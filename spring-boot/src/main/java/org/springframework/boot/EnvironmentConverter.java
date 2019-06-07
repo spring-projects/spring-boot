@@ -68,20 +68,16 @@ final class EnvironmentConverter {
 	 * @param environment the Environment to convert
 	 * @return the converted Environment
 	 */
-	StandardEnvironment convertToStandardEnvironmentIfNecessary(
-			ConfigurableEnvironment environment) {
-		if (environment instanceof StandardEnvironment
-				&& !isWebEnvironment(environment, this.classLoader)) {
+	StandardEnvironment convertToStandardEnvironmentIfNecessary(ConfigurableEnvironment environment) {
+		if (environment instanceof StandardEnvironment && !isWebEnvironment(environment, this.classLoader)) {
 			return (StandardEnvironment) environment;
 		}
 		return convertToStandardEnvironment(environment);
 	}
 
-	private boolean isWebEnvironment(ConfigurableEnvironment environment,
-			ClassLoader classLoader) {
+	private boolean isWebEnvironment(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		try {
-			Class<?> webEnvironmentClass = ClassUtils
-					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
+			Class<?> webEnvironmentClass = ClassUtils.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
 			return (webEnvironmentClass.isInstance(environment));
 		}
 		catch (Throwable ex) {
@@ -89,8 +85,7 @@ final class EnvironmentConverter {
 		}
 	}
 
-	private StandardEnvironment convertToStandardEnvironment(
-			ConfigurableEnvironment environment) {
+	private StandardEnvironment convertToStandardEnvironment(ConfigurableEnvironment environment) {
 		StandardEnvironment result = new StandardEnvironment();
 		result.setActiveProfiles(environment.getActiveProfiles());
 		result.setConversionService(environment.getConversionService());
@@ -98,8 +93,7 @@ final class EnvironmentConverter {
 		return result;
 	}
 
-	private void copyNonServletPropertySources(ConfigurableEnvironment source,
-			StandardEnvironment target) {
+	private void copyNonServletPropertySources(ConfigurableEnvironment source, StandardEnvironment target) {
 		removeAllPropertySources(target.getPropertySources());
 		for (PropertySource<?> propertySource : source.getPropertySources()) {
 			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,30 +33,26 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnEnabledEndpointCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName()));
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		AnnotationAttributes annotationAttributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName()));
 		String endpointName = annotationAttributes.getString("value");
 		boolean enabledByDefault = annotationAttributes.getBoolean("enabledByDefault");
-		ConditionOutcome outcome = determineEndpointOutcome(endpointName,
-				enabledByDefault, context);
+		ConditionOutcome outcome = determineEndpointOutcome(endpointName, enabledByDefault, context);
 		if (outcome != null) {
 			return outcome;
 		}
 		return determineAllEndpointsOutcome(context);
 	}
 
-	private ConditionOutcome determineEndpointOutcome(String endpointName,
-			boolean enabledByDefault, ConditionContext context) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "endpoints." + endpointName + ".");
+	private ConditionOutcome determineEndpointOutcome(String endpointName, boolean enabledByDefault,
+			ConditionContext context) {
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(),
+				"endpoints." + endpointName + ".");
 		if (resolver.containsProperty("enabled") || !enabledByDefault) {
-			boolean match = resolver.getProperty("enabled", Boolean.class,
-					enabledByDefault);
+			boolean match = resolver.getProperty("enabled", Boolean.class, enabledByDefault);
 			ConditionMessage message = ConditionMessage
-					.forCondition(ConditionalOnEnabledEndpoint.class,
-							"(" + endpointName + ")")
+					.forCondition(ConditionalOnEnabledEndpoint.class, "(" + endpointName + ")")
 					.because(match ? "enabled" : "disabled");
 			return new ConditionOutcome(match, message);
 		}
@@ -64,13 +60,10 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	}
 
 	private ConditionOutcome determineAllEndpointsOutcome(ConditionContext context) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "endpoints.");
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(), "endpoints.");
 		boolean match = Boolean.valueOf(resolver.getProperty("enabled", "true"));
-		ConditionMessage message = ConditionMessage
-				.forCondition(ConditionalOnEnabledEndpoint.class)
-				.because("All endpoints are " + (match ? "enabled" : "disabled")
-						+ " by default");
+		ConditionMessage message = ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
+				.because("All endpoints are " + (match ? "enabled" : "disabled") + " by default");
 		return new ConditionOutcome(match, message);
 	}
 

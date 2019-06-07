@@ -44,14 +44,12 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public abstract class AbstractEmbeddedServletContainerFactory
-		extends AbstractConfigurableEmbeddedServletContainer
+public abstract class AbstractEmbeddedServletContainerFactory extends AbstractConfigurableEmbeddedServletContainer
 		implements EmbeddedServletContainerFactory {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
-			"static" };
+	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public", "static" };
 
 	public AbstractEmbeddedServletContainerFactory() {
 		super();
@@ -79,9 +77,8 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		// Or maybe there is a document root in a well-known location
 		file = (file != null) ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isDebugEnabled()) {
-			this.logger
-					.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
-							+ " point to a directory and will be ignored.");
+			this.logger.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
+					+ " point to a directory and will be ignored.");
 		}
 		else if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Document root: " + file);
@@ -110,14 +107,12 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		try {
 			if ("file".equals(url.getProtocol())) {
 				File file = new File(url.toURI());
-				return (file.isDirectory()
-						&& new File(file, "META-INF/resources").isDirectory())
+				return (file.isDirectory() && new File(file, "META-INF/resources").isDirectory())
 						|| isResourcesJar(file);
 			}
 			else {
 				URLConnection connection = url.openConnection();
-				if (connection instanceof JarURLConnection
-						&& isResourcesJar((JarURLConnection) connection)) {
+				if (connection instanceof JarURLConnection && isResourcesJar((JarURLConnection) connection)) {
 					return true;
 				}
 			}
@@ -140,8 +135,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return URLDecoder.decode(url.getFile(), "UTF-8");
 		}
 		catch (UnsupportedEncodingException ex) {
-			throw new IllegalStateException(
-					"Failed to decode '" + url.getFile() + "' using UTF-8");
+			throw new IllegalStateException("Failed to decode '" + url.getFile() + "' using UTF-8");
 		}
 	}
 
@@ -161,8 +155,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return file.getName().endsWith(".jar") && isResourcesJar(new JarFile(file));
 		}
 		catch (IOException ex) {
-			this.logger.warn("Unable to open jar '" + file
-					+ "' to determine if it contains static resources", ex);
+			this.logger.warn("Unable to open jar '" + file + "' to determine if it contains static resources", ex);
 			return false;
 		}
 	}
@@ -182,8 +175,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		}
 		if (codeSourceFile != null && codeSourceFile.exists()) {
 			String path = codeSourceFile.getAbsolutePath();
-			int webInfPathIndex = path
-					.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
+			int webInfPathIndex = path.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
 			if (webInfPathIndex >= 0) {
 				path = path.substring(0, webInfPathIndex);
 				return new File(path);
@@ -281,9 +273,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		}
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to create tempDir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"),
-					ex);
+					"Unable to create tempDir. java.io.tmpdir is set to " + System.getProperty("java.io.tmpdir"), ex);
 		}
 	}
 

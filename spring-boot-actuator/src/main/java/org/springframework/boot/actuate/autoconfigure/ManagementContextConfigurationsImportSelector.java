@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
  * @see ManagementContextConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class ManagementContextConfigurationsImportSelector
-		implements DeferredImportSelector, BeanClassLoaderAware {
+class ManagementContextConfigurationsImportSelector implements DeferredImportSelector, BeanClassLoaderAware {
 
 	private ClassLoader classLoader;
 
@@ -61,8 +60,7 @@ class ManagementContextConfigurationsImportSelector
 	}
 
 	private List<ManagementConfiguration> getConfigurations() {
-		SimpleMetadataReaderFactory readerFactory = new SimpleMetadataReaderFactory(
-				this.classLoader);
+		SimpleMetadataReaderFactory readerFactory = new SimpleMetadataReaderFactory(this.classLoader);
 		List<ManagementConfiguration> configurations = new ArrayList<ManagementConfiguration>();
 		for (String className : loadFactoryNames()) {
 			getConfiguration(readerFactory, configurations, className);
@@ -77,14 +75,12 @@ class ManagementContextConfigurationsImportSelector
 			configurations.add(new ManagementConfiguration(metadataReader));
 		}
 		catch (IOException ex) {
-			throw new RuntimeException(
-					"Failed to read annotation metadata for '" + className + "'", ex);
+			throw new RuntimeException("Failed to read annotation metadata for '" + className + "'", ex);
 		}
 	}
 
 	protected List<String> loadFactoryNames() {
-		return SpringFactoriesLoader
-				.loadFactoryNames(ManagementContextConfiguration.class, this.classLoader);
+		return SpringFactoriesLoader.loadFactoryNames(ManagementContextConfiguration.class, this.classLoader);
 	}
 
 	@Override
@@ -102,17 +98,14 @@ class ManagementContextConfigurationsImportSelector
 		private final int order;
 
 		ManagementConfiguration(MetadataReader metadataReader) {
-			AnnotationMetadata annotationMetadata = metadataReader
-					.getAnnotationMetadata();
+			AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
 			this.order = readOrder(annotationMetadata);
 			this.className = metadataReader.getClassMetadata().getClassName();
 		}
 
 		private int readOrder(AnnotationMetadata annotationMetadata) {
-			Map<String, Object> attributes = annotationMetadata
-					.getAnnotationAttributes(Order.class.getName());
-			Integer order = (attributes != null) ? (Integer) attributes.get("value")
-					: null;
+			Map<String, Object> attributes = annotationMetadata.getAnnotationAttributes(Order.class.getName());
+			Integer order = (attributes != null) ? (Integer) attributes.get("value") : null;
 			return (order != null) ? order : Ordered.LOWEST_PRECEDENCE;
 		}
 

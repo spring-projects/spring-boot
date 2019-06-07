@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,28 +50,24 @@ public class ErrorMvcAutoConfigurationTests {
 			context.refresh();
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
-			DispatcherServletWebRequest webRequest = createWebRequest(
-					new IllegalStateException("Exception message"), false);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
-					webRequest.getRequest(), webRequest.getResponse());
-			assertThat(((MockHttpServletResponse) webRequest.getResponse())
-					.getContentAsString()).contains("<div>Exception message</div>");
+			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
+					false);
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, true), webRequest.getRequest(),
+					webRequest.getResponse());
+			assertThat(((MockHttpServletResponse) webRequest.getResponse()).getContentAsString())
+					.contains("<div>Exception message</div>");
 		}
 		finally {
 			context.close();
 		}
 	}
 
-	private DispatcherServletWebRequest createWebRequest(Exception ex,
-			boolean committed) {
+	private DispatcherServletWebRequest createWebRequest(Exception ex, boolean committed) {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/path");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request,
-				response);
-		webRequest.setAttribute("javax.servlet.error.exception", ex,
-				RequestAttributes.SCOPE_REQUEST);
-		webRequest.setAttribute("javax.servlet.error.request_uri", "/path",
-				RequestAttributes.SCOPE_REQUEST);
+		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request, response);
+		webRequest.setAttribute("javax.servlet.error.exception", ex, RequestAttributes.SCOPE_REQUEST);
+		webRequest.setAttribute("javax.servlet.error.request_uri", "/path", RequestAttributes.SCOPE_REQUEST);
 		response.setCommitted(committed);
 		response.setOutputStreamAccessAllowed(!committed);
 		response.setWriterAccessAllowed(!committed);

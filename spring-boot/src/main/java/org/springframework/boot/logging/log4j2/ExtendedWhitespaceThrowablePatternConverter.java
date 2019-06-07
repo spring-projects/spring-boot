@@ -31,11 +31,9 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
  * @author Phillip Webb
  * @since 1.3.0
  */
-@Plugin(name = "ExtendedWhitespaceThrowablePatternConverter",
-		category = PatternConverter.CATEGORY)
+@Plugin(name = "ExtendedWhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "xwEx", "xwThrowable", "xwException" })
-public final class ExtendedWhitespaceThrowablePatternConverter
-		extends ThrowablePatternConverter {
+public final class ExtendedWhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
 	private final ExtendedThrowablePatternConverter delegate;
 
@@ -59,8 +57,7 @@ public final class ExtendedWhitespaceThrowablePatternConverter
 	 * first line of the throwable will be formatted.
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
-	public static ExtendedWhitespaceThrowablePatternConverter newInstance(
-			String[] options) {
+	public static ExtendedWhitespaceThrowablePatternConverter newInstance(String[] options) {
 		return new ExtendedWhitespaceThrowablePatternConverter(options);
 	}
 

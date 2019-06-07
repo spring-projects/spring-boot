@@ -114,8 +114,7 @@ public class CacheProperties {
 	 */
 	public Resource resolveConfigLocation(Resource config) {
 		if (config != null) {
-			Assert.isTrue(config.exists(), "Cache configuration does not exist '"
-					+ config.getDescription() + "'");
+			Assert.isTrue(config.exists(), "Cache configuration does not exist '" + config.getDescription() + "'");
 			return config;
 		}
 		return null;
@@ -283,8 +282,7 @@ public class CacheProperties {
 		private String spec;
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(
-				reason = "Caffeine will supersede the Guava support in Spring Boot 2.0",
+		@DeprecatedConfigurationProperty(reason = "Caffeine will supersede the Guava support in Spring Boot 2.0",
 				replacement = "spring.cache.caffeine.spec")
 		public String getSpec() {
 			return this.spec;

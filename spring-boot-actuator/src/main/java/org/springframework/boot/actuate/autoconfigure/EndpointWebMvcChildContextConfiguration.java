@@ -142,8 +142,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	protected static class EndpointHandlerMappingConfiguration {
 
 		@Autowired
-		public void handlerMapping(MvcEndpoints endpoints,
-				ListableBeanFactory beanFactory, EndpointHandlerMapping mapping) {
+		public void handlerMapping(MvcEndpoints endpoints, ListableBeanFactory beanFactory,
+				EndpointHandlerMapping mapping) {
 			// In a child context we definitely want to see the parent endpoints
 			mapping.setDetectHandlerMethodsInAncestorContexts(true);
 		}
@@ -152,8 +152,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = "springSecurityFilterChain",
-			search = SearchStrategy.ANCESTORS)
+	@ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.ANCESTORS)
 	public static class EndpointWebMvcChildContextSecurityConfiguration {
 
 		@Bean
@@ -172,8 +171,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class ServerCustomization
-			implements EmbeddedServletContainerCustomizer, Ordered {
+	static class ServerCustomization implements EmbeddedServletContainerCustomizer, Ordered {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -192,11 +190,9 @@ public class EndpointWebMvcChildContextConfiguration {
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {
 			if (this.managementServerProperties == null) {
-				this.managementServerProperties = BeanFactoryUtils
-						.beanOfTypeIncludingAncestors(this.beanFactory,
-								ManagementServerProperties.class);
-				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(
-						this.beanFactory, ServerProperties.class);
+				this.managementServerProperties = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
+						ManagementServerProperties.class);
+				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, ServerProperties.class);
 			}
 			// Customize as per the parent context first (so e.g. the access logs go to
 			// the same place)
@@ -225,8 +221,7 @@ public class EndpointWebMvcChildContextConfiguration {
 		private List<HandlerMapping> mappings;
 
 		@Override
-		public HandlerExecutionChain getHandler(HttpServletRequest request)
-				throws Exception {
+		public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 			if (this.mappings == null) {
 				this.mappings = extractMappings();
 			}
@@ -278,8 +273,8 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		@Override
-		public ModelAndView handle(HttpServletRequest request,
-				HttpServletResponse response, Object handler) throws Exception {
+		public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+				throws Exception {
 			if (this.adapters == null) {
 				this.adapters = extractAdapters();
 			}
@@ -315,8 +310,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 		private List<HandlerExceptionResolver> extractResolvers() {
 			List<HandlerExceptionResolver> list = new ArrayList<HandlerExceptionResolver>();
-			list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class)
-					.values());
+			list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 			list.remove(this);
 			AnnotationAwareOrderComparator.sort(list);
 			if (list.isEmpty()) {
@@ -326,14 +320,13 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		@Override
-		public ModelAndView resolveException(HttpServletRequest request,
-				HttpServletResponse response, Object handler, Exception ex) {
+		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+				Exception ex) {
 			if (this.resolvers == null) {
 				this.resolvers = extractResolvers();
 			}
 			for (HandlerExceptionResolver mapping : this.resolvers) {
-				ModelAndView mav = mapping.resolveException(request, response, handler,
-						ex);
+				ModelAndView mav = mapping.resolveException(request, response, handler, ex);
 				if (mav != null) {
 					return mav;
 				}
@@ -372,8 +365,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class TomcatAccessLogCustomizer
-			extends AccessLogCustomizer<TomcatEmbeddedServletContainerFactory> {
+	static class TomcatAccessLogCustomizer extends AccessLogCustomizer<TomcatEmbeddedServletContainerFactory> {
 
 		TomcatAccessLogCustomizer() {
 			super(TomcatEmbeddedServletContainerFactory.class);
@@ -388,8 +380,7 @@ public class EndpointWebMvcChildContextConfiguration {
 			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
 		}
 
-		private AccessLogValve findAccessLogValve(
-				TomcatEmbeddedServletContainerFactory container) {
+		private AccessLogValve findAccessLogValve(TomcatEmbeddedServletContainerFactory container) {
 			for (Valve engineValve : container.getEngineValves()) {
 				if (engineValve instanceof AccessLogValve) {
 					return (AccessLogValve) engineValve;
@@ -400,8 +391,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class UndertowAccessLogCustomizer
-			extends AccessLogCustomizer<UndertowEmbeddedServletContainerFactory> {
+	static class UndertowAccessLogCustomizer extends AccessLogCustomizer<UndertowEmbeddedServletContainerFactory> {
 
 		UndertowAccessLogCustomizer() {
 			super(UndertowEmbeddedServletContainerFactory.class);

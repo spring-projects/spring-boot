@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ class LinksEnhancer {
 
 	public void addEndpointLinks(ResourceSupport resource, String self) {
 		if (!resource.hasLink("self")) {
-			resource.add(linkTo(LinksEnhancer.class).slash(this.rootPath + self)
-					.withSelfRel());
+			resource.add(linkTo(LinksEnhancer.class).slash(this.rootPath + self).withSelfRel());
 		}
 		MultiValueMap<String, String> added = new LinkedMultiValueMap<String, String>();
 		for (MvcEndpoint endpoint : this.endpoints.getEndpoints()) {
@@ -71,8 +70,7 @@ class LinksEnhancer {
 		return (path.startsWith("/") ? path.substring(1) : path);
 	}
 
-	private void addEndpointLink(ResourceSupport resource, MvcEndpoint endpoint,
-			String rel) {
+	private void addEndpointLink(ResourceSupport resource, MvcEndpoint endpoint, String rel) {
 		Class<?> type = endpoint.getEndpointType();
 		type = (type != null) ? type : Object.class;
 		if (StringUtils.hasText(rel)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +77,7 @@ public class HeapdumpMvcEndpointSecureOptionsTests {
 		this.mvc.perform(options("/heapdump")).andExpect(status().isOk());
 	}
 
-	@Import({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
@@ -115,8 +114,7 @@ public class HeapdumpMvcEndpointSecureOptionsTests {
 			return new HeapDumper() {
 
 				@Override
-				public void dumpHeap(File file, boolean live)
-						throws IOException, InterruptedException {
+				public void dumpHeap(File file, boolean live) throws IOException, InterruptedException {
 					if (!TestHeapdumpMvcEndpoint.this.available) {
 						throw new HeapDumperUnavailableException("Not available", null);
 					}
@@ -126,8 +124,7 @@ public class HeapdumpMvcEndpointSecureOptionsTests {
 					if (file.exists()) {
 						throw new IOException("File exists");
 					}
-					FileCopyUtils.copy(TestHeapdumpMvcEndpoint.this.heapDump.getBytes(),
-							file);
+					FileCopyUtils.copy(TestHeapdumpMvcEndpoint.this.heapDump.getBytes(), file);
 				}
 
 			};

@@ -40,8 +40,7 @@ public class LayoutsTests {
 		assertThat(Layouts.forFile(new File("test.jar"))).isInstanceOf(Layouts.Jar.class);
 		assertThat(Layouts.forFile(new File("test.JAR"))).isInstanceOf(Layouts.Jar.class);
 		assertThat(Layouts.forFile(new File("test.jAr"))).isInstanceOf(Layouts.Jar.class);
-		assertThat(Layouts.forFile(new File("te.st.jar")))
-				.isInstanceOf(Layouts.Jar.class);
+		assertThat(Layouts.forFile(new File("te.st.jar"))).isInstanceOf(Layouts.Jar.class);
 	}
 
 	@Test
@@ -49,8 +48,7 @@ public class LayoutsTests {
 		assertThat(Layouts.forFile(new File("test.war"))).isInstanceOf(Layouts.War.class);
 		assertThat(Layouts.forFile(new File("test.WAR"))).isInstanceOf(Layouts.War.class);
 		assertThat(Layouts.forFile(new File("test.wAr"))).isInstanceOf(Layouts.War.class);
-		assertThat(Layouts.forFile(new File("te.st.war")))
-				.isInstanceOf(Layouts.War.class);
+		assertThat(Layouts.forFile(new File("te.st.war"))).isInstanceOf(Layouts.War.class);
 	}
 
 	@Test
@@ -63,41 +61,29 @@ public class LayoutsTests {
 	@Test
 	public void jarLayout() throws Exception {
 		Layout layout = new Layouts.Jar();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
-				.isEqualTo("BOOT-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
-				.isEqualTo("BOOT-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
-				.isEqualTo("BOOT-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
-				.isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE)).isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM)).isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED)).isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME)).isEqualTo("BOOT-INF/lib/");
 	}
 
 	@Test
 	public void warLayout() throws Exception {
 		Layout layout = new Layouts.War();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
-				.isEqualTo("WEB-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
-				.isEqualTo("WEB-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
-				.isEqualTo("WEB-INF/lib-provided/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
-				.isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE)).isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM)).isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED)).isEqualTo("WEB-INF/lib-provided/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME)).isEqualTo("WEB-INF/lib/");
 	}
 
 	@Test
 	@SuppressWarnings("deprecation")
 	public void moduleLayout() throws Exception {
 		Layout layout = new Layouts.Module();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
-				.isEqualTo("lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
-				.isNull();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
-				.isEqualTo("lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
-				.isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE)).isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED)).isNull();
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME)).isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM)).isEqualTo("lib/");
 	}
 
 }

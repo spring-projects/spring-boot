@@ -42,8 +42,7 @@ public class NarayanaXADataSourceWrapper implements XADataSourceWrapper {
 	 * @param recoveryManager the underlying recovery manager
 	 * @param properties the Narayana properties
 	 */
-	public NarayanaXADataSourceWrapper(NarayanaRecoveryManagerBean recoveryManager,
-			NarayanaProperties properties) {
+	public NarayanaXADataSourceWrapper(NarayanaRecoveryManagerBean recoveryManager, NarayanaProperties properties) {
 		Assert.notNull(recoveryManager, "RecoveryManager must not be null");
 		Assert.notNull(properties, "Properties must not be null");
 		this.recoveryManager = recoveryManager;
@@ -58,12 +57,11 @@ public class NarayanaXADataSourceWrapper implements XADataSourceWrapper {
 	}
 
 	private XAResourceRecoveryHelper getRecoveryHelper(XADataSource dataSource) {
-		if (this.properties.getRecoveryDbUser() == null
-				&& this.properties.getRecoveryDbPass() == null) {
+		if (this.properties.getRecoveryDbUser() == null && this.properties.getRecoveryDbPass() == null) {
 			return new DataSourceXAResourceRecoveryHelper(dataSource);
 		}
-		return new DataSourceXAResourceRecoveryHelper(dataSource,
-				this.properties.getRecoveryDbUser(), this.properties.getRecoveryDbPass());
+		return new DataSourceXAResourceRecoveryHelper(dataSource, this.properties.getRecoveryDbUser(),
+				this.properties.getRecoveryDbPass());
 	}
 
 }

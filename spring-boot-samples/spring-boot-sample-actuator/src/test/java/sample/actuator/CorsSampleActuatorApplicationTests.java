@@ -58,8 +58,8 @@ public class CorsSampleActuatorApplicationTests {
 	@Before
 	public void setUp() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-				this.applicationContext.getEnvironment(), "http");
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(this.applicationContext.getEnvironment(),
+				"http");
 		restTemplate.setUriTemplateHandler(handler);
 		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 		this.testRestTemplate = new TestRestTemplate(restTemplate);
@@ -74,30 +74,24 @@ public class CorsSampleActuatorApplicationTests {
 	@Test
 	public void preflightRequestForInsensitiveShouldReturnOk() throws Exception {
 		RequestEntity<?> healthRequest = RequestEntity.options(new URI("/health"))
-				.header("Origin", "http://localhost:8080")
-				.header("Access-Control-Request-Method", "GET").build();
-		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest,
-				Map.class);
+				.header("Origin", "http://localhost:8080").header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest, Map.class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void preflightRequestForSensitiveEndpointShouldReturnOk() throws Exception {
-		RequestEntity<?> entity = RequestEntity.options(new URI("/env"))
-				.header("Origin", "http://localhost:8080")
+		RequestEntity<?> entity = RequestEntity.options(new URI("/env")).header("Origin", "http://localhost:8080")
 				.header("Access-Control-Request-Method", "GET").build();
 		ResponseEntity<?> env = this.testRestTemplate.exchange(entity, Map.class);
 		assertThat(env.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden()
-			throws Exception {
-		RequestEntity<?> entity = RequestEntity.options(new URI("/health"))
-				.header("Origin", "http://localhost:9095")
+	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() throws Exception {
+		RequestEntity<?> entity = RequestEntity.options(new URI("/health")).header("Origin", "http://localhost:9095")
 				.header("Access-Control-Request-Method", "GET").build();
-		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity,
-				byte[].class);
+		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity, byte[].class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 

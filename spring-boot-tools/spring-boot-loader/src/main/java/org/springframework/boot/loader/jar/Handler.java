@@ -55,16 +55,14 @@ public class Handler extends URLStreamHandler {
 
 	private static final String PARENT_DIR = "/../";
 
-	private static final String[] FALLBACK_HANDLERS = {
-			"sun.net.www.protocol.jar.Handler" };
+	private static final String[] FALLBACK_HANDLERS = { "sun.net.www.protocol.jar.Handler" };
 
 	private static final Method OPEN_CONNECTION_METHOD;
 
 	static {
 		Method method = null;
 		try {
-			method = URLStreamHandler.class.getDeclaredMethod("openConnection",
-					URL.class);
+			method = URLStreamHandler.class.getDeclaredMethod("openConnection", URL.class);
 		}
 		catch (Exception ex) {
 			// Swallow and ignore
@@ -92,8 +90,7 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
-		if (this.jarFile != null
-				&& url.toString().startsWith(this.jarFile.getUrl().toString())) {
+		if (this.jarFile != null && url.toString().startsWith(this.jarFile.getUrl().toString())) {
 			return JarURLConnection.get(url, this.jarFile);
 		}
 		try {
@@ -104,8 +101,7 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private URLConnection openFallbackConnection(URL url, Exception reason)
-			throws IOException {
+	private URLConnection openFallbackConnection(URL url, Exception reason) throws IOException {
 		try {
 			return openConnection(getFallbackHandler(), url);
 		}
@@ -124,8 +120,7 @@ public class Handler extends URLStreamHandler {
 
 	private void log(boolean warning, String message, Exception cause) {
 		try {
-			Logger.getLogger(getClass().getName())
-					.log((warning ? Level.WARNING : Level.FINEST), message, cause);
+			Logger.getLogger(getClass().getName()).log((warning ? Level.WARNING : Level.FINEST), message, cause);
 		}
 		catch (Exception ex) {
 			if (warning) {
@@ -151,11 +146,9 @@ public class Handler extends URLStreamHandler {
 		throw new IllegalStateException("Unable to find fallback handler");
 	}
 
-	private URLConnection openConnection(URLStreamHandler handler, URL url)
-			throws Exception {
+	private URLConnection openConnection(URLStreamHandler handler, URL url) throws Exception {
 		if (OPEN_CONNECTION_METHOD == null) {
-			throw new IllegalStateException(
-					"Unable to invoke fallback open connection method");
+			throw new IllegalStateException("Unable to invoke fallback open connection method");
 		}
 		OPEN_CONNECTION_METHOD.setAccessible(true);
 		return (URLConnection) OPEN_CONNECTION_METHOD.invoke(handler, url);
@@ -195,8 +188,7 @@ public class Handler extends URLStreamHandler {
 		}
 		int lastSlashIndex = file.lastIndexOf('/');
 		if (lastSlashIndex == -1) {
-			throw new IllegalArgumentException(
-					"No / found in context URL's file '" + file + "'");
+			throw new IllegalArgumentException("No / found in context URL's file '" + file + "'");
 		}
 		return file.substring(0, lastSlashIndex + 1) + spec;
 	}
@@ -204,8 +196,7 @@ public class Handler extends URLStreamHandler {
 	private String trimToJarRoot(String file) {
 		int lastSeparatorIndex = file.lastIndexOf(SEPARATOR);
 		if (lastSeparatorIndex == -1) {
-			throw new IllegalArgumentException(
-					"No !/ found in context URL's file '" + file + "'");
+			throw new IllegalArgumentException("No !/ found in context URL's file '" + file + "'");
 		}
 		return file.substring(0, lastSeparatorIndex);
 	}
@@ -218,8 +209,7 @@ public class Handler extends URLStreamHandler {
 			query = path.substring(queryIndex + 1);
 			path = path.substring(0, queryIndex);
 		}
-		setURL(context, JAR_PROTOCOL, null, -1, null, null, path, query,
-				context.getRef());
+		setURL(context, JAR_PROTOCOL, null, -1, null, null, path, query, context.getRef());
 	}
 
 	private String normalize(String file) {
@@ -238,8 +228,7 @@ public class Handler extends URLStreamHandler {
 		while ((parentDirIndex = file.indexOf(PARENT_DIR)) >= 0) {
 			int precedingSlashIndex = file.lastIndexOf('/', parentDirIndex - 1);
 			if (precedingSlashIndex >= 0) {
-				file = file.substring(0, precedingSlashIndex)
-						+ file.substring(parentDirIndex + 3);
+				file = file.substring(0, precedingSlashIndex) + file.substring(parentDirIndex + 3);
 			}
 			else {
 				file = file.substring(parentDirIndex + 4);
@@ -359,8 +348,7 @@ public class Handler extends URLStreamHandler {
 	 * which are then swallowed.
 	 * @param useFastConnectionExceptions if fast connection exceptions can be used.
 	 */
-	public static void setUseFastConnectionExceptions(
-			boolean useFastConnectionExceptions) {
+	public static void setUseFastConnectionExceptions(boolean useFastConnectionExceptions) {
 		JarURLConnection.setUseFastExceptions(useFastConnectionExceptions);
 	}
 

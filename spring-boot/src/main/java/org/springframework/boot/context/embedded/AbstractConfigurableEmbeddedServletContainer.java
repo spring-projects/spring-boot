@@ -46,11 +46,9 @@ import org.springframework.util.ClassUtils;
  * @author Brian Clozel
  * @see AbstractEmbeddedServletContainerFactory
  */
-public abstract class AbstractConfigurableEmbeddedServletContainer
-		implements ConfigurableEmbeddedServletContainer {
+public abstract class AbstractConfigurableEmbeddedServletContainer implements ConfigurableEmbeddedServletContainer {
 
-	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
-			.toSeconds(30);
+	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES.toSeconds(30);
 
 	private String contextPath = "";
 
@@ -125,12 +123,10 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 		Assert.notNull(contextPath, "ContextPath must not be null");
 		if (contextPath.length() > 0) {
 			if ("/".equals(contextPath)) {
-				throw new IllegalArgumentException(
-						"Root ContextPath must be specified using an empty string");
+				throw new IllegalArgumentException("Root ContextPath must be specified using an empty string");
 			}
 			if (!contextPath.startsWith("/") || contextPath.endsWith("/")) {
-				throw new IllegalArgumentException(
-						"ContextPath must start with '/' and not end with '/'");
+				throw new IllegalArgumentException("ContextPath must start with '/' and not end with '/'");
 			}
 		}
 	}
@@ -355,13 +351,11 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	 * @return a complete set of merged initializers (with the specified parameters
 	 * appearing first)
 	 */
-	protected final ServletContextInitializer[] mergeInitializers(
-			ServletContextInitializer... initializers) {
+	protected final ServletContextInitializer[] mergeInitializers(ServletContextInitializer... initializers) {
 		List<ServletContextInitializer> mergedInitializers = new ArrayList<ServletContextInitializer>();
 		mergedInitializers.addAll(Arrays.asList(initializers));
 		mergedInitializers.addAll(this.initializers);
-		return mergedInitializers
-				.toArray(new ServletContextInitializer[mergedInitializers.size()]);
+		return mergedInitializers.toArray(new ServletContextInitializer[mergedInitializers.size()]);
 	}
 
 	/**
@@ -370,8 +364,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {
-		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
-				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
+		return this.jspServlet != null && this.jspServlet.getRegistered()
+				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
 	}
 
 }

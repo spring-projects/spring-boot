@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,18 +35,16 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	public void defaultDataDir() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setPersistent(true);
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
-		assertThat(configuration.getJournalDirectory())
-				.startsWith(System.getProperty("java.io.tmpdir")).endsWith("/journal");
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
+		assertThat(configuration.getJournalDirectory()).startsWith(System.getProperty("java.io.tmpdir"))
+				.endsWith("/journal");
 	}
 
 	@Test
 	public void persistenceSetup() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setPersistent(true);
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		assertThat(configuration.isPersistenceEnabled()).isTrue();
 		assertThat(configuration.getJournalType()).isEqualTo(JournalType.NIO);
 	}
@@ -54,8 +52,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	@Test
 	public void generatedClusterPassword() throws Exception {
 		ArtemisProperties properties = new ArtemisProperties();
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		assertThat(configuration.getClusterPassword().length()).isEqualTo(36);
 	}
 
@@ -63,8 +60,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	public void specificClusterPassword() throws Exception {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setClusterPassword("password");
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		assertThat(configuration.getClusterPassword()).isEqualTo("password");
 	}
 

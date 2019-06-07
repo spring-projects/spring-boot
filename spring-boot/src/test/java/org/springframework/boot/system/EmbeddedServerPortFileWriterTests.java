@@ -91,12 +91,10 @@ public class EmbeddedServerPortFileWriterTests {
 		listener.onApplicationEvent(mockEvent("management", 9090));
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
 		String managementFile = file.getName();
-		managementFile = managementFile.substring(0, managementFile.length()
-				- StringUtils.getFilenameExtension(managementFile).length() - 1);
-		managementFile = managementFile + "-management."
-				+ StringUtils.getFilenameExtension(file.getName());
-		FileReader reader = new FileReader(
-				new File(file.getParentFile(), managementFile));
+		managementFile = managementFile.substring(0,
+				managementFile.length() - StringUtils.getFilenameExtension(managementFile).length() - 1);
+		managementFile = managementFile + "-management." + StringUtils.getFilenameExtension(file.getName());
+		FileReader reader = new FileReader(new File(file.getParentFile(), managementFile));
 		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
@@ -108,19 +106,16 @@ public class EmbeddedServerPortFileWriterTests {
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("management", 9090));
 		String managementFile = file.getName();
-		managementFile = managementFile.substring(0, managementFile.length()
-				- StringUtils.getFilenameExtension(managementFile).length() - 1);
-		managementFile = managementFile + "-MANAGEMENT."
-				+ StringUtils.getFilenameExtension(file.getName());
-		FileReader reader = new FileReader(
-				new File(file.getParentFile(), managementFile));
+		managementFile = managementFile.substring(0,
+				managementFile.length() - StringUtils.getFilenameExtension(managementFile).length() - 1);
+		managementFile = managementFile + "-MANAGEMENT." + StringUtils.getFilenameExtension(file.getName());
+		FileReader reader = new FileReader(new File(file.getParentFile(), managementFile));
 		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
 	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
-		EmbeddedWebApplicationContext applicationContext = mock(
-				EmbeddedWebApplicationContext.class);
+		EmbeddedWebApplicationContext applicationContext = mock(EmbeddedWebApplicationContext.class);
 		EmbeddedServletContainer source = mock(EmbeddedServletContainer.class);
 		given(applicationContext.getNamespace()).willReturn(name);
 		given(source.getPort()).willReturn(port);

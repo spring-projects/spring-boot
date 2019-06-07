@@ -45,33 +45,25 @@ public class GradleIT {
 
 	private void test(String name, String expected) throws Exception {
 		File projectDirectory = new File("target/gradleit/" + name);
-		File javaDirectory = new File(
-				"target/gradleit/" + name + "/src/main/java/org/test/");
+		File javaDirectory = new File("target/gradleit/" + name + "/src/main/java/org/test/");
 		projectDirectory.mkdirs();
 		javaDirectory.mkdirs();
 		File script = new File(projectDirectory, "build.gradle");
 		FileCopyUtils.copy(new File("src/it/" + name + "/build.gradle"), script);
-		FileCopyUtils.copy(
-				new File("src/it/" + name
-						+ "/src/main/java/org/test/SampleApplication.java"),
+		FileCopyUtils.copy(new File("src/it/" + name + "/src/main/java/org/test/SampleApplication.java"),
 				new File(javaDirectory, "SampleApplication.java"));
 		GradleConnector gradleConnector = GradleConnector.newConnector();
 		gradleConnector.useGradleVersion("2.9");
 		((DefaultGradleConnector) gradleConnector).embedded(true);
-		ProjectConnection project = gradleConnector.forProjectDirectory(projectDirectory)
-				.connect();
-		project.newBuild().forTasks("clean", "build").setStandardOutput(System.out)
-				.setStandardError(System.err)
+		ProjectConnection project = gradleConnector.forProjectDirectory(projectDirectory).connect();
+		project.newBuild().forTasks("clean", "build").setStandardOutput(System.out).setStandardError(System.err)
 				.withArguments("-PbootVersion=" + getBootVersion()).run();
-		Verify.verify(
-				new File("target/gradleit/" + name + "/build/libs/" + name + ".jar"),
-				expected);
+		Verify.verify(new File("target/gradleit/" + name + "/build/libs/" + name + ".jar"), expected);
 	}
 
 	public static String getBootVersion() {
 		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
-						+ "/text()");
+				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']" + "/text()");
 	}
 
 	private static String evaluateExpression(String expression) {

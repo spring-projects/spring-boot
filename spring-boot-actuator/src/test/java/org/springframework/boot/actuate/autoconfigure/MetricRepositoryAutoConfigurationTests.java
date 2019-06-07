@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class MetricRepositoryAutoConfigurationTests {
 
 	@Test
 	public void createServices() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(
-				MetricRepositoryAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(MetricRepositoryAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(BufferGaugeService.class);
 		assertThat(gaugeService).isNotNull();
 		assertThat(this.context.getBean(BufferCounterService.class)).isNotNull();
@@ -68,14 +67,12 @@ public class MetricRepositoryAutoConfigurationTests {
 
 	@Test
 	public void dropwizardInstalledIfPresent() {
-		this.context = new AnnotationConfigApplicationContext(
-				MetricsDropwizardAutoConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext(MetricsDropwizardAutoConfiguration.class,
 				MetricRepositoryAutoConfiguration.class, AopAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
 		assertThat(gaugeService).isNotNull();
 		gaugeService.submit("foo", 2.7);
-		DropwizardMetricServices exporter = this.context
-				.getBean(DropwizardMetricServices.class);
+		DropwizardMetricServices exporter = this.context.getBean(DropwizardMetricServices.class);
 		assertThat(exporter).isEqualTo(gaugeService);
 		MetricRegistry registry = this.context.getBean(MetricRegistry.class);
 		@SuppressWarnings("unchecked")
@@ -85,8 +82,7 @@ public class MetricRepositoryAutoConfigurationTests {
 
 	@Test
 	public void skipsIfBeansExist() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(Config.class,
-				MetricRepositoryAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(Config.class, MetricRepositoryAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(BufferGaugeService.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(BufferCounterService.class)).isEmpty();
 	}

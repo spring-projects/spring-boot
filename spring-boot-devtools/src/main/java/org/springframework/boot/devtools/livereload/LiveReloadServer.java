@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ public class LiveReloadServer {
 
 	private static final int READ_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(4);
 
-	private final ExecutorService executor = Executors
-			.newCachedThreadPool(new WorkerThreadFactory());
+	private final ExecutorService executor = Executors.newCachedThreadPool(new WorkerThreadFactory());
 
 	private final List<Connection> connections = new ArrayList<Connection>();
 
@@ -243,8 +242,8 @@ public class LiveReloadServer {
 	 * @return a connection
 	 * @throws IOException in case of I/O errors
 	 */
-	protected Connection createConnection(Socket socket, InputStream inputStream,
-			OutputStream outputStream) throws IOException {
+	protected Connection createConnection(Socket socket, InputStream inputStream, OutputStream outputStream)
+			throws IOException {
 		return new Connection(socket, inputStream, outputStream);
 	}
 
@@ -284,8 +283,7 @@ public class LiveReloadServer {
 				try {
 					OutputStream outputStream = this.socket.getOutputStream();
 					try {
-						Connection connection = createConnection(this.socket,
-								this.inputStream, outputStream);
+						Connection connection = createConnection(this.socket, this.inputStream, outputStream);
 						runConnection(connection);
 					}
 					finally {

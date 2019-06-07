@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,13 +84,10 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	public void testWebConfiguration() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
+		this.context.register(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class, JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
@@ -117,19 +114,15 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(WebConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
-		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
-				user.getAuthorities());
-		assertThat(authorities).containsAll(AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
+		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(user.getAuthorities());
+		assertThat(authorities)
+				.containsAll(AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
 	}
 
 	private UserDetails getUser() {
-		ProviderManager parent = (ProviderManager) this.context
-				.getBean(AuthenticationManager.class);
-		DaoAuthenticationProvider provider = (DaoAuthenticationProvider) parent
-				.getProviders().get(0);
-		UserDetailsService service = (UserDetailsService) ReflectionTestUtils
-				.getField(provider, "userDetailsService");
+		ProviderManager parent = (ProviderManager) this.context.getBean(AuthenticationManager.class);
+		DaoAuthenticationProvider provider = (DaoAuthenticationProvider) parent.getProviders().get(0);
+		UserDetailsService service = (UserDetailsService) ReflectionTestUtils.getField(provider, "userDetailsService");
 		UserDetails user = service.loadUserByUsername("user");
 		return user;
 	}
@@ -138,16 +131,13 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	public void testDisableIgnoredStaticApplicationPaths() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
+		this.context.register(SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class,
+				EndpointAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application and management endpoints now
-		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
-				.hasSize(2);
+		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains()).hasSize(2);
 	}
 
 	@Test
@@ -159,8 +149,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now plus the backup
 		// filter on app endpoints
-		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
-				.hasSize(3);
+		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains()).hasSize(3);
 	}
 
 	@Test
@@ -168,13 +157,11 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				ManagementWebSecurityAutoConfiguration.class, EndpointAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
-				this.context.getBean(TestConfiguration.class).authenticationManager);
+		assertThat(this.context.getBean(AuthenticationManager.class))
+				.isEqualTo(this.context.getBean(TestConfiguration.class).authenticationManager);
 	}
 
 	@Test
@@ -182,13 +169,11 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				ManagementWebSecurityAutoConfiguration.class, EndpointAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
-				this.context.getBean(TestConfiguration.class).authenticationManager);
+		assertThat(this.context.getBean(AuthenticationManager.class))
+				.isEqualTo(this.context.getBean(TestConfiguration.class).authenticationManager);
 	}
 
 	// gh-2466
@@ -197,40 +182,31 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(AuthenticationConfig.class, SecurityAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class, JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
 				WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				AuditAutoConfiguration.class);
 		this.context.refresh();
 
 		Filter filter = this.context.getBean("springSecurityFilterChain", Filter.class);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(filter).build();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(filter).build();
 
 		// no user (Main)
-		mockMvc.perform(MockMvcRequestBuilders.get("/home"))
-				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+		mockMvc.perform(MockMvcRequestBuilders.get("/home")).andExpect(MockMvcResultMatchers.status().isUnauthorized())
 				.andExpect(springAuthenticateRealmHeader());
 
 		// invalid user (Main)
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/home").header("authorization", "Basic xxx"))
-				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(springAuthenticateRealmHeader());
+		mockMvc.perform(MockMvcRequestBuilders.get("/home").header("authorization", "Basic xxx"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized()).andExpect(springAuthenticateRealmHeader());
 
 		// no user (Management)
-		mockMvc.perform(MockMvcRequestBuilders.get("/beans"))
-				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+		mockMvc.perform(MockMvcRequestBuilders.get("/beans")).andExpect(MockMvcResultMatchers.status().isUnauthorized())
 				.andExpect(springAuthenticateRealmHeader());
 
 		// invalid user (Management)
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/beans").header("authorization", "Basic xxx"))
-				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(springAuthenticateRealmHeader());
+		mockMvc.perform(MockMvcRequestBuilders.get("/beans").header("authorization", "Basic xxx"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized()).andExpect(springAuthenticateRealmHeader());
 	}
 
 	@Test
@@ -255,16 +231,14 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	private ResultMatcher springAuthenticateRealmHeader() {
-		return MockMvcResultMatchers.header().string("www-authenticate",
-				Matchers.containsString("realm=\"Spring\""));
+		return MockMvcResultMatchers.header().string("www-authenticate", Matchers.containsString("realm=\"Spring\""));
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			ManagementWebSecurityAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
 			FallbackWebSecurityAutoConfiguration.class })
 	static class WebConfiguration {
@@ -277,8 +251,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-			auth.inMemoryAuthentication().withUser("user").password("password")
-					.roles("USER");
+			auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
 		}
 
 	}
@@ -293,8 +266,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 			this.authenticationManager = new AuthenticationManager() {
 
 				@Override
-				public Authentication authenticate(Authentication authentication)
-						throws AuthenticationException {
+				public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 					return new TestingAuthenticationToken("foo", "bar");
 				}
 			};

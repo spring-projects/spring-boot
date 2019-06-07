@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,8 +138,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void invokeRestartWithCustomServerContextPath() throws Exception {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.context-path:/test");
+		loadContext("spring.devtools.remote.secret:supersecret", "server.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/restart");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -149,8 +148,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void disableRestart() throws Exception {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"spring.devtools.remote.restart.enabled:false");
+		loadContext("spring.devtools.remote.secret:supersecret", "spring.devtools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean("remoteRestartHandlerMapper");
 	}
@@ -167,8 +165,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void invokeTunnelWithCustomServerContextPath() throws Exception {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.context-path:/test");
+		loadContext("spring.devtools.remote.secret:supersecret", "server.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/debug");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -189,8 +186,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void disableRemoteDebug() throws Exception {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"spring.devtools.remote.debug.enabled:false");
+		loadContext("spring.devtools.remote.secret:supersecret", "spring.devtools.remote.debug.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean("remoteDebugHandlerMapper");
 	}
@@ -208,8 +204,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.context-path:/test");
+		loadContext("spring.devtools.remote.secret:supersecret", "server.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH);
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -219,13 +214,11 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	private void assertTunnelInvoked(boolean value) {
-		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked)
-				.isEqualTo(value);
+		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked).isEqualTo(value);
 	}
 
 	private void assertRestartInvoked(boolean value) {
-		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked)
-				.isEqualTo(value);
+		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked).isEqualTo(value);
 	}
 
 	private void loadContext(String... properties) {
@@ -243,14 +236,12 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		@Bean
 		public HttpTunnelServer remoteDebugHttpTunnelServer() {
-			return new MockHttpTunnelServer(
-					new SocketTargetServerConnection(new RemoteDebugPortProvider()));
+			return new MockHttpTunnelServer(new SocketTargetServerConnection(new RemoteDebugPortProvider()));
 		}
 
 		@Bean
 		public HttpRestartServer remoteRestartHttpRestartServer() {
-			SourceFolderUrlFilter sourceFolderUrlFilter = mock(
-					SourceFolderUrlFilter.class);
+			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
 		}
 
@@ -268,8 +259,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		}
 
 		@Override
-		public void handle(ServerHttpRequest request, ServerHttpResponse response)
-				throws IOException {
+		public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 			this.invoked = true;
 		}
 
@@ -287,8 +277,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		}
 
 		@Override
-		public void handle(ServerHttpRequest request, ServerHttpResponse response)
-				throws IOException {
+		public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 			this.invoked = true;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,11 +77,9 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	 * @param reservoirFactory the factory that instantiates the {@link Reservoir} that
 	 * will be used on Timers and Histograms
 	 */
-	public DropwizardMetricServices(MetricRegistry registry,
-			ReservoirFactory reservoirFactory) {
+	public DropwizardMetricServices(MetricRegistry registry, ReservoirFactory reservoirFactory) {
 		this.registry = registry;
-		this.reservoirFactory = (reservoirFactory != null) ? reservoirFactory
-				: ReservoirFactory.NONE;
+		this.reservoirFactory = (reservoirFactory != null) ? reservoirFactory : ReservoirFactory.NONE;
 	}
 
 	@Override
@@ -227,13 +225,11 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 
 		@SuppressWarnings("unchecked")
 		MetricRegistrar() {
-			this.type = (Class<T>) ResolvableType
-					.forClass(MetricRegistrar.class, getClass()).resolveGeneric();
+			this.type = (Class<T>) ResolvableType.forClass(MetricRegistrar.class, getClass()).resolveGeneric();
 		}
 
 		public void checkExisting(Metric metric) {
-			Assert.isInstanceOf(this.type, metric,
-					"Different metric type already registered");
+			Assert.isInstanceOf(this.type, metric, "Different metric type already registered");
 		}
 
 		protected abstract T register(MetricRegistry registry, String name);

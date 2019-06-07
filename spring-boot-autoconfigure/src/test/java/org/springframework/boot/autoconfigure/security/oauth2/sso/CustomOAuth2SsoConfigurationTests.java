@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,11 +54,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest
-@TestPropertySource(properties = { "security.oauth2.client.clientId=client",
-		"security.oauth2.client.clientSecret=secret",
-		"security.oauth2.client.authorizationUri=https://example.com/oauth/authorize",
-		"security.oauth2.client.tokenUri=https://example.com/oauth/token",
-		"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
+@TestPropertySource(
+		properties = { "security.oauth2.client.clientId=client", "security.oauth2.client.clientSecret=secret",
+				"security.oauth2.client.authorizationUri=https://example.com/oauth/authorize",
+				"security.oauth2.client.tokenUri=https://example.com/oauth/token",
+				"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
 public class CustomOAuth2SsoConfigurationTests {
 
 	@Autowired
@@ -72,8 +72,7 @@ public class CustomOAuth2SsoConfigurationTests {
 
 	@Before
 	public void init() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(this.filter).build();
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(this.filter).build();
 	}
 
 	@Test
@@ -90,14 +89,12 @@ public class CustomOAuth2SsoConfigurationTests {
 
 	@Test
 	public void uiPageSends401ToXhr() throws Exception {
-		this.mvc.perform(get("/ui/").header("X-Requested-With", "XMLHttpRequest"))
-				.andExpect(status().isUnauthorized());
+		this.mvc.perform(get("/ui/").header("X-Requested-With", "XMLHttpRequest")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void uiTestPageIsAccessible() throws Exception {
-		this.mvc.perform(get("/ui/test")).andExpect(status().isOk())
-				.andExpect(content().string("test"));
+		this.mvc.perform(get("/ui/test")).andExpect(status().isOk()).andExpect(content().string("test"));
 	}
 
 	@Configuration
@@ -108,8 +105,8 @@ public class CustomOAuth2SsoConfigurationTests {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/ui/**").authorizeRequests().antMatchers("/ui/test")
-					.permitAll().anyRequest().authenticated();
+			http.antMatcher("/ui/**").authorizeRequests().antMatchers("/ui/test").permitAll().anyRequest()
+					.authenticated();
 		}
 
 		@RestController

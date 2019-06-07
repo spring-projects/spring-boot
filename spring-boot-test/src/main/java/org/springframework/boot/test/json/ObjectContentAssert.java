@@ -32,8 +32,7 @@ import org.assertj.core.internal.Objects;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class ObjectContentAssert<A>
-		extends AbstractObjectAssert<ObjectContentAssert<A>, A> {
+public class ObjectContentAssert<A> extends AbstractObjectAssert<ObjectContentAssert<A>, A> {
 
 	protected ObjectContentAssert(A actual) {
 		super(actual, ObjectContentAssert.class);

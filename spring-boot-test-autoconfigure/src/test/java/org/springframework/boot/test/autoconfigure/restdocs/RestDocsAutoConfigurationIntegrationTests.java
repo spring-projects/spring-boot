@@ -40,8 +40,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets", uriScheme = "https",
-		uriHost = "api.example.com", uriPort = 443)
+@AutoConfigureRestDocs(outputDir = "target/generated-snippets", uriScheme = "https", uriHost = "api.example.com",
+		uriPort = 443)
 public class RestDocsAutoConfigurationIntegrationTests {
 
 	@Before
@@ -59,8 +59,7 @@ public class RestDocsAutoConfigurationIntegrationTests {
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
 				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.adoc"))
-				.has(contentContaining("api.example.com"));
+		assertThat(new File(defaultSnippetsDir, "http-request.adoc")).has(contentContaining("api.example.com"));
 		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
 	}
 

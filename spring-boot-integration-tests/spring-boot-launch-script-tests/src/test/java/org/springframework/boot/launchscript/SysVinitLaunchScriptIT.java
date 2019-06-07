@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,70 +102,60 @@ public class SysVinitLaunchScriptIT {
 	public void statusWhenStarted() throws Exception {
 		String output = doTest("status-when-started.sh");
 		assertThat(output).contains("Status: 0");
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 	}
 
 	@Test
 	public void statusWhenKilled() throws Exception {
 		String output = doTest("status-when-killed.sh");
 		assertThat(output).contains("Status: 1");
-		assertThat(output).has(coloredString(AnsiColor.RED,
-				"Not running (process " + extractPid(output) + " not found)"));
+		assertThat(output)
+				.has(coloredString(AnsiColor.RED, "Not running (process " + extractPid(output) + " not found)"));
 	}
 
 	@Test
 	public void stopWhenStopped() throws Exception {
 		String output = doTest("stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
-		assertThat(output)
-				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
 	}
 
 	@Test
 	public void forceStopWhenStopped() throws Exception {
 		String output = doTest("force-stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
-		assertThat(output)
-				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
 	}
 
 	@Test
 	public void startWhenStarted() throws Exception {
 		String output = doTest("start-when-started.sh");
 		assertThat(output).contains("Status: 0");
-		assertThat(output).has(coloredString(AnsiColor.YELLOW,
-				"Already running [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Already running [" + extractPid(output) + "]"));
 	}
 
 	@Test
 	public void restartWhenStopped() throws Exception {
 		String output = doTest("restart-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
-		assertThat(output)
-				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 	}
 
 	@Test
 	public void restartWhenStarted() throws Exception {
 		String output = doTest("restart-when-started.sh");
 		assertThat(output).contains("Status: 0");
-		assertThat(output).has(coloredString(AnsiColor.GREEN,
-				"Started [" + extract("PID1", output) + "]"));
-		assertThat(output).has(coloredString(AnsiColor.GREEN,
-				"Stopped [" + extract("PID1", output) + "]"));
-		assertThat(output).has(coloredString(AnsiColor.GREEN,
-				"Started [" + extract("PID2", output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extract("PID1", output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Stopped [" + extract("PID1", output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extract("PID2", output) + "]"));
 	}
 
 	@Test
 	public void startWhenStopped() throws Exception {
 		String output = doTest("start-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 	}
 
 	@Test
@@ -213,12 +203,9 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void launchWithRelativePidFolder() throws Exception {
 		String output = doTest("launch-with-relative-pid-folder.sh");
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Stopped [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Stopped [" + extractPid(output) + "]"));
 	}
 
 	@Test
@@ -269,10 +256,8 @@ public class SysVinitLaunchScriptIT {
 			copyFilesToContainer(docker, container, script);
 			docker.startContainerCmd(container).exec();
 			StringBuilder output = new StringBuilder();
-			AttachContainerResultCallback resultCallback = docker
-					.attachContainerCmd(container).withStdOut(true).withStdErr(true)
-					.withFollowStream(true).withLogs(true)
-					.exec(new AttachContainerResultCallback() {
+			AttachContainerResultCallback resultCallback = docker.attachContainerCmd(container).withStdOut(true)
+					.withStdErr(true).withFollowStream(true).withLogs(true).exec(new AttachContainerResultCallback() {
 
 						@Override
 						public void onNext(Frame item) {
@@ -298,17 +283,14 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private DockerClient createClient() {
-		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-				.withApiVersion("1.19").build();
-		return DockerClientBuilder.getInstance(config)
-				.withDockerCmdExecFactory(this.commandExecFactory).build();
+		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withApiVersion("1.19")
+				.build();
+		return DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(this.commandExecFactory).build();
 	}
 
 	private String buildImage(DockerClient docker) {
-		String dockerfile = "src/test/resources/conf/" + this.os + "/" + this.version
-				+ "/Dockerfile";
-		String tag = "spring-boot-it/" + this.os.toLowerCase(Locale.ENGLISH) + ":"
-				+ this.version;
+		String dockerfile = "src/test/resources/conf/" + this.os + "/" + this.version + "/Dockerfile";
+		String tag = "spring-boot-it/" + this.os.toLowerCase(Locale.ENGLISH) + ":" + this.version;
 		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
 
 			private List<BuildResponseItem> items = new ArrayList<BuildResponseItem>();
@@ -325,8 +307,7 @@ public class SysVinitLaunchScriptIT {
 					awaitCompletion();
 				}
 				catch (InterruptedException ex) {
-					throw new DockerClientException(
-							"Interrupted while waiting for image id", ex);
+					throw new DockerClientException("Interrupted while waiting for image id", ex);
 				}
 				return getImageId();
 			}
@@ -338,8 +319,8 @@ public class SysVinitLaunchScriptIT {
 				}
 				String imageId = extractImageId();
 				if (imageId == null) {
-					throw new DockerClientException("Could not build image: "
-							+ this.items.get(this.items.size() - 1).getError());
+					throw new DockerClientException(
+							"Could not build image: " + this.items.get(this.items.size() - 1).getError());
 				}
 				return imageId;
 			}
@@ -358,38 +339,31 @@ public class SysVinitLaunchScriptIT {
 			}
 
 		};
-		docker.buildImageCmd(new File(dockerfile))
-				.withTags(new HashSet<String>(Arrays.asList(tag))).exec(resultCallback);
+		docker.buildImageCmd(new File(dockerfile)).withTags(new HashSet<String>(Arrays.asList(tag)))
+				.exec(resultCallback);
 		String imageId = resultCallback.awaitImageId();
 		return imageId;
 	}
 
-	private String createContainer(DockerClient docker, String imageId,
-			String testScript) {
-		return docker.createContainerCmd(imageId).withTty(false).withCmd("/bin/bash",
-				"-c", "chmod +x " + testScript + " && ./" + testScript).exec().getId();
+	private String createContainer(DockerClient docker, String imageId, String testScript) {
+		return docker.createContainerCmd(imageId).withTty(false)
+				.withCmd("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript).exec().getId();
 	}
 
-	private void copyFilesToContainer(DockerClient docker, final String container,
-			String script) {
+	private void copyFilesToContainer(DockerClient docker, final String container, String script) {
 		copyToContainer(docker, container, findApplication());
-		copyToContainer(docker, container,
-				new File("src/test/resources/scripts/test-functions.sh"));
-		copyToContainer(docker, container,
-				new File("src/test/resources/scripts/" + script));
+		copyToContainer(docker, container, new File("src/test/resources/scripts/test-functions.sh"));
+		copyToContainer(docker, container, new File("src/test/resources/scripts/" + script));
 	}
 
-	private void copyToContainer(DockerClient docker, final String container,
-			final File file) {
-		this.commandExecFactory.createCopyToContainerCmdExec()
-				.exec(new CopyToContainerCmd(container, file));
+	private void copyToContainer(DockerClient docker, final String container, final File file) {
+		this.commandExecFactory.createCopyToContainerCmdExec().exec(new CopyToContainerCmd(container, file));
 	}
 
 	private File findApplication() {
 		File targetDir = new File("target");
 		for (File file : targetDir.listFiles()) {
-			if (file.getName().startsWith("spring-boot-launch-script-tests")
-					&& file.getName().endsWith(".jar")
+			if (file.getName().startsWith("spring-boot-launch-script-tests") && file.getName().endsWith(".jar")
 					&& !file.getName().endsWith("-sources.jar")) {
 				return file;
 			}
@@ -420,29 +394,24 @@ public class SysVinitLaunchScriptIT {
 		if (matcher.matches()) {
 			return matcher.group(1);
 		}
-		throw new IllegalArgumentException(
-				"Failed to extract " + label + " from output: " + output);
+		throw new IllegalArgumentException("Failed to extract " + label + " from output: " + output);
 	}
 
-	private static final class CopyToContainerCmdExec
-			extends AbstrSyncDockerCmdExec<CopyToContainerCmd, Void> {
+	private static final class CopyToContainerCmdExec extends AbstrSyncDockerCmdExec<CopyToContainerCmd, Void> {
 
-		private CopyToContainerCmdExec(WebTarget baseResource,
-				DockerClientConfig dockerClientConfig) {
+		private CopyToContainerCmdExec(WebTarget baseResource, DockerClientConfig dockerClientConfig) {
 			super(baseResource, dockerClientConfig);
 		}
 
 		@Override
 		protected Void execute(CopyToContainerCmd command) {
 			try {
-				InputStream streamToUpload = new FileInputStream(CompressArchiveUtil
-						.archiveTARFiles(command.getFile().getParentFile(),
-								Arrays.asList(command.getFile()),
-								command.getFile().getName()));
-				WebTarget webResource = getBaseResource().path("/containers/{id}/archive")
-						.resolveTemplate("id", command.getContainer());
-				webResource.queryParam("path", ".")
-						.queryParam("noOverwriteDirNonDir", false).request()
+				InputStream streamToUpload = new FileInputStream(
+						CompressArchiveUtil.archiveTARFiles(command.getFile().getParentFile(),
+								Arrays.asList(command.getFile()), command.getFile().getName()));
+				WebTarget webResource = getBaseResource().path("/containers/{id}/archive").resolveTemplate("id",
+						command.getContainer());
+				webResource.queryParam("path", ".").queryParam("noOverwriteDirNonDir", false).request()
 						.put(Entity.entity(streamToUpload, "application/x-tar")).close();
 				return null;
 			}
@@ -479,8 +448,7 @@ public class SysVinitLaunchScriptIT {
 
 	}
 
-	private static final class SpringBootDockerCmdExecFactory
-			extends JerseyDockerCmdExecFactory {
+	private static final class SpringBootDockerCmdExecFactory extends JerseyDockerCmdExecFactory {
 
 		private CopyToContainerCmdExec createCopyToContainerCmdExec() {
 			return new CopyToContainerCmdExec(getBaseResource(), getDockerClientConfig());

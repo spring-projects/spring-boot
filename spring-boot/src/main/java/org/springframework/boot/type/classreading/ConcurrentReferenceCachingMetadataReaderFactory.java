@@ -36,8 +36,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  * @since 1.4.0
  * @see CachingMetadataReaderFactory
  */
-public class ConcurrentReferenceCachingMetadataReaderFactory
-		extends SimpleMetadataReaderFactory {
+public class ConcurrentReferenceCachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 
 	private final Map<Resource, MetadataReader> cache = new ConcurrentReferenceHashMap<Resource, MetadataReader>();
 
@@ -55,8 +54,7 @@ public class ConcurrentReferenceCachingMetadataReaderFactory
 	 * @param resourceLoader the Spring ResourceLoader to use (also determines the
 	 * ClassLoader to use)
 	 */
-	public ConcurrentReferenceCachingMetadataReaderFactory(
-			ResourceLoader resourceLoader) {
+	public ConcurrentReferenceCachingMetadataReaderFactory(ResourceLoader resourceLoader) {
 		super(resourceLoader);
 	}
 

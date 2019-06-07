@@ -87,8 +87,8 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		this.excludeArtifactIds = excludeArtifactIds;
 	}
 
-	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
-			FilterArtifacts filters) throws MojoExecutionException {
+	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
+			throws MojoExecutionException {
 		try {
 			Set<Artifact> filtered = new LinkedHashSet<Artifact>(dependencies);
 			filtered.retainAll(filters.filter(dependencies));
@@ -109,10 +109,8 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		for (ArtifactsFilter additionalFilter : additionalFilters) {
 			filters.addFilter(additionalFilter);
 		}
-		filters.addFilter(
-				new ArtifactIdFilter("", cleanFilterConfig(this.excludeArtifactIds)));
-		filters.addFilter(
-				new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
+		filters.addFilter(new ArtifactIdFilter("", cleanFilterConfig(this.excludeArtifactIds)));
+		filters.addFilter(new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
 		if (this.includes != null && !this.includes.isEmpty()) {
 			filters.addFilter(new IncludeFilter(this.includes));
 		}

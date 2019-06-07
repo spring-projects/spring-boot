@@ -44,8 +44,7 @@ class WebDriverContextCustomizerFactory implements ContextCustomizerFactory {
 	private static class Customizer implements ContextCustomizer {
 
 		@Override
-		public void customizeContext(ConfigurableApplicationContext context,
-				MergedContextConfiguration mergedConfig) {
+		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 			WebDriverScope.registerWith(context);
 		}
 

@@ -71,8 +71,7 @@ abstract class MockitoApi {
 	 * @param storage the storage to use
 	 * @param matchers the matchers to set
 	 */
-	public abstract void reportMatchers(ArgumentMatcherStorage storage,
-			List<LocalizedMatcher> matchers);
+	public abstract void reportMatchers(ArgumentMatcherStorage storage, List<LocalizedMatcher> matchers);
 
 	/**
 	 * Create a new {@link MockAwareVerificationMode} instance.
@@ -80,8 +79,7 @@ abstract class MockitoApi {
 	 * @param mode the verification mode
 	 * @return a new {@link MockAwareVerificationMode} instance
 	 */
-	public abstract MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
-			VerificationMode mode);
+	public abstract MockAwareVerificationMode createMockAwareVerificationMode(Object mock, VerificationMode mode);
 
 	/**
 	 * Return the {@link Answer} for a given {@link Answers} value.
@@ -124,23 +122,20 @@ abstract class MockitoApi {
 			MockUtil mockUtil = new MockUtil();
 			InternalMockHandler<?> handler = mockUtil.getMockHandler(mock);
 			InvocationContainer container = handler.getInvocationContainer();
-			Field field = ReflectionUtils.findField(container.getClass(),
-					"mockingProgress");
+			Field field = ReflectionUtils.findField(container.getClass(), "mockingProgress");
 			ReflectionUtils.makeAccessible(field);
 			return (MockingProgress) ReflectionUtils.getField(field, container);
 		}
 
 		@Override
-		public void reportMatchers(ArgumentMatcherStorage storage,
-				List<LocalizedMatcher> matchers) {
+		public void reportMatchers(ArgumentMatcherStorage storage, List<LocalizedMatcher> matchers) {
 			for (LocalizedMatcher matcher : matchers) {
 				storage.reportMatcher(matcher);
 			}
 		}
 
 		@Override
-		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
-				VerificationMode mode) {
+		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock, VerificationMode mode) {
 			return new MockAwareVerificationMode(mock, mode);
 		}
 
@@ -167,34 +162,27 @@ abstract class MockitoApi {
 		private final Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor;
 
 		Mockito2Api() {
-			this.getMockSettingsMethod = ReflectionUtils.findMethod(MockUtil.class,
-					"getMockSettings", Object.class);
-			this.mockingProgressMethod = ReflectionUtils
-					.findMethod(ThreadSafeMockingProgress.class, "mockingProgress");
-			this.reportMatcherMethod = ReflectionUtils.findMethod(
-					ArgumentMatcherStorage.class, "reportMatcher", ArgumentMatcher.class);
-			this.getMatcherMethod = ReflectionUtils.findMethod(LocalizedMatcher.class,
-					"getMatcher");
-			this.mockAwareVerificationModeConstructor = ClassUtils
-					.getConstructorIfAvailable(MockAwareVerificationMode.class,
-							Object.class, VerificationMode.class, Set.class);
+			this.getMockSettingsMethod = ReflectionUtils.findMethod(MockUtil.class, "getMockSettings", Object.class);
+			this.mockingProgressMethod = ReflectionUtils.findMethod(ThreadSafeMockingProgress.class, "mockingProgress");
+			this.reportMatcherMethod = ReflectionUtils.findMethod(ArgumentMatcherStorage.class, "reportMatcher",
+					ArgumentMatcher.class);
+			this.getMatcherMethod = ReflectionUtils.findMethod(LocalizedMatcher.class, "getMatcher");
+			this.mockAwareVerificationModeConstructor = ClassUtils.getConstructorIfAvailable(
+					MockAwareVerificationMode.class, Object.class, VerificationMode.class, Set.class);
 		}
 
 		@Override
 		public MockCreationSettings<?> getMockSettings(Object mock) {
-			return (MockCreationSettings<?>) ReflectionUtils
-					.invokeMethod(this.getMockSettingsMethod, null, mock);
+			return (MockCreationSettings<?>) ReflectionUtils.invokeMethod(this.getMockSettingsMethod, null, mock);
 		}
 
 		@Override
 		public MockingProgress mockingProgress(Object mock) {
-			return (MockingProgress) ReflectionUtils
-					.invokeMethod(this.mockingProgressMethod, null);
+			return (MockingProgress) ReflectionUtils.invokeMethod(this.mockingProgressMethod, null);
 		}
 
 		@Override
-		public void reportMatchers(ArgumentMatcherStorage storage,
-				List<LocalizedMatcher> matchers) {
+		public void reportMatchers(ArgumentMatcherStorage storage, List<LocalizedMatcher> matchers) {
 			for (LocalizedMatcher matcher : matchers) {
 				ReflectionUtils.invokeMethod(this.reportMatcherMethod, storage,
 						ReflectionUtils.invokeMethod(this.getMatcherMethod, matcher));
@@ -202,12 +190,10 @@ abstract class MockitoApi {
 		}
 
 		@Override
-		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
-				VerificationMode mode) {
+		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock, VerificationMode mode) {
 			if (this.mockAwareVerificationModeConstructor != null) {
 				// Later 2.0 releases include a listener set
-				return BeanUtils.instantiateClass(
-						this.mockAwareVerificationModeConstructor, mock, mode,
+				return BeanUtils.instantiateClass(this.mockAwareVerificationModeConstructor, mock, mode,
 						Collections.emptySet());
 			}
 			return new MockAwareVerificationMode(mock, mode);

@@ -33,8 +33,8 @@ public class ExampleJdbcApplication {
 
 	@Bean
 	public DataSource dataSource() {
-		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-				.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL);
+		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder().generateUniqueName(true)
+				.setType(EmbeddedDatabaseType.HSQL);
 		return builder.build();
 	}
 

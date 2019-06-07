@@ -34,8 +34,7 @@ class DataJpaTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private final DataJpaTest annotation;
 
 	DataJpaTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				DataJpaTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, DataJpaTest.class);
 	}
 
 	@Override

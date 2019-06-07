@@ -93,8 +93,7 @@ public abstract class AbstractJsonParserTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void listOfMaps() {
-		List<Object> list = this.parser
-				.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
+		List<Object> list = this.parser.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
 		assertThat(list).hasSize(2);
 		assertThat(((Map<String, Object>) list.get(1))).hasSize(2);
 	}
@@ -102,8 +101,8 @@ public abstract class AbstractJsonParserTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void mapOfLists() {
-		Map<String, Object> map = this.parser.parseMap(
-				"{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
+		Map<String, Object> map = this.parser
+				.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertThat(map).hasSize(1);
 		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
 	}

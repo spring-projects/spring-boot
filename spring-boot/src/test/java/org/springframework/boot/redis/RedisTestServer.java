@@ -102,8 +102,7 @@ public class RedisTestServer implements TestRule {
 
 		@Override
 		public void evaluate() throws Throwable {
-			Assume.assumeTrue("Skipping test due to " + "Redis ConnectionFactory"
-					+ " not being available", false);
+			Assume.assumeTrue("Skipping test due to " + "Redis ConnectionFactory" + " not being available", false);
 		}
 
 	}

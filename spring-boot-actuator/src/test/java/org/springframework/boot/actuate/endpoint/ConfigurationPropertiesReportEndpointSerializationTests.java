@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,12 +69,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(2);
 		assertThat(map.get("name")).isEqualTo("foo");
@@ -89,11 +87,9 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).isNotNull();
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(2);
 		assertThat(((Map<String, Object>) map.get("bar")).get("name")).isEqualTo("foo");
@@ -108,12 +104,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).containsOnlyKeys("bar", "name");
 		assertThat(map).containsEntry("name", "foo");
@@ -130,12 +124,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("cycle");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("cycle");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("cycle");
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).containsOnlyKeys("error");
 		assertThat(map).containsEntry("error", "Cannot serialize 'cycle'");
@@ -150,12 +142,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
 		assertThat(((Map<String, Object>) map.get("map")).get("name")).isEqualTo("foo");
@@ -169,12 +159,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
 		assertThat((map.get("map"))).isNull();
@@ -189,12 +177,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
 		assertThat(((List<String>) map.get("list")).get(0)).isEqualTo("foo");
@@ -209,12 +195,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> map = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
 		assertThat(map.get("address")).isEqualTo("192.168.1.10");
@@ -224,19 +208,16 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	@SuppressWarnings("unchecked")
 	public void testInitializedMapAndList() throws Exception {
 		this.context.register(InitializedMapAndListPropertiesConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo.map.entryOne:true",
-				"foo.list[0]:abc");
+		EnvironmentTestUtils.addEnvironment(this.context, "foo.map.entryOne:true", "foo.list[0]:abc");
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> properties = report.invoke();
 		assertThat(properties).containsKeys("foo");
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("foo");
 		assertThat(nestedProperties).containsOnlyKeys("prefix", "properties");
 		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
-		Map<String, Object> propertiesMap = (Map<String, Object>) nestedProperties
-				.get("properties");
+		Map<String, Object> propertiesMap = (Map<String, Object>) nestedProperties.get("properties");
 		assertThat(propertiesMap).containsOnlyKeys("bar", "name", "map", "list");
 		Map<String, Object> map = (Map<String, Object>) propertiesMap.get("map");
 		assertThat(map).containsOnly(entry("entryOne", true));

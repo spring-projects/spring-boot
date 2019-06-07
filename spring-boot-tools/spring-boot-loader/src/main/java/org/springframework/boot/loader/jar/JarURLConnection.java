@@ -72,8 +72,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final String READ_ACTION = "read";
 
-	private static final JarURLConnection NOT_FOUND_CONNECTION = JarURLConnection
-			.notFound();
+	private static final JarURLConnection NOT_FOUND_CONNECTION = JarURLConnection.notFound();
 
 	private final JarFile jarFile;
 
@@ -85,8 +84,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private JarEntry jarEntry;
 
-	private JarURLConnection(URL url, JarFile jarFile, JarEntryName jarEntryName)
-			throws IOException {
+	private JarURLConnection(URL url, JarFile jarFile, JarEntryName jarEntryName) throws IOException {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
@@ -163,8 +161,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		if (this.jarEntryName.isEmpty()
-				&& this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
+		if (this.jarEntryName.isEmpty() && this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
 			throw new IOException("no entry name specified");
 		}
 		connect();
@@ -177,13 +174,11 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return inputStream;
 	}
 
-	private void throwFileNotFound(Object entry, JarFile jarFile)
-			throws FileNotFoundException {
+	private void throwFileNotFound(Object entry, JarFile jarFile) throws FileNotFoundException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		throw new FileNotFoundException(
-				"JAR entry " + entry + " not found in " + jarFile.getName());
+		throw new FileNotFoundException("JAR entry " + entry + " not found in " + jarFile.getName());
 	}
 
 	@Override
@@ -229,8 +224,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		if (this.permission == null) {
-			this.permission = new FilePermission(
-					this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
+			this.permission = new FilePermission(this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
 		}
 		return this.permission;
 	}
@@ -272,8 +266,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 		JarEntryName jarEntryName = JarEntryName.get(spec, index);
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
-			if (!jarEntryName.isEmpty()
-					&& !jarFile.containsEntry(jarEntryName.toString())) {
+			if (!jarEntryName.isEmpty() && !jarFile.containsEntry(jarEntryName.toString())) {
 				return NOT_FOUND_CONNECTION;
 			}
 		}
@@ -299,8 +292,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 	}
 
-	private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName)
-			throws IOException {
+	private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName) throws IOException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			return NOT_FOUND_CONNECTION;
 		}
@@ -336,8 +328,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				int c = source.charAt(i);
 				if (c > 127) {
 					try {
-						String encoded = URLEncoder.encode(String.valueOf((char) c),
-								"UTF-8");
+						String encoded = URLEncoder.encode(String.valueOf((char) c), "UTF-8");
 						write(encoded, outputStream);
 					}
 					catch (UnsupportedEncodingException ex) {
@@ -348,8 +339,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 					if (c == '%') {
 						if ((i + 2) >= length) {
 							throw new IllegalArgumentException(
-									"Invalid encoded sequence \"" + source.substring(i)
-											+ "\"");
+									"Invalid encoded sequence \"" + source.substring(i) + "\"");
 						}
 						c = decodeEscapeSequence(source, i);
 						i += 2;
@@ -363,8 +353,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			int hi = Character.digit(source.charAt(i + 1), 16);
 			int lo = Character.digit(source.charAt(i + 2), 16);
 			if (hi == -1 || lo == -1) {
-				throw new IllegalArgumentException(
-						"Invalid encoded sequence \"" + source.substring(i) + "\"");
+				throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
 			}
 			return ((char) ((hi << 4) + lo));
 		}

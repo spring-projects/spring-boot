@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CouchbaseAutoConfigurationTests
-		extends AbstractCouchbaseAutoConfigurationTests {
+public class CouchbaseAutoConfigurationTests extends AbstractCouchbaseAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -77,10 +76,8 @@ public class CouchbaseAutoConfigurationTests
 
 	@Test
 	public void customizeEnvEndpoints() throws Exception {
-		DefaultCouchbaseEnvironment env = customizeEnv(
-				"spring.couchbase.env.endpoints.keyValue=4",
-				"spring.couchbase.env.endpoints.query=5",
-				"spring.couchbase.env.endpoints.view=6");
+		DefaultCouchbaseEnvironment env = customizeEnv("spring.couchbase.env.endpoints.keyValue=4",
+				"spring.couchbase.env.endpoints.query=5", "spring.couchbase.env.endpoints.view=6");
 		assertThat(env.kvEndpoints()).isEqualTo(4);
 		assertThat(env.queryEndpoints()).isEqualTo(5);
 		assertThat(env.viewEndpoints()).isEqualTo(6);
@@ -88,12 +85,9 @@ public class CouchbaseAutoConfigurationTests
 
 	@Test
 	public void customizeEnvTimeouts() throws Exception {
-		DefaultCouchbaseEnvironment env = customizeEnv(
-				"spring.couchbase.env.timeouts.connect=100",
-				"spring.couchbase.env.timeouts.keyValue=200",
-				"spring.couchbase.env.timeouts.query=300",
-				"spring.couchbase.env.timeouts.socket-connect=400",
-				"spring.couchbase.env.timeouts.view=500");
+		DefaultCouchbaseEnvironment env = customizeEnv("spring.couchbase.env.timeouts.connect=100",
+				"spring.couchbase.env.timeouts.keyValue=200", "spring.couchbase.env.timeouts.query=300",
+				"spring.couchbase.env.timeouts.socket-connect=400", "spring.couchbase.env.timeouts.view=500");
 		assertThat(env.connectTimeout()).isEqualTo(100);
 		assertThat(env.kvTimeout()).isEqualTo(200);
 		assertThat(env.queryTimeout()).isEqualTo(300);
@@ -103,8 +97,7 @@ public class CouchbaseAutoConfigurationTests
 
 	@Test
 	public void enableSslNoEnabledFlag() throws Exception {
-		DefaultCouchbaseEnvironment env = customizeEnv(
-				"spring.couchbase.env.ssl.keyStore=foo",
+		DefaultCouchbaseEnvironment env = customizeEnv("spring.couchbase.env.ssl.keyStore=foo",
 				"spring.couchbase.env.ssl.keyStorePassword=secret");
 		assertThat(env.sslEnabled()).isTrue();
 		assertThat(env.sslKeystoreFile()).isEqualTo("foo");
@@ -113,10 +106,8 @@ public class CouchbaseAutoConfigurationTests
 
 	@Test
 	public void disableSslEvenWithKeyStore() throws Exception {
-		DefaultCouchbaseEnvironment env = customizeEnv(
-				"spring.couchbase.env.ssl.enabled=false",
-				"spring.couchbase.env.ssl.keyStore=foo",
-				"spring.couchbase.env.ssl.keyStorePassword=secret");
+		DefaultCouchbaseEnvironment env = customizeEnv("spring.couchbase.env.ssl.enabled=false",
+				"spring.couchbase.env.ssl.keyStore=foo", "spring.couchbase.env.ssl.keyStorePassword=secret");
 		assertThat(env.sslEnabled()).isFalse();
 		assertThat(env.sslKeystoreFile()).isNull();
 		assertThat(env.sslKeystorePassword()).isNull();
@@ -124,18 +115,15 @@ public class CouchbaseAutoConfigurationTests
 
 	@Test
 	public void customizeEnvWithCustomCouchbaseConfiguration() {
-		load(CustomCouchbaseConfiguration.class,
-				"spring.couchbase.bootstrap-hosts=localhost",
+		load(CustomCouchbaseConfiguration.class, "spring.couchbase.bootstrap-hosts=localhost",
 				"spring.couchbase.env.timeouts.connect=100");
 		assertThat(this.context.getBeansOfType(CouchbaseConfiguration.class)).hasSize(1);
-		DefaultCouchbaseEnvironment env = this.context
-				.getBean(DefaultCouchbaseEnvironment.class);
+		DefaultCouchbaseEnvironment env = this.context.getBean(DefaultCouchbaseEnvironment.class);
 		assertThat(env.socketConnectTimeout()).isEqualTo(5000);
 		assertThat(env.connectTimeout()).isEqualTo(2000);
 	}
 
-	private DefaultCouchbaseEnvironment customizeEnv(String... environment)
-			throws Exception {
+	private DefaultCouchbaseEnvironment customizeEnv(String... environment) throws Exception {
 		load(CouchbaseTestConfigurer.class, environment);
 		CouchbaseProperties properties = this.context.getBean(CouchbaseProperties.class);
 		return new CouchbaseConfiguration(properties).couchbaseEnvironment();
@@ -150,10 +138,8 @@ public class CouchbaseAutoConfigurationTests
 		}
 
 		@Override
-		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
-				CouchbaseProperties properties) {
-			return super.initializeEnvironmentBuilder(properties)
-					.socketConnectTimeout(5000).connectTimeout(2000);
+		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
+			return super.initializeEnvironmentBuilder(properties).socketConnectTimeout(5000).connectTimeout(2000);
 		}
 
 		@Override

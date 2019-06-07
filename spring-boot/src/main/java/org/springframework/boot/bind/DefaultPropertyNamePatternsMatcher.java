@@ -40,13 +40,11 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 		this(delimiters, false, names);
 	}
 
-	protected DefaultPropertyNamePatternsMatcher(char[] delimiters, boolean ignoreCase,
-			String... names) {
+	protected DefaultPropertyNamePatternsMatcher(char[] delimiters, boolean ignoreCase, String... names) {
 		this(delimiters, ignoreCase, new HashSet<String>(Arrays.asList(names)));
 	}
 
-	DefaultPropertyNamePatternsMatcher(char[] delimiters, boolean ignoreCase,
-			Set<String> names) {
+	DefaultPropertyNamePatternsMatcher(char[] delimiters, boolean ignoreCase, Set<String> names) {
 		this.delimiters = delimiters;
 		this.ignoreCase = ignoreCase;
 		this.names = names.toArray(new String[names.size()]);
@@ -71,15 +69,13 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 				if (match[nameIndex]) {
 					match[nameIndex] = false;
 					if (charIndex < this.names[nameIndex].length()) {
-						if (isCharMatch(this.names[nameIndex].charAt(charIndex),
-								propertyNameChars[charIndex])) {
+						if (isCharMatch(this.names[nameIndex].charAt(charIndex), propertyNameChars[charIndex])) {
 							match[nameIndex] = true;
 							noneMatched = false;
 						}
 					}
 					else {
-						char charAfter = propertyNameChars[this.names[nameIndex]
-								.length()];
+						char charAfter = propertyNameChars[this.names[nameIndex].length()];
 						if (isDelimiter(charAfter)) {
 							match[nameIndex] = true;
 							noneMatched = false;

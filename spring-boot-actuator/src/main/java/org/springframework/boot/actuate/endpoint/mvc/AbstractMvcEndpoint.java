@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Lari Hotari
  * @since 1.4.0
  */
-public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
-		implements MvcEndpoint, EnvironmentAware {
+public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint, EnvironmentAware {
 
 	private Environment environment;
 
@@ -80,8 +79,7 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 
 	public void setPath(String path) {
 		Assert.notNull(path, "Path must not be null");
-		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
-				"Path must start with / or be empty");
+		Assert.isTrue(path.isEmpty() || path.startsWith("/"), "Path must start with / or be empty");
 		this.path = path;
 	}
 
@@ -95,8 +93,7 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 
 	@Override
 	public boolean isSensitive() {
-		return EndpointProperties.isSensitive(this.environment, this.sensitive,
-				this.sensitiveDefault);
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, this.sensitiveDefault);
 	}
 
 	public void setSensitive(Boolean sensitive) {

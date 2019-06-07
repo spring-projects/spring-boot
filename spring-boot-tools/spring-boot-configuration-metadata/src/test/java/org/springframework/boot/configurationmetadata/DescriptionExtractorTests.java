@@ -33,22 +33,21 @@ public class DescriptionExtractorTests {
 
 	@Test
 	public void extractShortDescription() {
-		String description = this.extractor
-				.getShortDescription("My short " + "description. More stuff.");
+		String description = this.extractor.getShortDescription("My short " + "description. More stuff.");
 		assertThat(description).isEqualTo("My short description.");
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDot() {
-		String description = this.extractor.getShortDescription(
-				"My short" + NEW_LINE + "description." + NEW_LINE + "More stuff.");
+		String description = this.extractor
+				.getShortDescription("My short" + NEW_LINE + "description." + NEW_LINE + "More stuff.");
 		assertThat(description).isEqualTo("My short description.");
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDotWithSpaces() {
-		String description = this.extractor.getShortDescription(
-				"My short  " + NEW_LINE + " description.  " + NEW_LINE + "More stuff.");
+		String description = this.extractor
+				.getShortDescription("My short  " + NEW_LINE + " description.  " + NEW_LINE + "More stuff.");
 		assertThat(description).isEqualTo("My short description.");
 	}
 
@@ -60,8 +59,7 @@ public class DescriptionExtractorTests {
 
 	@Test
 	public void extractShortDescriptionNoDotMultipleLines() {
-		String description = this.extractor
-				.getShortDescription("My short description " + NEW_LINE + " More stuff");
+		String description = this.extractor.getShortDescription("My short description " + NEW_LINE + " More stuff");
 		assertThat(description).isEqualTo("My short description");
 	}
 

@@ -67,8 +67,7 @@ import static org.mockito.Mockito.mock;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  */
-public class UndertowEmbeddedServletContainerFactoryTests
-		extends AbstractEmbeddedServletContainerFactoryTests {
+public class UndertowEmbeddedServletContainerFactoryTests extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected UndertowEmbeddedServletContainerFactory getFactory() {
@@ -79,8 +78,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	public void errorPage404() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/hello"));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 		assertThat(getResponse(getLocalUrl("/not-found"))).isEqualTo("Hello World");
@@ -141,8 +140,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(UndertowDeploymentInfoCustomizer.class);
 		}
-		factory.setDeploymentInfoCustomizers(
-				Arrays.asList(customizers[0], customizers[1]));
+		factory.setDeploymentInfoCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addDeploymentInfoCustomizers(customizers[2], customizers[3]);
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -180,19 +178,16 @@ public class UndertowEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void eachFactoryUsesADiscreteServletContainer() {
-		assertThat(getServletContainerFromNewFactory())
-				.isNotEqualTo(getServletContainerFromNewFactory());
+		assertThat(getServletContainerFromNewFactory()).isNotEqualTo(getServletContainerFromNewFactory());
 	}
 
 	@Test
-	public void accessLogCanBeEnabled()
-			throws IOException, URISyntaxException, InterruptedException {
+	public void accessLogCanBeEnabled() throws IOException, URISyntaxException, InterruptedException {
 		testAccessLog(null, null, "access_log.log");
 	}
 
 	@Test
-	public void accessLogCanBeCustomized()
-			throws IOException, URISyntaxException, InterruptedException {
+	public void accessLogCanBeCustomized() throws IOException, URISyntaxException, InterruptedException {
 		testAccessLog("my_access.", "logz", "my_access.logz");
 	}
 
@@ -240,8 +235,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		File accessLogDirectory = this.temporaryFolder.getRoot();
 		factory.setAccessLogDirectory(accessLogDirectory);
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, expectedFile);
@@ -250,30 +245,26 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	}
 
 	@Override
-	protected void addConnector(final int port,
-			AbstractEmbeddedServletContainerFactory factory) {
-		((UndertowEmbeddedServletContainerFactory) factory)
-				.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+	protected void addConnector(final int port, AbstractEmbeddedServletContainerFactory factory) {
+		((UndertowEmbeddedServletContainerFactory) factory).addBuilderCustomizers(new UndertowBuilderCustomizer() {
 
-					@Override
-					public void customize(Builder builder) {
-						builder.addHttpListener(port, "0.0.0.0");
-					}
-				});
+			@Override
+			public void customize(Builder builder) {
+				builder.addHttpListener(port, "0.0.0.0");
+			}
+		});
 	}
 
 	@Test
 	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
-		this.thrown.expect(
-				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
+		this.thrown.expect(anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
 				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
 	}
 
 	@Test
 	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
-		this.thrown.expect(
-				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
+		this.thrown.expect(anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
 				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
 	}
@@ -292,8 +283,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
-		this.thrown.expect(
-				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
+		this.thrown.expect(anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
@@ -303,11 +293,9 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
 		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
 		factory.setSsl(ssl);
-		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(factory,
-				"getKeyManagers");
-		Class<?> name = Class
-				.forName("org.springframework.boot.context.embedded.undertow."
-						+ "UndertowEmbeddedServletContainerFactory$ConfigurableAliasKeyManager");
+		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(factory, "getKeyManagers");
+		Class<?> name = Class.forName("org.springframework.boot.context.embedded.undertow."
+				+ "UndertowEmbeddedServletContainerFactory$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(name);
 	}
 
@@ -327,8 +315,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		UndertowEmbeddedServletContainer container = (UndertowEmbeddedServletContainer) getFactory()
 				.getEmbeddedServletContainer();
 		try {
-			return ((DeploymentManager) ReflectionTestUtils.getField(container,
-					"manager")).getDeployment().getServletContainer();
+			return ((DeploymentManager) ReflectionTestUtils.getField(container, "manager")).getDeployment()
+					.getServletContainer();
 		}
 		finally {
 			container.stop();
@@ -337,31 +325,29 @@ public class UndertowEmbeddedServletContainerFactoryTests
 
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
-		return ((DeploymentManager) ReflectionTestUtils.getField(this.container,
-				"manager")).getDeployment().getMimeExtensionMappings();
+		return ((DeploymentManager) ReflectionTestUtils.getField(this.container, "manager")).getDeployment()
+				.getMimeExtensionMappings();
 	}
 
 	@Override
 	protected Collection<Mapping> getExpectedMimeMappings() {
 		// Unlike Tomcat and Jetty, Undertow performs a case-sensitive match on file
 		// extension so it has a mapping for "z" and "Z".
-		Set<Mapping> expectedMappings = new HashSet<Mapping>(
-				super.getExpectedMimeMappings());
+		Set<Mapping> expectedMappings = new HashSet<Mapping>(super.getExpectedMimeMappings());
 		expectedMappings.add(new Mapping("Z", "application/x-compress"));
 		return expectedMappings;
 	}
 
 	@Override
 	protected Charset getCharset(Locale locale) {
-		DeploymentInfo info = ((DeploymentManager) ReflectionTestUtils
-				.getField(this.container, "manager")).getDeployment().getDeploymentInfo();
+		DeploymentInfo info = ((DeploymentManager) ReflectionTestUtils.getField(this.container, "manager"))
+				.getDeployment().getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 	@Override
-	protected void handleExceptionCausedByBlockedPort(RuntimeException ex,
-			int blockedPort) {
+	protected void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 		Object undertow = ReflectionTestUtils.getField(this.container, "undertow");

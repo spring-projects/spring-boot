@@ -26,14 +26,12 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  *
  * @author Phillip Webb
  */
-class MockMvcPrintOnlyOnFailureTestExecutionListener
-		extends AbstractTestExecutionListener {
+class MockMvcPrintOnlyOnFailureTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
 		if (testContext.getTestException() != null) {
-			DeferredLinesWriter writer = DeferredLinesWriter
-					.get(testContext.getApplicationContext());
+			DeferredLinesWriter writer = DeferredLinesWriter.get(testContext.getApplicationContext());
 			if (writer != null) {
 				writer.writeDeferredResult();
 			}

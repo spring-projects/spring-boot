@@ -40,10 +40,10 @@ public class DuplicateJsonObjectContextCustomizerFactoryTests {
 
 	@Test
 	public void warningForMultipleVersions() {
-		new DuplicateJsonObjectContextCustomizerFactory()
-				.createContextCustomizer(null, null).customizeContext(null, null);
-		assertThat(this.output.toString()).contains(
-				"Found multiple occurrences of org.json.JSONObject on the class path:");
+		new DuplicateJsonObjectContextCustomizerFactory().createContextCustomizer(null, null).customizeContext(null,
+				null);
+		assertThat(this.output.toString())
+				.contains("Found multiple occurrences of org.json.JSONObject on the class path:");
 	}
 
 }

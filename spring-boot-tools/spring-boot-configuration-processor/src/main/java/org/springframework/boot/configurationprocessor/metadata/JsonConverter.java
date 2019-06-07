@@ -32,8 +32,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  */
 class JsonConverter {
 
-	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType)
-			throws Exception {
+	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemMetadata item : metadata.getItems()) {
 			if (item.isOfItemType(itemType)) {
@@ -115,8 +114,7 @@ class JsonConverter {
 		return providers;
 	}
 
-	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider)
-			throws Exception {
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws Exception {
 		JSONObject result = new JSONOrderedObject();
 		result.put("name", provider.getName());
 		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
@@ -129,8 +127,7 @@ class JsonConverter {
 		return result;
 	}
 
-	private void putIfPresent(JSONObject jsonObject, String name, Object value)
-			throws Exception {
+	private void putIfPresent(JSONObject jsonObject, String name, Object value) throws Exception {
 		if (value != null) {
 			jsonObject.put(name, value);
 		}

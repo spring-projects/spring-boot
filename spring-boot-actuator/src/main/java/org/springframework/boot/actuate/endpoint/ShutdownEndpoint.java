@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,16 +33,13 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.shutdown")
-public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
-		implements ApplicationContextAware {
+public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
 	private static final Map<String, Object> NO_CONTEXT_MESSAGE = Collections
-			.unmodifiableMap(Collections.<String, Object>singletonMap("message",
-					"No context to shutdown."));
+			.unmodifiableMap(Collections.<String, Object>singletonMap("message", "No context to shutdown."));
 
 	private static final Map<String, Object> SHUTDOWN_MESSAGE = Collections
-			.unmodifiableMap(Collections.<String, Object>singletonMap("message",
-					"Shutting down, bye..."));
+			.unmodifiableMap(Collections.<String, Object>singletonMap("message", "Shutting down, bye..."));
 
 	private ConfigurableApplicationContext context;
 

@@ -36,8 +36,7 @@ public abstract class AnsiOutput {
 
 	private static Boolean ansiCapable;
 
-	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name")
-			.toLowerCase(Locale.ENGLISH);
+	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
 	private static final String ENCODE_START = "\033[";
 

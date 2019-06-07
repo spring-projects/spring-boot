@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,15 +56,13 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	@PostConstruct
 	public void initialize() {
 		DataSource primaryDataSource = getPrimaryDataSource();
-		DataSourcePoolMetadataProvider provider = new DataSourcePoolMetadataProviders(
-				this.providers);
-		for (Map.Entry<String, DataSource> entry : this.applicationContext
-				.getBeansOfType(DataSource.class).entrySet()) {
+		DataSourcePoolMetadataProvider provider = new DataSourcePoolMetadataProviders(this.providers);
+		for (Map.Entry<String, DataSource> entry : this.applicationContext.getBeansOfType(DataSource.class)
+				.entrySet()) {
 			String beanName = entry.getKey();
 			DataSource bean = entry.getValue();
 			String prefix = createPrefix(beanName, bean, bean.equals(primaryDataSource));
-			DataSourcePoolMetadata poolMetadata = provider
-					.getDataSourcePoolMetadata(bean);
+			DataSourcePoolMetadata poolMetadata = provider.getDataSourcePoolMetadata(bean);
 			if (poolMetadata != null) {
 				this.metadataByPrefix.put(prefix, poolMetadata);
 			}
@@ -74,8 +72,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	@Override
 	public Collection<Metric<?>> metrics() {
 		Set<Metric<?>> metrics = new LinkedHashSet<Metric<?>>();
-		for (Map.Entry<String, DataSourcePoolMetadata> entry : this.metadataByPrefix
-				.entrySet()) {
+		for (Map.Entry<String, DataSourcePoolMetadata> entry : this.metadataByPrefix.entrySet()) {
 			String prefix = entry.getKey();
 			prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
 			DataSourcePoolMetadata metadata = entry.getValue();
@@ -85,8 +82,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 		return metrics;
 	}
 
-	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name,
-			T value) {
+	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name, T value) {
 		if (value != null) {
 			metrics.add(new Metric<T>(name, value));
 		}
@@ -104,8 +100,8 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 		if (primary) {
 			return "datasource.primary";
 		}
-		if (name.length() > DATASOURCE_SUFFIX.length() && name.toLowerCase(Locale.ENGLISH)
-				.endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
+		if (name.length() > DATASOURCE_SUFFIX.length()
+				&& name.toLowerCase(Locale.ENGLISH).endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
 			name = name.substring(0, name.length() - DATASOURCE_SUFFIX.length());
 		}
 		return "datasource." + name;

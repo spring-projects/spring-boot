@@ -58,8 +58,7 @@ public class MessageController {
 	}
 
 	@PostMapping
-	public ModelAndView create(@Valid Message message, BindingResult result,
-			RedirectAttributes redirect) {
+	public ModelAndView create(@Valid Message message, BindingResult result, RedirectAttributes redirect) {
 		if (result.hasErrors()) {
 			return new ModelAndView("messages/form", "formErrors", result.getAllErrors());
 		}

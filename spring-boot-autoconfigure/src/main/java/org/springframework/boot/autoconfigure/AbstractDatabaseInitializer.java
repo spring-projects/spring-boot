@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public abstract class AbstractDatabaseInitializer {
 
 	private final ResourceLoader resourceLoader;
 
-	protected AbstractDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
+	protected AbstractDatabaseInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
 		Assert.notNull(dataSource, "DataSource must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.dataSource = dataSource;
@@ -72,9 +71,8 @@ public abstract class AbstractDatabaseInitializer {
 
 	protected String getDatabaseName() {
 		try {
-			String productName = JdbcUtils.commonDatabaseName(JdbcUtils
-					.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName")
-					.toString());
+			String productName = JdbcUtils.commonDatabaseName(
+					JdbcUtils.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName").toString());
 			DatabaseDriver databaseDriver = DatabaseDriver.fromProductName(productName);
 			if (databaseDriver == DatabaseDriver.UNKNOWN) {
 				throw new IllegalStateException("Unable to detect database type");

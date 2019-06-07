@@ -90,12 +90,10 @@ public class RabbitAutoConfiguration {
 
 		// Only available in rabbitmq-java-client 5.4.0 +
 		private static final boolean CAN_ENABLE_HOSTNAME_VERIFICATION = ReflectionUtils
-				.findMethod(com.rabbitmq.client.ConnectionFactory.class,
-						"enableHostnameVerification") != null;
+				.findMethod(com.rabbitmq.client.ConnectionFactory.class, "enableHostnameVerification") != null;
 
 		@Bean
-		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
-				throws Exception {
+		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config) throws Exception {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
 			if (config.determineHost() != null) {
 				factory.setHost(config.determineHost());
@@ -123,8 +121,7 @@ public class RabbitAutoConfiguration {
 				factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
 				factory.setTrustStore(ssl.getTrustStore());
 				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
-				factory.setSkipServerCertificateValidation(
-						!ssl.isValidateServerCertificate());
+				factory.setSkipServerCertificateValidation(!ssl.isValidateServerCertificate());
 				if (ssl.getVerifyHostname() != null) {
 					factory.setEnableHostnameVerification(ssl.getVerifyHostname());
 				}
@@ -138,26 +135,21 @@ public class RabbitAutoConfiguration {
 				factory.setConnectionTimeout(config.getConnectionTimeout());
 			}
 			factory.afterPropertiesSet();
-			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
-					factory.getObject());
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(factory.getObject());
 			connectionFactory.setAddresses(config.determineAddresses());
 			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
 			connectionFactory.setPublisherReturns(config.isPublisherReturns());
 			if (config.getCache().getChannel().getSize() != null) {
-				connectionFactory
-						.setChannelCacheSize(config.getCache().getChannel().getSize());
+				connectionFactory.setChannelCacheSize(config.getCache().getChannel().getSize());
 			}
 			if (config.getCache().getConnection().getMode() != null) {
-				connectionFactory
-						.setCacheMode(config.getCache().getConnection().getMode());
+				connectionFactory.setCacheMode(config.getCache().getConnection().getMode());
 			}
 			if (config.getCache().getConnection().getSize() != null) {
-				connectionFactory.setConnectionCacheSize(
-						config.getCache().getConnection().getSize());
+				connectionFactory.setConnectionCacheSize(config.getCache().getConnection().getSize());
 			}
 			if (config.getCache().getChannel().getCheckoutTimeout() != null) {
-				connectionFactory.setChannelCheckoutTimeout(
-						config.getCache().getChannel().getCheckoutTimeout());
+				connectionFactory.setChannelCheckoutTimeout(config.getCache().getChannel().getCheckoutTimeout());
 			}
 			return connectionFactory;
 		}
@@ -172,8 +164,7 @@ public class RabbitAutoConfiguration {
 
 		private final RabbitProperties properties;
 
-		public RabbitTemplateConfiguration(
-				ObjectProvider<MessageConverter> messageConverter,
+		public RabbitTemplateConfiguration(ObjectProvider<MessageConverter> messageConverter,
 				RabbitProperties properties) {
 			this.messageConverter = messageConverter;
 			this.properties = properties;
@@ -223,8 +214,7 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
-		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic",
-				matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
 		@ConditionalOnMissingBean(AmqpAdmin.class)
 		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 			return new RabbitAdmin(connectionFactory);
@@ -240,8 +230,7 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(RabbitTemplate.class)
-		public RabbitMessagingTemplate rabbitMessagingTemplate(
-				RabbitTemplate rabbitTemplate) {
+		public RabbitMessagingTemplate rabbitMessagingTemplate(RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);
 		}
 

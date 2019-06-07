@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public class TomcatPublicMetricsTests {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext(
 				Config.class);
 		try {
-			TomcatPublicMetrics tomcatMetrics = context
-					.getBean(TomcatPublicMetrics.class);
+			TomcatPublicMetrics tomcatMetrics = context.getBean(TomcatPublicMetrics.class);
 			Iterator<Metric<?>> metrics = tomcatMetrics.metrics().iterator();
 			assertThat(metrics.next().getName()).isEqualTo("httpsessions.max");
 			assertThat(metrics.next().getName()).isEqualTo("httpsessions.active");

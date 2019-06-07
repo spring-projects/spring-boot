@@ -52,13 +52,11 @@ import org.springframework.util.StringUtils;
 public class ConfigurationWarningsApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	private static final Log logger = LogFactory
-			.getLog(ConfigurationWarningsApplicationContextInitializer.class);
+	private static final Log logger = LogFactory.getLog(ConfigurationWarningsApplicationContextInitializer.class);
 
 	@Override
 	public void initialize(ConfigurableApplicationContext context) {
-		context.addBeanFactoryPostProcessor(
-				new ConfigurationWarningsPostProcessor(getChecks()));
+		context.addBeanFactoryPostProcessor(new ConfigurationWarningsPostProcessor(getChecks()));
 	}
 
 	/**
@@ -87,13 +85,11 @@ public class ConfigurationWarningsApplicationContextInitializer
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			for (Check check : this.checks) {
 				String message = check.getWarning(registry);
 				if (StringUtils.hasLength(message)) {
@@ -146,31 +142,26 @@ public class ConfigurationWarningsApplicationContextInitializer
 			if (problematicPackages.isEmpty()) {
 				return null;
 			}
-			return "Your ApplicationContext is unlikely to "
-					+ "start due to a @ComponentScan of "
-					+ StringUtils.collectionToDelimitedString(problematicPackages, ", ")
-					+ ".";
+			return "Your ApplicationContext is unlikely to " + "start due to a @ComponentScan of "
+					+ StringUtils.collectionToDelimitedString(problematicPackages, ", ") + ".";
 		}
 
-		protected Set<String> getComponentScanningPackages(
-				BeanDefinitionRegistry registry) {
+		protected Set<String> getComponentScanningPackages(BeanDefinitionRegistry registry) {
 			Set<String> packages = new LinkedHashSet<String>();
 			String[] names = registry.getBeanDefinitionNames();
 			for (String name : names) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
 				if (definition instanceof AnnotatedBeanDefinition) {
 					AnnotatedBeanDefinition annotatedDefinition = (AnnotatedBeanDefinition) definition;
-					addComponentScanningPackages(packages,
-							annotatedDefinition.getMetadata());
+					addComponentScanningPackages(packages, annotatedDefinition.getMetadata());
 				}
 			}
 			return packages;
 		}
 
-		private void addComponentScanningPackages(Set<String> packages,
-				AnnotationMetadata metadata) {
-			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-					.getAnnotationAttributes(ComponentScan.class.getName(), true));
+		private void addComponentScanningPackages(Set<String> packages, AnnotationMetadata metadata) {
+			AnnotationAttributes attributes = AnnotationAttributes
+					.fromMap(metadata.getAnnotationAttributes(ComponentScan.class.getName(), true));
 			if (attributes != null) {
 				addPackages(packages, attributes.getStringArray("value"));
 				addPackages(packages, attributes.getStringArray("basePackages"));

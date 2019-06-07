@@ -31,16 +31,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class RelaxedConversionServiceTests {
 
-	private RelaxedConversionService conversionService = new RelaxedConversionService(
-			new DefaultConversionService());
+	private RelaxedConversionService conversionService = new RelaxedConversionService(new DefaultConversionService());
 
 	@Test
 	public void conversionServiceShouldAlwaysUseLocaleEnglish() {
 		Locale defaultLocale = Locale.getDefault();
 		try {
 			Locale.setDefault(new Locale("tr"));
-			TestEnum result = this.conversionService
-					.convert("accept-case-insensitive-properties", TestEnum.class);
+			TestEnum result = this.conversionService.convert("accept-case-insensitive-properties", TestEnum.class);
 			assertThat(result).isEqualTo(TestEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 		}
 		finally {

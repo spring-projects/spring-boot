@@ -60,51 +60,44 @@ public class CassandraDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.cassandra.keyspaceName:boot_test");
 		this.context.register(TestExcludeConfiguration.class, TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, CassandraAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length)
-				.isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length).isEqualTo(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.cassandra.keyspaceName:boot_test");
 		this.context.register(TestConfiguration.class, EntityScanConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, CassandraAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class);
 		this.context.refresh();
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
 	}
 
 	@Test
 	public void userTypeResolverShouldBeSet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
-		this.context.register(TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.cassandra.keyspaceName:boot_test");
+		this.context.register(TestConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
 		this.context.refresh();
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
 				.isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	@Configuration
-	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = { Session.class },
-			type = FilterType.ASSIGNABLE_TYPE))
+	@ComponentScan(
+			excludeFilters = @ComponentScan.Filter(classes = { Session.class }, type = FilterType.ASSIGNABLE_TYPE))
 	static class TestExcludeConfiguration {
 
 	}

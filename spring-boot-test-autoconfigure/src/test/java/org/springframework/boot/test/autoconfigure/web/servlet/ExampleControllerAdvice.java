@@ -39,10 +39,8 @@ public class ExampleControllerAdvice {
 
 	@ExceptionHandler(NoHandlerFoundException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<String> noHandlerFoundHandler(
-			NoHandlerFoundException exception) {
-		return ResponseEntity.badRequest()
-				.body("Invalid request: " + exception.getRequestURL());
+	public ResponseEntity<String> noHandlerFoundHandler(NoHandlerFoundException exception) {
+		return ResponseEntity.badRequest().body("Invalid request: " + exception.getRequestURL());
 	}
 
 }

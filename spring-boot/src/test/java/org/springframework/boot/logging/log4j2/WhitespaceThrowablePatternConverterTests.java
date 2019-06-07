@@ -48,8 +48,7 @@ public class WhitespaceThrowablePatternConverterTests {
 		LogEvent event = Log4jLogEvent.newBuilder().setThrown(new Exception()).build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
-		assertThat(builder.toString()).startsWith(LINE_SEPARATOR)
-				.endsWith(LINE_SEPARATOR);
+		assertThat(builder.toString()).startsWith(LINE_SEPARATOR).endsWith(LINE_SEPARATOR);
 	}
 
 }

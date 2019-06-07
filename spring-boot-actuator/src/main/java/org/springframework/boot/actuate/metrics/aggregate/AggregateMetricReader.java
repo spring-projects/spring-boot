@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,19 +121,16 @@ public class AggregateMetricReader implements MetricReader {
 		String name = this.prefix + key;
 		Metric<?> aggregate = result.findOne(name);
 		if (aggregate == null) {
-			aggregate = new Metric<Number>(name, metric.getValue(),
-					metric.getTimestamp());
+			aggregate = new Metric<Number>(name, metric.getValue(), metric.getTimestamp());
 		}
 		else if (key.contains("counter.")) {
 			// accumulate all values
-			aggregate = new Metric<Number>(name,
-					metric.increment(aggregate.getValue().intValue()).getValue(),
+			aggregate = new Metric<Number>(name, metric.increment(aggregate.getValue().intValue()).getValue(),
 					metric.getTimestamp());
 		}
 		else if (aggregate.getTimestamp().before(metric.getTimestamp())) {
 			// sort by timestamp and only take the latest
-			aggregate = new Metric<Number>(name, metric.getValue(),
-					metric.getTimestamp());
+			aggregate = new Metric<Number>(name, metric.getValue(), metric.getTimestamp());
 		}
 		result.set(aggregate);
 	}

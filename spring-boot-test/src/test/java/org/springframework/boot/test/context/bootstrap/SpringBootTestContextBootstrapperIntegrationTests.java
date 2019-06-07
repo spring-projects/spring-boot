@@ -63,8 +63,7 @@ public class SpringBootTestContextBootstrapperIntegrationTests {
 	}
 
 	@Test
-	public void defaultTestExecutionListenersPostProcessorShouldBeCalled()
-			throws Exception {
+	public void defaultTestExecutionListenersPostProcessorShouldBeCalled() throws Exception {
 		assertThat(this.defaultTestExecutionListenersPostProcessorCalled).isTrue();
 	}
 

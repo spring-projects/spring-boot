@@ -25,10 +25,9 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 public class SampleTypeExcludeFilter extends TypeExcludeFilter {
 
 	@Override
-	public boolean match(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		return metadataReader.getClassMetadata().getClassName()
-				.equals(ExampleFilteredComponent.class.getName());
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		return metadataReader.getClassMetadata().getClassName().equals(ExampleFilteredComponent.class.getName());
 	}
 
 }

@@ -60,8 +60,7 @@ import org.springframework.util.Assert;
  * @author Tomasz Przybyla
  * @since 1.4.0
  */
-public class ApplicationPidFileWriter
-		implements ApplicationListener<SpringApplicationEvent>, Ordered {
+public class ApplicationPidFileWriter implements ApplicationListener<SpringApplicationEvent>, Ordered {
 
 	private static final Log logger = LogFactory.getLog(ApplicationPidFileWriter.class);
 
@@ -127,8 +126,7 @@ public class ApplicationPidFileWriter
 	 * {@link Environment}.
 	 * @param triggerEventType the trigger event type
 	 */
-	public void setTriggerEventType(
-			Class<? extends SpringApplicationEvent> triggerEventType) {
+	public void setTriggerEventType(Class<? extends SpringApplicationEvent> triggerEventType) {
 		Assert.notNull(triggerEventType, "Trigger event type must not be null");
 		this.triggerEventType = triggerEventType;
 	}
@@ -141,8 +139,7 @@ public class ApplicationPidFileWriter
 					writePidFile(event);
 				}
 				catch (Exception ex) {
-					String message = String.format("Cannot create pid file %s",
-							this.file);
+					String message = String.format("Cannot create pid file %s", this.file);
 					if (failOnWriteError(event)) {
 						throw new IllegalStateException(message, ex);
 					}
@@ -222,8 +219,7 @@ public class ApplicationPidFileWriter
 			if (environment == null) {
 				return null;
 			}
-			return new RelaxedPropertyResolver(environment, this.prefix)
-					.getProperty(this.key);
+			return new RelaxedPropertyResolver(environment, this.prefix).getProperty(this.key);
 		}
 
 		private Environment getEnvironment(SpringApplicationEvent event) {
@@ -231,12 +227,10 @@ public class ApplicationPidFileWriter
 				return ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
 			}
 			if (event instanceof ApplicationPreparedEvent) {
-				return ((ApplicationPreparedEvent) event).getApplicationContext()
-						.getEnvironment();
+				return ((ApplicationPreparedEvent) event).getApplicationContext().getEnvironment();
 			}
 			if (event instanceof ApplicationReadyEvent) {
-				return ((ApplicationReadyEvent) event).getApplicationContext()
-						.getEnvironment();
+				return ((ApplicationReadyEvent) event).getApplicationContext().getEnvironment();
 			}
 			return null;
 		}
@@ -251,8 +245,7 @@ public class ApplicationPidFileWriter
 		private final String[] properties;
 
 		SystemProperty(String name) {
-			this.properties = new String[] { name.toUpperCase(Locale.ENGLISH),
-					name.toLowerCase(Locale.ENGLISH) };
+			this.properties = new String[] { name.toUpperCase(Locale.ENGLISH), name.toLowerCase(Locale.ENGLISH) };
 		}
 
 		@Override

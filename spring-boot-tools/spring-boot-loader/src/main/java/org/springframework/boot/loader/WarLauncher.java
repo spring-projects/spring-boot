@@ -50,8 +50,7 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 			return entry.getName().equals(WEB_INF_CLASSES);
 		}
 		else {
-			return entry.getName().startsWith(WEB_INF_LIB)
-					|| entry.getName().startsWith(WEB_INF_LIB_PROVIDED);
+			return entry.getName().startsWith(WEB_INF_LIB) || entry.getName().startsWith(WEB_INF_LIB_PROVIDED);
 		}
 	}
 

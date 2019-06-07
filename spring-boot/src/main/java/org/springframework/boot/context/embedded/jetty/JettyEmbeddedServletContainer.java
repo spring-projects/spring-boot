@@ -50,8 +50,7 @@ import org.springframework.util.StringUtils;
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
-	private static final Log logger = LogFactory
-			.getLog(JettyEmbeddedServletContainer.class);
+	private static final Log logger = LogFactory.getLog(JettyEmbeddedServletContainer.class);
 
 	private final Object monitor = new Object();
 
@@ -94,8 +93,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 					@Override
 					protected void doStart() throws Exception {
 						for (Connector connector : JettyEmbeddedServletContainer.this.connectors) {
-							Assert.state(connector.isStopped(), "Connector " + connector
-									+ " has been started prematurely");
+							Assert.state(connector.isStopped(),
+									"Connector " + connector + " has been started prematurely");
 						}
 						JettyEmbeddedServletContainer.this.server.setConnectors(null);
 					}
@@ -108,8 +107,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			catch (Throwable ex) {
 				// Ensure process isn't left running
 				stopSilently();
-				throw new EmbeddedServletContainerException(
-						"Unable to start embedded Jetty servlet container", ex);
+				throw new EmbeddedServletContainerException("Unable to start embedded Jetty servlet container", ex);
 			}
 		}
 	}
@@ -144,17 +142,14 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 						connector.start();
 					}
 					catch (IOException ex) {
-						if (connector instanceof NetworkConnector
-								&& findBindException(ex) != null) {
-							throw new PortInUseException(
-									((NetworkConnector) connector).getPort());
+						if (connector instanceof NetworkConnector && findBindException(ex) != null) {
+							throw new PortInUseException(((NetworkConnector) connector).getPort());
 						}
 						throw ex;
 					}
 				}
 				this.started = true;
-				JettyEmbeddedServletContainer.logger
-						.info("Jetty started on port(s) " + getActualPortsDescription());
+				JettyEmbeddedServletContainer.logger.info("Jetty started on port(s) " + getActualPortsDescription());
 			}
 			catch (EmbeddedServletContainerException ex) {
 				stopSilently();
@@ -162,8 +157,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			}
 			catch (Exception ex) {
 				stopSilently();
-				throw new EmbeddedServletContainerException(
-						"Unable to start embedded Jetty servlet container", ex);
+				throw new EmbeddedServletContainerException("Unable to start embedded Jetty servlet container", ex);
 			}
 		}
 	}
@@ -190,13 +184,11 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	private Integer getLocalPort(Connector connector) {
 		try {
 			// Jetty 9 internals are different, but the method name is the same
-			return (Integer) ReflectionUtils.invokeMethod(
-					ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"),
-					connector);
+			return (Integer) ReflectionUtils
+					.invokeMethod(ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"), connector);
 		}
 		catch (Exception ex) {
-			JettyEmbeddedServletContainer.logger
-					.info("could not determine port ( " + ex.getMessage() + ")");
+			JettyEmbeddedServletContainer.logger.info("could not determine port ( " + ex.getMessage() + ")");
 			return 0;
 		}
 	}
@@ -238,8 +230,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 				Thread.currentThread().interrupt();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedServletContainerException(
-						"Unable to stop embedded Jetty servlet container", ex);
+				throw new EmbeddedServletContainerException("Unable to stop embedded Jetty servlet container", ex);
 			}
 		}
 	}

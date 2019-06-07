@@ -37,13 +37,11 @@ import org.springframework.core.ResolvableType;
  *
  * @author Andy Wilkinson
  */
-public final class ClasspathLoggingApplicationListener
-		implements GenericApplicationListener {
+public final class ClasspathLoggingApplicationListener implements GenericApplicationListener {
 
 	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
-	private static final Log logger = LogFactory
-			.getLog(ClasspathLoggingApplicationListener.class);
+	private static final Log logger = LogFactory.getLog(ClasspathLoggingApplicationListener.class);
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -52,8 +50,7 @@ public final class ClasspathLoggingApplicationListener
 				logger.debug("Application started with classpath: " + getClasspath());
 			}
 			else if (event instanceof ApplicationFailedEvent) {
-				logger.debug(
-						"Application failed to start with classpath: " + getClasspath());
+				logger.debug("Application failed to start with classpath: " + getClasspath());
 			}
 		}
 	}

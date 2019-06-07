@@ -27,8 +27,7 @@ public class ReverseWebSocketEndpoint {
 
 	@OnMessage
 	public void handleMessage(Session session, String message) throws IOException {
-		session.getBasicRemote()
-				.sendText("Reversed: " + new StringBuilder(message).reverse());
+		session.getBasicRemote().sendText("Reversed: " + new StringBuilder(message).reverse());
 	}
 
 }

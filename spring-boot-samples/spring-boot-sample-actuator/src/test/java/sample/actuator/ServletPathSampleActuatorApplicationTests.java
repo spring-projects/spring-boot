@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "server.servletPath=/spring" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "server.servletPath=/spring" })
 @DirtiesContext
 public class ServletPathSampleActuatorApplicationTests {
 
@@ -49,8 +48,7 @@ public class ServletPathSampleActuatorApplicationTests {
 	@Test
 	public void testErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/error",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -60,8 +58,7 @@ public class ServletPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/spring/health",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/spring/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
@@ -69,8 +66,7 @@ public class ServletPathSampleActuatorApplicationTests {
 	@Test
 	public void testHomeIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

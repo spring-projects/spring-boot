@@ -54,8 +54,7 @@ public class ExampleObjectWithView {
 			return false;
 		}
 		ExampleObjectWithView other = (ExampleObjectWithView) obj;
-		return ObjectUtils.nullSafeEquals(this.name, other.name)
-				&& ObjectUtils.nullSafeEquals(this.age, other.age);
+		return ObjectUtils.nullSafeEquals(this.name, other.name) && ObjectUtils.nullSafeEquals(this.age, other.age);
 	}
 
 	@Override

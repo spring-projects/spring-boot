@@ -35,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 public class UserRepositoryTests {
 
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"00000000000000000");
+	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Autowired
 	private TestEntityManager entityManager;

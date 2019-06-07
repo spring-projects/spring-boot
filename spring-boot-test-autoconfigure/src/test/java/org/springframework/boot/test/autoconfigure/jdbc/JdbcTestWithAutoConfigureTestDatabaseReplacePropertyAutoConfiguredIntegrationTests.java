@@ -47,8 +47,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplacePropertyAutoConfiguredI
 
 	@Test
 	public void replacesAutoConfiguredDataSource() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("HSQL");
 	}
 

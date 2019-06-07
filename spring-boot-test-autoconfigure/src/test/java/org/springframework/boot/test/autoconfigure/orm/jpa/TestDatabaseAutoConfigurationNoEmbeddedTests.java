@@ -61,13 +61,10 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 		}
 		catch (BeanCreationException ex) {
 			String message = ex.getMessage();
-			assertThat(message).contains(
-					"Failed to replace DataSource with an embedded database for tests.");
-			assertThat(message).contains(
-					"If you want an embedded database please put a supported one on the "
-							+ "classpath");
-			assertThat(message).contains(
-					"or tune the replace attribute of @AutoconfigureTestDatabase.");
+			assertThat(message).contains("Failed to replace DataSource with an embedded database for tests.");
+			assertThat(message)
+					.contains("If you want an embedded database please put a supported one on the " + "classpath");
+			assertThat(message).contains("or tune the replace attribute of @AutoconfigureTestDatabase.");
 		}
 	}
 
@@ -75,8 +72,7 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 	public void applyNoReplace() {
 		load(ExistingDataSourceConfiguration.class, "spring.test.database.replace=NONE");
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
-		assertThat(this.context.getBean(DataSource.class))
-				.isSameAs(this.context.getBean("myCustomDataSource"));
+		assertThat(this.context.getBean(DataSource.class)).isSameAs(this.context.getBean("myCustomDataSource"));
 	}
 
 	public void load(Class<?> config, String... environment) {

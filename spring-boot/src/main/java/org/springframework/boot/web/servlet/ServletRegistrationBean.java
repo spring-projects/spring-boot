@@ -90,8 +90,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * @param alwaysMapUrl if omitted URL mappings should be replaced with '/*'
 	 * @param urlMappings the URLs being mapped
 	 */
-	public ServletRegistrationBean(Servlet servlet, boolean alwaysMapUrl,
-			String... urlMappings) {
+	public ServletRegistrationBean(Servlet servlet, boolean alwaysMapUrl, String... urlMappings) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
 		this.servlet = servlet;
@@ -191,8 +190,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 		logger.info("Mapping servlet: '" + name + "' to " + this.urlMappings);
 		Dynamic added = servletContext.addServlet(name, this.servlet);
 		if (added == null) {
-			logger.info("Servlet " + name + " was not registered "
-					+ "(possibly already registered?)");
+			logger.info("Servlet " + name + " was not registered " + "(possibly already registered?)");
 			return;
 		}
 		configure(added);
@@ -205,8 +203,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 */
 	protected void configure(ServletRegistration.Dynamic registration) {
 		super.configure(registration);
-		String[] urlMapping = this.urlMappings
-				.toArray(new String[this.urlMappings.size()]);
+		String[] urlMapping = this.urlMappings.toArray(new String[this.urlMappings.size()]);
 		if (urlMapping.length == 0 && this.alwaysMapUrl) {
 			urlMapping = DEFAULT_MAPPINGS;
 		}

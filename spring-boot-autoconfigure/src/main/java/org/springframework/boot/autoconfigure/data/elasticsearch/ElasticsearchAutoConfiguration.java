@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ Client.class, TransportClientFactoryBean.class,
-		NodeClientFactoryBean.class })
+@ConditionalOnClass({ Client.class, TransportClientFactoryBean.class, NodeClientFactoryBean.class })
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchAutoConfiguration implements DisposableBean {
 
@@ -66,8 +65,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		DEFAULTS = Collections.unmodifiableMap(defaults);
 	}
 
-	private static final Log logger = LogFactory
-			.getLog(ElasticsearchAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(ElasticsearchAutoConfiguration.class);
 
 	private final ElasticsearchProperties properties;
 
@@ -103,8 +101,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 			}
 		}
 		settings.put(this.properties.getProperties());
-		Node node = new NodeBuilder().settings(settings)
-				.clusterName(this.properties.getClusterName()).node();
+		Node node = new NodeBuilder().settings(settings).clusterName(this.properties.getClusterName()).node();
 		this.releasable = node;
 		return node.client();
 	}
@@ -138,8 +135,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 				}
 				catch (NoSuchMethodError ex) {
 					// Earlier versions of Elasticsearch had a different method name
-					ReflectionUtils.invokeMethod(
-							ReflectionUtils.findMethod(Releasable.class, "release"),
+					ReflectionUtils.invokeMethod(ReflectionUtils.findMethod(Releasable.class, "release"),
 							this.releasable);
 				}
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @since 1.5.0
  */
-public abstract class AbstractNamedMvcEndpoint extends AbstractMvcEndpoint
-		implements NamedMvcEndpoint {
+public abstract class AbstractNamedMvcEndpoint extends AbstractMvcEndpoint implements NamedMvcEndpoint {
 
 	private final String name;
 
@@ -37,8 +36,7 @@ public abstract class AbstractNamedMvcEndpoint extends AbstractMvcEndpoint
 		this.name = name;
 	}
 
-	public AbstractNamedMvcEndpoint(String name, String path, boolean sensitive,
-			boolean enabled) {
+	public AbstractNamedMvcEndpoint(String name, String path, boolean sensitive, boolean enabled) {
 		super(path, sensitive, enabled);
 		Assert.hasLength(name, "Name must not be empty");
 		this.name = name;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.env")
-public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
-		implements EnvironmentAware {
+public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements EnvironmentAware {
 
 	private Environment environment;
 
@@ -75,8 +74,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 		@Override
 		protected void getNames(Environment source, NameCallback callback) {
 			if (source instanceof ConfigurableEnvironment) {
-				getNames(((ConfigurableEnvironment) source).getPropertySources(),
-						callback);
+				getNames(((ConfigurableEnvironment) source).getPropertySources(), callback);
 			}
 		}
 
@@ -110,8 +108,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 		}
 
 		private Object getValue(String name) {
-			return ((EnvironmentEndpoint) getDelegate()).getResolver().getProperty(name,
-					Object.class);
+			return ((EnvironmentEndpoint) getDelegate()).getResolver().getProperty(name, Object.class);
 		}
 
 	}

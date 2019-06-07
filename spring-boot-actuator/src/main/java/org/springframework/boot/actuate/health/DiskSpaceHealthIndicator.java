@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,15 +51,12 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 			builder.up();
 		}
 		else {
-			logger.warn(String.format(
-					"Free disk space below threshold. "
-							+ "Available: %d bytes (threshold: %d bytes)",
+			logger.warn(String.format("Free disk space below threshold. " + "Available: %d bytes (threshold: %d bytes)",
 					diskFreeInBytes, this.properties.getThreshold()));
 			builder.down();
 		}
-		builder.withDetail("total", path.getTotalSpace())
-				.withDetail("free", diskFreeInBytes)
-				.withDetail("threshold", this.properties.getThreshold());
+		builder.withDetail("total", path.getTotalSpace()).withDetail("free", diskFreeInBytes).withDetail("threshold",
+				this.properties.getThreshold());
 	}
 
 }

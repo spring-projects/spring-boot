@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class JmsHealthIndicatorTests {
 	@Test
 	public void jmsBrokerIsDown() throws JMSException {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-		given(connectionFactory.createConnection())
-				.willThrow(new JMSException("test", "123"));
+		given(connectionFactory.createConnection()).willThrow(new JMSException("test", "123"));
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -66,8 +65,7 @@ public class JmsHealthIndicatorTests {
 	@Test
 	public void jmsBrokerCouldNotRetrieveProviderMetadata() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
-		given(connectionMetaData.getJMSProviderName())
-				.willThrow(new JMSException("test", "123"));
+		given(connectionMetaData.getJMSProviderName()).willThrow(new JMSException("test", "123"));
 		Connection connection = mock(Connection.class);
 		given(connection.getMetaData()).willReturn(connectionMetaData);
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);

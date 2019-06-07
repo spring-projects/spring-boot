@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ import org.springframework.util.ReflectionUtils;
  */
 @Configuration
 @Conditional(EnableOAuth2SsoCondition.class)
-public class OAuth2SsoCustomConfiguration
-		implements ImportAware, BeanPostProcessor, ApplicationContextAware {
+public class OAuth2SsoCustomConfiguration implements ImportAware, BeanPostProcessor, ApplicationContextAware {
 
 	private Class<?> configType;
 
@@ -59,22 +58,18 @@ public class OAuth2SsoCustomConfiguration
 
 	@Override
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
-		this.configType = ClassUtils.resolveClassName(importMetadata.getClassName(),
-				null);
+		this.configType = ClassUtils.resolveClassName(importMetadata.getClassName(), null);
 
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
-		if (this.configType.isAssignableFrom(bean.getClass())
-				&& bean instanceof WebSecurityConfigurerAdapter) {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		if (this.configType.isAssignableFrom(bean.getClass()) && bean instanceof WebSecurityConfigurerAdapter) {
 			ProxyFactory factory = new ProxyFactory();
 			factory.setTarget(bean);
 			factory.addAdvice(new SsoSecurityAdapter(this.applicationContext));
@@ -94,11 +89,9 @@ public class OAuth2SsoCustomConfiguration
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
 			if (invocation.getMethod().getName().equals("init")) {
-				Method method = ReflectionUtils
-						.findMethod(WebSecurityConfigurerAdapter.class, "getHttp");
+				Method method = ReflectionUtils.findMethod(WebSecurityConfigurerAdapter.class, "getHttp");
 				ReflectionUtils.makeAccessible(method);
-				HttpSecurity http = (HttpSecurity) ReflectionUtils.invokeMethod(method,
-						invocation.getThis());
+				HttpSecurity http = (HttpSecurity) ReflectionUtils.invokeMethod(method, invocation.getThis());
 				this.configurer.configure(http);
 			}
 			return invocation.proceed();

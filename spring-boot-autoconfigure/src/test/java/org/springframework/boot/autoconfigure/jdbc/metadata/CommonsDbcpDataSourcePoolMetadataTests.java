@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ public class CommonsDbcpDataSourcePoolMetadataTests
 
 	@Test
 	public void getPoolUsageWithNoCurrent() {
-		CommonsDbcpDataSourcePoolMetadata dsm = new CommonsDbcpDataSourcePoolMetadata(
-				createDataSource()) {
+		CommonsDbcpDataSourcePoolMetadata dsm = new CommonsDbcpDataSourcePoolMetadata(createDataSource()) {
 			@Override
 			public Integer getActive() {
 				return null;
@@ -57,8 +56,7 @@ public class CommonsDbcpDataSourcePoolMetadataTests
 
 	@Test
 	public void getPoolUsageWithNoMax() {
-		CommonsDbcpDataSourcePoolMetadata dsm = new CommonsDbcpDataSourcePoolMetadata(
-				createDataSource()) {
+		CommonsDbcpDataSourcePoolMetadata dsm = new CommonsDbcpDataSourcePoolMetadata(createDataSource()) {
 			@Override
 			public Integer getMax() {
 				return null;
@@ -77,12 +75,10 @@ public class CommonsDbcpDataSourcePoolMetadataTests
 	public void getValidationQuery() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertThat(new CommonsDbcpDataSourcePoolMetadata(dataSource).getValidationQuery())
-				.isEqualTo("SELECT FROM FOO");
+		assertThat(new CommonsDbcpDataSourcePoolMetadata(dataSource).getValidationQuery()).isEqualTo("SELECT FROM FOO");
 	}
 
-	private CommonsDbcpDataSourcePoolMetadata createDataSourceMetadata(int minSize,
-			int maxSize) {
+	private CommonsDbcpDataSourcePoolMetadata createDataSourceMetadata(int minSize, int maxSize) {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);

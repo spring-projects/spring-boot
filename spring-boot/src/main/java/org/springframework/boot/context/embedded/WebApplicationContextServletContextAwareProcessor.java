@@ -31,13 +31,11 @@ import org.springframework.web.context.support.ServletContextAwareProcessor;
  *
  * @author Phillip Webb
  */
-public class WebApplicationContextServletContextAwareProcessor
-		extends ServletContextAwareProcessor {
+public class WebApplicationContextServletContextAwareProcessor extends ServletContextAwareProcessor {
 
 	private final ConfigurableWebApplicationContext webApplicationContext;
 
-	public WebApplicationContextServletContextAwareProcessor(
-			ConfigurableWebApplicationContext webApplicationContext) {
+	public WebApplicationContextServletContextAwareProcessor(ConfigurableWebApplicationContext webApplicationContext) {
 		Assert.notNull(webApplicationContext, "WebApplicationContext must not be null");
 		this.webApplicationContext = webApplicationContext;
 	}

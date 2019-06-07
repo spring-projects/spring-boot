@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,7 @@ public class HikariDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "jdbcUrl:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "jdbcUrl:jdbc:foo//bar/spam");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxLifetime:1234");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
@@ -74,12 +73,11 @@ public class HikariDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceGenericPropertiesOverridden() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
-		assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
-				.isEqualTo("org.h2.JDBCDataSource");
+		assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName")).isEqualTo("org.h2.JDBCDataSource");
 	}
 
 	@Test

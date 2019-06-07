@@ -105,8 +105,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
-		ServletContextInitializerBeans Initializers = new ServletContextInitializerBeans(
-				this.context);
+		ServletContextInitializerBeans Initializers = new ServletContextInitializerBeans(this.context);
 		for (ServletContextInitializer initializer : Initializers) {
 			if (initializer instanceof FilterRegistrationBean) {
 				addFilter(builder, (FilterRegistrationBean) initializer);
@@ -117,22 +116,19 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		}
 	}
 
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
-			FilterRegistrationBean registration) {
+	private void addFilter(ConfigurableMockMvcBuilder<?> builder, FilterRegistrationBean registration) {
 		if (registration.isEnabled()) {
 			addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
 		}
 	}
 
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
-			DelegatingFilterProxyRegistrationBean registration) {
+	private void addFilter(ConfigurableMockMvcBuilder<?> builder, DelegatingFilterProxyRegistrationBean registration) {
 		if (registration.isEnabled()) {
 			addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
 		}
 	}
 
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder, Filter filter,
-			Collection<String> urls) {
+	private void addFilter(ConfigurableMockMvcBuilder<?> builder, Filter filter, Collection<String> urls) {
 		if (urls.isEmpty()) {
 			builder.addFilters(filter);
 		}
@@ -247,8 +243,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		DeferredLinesWriter(WebApplicationContext context, LinesWriter delegate) {
 			Assert.state(context instanceof ConfigurableApplicationContext,
 					"A ConfigurableApplicationContext is required for printOnlyOnFailure");
-			((ConfigurableApplicationContext) context).getBeanFactory()
-					.registerSingleton(BEAN_NAME, this);
+			((ConfigurableApplicationContext) context).getBeanFactory().registerSingleton(BEAN_NAME, this);
 			this.delegate = delegate;
 		}
 
@@ -277,8 +272,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	 */
 	private static class LoggingLinesWriter implements LinesWriter {
 
-		private static final Log logger = LogFactory
-				.getLog("org.springframework.test.web.servlet.result");
+		private static final Log logger = LogFactory.getLog("org.springframework.test.web.servlet.result");
 
 		@Override
 		public void write(List<String> lines) {

@@ -28,8 +28,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Andy Wilkinson
  */
-public final class AutoConfigurationImportedCondition
-		extends Condition<ApplicationContext> {
+public final class AutoConfigurationImportedCondition extends Condition<ApplicationContext> {
 
 	private final Class<?> autoConfigurationClass;
 
@@ -41,10 +40,8 @@ public final class AutoConfigurationImportedCondition
 	@Override
 	public boolean matches(ApplicationContext context) {
 		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get((ConfigurableListableBeanFactory) context
-						.getAutowireCapableBeanFactory());
-		return report.getConditionAndOutcomesBySource().keySet()
-				.contains(this.autoConfigurationClass.getName());
+				.get((ConfigurableListableBeanFactory) context.getAutowireCapableBeanFactory());
+		return report.getConditionAndOutcomesBySource().keySet().contains(this.autoConfigurationClass.getName());
 	}
 
 	/**
@@ -53,8 +50,7 @@ public final class AutoConfigurationImportedCondition
 	 * @param autoConfigurationClass the auto-configuration class
 	 * @return the condition
 	 */
-	public static AutoConfigurationImportedCondition importedAutoConfiguration(
-			Class<?> autoConfigurationClass) {
+	public static AutoConfigurationImportedCondition importedAutoConfiguration(Class<?> autoConfigurationClass) {
 		return new AutoConfigurationImportedCondition(autoConfigurationClass);
 	}
 

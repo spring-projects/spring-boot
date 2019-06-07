@@ -45,8 +45,7 @@ public class ValidationExceptionFailureAnalyzerTests {
 			fail("Expected failure did not occur");
 		}
 		catch (Exception ex) {
-			FailureAnalysis analysis = new ValidationExceptionFailureAnalyzer()
-					.analyze(ex);
+			FailureAnalysis analysis = new ValidationExceptionFailureAnalyzer().analyze(ex);
 			assertThat(analysis).isNotNull();
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,13 @@ import org.springframework.context.annotation.Bean;
  */
 abstract class AbstractTemplateResolverConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(AbstractTemplateResolverConfiguration.class);
+	private static final Log logger = LogFactory.getLog(AbstractTemplateResolverConfiguration.class);
 
 	private final ThymeleafProperties properties;
 
 	private final ApplicationContext applicationContext;
 
-	AbstractTemplateResolverConfiguration(ThymeleafProperties properties,
-			ApplicationContext applicationContext) {
+	AbstractTemplateResolverConfiguration(ThymeleafProperties properties, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.applicationContext = applicationContext;
 	}
@@ -57,8 +55,7 @@ abstract class AbstractTemplateResolverConfiguration {
 		if (checkTemplateLocation) {
 			TemplateLocation location = new TemplateLocation(this.properties.getPrefix());
 			if (!location.exists(this.applicationContext)) {
-				logger.warn("Cannot find template location: " + location
-						+ " (please add some templates or check "
+				logger.warn("Cannot find template location: " + location + " (please add some templates or check "
 						+ "your Thymeleaf configuration)");
 			}
 		}

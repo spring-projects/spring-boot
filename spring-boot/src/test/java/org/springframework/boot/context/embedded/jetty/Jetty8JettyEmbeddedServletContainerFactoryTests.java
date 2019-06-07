@@ -53,22 +53,17 @@ public class Jetty8JettyEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void errorHandling() {
-		JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory(
-				0);
+		JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory(0);
 		factory.addErrorPages(new ErrorPage("/error"));
-		EmbeddedServletContainer jetty = factory
-				.getEmbeddedServletContainer(new ServletContextInitializer() {
+		EmbeddedServletContainer jetty = factory.getEmbeddedServletContainer(new ServletContextInitializer() {
 
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						servletContext.addServlet("test", new TestServlet())
-								.addMapping("/test");
-						servletContext.addServlet("error", new ErrorPageServlet())
-								.addMapping("/error");
-					}
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.addServlet("test", new TestServlet()).addMapping("/test");
+				servletContext.addServlet("error", new ErrorPageServlet()).addMapping("/error");
+			}
 
-				});
+		});
 		jetty.start();
 		try {
 			int port = jetty.getPort();
@@ -85,8 +80,7 @@ public class Jetty8JettyEmbeddedServletContainerFactoryTests {
 				}
 
 			});
-			ResponseEntity<String> response = restTemplate
-					.getForEntity("http://localhost:" + port, String.class);
+			ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port, String.class);
 			assertThat(response.getBody()).isEqualTo("An error occurred");
 		}
 		finally {
@@ -97,8 +91,7 @@ public class Jetty8JettyEmbeddedServletContainerFactoryTests {
 	private static final class TestServlet extends HttpServlet {
 
 		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-				throws ServletException, IOException {
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			throw new RuntimeException("boom");
 		}
 
@@ -107,8 +100,7 @@ public class Jetty8JettyEmbeddedServletContainerFactoryTests {
 	private static final class ErrorPageServlet extends HttpServlet {
 
 		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-				throws IOException {
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 			resp.getWriter().print("An error occurred");
 			resp.flushBuffer();
 		}

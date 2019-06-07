@@ -51,13 +51,12 @@ public final class Verify {
 		new JarArchiveVerification(file, SAMPLE_APP).verify();
 	}
 
-	public static void verifyJar(File file, String main, String... scriptContents)
-			throws Exception {
+	public static void verifyJar(File file, String main, String... scriptContents) throws Exception {
 		verifyJar(file, main, true, scriptContents);
 	}
 
-	public static void verifyJar(File file, String main, boolean executable,
-			String... scriptContents) throws Exception {
+	public static void verifyJar(File file, String main, boolean executable, String... scriptContents)
+			throws Exception {
 		new JarArchiveVerification(file, main).verify(executable, scriptContents);
 	}
 
@@ -73,8 +72,8 @@ public final class Verify {
 		new ModuleArchiveVerification(file).verify();
 	}
 
-	public static Properties verifyBuildInfo(File file, String group, String artifact,
-			String name, String version) throws IOException {
+	public static Properties verifyBuildInfo(File file, String group, String artifact, String name, String version)
+			throws IOException {
 		FileSystemResource resource = new FileSystemResource(file);
 		Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 		assertThat(properties.get("build.group")).isEqualTo(group);
@@ -112,21 +111,18 @@ public final class Verify {
 		public void assertHasNoEntryNameStartingWith(String entry) {
 			for (String name : this.content.keySet()) {
 				if (name.startsWith(entry)) {
-					throw new IllegalStateException("Entry starting with " + entry
-							+ " should not have been found");
+					throw new IllegalStateException("Entry starting with " + entry + " should not have been found");
 				}
 			}
 		}
 
 		public void assertHasNonUnpackEntry(String entryName) {
-			assertThat(hasNonUnpackEntry(entryName))
-					.as("Entry starting with " + entryName + " was an UNPACK entry")
+			assertThat(hasNonUnpackEntry(entryName)).as("Entry starting with " + entryName + " was an UNPACK entry")
 					.isTrue();
 		}
 
 		public void assertHasUnpackEntry(String entryName) {
-			assertThat(hasUnpackEntry(entryName))
-					.as("Entry starting with " + entryName + " was not an UNPACK entry")
+			assertThat(hasUnpackEntry(entryName)).as("Entry starting with " + entryName + " was not an UNPACK entry")
 					.isTrue();
 		}
 
@@ -145,8 +141,7 @@ public final class Verify {
 					return entry.getValue();
 				}
 			}
-			throw new IllegalStateException(
-					"Unable to find entry starting with " + entryName);
+			throw new IllegalStateException("Unable to find entry starting with " + entryName);
 		}
 
 		public boolean hasEntry(String entry) {
@@ -179,14 +174,12 @@ public final class Verify {
 			verify(true);
 		}
 
-		public void verify(boolean executable, String... scriptContents)
-				throws Exception {
+		public void verify(boolean executable, String... scriptContents) throws Exception {
 			assertThat(this.file).exists().isFile();
 
 			if (scriptContents.length > 0 && executable) {
 				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
-				contents = contents.substring(0, contents
-						.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
+				contents = contents.substring(0, contents.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
 				for (String content : scriptContents) {
 					assertThat(contents).contains(content);
 				}
@@ -194,8 +187,7 @@ public final class Verify {
 
 			if (!executable) {
 				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
-				assertThat(contents).as("Is executable")
-						.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 }));
+				assertThat(contents).as("Is executable").startsWith(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 }));
 			}
 
 			ZipFile zipFile = new ZipFile(this.file);
@@ -213,8 +205,7 @@ public final class Verify {
 		}
 
 		private void verifyManifest(ArchiveVerifier verifier) throws Exception {
-			Manifest manifest = new Manifest(
-					verifier.getEntryContent("META-INF/MANIFEST.MF"));
+			Manifest manifest = new Manifest(verifier.getEntryContent("META-INF/MANIFEST.MF"));
 			verifyManifest(manifest);
 		}
 
@@ -237,22 +228,18 @@ public final class Verify {
 			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-core");
 			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/javax.servlet-api-3");
-			assertThat(verifier
-					.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
-							.as("Unpacked launcher classes").isTrue();
-			assertThat(verifier
-					.hasEntry("BOOT-INF/classes/org/test/SampleApplication.class"))
-							.as("Own classes").isTrue();
+			assertThat(verifier.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
+					.as("Unpacked launcher classes").isTrue();
+			assertThat(verifier.hasEntry("BOOT-INF/classes/org/test/SampleApplication.class")).as("Own classes")
+					.isTrue();
 		}
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
 			assertThat(manifest.getMainAttributes().getValue("Main-Class"))
 					.isEqualTo("org.springframework.boot.loader.JarLauncher");
-			assertThat(manifest.getMainAttributes().getValue("Start-Class"))
-					.isEqualTo(this.main);
-			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
-					.isEqualTo("Foo");
+			assertThat(manifest.getMainAttributes().getValue("Start-Class")).isEqualTo(this.main);
+			assertThat(manifest.getMainAttributes().getValue("Not-Used")).isEqualTo("Foo");
 		}
 
 	}
@@ -268,14 +255,11 @@ public final class Verify {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-core");
-			verifier.assertHasEntryNameStartingWith(
-					"WEB-INF/lib-provided/javax.servlet-api-3");
-			assertThat(verifier
-					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
-							.as("Unpacked launcher classes").isTrue();
-			assertThat(verifier
-					.hasEntry("WEB-INF/classes/org/" + "test/SampleApplication.class"))
-							.as("Own classes").isTrue();
+			verifier.assertHasEntryNameStartingWith("WEB-INF/lib-provided/javax.servlet-api-3");
+			assertThat(verifier.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
+					.as("Unpacked launcher classes").isTrue();
+			assertThat(verifier.hasEntry("WEB-INF/classes/org/" + "test/SampleApplication.class")).as("Own classes")
+					.isTrue();
 			assertThat(verifier.hasEntry("index.html")).as("Web content").isTrue();
 		}
 
@@ -283,10 +267,8 @@ public final class Verify {
 		protected void verifyManifest(Manifest manifest) throws Exception {
 			assertThat(manifest.getMainAttributes().getValue("Main-Class"))
 					.isEqualTo("org.springframework.boot.loader.WarLauncher");
-			assertThat(manifest.getMainAttributes().getValue("Start-Class"))
-					.isEqualTo("org.test.SampleApplication");
-			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
-					.isEqualTo("Foo");
+			assertThat(manifest.getMainAttributes().getValue("Start-Class")).isEqualTo("org.test.SampleApplication");
+			assertThat(manifest.getMainAttributes().getValue("Not-Used")).isEqualTo("Foo");
 		}
 
 	}
@@ -301,10 +283,8 @@ public final class Verify {
 		protected void verifyManifest(Manifest manifest) throws Exception {
 			assertThat(manifest.getMainAttributes().getValue("Main-Class"))
 					.isEqualTo("org.springframework.boot.loader.PropertiesLauncher");
-			assertThat(manifest.getMainAttributes().getValue("Start-Class"))
-					.isEqualTo("org.test.SampleApplication");
-			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
-					.isEqualTo("Foo");
+			assertThat(manifest.getMainAttributes().getValue("Start-Class")).isEqualTo("org.test.SampleApplication");
+			assertThat(manifest.getMainAttributes().getValue("Not-Used")).isEqualTo("Foo");
 		}
 
 	}
@@ -321,11 +301,9 @@ public final class Verify {
 			verifier.assertHasEntryNameStartingWith("lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("lib/spring-core");
 			verifier.assertHasNoEntryNameStartingWith("lib/javax.servlet-api-3");
-			assertThat(verifier
-					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
-							.as("Unpacked launcher classes").isFalse();
-			assertThat(verifier.hasEntry("org/" + "test/SampleModule.class"))
-					.as("Own classes").isTrue();
+			assertThat(verifier.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
+					.as("Unpacked launcher classes").isFalse();
+			assertThat(verifier.hasEntry("org/" + "test/SampleModule.class")).as("Own classes").isTrue();
 		}
 
 		@Override

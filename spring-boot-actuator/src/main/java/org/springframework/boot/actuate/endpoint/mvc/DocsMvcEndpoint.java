@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,20 +47,17 @@ public class DocsMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	@RequestMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
 	public String browse() {
-		return "forward:" + this.managementServletContext.getContextPath() + getPath()
-				+ "/index.html";
+		return "forward:" + this.managementServletContext.getContextPath() + getPath() + "/index.html";
 	}
 
 	@RequestMapping(value = "", produces = MediaType.TEXT_HTML_VALUE)
 	public String redirect() {
-		return "redirect:" + this.managementServletContext.getContextPath() + getPath()
-				+ "/";
+		return "redirect:" + this.managementServletContext.getContextPath() + getPath() + "/";
 	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler(
-				this.managementServletContext.getContextPath() + getPath() + "/**")
+		registry.addResourceHandler(this.managementServletContext.getContextPath() + getPath() + "/**")
 				.addResourceLocations(DOCS_LOCATION);
 	}
 

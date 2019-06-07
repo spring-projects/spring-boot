@@ -80,8 +80,7 @@ public class ConditionalOnMissingBeanTests {
 
 	@Test
 	public void testNameAndTypeOnMissingBeanCondition() {
-		this.context.register(FooConfiguration.class,
-				OnBeanNameAndTypeConfiguration.class);
+		this.context.register(FooConfiguration.class, OnBeanNameAndTypeConfiguration.class);
 		this.context.refresh();
 		/*
 		 * Arguably this should be true, but as things are implemented the conditions
@@ -132,8 +131,7 @@ public class ConditionalOnMissingBeanTests {
 	@Test
 	public void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
 		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class,
-				FactoryBeanXmlConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				FactoryBeanXmlConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("bar")).isFalse();
 		assertThat(this.context.containsBean("example")).isTrue();
@@ -142,60 +140,48 @@ public class ConditionalOnMissingBeanTests {
 
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBean() {
-		this.context.register(FactoryBeanConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(FactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
-		this.context.register(ComponentScannedFactoryBeanBeanMethodConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(ComponentScannedFactoryBeanBeanMethodConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
-		this.context.register(
-				ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
-				ConditionalOnFactoryBean.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
+				ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
-		this.context.register(FactoryBeanWithBeanMethodArgumentsConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(FactoryBeanWithBeanMethodArgumentsConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "theValue:foo");
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithConcreteFactoryBean() {
-		this.context.register(ConcreteFactoryBeanConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(ConcreteFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
-		this.context.register(UnhelpfulFactoryBeanConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(UnhelpfulFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		// We could not tell that the FactoryBean would ultimately create an ExampleBean
@@ -204,48 +190,39 @@ public class ConditionalOnMissingBeanTests {
 
 	@Test
 	public void testOnMissingBeanConditionWithRegisteredFactoryBean() {
-		this.context.register(RegisteredFactoryBeanConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(RegisteredFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
-		this.context.register(NonspecificFactoryBeanClassAttributeConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(NonspecificFactoryBeanClassAttributeConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
-		this.context.register(NonspecificFactoryBeanStringAttributeConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(NonspecificFactoryBeanStringAttributeConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBeanInXml() {
-		this.context.register(FactoryBeanXmlConfiguration.class,
-				ConditionalOnFactoryBean.class,
+		this.context.register(FactoryBeanXmlConfiguration.class, ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString())
-				.isEqualTo("fromFactory");
+		assertThat(this.context.getBean(ExampleBean.class).toString()).isEqualTo("fromFactory");
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithIgnoredSubclass() {
-		this.context.register(CustomExampleBeanConfiguration.class,
-				ConditionalOnIgnoredSubclass.class,
+		this.context.register(CustomExampleBeanConfiguration.class, ConditionalOnIgnoredSubclass.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(2);
@@ -254,8 +231,7 @@ public class ConditionalOnMissingBeanTests {
 
 	@Test
 	public void testOnMissingBeanConditionWithIgnoredSubclassByName() {
-		this.context.register(CustomExampleBeanConfiguration.class,
-				ConditionalOnIgnoredSubclassByName.class,
+		this.context.register(CustomExampleBeanConfiguration.class, ConditionalOnIgnoredSubclassByName.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(2);
@@ -271,8 +247,7 @@ public class ConditionalOnMissingBeanTests {
 		parent.refresh();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
 		child.setParent(parent);
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInParentsConfiguration.class);
+		child.register(ExampleBeanConfiguration.class, OnBeanInParentsConfiguration.class);
 		child.refresh();
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
 		child.close();
@@ -288,8 +263,7 @@ public class ConditionalOnMissingBeanTests {
 		parent.refresh();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
 		child.setParent(parent);
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInAncestorsConfiguration.class);
+		child.register(ExampleBeanConfiguration.class, OnBeanInAncestorsConfiguration.class);
 		child.refresh();
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
 		child.close();
@@ -300,8 +274,7 @@ public class ConditionalOnMissingBeanTests {
 	public void currentContextIsIgnoredWhenUsingParentsStrategy() {
 		this.context.refresh();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInParentsConfiguration.class);
+		child.register(ExampleBeanConfiguration.class, OnBeanInParentsConfiguration.class);
 		child.setParent(this.context);
 		child.refresh();
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
@@ -311,8 +284,7 @@ public class ConditionalOnMissingBeanTests {
 	public void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
 		this.context.refresh();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(ExampleBeanConfiguration.class,
-				OnBeanInAncestorsConfiguration.class);
+		child.register(ExampleBeanConfiguration.class, OnBeanInAncestorsConfiguration.class);
 		child.setParent(this.context);
 		child.refresh();
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
@@ -320,8 +292,7 @@ public class ConditionalOnMissingBeanTests {
 
 	@Test
 	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
-		this.context.register(ConcreteFactoryBeanConfiguration.class,
-				OnAnnotationWithFactoryBeanConfiguration.class);
+		this.context.register(ConcreteFactoryBeanConfiguration.class, OnAnnotationWithFactoryBeanConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("bar")).isFalse();
 		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(1);
@@ -403,8 +374,7 @@ public class ConditionalOnMissingBeanTests {
 	protected static class FactoryBeanWithBeanMethodArgumentsConfiguration {
 
 		@Bean
-		public FactoryBean<ExampleBean> exampleBeanFactoryBean(
-				@Value("${theValue}") String value) {
+		public FactoryBean<ExampleBean> exampleBeanFactoryBean(@Value("${theValue}") String value) {
 			return new ExampleFactoryBean(value);
 		}
 
@@ -437,19 +407,14 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	protected static class NonspecificFactoryBeanClassAttributeRegistrar
-			implements ImportBeanDefinitionRegistrar {
+	protected static class NonspecificFactoryBeanClassAttributeRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata meta,
-				BeanDefinitionRegistry registry) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(NonspecificFactoryBean.class);
+		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(
-					OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE, ExampleBean.class);
-			registry.registerBeanDefinition("exampleBeanFactoryBean",
-					builder.getBeanDefinition());
+			builder.getBeanDefinition().setAttribute(OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE, ExampleBean.class);
+			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
 	}
@@ -460,20 +425,15 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
-	protected static class NonspecificFactoryBeanStringAttributeRegistrar
-			implements ImportBeanDefinitionRegistrar {
+	protected static class NonspecificFactoryBeanStringAttributeRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata meta,
-				BeanDefinitionRegistry registry) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(NonspecificFactoryBean.class);
+		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(
-					OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE,
+			builder.getBeanDefinition().setAttribute(OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE,
 					ExampleBean.class.getName());
-			registry.registerBeanDefinition("exampleBeanFactoryBean",
-					builder.getBeanDefinition());
+			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
 	}
@@ -487,13 +447,10 @@ public class ConditionalOnMissingBeanTests {
 	protected static class FactoryBeanRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata meta,
-				BeanDefinitionRegistry registry) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(ExampleFactoryBean.class);
+		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ExampleFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			registry.registerBeanDefinition("exampleBeanFactoryBean",
-					builder.getBeanDefinition());
+			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
 	}
@@ -519,8 +476,7 @@ public class ConditionalOnMissingBeanTests {
 	protected static class ConditionalOnIgnoredSubclass {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class,
-				ignored = CustomExampleBean.class)
+		@ConditionalOnMissingBean(value = ExampleBean.class, ignored = CustomExampleBean.class)
 		public ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}

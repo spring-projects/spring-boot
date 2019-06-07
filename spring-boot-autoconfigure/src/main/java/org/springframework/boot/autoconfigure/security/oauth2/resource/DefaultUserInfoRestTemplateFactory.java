@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public class DefaultUserInfoRestTemplateFactory implements UserInfoRestTemplateF
 
 	private OAuth2RestTemplate oauth2RestTemplate;
 
-	public DefaultUserInfoRestTemplateFactory(
-			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizers,
+	public DefaultUserInfoRestTemplateFactory(ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizers,
 			ObjectProvider<OAuth2ProtectedResourceDetails> details,
 			ObjectProvider<OAuth2ClientContext> oauth2ClientContext) {
 		this.customizers = customizers.getIfAvailable();
@@ -71,8 +70,7 @@ public class DefaultUserInfoRestTemplateFactory implements UserInfoRestTemplateF
 		if (this.oauth2RestTemplate == null) {
 			this.oauth2RestTemplate = createOAuth2RestTemplate(
 					(this.details != null) ? this.details : DEFAULT_RESOURCE_DETAILS);
-			this.oauth2RestTemplate.getInterceptors()
-					.add(new AcceptJsonRequestInterceptor());
+			this.oauth2RestTemplate.getInterceptors().add(new AcceptJsonRequestInterceptor());
 			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
 			accessTokenProvider.setTokenRequestEnhancer(new AcceptJsonRequestEnhancer());
 			this.oauth2RestTemplate.setAccessTokenProvider(accessTokenProvider);
@@ -86,8 +84,7 @@ public class DefaultUserInfoRestTemplateFactory implements UserInfoRestTemplateF
 		return this.oauth2RestTemplate;
 	}
 
-	private OAuth2RestTemplate createOAuth2RestTemplate(
-			OAuth2ProtectedResourceDetails details) {
+	private OAuth2RestTemplate createOAuth2RestTemplate(OAuth2ProtectedResourceDetails details) {
 		if (this.oauth2ClientContext == null) {
 			return new OAuth2RestTemplate(details);
 		}

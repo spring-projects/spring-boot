@@ -37,8 +37,7 @@ public class AtomikosXAConnectionFactoryWrapperTests {
 		AtomikosXAConnectionFactoryWrapper wrapper = new AtomikosXAConnectionFactoryWrapper();
 		ConnectionFactory wrapped = wrapper.wrapConnectionFactory(connectionFactory);
 		assertThat(wrapped).isInstanceOf(AtomikosConnectionFactoryBean.class);
-		assertThat(((AtomikosConnectionFactoryBean) wrapped).getXaConnectionFactory())
-				.isSameAs(connectionFactory);
+		assertThat(((AtomikosConnectionFactoryBean) wrapped).getXaConnectionFactory()).isSameAs(connectionFactory);
 	}
 
 }

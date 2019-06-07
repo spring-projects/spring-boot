@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,8 @@ public class BootRunResourceTests {
 	@Test
 	public void resourcesDirectlyFromSource() {
 		project.newBuild().forTasks("clean", "bootRun")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=true")
-				.setStandardOutput(System.out).run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=true").setStandardOutput(System.out)
+				.run();
 
 		assertThat(this.output.toString()).contains("src/main/resources/test.txt");
 	}
@@ -58,8 +58,8 @@ public class BootRunResourceTests {
 	@Test
 	public void resourcesFromBuildOutput() {
 		project.newBuild().forTasks("clean", "bootRun")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=false")
-				.setStandardOutput(System.out).run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=false").setStandardOutput(System.out)
+				.run();
 		assertThat(this.output.toString()).contains("build/resources/main/test.txt");
 	}
 

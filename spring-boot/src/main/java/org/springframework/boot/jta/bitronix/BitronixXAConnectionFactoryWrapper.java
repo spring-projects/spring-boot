@@ -31,8 +31,7 @@ import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 public class BitronixXAConnectionFactoryWrapper implements XAConnectionFactoryWrapper {
 
 	@Override
-	public ConnectionFactory wrapConnectionFactory(
-			XAConnectionFactory connectionFactory) {
+	public ConnectionFactory wrapConnectionFactory(XAConnectionFactory connectionFactory) {
 		PoolingConnectionFactoryBean pool = new PoolingConnectionFactoryBean();
 		pool.setConnectionFactory(connectionFactory);
 		return pool;

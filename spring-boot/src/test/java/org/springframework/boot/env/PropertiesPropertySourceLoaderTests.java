@@ -34,8 +34,7 @@ public class PropertiesPropertySourceLoaderTests {
 
 	@Test
 	public void getFileExtensions() throws Exception {
-		assertThat(this.loader.getFileExtensions())
-				.isEqualTo(new String[] { "properties", "xml" });
+		assertThat(this.loader.getFileExtensions()).isEqualTo(new String[] { "properties", "xml" });
 	}
 
 	@Test
@@ -47,8 +46,8 @@ public class PropertiesPropertySourceLoaderTests {
 
 	@Test
 	public void loadXml() throws Exception {
-		PropertySource<?> source = this.loader.load("test.xml",
-				new ClassPathResource("test-xml.xml", getClass()), null);
+		PropertySource<?> source = this.loader.load("test.xml", new ClassPathResource("test-xml.xml", getClass()),
+				null);
 		assertThat(source.getProperty("test")).isEqualTo("xml");
 	}
 

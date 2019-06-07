@@ -41,8 +41,7 @@ class MockitoContextCustomizer implements ContextCustomizer {
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		if (context instanceof BeanDefinitionRegistry) {
-			MockitoPostProcessor.register((BeanDefinitionRegistry) context,
-					this.definitions);
+			MockitoPostProcessor.register((BeanDefinitionRegistry) context, this.definitions);
 		}
 	}
 

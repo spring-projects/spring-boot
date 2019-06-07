@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,13 +61,11 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	public void testSecurityFilterDoesNotCauseEarlyInitialization() throws Exception {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		try {
-			EnvironmentTestUtils.addEnvironment(context, "server.port:0",
-					"security.user.password:password");
+			EnvironmentTestUtils.addEnvironment(context, "server.port:0", "security.user.password:password");
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getEmbeddedServletContainer().getPort();
-			new TestRestTemplate("user", "password")
-					.getForEntity("http://localhost:" + port, Object.class);
+			new TestRestTemplate("user", "password").getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
 
 		}
@@ -78,14 +76,11 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	}
 
 	@Configuration
-	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class,
-			ConverterBean.class })
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebSecurity.class,
+	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class, ConverterBean.class })
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class, WebSecurity.class,
 			SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+			ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 
 		@Bean

@@ -28,8 +28,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-class RestDocsMockMvcBuilderCustomizer
-		implements InitializingBean, MockMvcBuilderCustomizer {
+class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockMvcBuilderCustomizer {
 
 	private final MockMvcRestDocumentationConfigurer delegate;
 

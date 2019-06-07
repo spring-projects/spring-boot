@@ -49,8 +49,7 @@ public class SampleDataGemFireApplication {
 
 	private final SampleDataGemFireProperties properties;
 
-	public SampleDataGemFireApplication(
-			SampleDataGemFireProperties applicationProperties) {
+	public SampleDataGemFireApplication(SampleDataGemFireProperties applicationProperties) {
 		this.properties = applicationProperties;
 	}
 
@@ -64,8 +63,7 @@ public class SampleDataGemFireApplication {
 
 	private Properties getCacheProperties() {
 		Properties properties = new Properties();
-		properties.setProperty("name",
-				SampleDataGemFireApplication.class.getSimpleName());
+		properties.setProperty("name", SampleDataGemFireApplication.class.getSimpleName());
 		properties.setProperty("mcast-port", "0");
 		properties.setProperty("locators", "");
 		properties.setProperty("log-level", this.properties.getLogLevel());

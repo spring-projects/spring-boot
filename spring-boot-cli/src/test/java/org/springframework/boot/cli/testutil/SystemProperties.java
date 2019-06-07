@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ public final class SystemProperties {
 	 * @param systemPropertyPairs The system properties, each in the form
 	 * {@code key:value}
 	 */
-	public static void doWithSystemProperties(Runnable action,
-			String... systemPropertyPairs) {
+	public static void doWithSystemProperties(Runnable action, String... systemPropertyPairs) {
 		Map<String, String> originalValues = new HashMap<String, String>();
 		for (String pair : systemPropertyPairs) {
 			String[] components = pair.split(":");

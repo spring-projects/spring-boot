@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-class WebMvcValidator implements SmartValidator, ApplicationContextAware,
-		InitializingBean, DisposableBean {
+class WebMvcValidator implements SmartValidator, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	private final SpringValidatorAdapter target;
 
@@ -70,11 +69,9 @@ class WebMvcValidator implements SmartValidator, ApplicationContextAware,
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		if (!this.existingBean && this.target instanceof ApplicationContextAware) {
-			((ApplicationContextAware) this.target)
-					.setApplicationContext(applicationContext);
+			((ApplicationContextAware) this.target).setApplicationContext(applicationContext);
 		}
 	}
 
@@ -92,8 +89,7 @@ class WebMvcValidator implements SmartValidator, ApplicationContextAware,
 		}
 	}
 
-	public static Validator get(ApplicationContext applicationContext,
-			Validator validator) {
+	public static Validator get(ApplicationContext applicationContext, Validator validator) {
 		if (validator != null) {
 			return wrap(validator, false);
 		}
@@ -110,8 +106,7 @@ class WebMvcValidator implements SmartValidator, ApplicationContextAware,
 
 	private static Validator getExisting(ApplicationContext applicationContext) {
 		try {
-			javax.validation.Validator validator = applicationContext
-					.getBean(javax.validation.Validator.class);
+			javax.validation.Validator validator = applicationContext.getBean(javax.validation.Validator.class);
 			if (validator instanceof Validator) {
 				return (Validator) validator;
 			}
@@ -131,11 +126,9 @@ class WebMvcValidator implements SmartValidator, ApplicationContextAware,
 	private static Validator wrap(Validator validator, boolean existingBean) {
 		if (validator instanceof javax.validation.Validator) {
 			if (validator instanceof SpringValidatorAdapter) {
-				return new WebMvcValidator((SpringValidatorAdapter) validator,
-						existingBean);
+				return new WebMvcValidator((SpringValidatorAdapter) validator, existingBean);
 			}
-			return new WebMvcValidator(
-					new SpringValidatorAdapter((javax.validation.Validator) validator),
+			return new WebMvcValidator(new SpringValidatorAdapter((javax.validation.Validator) validator),
 					existingBean);
 		}
 		return validator;

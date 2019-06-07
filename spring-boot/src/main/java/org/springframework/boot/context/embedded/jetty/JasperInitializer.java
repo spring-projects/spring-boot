@@ -38,8 +38,7 @@ import org.springframework.util.ClassUtils;
  */
 class JasperInitializer extends AbstractLifeCycle {
 
-	private static final String[] INITIALIZER_CLASSES = {
-			"org.eclipse.jetty.apache.jsp.JettyJasperInitializer",
+	private static final String[] INITIALIZER_CLASSES = { "org.eclipse.jetty.apache.jsp.JettyJasperInitializer",
 			"org.apache.jasper.servlet.JasperInitializer" };
 
 	private final WebAppContext context;
@@ -127,8 +126,7 @@ class JasperInitializer extends AbstractLifeCycle {
 			String path = "jar:" + spec.substring("war:".length());
 			int separator = path.indexOf("*/");
 			if (separator >= 0) {
-				path = path.substring(0, separator) + "!/"
-						+ path.substring(separator + 2);
+				path = path.substring(0, separator) + "!/" + path.substring(separator + 2);
 			}
 			setURL(u, u.getProtocol(), "", -1, null, null, path, null, null);
 		}

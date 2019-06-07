@@ -46,8 +46,7 @@ public abstract class EndpointMBean implements JmxEndpoint {
 	 * @param endpoint the endpoint to wrap
 	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
 	 */
-	public EndpointMBean(String beanName, Endpoint<?> endpoint,
-			ObjectMapper objectMapper) {
+	public EndpointMBean(String beanName, Endpoint<?> endpoint, ObjectMapper objectMapper) {
 		this.dataConverter = new DataConverter(objectMapper);
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
@@ -64,8 +63,7 @@ public abstract class EndpointMBean implements JmxEndpoint {
 		return this.endpoint.isEnabled();
 	}
 
-	@ManagedAttribute(
-			description = "Indicates whether the underlying endpoint exposes sensitive information")
+	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
 	public boolean isSensitive() {
 		return this.endpoint.isSensitive();
 	}

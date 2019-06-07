@@ -56,12 +56,10 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		}
 	}
 
-	private void resetMocks(ConfigurableApplicationContext applicationContext,
-			MockReset reset) {
+	private void resetMocks(ConfigurableApplicationContext applicationContext, MockReset reset) {
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		String[] names = beanFactory.getBeanDefinitionNames();
-		Set<String> instantiatedSingletons = new HashSet<String>(
-				Arrays.asList(beanFactory.getSingletonNames()));
+		Set<String> instantiatedSingletons = new HashSet<String>(Arrays.asList(beanFactory.getSingletonNames()));
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
 			if (definition.isSingleton() && instantiatedSingletons.contains(name)) {

@@ -39,8 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.port=-1" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.port=-1" })
 @DirtiesContext
 public class NoManagementSampleActuatorApplicationTests {
 
@@ -53,8 +52,8 @@ public class NoManagementSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword()).getForEntity("/", Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/",
+				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -65,8 +64,8 @@ public class NoManagementSampleActuatorApplicationTests {
 	public void testMetricsNotAvailable() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword()).getForEntity("/metrics", Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/metrics",
+				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

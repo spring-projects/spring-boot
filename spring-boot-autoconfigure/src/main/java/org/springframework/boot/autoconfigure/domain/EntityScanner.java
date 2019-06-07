@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,15 +58,13 @@ public class EntityScanner {
 	 * @throws ClassNotFoundException if an entity class cannot be loaded
 	 */
 	@SafeVarargs
-	public final Set<Class<?>> scan(Class<? extends Annotation>... annotationTypes)
-			throws ClassNotFoundException {
+	public final Set<Class<?>> scan(Class<? extends Annotation>... annotationTypes) throws ClassNotFoundException {
 		List<String> packages = getPackages();
 		if (packages.isEmpty()) {
 			return Collections.<Class<?>>emptySet();
 		}
 		Set<Class<?>> entitySet = new HashSet<Class<?>>();
-		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
-				false);
+		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
 		scanner.setEnvironment(this.context.getEnvironment());
 		scanner.setResourceLoader(this.context);
 		for (Class<? extends Annotation> annotationType : annotationTypes) {
@@ -74,10 +72,8 @@ public class EntityScanner {
 		}
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
-				for (BeanDefinition candidate : scanner
-						.findCandidateComponents(basePackage)) {
-					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(),
-							this.context.getClassLoader()));
+				for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
+					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(), this.context.getClassLoader()));
 				}
 			}
 		}

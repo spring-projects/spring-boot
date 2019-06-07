@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		result.put("profiles", getEnvironment().getActiveProfiles());
 		PropertyResolver resolver = getResolver();
-		for (Entry<String, PropertySource<?>> entry : getPropertySourcesAsMap()
-				.entrySet()) {
+		for (Entry<String, PropertySource<?>> entry : getPropertySourcesAsMap().entrySet()) {
 			PropertySource<?> source = entry.getValue();
 			String sourceName = entry.getKey();
 			if (source instanceof EnumerablePropertySource) {
@@ -85,8 +84,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	public PropertyResolver getResolver() {
-		PlaceholderSanitizingPropertyResolver resolver = new PlaceholderSanitizingPropertyResolver(
-				getPropertySources(), this.sanitizer);
+		PlaceholderSanitizingPropertyResolver resolver = new PlaceholderSanitizingPropertyResolver(getPropertySources(),
+				this.sanitizer);
 		resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 		return resolver;
 	}
@@ -111,11 +110,9 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		return sources;
 	}
 
-	private void extract(String root, Map<String, PropertySource<?>> map,
-			PropertySource<?> source) {
+	private void extract(String root, Map<String, PropertySource<?>> map, PropertySource<?> source) {
 		if (source instanceof CompositePropertySource) {
-			for (PropertySource<?> nest : ((CompositePropertySource) source)
-					.getPropertySources()) {
+			for (PropertySource<?> nest : ((CompositePropertySource) source).getPropertySources()) {
 				extract(source.getName() + ":", map, nest);
 			}
 		}
@@ -136,8 +133,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * added
 	 * @since 1.4.0
 	 */
-	protected Map<String, Object> postProcessSourceProperties(String sourceName,
-			Map<String, Object> properties) {
+	protected Map<String, Object> postProcessSourceProperties(String sourceName, Map<String, Object> properties) {
 		return properties;
 	}
 
@@ -145,8 +141,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * {@link PropertySourcesPropertyResolver} that sanitizes sensitive placeholders if
 	 * present.
 	 */
-	private class PlaceholderSanitizingPropertyResolver
-			extends PropertySourcesPropertyResolver {
+	private class PlaceholderSanitizingPropertyResolver extends PropertySourcesPropertyResolver {
 
 		private final Sanitizer sanitizer;
 
@@ -155,8 +150,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		 * @param propertySources the set of {@link PropertySource} objects to use
 		 * @param sanitizer the sanitizer used to sanitize sensitive values
 		 */
-		PlaceholderSanitizingPropertyResolver(PropertySources propertySources,
-				Sanitizer sanitizer) {
+		PlaceholderSanitizingPropertyResolver(PropertySources propertySources, Sanitizer sanitizer) {
 			super(propertySources);
 			this.sanitizer = sanitizer;
 		}

@@ -70,13 +70,13 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 			X509TrustManager tm = new X509TrustManager() {
 
 				@Override
-				public void checkClientTrusted(java.security.cert.X509Certificate[] chain,
-						String authType) throws java.security.cert.CertificateException {
+				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
+						throws java.security.cert.CertificateException {
 				}
 
 				@Override
-				public void checkServerTrusted(java.security.cert.X509Certificate[] chain,
-						String authType) throws java.security.cert.CertificateException {
+				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
+						throws java.security.cert.CertificateException {
 				}
 
 				@Override
@@ -96,25 +96,22 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 	@Test
 	public void testHello() throws Exception {
 		RestTemplate template = new RestTemplate();
-		final MySimpleClientHttpRequestFactory factory = new MySimpleClientHttpRequestFactory(
-				new HostnameVerifier() {
+		final MySimpleClientHttpRequestFactory factory = new MySimpleClientHttpRequestFactory(new HostnameVerifier() {
 
-					@Override
-					public boolean verify(final String hostname,
-							final SSLSession session) {
-						return true; // these guys are alright by me...
-					}
-				});
+			@Override
+			public boolean verify(final String hostname, final SSLSession session) {
+				return true; // these guys are alright by me...
+			}
+		});
 		template.setRequestFactory(factory);
 
-		ResponseEntity<String> entity = template.getForEntity(
-				"http://localhost:" + this.context.getBean("port") + "/hello",
-				String.class);
+		ResponseEntity<String> entity = template
+				.getForEntity("http://localhost:" + this.context.getBean("port") + "/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("hello");
 
-		ResponseEntity<String> httpsEntity = template
-				.getForEntity("https://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> httpsEntity = template.getForEntity("https://localhost:" + this.port + "/hello",
+				String.class);
 		assertThat(httpsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(httpsEntity.getBody()).isEqualTo("hello");
 
@@ -132,8 +129,8 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 		}
 
 		@Override
-		protected void prepareConnection(final HttpURLConnection connection,
-				final String httpMethod) throws IOException {
+		protected void prepareConnection(final HttpURLConnection connection, final String httpMethod)
+				throws IOException {
 			if (connection instanceof HttpsURLConnection) {
 				((HttpsURLConnection) connection).setHostnameVerifier(this.verifier);
 			}

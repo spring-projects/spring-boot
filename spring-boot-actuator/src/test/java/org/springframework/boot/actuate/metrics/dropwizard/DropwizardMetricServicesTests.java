@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,16 +99,14 @@ public class DropwizardMetricServicesTests {
 
 	@Test
 	public void setCustomReservoirTimer() {
-		given(this.reservoirFactory.getReservoir(anyString()))
-				.willReturn(new UniformReservoir());
+		given(this.reservoirFactory.getReservoir(anyString())).willReturn(new UniformReservoir());
 		this.writer.submit("timer.foo", 200);
 		this.writer.submit("timer.foo", 300);
 		assertThat(this.registry.timer("timer.foo").getCount()).isEqualTo(2);
 		Timer timer = (Timer) this.registry.getMetrics().get("timer.foo");
-		Histogram histogram = (Histogram) ReflectionTestUtils.getField(timer,
-				"histogram");
-		assertThat(ReflectionTestUtils.getField(histogram, "reservoir").getClass()
-				.equals(UniformReservoir.class)).isTrue();
+		Histogram histogram = (Histogram) ReflectionTestUtils.getField(timer, "histogram");
+		assertThat(ReflectionTestUtils.getField(histogram, "reservoir").getClass().equals(UniformReservoir.class))
+				.isTrue();
 	}
 
 	@Test
@@ -120,14 +118,12 @@ public class DropwizardMetricServicesTests {
 
 	@Test
 	public void setCustomReservoirHistogram() {
-		given(this.reservoirFactory.getReservoir(anyString()))
-				.willReturn(new UniformReservoir());
+		given(this.reservoirFactory.getReservoir(anyString())).willReturn(new UniformReservoir());
 		this.writer.submit("histogram.foo", 2.1);
 		this.writer.submit("histogram.foo", 2.3);
 		assertThat(this.registry.histogram("histogram.foo").getCount()).isEqualTo(2);
-		assertThat(ReflectionTestUtils
-				.getField(this.registry.getMetrics().get("histogram.foo"), "reservoir")
-				.getClass().equals(UniformReservoir.class)).isTrue();
+		assertThat(ReflectionTestUtils.getField(this.registry.getMetrics().get("histogram.foo"), "reservoir").getClass()
+				.equals(UniformReservoir.class)).isTrue();
 	}
 
 	/**
@@ -152,8 +148,7 @@ public class DropwizardMetricServicesTests {
 		}
 
 		for (WriterThread thread : threads) {
-			assertThat(thread.isFailed())
-					.as("expected thread caused unexpected exception").isFalse();
+			assertThat(thread.isFailed()).as("expected thread caused unexpected exception").isFalse();
 		}
 	}
 
@@ -165,8 +160,7 @@ public class DropwizardMetricServicesTests {
 
 		private DropwizardMetricServices writer;
 
-		public WriterThread(ThreadGroup group, int index,
-				DropwizardMetricServices writer) {
+		public WriterThread(ThreadGroup group, int index, DropwizardMetricServices writer) {
 			super(group, "Writer-" + index);
 			this.index = index;
 			this.writer = writer;

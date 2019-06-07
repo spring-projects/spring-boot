@@ -58,20 +58,16 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	}
 
 	private void addRepackageTask(Project project) {
-		RepackageTask task = project.getTasks().create(REPACKAGE_TASK_NAME,
-				RepackageTask.class);
+		RepackageTask task = project.getTasks().create(REPACKAGE_TASK_NAME, RepackageTask.class);
 		task.setDescription("Repackage existing JAR and WAR "
-				+ "archives so that they can be executed from the command "
-				+ "line using 'java -jar'");
+				+ "archives so that they can be executed from the command " + "line using 'java -jar'");
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		Configuration runtimeConfiguration = project.getConfigurations()
 				.getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME);
 		TaskDependency runtimeProjectDependencyJarTasks = runtimeConfiguration
 				.getTaskDependencyFromProjectDependency(true, JavaPlugin.JAR_TASK_NAME);
-		task.dependsOn(
-				project.getConfigurations().getByName(Dependency.ARCHIVES_CONFIGURATION)
-						.getAllArtifacts().getBuildDependencies(),
-				runtimeProjectDependencyJarTasks);
+		task.dependsOn(project.getConfigurations().getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
+				.getBuildDependencies(), runtimeProjectDependencyJarTasks);
 		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
 		ensureMainClassHasBeenFound(project, task);
@@ -81,8 +77,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		project.afterEvaluate(new Action<Project>() {
 			@Override
 			public void execute(Project project) {
-				project.getTasks().withType(Jar.class,
-						new RegisterInputsOutputsAction(task));
+				project.getTasks().withType(Jar.class, new RegisterInputsOutputsAction(task));
 				Object withJar = task.getWithJarTask();
 				if (withJar != null) {
 					task.dependsOn(withJar);
@@ -104,8 +99,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	 * @param project the source project
 	 */
 	private void registerRepackageTaskProperty(Project project) {
-		project.getExtensions().getExtraProperties().set("BootRepackage",
-				RepackageTask.class);
+		project.getExtensions().getExtraProperties().set("BootRepackage", RepackageTask.class);
 	}
 
 	/**
@@ -140,12 +134,11 @@ public class RepackagePluginFeatures implements PluginFeatures {
 
 		private void setupInputOutputs(Jar jarTask, String classifier) {
 			Logger logger = this.project.getLogger();
-			logger.debug("Using classifier: " + classifier + " for task "
-					+ this.task.getName());
+			logger.debug("Using classifier: " + classifier + " for task " + this.task.getName());
 			File inputFile = jarTask.getArchivePath();
 			String outputName = inputFile.getName();
-			outputName = StringUtils.stripFilenameExtension(outputName) + "-" + classifier
-					+ "." + StringUtils.getFilenameExtension(outputName);
+			outputName = StringUtils.stripFilenameExtension(outputName) + "-" + classifier + "."
+					+ StringUtils.getFilenameExtension(outputName);
 			File outputFile = new File(inputFile.getParentFile(), outputName);
 			this.task.getInputs().file(jarTask);
 			addLibraryDependencies(this.task);

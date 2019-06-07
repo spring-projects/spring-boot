@@ -44,8 +44,7 @@ public class SpringProfileActionTests {
 
 	private final Context context = new ContextBase();
 
-	private final InterpretationContext interpretationContext = new InterpretationContext(
-			this.context, null);
+	private final InterpretationContext interpretationContext = new InterpretationContext(this.context, null);
 
 	private final Attributes attributes = mock(Attributes.class);
 
@@ -55,24 +54,21 @@ public class SpringProfileActionTests {
 	}
 
 	@Test
-	public void environmentIsQueriedWithProfileFromNameAttribute()
-			throws ActionException {
+	public void environmentIsQueriedWithProfileFromNameAttribute() throws ActionException {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("dev");
 		this.action.begin(this.interpretationContext, null, this.attributes);
 		verify(this.environment).acceptsProfiles("dev");
 	}
 
 	@Test
-	public void environmentIsQueriedWithMultipleProfilesFromCommaSeparatedNameAttribute()
-			throws ActionException {
+	public void environmentIsQueriedWithMultipleProfilesFromCommaSeparatedNameAttribute() throws ActionException {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("dev,qa");
 		this.action.begin(this.interpretationContext, null, this.attributes);
 		verify(this.environment).acceptsProfiles("dev", "qa");
 	}
 
 	@Test
-	public void environmentIsQueriedWithResolvedValueWhenNameAttributeUsesAPlaceholder()
-			throws ActionException {
+	public void environmentIsQueriedWithResolvedValueWhenNameAttributeUsesAPlaceholder() throws ActionException {
 		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("${profile}");
 		this.context.putProperty("profile", "dev");
 		this.action.begin(this.interpretationContext, null, this.attributes);
@@ -82,8 +78,7 @@ public class SpringProfileActionTests {
 	@Test
 	public void environmentIsQueriedWithResolvedValuesFromCommaSeparatedNameNameAttributeWithPlaceholders()
 			throws ActionException {
-		given(this.attributes.getValue(Action.NAME_ATTRIBUTE))
-				.willReturn("${profile1},${profile2}");
+		given(this.attributes.getValue(Action.NAME_ATTRIBUTE)).willReturn("${profile1},${profile2}");
 		this.context.putProperty("profile1", "dev");
 		this.context.putProperty("profile2", "qa");
 		this.action.begin(this.interpretationContext, null, this.attributes);

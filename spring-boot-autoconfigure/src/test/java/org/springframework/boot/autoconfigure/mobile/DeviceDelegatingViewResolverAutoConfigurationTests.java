@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,22 +79,18 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void deviceDelegatingJspResourceViewResolver() throws Exception {
 		load("spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(1);
 		InternalResourceViewResolver internalResourceViewResolver = this.context
 				.getBean(InternalResourceViewResolver.class);
-		assertLiteDeviceDelegatingViewResolver(internalResourceViewResolver,
-				"deviceDelegatingJspViewResolver");
+		assertLiteDeviceDelegatingViewResolver(internalResourceViewResolver, "deviceDelegatingJspViewResolver");
 	}
 
 	@Test
 	public void deviceDelegatingFreeMarkerViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(FreeMarkerAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
-				.hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(
-				this.context.getBean(FreeMarkerViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(this.context.getBean(FreeMarkerViewResolver.class),
 				"deviceDelegatingFreeMarkerViewResolver");
 	}
 
@@ -102,10 +98,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingGroovyMarkupViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(GroovyTemplateAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
-				.hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(
-				this.context.getBean(GroovyMarkupViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(this.context.getBean(GroovyMarkupViewResolver.class),
 				"deviceDelegatingGroovyMarkupViewResolver");
 	}
 
@@ -113,10 +107,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingMustacheViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(MustacheAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
-				.hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(
-				this.context.getBean(MustacheViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(this.context.getBean(MustacheViewResolver.class),
 				"deviceDelegatingMustacheViewResolver");
 	}
 
@@ -124,40 +116,32 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingThymeleafViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(ThymeleafAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
-				.hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(
-				this.context.getBean(ThymeleafViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(this.context.getBean(ThymeleafViewResolver.class),
 				"deviceDelegatingThymeleafViewResolver");
 	}
 
-	public void assertLiteDeviceDelegatingViewResolver(ViewResolver delegate,
-			String delegatingBeanName) {
-		LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
-				.getBean(delegatingBeanName, LiteDeviceDelegatingViewResolver.class);
+	public void assertLiteDeviceDelegatingViewResolver(ViewResolver delegate, String delegatingBeanName) {
+		LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context.getBean(delegatingBeanName,
+				LiteDeviceDelegatingViewResolver.class);
 		assertThat(deviceDelegatingViewResolver.getViewResolver()).isSameAs(delegate);
-		assertThat(deviceDelegatingViewResolver.getOrder())
-				.isEqualTo(((Ordered) delegate).getOrder() - 1);
+		assertThat(deviceDelegatingViewResolver.getOrder()).isEqualTo(((Ordered) delegate).getOrder() - 1);
 	}
 
 	@Test
 	public void deviceDelegatingViewResolverDisabled() throws Exception {
-		load(Arrays.asList(FreeMarkerAutoConfiguration.class,
-				GroovyTemplateAutoConfiguration.class, MustacheAutoConfiguration.class,
-				ThymeleafAutoConfiguration.class),
+		load(Arrays.asList(FreeMarkerAutoConfiguration.class, GroovyTemplateAutoConfiguration.class,
+				MustacheAutoConfiguration.class, ThymeleafAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:false");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
-				.hasSize(0);
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(0);
 	}
 
 	@Test
 	public void defaultPropertyValues() throws Exception {
 		load("spring.mobile.devicedelegatingviewresolver.enabled:true");
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingJspViewResolver",
-						LiteDeviceDelegatingViewResolver.class);
-		DirectFieldAccessor accessor = new DirectFieldAccessor(
-				liteDeviceDelegatingViewResolver);
+				.getBean("deviceDelegatingJspViewResolver", LiteDeviceDelegatingViewResolver.class);
+		DirectFieldAccessor accessor = new DirectFieldAccessor(liteDeviceDelegatingViewResolver);
 		assertThat(accessor.getPropertyValue("enableFallback")).isEqualTo(Boolean.FALSE);
 		assertThat(accessor.getPropertyValue("normalPrefix")).isEqualTo("");
 		assertThat(accessor.getPropertyValue("mobilePrefix")).isEqualTo("mobile/");
@@ -223,12 +207,10 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		assertThat(accessor.getPropertyValue("tabletSuffix")).isEqualTo(".tab");
 	}
 
-	private PropertyAccessor getLiteDeviceDelegatingViewResolverAccessor(
-			String... configuration) {
+	private PropertyAccessor getLiteDeviceDelegatingViewResolverAccessor(String... configuration) {
 		load(configuration);
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingJspViewResolver",
-						LiteDeviceDelegatingViewResolver.class);
+				.getBean("deviceDelegatingJspViewResolver", LiteDeviceDelegatingViewResolver.class);
 		return new DirectFieldAccessor(liteDeviceDelegatingViewResolver);
 	}
 
@@ -242,10 +224,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		if (config != null) {
 			this.context.register(config.toArray(new Class[config.size()]));
 		}
-		this.context.register(WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				DeviceDelegatingViewResolverAutoConfiguration.class);
+		this.context.register(WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, DeviceDelegatingViewResolverAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
 		this.context.refresh();
 	}

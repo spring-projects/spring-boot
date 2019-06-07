@@ -127,8 +127,7 @@ public class MultipartConfigFactory {
 	 * @return the multipart config element
 	 */
 	public MultipartConfigElement createMultipartConfig() {
-		return new MultipartConfigElement(this.location, this.maxFileSize,
-				this.maxRequestSize, this.fileSizeThreshold);
+		return new MultipartConfigElement(this.location, this.maxFileSize, this.maxRequestSize, this.fileSizeThreshold);
 	}
 
 }

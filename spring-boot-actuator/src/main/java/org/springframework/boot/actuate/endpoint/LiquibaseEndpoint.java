@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 		for (Map.Entry<String, SpringLiquibase> entry : this.liquibases.entrySet()) {
 			try {
 				DataSource dataSource = entry.getValue().getDataSource();
-				JdbcConnection connection = new JdbcConnection(
-						dataSource.getConnection());
+				JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
 				Database database = null;
 				try {
 					database = factory.findCorrectDatabaseImplementation(connection);
@@ -73,8 +72,7 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 					if (StringUtils.hasText(defaultSchema)) {
 						database.setDefaultSchemaName(defaultSchema);
 					}
-					reports.add(new LiquibaseReport(entry.getKey(),
-							service.queryDatabaseChangeLogTable(database)));
+					reports.add(new LiquibaseReport(entry.getKey(), service.queryDatabaseChangeLogTable(database)));
 				}
 				finally {
 					if (database != null) {

@@ -59,8 +59,7 @@ class TomcatErrorPage {
 				return BeanUtils.instantiate(ClassUtils.forName(ERROR_PAGE_CLASS, null));
 			}
 			if (ClassUtils.isPresent(LEGACY_ERROR_PAGE_CLASS, null)) {
-				return BeanUtils
-						.instantiate(ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
+				return BeanUtils.instantiate(ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
 			}
 		}
 		catch (ClassNotFoundException ex) {
@@ -73,8 +72,7 @@ class TomcatErrorPage {
 	}
 
 	public void addToContext(Context context) {
-		Assert.state(this.nativePage != null,
-				"Neither Tomcat 7 nor 8 detected so no native error page exists");
+		Assert.state(this.nativePage != null, "Neither Tomcat 7 nor 8 detected so no native error page exists");
 		if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
 			org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
 			errorPage.setLocation(this.location);
@@ -85,10 +83,8 @@ class TomcatErrorPage {
 		else {
 			callMethod(this.nativePage, "setLocation", this.location, String.class);
 			callMethod(this.nativePage, "setErrorCode", this.errorCode, int.class);
-			callMethod(this.nativePage, "setExceptionType", this.exceptionType,
-					String.class);
-			callMethod(context, "addErrorPage", this.nativePage,
-					this.nativePage.getClass());
+			callMethod(this.nativePage, "setExceptionType", this.exceptionType, String.class);
+			callMethod(context, "addErrorPage", this.nativePage, this.nativePage.getClass());
 		}
 	}
 

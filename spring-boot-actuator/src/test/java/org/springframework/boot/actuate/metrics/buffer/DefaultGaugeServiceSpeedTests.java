@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,7 @@ public class DefaultGaugeServiceSpeedTests {
 
 	private static int threadCount = 2;
 
-	private static final int number = (Boolean.getBoolean("performance.test") ? 5000000
-			: 1000000);
+	private static final int number = (Boolean.getBoolean("performance.test") ? 5000000 : 1000000);
 
 	private static int count;
 
@@ -94,8 +93,7 @@ public class DefaultGaugeServiceSpeedTests {
 			public void run() {
 				for (int i = 0; i < number; i++) {
 					String name = sample[i % sample.length];
-					DefaultGaugeServiceSpeedTests.this.gaugeService.submit(name,
-							count + i);
+					DefaultGaugeServiceSpeedTests.this.gaugeService.submit(name, count + i);
 				}
 			}
 		};

@@ -59,8 +59,7 @@ public class TestEntityManagerTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.testEntityManager = new TestEntityManager(this.entityManagerFactory);
-		given(this.entityManagerFactory.getPersistenceUnitUtil())
-				.willReturn(this.persistenceUnitUtil);
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 	}
 
 	@Test
@@ -191,8 +190,8 @@ public class TestEntityManagerTests {
 	public void getIdForTypeWhenTypeIsWrongShouldThrowException() throws Exception {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		this.thrown.expectMessage("ID mismatch: Object of class [java.lang.Integer] "
-				+ "must be an instance of class java.lang.Long");
+		this.thrown.expectMessage(
+				"ID mismatch: Object of class [java.lang.Integer] " + "must be an instance of class java.lang.Long");
 		this.testEntityManager.getId(entity, Long.class);
 	}
 
@@ -207,8 +206,7 @@ public class TestEntityManagerTests {
 	@Test
 	public void getEntityManagerShouldGetEntityManager() throws Exception {
 		bindEntityManager();
-		assertThat(this.testEntityManager.getEntityManager())
-				.isEqualTo(this.entityManager);
+		assertThat(this.testEntityManager.getEntityManager()).isEqualTo(this.entityManager);
 	}
 
 	@Test

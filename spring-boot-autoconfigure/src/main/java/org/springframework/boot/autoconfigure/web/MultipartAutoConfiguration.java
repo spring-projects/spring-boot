@@ -47,10 +47,8 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Toshiaki Maki
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class,
-		MultipartConfigElement.class })
-@ConditionalOnProperty(prefix = "spring.http.multipart", name = "enabled",
-		matchIfMissing = true)
+@ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class, MultipartConfigElement.class })
+@ConditionalOnProperty(prefix = "spring.http.multipart", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MultipartProperties.class)
 public class MultipartAutoConfiguration {
 
@@ -61,8 +59,7 @@ public class MultipartAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ MultipartConfigElement.class,
-			CommonsMultipartResolver.class })
+	@ConditionalOnMissingBean({ MultipartConfigElement.class, CommonsMultipartResolver.class })
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}

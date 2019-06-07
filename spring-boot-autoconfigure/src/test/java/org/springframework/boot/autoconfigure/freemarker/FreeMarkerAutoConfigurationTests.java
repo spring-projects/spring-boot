@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,16 +79,15 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void nonExistentTemplateLocation() throws Exception {
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/does-not-exist/,classpath:/also-does-not-exist");
+		registerAndRefreshContext(
+				"spring.freemarker.templateLoaderPath:" + "classpath:/does-not-exist/,classpath:/also-does-not-exist");
 		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
 	public void emptyTemplateLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/templates/empty-directory/");
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:" + "classpath:/templates/empty-directory/");
 	}
 
 	@Test
@@ -134,8 +133,7 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		registerAndRefreshContext(
-				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result).contains("custom");
@@ -144,32 +142,28 @@ public class FreeMarkerAutoConfigurationTests {
 	@Test
 	public void disableCache() {
 		registerAndRefreshContext("spring.freemarker.cache:false");
-		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit())
-				.isEqualTo(0);
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit()).isEqualTo(0);
 	}
 
 	@Test
 	public void allowSessionOverride() {
 		registerAndRefreshContext("spring.freemarker.allow-session-override:true");
-		AbstractTemplateViewResolver viewResolver = this.context
-				.getBean(FreeMarkerViewResolver.class);
-		assertThat(ReflectionTestUtils.getField(viewResolver, "allowSessionOverride"))
-				.isEqualTo(true);
+		AbstractTemplateViewResolver viewResolver = this.context.getBean(FreeMarkerViewResolver.class);
+		assertThat(ReflectionTestUtils.getField(viewResolver, "allowSessionOverride")).isEqualTo(true);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Test
 	public void customFreeMarkerSettings() {
 		registerAndRefreshContext("spring.freemarker.settings.boolean_format:yup,nope");
-		assertThat(this.context.getBean(FreeMarkerConfigurer.class).getConfiguration()
-				.getSetting("boolean_format")).isEqualTo("yup,nope");
+		assertThat(this.context.getBean(FreeMarkerConfigurer.class).getConfiguration().getSetting("boolean_format"))
+				.isEqualTo("yup,nope");
 	}
 
 	@Test
 	public void renderTemplate() throws Exception {
 		registerAndRefreshContext();
-		FreeMarkerConfigurer freemarker = this.context
-				.getBean(FreeMarkerConfigurer.class);
+		FreeMarkerConfigurer freemarker = this.context.getBean(FreeMarkerConfigurer.class);
 		StringWriter writer = new StringWriter();
 		freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
 		assertThat(writer.toString()).contains("Hello World");
@@ -180,8 +174,7 @@ public class FreeMarkerAutoConfigurationTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				FreeMarkerAutoConfiguration.class);
 		try {
-			freemarker.template.Configuration freemarker = context
-					.getBean(freemarker.template.Configuration.class);
+			freemarker.template.Configuration freemarker = context.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
 			freemarker.getTemplate("message.ftl").process(this, writer);
 			assertThat(writer.toString()).contains("Hello World");
@@ -194,13 +187,11 @@ public class FreeMarkerAutoConfigurationTests {
 	@Test
 	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
 		registerAndRefreshContext();
-		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
-				.isEmpty();
+		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class)).isEmpty();
 	}
 
 	@Test
-	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
-			throws Exception {
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() throws Exception {
 		registerAndRefreshContext("spring.resources.chain.enabled:true");
 		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
@@ -216,13 +207,11 @@ public class FreeMarkerAutoConfigurationTests {
 	}
 
 	private MockHttpServletResponse render(String viewName) throws Exception {
-		FreeMarkerViewResolver resolver = this.context
-				.getBean(FreeMarkerViewResolver.class);
+		FreeMarkerViewResolver resolver = this.context.getBean(FreeMarkerViewResolver.class);
 		View view = resolver.resolveViewName(viewName, Locale.UK);
 		assertThat(view).isNotNull();
 		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-				this.context);
+		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		view.render(null, request, response);
 		return response;

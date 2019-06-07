@@ -33,8 +33,7 @@ class RawConfigurationMetadata {
 
 	private final List<ConfigurationMetadataHint> hints;
 
-	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources,
-			List<ConfigurationMetadataItem> items,
+	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources, List<ConfigurationMetadataItem> items,
 			List<ConfigurationMetadataHint> hints) {
 		this.sources = new ArrayList<ConfigurationMetadataSource>(sources);
 		this.items = new ArrayList<ConfigurationMetadataItem>(items);

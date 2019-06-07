@@ -54,8 +54,7 @@ public class MetadataCollector {
 	 * @param processingEnvironment the processing environment of the build
 	 * @param previousMetadata any previous metadata or {@code null}
 	 */
-	public MetadataCollector(ProcessingEnvironment processingEnvironment,
-			ConfigurationMetadata previousMetadata) {
+	public MetadataCollector(ProcessingEnvironment processingEnvironment, ConfigurationMetadata previousMetadata) {
 		this.processingEnvironment = processingEnvironment;
 		this.previousMetadata = previousMetadata;
 		this.typeUtils = new TypeUtils(processingEnvironment);
@@ -82,8 +81,7 @@ public class MetadataCollector {
 			throw new IllegalStateException("item " + metadata + " must be a group");
 		}
 		for (ItemMetadata existing : this.metadataItems) {
-			if (existing.isOfItemType(ItemMetadata.ItemType.GROUP)
-					&& existing.getName().equals(metadata.getName())
+			if (existing.isOfItemType(ItemMetadata.ItemType.GROUP) && existing.getName().equals(metadata.getName())
 					&& existing.getType().equals(metadata.getType())) {
 				return true;
 			}
@@ -109,13 +107,11 @@ public class MetadataCollector {
 
 	private boolean shouldBeMerged(ItemMetadata itemMetadata) {
 		String sourceType = itemMetadata.getSourceType();
-		return (sourceType != null && !deletedInCurrentBuild(sourceType)
-				&& !processedInCurrentBuild(sourceType));
+		return (sourceType != null && !deletedInCurrentBuild(sourceType) && !processedInCurrentBuild(sourceType));
 	}
 
 	private boolean deletedInCurrentBuild(String sourceType) {
-		return this.processingEnvironment.getElementUtils()
-				.getTypeElement(sourceType) == null;
+		return this.processingEnvironment.getElementUtils().getTypeElement(sourceType) == null;
 	}
 
 	private boolean processedInCurrentBuild(String sourceType) {

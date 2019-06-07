@@ -33,11 +33,9 @@ public class SpringPackageScanClassResolverTests {
 
 	@Test
 	public void testScan() {
-		SpringPackageScanClassResolver resolver = new SpringPackageScanClassResolver(
-				LogFactory.getLog(getClass()));
+		SpringPackageScanClassResolver resolver = new SpringPackageScanClassResolver(LogFactory.getLog(getClass()));
 		resolver.addClassLoader(getClass().getClassLoader());
-		Set<Class<?>> implementations = resolver.findImplementations(Logger.class,
-				"liquibase.logging.core");
+		Set<Class<?>> implementations = resolver.findImplementations(Logger.class, "liquibase.logging.core");
 		assertThat(implementations).isNotEmpty();
 	}
 

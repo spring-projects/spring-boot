@@ -61,8 +61,7 @@ public class AgentTasksEnhancer implements Action<Project> {
 
 	private void setup(Project project) {
 		project.getLogger().info("Configuring agent");
-		SpringBootPluginExtension extension = project.getExtensions()
-				.getByType(SpringBootPluginExtension.class);
+		SpringBootPluginExtension extension = project.getExtensions().getByType(SpringBootPluginExtension.class);
 		this.noverify = extension.getNoverify();
 		this.agent = getAgent(project, extension);
 		if (this.agent == null) {
@@ -116,8 +115,7 @@ public class AgentTasksEnhancer implements Action<Project> {
 			if (this.noverify != null && this.noverify) {
 				exec.jvmArgs("-noverify");
 			}
-			Iterable<?> defaultJvmArgs = exec.getConventionMapping()
-					.getConventionValue(null, "jvmArgs", false);
+			Iterable<?> defaultJvmArgs = exec.getConventionMapping().getConventionValue(null, "jvmArgs", false);
 			if (defaultJvmArgs != null) {
 				exec.jvmArgs(defaultJvmArgs);
 			}

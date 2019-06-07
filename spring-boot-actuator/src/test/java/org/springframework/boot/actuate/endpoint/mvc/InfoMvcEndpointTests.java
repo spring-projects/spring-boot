@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,31 +77,28 @@ public class InfoMvcEndpointTests {
 	@Test
 	public void home() throws Exception {
 		this.mvc.perform(get("/info")).andExpect(status().isOk())
-				.andExpect(content().string(containsString(
-						"\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")))
-				.andExpect(content().string(containsString(
-						"\"beanName2\":{\"key21\":\"value21\",\"key22\":\"value22\"}")));
+				.andExpect(
+						content().string(containsString("\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")))
+				.andExpect(content()
+						.string(containsString("\"beanName2\":{\"key21\":\"value21\",\"key22\":\"value22\"}")));
 	}
 
 	@Test
 	public void contentTypeDefaultsToActuatorV1Json() throws Exception {
-		this.mvc.perform(get("/info")).andExpect(status().isOk())
-				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+		this.mvc.perform(get("/info")).andExpect(status().isOk()).andExpect(
+				header().string("Content-Type", "application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void contentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(
-				get("/info").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk()).andExpect(header().string("Content-Type",
-						MediaType.APPLICATION_JSON_UTF8_VALUE));
+		this.mvc.perform(get("/info").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk())
+				.andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
 	public static class TestConfiguration {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,7 @@ public class LinkedInAutoConfiguration {
 		@ConditionalOnMissingBean(LinkedIn.class)
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public LinkedIn linkedin(ConnectionRepository repository) {
-			Connection<LinkedIn> connection = repository
-					.findPrimaryConnection(LinkedIn.class);
+			Connection<LinkedIn> connection = repository.findPrimaryConnection(LinkedIn.class);
 			return (connection != null) ? connection.getApi() : null;
 		}
 
@@ -81,8 +80,7 @@ public class LinkedInAutoConfiguration {
 
 		@Override
 		protected ConnectionFactory<?> createConnectionFactory() {
-			return new LinkedInConnectionFactory(this.properties.getAppId(),
-					this.properties.getAppSecret());
+			return new LinkedInConnectionFactory(this.properties.getAppId(), this.properties.getAppSecret());
 		}
 
 	}

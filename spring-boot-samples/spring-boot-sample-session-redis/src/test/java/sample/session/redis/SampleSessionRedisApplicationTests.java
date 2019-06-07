@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,10 +46,8 @@ public class SampleSessionRedisApplicationTests {
 
 		try {
 			ConfigurableApplicationContext context = new SpringApplicationBuilder()
-					.sources(SampleSessionRedisApplication.class)
-					.properties("server.port:0")
-					.initializers(new ServerPortInfoApplicationContextInitializer())
-					.run();
+					.sources(SampleSessionRedisApplication.class).properties("server.port:0")
+					.initializers(new ServerPortInfoApplicationContextInitializer()).run();
 			port = context.getEnvironment().getProperty("local.server.port");
 		}
 		catch (RuntimeException ex) {
@@ -67,8 +65,7 @@ public class SampleSessionRedisApplicationTests {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Cookie", response.getHeaders().getFirst("Set-Cookie"));
 
-		RequestEntity<Void> request = new RequestEntity<Void>(requestHeaders,
-				HttpMethod.GET, uri);
+		RequestEntity<Void> request = new RequestEntity<Void>(requestHeaders, HttpMethod.GET, uri);
 
 		String uuid2 = restTemplate.exchange(request, String.class).getBody();
 		assertThat(uuid1).isEqualTo(uuid2);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,17 +45,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
-		implements ResourceLoaderAware {
+public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint implements ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	private static HalBrowserLocation[] HAL_BROWSER_RESOURCE_LOCATIONS = {
-			new HalBrowserLocation("classpath:/META-INF/spring-data-rest/hal-browser/",
-					"index.html"),
-			new HalBrowserLocation(
-					"classpath:/META-INF/resources/webjars/hal-browser/9f96c74/",
-					"browser.html") };
+			new HalBrowserLocation("classpath:/META-INF/spring-data-rest/hal-browser/", "index.html"),
+			new HalBrowserLocation("classpath:/META-INF/resources/webjars/hal-browser/9f96c74/", "browser.html") };
 
 	private HalBrowserLocation location;
 
@@ -65,12 +61,10 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public String browse(HttpServletRequest request) {
-		ServletUriComponentsBuilder builder = ServletUriComponentsBuilder
-				.fromRequest(request);
+		ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromRequest(request);
 		String uriString = builder.build().toUriString();
 
-		return "redirect:" + uriString + (uriString.endsWith("/") ? "" : "/")
-				+ this.location.getHtmlFile();
+		return "redirect:" + uriString + (uriString.endsWith("/") ? "" : "/") + this.location.getHtmlFile();
 	}
 
 	@Override
@@ -85,14 +79,12 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 		if (this.location != null) {
 			String start = getManagementServletContext().getContextPath() + getPath();
 			registry.addResourceHandler(start + "/", start + "/**")
-					.addResourceLocations(this.location.getResourceLocation())
-					.setCachePeriod(0).resourceChain(true)
+					.addResourceLocations(this.location.getResourceLocation()).setCachePeriod(0).resourceChain(true)
 					.addTransformer(new InitialUrlTransformer());
 		}
 	}
 
-	public static HalBrowserLocation getHalBrowserLocation(
-			ResourceLoader resourceLoader) {
+	public static HalBrowserLocation getHalBrowserLocation(ResourceLoader resourceLoader) {
 		for (HalBrowserLocation candidate : HAL_BROWSER_RESOURCE_LOCATIONS) {
 			try {
 				Resource resource = resourceLoader.getResource(candidate.toString());
@@ -145,22 +137,19 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 		public Resource transform(HttpServletRequest request, Resource resource,
 				ResourceTransformerChain transformerChain) throws IOException {
 			resource = transformerChain.transform(request, resource);
-			if (resource.getFilename().equalsIgnoreCase(
-					HalBrowserMvcEndpoint.this.location.getHtmlFile())) {
+			if (resource.getFilename().equalsIgnoreCase(HalBrowserMvcEndpoint.this.location.getHtmlFile())) {
 				return replaceInitialLink(request, resource);
 			}
 			return resource;
 		}
 
-		private Resource replaceInitialLink(HttpServletRequest request, Resource resource)
-				throws IOException {
+		private Resource replaceInitialLink(HttpServletRequest request, Resource resource) throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			List<String> pathSegments = new ArrayList<String>(ServletUriComponentsBuilder
-					.fromRequest(request).build().getPathSegments());
+			List<String> pathSegments = new ArrayList<String>(
+					ServletUriComponentsBuilder.fromRequest(request).build().getPathSegments());
 			pathSegments.remove(pathSegments.size() - 1);
-			String initial = "/"
-					+ StringUtils.collectionToDelimitedString(pathSegments, "/");
+			String initial = "/" + StringUtils.collectionToDelimitedString(pathSegments, "/");
 			content = content.replace("entryPoint: '/'", "entryPoint: '" + initial + "'");
 			return new TransformedResource(resource, content.getBytes(DEFAULT_CHARSET));
 		}

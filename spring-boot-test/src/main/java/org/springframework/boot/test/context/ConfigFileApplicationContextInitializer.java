@@ -37,8 +37,7 @@ public class ConfigFileApplicationContextInitializer
 	public void initialize(final ConfigurableApplicationContext applicationContext) {
 		new ConfigFileApplicationListener() {
 			public void apply() {
-				addPropertySources(applicationContext.getEnvironment(),
-						applicationContext);
+				addPropertySources(applicationContext.getEnvironment(), applicationContext);
 				addPostProcessors(applicationContext);
 			}
 		}.apply();

@@ -50,8 +50,7 @@ import org.springframework.core.Ordered;
 @AutoConfigureOrder(CloudAutoConfiguration.ORDER)
 @ConditionalOnClass(CloudScanConfiguration.class)
 @ConditionalOnMissingBean(Cloud.class)
-@ConditionalOnProperty(prefix = "spring.cloud", name = "enabled", havingValue = "true",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.cloud", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(CloudScanConfiguration.class)
 public class CloudAutoConfiguration {
 

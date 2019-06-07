@@ -106,8 +106,8 @@ import org.springframework.util.StringUtils;
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
  */
-public class JettyEmbeddedServletContainerFactory
-		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class JettyEmbeddedServletContainerFactory extends AbstractEmbeddedServletContainerFactory
+		implements ResourceLoaderAware {
 
 	private static final String GZIP_HANDLER_JETTY_9_2 = "org.eclipse.jetty.servlets.gzip.GzipHandler";
 
@@ -166,8 +166,7 @@ public class JettyEmbeddedServletContainerFactory
 	}
 
 	@Override
-	public EmbeddedServletContainer getEmbeddedServletContainer(
-			ServletContextInitializer... initializers) {
+	public EmbeddedServletContainer getEmbeddedServletContainer(ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		int port = (getPort() >= 0) ? getPort() : 0;
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
@@ -178,8 +177,8 @@ public class JettyEmbeddedServletContainerFactory
 		if (getSsl() != null && getSsl().isEnabled()) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
-			AbstractConnector connector = getSslServerConnectorFactory()
-					.createConnector(server, sslContextFactory, address);
+			AbstractConnector connector = getSslServerConnectorFactory().createConnector(server, sslContextFactory,
+					address);
 			server.setConnectors(new Connector[] { connector });
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
@@ -205,11 +204,9 @@ public class JettyEmbeddedServletContainerFactory
 
 	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
 		if (ClassUtils.isPresent(CONNECTOR_JETTY_8, getClass().getClassLoader())) {
-			return new Jetty8ConnectorFactory().createConnector(server, address,
-					this.acceptors, this.selectors);
+			return new Jetty8ConnectorFactory().createConnector(server, address, this.acceptors, this.selectors);
 		}
-		return new Jetty9ConnectorFactory().createConnector(server, address,
-				this.acceptors, this.selectors);
+		return new Jetty9ConnectorFactory().createConnector(server, address, this.acceptors, this.selectors);
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
@@ -238,13 +235,11 @@ public class JettyEmbeddedServletContainerFactory
 		if (ClassUtils.isPresent(GZIP_HANDLER_JETTY_9_3, getClass().getClassLoader())) {
 			return new Jetty93GzipHandlerFactory().createGzipHandler(getCompression());
 		}
-		throw new IllegalStateException(
-				"Compression is enabled, but GzipHandler is not on the classpath");
+		throw new IllegalStateException("Compression is enabled, but GzipHandler is not on the classpath");
 	}
 
 	private SslServerConnectorFactory getSslServerConnectorFactory() {
-		if (ClassUtils.isPresent("org.eclipse.jetty.server.ssl.SslSocketConnector",
-				null)) {
+		if (ClassUtils.isPresent("org.eclipse.jetty.server.ssl.SslSocketConnector", null)) {
 			return new Jetty8SslServerConnectorFactory();
 		}
 		return new Jetty9SslServerConnectorFactory();
@@ -307,8 +302,7 @@ public class JettyEmbeddedServletContainerFactory
 			factory.setKeyStoreResource(Resource.newResource(url));
 		}
 		catch (IOException ex) {
-			throw new EmbeddedServletContainerException(
-					"Could not find key store '" + ssl.getKeyStore() + "'", ex);
+			throw new EmbeddedServletContainerException("Could not find key store '" + ssl.getKeyStore() + "'", ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			factory.setKeyStoreType(ssl.getKeyStoreType());
@@ -328,8 +322,8 @@ public class JettyEmbeddedServletContainerFactory
 				factory.setTrustStoreResource(Resource.newResource(url));
 			}
 			catch (IOException ex) {
-				throw new EmbeddedServletContainerException(
-						"Could not find trust store '" + ssl.getTrustStore() + "'", ex);
+				throw new EmbeddedServletContainerException("Could not find trust store '" + ssl.getTrustStore() + "'",
+						ex);
 			}
 		}
 		if (ssl.getTrustStoreType() != null) {
@@ -345,8 +339,7 @@ public class JettyEmbeddedServletContainerFactory
 	 * @param context the context to configure
 	 * @param initializers the set of initializers to apply
 	 */
-	protected final void configureWebAppContext(WebAppContext context,
-			ServletContextInitializer... initializers) {
+	protected final void configureWebAppContext(WebAppContext context, ServletContextInitializer... initializers) {
 		Assert.notNull(context, "Context must not be null");
 		context.setTempDirectory(getTempDirectory());
 		if (this.resourceLoader != null) {
@@ -365,8 +358,7 @@ public class JettyEmbeddedServletContainerFactory
 		}
 		addLocaleMappings(context);
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		Configuration[] configurations = getWebAppContextConfigurations(context,
-				initializersToUse);
+		Configuration[] configurations = getWebAppContextConfigurations(context, initializersToUse);
 		context.setConfigurations(configurations);
 		context.setThrowUnavailableOnStartupException(true);
 		configureSession(context);
@@ -375,16 +367,14 @@ public class JettyEmbeddedServletContainerFactory
 
 	private void configureSession(WebAppContext context) {
 		SessionConfigurer configurer = getSessionConfigurer();
-		configurer.configure(context, getSessionTimeout(), isPersistSession(),
-				new SessionDirectory() {
+		configurer.configure(context, getSessionTimeout(), isPersistSession(), new SessionDirectory() {
 
-					@Override
-					public File get() {
-						return JettyEmbeddedServletContainerFactory.this
-								.getValidSessionStoreDir();
-					}
+			@Override
+			public File get() {
+				return JettyEmbeddedServletContainerFactory.this.getValidSessionStoreDir();
+			}
 
-				});
+		});
 	}
 
 	private void addLocaleMappings(WebAppContext context) {
@@ -412,9 +402,8 @@ public class JettyEmbeddedServletContainerFactory
 		root = (root != null) ? root : createTempDir("jetty-docbase");
 		try {
 			List<Resource> resources = new ArrayList<Resource>();
-			resources.add(
-					root.isDirectory() ? Resource.newResource(root.getCanonicalFile())
-							: JarResource.newJarResource(Resource.newResource(root)));
+			resources.add(root.isDirectory() ? Resource.newResource(root.getCanonicalFile())
+					: JarResource.newJarResource(Resource.newResource(root)));
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				// Jetty 9.2 and earlier do not support nested jars. See
@@ -423,8 +412,7 @@ public class JettyEmbeddedServletContainerFactory
 					resources.add(resource);
 				}
 			}
-			handler.setBaseResource(new ResourceCollection(
-					resources.toArray(new Resource[resources.size()])));
+			handler.setBaseResource(new ResourceCollection(resources.toArray(new Resource[resources.size()])));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -484,8 +472,7 @@ public class JettyEmbeddedServletContainerFactory
 	protected Configuration[] getWebAppContextConfigurations(WebAppContext webAppContext,
 			ServletContextInitializer... initializers) {
 		List<Configuration> configurations = new ArrayList<Configuration>();
-		configurations.add(
-				getServletContextInitializerConfiguration(webAppContext, initializers));
+		configurations.add(getServletContextInitializerConfiguration(webAppContext, initializers));
 		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
@@ -520,8 +507,7 @@ public class JettyEmbeddedServletContainerFactory
 			public void configure(WebAppContext context) throws Exception {
 				MimeTypes mimeTypes = context.getMimeTypes();
 				for (MimeMappings.Mapping mapping : getMimeMappings()) {
-					mimeTypes.addMimeMapping(mapping.getExtension(),
-							mapping.getMimeType());
+					mimeTypes.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 				}
 			}
 
@@ -536,8 +522,8 @@ public class JettyEmbeddedServletContainerFactory
 	 * @param initializers the {@link ServletContextInitializer}s to apply
 	 * @return the {@link Configuration} instance
 	 */
-	protected Configuration getServletContextInitializerConfiguration(
-			WebAppContext webAppContext, ServletContextInitializer... initializers) {
+	protected Configuration getServletContextInitializerConfiguration(WebAppContext webAppContext,
+			ServletContextInitializer... initializers) {
 		return new ServletContextInitializerConfiguration(initializers);
 	}
 
@@ -558,8 +544,7 @@ public class JettyEmbeddedServletContainerFactory
 	 * @param server the Jetty server.
 	 * @return a new {@link JettyEmbeddedServletContainer} instance
 	 */
-	protected JettyEmbeddedServletContainer getJettyEmbeddedServletContainer(
-			Server server) {
+	protected JettyEmbeddedServletContainer getJettyEmbeddedServletContainer(Server server) {
 		return new JettyEmbeddedServletContainer(server, getPort() >= 0);
 	}
 
@@ -600,8 +585,7 @@ public class JettyEmbeddedServletContainerFactory
 	 * before it is started. Calling this method will replace any existing configurations.
 	 * @param customizers the Jetty customizers to apply
 	 */
-	public void setServerCustomizers(
-			Collection<? extends JettyServerCustomizer> customizers) {
+	public void setServerCustomizers(Collection<? extends JettyServerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers = new ArrayList<JettyServerCustomizer>(customizers);
 	}
@@ -672,23 +656,19 @@ public class JettyEmbeddedServletContainerFactory
 		this.threadPool = threadPool;
 	}
 
-	private void addJettyErrorPages(ErrorHandler errorHandler,
-			Collection<ErrorPage> errorPages) {
+	private void addJettyErrorPages(ErrorHandler errorHandler, Collection<ErrorPage> errorPages) {
 		if (errorHandler instanceof ErrorPageErrorHandler) {
 			ErrorPageErrorHandler handler = (ErrorPageErrorHandler) errorHandler;
 			for (ErrorPage errorPage : errorPages) {
 				if (errorPage.isGlobal()) {
-					handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE,
-							errorPage.getPath());
+					handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE, errorPage.getPath());
 				}
 				else {
 					if (errorPage.getExceptionName() != null) {
-						handler.addErrorPage(errorPage.getExceptionName(),
-								errorPage.getPath());
+						handler.addErrorPage(errorPage.getExceptionName(), errorPage.getPath());
 					}
 					else {
-						handler.addErrorPage(errorPage.getStatusCode(),
-								errorPage.getPath());
+						handler.addErrorPage(errorPage.getStatusCode(), errorPage.getPath());
 					}
 				}
 			}
@@ -700,28 +680,26 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	private interface SslServerConnectorFactory {
 
-		AbstractConnector createConnector(Server server,
-				SslContextFactory sslContextFactory, InetSocketAddress address);
+		AbstractConnector createConnector(Server server, SslContextFactory sslContextFactory,
+				InetSocketAddress address);
 
 	}
 
 	/**
 	 * {@link SslServerConnectorFactory} for Jetty 9.
 	 */
-	private static class Jetty9SslServerConnectorFactory
-			implements SslServerConnectorFactory {
+	private static class Jetty9SslServerConnectorFactory implements SslServerConnectorFactory {
 
 		@Override
-		public ServerConnector createConnector(Server server,
-				SslContextFactory sslContextFactory, InetSocketAddress address) {
+		public ServerConnector createConnector(Server server, SslContextFactory sslContextFactory,
+				InetSocketAddress address) {
 			HttpConfiguration config = new HttpConfiguration();
 			config.setSendServerVersion(false);
 			config.addCustomizer(new SecureRequestCustomizer());
 			HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
-			SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
-					sslContextFactory, HttpVersion.HTTP_1_1.asString());
-			ServerConnector serverConnector = new ServerConnector(server,
-					sslConnectionFactory, connectionFactory);
+			SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(sslContextFactory,
+					HttpVersion.HTTP_1_1.asString());
+			ServerConnector serverConnector = new ServerConnector(server, sslConnectionFactory, connectionFactory);
 			serverConnector.setPort(address.getPort());
 			serverConnector.setHost(address.getHostString());
 			return serverConnector;
@@ -732,22 +710,17 @@ public class JettyEmbeddedServletContainerFactory
 	/**
 	 * {@link SslServerConnectorFactory} for Jetty 8.
 	 */
-	private static class Jetty8SslServerConnectorFactory
-			implements SslServerConnectorFactory {
+	private static class Jetty8SslServerConnectorFactory implements SslServerConnectorFactory {
 
 		@Override
-		public AbstractConnector createConnector(Server server,
-				SslContextFactory sslContextFactory, InetSocketAddress address) {
+		public AbstractConnector createConnector(Server server, SslContextFactory sslContextFactory,
+				InetSocketAddress address) {
 			try {
-				Class<?> connectorClass = Class
-						.forName("org.eclipse.jetty.server.ssl.SslSocketConnector");
-				AbstractConnector connector = (AbstractConnector) connectorClass
-						.getConstructor(SslContextFactory.class)
+				Class<?> connectorClass = Class.forName("org.eclipse.jetty.server.ssl.SslSocketConnector");
+				AbstractConnector connector = (AbstractConnector) connectorClass.getConstructor(SslContextFactory.class)
 						.newInstance(sslContextFactory);
-				connector.getClass().getMethod("setPort", int.class).invoke(connector,
-						address.getPort());
-				connector.getClass().getMethod("setHost", String.class).invoke(connector,
-						address.getHostString());
+				connector.getClass().getMethod("setPort", int.class).invoke(connector, address.getPort());
+				connector.getClass().getMethod("setHost", String.class).invoke(connector, address.getHostString());
 				return connector;
 			}
 			catch (Exception ex) {
@@ -768,24 +741,20 @@ public class JettyEmbeddedServletContainerFactory
 		@Override
 		public HandlerWrapper createGzipHandler(Compression compression) {
 			try {
-				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_8,
-						getClass().getClassLoader());
+				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_8, getClass().getClassLoader());
 				HandlerWrapper handler = (HandlerWrapper) handlerClass.newInstance();
-				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class)
-						.invoke(handler, compression.getMinResponseSize());
-				ReflectionUtils.findMethod(handlerClass, "setMimeTypes", Set.class)
-						.invoke(handler, new HashSet<String>(
-								Arrays.asList(compression.getMimeTypes())));
+				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class).invoke(handler,
+						compression.getMinResponseSize());
+				ReflectionUtils.findMethod(handlerClass, "setMimeTypes", Set.class).invoke(handler,
+						new HashSet<String>(Arrays.asList(compression.getMimeTypes())));
 				if (compression.getExcludedUserAgents() != null) {
-					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class)
-							.invoke(handler, new HashSet<String>(
-									Arrays.asList(compression.getExcludedUserAgents())));
+					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class).invoke(handler,
+							new HashSet<String>(Arrays.asList(compression.getExcludedUserAgents())));
 				}
 				return handler;
 			}
 			catch (Exception ex) {
-				throw new RuntimeException("Failed to configure Jetty 8 gzip handler",
-						ex);
+				throw new RuntimeException("Failed to configure Jetty 8 gzip handler", ex);
 			}
 		}
 
@@ -796,24 +765,20 @@ public class JettyEmbeddedServletContainerFactory
 		@Override
 		public HandlerWrapper createGzipHandler(Compression compression) {
 			try {
-				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_9_2,
-						getClass().getClassLoader());
+				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_9_2, getClass().getClassLoader());
 				HandlerWrapper gzipHandler = (HandlerWrapper) handlerClass.newInstance();
-				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class)
-						.invoke(gzipHandler, compression.getMinResponseSize());
-				ReflectionUtils
-						.findMethod(handlerClass, "addIncludedMimeTypes", String[].class)
-						.invoke(gzipHandler, new Object[] { compression.getMimeTypes() });
+				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class).invoke(gzipHandler,
+						compression.getMinResponseSize());
+				ReflectionUtils.findMethod(handlerClass, "addIncludedMimeTypes", String[].class).invoke(gzipHandler,
+						new Object[] { compression.getMimeTypes() });
 				if (compression.getExcludedUserAgents() != null) {
-					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class)
-							.invoke(gzipHandler, new HashSet<String>(
-									Arrays.asList(compression.getExcludedUserAgents())));
+					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class).invoke(gzipHandler,
+							new HashSet<String>(Arrays.asList(compression.getExcludedUserAgents())));
 				}
 				return gzipHandler;
 			}
 			catch (Exception ex) {
-				throw new RuntimeException("Failed to configure Jetty 9.2 gzip handler",
-						ex);
+				throw new RuntimeException("Failed to configure Jetty 9.2 gzip handler", ex);
 			}
 		}
 
@@ -844,11 +809,10 @@ public class JettyEmbeddedServletContainerFactory
 		public void customize(Server server) {
 			ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
 			for (Connector connector : server.getConnectors()) {
-				for (ConnectionFactory connectionFactory : connector
-						.getConnectionFactories()) {
+				for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 					if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-						((HttpConfiguration.ConnectionFactory) connectionFactory)
-								.getHttpConfiguration().addCustomizer(customizer);
+						((HttpConfiguration.ConnectionFactory) connectionFactory).getHttpConfiguration()
+								.addCustomizer(customizer);
 					}
 				}
 			}
@@ -870,8 +834,8 @@ public class JettyEmbeddedServletContainerFactory
 		}
 
 		@Override
-		public void handle(String target, Request baseRequest, HttpServletRequest request,
-				HttpServletResponse response) throws IOException, ServletException {
+		public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+				throws IOException, ServletException {
 			if (!response.getHeaderNames().contains(SERVER_HEADER)) {
 				response.setHeader(SERVER_HEADER, this.value);
 			}
@@ -882,35 +846,28 @@ public class JettyEmbeddedServletContainerFactory
 
 	private interface ConnectorFactory {
 
-		AbstractConnector createConnector(Server server, InetSocketAddress address,
-				int acceptors, int selectors);
+		AbstractConnector createConnector(Server server, InetSocketAddress address, int acceptors, int selectors);
 
 	}
 
 	private static class Jetty8ConnectorFactory implements ConnectorFactory {
 
 		@Override
-		public AbstractConnector createConnector(Server server, InetSocketAddress address,
-				int acceptors, int selectors) {
+		public AbstractConnector createConnector(Server server, InetSocketAddress address, int acceptors,
+				int selectors) {
 			try {
-				Class<?> connectorClass = ClassUtils.forName(CONNECTOR_JETTY_8,
-						getClass().getClassLoader());
-				AbstractConnector connector = (AbstractConnector) connectorClass
-						.newInstance();
-				ReflectionUtils.findMethod(connectorClass, "setPort", int.class)
-						.invoke(connector, address.getPort());
-				ReflectionUtils.findMethod(connectorClass, "setHost", String.class)
-						.invoke(connector, address.getHostString());
+				Class<?> connectorClass = ClassUtils.forName(CONNECTOR_JETTY_8, getClass().getClassLoader());
+				AbstractConnector connector = (AbstractConnector) connectorClass.newInstance();
+				ReflectionUtils.findMethod(connectorClass, "setPort", int.class).invoke(connector, address.getPort());
+				ReflectionUtils.findMethod(connectorClass, "setHost", String.class).invoke(connector,
+						address.getHostString());
 				if (acceptors > 0) {
-					ReflectionUtils.findMethod(connectorClass, "setAcceptors", int.class)
-							.invoke(connector, acceptors);
+					ReflectionUtils.findMethod(connectorClass, "setAcceptors", int.class).invoke(connector, acceptors);
 				}
 				if (selectors > 0) {
-					Object selectorManager = ReflectionUtils
-							.findMethod(connectorClass, "getSelectorManager")
+					Object selectorManager = ReflectionUtils.findMethod(connectorClass, "getSelectorManager")
 							.invoke(connector);
-					ReflectionUtils.findMethod(selectorManager.getClass(),
-							"setSelectSets", int.class)
+					ReflectionUtils.findMethod(selectorManager.getClass(), "setSelectSets", int.class)
 							.invoke(selectorManager, selectors);
 				}
 
@@ -926,16 +883,15 @@ public class JettyEmbeddedServletContainerFactory
 	private static class Jetty9ConnectorFactory implements ConnectorFactory {
 
 		@Override
-		public AbstractConnector createConnector(Server server, InetSocketAddress address,
-				int acceptors, int selectors) {
+		public AbstractConnector createConnector(Server server, InetSocketAddress address, int acceptors,
+				int selectors) {
 			ServerConnector connector = new ServerConnector(server, acceptors, selectors);
 			connector.setHost(address.getHostString());
 			connector.setPort(address.getPort());
-			for (ConnectionFactory connectionFactory : connector
-					.getConnectionFactories()) {
+			for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 				if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-					((HttpConfiguration.ConnectionFactory) connectionFactory)
-							.getHttpConfiguration().setSendServerVersion(false);
+					((HttpConfiguration.ConnectionFactory) connectionFactory).getHttpConfiguration()
+							.setSendServerVersion(false);
 				}
 			}
 			return connector;
@@ -955,17 +911,13 @@ public class JettyEmbeddedServletContainerFactory
 		public Server createServer(ThreadPool threadPool) {
 			Server server = new Server();
 			try {
-				ReflectionUtils
-						.findMethod(Server.class, "setThreadPool", ThreadPool.class)
-						.invoke(server, threadPool);
+				ReflectionUtils.findMethod(Server.class, "setThreadPool", ThreadPool.class).invoke(server, threadPool);
 			}
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to configure Jetty 8 ThreadPool", ex);
 			}
 			try {
-				ReflectionUtils
-						.findMethod(Server.class, "setSendServerVersion", boolean.class)
-						.invoke(server, false);
+				ReflectionUtils.findMethod(Server.class, "setSendServerVersion", boolean.class).invoke(server, false);
 			}
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to disable Server header", ex);
@@ -998,8 +950,7 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	private interface SessionConfigurer {
 
-		void configure(WebAppContext context, int timeout, boolean persist,
-				SessionDirectory sessionDirectory);
+		void configure(WebAppContext context, int timeout, boolean persist, SessionDirectory sessionDirectory);
 
 	}
 
@@ -1009,35 +960,29 @@ public class JettyEmbeddedServletContainerFactory
 	private static class Jetty93SessionConfigurer implements SessionConfigurer {
 
 		@Override
-		public void configure(WebAppContext context, int timeout, boolean persist,
-				SessionDirectory sessionDirectory) {
+		public void configure(WebAppContext context, int timeout, boolean persist, SessionDirectory sessionDirectory) {
 			SessionHandler handler = context.getSessionHandler();
 			Object manager = getSessionManager(handler);
 			setMaxInactiveInterval(manager, (timeout > 0) ? timeout : -1);
 			if (persist) {
 				Class<?> hashSessionManagerClass = ClassUtils.resolveClassName(
-						"org.eclipse.jetty.server.session.HashSessionManager",
-						handler.getClass().getClassLoader());
-				Assert.isInstanceOf(hashSessionManagerClass, manager,
-						"Unable to use persistent sessions");
+						"org.eclipse.jetty.server.session.HashSessionManager", handler.getClass().getClassLoader());
+				Assert.isInstanceOf(hashSessionManagerClass, manager, "Unable to use persistent sessions");
 				configurePersistSession(manager, sessionDirectory);
 			}
 		}
 
 		private Object getSessionManager(SessionHandler handler) {
-			Method method = ReflectionUtils.findMethod(SessionHandler.class,
-					"getSessionManager");
+			Method method = ReflectionUtils.findMethod(SessionHandler.class, "getSessionManager");
 			return ReflectionUtils.invokeMethod(method, handler);
 		}
 
 		private void setMaxInactiveInterval(Object manager, int interval) {
-			Method method = ReflectionUtils.findMethod(manager.getClass(),
-					"setMaxInactiveInterval", Integer.TYPE);
+			Method method = ReflectionUtils.findMethod(manager.getClass(), "setMaxInactiveInterval", Integer.TYPE);
 			ReflectionUtils.invokeMethod(method, manager, interval);
 		}
 
-		private void configurePersistSession(Object manager,
-				SessionDirectory sessionDirectory) {
+		private void configurePersistSession(Object manager, SessionDirectory sessionDirectory) {
 			try {
 				setStoreDirectory(manager, sessionDirectory.get());
 			}
@@ -1047,8 +992,7 @@ public class JettyEmbeddedServletContainerFactory
 		}
 
 		private void setStoreDirectory(Object manager, File file) throws IOException {
-			Method method = ReflectionUtils.findMethod(manager.getClass(),
-					"setStoreDirectory", File.class);
+			Method method = ReflectionUtils.findMethod(manager.getClass(), "setStoreDirectory", File.class);
 			ReflectionUtils.invokeMethod(method, manager, file);
 		}
 
@@ -1060,8 +1004,7 @@ public class JettyEmbeddedServletContainerFactory
 	private static class Jetty94SessionConfigurer implements SessionConfigurer {
 
 		@Override
-		public void configure(WebAppContext context, int timeout, boolean persist,
-				SessionDirectory sessionDirectory) {
+		public void configure(WebAppContext context, int timeout, boolean persist, SessionDirectory sessionDirectory) {
 			SessionHandler handler = context.getSessionHandler();
 			handler.setMaxInactiveInterval((timeout > 0) ? timeout : -1);
 			if (persist) {

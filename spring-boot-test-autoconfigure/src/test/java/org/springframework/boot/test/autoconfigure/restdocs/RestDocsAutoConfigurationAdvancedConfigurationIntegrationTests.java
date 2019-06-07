@@ -63,13 +63,11 @@ public class RestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Test
 	public void snippetGeneration() throws Exception {
-		this.mvc.perform(get("/")).andDo(this.documentationHandler.document(links(
-				linkWithRel("self").description("Canonical location of this resource"))));
-		File defaultSnippetsDir = new File(
-				"target/generated-snippets/snippet-generation");
+		this.mvc.perform(get("/")).andDo(this.documentationHandler
+				.document(links(linkWithRel("self").description("Canonical location of this resource"))));
+		File defaultSnippetsDir = new File("target/generated-snippets/snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
-				.has(contentContaining("'http://localhost:8080/'"));
+		assertThat(new File(defaultSnippetsDir, "curl-request.md")).has(contentContaining("'http://localhost:8080/'"));
 		assertThat(new File(defaultSnippetsDir, "links.md")).isFile();
 	}
 
@@ -78,8 +76,7 @@ public class RestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 	}
 
 	@TestConfiguration
-	public static class CustomizationConfiguration
-			implements RestDocsMockMvcConfigurationCustomizer {
+	public static class CustomizationConfiguration implements RestDocsMockMvcConfigurationCustomizer {
 
 		@Bean
 		public RestDocumentationResultHandler restDocumentation() {

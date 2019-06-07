@@ -36,8 +36,7 @@ abstract class Definition {
 
 	private final QualifierDefinition qualifier;
 
-	Definition(String name, MockReset reset, boolean proxyTargetAware,
-			QualifierDefinition qualifier) {
+	Definition(String name, MockReset reset, boolean proxyTargetAware, QualifierDefinition qualifier) {
 		this.name = name;
 		this.reset = (reset != null) ? reset : MockReset.AFTER;
 		this.proxyTargetAware = proxyTargetAware;
@@ -88,8 +87,7 @@ abstract class Definition {
 		boolean result = true;
 		result = result && ObjectUtils.nullSafeEquals(this.name, other.name);
 		result = result && ObjectUtils.nullSafeEquals(this.reset, other.reset);
-		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware,
-				other.proxyTargetAware);
+		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware, other.proxyTargetAware);
 		result = result && ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
 		return result;
 	}
@@ -99,8 +97,7 @@ abstract class Definition {
 		int result = 1;
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
-		result = MULTIPLIER * result
-				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
 		return result;
 	}

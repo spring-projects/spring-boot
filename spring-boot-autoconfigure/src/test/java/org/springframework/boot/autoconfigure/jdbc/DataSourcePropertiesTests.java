@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		assertThat(properties.getDriverClassName()).isNull();
-		assertThat(properties.determineDriverClassName())
-				.isEqualTo("com.mysql.jdbc.Driver");
+		assertThat(properties.determineDriverClassName()).isEqualTo("com.mysql.jdbc.Driver");
 	}
 
 	@Test
@@ -49,8 +48,7 @@ public class DataSourcePropertiesTests {
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.setDriverClassName("org.hsqldb.jdbcDriver");
 		assertThat(properties.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
-		assertThat(properties.determineDriverClassName())
-				.isEqualTo("org.hsqldb.jdbcDriver");
+		assertThat(properties.determineDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
 	}
 
 	@Test
@@ -58,15 +56,13 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
 		assertThat(properties.getUrl()).isNull();
-		assertThat(properties.determineUrl())
-				.isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
+		assertThat(properties.determineUrl()).isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
 	}
 
 	@Test
 	public void determineUrlWithNoEmbeddedSupport() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
-		properties.setBeanClassLoader(
-				new HidePackagesClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
+		properties.setBeanClassLoader(new HidePackagesClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
 		properties.afterPropertiesSet();
 		this.thrown.expect(DataSourceProperties.DataSourceBeanCreationException.class);
 		this.thrown.expectMessage("Cannot determine embedded database url");

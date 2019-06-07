@@ -46,8 +46,7 @@ class RabbitAnnotationDrivenConfiguration {
 	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
-			ObjectProvider<MessageRecoverer> messageRecoverer,
-			RabbitProperties properties) {
+			ObjectProvider<MessageRecoverer> messageRecoverer, RabbitProperties properties) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
 		this.properties = properties;
@@ -66,16 +65,14 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-			SimpleRabbitListenerContainerFactoryConfigurer configurer,
-			ConnectionFactory connectionFactory) {
+			SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
 		return factory;
 	}
 
 	@EnableRabbit
-	@ConditionalOnMissingBean(
-			name = RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+	@ConditionalOnMissingBean(name = RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableRabbitConfiguration {
 
 	}

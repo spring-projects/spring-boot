@@ -25,8 +25,7 @@ public class ExampleGenericStringServiceCaller {
 
 	private final ExampleGenericService<String> stringService;
 
-	public ExampleGenericStringServiceCaller(
-			ExampleGenericService<String> stringService) {
+	public ExampleGenericStringServiceCaller(ExampleGenericService<String> stringService) {
 		this.stringService = stringService;
 	}
 

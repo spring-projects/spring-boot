@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,11 +43,9 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		public DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
 			return new DataSourcePoolMetadataProvider() {
 				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
+				public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 					if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
-						return new TomcatDataSourcePoolMetadata(
-								(org.apache.tomcat.jdbc.pool.DataSource) dataSource);
+						return new TomcatDataSourcePoolMetadata((org.apache.tomcat.jdbc.pool.DataSource) dataSource);
 					}
 					return null;
 				}
@@ -64,11 +62,9 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		public DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
 			return new DataSourcePoolMetadataProvider() {
 				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
+				public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 					if (dataSource instanceof HikariDataSource) {
-						return new HikariDataSourcePoolMetadata(
-								(HikariDataSource) dataSource);
+						return new HikariDataSourcePoolMetadata((HikariDataSource) dataSource);
 					}
 					return null;
 				}
@@ -86,8 +82,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		public DataSourcePoolMetadataProvider commonsDbcpPoolDataSourceMetadataProvider() {
 			return new DataSourcePoolMetadataProvider() {
 				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
+				public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 					if (dataSource instanceof org.apache.commons.dbcp.BasicDataSource) {
 						return new CommonsDbcpDataSourcePoolMetadata(
 								(org.apache.commons.dbcp.BasicDataSource) dataSource);
@@ -107,11 +102,9 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
 			return new DataSourcePoolMetadataProvider() {
 				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
+				public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 					if (dataSource instanceof BasicDataSource) {
-						return new CommonsDbcp2DataSourcePoolMetadata(
-								(BasicDataSource) dataSource);
+						return new CommonsDbcp2DataSourcePoolMetadata((BasicDataSource) dataSource);
 					}
 					return null;
 				}

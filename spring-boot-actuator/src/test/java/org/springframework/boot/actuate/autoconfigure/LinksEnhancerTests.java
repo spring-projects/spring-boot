@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class LinksEnhancerTests {
 	public void useNameAsRelIfAvailable() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		endpoint.setPath("something-else");
-		LinksEnhancer enhancer = getLinksEnhancer(
-				Collections.singletonList((MvcEndpoint) endpoint));
+		LinksEnhancer enhancer = getLinksEnhancer(Collections.singletonList((MvcEndpoint) endpoint));
 		ResourceSupport support = new ResourceSupport();
 		enhancer.addEndpointLinks(support, "");
 		assertThat(support.getLink("a").getHref()).contains("/something-else");
@@ -87,20 +86,17 @@ public class LinksEnhancerTests {
 		endpoint.setPath("endpoint");
 		TestMvcEndpoint otherEndpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		otherEndpoint.setPath("other-endpoint");
-		LinksEnhancer enhancer = getLinksEnhancer(
-				Arrays.asList((MvcEndpoint) endpoint, otherEndpoint));
+		LinksEnhancer enhancer = getLinksEnhancer(Arrays.asList((MvcEndpoint) endpoint, otherEndpoint));
 		ResourceSupport support = new ResourceSupport();
 		enhancer.addEndpointLinks(support, "");
 		assertThat(support.getLinks()).haveExactly(1, getCondition("a", "endpoint"));
-		assertThat(support.getLinks()).haveExactly(1,
-				getCondition("a", "other-endpoint"));
+		assertThat(support.getLinks()).haveExactly(1, getCondition("a", "other-endpoint"));
 	}
 
 	private LinksEnhancer getLinksEnhancer(List<MvcEndpoint> endpoints) throws Exception {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		for (MvcEndpoint endpoint : endpoints) {
-			context.getDefaultListableBeanFactory().registerSingleton(endpoint.toString(),
-					endpoint);
+			context.getDefaultListableBeanFactory().registerSingleton(endpoint.toString(), endpoint);
 		}
 		MvcEndpoints mvcEndpoints = new MvcEndpoints();
 		mvcEndpoints.setApplicationContext(context);
@@ -113,8 +109,7 @@ public class LinksEnhancerTests {
 
 			@Override
 			public boolean matches(Link link) {
-				return link.getRel().equals(rel)
-						&& link.getHref().equals("http://localhost/" + href);
+				return link.getRel().equals(rel) && link.getHref().equals("http://localhost/" + href);
 			}
 
 		};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,10 @@ public class RabbitHealthIndicatorTests {
 
 	@Test
 	public void indicatorExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, RabbitAutoConfiguration.class,
-				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(RabbitAdmin.class).length)
-				.isEqualTo(1);
-		RabbitHealthIndicator healthIndicator = this.context
-				.getBean(RabbitHealthIndicator.class);
+		this.context = new AnnotationConfigApplicationContext(PropertyPlaceholderAutoConfiguration.class,
+				RabbitAutoConfiguration.class, EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(RabbitAdmin.class).length).isEqualTo(1);
+		RabbitHealthIndicator healthIndicator = this.context.getBean(RabbitHealthIndicator.class);
 		assertThat(healthIndicator).isNotNull();
 	}
 

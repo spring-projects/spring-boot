@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * security for the rest of the application, use
 	 * {@code SecurityProperties.ACCESS_OVERRIDE_ORDER} instead.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
-			- 1;
+	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
 
 	/**
 	 * Management endpoint HTTP port. Use the same port as the application by default.
@@ -169,8 +168,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = new ArrayList<String>(
-				Collections.singletonList("ACTUATOR"));
+		private List<String> roles = new ArrayList<String>(Collections.singletonList("ACTUATOR"));
 
 		/**
 		 * Session creating policy for security use (always, never, if_required,

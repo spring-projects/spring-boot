@@ -32,13 +32,11 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @since 1.2.0
  * @see ServletContext#setInitParameter(String, String)
  */
-public class InitParameterConfiguringServletContextInitializer
-		implements ServletContextInitializer {
+public class InitParameterConfiguringServletContextInitializer implements ServletContextInitializer {
 
 	private final Map<String, String> parameters;
 
-	public InitParameterConfiguringServletContextInitializer(
-			Map<String, String> parameters) {
+	public InitParameterConfiguringServletContextInitializer(Map<String, String> parameters) {
 		this.parameters = parameters;
 	}
 

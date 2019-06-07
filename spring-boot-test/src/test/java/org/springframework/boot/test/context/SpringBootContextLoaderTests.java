@@ -74,8 +74,7 @@ public class SpringBootContextLoaderTests {
 
 	@Test
 	public void environmentPropertiesAnotherSeparatorInValue() throws Exception {
-		Map<String, Object> config = getEnvironmentProperties(
-				AnotherSeparatorInValue.class);
+		Map<String, Object> config = getEnvironmentProperties(AnotherSeparatorInValue.class);
 		assertKey(config, "key", "my:Value");
 		assertKey(config, "anotherKey", "another=Value");
 	}
@@ -89,14 +88,11 @@ public class SpringBootContextLoaderTests {
 		assertKey(config, "variables", "foo=FOO\n bar=BAR");
 	}
 
-	private Map<String, Object> getEnvironmentProperties(Class<?> testClass)
-			throws Exception {
-		TestContext context = new ExposedTestContextManager(testClass)
-				.getExposedTestContext();
-		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils
-				.getField(context, "mergedContextConfiguration");
-		return TestPropertySourceUtils
-				.convertInlinedPropertiesToMap(config.getPropertySourceProperties());
+	private Map<String, Object> getEnvironmentProperties(Class<?> testClass) throws Exception {
+		TestContext context = new ExposedTestContextManager(testClass).getExposedTestContext();
+		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils.getField(context,
+				"mergedContextConfiguration");
+		return TestPropertySourceUtils.convertInlinedPropertiesToMap(config.getPropertySourceProperties());
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {

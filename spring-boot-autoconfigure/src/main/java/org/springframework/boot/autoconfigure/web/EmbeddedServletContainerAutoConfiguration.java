@@ -71,8 +71,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedTomcat {
 
 		@Bean
@@ -86,10 +85,8 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * Nested configuration if Jetty is being used.
 	 */
 	@Configuration
-	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class,
-			WebAppContext.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class, WebAppContext.class })
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedJetty {
 
 		@Bean
@@ -104,8 +101,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedUndertow {
 
 		@Bean
@@ -119,8 +115,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * Registers a {@link EmbeddedServletContainerCustomizerBeanPostProcessor}. Registered
 	 * via {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
-	public static class BeanPostProcessorsRegistrar
-			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+	public static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 		private ConfigurableListableBeanFactory beanFactory;
 
@@ -137,18 +132,14 @@ public class EmbeddedServletContainerAutoConfiguration {
 			if (this.beanFactory == null) {
 				return;
 			}
-			registerSyntheticBeanIfMissing(registry,
-					"embeddedServletContainerCustomizerBeanPostProcessor",
+			registerSyntheticBeanIfMissing(registry, "embeddedServletContainerCustomizerBeanPostProcessor",
 					EmbeddedServletContainerCustomizerBeanPostProcessor.class);
-			registerSyntheticBeanIfMissing(registry,
-					"errorPageRegistrarBeanPostProcessor",
+			registerSyntheticBeanIfMissing(registry, "errorPageRegistrarBeanPostProcessor",
 					ErrorPageRegistrarBeanPostProcessor.class);
 		}
 
-		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry,
-				String name, Class<?> beanClass) {
-			if (ObjectUtils.isEmpty(
-					this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
+		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name, Class<?> beanClass) {
+			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(name, beanDefinition);

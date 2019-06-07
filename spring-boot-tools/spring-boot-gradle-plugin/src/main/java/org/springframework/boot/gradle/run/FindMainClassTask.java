@@ -60,15 +60,14 @@ public class FindMainClassTask extends DefaultTask {
 	@TaskAction
 	public void setMainClassNameProperty() {
 		Project project = getProject();
-		if (!project.hasProperty("mainClassName")
-				|| project.property("mainClassName") == null) {
+		if (!project.hasProperty("mainClassName") || project.property("mainClassName") == null) {
 			String mainClass = findMainClass();
 			if (project.hasProperty("mainClassName")) {
 				project.setProperty("mainClassName", mainClass);
 			}
 			else {
-				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) project
-						.getExtensions().getByName("ext");
+				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) project.getExtensions()
+						.getByName("ext");
 				extraProperties.set("mainClassName", mainClass);
 			}
 		}
@@ -80,14 +79,13 @@ public class FindMainClassTask extends DefaultTask {
 		String mainClass = null;
 
 		// Try the SpringBoot extension setting
-		SpringBootPluginExtension bootExtension = project.getExtensions()
-				.getByType(SpringBootPluginExtension.class);
+		SpringBootPluginExtension bootExtension = project.getExtensions().getByType(SpringBootPluginExtension.class);
 		if (bootExtension.getMainClass() != null) {
 			mainClass = bootExtension.getMainClass();
 		}
 
-		ApplicationPluginConvention application = (ApplicationPluginConvention) project
-				.getConvention().getPlugins().get("application");
+		ApplicationPluginConvention application = (ApplicationPluginConvention) project.getConvention().getPlugins()
+				.get("application");
 
 		if (mainClass == null && application != null) {
 			// Try the Application extension setting
@@ -109,12 +107,10 @@ public class FindMainClassTask extends DefaultTask {
 		if (mainClass == null) {
 			// Search
 			if (this.mainClassSourceSetOutput != null) {
-				Collection<File> classesDirs = getClassesDirs(
-						this.mainClassSourceSetOutput);
+				Collection<File> classesDirs = getClassesDirs(this.mainClassSourceSetOutput);
 				getProject().getLogger().debug("Looking for main in: " + classesDirs);
 				try {
-					mainClass = MainClassFinder.findSingleMainClass(classesDirs,
-							SPRING_BOOT_APPLICATION_CLASS_NAME);
+					mainClass = MainClassFinder.findSingleMainClass(classesDirs, SPRING_BOOT_APPLICATION_CLASS_NAME);
 					getProject().getLogger().info("Computed main class: " + mainClass);
 				}
 				catch (IOException ex) {
@@ -139,13 +135,11 @@ public class FindMainClassTask extends DefaultTask {
 	}
 
 	private Collection<File> getClassesDirs(SourceSetOutput sourceSetOutput) {
-		Method getClassesDirs = ReflectionUtils.findMethod(SourceSetOutput.class,
-				"getClassesDirs");
+		Method getClassesDirs = ReflectionUtils.findMethod(SourceSetOutput.class, "getClassesDirs");
 		if (getClassesDirs == null) {
 			return Arrays.asList(sourceSetOutput.getClassesDir());
 		}
-		FileCollection classesDirs = (FileCollection) ReflectionUtils
-				.invokeMethod(getClassesDirs, sourceSetOutput);
+		FileCollection classesDirs = (FileCollection) ReflectionUtils.invokeMethod(getClassesDirs, sourceSetOutput);
 		return classesDirs.getFiles();
 	}
 

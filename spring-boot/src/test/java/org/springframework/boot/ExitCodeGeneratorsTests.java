@@ -85,8 +85,7 @@ public class ExitCodeGeneratorsTests {
 	}
 
 	@Test
-	public void getExitCodeWhenUsingExitCodeExceptionMapperShouldCallMapper()
-			throws Exception {
+	public void getExitCodeWhenUsingExitCodeExceptionMapperShouldCallMapper() throws Exception {
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		Exception e = new IOException();
 		generators.add(e, mockMapper(IllegalStateException.class, 1));
@@ -101,8 +100,7 @@ public class ExitCodeGeneratorsTests {
 		return generator;
 	}
 
-	private ExitCodeExceptionMapper mockMapper(final Class<?> exceptionType,
-			final int exitCode) {
+	private ExitCodeExceptionMapper mockMapper(final Class<?> exceptionType, final int exitCode) {
 		return new ExitCodeExceptionMapper() {
 
 			@Override

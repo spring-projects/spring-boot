@@ -48,8 +48,7 @@ public class ApplicationContextHeaderFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		response.addHeader(HEADER_NAME, this.applicationContext.getId());
 		filterChain.doFilter(request, response);

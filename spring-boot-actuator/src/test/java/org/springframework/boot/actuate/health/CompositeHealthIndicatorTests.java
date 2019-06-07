@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,9 @@ public class CompositeHealthIndicatorTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.one.health())
-				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
-		given(this.two.health())
-				.willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
-		given(this.three.health())
-				.willReturn(new Health.Builder().unknown().withDetail("3", "3").build());
+		given(this.one.health()).willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
+		given(this.two.health()).willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
+		given(this.three.health()).willReturn(new Health.Builder().unknown().withDetail("3", "3").build());
 
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
@@ -66,8 +63,7 @@ public class CompositeHealthIndicatorTests {
 		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator, indicators);
 		Health result = composite.health();
 		assertThat(result.getDetails()).hasSize(2);
 		assertThat(result.getDetails()).containsEntry("one",
@@ -81,8 +77,7 @@ public class CompositeHealthIndicatorTests {
 		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator, indicators);
 		composite.addHealthIndicator("three", this.three);
 		Health result = composite.health();
 		assertThat(result.getDetails()).hasSize(3);
@@ -96,8 +91,7 @@ public class CompositeHealthIndicatorTests {
 
 	@Test
 	public void createWithoutAndAdd() throws Exception {
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator);
 		composite.addHealthIndicator("one", this.one);
 		composite.addHealthIndicator("two", this.two);
 		Health result = composite.health();
@@ -113,17 +107,13 @@ public class CompositeHealthIndicatorTests {
 		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);
-		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator);
+		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(this.healthAggregator, indicators);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator);
 		composite.addHealthIndicator("db", innerComposite);
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
-		assertThat(mapper.writeValueAsString(result))
-				.isEqualTo("{\"status\":\"UNKNOWN\",\"db\":{\"status\":\"UNKNOWN\""
-						+ ",\"db1\":{\"status\":\"UNKNOWN\",\"1\":\"1\"},"
-						+ "\"db2\":{\"status\":\"UNKNOWN\",\"2\":\"2\"}}}");
+		assertThat(mapper.writeValueAsString(result)).isEqualTo("{\"status\":\"UNKNOWN\",\"db\":{\"status\":\"UNKNOWN\""
+				+ ",\"db1\":{\"status\":\"UNKNOWN\",\"1\":\"1\"}," + "\"db2\":{\"status\":\"UNKNOWN\",\"2\":\"2\"}}}");
 	}
 
 }

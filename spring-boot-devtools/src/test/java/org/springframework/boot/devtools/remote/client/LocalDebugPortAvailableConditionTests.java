@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,25 +47,21 @@ public class LocalDebugPortAvailableConditionTests {
 	public void portAvailable() throws Exception {
 		ConditionOutcome outcome = getOutcome();
 		assertThat(outcome.isMatch()).isTrue();
-		assertThat(outcome.getMessage())
-				.isEqualTo("Local Debug Port Condition found local debug port");
+		assertThat(outcome.getMessage()).isEqualTo("Local Debug Port Condition found local debug port");
 	}
 
 	@Test
 	public void portInUse() throws Exception {
-		final ServerSocket serverSocket = ServerSocketFactory.getDefault()
-				.createServerSocket(this.port);
+		final ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(this.port);
 		ConditionOutcome outcome = getOutcome();
 		serverSocket.close();
 		assertThat(outcome.isMatch()).isFalse();
-		assertThat(outcome.getMessage())
-				.isEqualTo("Local Debug Port Condition did not find local debug port");
+		assertThat(outcome.getMessage()).isEqualTo("Local Debug Port Condition did not find local debug port");
 	}
 
 	private ConditionOutcome getOutcome() {
 		MockEnvironment environment = new MockEnvironment();
-		EnvironmentTestUtils.addEnvironment(environment,
-				"spring.devtools.remote.debug.local-port:" + this.port);
+		EnvironmentTestUtils.addEnvironment(environment, "spring.devtools.remote.debug.local-port:" + this.port);
 		ConditionContext context = mock(ConditionContext.class);
 		given(context.getEnvironment()).willReturn(environment);
 		ConditionOutcome outcome = this.condition.getMatchOutcome(context, null);

@@ -50,8 +50,7 @@ public class ServletPathInsecureSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -62,8 +61,7 @@ public class ServletPathInsecureSampleActuatorApplicationTests {
 	@Test
 	public void testMetricsIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/metrics",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 

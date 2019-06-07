@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,13 +64,11 @@ public class BufferGaugeServiceSpeedTests {
 
 	private GaugeService service = new BufferGaugeService(this.gauges);
 
-	private BufferMetricReader reader = new BufferMetricReader(new CounterBuffers(),
-			this.gauges);
+	private BufferMetricReader reader = new BufferMetricReader(new CounterBuffers(), this.gauges);
 
 	private static int threadCount = 2;
 
-	private static final int number = (Boolean.getBoolean("performance.test") ? 10000000
-			: 1000000);
+	private static final int number = (Boolean.getBoolean("performance.test") ? 10000000 : 1000000);
 
 	private static StopWatch watch = new StopWatch("count");
 
@@ -99,22 +97,20 @@ public class BufferGaugeServiceSpeedTests {
 		System.err.println("Rate(" + count + ")=" + rate + ", " + watch);
 		watch.start("readRaw" + count);
 		for (String name : names) {
-			this.gauges.forEach(Pattern.compile(name).asPredicate(),
-					new BiConsumer<String, GaugeBuffer>() {
-						@Override
-						public void accept(String name, GaugeBuffer value) {
-							err.println(name + "=" + value);
-						}
-					});
+			this.gauges.forEach(Pattern.compile(name).asPredicate(), new BiConsumer<String, GaugeBuffer>() {
+				@Override
+				public void accept(String name, GaugeBuffer value) {
+					err.println(name + "=" + value);
+				}
+			});
 		}
 		final DoubleAdder total = new DoubleAdder();
-		this.gauges.forEach(Pattern.compile(".*").asPredicate(),
-				new BiConsumer<String, GaugeBuffer>() {
-					@Override
-					public void accept(String name, GaugeBuffer value) {
-						total.add(value.getValue());
-					}
-				});
+		this.gauges.forEach(Pattern.compile(".*").asPredicate(), new BiConsumer<String, GaugeBuffer>() {
+			@Override
+			public void accept(String name, GaugeBuffer value) {
+				total.add(value.getValue());
+			}
+		});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
 		assertThat(number * threadCount < total.longValue()).isTrue();

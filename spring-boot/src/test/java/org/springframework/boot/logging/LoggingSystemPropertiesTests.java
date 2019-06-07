@@ -58,40 +58,33 @@ public class LoggingSystemPropertiesTests {
 
 	@Test
 	public void consoleLogPatternIsSet() {
-		new LoggingSystemProperties(new MockEnvironment()
-				.withProperty("logging.pattern.console", "console pattern")).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
-				.isEqualTo("console pattern");
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.console", "console pattern"))
+				.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).isEqualTo("console pattern");
 	}
 
 	@Test
 	public void fileLogPatternIsSet() {
-		new LoggingSystemProperties(new MockEnvironment()
-				.withProperty("logging.pattern.file", "file pattern")).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN))
-				.isEqualTo("file pattern");
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.file", "file pattern"))
+				.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).isEqualTo("file pattern");
 	}
 
 	@Test
 	public void consoleLogPatternCanReferencePid() {
-		new LoggingSystemProperties(
-				environment("logging.pattern.console", "${PID:unknown}")).apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
-				.matches("[0-9]+");
+		new LoggingSystemProperties(environment("logging.pattern.console", "${PID:unknown}")).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).matches("[0-9]+");
 	}
 
 	@Test
 	public void fileLogPatternCanReferencePid() {
-		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}"))
-				.apply(null);
-		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN))
-				.matches("[0-9]+");
+		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}")).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).matches("[0-9]+");
 	}
 
 	private Environment environment(String key, Object value) {
 		StandardEnvironment environment = new StandardEnvironment();
-		environment.getPropertySources().addLast(
-				new MapPropertySource("test", Collections.singletonMap(key, value)));
+		environment.getPropertySources().addLast(new MapPropertySource("test", Collections.singletonMap(key, value)));
 		return environment;
 	}
 

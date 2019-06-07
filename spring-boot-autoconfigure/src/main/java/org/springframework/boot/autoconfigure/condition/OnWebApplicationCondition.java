@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,8 @@ class OnWebApplicationCondition extends SpringBootCondition {
 			+ "support.GenericWebApplicationContext";
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		boolean required = metadata
-				.isAnnotated(ConditionalOnWebApplication.class.getName());
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		boolean required = metadata.isAnnotated(ConditionalOnWebApplication.class.getName());
 		ConditionOutcome outcome = isWebApplication(context, metadata, required);
 		if (required && !outcome.isMatch()) {
 			return ConditionOutcome.noMatch(outcome.getConditionMessage());
@@ -55,13 +53,12 @@ class OnWebApplicationCondition extends SpringBootCondition {
 		return ConditionOutcome.match(outcome.getConditionMessage());
 	}
 
-	private ConditionOutcome isWebApplication(ConditionContext context,
-			AnnotatedTypeMetadata metadata, boolean required) {
-		ConditionMessage.Builder message = ConditionMessage.forCondition(
-				ConditionalOnWebApplication.class, required ? "(required)" : "");
+	private ConditionOutcome isWebApplication(ConditionContext context, AnnotatedTypeMetadata metadata,
+			boolean required) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnWebApplication.class,
+				required ? "(required)" : "");
 		if (!ClassUtils.isPresent(WEB_CONTEXT_CLASS, context.getClassLoader())) {
-			return ConditionOutcome
-					.noMatch(message.didNotFind("web application classes").atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("web application classes").atAll());
 		}
 		if (context.getBeanFactory() != null) {
 			String[] scopes = context.getBeanFactory().getRegisteredScopeNames();
@@ -70,8 +67,7 @@ class OnWebApplicationCondition extends SpringBootCondition {
 			}
 		}
 		if (context.getEnvironment() instanceof StandardServletEnvironment) {
-			return ConditionOutcome
-					.match(message.foundExactly("StandardServletEnvironment"));
+			return ConditionOutcome.match(message.foundExactly("StandardServletEnvironment"));
 		}
 		if (context.getResourceLoader() instanceof WebApplicationContext) {
 			return ConditionOutcome.match(message.foundExactly("WebApplicationContext"));

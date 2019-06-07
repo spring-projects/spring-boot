@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,9 @@ import org.springframework.web.servlet.ModelAndView;
  * @see ErrorAttributes
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class DefaultErrorAttributes
-		implements ErrorAttributes, HandlerExceptionResolver, Ordered {
+public class DefaultErrorAttributes implements ErrorAttributes, HandlerExceptionResolver, Ordered {
 
-	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName()
-			+ ".ERROR";
+	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
 	@Override
 	public int getOrder() {
@@ -70,8 +68,8 @@ public class DefaultErrorAttributes
 	}
 
 	@Override
-	public ModelAndView resolveException(HttpServletRequest request,
-			HttpServletResponse response, Object handler, Exception ex) {
+	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Exception ex) {
 		storeErrorAttributes(request, ex);
 		return null;
 	}
@@ -81,8 +79,7 @@ public class DefaultErrorAttributes
 	}
 
 	@Override
-	public Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes,
-			boolean includeStackTrace) {
+	public Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<String, Object>();
 		errorAttributes.put("timestamp", new Date());
 		addStatus(errorAttributes, requestAttributes);
@@ -91,10 +88,8 @@ public class DefaultErrorAttributes
 		return errorAttributes;
 	}
 
-	private void addStatus(Map<String, Object> errorAttributes,
-			RequestAttributes requestAttributes) {
-		Integer status = getAttribute(requestAttributes,
-				"javax.servlet.error.status_code");
+	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
+		Integer status = getAttribute(requestAttributes, "javax.servlet.error.status_code");
 		if (status == null) {
 			errorAttributes.put("status", 999);
 			errorAttributes.put("error", "None");
@@ -110,8 +105,8 @@ public class DefaultErrorAttributes
 		}
 	}
 
-	private void addErrorDetails(Map<String, Object> errorAttributes,
-			RequestAttributes requestAttributes, boolean includeStackTrace) {
+	private void addErrorDetails(Map<String, Object> errorAttributes, RequestAttributes requestAttributes,
+			boolean includeStackTrace) {
 		Throwable error = getError(requestAttributes);
 		if (error != null) {
 			while (error instanceof ServletException && error.getCause() != null) {
@@ -126,8 +121,7 @@ public class DefaultErrorAttributes
 		Object message = getAttribute(requestAttributes, "javax.servlet.error.message");
 		if ((!StringUtils.isEmpty(message) || errorAttributes.get("message") == null)
 				&& !(error instanceof BindingResult)) {
-			errorAttributes.put("message",
-					StringUtils.isEmpty(message) ? "No message available" : message);
+			errorAttributes.put("message", StringUtils.isEmpty(message) ? "No message available" : message);
 		}
 	}
 
@@ -139,9 +133,8 @@ public class DefaultErrorAttributes
 		}
 		if (result.getErrorCount() > 0) {
 			errorAttributes.put("errors", result.getAllErrors());
-			errorAttributes.put("message",
-					"Validation failed for object='" + result.getObjectName()
-							+ "'. Error count: " + result.getErrorCount());
+			errorAttributes.put("message", "Validation failed for object='" + result.getObjectName()
+					+ "'. Error count: " + result.getErrorCount());
 		}
 		else {
 			errorAttributes.put("message", "No errors");
@@ -165,8 +158,7 @@ public class DefaultErrorAttributes
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void addPath(Map<String, Object> errorAttributes,
-			RequestAttributes requestAttributes) {
+	private void addPath(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
 		String path = getAttribute(requestAttributes, "javax.servlet.error.request_uri");
 		if (path != null) {
 			errorAttributes.put("path", path);

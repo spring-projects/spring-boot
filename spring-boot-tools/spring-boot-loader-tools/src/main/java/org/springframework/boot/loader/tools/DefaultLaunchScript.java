@@ -41,8 +41,7 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final int BUFFER_SIZE = 4096;
 
-	private static final Pattern PLACEHOLDER_PATTERN = Pattern
-			.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
+	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
 	private final String content;
 
@@ -75,8 +74,7 @@ public class DefaultLaunchScript implements LaunchScript {
 		}
 	}
 
-	private void copy(InputStream inputStream, OutputStream outputStream)
-			throws IOException {
+	private void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
 		int bytesRead;
 		while ((bytesRead = inputStream.read(buffer)) != -1) {

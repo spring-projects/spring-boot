@@ -62,18 +62,15 @@ public class SpringPhysicalNamingStrategyTests {
 
 	@Test
 	public void tableNameShouldBeLowercaseUnderscore() throws Exception {
-		PersistentClass binding = this.metadata
-				.getEntityBinding(TelephoneNumber.class.getName());
+		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("telephone_number");
 	}
 
 	@Test
 	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() throws Exception {
 		this.metadata = this.metadataSources.getMetadataBuilder(this.serviceRegistry)
-				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy())
-				.build();
-		PersistentClass binding = this.metadata
-				.getEntityBinding(TelephoneNumber.class.getName());
+				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy()).build();
+		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("Telephone_Number");
 	}
 

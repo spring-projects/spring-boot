@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		this(redisConnectionFactory, DEFAULT_METRICS_PREFIX);
 	}
 
-	public RedisMultiMetricRepository(RedisConnectionFactory redisConnectionFactory,
-			String prefix) {
+	public RedisMultiMetricRepository(RedisConnectionFactory redisConnectionFactory, String prefix) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		if (!prefix.endsWith(".")) {
@@ -70,8 +69,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	@Override
 	public Iterable<Metric<?>> findAll(String group) {
 
-		BoundZSetOperations<String, String> zSetOperations = this.redisOperations
-				.boundZSetOps(keyFor(group));
+		BoundZSetOperations<String, String> zSetOperations = this.redisOperations.boundZSetOps(keyFor(group));
 
 		Set<String> keys = zSetOperations.range(0, -1);
 		Iterator<String> keysIt = keys.iterator();
@@ -90,8 +88,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	public void set(String group, Collection<Metric<?>> values) {
 		String groupKey = keyFor(group);
 		trackMembership(groupKey);
-		BoundZSetOperations<String, String> zSetOperations = this.redisOperations
-				.boundZSetOps(groupKey);
+		BoundZSetOperations<String, String> zSetOperations = this.redisOperations.boundZSetOps(groupKey);
 		for (Metric<?> metric : values) {
 			String raw = serialize(metric);
 			String key = keyFor(metric.getName());
@@ -104,12 +101,10 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	public void increment(String group, Delta<?> delta) {
 		String groupKey = keyFor(group);
 		trackMembership(groupKey);
-		BoundZSetOperations<String, String> zSetOperations = this.redisOperations
-				.boundZSetOps(groupKey);
+		BoundZSetOperations<String, String> zSetOperations = this.redisOperations.boundZSetOps(groupKey);
 		String key = keyFor(delta.getName());
 		double value = zSetOperations.incrementScore(key, delta.getValue().doubleValue());
-		String raw = serialize(
-				new Metric<Double>(delta.getName(), value, delta.getTimestamp()));
+		String raw = serialize(new Metric<Double>(delta.getName(), value, delta.getTimestamp()));
 		this.redisOperations.opsForValue().set(key, raw);
 	}
 
@@ -132,8 +127,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	public void reset(String group) {
 		String groupKey = keyFor(group);
 		if (this.redisOperations.hasKey(groupKey)) {
-			BoundZSetOperations<String, String> zSetOperations = this.redisOperations
-					.boundZSetOps(groupKey);
+			BoundZSetOperations<String, String> zSetOperations = this.redisOperations.boundZSetOps(groupKey);
 			Set<String> keys = zSetOperations.range(0, -1);
 			for (String key : keys) {
 				this.redisOperations.delete(key);

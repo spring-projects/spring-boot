@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,8 +100,7 @@ public class CliTester implements TestRule {
 		return getOutput();
 	}
 
-	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command,
-			String... args) {
+	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command, String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
 		return Executors.newSingleThreadExecutor().submit(new Callable<T>() {
@@ -161,16 +160,13 @@ public class CliTester implements TestRule {
 
 	@Override
 	public Statement apply(final Statement base, final Description description) {
-		final Statement statement = CliTester.this.outputCapture
-				.apply(new RunLauncherStatement(base), description);
+		final Statement statement = CliTester.this.outputCapture.apply(new RunLauncherStatement(base), description);
 		return new Statement() {
 
 			@Override
 			public void evaluate() throws Throwable {
-				Assume.assumeTrue(
-						"Not running sample integration tests because integration profile not active",
-						System.getProperty("spring.profiles.active", "integration")
-								.contains("integration"));
+				Assume.assumeTrue("Not running sample integration tests because integration profile not active",
+						System.getProperty("spring.profiles.active", "integration").contains("integration"));
 				statement.evaluate();
 			}
 		};
@@ -182,8 +178,7 @@ public class CliTester implements TestRule {
 
 	public String getHttpOutput(String uri) {
 		try {
-			InputStream stream = URI.create("http://localhost:" + this.port + uri).toURL()
-					.openStream();
+			InputStream stream = URI.create("http://localhost:" + this.port + uri).toURL().openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
 			StringBuilder result = new StringBuilder();

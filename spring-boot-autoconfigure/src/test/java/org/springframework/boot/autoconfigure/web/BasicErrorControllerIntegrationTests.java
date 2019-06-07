@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,10 +76,9 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClient() throws Exception {
 		load();
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
-				IllegalStateException.class, "Expected!", "/");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
+				"Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isFalse();
 	}
 
@@ -87,10 +86,9 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientTraceParamStacktrace() throws Exception {
 		load("--server.error.include-stacktrace=on-trace-param");
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
-				IllegalStateException.class, "Expected!", "/");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
+				"Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isTrue();
 	}
 
@@ -98,10 +96,9 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientNoStacktrace() throws Exception {
 		load("--server.error.include-stacktrace=never");
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
-				IllegalStateException.class, "Expected!", "/");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
+				"Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isFalse();
 	}
 
@@ -109,10 +106,9 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientAlwaysStacktrace() throws Exception {
 		load("--server.error.include-stacktrace=always");
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("?trace=false"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
-				IllegalStateException.class, "Expected!", "/");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=false"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
+				"Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isTrue();
 	}
 
@@ -120,30 +116,26 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedException() throws Exception {
 		load();
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("/annotated"), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request",
-				TestConfiguration.Errors.ExpectedException.class, "Expected!",
-				"/annotated");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
+				"Expected!", "/annotated");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedNoReasonException() throws Exception {
 		load();
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("/annotatedNoReason"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
-				TestConfiguration.Errors.NoReasonExpectedException.class,
-				"Expected message", "/annotatedNoReason");
+				TestConfiguration.Errors.NoReasonExpectedException.class, "Expected message", "/annotatedNoReason");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testBindingExceptionForMachineClient() throws Exception {
 		load();
-		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind")))
-				.accept(MediaType.APPLICATION_JSON).build();
+		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind"))).accept(MediaType.APPLICATION_JSON)
+				.build();
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
 		assertThat(resp).contains("Error count: 1");
@@ -156,8 +148,7 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testRequestBodyValidationForMachineClient() throws Exception {
 		load();
-		RequestEntity request = RequestEntity
-				.post(URI.create(createUrl("/bodyValidation")))
+		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
 				.contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
@@ -170,27 +161,24 @@ public class BasicErrorControllerIntegrationTests {
 	@Test
 	public void testConventionTemplateMapping() throws Exception {
 		load();
-		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage")))
-				.accept(MediaType.TEXT_HTML).build();
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(request,
-				String.class);
+		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage"))).accept(MediaType.TEXT_HTML)
+				.build();
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(request, String.class);
 		String resp = entity.getBody();
 		assertThat(resp).contains("We are out of storage");
 	}
 
-	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
-			Class<?> exception, String message, String path) {
+	private void assertErrorAttributes(Map<?, ?> content, String status, String error, Class<?> exception,
+			String message, String path) {
 		assertThat(content.get("status")).as("Wrong status").isEqualTo(status);
 		assertThat(content.get("error")).as("Wrong error").isEqualTo(error);
-		assertThat(content.get("exception")).as("Wrong exception")
-				.isEqualTo(exception.getName());
+		assertThat(content.get("exception")).as("Wrong exception").isEqualTo(exception.getName());
 		assertThat(content.get("message")).as("Wrong message").isEqualTo(message);
 		assertThat(content.get("path")).as("Wrong path").isEqualTo(path);
 	}
 
 	private String createUrl(String path) {
-		int port = this.context.getEnvironment().getProperty("local.server.port",
-				int.class);
+		int port = this.context.getEnvironment().getProperty("local.server.port", int.class);
 		return "http://localhost:" + port + path;
 	}
 
@@ -200,8 +188,7 @@ public class BasicErrorControllerIntegrationTests {
 		if (arguments != null) {
 			args.addAll(Arrays.asList(arguments));
 		}
-		this.context = SpringApplication.run(TestConfiguration.class,
-				args.toArray(new String[args.size()]));
+		this.context = SpringApplication.run(TestConfiguration.class, args.toArray(new String[args.size()]));
 	}
 
 	@Configuration
@@ -218,9 +205,8 @@ public class BasicErrorControllerIntegrationTests {
 		public View error() {
 			return new AbstractView() {
 				@Override
-				protected void renderMergedOutputModel(Map<String, Object> model,
-						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+				protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
+						HttpServletResponse response) throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};

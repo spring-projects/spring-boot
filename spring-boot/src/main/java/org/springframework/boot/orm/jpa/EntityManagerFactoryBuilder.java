@@ -63,8 +63,8 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 */
-	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager) {
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
+			PersistenceUnitManager persistenceUnitManager) {
 		this(jpaVendorAdapter, jpaProperties, persistenceUnitManager, null);
 	}
 
@@ -79,9 +79,8 @@ public class EntityManagerFactoryBuilder {
 	 * fallback (can be null)
 	 * @since 1.4.1
 	 */
-	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager,
-			URL persistenceUnitRootLocation) {
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
+			PersistenceUnitManager persistenceUnitManager, URL persistenceUnitRootLocation) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaProperties = new LinkedHashMap<String, Object>(jpaProperties);
@@ -184,14 +183,13 @@ public class EntityManagerFactoryBuilder {
 		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
-				entityManagerFactoryBean.setPersistenceUnitManager(
-						EntityManagerFactoryBuilder.this.persistenceUnitManager);
+				entityManagerFactoryBean
+						.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
 			}
 			if (this.persistenceUnit != null) {
 				entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
 			}
-			entityManagerFactoryBean.setJpaVendorAdapter(
-					EntityManagerFactoryBuilder.this.jpaVendorAdapter);
+			entityManagerFactoryBean.setJpaVendorAdapter(EntityManagerFactoryBuilder.this.jpaVendorAdapter);
 
 			if (this.jta) {
 				entityManagerFactoryBean.setJtaDataSource(this.dataSource);
@@ -200,17 +198,14 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean.setDataSource(this.dataSource);
 			}
 			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
-			entityManagerFactoryBean.getJpaPropertyMap()
-					.putAll(EntityManagerFactoryBuilder.this.jpaProperties);
+			entityManagerFactoryBean.getJpaPropertyMap().putAll(EntityManagerFactoryBuilder.this.jpaProperties);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
 			URL rootLocation = EntityManagerFactoryBuilder.this.persistenceUnitRootLocation;
 			if (rootLocation != null) {
-				entityManagerFactoryBean
-						.setPersistenceUnitRootLocation(rootLocation.toString());
+				entityManagerFactoryBean.setPersistenceUnitRootLocation(rootLocation.toString());
 			}
 			if (EntityManagerFactoryBuilder.this.callback != null) {
-				EntityManagerFactoryBuilder.this.callback
-						.execute(entityManagerFactoryBean);
+				EntityManagerFactoryBuilder.this.callback.execute(entityManagerFactoryBean);
 			}
 			return entityManagerFactoryBean;
 		}

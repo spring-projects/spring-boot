@@ -42,16 +42,14 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 
 	static {
 		Set<String> fallbacks = new LinkedHashSet<String>();
-		fallbacks.add("org.hibernate.validator.messageinterpolation"
-				+ ".ParameterMessageInterpolator");
+		fallbacks.add("org.hibernate.validator.messageinterpolation" + ".ParameterMessageInterpolator");
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
 	}
 
 	@Override
 	public MessageInterpolator getObject() throws BeansException {
 		try {
-			return Validation.byDefaultProvider().configure()
-					.getDefaultMessageInterpolator();
+			return Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();
 		}
 		catch (ValidationException ex) {
 			MessageInterpolator fallback = getFallback();

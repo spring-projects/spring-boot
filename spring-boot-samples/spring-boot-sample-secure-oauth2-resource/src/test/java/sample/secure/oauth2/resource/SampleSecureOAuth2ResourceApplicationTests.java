@@ -56,29 +56,26 @@ public class SampleSecureOAuth2ResourceApplicationTests {
 
 	@Before
 	public void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(this.filterChain).build();
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(this.filterChain).build();
 		SecurityContextHolder.clearContext();
 	}
 
 	@Test
 	public void homePageAvailable() throws Exception {
-		this.mvc.perform(get("/").accept(MediaTypes.HAL_JSON)).andExpect(status().isOk())
-				.andDo(print());
+		this.mvc.perform(get("/").accept(MediaTypes.HAL_JSON)).andExpect(status().isOk()).andDo(print());
 	}
 
 	@Test
 	public void flightsSecuredByDefault() throws Exception {
-		this.mvc.perform(get("/flights").accept(MediaTypes.HAL_JSON))
-				.andExpect(status().isUnauthorized()).andDo(print());
-		this.mvc.perform(get("/flights/1").accept(MediaTypes.HAL_JSON))
-				.andExpect(status().isUnauthorized()).andDo(print());
+		this.mvc.perform(get("/flights").accept(MediaTypes.HAL_JSON)).andExpect(status().isUnauthorized())
+				.andDo(print());
+		this.mvc.perform(get("/flights/1").accept(MediaTypes.HAL_JSON)).andExpect(status().isUnauthorized())
+				.andDo(print());
 	}
 
 	@Test
 	public void profileAvailable() throws Exception {
-		this.mvc.perform(get("/profile").accept(MediaTypes.HAL_JSON))
-				.andExpect(status().isOk()).andDo(print());
+		this.mvc.perform(get("/profile").accept(MediaTypes.HAL_JSON)).andExpect(status().isOk()).andDo(print());
 	}
 
 }

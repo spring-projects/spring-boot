@@ -60,8 +60,8 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		if (this.verification.isVerifying()) {
 			this.verification.replaceVerifyMock(this.source, this.target);
-			return AopUtils.invokeJoinpointUsingReflection(this.target,
-					invocation.getMethod(), invocation.getArguments());
+			return AopUtils.invokeJoinpointUsingReflection(this.target, invocation.getMethod(),
+					invocation.getArguments());
 		}
 		return invocation.proceed();
 	}
@@ -113,8 +113,7 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 					if (mode instanceof MockAwareVerificationMode) {
 						MockAwareVerificationMode mockAwareMode = (MockAwareVerificationMode) mode;
 						if (mockAwareMode.getMock() == source) {
-							mode = MockitoApi.get().createMockAwareVerificationMode(
-									target, mockAwareMode);
+							mode = MockitoApi.get().createMockAwareVerificationMode(target, mockAwareMode);
 						}
 					}
 					resetVerificationStarted(mode);

@@ -42,8 +42,7 @@ public abstract class EnvironmentTestUtils {
 	 * @param context the context with an environment to modify
 	 * @param pairs the name:value pairs
 	 */
-	public static void addEnvironment(ConfigurableApplicationContext context,
-			String... pairs) {
+	public static void addEnvironment(ConfigurableApplicationContext context, String... pairs) {
 		addEnvironment(context.getEnvironment(), pairs);
 	}
 
@@ -53,8 +52,7 @@ public abstract class EnvironmentTestUtils {
 	 * @param environment the environment to modify
 	 * @param pairs the name:value pairs
 	 */
-	public static void addEnvironment(ConfigurableEnvironment environment,
-			String... pairs) {
+	public static void addEnvironment(ConfigurableEnvironment environment, String... pairs) {
 		addEnvironment("test", environment, pairs);
 	}
 
@@ -65,8 +63,7 @@ public abstract class EnvironmentTestUtils {
 	 * @param name the property source name
 	 * @param pairs the name:value pairs
 	 */
-	public static void addEnvironment(String name, ConfigurableEnvironment environment,
-			String... pairs) {
+	public static void addEnvironment(String name, ConfigurableEnvironment environment, String... pairs) {
 		MutablePropertySources sources = environment.getPropertySources();
 		Map<String, Object> map = getOrAdd(sources, name);
 		for (String pair : pairs) {
@@ -78,8 +75,7 @@ public abstract class EnvironmentTestUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, Object> getOrAdd(MutablePropertySources sources,
-			String name) {
+	private static Map<String, Object> getOrAdd(MutablePropertySources sources, String name) {
 		if (sources.contains(name)) {
 			return (Map<String, Object>) sources.get(name).getSource();
 		}

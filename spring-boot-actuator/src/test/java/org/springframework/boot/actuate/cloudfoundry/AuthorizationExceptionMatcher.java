@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,12 @@ final class AuthorizationExceptionMatcher {
 	}
 
 	static Matcher<?> withReason(final Reason reason) {
-		return new CustomMatcher<Object>(
-				"CloudFoundryAuthorizationException with " + reason + " reason") {
+		return new CustomMatcher<Object>("CloudFoundryAuthorizationException with " + reason + " reason") {
 
 			@Override
 			public boolean matches(Object object) {
 				return ((object instanceof CloudFoundryAuthorizationException)
-						&& ((CloudFoundryAuthorizationException) object)
-								.getReason() == reason);
+						&& ((CloudFoundryAuthorizationException) object).getReason() == reason);
 			}
 
 		};

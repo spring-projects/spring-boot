@@ -48,8 +48,7 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 	static ApplicationContext contextFromTest;
 
 	@Test
-	public void testClassesThatHaveSameAnnotationsShareAContext()
-			throws InitializationError {
+	public void testClassesThatHaveSameAnnotationsShareAContext() throws InitializationError {
 		RunNotifier notifier = new RunNotifier();
 		new SpringJUnit4ClassRunner(DataJpaTest1.class).run(notifier);
 		ApplicationContext test1Context = contextFromTest;
@@ -59,8 +58,7 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 	}
 
 	@Test
-	public void testClassesThatOnlyHaveDifferingUnrelatedAnnotationsShareAContext()
-			throws InitializationError {
+	public void testClassesThatOnlyHaveDifferingUnrelatedAnnotationsShareAContext() throws InitializationError {
 		RunNotifier notifier = new RunNotifier();
 		new SpringJUnit4ClassRunner(DataJpaTest1.class).run(notifier);
 		ApplicationContext test1Context = contextFromTest;

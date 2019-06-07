@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,26 +60,22 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class))
-				.isNotNull();
+		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class)).isNotNull();
 	}
 
 	@Test
 	public void sitePreferenceHandlerInterceptorEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mobile.sitepreference.enabled:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class))
-				.isNotNull();
+		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceHandlerInterceptorDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mobile.sitepreference.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mobile.sitepreference.enabled:false");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerInterceptor.class);
@@ -90,28 +86,22 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(
-				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class))
-						.isNotNull();
+		assertThat(this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class)).isNotNull();
 	}
 
 	@Test
 	public void sitePreferenceMethodArgumentResolverEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mobile.sitepreference.enabled:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(
-				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class))
-						.isNotNull();
+		assertThat(this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceMethodArgumentResolverDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mobile.sitepreference.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mobile.sitepreference.enabled:false");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class);
@@ -121,17 +111,12 @@ public class SitePreferenceAutoConfigurationTests {
 	public void sitePreferenceHandlerInterceptorRegistered() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				SitePreferenceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(Config.class, WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				SitePreferenceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		RequestMappingHandlerMapping mapping = this.context
-				.getBean(RequestMappingHandlerMapping.class);
-		HandlerInterceptor[] interceptors = mapping
-				.getHandler(new MockHttpServletRequest()).getInterceptors();
-		assertThat(interceptors)
-				.hasAtLeastOneElementOfType(SitePreferenceHandlerInterceptor.class);
+		RequestMappingHandlerMapping mapping = this.context.getBean(RequestMappingHandlerMapping.class);
+		HandlerInterceptor[] interceptors = mapping.getHandler(new MockHttpServletRequest()).getInterceptors();
+		assertThat(interceptors).hasAtLeastOneElementOfType(SitePreferenceHandlerInterceptor.class);
 	}
 
 	@Configuration

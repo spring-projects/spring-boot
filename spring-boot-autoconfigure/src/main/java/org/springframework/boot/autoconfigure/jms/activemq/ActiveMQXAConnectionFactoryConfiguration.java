@@ -52,21 +52,18 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
-		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-				properties, factoryCustomizers.getIfAvailable())
-						.createConnectionFactory(ActiveMQXAConnectionFactory.class);
+		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
+				factoryCustomizers.getIfAvailable()).createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
-			havingValue = "false", matchIfMissing = true)
-	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(
-			ActiveMQProperties properties,
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
+			matchIfMissing = true)
+	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
-		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.getIfAvailable())
-						.createConnectionFactory(ActiveMQConnectionFactory.class);
+		return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.getIfAvailable())
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 }

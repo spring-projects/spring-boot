@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ public class MvcEndpointsTests {
 
 	@Test
 	public void picksUpEndpointDelegates() throws Exception {
-		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
-				new TestEndpoint());
+		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint", new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
 		assertThat(this.endpoints.getEndpoints()).hasSize(1);
@@ -50,8 +49,7 @@ public class MvcEndpointsTests {
 	public void picksUpEndpointDelegatesFromParent() throws Exception {
 		StaticApplicationContext parent = new StaticApplicationContext();
 		this.context.setParent(parent);
-		parent.getDefaultListableBeanFactory().registerSingleton("endpoint",
-				new TestEndpoint());
+		parent.getDefaultListableBeanFactory().registerSingleton("endpoint", new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
 		assertThat(this.endpoints.getEndpoints()).hasSize(1);
@@ -68,15 +66,12 @@ public class MvcEndpointsTests {
 
 	@Test
 	public void changesPath() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.test.path=/foo/bar/");
-		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
-				new TestEndpoint());
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.test.path=/foo/bar/");
+		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint", new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
 		assertThat(this.endpoints.getEndpoints()).hasSize(1);
-		assertThat(this.endpoints.getEndpoints().iterator().next().getPath())
-				.isEqualTo("/foo/bar");
+		assertThat(this.endpoints.getEndpoints().iterator().next().getPath()).isEqualTo("/foo/bar");
 	}
 
 	@Test

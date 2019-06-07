@@ -28,8 +28,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  *
  * @author Phillip Webb
  */
-public class TestDefaultTestExecutionListenersPostProcessor
-		implements DefaultTestExecutionListenersPostProcessor {
+public class TestDefaultTestExecutionListenersPostProcessor implements DefaultTestExecutionListenersPostProcessor {
 
 	@Override
 	public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,8 +198,8 @@ public class MongoProperties {
 	 * @return the Mongo client
 	 * @throws UnknownHostException if the configured host is unknown
 	 */
-	public MongoClient createMongoClient(MongoClientOptions options,
-			Environment environment) throws UnknownHostException {
+	public MongoClient createMongoClient(MongoClientOptions options, Environment environment)
+			throws UnknownHostException {
 		try {
 			Integer embeddedPort = getEmbeddedPort(environment);
 			if (embeddedPort != null) {
@@ -234,24 +234,21 @@ public class MongoProperties {
 	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
 		if (hasCustomAddress() || hasCustomCredentials()) {
 			if (this.uri != null) {
-				throw new IllegalStateException("Invalid mongo configuration, "
-						+ "either uri or host/port/credentials must be specified");
+				throw new IllegalStateException(
+						"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
 			}
 			if (options == null) {
 				options = MongoClientOptions.builder().build();
 			}
 			List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 			if (hasCustomCredentials()) {
-				String database = (this.authenticationDatabase != null)
-						? this.authenticationDatabase : getMongoClientDatabase();
-				credentials.add(MongoCredential.createCredential(this.username, database,
-						this.password));
+				String database = (this.authenticationDatabase != null) ? this.authenticationDatabase
+						: getMongoClientDatabase();
+				credentials.add(MongoCredential.createCredential(this.username, database, this.password));
 			}
 			String host = (this.host != null) ? this.host : "localhost";
 			int port = (this.port != null) ? this.port : DEFAULT_PORT;
-			return new MongoClient(
-					Collections.singletonList(new ServerAddress(host, port)), credentials,
-					options);
+			return new MongoClient(Collections.singletonList(new ServerAddress(host, port)), credentials, options);
 		}
 		// The options and credentials are in the URI
 		return new MongoClient(new MongoClientURI(determineUri(), builder(options)));

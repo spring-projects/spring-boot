@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,11 +62,9 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	}
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (isLocalApplication(environment) && canAddProperties(environment)) {
-			PropertySource<?> propertySource = new MapPropertySource("refresh",
-					PROPERTIES);
+			PropertySource<?> propertySource = new MapPropertySource("refresh", PROPERTIES);
 			environment.getPropertySources().addLast(propertySource);
 		}
 	}
@@ -90,8 +88,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	}
 
 	private boolean isRemoteRestartEnabled(Environment environment) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-				"spring.devtools.remote.");
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, "spring.devtools.remote.");
 		return resolver.containsProperty("secret");
 	}
 

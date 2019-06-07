@@ -67,8 +67,7 @@ abstract class TomcatResources {
 				}
 			}
 			catch (URISyntaxException ex) {
-				throw new IllegalStateException(
-						"Failed to create File from URL '" + url + "'");
+				throw new IllegalStateException("Failed to create File from URL '" + url + "'");
 			}
 		}
 	}
@@ -111,8 +110,8 @@ abstract class TomcatResources {
 
 		Tomcat7Resources(Context context) {
 			super(context);
-			this.addResourceJarUrlMethod = ReflectionUtils.findMethod(context.getClass(),
-					"addResourceJarUrl", URL.class);
+			this.addResourceJarUrlMethod = ReflectionUtils.findMethod(context.getClass(), "addResourceJarUrl",
+					URL.class);
 		}
 
 		@Override
@@ -142,15 +141,13 @@ abstract class TomcatResources {
 		protected void addDir(String dir, URL url) {
 			if (getContext() instanceof StandardContext) {
 				try {
-					Class<?> fileDirContextClass = Class
-							.forName("org.apache.naming.resources.FileDirContext");
-					Method setDocBaseMethod = ReflectionUtils
-							.findMethod(fileDirContextClass, "setDocBase", String.class);
+					Class<?> fileDirContextClass = Class.forName("org.apache.naming.resources.FileDirContext");
+					Method setDocBaseMethod = ReflectionUtils.findMethod(fileDirContextClass, "setDocBase",
+							String.class);
 					Object fileDirContext = fileDirContextClass.newInstance();
 					setDocBaseMethod.invoke(fileDirContext, dir);
-					Method addResourcesDirContextMethod = ReflectionUtils.findMethod(
-							StandardContext.class, "addResourcesDirContext",
-							DirContext.class);
+					Method addResourcesDirContextMethod = ReflectionUtils.findMethod(StandardContext.class,
+							"addResourcesDirContext", DirContext.class);
 					addResourcesDirContextMethod.invoke(getContext(), fileDirContext);
 				}
 				catch (Exception ex) {
@@ -190,8 +187,7 @@ abstract class TomcatResources {
 				}
 				URL url = new URL(resource);
 				String path = "/META-INF/resources";
-				getContext().getResources().createWebResourceSet(
-						ResourceSetType.RESOURCE_JAR, "/", url, path);
+				getContext().getResources().createWebResourceSet(ResourceSetType.RESOURCE_JAR, "/", url, path);
 			}
 			catch (Exception ex) {
 				// Ignore (probably not a directory)

@@ -60,23 +60,21 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 			mainClass = manifest.getMainAttributes().getValue("Start-Class");
 		}
 		if (mainClass == null) {
-			throw new IllegalStateException(
-					"No 'Start-Class' manifest entry specified in " + this);
+			throw new IllegalStateException("No 'Start-Class' manifest entry specified in " + this);
 		}
 		return mainClass;
 	}
 
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> archives = new ArrayList<Archive>(
-				this.archive.getNestedArchives(new EntryFilter() {
+		List<Archive> archives = new ArrayList<Archive>(this.archive.getNestedArchives(new EntryFilter() {
 
-					@Override
-					public boolean matches(Entry entry) {
-						return isNestedArchive(entry);
-					}
+			@Override
+			public boolean matches(Entry entry) {
+				return isNestedArchive(entry);
+			}
 
-				}));
+		}));
 		postProcessClassPathArchives(archives);
 		return archives;
 	}

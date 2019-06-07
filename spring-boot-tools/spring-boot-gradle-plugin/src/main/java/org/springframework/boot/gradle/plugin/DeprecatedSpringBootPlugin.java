@@ -30,13 +30,11 @@ import org.slf4j.LoggerFactory;
 @Deprecated
 public class DeprecatedSpringBootPlugin extends SpringBootPlugin {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DeprecatedSpringBootPlugin.class);
+	private static final Logger logger = LoggerFactory.getLogger(DeprecatedSpringBootPlugin.class);
 
 	@Override
 	public void apply(Project project) {
-		logger.warn("The plugin id 'spring-boot' is deprecated. Please use "
-				+ "'org.springframework.boot' instead.");
+		logger.warn("The plugin id 'spring-boot' is deprecated. Please use " + "'org.springframework.boot' instead.");
 		super.apply(project);
 	}
 

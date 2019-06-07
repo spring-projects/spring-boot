@@ -48,8 +48,7 @@ public class ExampleServlet extends GenericServlet {
 	}
 
 	@Override
-	public void service(ServletRequest request, ServletResponse response)
-			throws ServletException, IOException {
+	public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 		String content = "Hello World";
 		if (this.echoRequestInfo) {
 			content += " scheme=" + request.getScheme();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,7 @@ import org.springframework.util.ObjectUtils;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  */
-public class EndpointMBeanExporter extends MBeanExporter
-		implements SmartLifecycle, ApplicationContextAware {
+public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle, ApplicationContextAware {
 
 	/**
 	 * The default JMX domain.
@@ -75,11 +74,9 @@ public class EndpointMBeanExporter extends MBeanExporter
 
 	private final AnnotationJmxAttributeSource attributeSource = new EndpointJmxAttributeSource();
 
-	private final MetadataMBeanInfoAssembler assembler = new MetadataMBeanInfoAssembler(
-			this.attributeSource);
+	private final MetadataMBeanInfoAssembler assembler = new MetadataMBeanInfoAssembler(this.attributeSource);
 
-	private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(
-			this.attributeSource);
+	private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(this.attributeSource);
 
 	private final Set<Class<?>> registeredEndpoints = new HashSet<Class<?>>();
 
@@ -122,8 +119,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -144,8 +140,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	}
 
 	@Override
-	public void setEnsureUniqueRuntimeObjectNames(
-			boolean ensureUniqueRuntimeObjectNames) {
+	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
 		super.setEnsureUniqueRuntimeObjectNames(ensureUniqueRuntimeObjectNames);
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
@@ -167,8 +162,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 		for (Map.Entry<String, JmxEndpoint> entry : endpoints.entrySet()) {
 			String name = entry.getKey();
 			JmxEndpoint endpoint = entry.getValue();
-			Class<?> type = (endpoint.getEndpointType() != null)
-					? endpoint.getEndpointType() : endpoint.getClass();
+			Class<?> type = (endpoint.getEndpointType() != null) ? endpoint.getEndpointType() : endpoint.getClass();
 			if (!this.registeredEndpoints.contains(type) && endpoint.isEnabled()) {
 				try {
 					registerBeanNameOrInstance(endpoint, name);
@@ -204,8 +198,8 @@ public class EndpointMBeanExporter extends MBeanExporter
 	@Deprecated
 	protected void registerEndpoint(String beanName, Endpoint<?> endpoint) {
 		Class<?> type = endpoint.getClass();
-		if (isAnnotatedWithManagedResource(type) || (type.isMemberClass()
-				&& isAnnotatedWithManagedResource(type.getEnclosingClass()))) {
+		if (isAnnotatedWithManagedResource(type)
+				|| (type.isMemberClass() && isAnnotatedWithManagedResource(type.getEnclosingClass()))) {
 			// Endpoint is directly managed
 			return;
 		}
@@ -251,8 +245,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	}
 
 	@Override
-	protected ObjectName getObjectName(Object bean, String beanKey)
-			throws MalformedObjectNameException {
+	protected ObjectName getObjectName(Object bean, String beanKey) throws MalformedObjectNameException {
 		if (bean instanceof SelfNaming) {
 			return ((SelfNaming) bean).getObjectName();
 		}
@@ -262,15 +255,13 @@ public class EndpointMBeanExporter extends MBeanExporter
 		return this.defaultNamingStrategy.getObjectName(bean, beanKey);
 	}
 
-	private ObjectName getObjectName(JmxEndpoint jmxEndpoint, String beanKey)
-			throws MalformedObjectNameException {
+	private ObjectName getObjectName(JmxEndpoint jmxEndpoint, String beanKey) throws MalformedObjectNameException {
 		StringBuilder builder = new StringBuilder();
 		builder.append(this.domain);
 		builder.append(":type=Endpoint");
 		builder.append(",name=" + beanKey);
 		if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
-			builder.append(",context="
-					+ ObjectUtils.getIdentityHexString(this.applicationContext));
+			builder.append(",context=" + ObjectUtils.getIdentityHexString(this.applicationContext));
 		}
 		if (this.ensureUniqueRuntimeObjectNames) {
 			builder.append(",identity=" + jmxEndpoint.getIdentity());
@@ -279,8 +270,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 		return ObjectNameManager.getInstance(builder.toString());
 	}
 
-	private boolean parentContextContainsSameBean(ApplicationContext applicationContext,
-			String beanKey) {
+	private boolean parentContextContainsSameBean(ApplicationContext applicationContext, String beanKey) {
 		if (applicationContext.getParent() != null) {
 			try {
 				Object bean = this.applicationContext.getParent().getBean(beanKey);
@@ -374,8 +364,8 @@ public class EndpointMBeanExporter extends MBeanExporter
 	private static class EndpointJmxAttributeSource extends AnnotationJmxAttributeSource {
 
 		@Override
-		public org.springframework.jmx.export.metadata.ManagedResource getManagedResource(
-				Class<?> beanClass) throws InvalidMetadataException {
+		public org.springframework.jmx.export.metadata.ManagedResource getManagedResource(Class<?> beanClass)
+				throws InvalidMetadataException {
 			Assert.state(super.getManagedResource(beanClass) == null,
 					"@ManagedResource annotation found on JmxEndpoint " + beanClass);
 			return new org.springframework.jmx.export.metadata.ManagedResource();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ import org.springframework.core.Ordered;
  * @since 1.3.0
  */
 @GroovyASTTransformation(phase = CompilePhase.CONVERSION)
-public abstract class GenericBomAstTransformation
-		implements SpringBootAstTransformation, Ordered {
+public abstract class GenericBomAstTransformation implements SpringBootAstTransformation, Ordered {
 
 	private static ClassNode BOM = ClassHelper.make(DependencyManagementBom.class);
 
@@ -81,8 +80,7 @@ public abstract class GenericBomAstTransformation
 		AnnotatedNode annotated = getAnnotatedNode(node);
 		if (annotated != null) {
 			AnnotationNode bom = getAnnotation(annotated);
-			List<Expression> expressions = new ArrayList<Expression>(
-					getConstantExpressions(bom.getMember("value")));
+			List<Expression> expressions = new ArrayList<Expression>(getConstantExpressions(bom.getMember("value")));
 			expressions.add(new ConstantExpression(module));
 			bom.setMember("value", new ListExpression(expressions));
 		}
@@ -120,8 +118,7 @@ public abstract class GenericBomAstTransformation
 		return Collections.emptyList();
 	}
 
-	private List<ConstantExpression> getConstantExpressions(
-			ListExpression valueExpression) {
+	private List<ConstantExpression> getConstantExpressions(ListExpression valueExpression) {
 		List<ConstantExpression> expressions = new ArrayList<ConstantExpression>();
 		for (Expression expression : valueExpression.getExpressions()) {
 			if (expression instanceof ConstantExpression

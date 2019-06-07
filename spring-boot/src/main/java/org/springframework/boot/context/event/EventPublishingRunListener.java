@@ -65,14 +65,13 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	@Override
 	@SuppressWarnings("deprecation")
 	public void starting() {
-		this.initialMulticaster
-				.multicastEvent(new ApplicationStartedEvent(this.application, this.args));
+		this.initialMulticaster.multicastEvent(new ApplicationStartedEvent(this.application, this.args));
 	}
 
 	@Override
 	public void environmentPrepared(ConfigurableEnvironment environment) {
-		this.initialMulticaster.multicastEvent(new ApplicationEnvironmentPreparedEvent(
-				this.application, this.args, environment));
+		this.initialMulticaster
+				.multicastEvent(new ApplicationEnvironmentPreparedEvent(this.application, this.args, environment));
 	}
 
 	@Override
@@ -88,8 +87,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 			}
 			context.addApplicationListener(listener);
 		}
-		this.initialMulticaster.multicastEvent(
-				new ApplicationPreparedEvent(this.application, this.args, context));
+		this.initialMulticaster.multicastEvent(new ApplicationPreparedEvent(this.application, this.args, context));
 	}
 
 	@Override
@@ -116,11 +114,9 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 		}
 	}
 
-	private SpringApplicationEvent getFinishedEvent(
-			ConfigurableApplicationContext context, Throwable exception) {
+	private SpringApplicationEvent getFinishedEvent(ConfigurableApplicationContext context, Throwable exception) {
 		if (exception != null) {
-			return new ApplicationFailedEvent(this.application, this.args, context,
-					exception);
+			return new ApplicationFailedEvent(this.application, this.args, context, exception);
 		}
 		return new ApplicationReadyEvent(this.application, this.args, context);
 	}

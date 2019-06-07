@@ -256,8 +256,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 	 */
 	private MimeMappings(MimeMappings mappings, boolean mutable) {
 		Assert.notNull(mappings, "Mappings must not be null");
-		this.map = (mutable
-				? new LinkedHashMap<String, MimeMappings.Mapping>(mappings.map)
+		this.map = (mutable ? new LinkedHashMap<String, MimeMappings.Mapping>(mappings.map)
 				: Collections.unmodifiableMap(mappings.map));
 	}
 
@@ -369,8 +368,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 			}
 			if (obj instanceof Mapping) {
 				Mapping other = (Mapping) obj;
-				return this.extension.equals(other.extension)
-						&& this.mimeType.equals(other.mimeType);
+				return this.extension.equals(other.extension) && this.mimeType.equals(other.mimeType);
 			}
 			return false;
 		}
@@ -382,8 +380,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 
 		@Override
 		public String toString() {
-			return "Mapping [extension=" + this.extension + ", mimeType=" + this.mimeType
-					+ "]";
+			return "Mapping [extension=" + this.extension + ", mimeType=" + this.mimeType + "]";
 		}
 
 	}

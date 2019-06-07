@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = { "app.datasource.bar.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
-		"app.datasource.bar.max-total=42" })
+@SpringBootTest(
+		properties = { "app.datasource.bar.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1", "app.datasource.bar.max-total=42" })
 @Import(SimpleTwoDataSourcesExample.SimpleDataSourcesConfiguration.class)
 public class SimpleTwoDataSourcesExampleTests {
 
@@ -51,10 +51,8 @@ public class SimpleTwoDataSourcesExampleTests {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(2);
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertThat(this.context.getBean("fooDataSource")).isSameAs(dataSource);
-		assertThat(dataSource.getConnection().getMetaData().getURL())
-				.startsWith("jdbc:h2:mem:");
-		BasicDataSource barDataSource = this.context.getBean("barDataSource",
-				BasicDataSource.class);
+		assertThat(dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
+		BasicDataSource barDataSource = this.context.getBean("barDataSource", BasicDataSource.class);
 		assertThat(barDataSource.getUrl()).isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
 		assertThat(barDataSource.getMaxTotal()).isEqualTo(42);
 	}

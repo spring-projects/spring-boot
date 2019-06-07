@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,21 +57,18 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ freemarker.template.Configuration.class,
-		FreeMarkerConfigurationFactory.class })
+@ConditionalOnClass({ freemarker.template.Configuration.class, FreeMarkerConfigurationFactory.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(FreeMarkerProperties.class)
 public class FreeMarkerAutoConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(FreeMarkerAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(FreeMarkerAutoConfiguration.class);
 
 	private final ApplicationContext applicationContext;
 
 	private final FreeMarkerProperties properties;
 
-	public FreeMarkerAutoConfiguration(ApplicationContext applicationContext,
-			FreeMarkerProperties properties) {
+	public FreeMarkerAutoConfiguration(ApplicationContext applicationContext, FreeMarkerProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 	}
@@ -90,8 +87,7 @@ public class FreeMarkerAutoConfiguration {
 				}
 			}
 			if (templatePathLocation == null) {
-				logger.warn("Cannot find template location(s): " + locations
-						+ " (please add some templates, "
+				logger.warn("Cannot find template location(s): " + locations + " (please add some templates, "
 						+ "check your FreeMarker configuration, or set "
 						+ "spring.freemarker.checkTemplateLocation=false)");
 			}
@@ -142,8 +138,7 @@ public class FreeMarkerAutoConfiguration {
 		}
 
 		@Bean
-		public freemarker.template.Configuration freeMarkerConfiguration(
-				FreeMarkerConfig configurer) {
+		public freemarker.template.Configuration freeMarkerConfiguration(FreeMarkerConfig configurer) {
 			return configurer.getConfiguration();
 		}
 

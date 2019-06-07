@@ -61,29 +61,23 @@ public class NarayanaConfigurationBean implements InitializingBean {
 	}
 
 	private boolean isPropertiesFileAvailable() {
-		return Thread.currentThread().getContextClassLoader()
-				.getResource(JBOSSTS_PROPERTIES_FILE_NAME) != null;
+		return Thread.currentThread().getContextClassLoader().getResource(JBOSSTS_PROPERTIES_FILE_NAME) != null;
 	}
 
-	private void setNodeIdentifier(String nodeIdentifier)
-			throws CoreEnvironmentBeanException {
+	private void setNodeIdentifier(String nodeIdentifier) throws CoreEnvironmentBeanException {
 		getPopulator(CoreEnvironmentBean.class).setNodeIdentifier(nodeIdentifier);
 	}
 
 	private void setObjectStoreDir(String objectStoreDir) {
 		if (objectStoreDir != null) {
-			getPopulator(ObjectStoreEnvironmentBean.class)
-					.setObjectStoreDir(objectStoreDir);
-			getPopulator(ObjectStoreEnvironmentBean.class, "communicationStore")
-					.setObjectStoreDir(objectStoreDir);
-			getPopulator(ObjectStoreEnvironmentBean.class, "stateStore")
-					.setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class).setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class, "communicationStore").setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class, "stateStore").setObjectStoreDir(objectStoreDir);
 		}
 	}
 
 	private void setCommitOnePhase(boolean isCommitOnePhase) {
-		getPopulator(CoordinatorEnvironmentBean.class)
-				.setCommitOnePhase(isCommitOnePhase);
+		getPopulator(CoordinatorEnvironmentBean.class).setCommitOnePhase(isCommitOnePhase);
 	}
 
 	private void setDefaultTimeout(int defaultTimeout) {
@@ -91,28 +85,23 @@ public class NarayanaConfigurationBean implements InitializingBean {
 	}
 
 	private void setPeriodicRecoveryPeriod(int periodicRecoveryPeriod) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setPeriodicRecoveryPeriod(periodicRecoveryPeriod);
+		getPopulator(RecoveryEnvironmentBean.class).setPeriodicRecoveryPeriod(periodicRecoveryPeriod);
 	}
 
 	private void setRecoveryBackoffPeriod(int recoveryBackoffPeriod) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setRecoveryBackoffPeriod(recoveryBackoffPeriod);
+		getPopulator(RecoveryEnvironmentBean.class).setRecoveryBackoffPeriod(recoveryBackoffPeriod);
 	}
 
 	private void setXaResourceOrphanFilters(List<String> xaResourceOrphanFilters) {
-		getPopulator(JTAEnvironmentBean.class)
-				.setXaResourceOrphanFilterClassNames(xaResourceOrphanFilters);
+		getPopulator(JTAEnvironmentBean.class).setXaResourceOrphanFilterClassNames(xaResourceOrphanFilters);
 	}
 
 	private void setRecoveryModules(List<String> recoveryModules) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setRecoveryModuleClassNames(recoveryModules);
+		getPopulator(RecoveryEnvironmentBean.class).setRecoveryModuleClassNames(recoveryModules);
 	}
 
 	private void setExpiryScanners(List<String> expiryScanners) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setExpiryScannerClassNames(expiryScanners);
+		getPopulator(RecoveryEnvironmentBean.class).setExpiryScannerClassNames(expiryScanners);
 	}
 
 	private <T> T getPopulator(Class<T> beanClass) {

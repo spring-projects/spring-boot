@@ -42,8 +42,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = JpaUserDetailsTests.Main.class,
-		loader = SpringBootContextLoader.class)
+@ContextConfiguration(classes = JpaUserDetailsTests.Main.class, loader = SpringBootContextLoader.class)
 @DirtiesContext
 public class JpaUserDetailsTests {
 
@@ -56,8 +55,8 @@ public class JpaUserDetailsTests {
 	}
 
 	@Import({ EmbeddedDataSourceConfiguration.class, DataSourceAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
+			HibernateJpaAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			SecurityAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = SecurityConfig.class)
 	public static class Main {
 

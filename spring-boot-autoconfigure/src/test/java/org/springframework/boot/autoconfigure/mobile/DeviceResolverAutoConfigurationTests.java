@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,7 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DeviceResolverAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(DeviceResolverHandlerInterceptor.class))
-				.isNotNull();
+		assertThat(this.context.getBean(DeviceResolverHandlerInterceptor.class)).isNotNull();
 	}
 
 	@Test
@@ -77,8 +76,7 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DeviceResolverAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(DeviceHandlerMethodArgumentResolver.class))
-				.isNotNull();
+		assertThat(this.context.getBean(DeviceHandlerMethodArgumentResolver.class)).isNotNull();
 	}
 
 	@Test
@@ -87,12 +85,9 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(Config.class);
 		this.context.refresh();
-		RequestMappingHandlerMapping mapping = this.context
-				.getBean(RequestMappingHandlerMapping.class);
-		HandlerInterceptor[] interceptors = mapping
-				.getHandler(new MockHttpServletRequest()).getInterceptors();
-		assertThat(interceptors)
-				.hasAtLeastOneElementOfType(DeviceResolverHandlerInterceptor.class);
+		RequestMappingHandlerMapping mapping = this.context.getBean(RequestMappingHandlerMapping.class);
+		HandlerInterceptor[] interceptors = mapping.getHandler(new MockHttpServletRequest()).getInterceptors();
+		assertThat(interceptors).hasAtLeastOneElementOfType(DeviceResolverHandlerInterceptor.class);
 	}
 
 	@Test
@@ -106,12 +101,9 @@ public class DeviceResolverAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			DeviceResolverAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class,
-			SpringDataWebAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class })
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			DeviceResolverAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			SpringDataWebAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
 	protected static class Config {
 
 		@Bean

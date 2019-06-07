@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.util.Assert;
 public class InstallCommand extends OptionParsingCommand {
 
 	public InstallCommand() {
-		super("install", "Install dependencies to the lib/ext directory",
-				new InstallOptionHandler());
+		super("install", "Install dependencies to the lib/ext directory", new InstallOptionHandler());
 	}
 
 	@Override
@@ -52,8 +51,8 @@ public class InstallCommand extends OptionParsingCommand {
 		@SuppressWarnings("unchecked")
 		protected ExitStatus run(OptionSet options) throws Exception {
 			List<String> args = (List<String>) options.nonOptionArguments();
-			Assert.notEmpty(args, "Please specify at least one "
-					+ "dependency, in the form group:artifact:version, to install");
+			Assert.notEmpty(args,
+					"Please specify at least one " + "dependency, in the form group:artifact:version, to install");
 			try {
 				new Installer(options, this).install(args);
 			}

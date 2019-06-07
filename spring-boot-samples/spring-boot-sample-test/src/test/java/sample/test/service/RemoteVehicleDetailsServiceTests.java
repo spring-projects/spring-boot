@@ -65,31 +65,24 @@ public class RemoteVehicleDetailsServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
-			throws Exception {
+	public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() throws Exception {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
-				.andRespond(withSuccess(getClassPathResource("vehicledetails.json"),
-						MediaType.APPLICATION_JSON));
-		VehicleDetails details = this.service
-				.getVehicleDetails(new VehicleIdentificationNumber(VIN));
+				.andRespond(withSuccess(getClassPathResource("vehicledetails.json"), MediaType.APPLICATION_JSON));
+		VehicleDetails details = this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
 		assertThat(details.getMake()).isEqualTo("Honda");
 		assertThat(details.getModel()).isEqualTo("Civic");
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException()
-			throws Exception {
-		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
-				.andRespond(withStatus(HttpStatus.NOT_FOUND));
+	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException() throws Exception {
+		this.server.expect(requestTo("/vehicle/" + VIN + "/details")).andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.thrown.expect(VehicleIdentificationNumberNotFoundException.class);
 		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException()
-			throws Exception {
-		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
-				.andRespond(withServerError());
+	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException() throws Exception {
+		this.server.expect(requestTo("/vehicle/" + VIN + "/details")).andRespond(withServerError());
 		this.thrown.expect(HttpServerErrorException.class);
 		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
 	}

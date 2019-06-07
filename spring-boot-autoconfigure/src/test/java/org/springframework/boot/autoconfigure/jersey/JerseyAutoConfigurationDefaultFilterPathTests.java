@@ -53,8 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jersey.type=filter")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.type=filter")
 @DirtiesContext
 public class JerseyAutoConfigurationDefaultFilterPathTests {
 
@@ -63,8 +62,7 @@ public class JerseyAutoConfigurationDefaultFilterPathTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -94,9 +92,8 @@ public class JerseyAutoConfigurationDefaultFilterPathTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

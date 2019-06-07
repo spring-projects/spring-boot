@@ -52,8 +52,7 @@ class VariableTree extends ReflectionWrapper {
 		if (modifiers == null) {
 			return Collections.emptySet();
 		}
-		return (Set<Modifier>) findMethod(findClass("com.sun.source.tree.ModifiersTree"),
-				"getFlags").invoke(modifiers);
+		return (Set<Modifier>) findMethod(findClass("com.sun.source.tree.ModifiersTree"), "getFlags").invoke(modifiers);
 	}
 
 }

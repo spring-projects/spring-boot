@@ -67,8 +67,7 @@ class ReflectionWrapper {
 		}
 	}
 
-	protected static Method findMethod(Class<?> type, String name,
-			Class<?>... parameterTypes) {
+	protected static Method findMethod(Class<?> type, String name, Class<?>... parameterTypes) {
 		try {
 			return type.getMethod(name, parameterTypes);
 		}

@@ -271,8 +271,7 @@ public class SpringBootPluginExtension {
 		return this.embeddedLaunchScriptProperties;
 	}
 
-	public void setEmbeddedLaunchScriptProperties(
-			Map<String, String> embeddedLaunchScriptProperties) {
+	public void setEmbeddedLaunchScriptProperties(Map<String, String> embeddedLaunchScriptProperties) {
 		this.embeddedLaunchScriptProperties = embeddedLaunchScriptProperties;
 	}
 
@@ -281,10 +280,8 @@ public class SpringBootPluginExtension {
 	}
 
 	public void buildInfo(Closure<?> taskConfigurer) {
-		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo",
-				BuildInfo.class);
-		this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
-				.dependsOn(bootBuildInfo);
+		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo", BuildInfo.class);
+		this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME).dependsOn(bootBuildInfo);
 		if (taskConfigurer != null) {
 			taskConfigurer.setDelegate(bootBuildInfo);
 			taskConfigurer.call();

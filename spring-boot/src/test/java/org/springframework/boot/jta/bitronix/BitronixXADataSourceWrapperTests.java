@@ -37,8 +37,7 @@ public class BitronixXADataSourceWrapperTests {
 		BitronixXADataSourceWrapper wrapper = new BitronixXADataSourceWrapper();
 		DataSource wrapped = wrapper.wrapDataSource(dataSource);
 		assertThat(wrapped).isInstanceOf(PoolingDataSourceBean.class);
-		assertThat(((PoolingDataSourceBean) wrapped).getDataSource())
-				.isSameAs(dataSource);
+		assertThat(((PoolingDataSourceBean) wrapped).getDataSource()).isSameAs(dataSource);
 	}
 
 }

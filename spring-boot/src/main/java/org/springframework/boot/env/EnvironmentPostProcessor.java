@@ -44,7 +44,6 @@ public interface EnvironmentPostProcessor {
 	 * @param environment the environment to post-process
 	 * @param application the application to which the environment belongs
 	 */
-	void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application);
+	void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application);
 
 }

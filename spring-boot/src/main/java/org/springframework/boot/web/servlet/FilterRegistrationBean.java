@@ -60,8 +60,7 @@ public class FilterRegistrationBean extends AbstractFilterRegistrationBean {
 	 * @param filter the filter to register
 	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
 	 */
-	public FilterRegistrationBean(Filter filter,
-			ServletRegistrationBean... servletRegistrationBeans) {
+	public FilterRegistrationBean(Filter filter, ServletRegistrationBean... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
 		Assert.notNull(filter, "Filter must not be null");
 		this.filter = filter;

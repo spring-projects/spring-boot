@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,9 +78,8 @@ public class EmbeddedLdapAutoConfiguration {
 
 	private InMemoryDirectoryServer server;
 
-	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties,
-			LdapProperties properties, ConfigurableApplicationContext applicationContext,
-			Environment environment) {
+	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties, LdapProperties properties,
+			ConfigurableApplicationContext applicationContext, Environment environment) {
 		this.embeddedProperties = embeddedProperties;
 		this.properties = properties;
 		this.applicationContext = applicationContext;
@@ -102,16 +101,14 @@ public class EmbeddedLdapAutoConfiguration {
 
 	@Bean
 	public InMemoryDirectoryServer directoryServer() throws LDAPException {
-		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(
-				this.embeddedProperties.getBaseDn());
+		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(this.embeddedProperties.getBaseDn());
 		if (hasCredentials(this.embeddedProperties.getCredential())) {
-			config.addAdditionalBindCredentials(
-					this.embeddedProperties.getCredential().getUsername(),
+			config.addAdditionalBindCredentials(this.embeddedProperties.getCredential().getUsername(),
 					this.embeddedProperties.getCredential().getPassword());
 		}
 		setSchema(config);
-		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig
-				.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
+		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig.createLDAPConfig("LDAP",
+				this.embeddedProperties.getPort());
 		config.setListenerConfigs(listenerConfig);
 		this.server = new InMemoryDirectoryServer(config);
 		importLdif();
@@ -138,14 +135,12 @@ public class EmbeddedLdapAutoConfiguration {
 			config.setSchema(Schema.mergeSchemas(defaultSchema, schema));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to load schema " + resource.getDescription(), ex);
+			throw new IllegalStateException("Unable to load schema " + resource.getDescription(), ex);
 		}
 	}
 
 	private boolean hasCredentials(Credential credential) {
-		return StringUtils.hasText(credential.getUsername())
-				&& StringUtils.hasText(credential.getPassword());
+		return StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
 	}
 
 	private void importLdif() throws LDAPException {
@@ -171,8 +166,8 @@ public class EmbeddedLdapAutoConfiguration {
 
 	private void setPortProperty(ApplicationContext context, int port) {
 		if (context instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext) context)
-					.getEnvironment().getPropertySources();
+			MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment()
+					.getPropertySources();
 			getLdapPorts(sources).put("local.ldap.port", port);
 		}
 		if (context.getParent() != null) {
@@ -184,8 +179,7 @@ public class EmbeddedLdapAutoConfiguration {
 	private Map<String, Object> getLdapPorts(MutablePropertySources sources) {
 		PropertySource<?> propertySource = sources.get(PROPERTY_SOURCE_NAME);
 		if (propertySource == null) {
-			propertySource = new MapPropertySource(PROPERTY_SOURCE_NAME,
-					new HashMap<String, Object>());
+			propertySource = new MapPropertySource(PROPERTY_SOURCE_NAME, new HashMap<String, Object>());
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();

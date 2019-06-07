@@ -63,25 +63,22 @@ public class SpringApplicationHierarchyTests {
 		this.context = builder.run("--server.port=0");
 	}
 
-	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			MongoDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
-			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class },
+	@EnableAutoConfiguration(
+			exclude = { ElasticsearchDataAutoConfiguration.class, ElasticsearchRepositoriesAutoConfiguration.class,
+					CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
+					MongoDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
+					Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
+					RedisRepositoriesAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 
 	}
 
-	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class,
-			ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			MongoDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
-			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
+	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class, EndpointMBeanExportAutoConfiguration.class,
+			ElasticsearchDataAutoConfiguration.class, ElasticsearchRepositoriesAutoConfiguration.class,
+			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class, MongoDataAutoConfiguration.class,
+			Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })

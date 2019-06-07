@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,7 @@ public class EndpointAutoConfiguration {
 	public EndpointAutoConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
 			ObjectProvider<Map<String, HealthIndicator>> healthIndicators,
 			ObjectProvider<List<InfoContributor>> infoContributors,
-			ObjectProvider<Collection<PublicMetrics>> publicMetrics,
-			ObjectProvider<TraceRepository> traceRepository) {
+			ObjectProvider<Collection<PublicMetrics>> publicMetrics, ObjectProvider<TraceRepository> traceRepository) {
 		this.healthAggregator = healthAggregator.getIfAvailable();
 		this.healthIndicators = healthIndicators.getIfAvailable();
 		this.infoContributors = infoContributors.getIfAvailable();
@@ -114,10 +113,10 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		HealthAggregator healthAggregator = (this.healthAggregator != null)
-				? this.healthAggregator : new OrderedHealthAggregator();
-		Map<String, HealthIndicator> healthIndicators = (this.healthIndicators != null)
-				? this.healthIndicators : Collections.<String, HealthIndicator>emptyMap();
+		HealthAggregator healthAggregator = (this.healthAggregator != null) ? this.healthAggregator
+				: new OrderedHealthAggregator();
+		Map<String, HealthIndicator> healthIndicators = (this.healthIndicators != null) ? this.healthIndicators
+				: Collections.<String, HealthIndicator>emptyMap();
 		return new HealthEndpoint(healthAggregator, healthIndicators);
 	}
 
@@ -130,8 +129,8 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint() throws Exception {
-		return new InfoEndpoint((this.infoContributors != null) ? this.infoContributors
-				: Collections.<InfoContributor>emptyList());
+		return new InfoEndpoint(
+				(this.infoContributors != null) ? this.infoContributors : Collections.<InfoContributor>emptyList());
 	}
 
 	@Bean
@@ -155,8 +154,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public TraceEndpoint traceEndpoint() {
-		return new TraceEndpoint((this.traceRepository != null) ? this.traceRepository
-				: new InMemoryTraceRepository());
+		return new TraceEndpoint((this.traceRepository != null) ? this.traceRepository : new InMemoryTraceRepository());
 	}
 
 	@Bean
@@ -204,8 +202,7 @@ public class EndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public LiquibaseEndpoint liquibaseEndpoint(
-				Map<String, SpringLiquibase> liquibases) {
+		public LiquibaseEndpoint liquibaseEndpoint(Map<String, SpringLiquibase> liquibases) {
 			return new LiquibaseEndpoint(liquibases);
 		}
 

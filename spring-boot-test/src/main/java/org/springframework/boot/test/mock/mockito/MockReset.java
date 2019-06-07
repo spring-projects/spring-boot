@@ -53,8 +53,7 @@ public enum MockReset {
 	 */
 	NONE;
 
-	private static final boolean MOCKITO_PRESENT = ClassUtils
-			.isPresent("org.mockito.internal.util.MockUtil", null);
+	private static final boolean MOCKITO_PRESENT = ClassUtils.isPresent("org.mockito.internal.util.MockUtil", null);
 
 	/**
 	 * Create {@link MockSettings settings} to be used with mocks where reset should occur

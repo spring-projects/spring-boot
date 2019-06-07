@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,7 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = properties.createMongoClient(null, null);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
-				"test");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "test");
 	}
 
 	@Test
@@ -100,8 +99,7 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = properties.createMongoClient(null, null);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
 	}
 
 	@Test
@@ -111,15 +109,13 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = properties.createMongoClient(null, null);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
 	}
 
 	@Test
 	public void uriCanBeCustomized() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
-				+ "mongo2.example.com:23456/test");
+		properties.setUri("mongodb://user:secret@mongo1.example.com:12345," + "mongo2.example.com:23456/test");
 		MongoClient client = properties.createMongoClient(null, null);
 		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(2);
@@ -137,8 +133,8 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
+		this.thrown.expectMessage(
+				"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
 		properties.createMongoClient(null, null);
 	}
 
@@ -149,8 +145,8 @@ public class MongoPropertiesTests {
 		properties.setHost("localhost");
 		properties.setPort(4567);
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
+		this.thrown.expectMessage(
+				"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
 		properties.createMongoClient(null, null);
 	}
 
@@ -191,52 +187,40 @@ public class MongoPropertiesTests {
 		MongoClient client = properties.createMongoClient(options, null);
 		MongoClientOptions wrapped = client.getMongoClientOptions();
 		assertThat(wrapped.isAlwaysUseMBeans()).isEqualTo(options.isAlwaysUseMBeans());
-		assertThat(wrapped.getConnectionsPerHost())
-				.isEqualTo(options.getConnectionsPerHost());
+		assertThat(wrapped.getConnectionsPerHost()).isEqualTo(options.getConnectionsPerHost());
 		assertThat(wrapped.getConnectTimeout()).isEqualTo(options.getConnectTimeout());
-		assertThat(wrapped.isCursorFinalizerEnabled())
-				.isEqualTo(options.isCursorFinalizerEnabled());
+		assertThat(wrapped.isCursorFinalizerEnabled()).isEqualTo(options.isCursorFinalizerEnabled());
 		assertThat(wrapped.getDescription()).isEqualTo(options.getDescription());
 		assertThat(wrapped.getMaxWaitTime()).isEqualTo(options.getMaxWaitTime());
 		assertThat(wrapped.getSocketTimeout()).isEqualTo(options.getSocketTimeout());
 		assertThat(wrapped.isSocketKeepAlive()).isEqualTo(options.isSocketKeepAlive());
 		assertThat(wrapped.getThreadsAllowedToBlockForConnectionMultiplier())
 				.isEqualTo(options.getThreadsAllowedToBlockForConnectionMultiplier());
-		assertThat(wrapped.getMinConnectionsPerHost())
-				.isEqualTo(options.getMinConnectionsPerHost());
-		assertThat(wrapped.getMaxConnectionIdleTime())
-				.isEqualTo(options.getMaxConnectionIdleTime());
-		assertThat(wrapped.getMaxConnectionLifeTime())
-				.isEqualTo(options.getMaxConnectionLifeTime());
-		assertThat(wrapped.getHeartbeatFrequency())
-				.isEqualTo(options.getHeartbeatFrequency());
-		assertThat(wrapped.getMinHeartbeatFrequency())
-				.isEqualTo(options.getMinHeartbeatFrequency());
-		assertThat(wrapped.getHeartbeatConnectTimeout())
-				.isEqualTo(options.getHeartbeatConnectTimeout());
-		assertThat(wrapped.getHeartbeatSocketTimeout())
-				.isEqualTo(options.getHeartbeatSocketTimeout());
+		assertThat(wrapped.getMinConnectionsPerHost()).isEqualTo(options.getMinConnectionsPerHost());
+		assertThat(wrapped.getMaxConnectionIdleTime()).isEqualTo(options.getMaxConnectionIdleTime());
+		assertThat(wrapped.getMaxConnectionLifeTime()).isEqualTo(options.getMaxConnectionLifeTime());
+		assertThat(wrapped.getHeartbeatFrequency()).isEqualTo(options.getHeartbeatFrequency());
+		assertThat(wrapped.getMinHeartbeatFrequency()).isEqualTo(options.getMinHeartbeatFrequency());
+		assertThat(wrapped.getHeartbeatConnectTimeout()).isEqualTo(options.getHeartbeatConnectTimeout());
+		assertThat(wrapped.getHeartbeatSocketTimeout()).isEqualTo(options.getHeartbeatSocketTimeout());
 		assertThat(wrapped.getLocalThreshold()).isEqualTo(options.getLocalThreshold());
-		assertThat(wrapped.getRequiredReplicaSetName())
-				.isEqualTo(options.getRequiredReplicaSetName());
+		assertThat(wrapped.getRequiredReplicaSetName()).isEqualTo(options.getRequiredReplicaSetName());
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
 		Cluster cluster = (Cluster) ReflectionTestUtils.getField(client, "cluster");
-		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils
-				.getField(cluster, "settings");
+		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils.getField(cluster, "settings");
 		List<ServerAddress> allAddresses = clusterSettings.getHosts();
 		return allAddresses;
 	}
 
-	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
-			int expectedPort) {
+	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
 		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
 		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
 	}
 
-	private void assertMongoCredential(MongoCredential credentials,
-			String expectedUsername, String expectedPassword, String expectedSource) {
+	private void assertMongoCredential(MongoCredential credentials, String expectedUsername, String expectedPassword,
+			String expectedSource) {
 		assertThat(credentials.getUserName()).isEqualTo(expectedUsername);
 		assertThat(credentials.getPassword()).isEqualTo(expectedPassword.toCharArray());
 		assertThat(credentials.getSource()).isEqualTo(expectedSource);

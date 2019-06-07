@@ -37,8 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.AUTO_CONFIGURED,
-		connection = EmbeddedDatabaseConnection.HSQL)
+@AutoConfigureTestDatabase(replace = Replace.AUTO_CONFIGURED, connection = EmbeddedDatabaseConnection.HSQL)
 @Deprecated
 public class DataJpaTestWithAutoConfigureTestDatabaseReplaceAutoConfiguredIntegrationTests {
 
@@ -62,8 +61,7 @@ public class DataJpaTestWithAutoConfigureTestDatabaseReplaceAutoConfiguredIntegr
 
 	@Test
 	public void replacesAutoConfiguredDataSource() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("HSQL");
 	}
 

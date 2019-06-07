@@ -43,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "server.servletPath:/spring/*")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.servletPath:/spring/*")
 @DirtiesContext
 public class RemappedErrorViewIntegrationTests {
 
@@ -55,26 +54,23 @@ public class RemappedErrorViewIntegrationTests {
 
 	@Test
 	public void directAccessToErrorPage() throws Exception {
-		String content = this.template.getForObject(
-				"http://localhost:" + this.port + "/spring/error", String.class);
+		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/error", String.class);
 		assertThat(content).contains("error");
 		assertThat(content).contains("999");
 	}
 
 	@Test
 	public void forwardToErrorPage() throws Exception {
-		String content = this.template
-				.getForObject("http://localhost:" + this.port + "/spring/", String.class);
+		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/", String.class);
 		assertThat(content).contains("error");
 		assertThat(content).contains("500");
 	}
 
 	@Configuration
-	@Import({ PropertyPlaceholderAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
+	@Import({ PropertyPlaceholderAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			EmbeddedServletContainerAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class })
 	@Controller
 	public static class TestConfiguration implements ErrorPageRegistrar {
 
@@ -90,8 +86,7 @@ public class RemappedErrorViewIntegrationTests {
 
 		// For manual testing
 		public static void main(String[] args) {
-			new SpringApplicationBuilder(TestConfiguration.class)
-					.properties("server.servletPath:spring/*").run(args);
+			new SpringApplicationBuilder(TestConfiguration.class).properties("server.servletPath:spring/*").run(args);
 		}
 
 	}

@@ -57,16 +57,14 @@ public class SampleSecureOAuth2ActuatorApplicationTests {
 
 	@Before
 	public void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(this.filterChain).build();
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(this.filterChain).build();
 		SecurityContextHolder.clearContext();
 	}
 
 	@Test
 	public void homePageSecuredByDefault() throws Exception {
 		this.mvc.perform(get("/")).andExpect(status().isUnauthorized())
-				.andExpect(header().string("WWW-Authenticate", containsString("Bearer")))
-				.andDo(print());
+				.andExpect(header().string("WWW-Authenticate", containsString("Bearer"))).andDo(print());
 	}
 
 	@Test
@@ -77,14 +75,13 @@ public class SampleSecureOAuth2ActuatorApplicationTests {
 	@Test
 	public void envSecuredWithBasic() throws Exception {
 		this.mvc.perform(get("/env")).andExpect(status().isUnauthorized())
-				.andExpect(header().string("WWW-Authenticate", containsString("Basic")))
-				.andDo(print());
+				.andExpect(header().string("WWW-Authenticate", containsString("Basic"))).andDo(print());
 	}
 
 	@Test
 	public void envWithPassword() throws Exception {
-		this.mvc.perform(get("/env").header("Authorization",
-				"Basic " + Base64Utils.encodeToString("user:password".getBytes())))
+		this.mvc.perform(
+				get("/env").header("Authorization", "Basic " + Base64Utils.encodeToString("user:password".getBytes())))
 				.andExpect(status().isOk()).andDo(print());
 	}
 

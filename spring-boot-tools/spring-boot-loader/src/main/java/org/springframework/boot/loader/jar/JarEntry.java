@@ -55,8 +55,8 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	@Override
 	public boolean hasName(String name, String suffix) {
-		return getName().length() == name.length() + suffix.length()
-				&& getName().startsWith(name) && getName().endsWith(suffix);
+		return getName().length() == name.length() + suffix.length() && getName().startsWith(name)
+				&& getName().endsWith(suffix);
 	}
 
 	/**

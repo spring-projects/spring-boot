@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,51 +32,43 @@ public class CloudFoundryAuthorizationExceptionTests {
 
 	@Test
 	public void statusCodeForInvalidTokenReasonShouldBe401() throws Exception {
-		assertThat(createException(Reason.INVALID_TOKEN).getStatusCode())
-				.isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(createException(Reason.INVALID_TOKEN).getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void statusCodeForInvalidIssuerReasonShouldBe401() throws Exception {
-		assertThat(createException(Reason.INVALID_ISSUER).getStatusCode())
-				.isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(createException(Reason.INVALID_ISSUER).getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void statusCodeForInvalidAudienceReasonShouldBe401() throws Exception {
-		assertThat(createException(Reason.INVALID_AUDIENCE).getStatusCode())
-				.isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(createException(Reason.INVALID_AUDIENCE).getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void statusCodeForInvalidSignatureReasonShouldBe401() throws Exception {
-		assertThat(createException(Reason.INVALID_SIGNATURE).getStatusCode())
-				.isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(createException(Reason.INVALID_SIGNATURE).getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void statusCodeForMissingAuthorizationReasonShouldBe401() throws Exception {
-		assertThat(createException(Reason.MISSING_AUTHORIZATION).getStatusCode())
-				.isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(createException(Reason.MISSING_AUTHORIZATION).getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForUnsupportedSignatureAlgorithmReasonShouldBe401()
-			throws Exception {
-		assertThat(createException(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM)
-				.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	public void statusCodeForUnsupportedSignatureAlgorithmReasonShouldBe401() throws Exception {
+		assertThat(createException(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM).getStatusCode())
+				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void statusCodeForTokenExpiredReasonShouldBe401() throws Exception {
-		assertThat(createException(Reason.TOKEN_EXPIRED).getStatusCode())
-				.isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(createException(Reason.TOKEN_EXPIRED).getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void statusCodeForAccessDeniedReasonShouldBe403() throws Exception {
-		assertThat(createException(Reason.ACCESS_DENIED).getStatusCode())
-				.isEqualTo(HttpStatus.FORBIDDEN);
+		assertThat(createException(Reason.ACCESS_DENIED).getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test

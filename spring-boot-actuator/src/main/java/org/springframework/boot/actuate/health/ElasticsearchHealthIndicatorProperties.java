@@ -28,8 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "management.health.elasticsearch",
-		ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "management.health.elasticsearch", ignoreUnknownFields = false)
 public class ElasticsearchHealthIndicatorProperties {
 
 	/**

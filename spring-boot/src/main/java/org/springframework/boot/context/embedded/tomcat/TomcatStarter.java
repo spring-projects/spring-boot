@@ -48,8 +48,7 @@ class TomcatStarter implements ServletContainerInitializer {
 	}
 
 	@Override
-	public void onStartup(Set<Class<?>> classes, ServletContext servletContext)
-			throws ServletException {
+	public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
 		try {
 			for (ServletContextInitializer initializer : this.initializers) {
 				initializer.onStartup(servletContext);
@@ -60,8 +59,8 @@ class TomcatStarter implements ServletContainerInitializer {
 			// Prevent Tomcat from logging and re-throwing when we know we can
 			// deal with it in the main thread, but log for information here.
 			if (logger.isErrorEnabled()) {
-				logger.error("Error starting Tomcat context. Exception: "
-						+ ex.getClass().getName() + ". Message: " + ex.getMessage());
+				logger.error("Error starting Tomcat context. Exception: " + ex.getClass().getName() + ". Message: "
+						+ ex.getMessage());
 			}
 		}
 	}

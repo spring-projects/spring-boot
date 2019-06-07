@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,8 +141,7 @@ public class JpaProperties {
 
 	public static class Hibernate {
 
-		private static final String USE_NEW_ID_GENERATOR_MAPPINGS = "hibernate.id."
-				+ "new_generator_mappings";
+		private static final String USE_NEW_ID_GENERATOR_MAPPINGS = "hibernate.id." + "new_generator_mappings";
 
 		/**
 		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
@@ -182,8 +181,7 @@ public class JpaProperties {
 			return this.naming;
 		}
 
-		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
-				DataSource dataSource) {
+		private Map<String, String> getAdditionalProperties(Map<String, String> existing, DataSource dataSource) {
 			Map<String, String> result = new HashMap<String, String>(existing);
 			applyNewIdGeneratorMappings(result);
 			getNaming().applyNamingStrategy(result);
@@ -199,8 +197,7 @@ public class JpaProperties {
 
 		private void applyNewIdGeneratorMappings(Map<String, String> result) {
 			if (this.useNewIdGeneratorMappings != null) {
-				result.put(USE_NEW_ID_GENERATOR_MAPPINGS,
-						this.useNewIdGeneratorMappings.toString());
+				result.put(USE_NEW_ID_GENERATOR_MAPPINGS, this.useNewIdGeneratorMappings.toString());
 			}
 			else if (HibernateVersion.getRunning() == HibernateVersion.V5
 					&& !result.containsKey(USE_NEW_ID_GENERATOR_MAPPINGS)) {
@@ -208,12 +205,9 @@ public class JpaProperties {
 			}
 		}
 
-		private String getOrDeduceDdlAuto(Map<String, String> existing,
-				DataSource dataSource) {
-			String ddlAuto = (this.ddlAuto != null) ? this.ddlAuto
-					: getDefaultDdlAuto(dataSource);
-			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
-					&& !"none".equals(ddlAuto)) {
+		private String getOrDeduceDdlAuto(Map<String, String> existing, DataSource dataSource) {
+			String ddlAuto = (this.ddlAuto != null) ? this.ddlAuto : getDefaultDdlAuto(dataSource);
+			if (!existing.containsKey("hibernate." + "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
 				return ddlAuto;
 			}
 			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
@@ -291,16 +285,14 @@ public class JpaProperties {
 		}
 
 		private void applyHibernate5NamingStrategy(Map<String, String> properties) {
-			applyHibernate5NamingStrategy(properties,
-					"hibernate.implicit_naming_strategy", this.implicitStrategy,
+			applyHibernate5NamingStrategy(properties, "hibernate.implicit_naming_strategy", this.implicitStrategy,
 					DEFAULT_IMPLICIT_STRATEGY);
-			applyHibernate5NamingStrategy(properties,
-					"hibernate.physical_naming_strategy", this.physicalStrategy,
+			applyHibernate5NamingStrategy(properties, "hibernate.physical_naming_strategy", this.physicalStrategy,
 					DEFAULT_PHYSICAL_STRATEGY);
 		}
 
-		private void applyHibernate5NamingStrategy(Map<String, String> properties,
-				String key, String strategy, String defaultStrategy) {
+		private void applyHibernate5NamingStrategy(Map<String, String> properties, String key, String strategy,
+				String defaultStrategy) {
 			if (strategy != null) {
 				properties.put(key, strategy);
 			}
@@ -311,14 +303,12 @@ public class JpaProperties {
 
 		private void applyHibernate4NamingStrategy(Map<String, String> properties) {
 			if (!properties.containsKey("hibernate.ejb.naming_strategy_delegator")) {
-				properties.put("hibernate.ejb.naming_strategy",
-						getHibernate4NamingStrategy(properties));
+				properties.put("hibernate.ejb.naming_strategy", getHibernate4NamingStrategy(properties));
 			}
 		}
 
 		private String getHibernate4NamingStrategy(Map<String, String> existing) {
-			if (!existing.containsKey("hibernate.ejb.naming_strategy")
-					&& this.strategy != null) {
+			if (!existing.containsKey("hibernate.ejb.naming_strategy") && this.strategy != null) {
 				return this.strategy;
 			}
 			return DEFAULT_HIBERNATE4_STRATEGY;

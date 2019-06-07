@@ -94,8 +94,7 @@ public class BasicJsonTester {
 	 * @param type the type under test
 	 * @since 1.4.1
 	 */
-	protected final void initialize(Class<?> resourceLoadClass, Charset charset,
-			ResolvableType type) {
+	protected final void initialize(Class<?> resourceLoadClass, Charset charset, ResolvableType type) {
 		if (this.loader == null) {
 			this.loader = new JsonLoader(resourceLoadClass, charset);
 		}

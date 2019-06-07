@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,11 +59,10 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		assertThat(this.context.getBeansOfType(MongoClient.class)).hasSize(1);
-		MongoMappingContext mappingContext = this.context
-				.getBean(MongoMappingContext.class);
+		MongoMappingContext mappingContext = this.context.getBean(MongoMappingContext.class);
 		@SuppressWarnings("unchecked")
-		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 		assertThat(entities).hasSize(1);
 	}
 
@@ -90,10 +89,8 @@ public class MongoRepositoriesAutoConfigurationTests {
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(configurationClasses);
-		this.context.register(MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
-				MongoRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				MongoRepositoriesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}
 

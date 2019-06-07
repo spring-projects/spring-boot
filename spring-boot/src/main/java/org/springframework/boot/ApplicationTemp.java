@@ -79,8 +79,7 @@ public class ApplicationTemp {
 				byte[] hash = generateHash(this.sourceClass);
 				this.dir = new File(getTempDirectory(), toHexString(hash));
 				this.dir.mkdirs();
-				Assert.state(this.dir.exists(),
-						"Unable to create temp directory " + this.dir);
+				Assert.state(this.dir.exists(), "Unable to create temp directory " + this.dir);
 			}
 		}
 		return this.dir;

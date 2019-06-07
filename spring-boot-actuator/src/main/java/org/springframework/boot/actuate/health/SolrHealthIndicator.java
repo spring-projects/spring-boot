@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 		CoreAdminResponse response = request.process(this.solrClient);
 		int statusCode = response.getStatus();
 		Status status = (statusCode != 0) ? Status.DOWN : Status.UP;
-		builder.status(status).withDetail("solrStatus",
-				(statusCode != 0) ? statusCode : "OK");
+		builder.status(status).withDetail("solrStatus", (statusCode != 0) ? statusCode : "OK");
 	}
 
 }

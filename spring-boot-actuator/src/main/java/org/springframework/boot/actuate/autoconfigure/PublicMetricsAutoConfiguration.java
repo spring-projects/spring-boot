@@ -77,8 +77,7 @@ public class PublicMetricsAutoConfiguration {
 
 	private final List<MetricReader> metricReaders;
 
-	public PublicMetricsAutoConfiguration(
-			@ExportMetricReader ObjectProvider<List<MetricReader>> metricReaders) {
+	public PublicMetricsAutoConfiguration(@ExportMetricReader ObjectProvider<List<MetricReader>> metricReaders) {
 		this.metricReaders = metricReaders.getIfAvailable();
 	}
 
@@ -90,15 +89,13 @@ public class PublicMetricsAutoConfiguration {
 	@Bean
 	public MetricReaderPublicMetrics metricReaderPublicMetrics() {
 		MetricReader[] readers = (this.metricReaders != null)
-				? this.metricReaders.toArray(new MetricReader[this.metricReaders.size()])
-				: new MetricReader[0];
+				? this.metricReaders.toArray(new MetricReader[this.metricReaders.size()]) : new MetricReader[0];
 		return new MetricReaderPublicMetrics(new CompositeMetricReader(readers));
 	}
 
 	@Bean
 	@ConditionalOnBean(RichGaugeReader.class)
-	public RichGaugeReaderPublicMetrics richGaugePublicMetrics(
-			RichGaugeReader richGaugeReader) {
+	public RichGaugeReaderPublicMetrics richGaugePublicMetrics(RichGaugeReader richGaugeReader) {
 		return new RichGaugeReaderPublicMetrics(richGaugeReader);
 	}
 
@@ -137,8 +134,7 @@ public class PublicMetricsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(CacheStatisticsProvider.class)
-		public CachePublicMetrics cachePublicMetrics(
-				Map<String, CacheManager> cacheManagers,
+		public CachePublicMetrics cachePublicMetrics(Map<String, CacheManager> cacheManagers,
 				Collection<CacheStatisticsProvider<?>> statisticsProviders) {
 			return new CachePublicMetrics(cacheManagers, statisticsProviders);
 		}
@@ -153,8 +149,7 @@ public class PublicMetricsAutoConfiguration {
 
 		@Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
 		@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
-				name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
-				search = SearchStrategy.CURRENT)
+				name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
 		public IntegrationManagementConfigurer managementConfigurer() {
 			IntegrationManagementConfigurer configurer = new IntegrationManagementConfigurer();
 			configurer.setDefaultCountsEnabled(true);
@@ -166,8 +161,7 @@ public class PublicMetricsAutoConfiguration {
 		@ConditionalOnMissingBean(name = "springIntegrationPublicMetrics")
 		public MetricReaderPublicMetrics springIntegrationPublicMetrics(
 				IntegrationManagementConfigurer managementConfigurer) {
-			return new MetricReaderPublicMetrics(
-					new SpringIntegrationMetricReader(managementConfigurer));
+			return new MetricReaderPublicMetrics(new SpringIntegrationMetricReader(managementConfigurer));
 		}
 
 	}

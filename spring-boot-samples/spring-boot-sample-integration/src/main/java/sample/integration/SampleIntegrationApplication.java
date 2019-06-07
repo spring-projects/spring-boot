@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,25 +54,22 @@ public class SampleIntegrationApplication {
 
 	@Bean
 	public FileWritingMessageHandler fileWriter() {
-		FileWritingMessageHandler writer = new FileWritingMessageHandler(
-				new File("target/output"));
+		FileWritingMessageHandler writer = new FileWritingMessageHandler(new File("target/output"));
 		writer.setExpectReply(false);
 		return writer;
 	}
 
 	@Bean
 	public IntegrationFlow integrationFlow(SampleEndpoint endpoint) {
-		return IntegrationFlows.from(fileReader(), new FixedRatePoller())
-				.channel(inputChannel()).handle(endpoint).channel(outputChannel())
-				.handle(fileWriter()).get();
+		return IntegrationFlows.from(fileReader(), new FixedRatePoller()).channel(inputChannel()).handle(endpoint)
+				.channel(outputChannel()).handle(fileWriter()).get();
 	}
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleIntegrationApplication.class, args);
 	}
 
-	private static class FixedRatePoller
-			implements Consumer<SourcePollingChannelAdapterSpec> {
+	private static class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
 
 		@Override
 		public void accept(SourcePollingChannelAdapterSpec spec) {

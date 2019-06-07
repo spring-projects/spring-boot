@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 
 	private SourceUnit sourceUnit;
 
-	protected AnnotatedNodeASTTransformation(Set<String> interestingAnnotationNames,
-			boolean removeAnnotations) {
+	protected AnnotatedNodeASTTransformation(Set<String> interestingAnnotationNames, boolean removeAnnotations) {
 		this.interestingAnnotationNames = interestingAnnotationNames;
 		this.removeAnnotations = removeAnnotations;
 	}
@@ -68,12 +67,10 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 				for (ImportNode importNode : module.getStarImports()) {
 					visitAnnotatedNode(importNode, annotationNodes);
 				}
-				for (Map.Entry<String, ImportNode> entry : module.getStaticImports()
-						.entrySet()) {
+				for (Map.Entry<String, ImportNode> entry : module.getStaticImports().entrySet()) {
 					visitAnnotatedNode(entry.getValue(), annotationNodes);
 				}
-				for (Map.Entry<String, ImportNode> entry : module.getStaticStarImports()
-						.entrySet()) {
+				for (Map.Entry<String, ImportNode> entry : module.getStaticStarImports().entrySet()) {
 					visitAnnotatedNode(entry.getValue(), annotationNodes);
 				}
 				for (ClassNode classNode : module.getClasses()) {
@@ -91,15 +88,12 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 
 	protected abstract void processAnnotationNodes(List<AnnotationNode> annotationNodes);
 
-	private void visitAnnotatedNode(AnnotatedNode annotatedNode,
-			List<AnnotationNode> annotatedNodes) {
+	private void visitAnnotatedNode(AnnotatedNode annotatedNode, List<AnnotationNode> annotatedNodes) {
 		if (annotatedNode != null) {
-			Iterator<AnnotationNode> annotationNodes = annotatedNode.getAnnotations()
-					.iterator();
+			Iterator<AnnotationNode> annotationNodes = annotatedNode.getAnnotations().iterator();
 			while (annotationNodes.hasNext()) {
 				AnnotationNode annotationNode = annotationNodes.next();
-				if (this.interestingAnnotationNames
-						.contains(annotationNode.getClassNode().getName())) {
+				if (this.interestingAnnotationNames.contains(annotationNode.getClassNode().getName())) {
 					annotatedNodes.add(annotationNode);
 					if (this.removeAnnotations) {
 						annotationNodes.remove();

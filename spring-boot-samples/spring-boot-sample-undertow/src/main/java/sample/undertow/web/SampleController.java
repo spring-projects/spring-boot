@@ -41,8 +41,7 @@ public class SampleController {
 
 			@Override
 			public String call() throws Exception {
-				return "async: "
-						+ SampleController.this.helloWorldService.getHelloMessage();
+				return "async: " + SampleController.this.helloWorldService.getHelloMessage();
 			}
 
 		};

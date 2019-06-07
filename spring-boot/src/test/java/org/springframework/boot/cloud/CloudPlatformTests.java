@@ -45,10 +45,8 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry()
-			throws Exception {
-		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION",
-				"---");
+	public void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry() throws Exception {
+		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
@@ -56,8 +54,7 @@ public class CloudPlatformTests {
 
 	@Test
 	public void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() throws Exception {
-		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES",
-				"---");
+		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ public class TransactionManagerCustomizersTests {
 
 	@Test
 	public void customizeWithNullCustomizersShouldDoNothing() throws Exception {
-		new TransactionManagerCustomizers(null)
-				.customize(mock(PlatformTransactionManager.class));
+		new TransactionManagerCustomizers(null).customize(mock(PlatformTransactionManager.class));
 	}
 
 	@Test
@@ -45,8 +44,7 @@ public class TransactionManagerCustomizersTests {
 		List<TestCustomizer<?>> list = new ArrayList<TestCustomizer<?>>();
 		list.add(new TestCustomizer<PlatformTransactionManager>());
 		list.add(new TestJtaCustomizer());
-		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(
-				list);
+		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(list);
 		customizers.customize(mock(PlatformTransactionManager.class));
 		customizers.customize(mock(JtaTransactionManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);

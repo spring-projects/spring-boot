@@ -82,8 +82,7 @@ public class AnsiOutputApplicationListenerTests {
 	@Test
 	public void disabledViaApplicationProperties() throws Exception {
 		ConfigurableEnvironment environment = new StandardEnvironment();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
-				"spring.config.name=ansi");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "spring.config.name=ansi");
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		application.setEnvironment(environment);

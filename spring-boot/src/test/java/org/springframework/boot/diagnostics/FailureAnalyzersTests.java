@@ -139,8 +139,7 @@ public class FailureAnalyzersTests {
 		@Override
 		public Enumeration<URL> getResources(String name) throws IOException {
 			if ("META-INF/spring.factories".equals(name)) {
-				return super.getResources(
-						"failure-analyzers-tests/" + this.factoriesName);
+				return super.getResources("failure-analyzers-tests/" + this.factoriesName);
 			}
 			return super.getResources(name);
 		}

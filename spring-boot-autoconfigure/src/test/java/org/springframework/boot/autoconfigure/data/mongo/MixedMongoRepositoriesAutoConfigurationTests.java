@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -72,8 +71,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testMixedRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -83,8 +81,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithMongoTemplate() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -93,19 +90,16 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithMongoOverlap() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled()
-			throws Exception {
+	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false",
 				"spring.data.mongodb.repositories.enabled:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
@@ -158,9 +152,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			List<String> names = new ArrayList<String>();
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
-					HibernateJpaAutoConfiguration.class,
-					JpaRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class,
-					MongoDataAutoConfiguration.class,
+					HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
+					MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 					MongoRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}

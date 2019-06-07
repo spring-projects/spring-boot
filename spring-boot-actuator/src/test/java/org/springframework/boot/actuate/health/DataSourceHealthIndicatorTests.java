@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ public class DataSourceHealthIndicatorTests {
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
-		this.dataSource = new SingleConnectionDataSource(db.getUrl() + ";shutdown=true",
-				"sa", "", false);
+		this.dataSource = new SingleConnectionDataSource(db.getUrl() + ";shutdown=true", "sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
 	}
 
@@ -71,8 +70,7 @@ public class DataSourceHealthIndicatorTests {
 	@Test
 	public void customQuery() {
 		this.indicator.setDataSource(this.dataSource);
-		new JdbcTemplate(this.dataSource)
-				.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
+		new JdbcTemplate(this.dataSource).execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
 		this.indicator.setQuery("SELECT COUNT(*) from FOO");
 		Health health = this.indicator.health();
 		System.err.println(health);
@@ -94,8 +92,7 @@ public class DataSourceHealthIndicatorTests {
 	public void connectionClosed() throws Exception {
 		DataSource dataSource = mock(DataSource.class);
 		Connection connection = mock(Connection.class);
-		given(connection.getMetaData())
-				.willReturn(this.dataSource.getConnection().getMetaData());
+		given(connection.getMetaData()).willReturn(this.dataSource.getConnection().getMetaData());
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();

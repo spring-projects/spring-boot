@@ -47,8 +47,7 @@ public class UserVehicleControllerHtmlUnitTests {
 
 	@Test
 	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
 		HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");
 		assertThat(page.getBody().getTextContent()).isEqualTo("Honda Civic");
 	}

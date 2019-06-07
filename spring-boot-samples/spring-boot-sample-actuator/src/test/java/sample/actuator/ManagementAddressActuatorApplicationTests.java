@@ -40,8 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.port=0", "management.address=127.0.0.1",
-				"management.context-path:/admin" })
+		properties = { "management.port=0", "management.address=127.0.0.1", "management.context-path:/admin" })
 @DirtiesContext
 public class ManagementAddressActuatorApplicationTests {
 
@@ -54,16 +53,14 @@ public class ManagementAddressActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port, Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/health",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

@@ -56,27 +56,22 @@ public class RestDocsTestExecutionListener extends AbstractTestExecutionListener
 	private static class DocumentationHandler {
 
 		private void beforeTestMethod(TestContext testContext) throws Exception {
-			ManualRestDocumentation restDocumentation = findManualRestDocumentation(
-					testContext);
+			ManualRestDocumentation restDocumentation = findManualRestDocumentation(testContext);
 			if (restDocumentation != null) {
-				restDocumentation.beforeTest(testContext.getTestClass(),
-						testContext.getTestMethod().getName());
+				restDocumentation.beforeTest(testContext.getTestClass(), testContext.getTestMethod().getName());
 			}
 		}
 
 		private void afterTestMethod(TestContext testContext) {
-			ManualRestDocumentation restDocumentation = findManualRestDocumentation(
-					testContext);
+			ManualRestDocumentation restDocumentation = findManualRestDocumentation(testContext);
 			if (restDocumentation != null) {
 				restDocumentation.afterTest();
 			}
 		}
 
-		private ManualRestDocumentation findManualRestDocumentation(
-				TestContext testContext) {
+		private ManualRestDocumentation findManualRestDocumentation(TestContext testContext) {
 			try {
-				return testContext.getApplicationContext()
-						.getBean(ManualRestDocumentation.class);
+				return testContext.getApplicationContext().getBean(ManualRestDocumentation.class);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return null;

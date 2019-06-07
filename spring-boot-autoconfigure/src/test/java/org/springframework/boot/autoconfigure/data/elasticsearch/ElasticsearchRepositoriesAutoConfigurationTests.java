@@ -51,10 +51,8 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		addElasticsearchProperties(this.context);
-		this.context.register(TestConfiguration.class,
-				ElasticsearchAutoConfiguration.class,
-				ElasticsearchRepositoriesAutoConfiguration.class,
-				ElasticsearchDataAutoConfiguration.class,
+		this.context.register(TestConfiguration.class, ElasticsearchAutoConfiguration.class,
+				ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -65,10 +63,8 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		addElasticsearchProperties(this.context);
-		this.context.register(EmptyConfiguration.class,
-				ElasticsearchAutoConfiguration.class,
-				ElasticsearchRepositoriesAutoConfiguration.class,
-				ElasticsearchDataAutoConfiguration.class,
+		this.context.register(EmptyConfiguration.class, ElasticsearchAutoConfiguration.class,
+				ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(Client.class)).isNotNull();
@@ -78,18 +74,15 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.context = new AnnotationConfigApplicationContext();
 		addElasticsearchProperties(this.context);
-		this.context.register(CustomizedConfiguration.class,
-				ElasticsearchAutoConfiguration.class,
-				ElasticsearchRepositoriesAutoConfiguration.class,
-				ElasticsearchDataAutoConfiguration.class,
+		this.context.register(CustomizedConfiguration.class, ElasticsearchAutoConfiguration.class,
+				ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityElasticsearchDbRepository.class)).isNotNull();
 	}
 
 	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.data.elasticsearch.properties.path.home:target");
+		EnvironmentTestUtils.addEnvironment(context, "spring.data.elasticsearch.properties.path.home:target");
 	}
 
 	@Configuration
@@ -106,8 +99,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@TestAutoConfigurationPackage(ElasticsearchRepositoriesAutoConfigurationTests.class)
-	@EnableElasticsearchRepositories(
-			basePackageClasses = CityElasticsearchDbRepository.class)
+	@EnableElasticsearchRepositories(basePackageClasses = CityElasticsearchDbRepository.class)
 	protected static class CustomizedConfiguration {
 
 	}

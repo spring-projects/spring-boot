@@ -50,8 +50,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "server.servlet-path=/spring" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "server.servlet-path=/spring" })
 @DirtiesContext
 public class HalBrowserMvcEndpointServerServletPathIntegrationTests {
 
@@ -62,9 +61,8 @@ public class HalBrowserMvcEndpointServerServletPathIntegrationTests {
 	public void linksAddedToHomePage() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/spring/", HttpMethod.GET,
-				new HttpEntity<Void>(null, headers), String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().exchange("http://localhost:" + this.port + "/spring/",
+				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"_links\":");
 	}
@@ -77,8 +75,8 @@ public class HalBrowserMvcEndpointServerServletPathIntegrationTests {
 				"http://localhost:" + this.port + "/spring/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create(
-				"http://localhost:" + this.port + "/spring/actuator/browser.html"));
+		assertThat(entity.getHeaders().getLocation())
+				.isEqualTo(URI.create("http://localhost:" + this.port + "/spring/actuator/browser.html"));
 	}
 
 	@Test
@@ -86,8 +84,8 @@ public class HalBrowserMvcEndpointServerServletPathIntegrationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/spring/actuator/browser.html",
-				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
+				"http://localhost:" + this.port + "/spring/actuator/browser.html", HttpMethod.GET,
+				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("entryPoint: '/spring/actuator'");
 	}
@@ -121,8 +119,7 @@ public class HalBrowserMvcEndpointServerServletPathIntegrationTests {
 		@RequestMapping("")
 		public ResourceSupport home() {
 			ResourceSupport resource = new ResourceSupport();
-			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/")
-					.withSelfRel());
+			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/").withSelfRel());
 			return resource;
 		}
 

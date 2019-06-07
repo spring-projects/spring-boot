@@ -57,11 +57,9 @@ public class RestDocsAutoConfiguration {
 
 	@Bean
 	@ConfigurationProperties(prefix = "spring.test.restdocs")
-	public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(
-			MockMvcRestDocumentationConfigurer configurer,
+	public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(MockMvcRestDocumentationConfigurer configurer,
 			ObjectProvider<RestDocumentationResultHandler> resultHandler) {
-		return new RestDocsMockMvcBuilderCustomizer(configurer,
-				resultHandler.getIfAvailable());
+		return new RestDocsMockMvcBuilderCustomizer(configurer, resultHandler.getIfAvailable());
 	}
 
 }

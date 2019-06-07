@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 public class DevToolsDataSourceAutoConfiguration {
 
 	@Bean
-	NonEmbeddedInMemoryDatabaseShutdownExecutor inMemoryDatabaseShutdownExecutor(
-			DataSource dataSource, DataSourceProperties dataSourceProperties) {
-		return new NonEmbeddedInMemoryDatabaseShutdownExecutor(dataSource,
-				dataSourceProperties);
+	NonEmbeddedInMemoryDatabaseShutdownExecutor inMemoryDatabaseShutdownExecutor(DataSource dataSource,
+			DataSourceProperties dataSourceProperties) {
+		return new NonEmbeddedInMemoryDatabaseShutdownExecutor(dataSource, dataSourceProperties);
 	}
 
 	/**
@@ -72,8 +71,7 @@ public class DevToolsDataSourceAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	static class DatabaseShutdownExecutorJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	static class DatabaseShutdownExecutorJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		DatabaseShutdownExecutorJpaDependencyConfiguration() {
 			super("inMemoryDatabaseShutdownExecutor");
@@ -81,15 +79,13 @@ public class DevToolsDataSourceAutoConfiguration {
 
 	}
 
-	static final class NonEmbeddedInMemoryDatabaseShutdownExecutor
-			implements DisposableBean {
+	static final class NonEmbeddedInMemoryDatabaseShutdownExecutor implements DisposableBean {
 
 		private final DataSource dataSource;
 
 		private final DataSourceProperties dataSourceProperties;
 
-		NonEmbeddedInMemoryDatabaseShutdownExecutor(DataSource dataSource,
-				DataSourceProperties dataSourceProperties) {
+		NonEmbeddedInMemoryDatabaseShutdownExecutor(DataSource dataSource, DataSourceProperties dataSourceProperties) {
 			this.dataSource = dataSource;
 			this.dataSourceProperties = dataSourceProperties;
 		}
@@ -116,8 +112,7 @@ public class DevToolsDataSourceAutoConfiguration {
 
 			H2("jdbc:h2:mem:", "org.h2.Driver", "org.h2.jdbcx.JdbcDataSource"),
 
-			HSQLDB("jdbc:hsqldb:mem:", "org.hsqldb.jdbcDriver",
-					"org.hsqldb.jdbc.JDBCDriver",
+			HSQLDB("jdbc:hsqldb:mem:", "org.hsqldb.jdbcDriver", "org.hsqldb.jdbc.JDBCDriver",
 					"org.hsqldb.jdbc.pool.JDBCXADataSource");
 
 			private final String urlPrefix;
@@ -126,24 +121,20 @@ public class DevToolsDataSourceAutoConfiguration {
 
 			InMemoryDatabase(String urlPrefix, String... driverClassNames) {
 				this.urlPrefix = urlPrefix;
-				this.driverClassNames = new HashSet<String>(
-						Arrays.asList(driverClassNames));
+				this.driverClassNames = new HashSet<String>(Arrays.asList(driverClassNames));
 			}
 
 			boolean matches(DataSourceProperties properties) {
 				String url = properties.getUrl();
-				return (url == null || this.urlPrefix == null
-						|| url.startsWith(this.urlPrefix))
-						&& this.driverClassNames
-								.contains(properties.determineDriverClassName());
+				return (url == null || this.urlPrefix == null || url.startsWith(this.urlPrefix))
+						&& this.driverClassNames.contains(properties.determineDriverClassName());
 			}
 
 		}
 
 	}
 
-	static class DevToolsDataSourceCondition extends SpringBootCondition
-			implements ConfigurationCondition {
+	static class DevToolsDataSourceCondition extends SpringBootCondition implements ConfigurationCondition {
 
 		@Override
 		public ConfigurationPhase getConfigurationPhase() {
@@ -151,35 +142,24 @@ public class DevToolsDataSourceAutoConfiguration {
 		}
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("DevTools DataSource Condition");
-			String[] dataSourceBeanNames = context.getBeanFactory()
-					.getBeanNamesForType(DataSource.class);
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage.forCondition("DevTools DataSource Condition");
+			String[] dataSourceBeanNames = context.getBeanFactory().getBeanNamesForType(DataSource.class);
 			if (dataSourceBeanNames.length != 1) {
-				return ConditionOutcome
-						.noMatch(message.didNotFind("a single DataSource bean").atAll());
+				return ConditionOutcome.noMatch(message.didNotFind("a single DataSource bean").atAll());
 			}
-			if (context.getBeanFactory()
-					.getBeanNamesForType(DataSourceProperties.class).length != 1) {
-				return ConditionOutcome.noMatch(
-						message.didNotFind("a single DataSourceProperties bean").atAll());
+			if (context.getBeanFactory().getBeanNamesForType(DataSourceProperties.class).length != 1) {
+				return ConditionOutcome.noMatch(message.didNotFind("a single DataSourceProperties bean").atAll());
 			}
-			BeanDefinition dataSourceDefinition = context.getRegistry()
-					.getBeanDefinition(dataSourceBeanNames[0]);
+			BeanDefinition dataSourceDefinition = context.getRegistry().getBeanDefinition(dataSourceBeanNames[0]);
 			if (dataSourceDefinition instanceof AnnotatedBeanDefinition
-					&& ((AnnotatedBeanDefinition) dataSourceDefinition)
-							.getFactoryMethodMetadata() != null
-					&& ((AnnotatedBeanDefinition) dataSourceDefinition)
-							.getFactoryMethodMetadata().getDeclaringClassName()
-							.startsWith(DataSourceAutoConfiguration.class.getPackage()
-									.getName() + ".DataSourceConfiguration$")) {
-				return ConditionOutcome
-						.match(message.foundExactly("auto-configured DataSource"));
+					&& ((AnnotatedBeanDefinition) dataSourceDefinition).getFactoryMethodMetadata() != null
+					&& ((AnnotatedBeanDefinition) dataSourceDefinition).getFactoryMethodMetadata()
+							.getDeclaringClassName().startsWith(DataSourceAutoConfiguration.class.getPackage().getName()
+									+ ".DataSourceConfiguration$")) {
+				return ConditionOutcome.match(message.foundExactly("auto-configured DataSource"));
 			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("an auto-configured DataSource").atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("an auto-configured DataSource").atAll());
 		}
 
 	}

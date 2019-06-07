@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoint> {
 
 	public ShutdownEndpointTests() {
-		super(Config.class, ShutdownEndpoint.class, "shutdown", true,
-				"endpoints.shutdown");
+		super(Config.class, ShutdownEndpoint.class, "shutdown", true, "endpoints.shutdown");
 	}
 
 	@Override
@@ -57,8 +56,7 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 		Config config = this.context.getBean(Config.class);
 		ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
 		Map<String, Object> result;
-		Thread.currentThread().setContextClassLoader(
-				new URLClassLoader(new URL[0], getClass().getClassLoader()));
+		Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()));
 		try {
 			result = getEndpointBean().invoke();
 		}
@@ -68,8 +66,7 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 		assertThat((String) result.get("message")).startsWith("Shutting down");
 		assertThat(this.context.isActive()).isTrue();
 		assertThat(config.latch.await(10, TimeUnit.SECONDS)).isTrue();
-		assertThat(config.threadContextClassLoader)
-				.isEqualTo(getClass().getClassLoader());
+		assertThat(config.threadContextClassLoader).isEqualTo(getClass().getClassLoader());
 	}
 
 	@Configuration
@@ -92,8 +89,7 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 
 				@Override
 				public void onApplicationEvent(ContextClosedEvent event) {
-					Config.this.threadContextClassLoader = Thread.currentThread()
-							.getContextClassLoader();
+					Config.this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
 					Config.this.latch.countDown();
 				}
 

@@ -40,8 +40,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getExtensions().create("springBoot", SpringBootPluginExtension.class,
-				project);
+		project.getExtensions().create("springBoot", SpringBootPluginExtension.class, project);
 		project.getPlugins().apply(JavaPlugin.class);
 		new AgentPluginFeatures().apply(project);
 		new RepackagePluginFeatures().apply(project);

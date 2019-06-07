@@ -46,14 +46,10 @@ public class NarayanaBeanFactoryPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext(beanFactory);
 		this.context.register(Config.class);
 		this.context.refresh();
-		verify(beanFactory).registerDependentBean("narayanaTransactionManager",
-				"dataSource");
-		verify(beanFactory).registerDependentBean("narayanaTransactionManager",
-				"connectionFactory");
-		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean",
-				"dataSource");
-		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean",
-				"connectionFactory");
+		verify(beanFactory).registerDependentBean("narayanaTransactionManager", "dataSource");
+		verify(beanFactory).registerDependentBean("narayanaTransactionManager", "connectionFactory");
+		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean", "dataSource");
+		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean", "connectionFactory");
 		this.context.close();
 	}
 

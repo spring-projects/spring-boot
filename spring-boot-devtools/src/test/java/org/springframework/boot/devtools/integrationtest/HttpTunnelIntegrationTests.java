@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,7 @@ public class HttpTunnelIntegrationTests {
 	@Test
 	public void httpServerDirect() throws Exception {
 		String url = "http://localhost:" + this.config.httpServerPort + "/hello";
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
@@ -80,8 +79,7 @@ public class HttpTunnelIntegrationTests {
 	@Test
 	public void viaTunnel() throws Exception {
 		String url = "http://localhost:" + this.config.clientPort + "/hello";
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
@@ -104,8 +102,7 @@ public class HttpTunnelIntegrationTests {
 			PortProvider port = new StaticPortProvider(this.httpServerPort);
 			TargetServerConnection connection = new SocketTargetServerConnection(port);
 			HttpTunnelServer server = new HttpTunnelServer(connection);
-			HandlerMapper mapper = new UrlHandlerMapper("/httptunnel",
-					new HttpTunnelServerHandler(server));
+			HandlerMapper mapper = new UrlHandlerMapper("/httptunnel", new HttpTunnelServerHandler(server));
 			Collection<HandlerMapper> mappers = Collections.singleton(mapper);
 			Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
 			return new DispatcherFilter(dispatcher);
@@ -114,8 +111,7 @@ public class HttpTunnelIntegrationTests {
 		@Bean
 		public TunnelClient tunnelClient() {
 			String url = "http://localhost:" + this.httpServerPort + "/httptunnel";
-			TunnelConnection connection = new HttpTunnelConnection(url,
-					new SimpleClientHttpRequestFactory());
+			TunnelConnection connection = new HttpTunnelConnection(url, new SimpleClientHttpRequestFactory());
 			return new TunnelClient(this.clientPort, connection);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,86 +148,74 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onSamePort() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.security.enabled:false");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				BaseConfiguration.class, ServerPortConfig.class,
-				EndpointWebMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.security.enabled:false");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, BaseConfiguration.class,
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, "endpointoutput");
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, null);
-		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context"))
-				.isTrue();
-		assertThat(this.applicationContext.containsBean("applicationContextIdFilter"))
-				.isTrue();
+		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context")).isTrue();
+		assertThat(this.applicationContext.containsBean("applicationContextIdFilter")).isTrue();
 	}
 
 	@Test
 	public void onSamePortWithoutHeader() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.add-application-context-header:false");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				BaseConfiguration.class, ServerPortConfig.class,
-				EndpointWebMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.add-application-context-header:false");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, BaseConfiguration.class,
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context"))
-				.isFalse();
-		assertThat(this.applicationContext.containsBean("applicationContextIdFilter"))
-				.isFalse();
+		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context")).isFalse();
+		assertThat(this.applicationContext.containsBean("applicationContextIdFilter")).isFalse();
 	}
 
 	@Test
 	public void onDifferentPort() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
 		assertContent("/error", ports.get().management, startsWith("{"));
-		ApplicationContext managementContext = this.applicationContext
-				.getBean(ManagementContextResolver.class).getApplicationContext();
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
-				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
+		ApplicationContext managementContext = this.applicationContext.getBean(ManagementContextResolver.class)
+				.getApplicationContext();
+		List<?> interceptors = (List<?>) ReflectionTestUtils
+				.getField(managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
 		assertThat(interceptors).hasSize(2);
 	}
 
 	@Test
 	public void onDifferentPortWithSpecificContainer() throws Exception {
-		this.applicationContext.register(SpecificContainerConfig.class, RootConfig.class,
-				DifferentPortConfig.class, EndpointConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.register(SpecificContainerConfig.class, RootConfig.class, DifferentPortConfig.class,
+				EndpointConfig.class, BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
 		assertContent("/error", ports.get().management, startsWith("{"));
-		ApplicationContext managementContext = this.applicationContext
-				.getBean(ManagementContextResolver.class).getApplicationContext();
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
-				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
+		ApplicationContext managementContext = this.applicationContext.getBean(ManagementContextResolver.class)
+				.getApplicationContext();
+		List<?> interceptors = (List<?>) ReflectionTestUtils
+				.getField(managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
 		assertThat(interceptors).hasSize(2);
 		EmbeddedServletContainerFactory parentContainerFactory = this.applicationContext
 				.getBean(EmbeddedServletContainerFactory.class);
 		EmbeddedServletContainerFactory managementContainerFactory = managementContext
 				.getBean(EmbeddedServletContainerFactory.class);
-		assertThat(parentContainerFactory)
-				.isInstanceOf(SpecificEmbeddedServletContainerFactory.class);
-		assertThat(managementContainerFactory)
-				.isInstanceOf(SpecificEmbeddedServletContainerFactory.class);
+		assertThat(parentContainerFactory).isInstanceOf(SpecificEmbeddedServletContainerFactory.class);
+		assertThat(managementContainerFactory).isInstanceOf(SpecificEmbeddedServletContainerFactory.class);
 		assertThat(managementContainerFactory).isNotSameAs(parentContainerFactory);
 	}
 
 	@Test
 	public void onDifferentPortAndContext() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		management.setContextPath("/admin");
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
@@ -237,9 +225,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortAndMainContext() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		management.setContextPath("/admin");
 		server.setContextPath("/spring");
 		this.applicationContext.refresh();
@@ -250,23 +237,19 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortWithoutErrorMvcAutoConfiguration() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/error", ports.get().management, null);
 	}
 
 	@Test
 	public void onDifferentPortInServletContainer() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		ServletContext servletContext = mock(ServletContext.class);
-		given(servletContext.getInitParameterNames())
-				.willReturn(new Vector<String>().elements());
-		given(servletContext.getAttributeNames())
-				.willReturn(new Vector<String>().elements());
+		given(servletContext.getInitParameterNames()).willReturn(new Vector<String>().elements());
+		given(servletContext.getAttributeNames()).willReturn(new Vector<String>().elements());
 		this.applicationContext.setServletContext(servletContext);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().management, null);
@@ -275,11 +258,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onRandomPort() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				RandomPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
-		GrabManagementPort grabManagementPort = new GrabManagementPort(
-				this.applicationContext);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, RandomPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		GrabManagementPort grabManagementPort = new GrabManagementPort(this.applicationContext);
 		this.applicationContext.addApplicationListener(grabManagementPort);
 		this.applicationContext.refresh();
 		int managementPort = grabManagementPort.getServletContainer().getPort();
@@ -292,24 +273,21 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onDifferentPortWithPrimaryFailure() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		ApplicationContext managementContext = this.applicationContext
-				.getBean(ManagementContextResolver.class).getApplicationContext();
+		ApplicationContext managementContext = this.applicationContext.getBean(ManagementContextResolver.class)
+				.getApplicationContext();
 		ApplicationFailedEvent event = mock(ApplicationFailedEvent.class);
 		given(event.getApplicationContext()).willReturn(this.applicationContext);
 		this.applicationContext.publishEvent(event);
-		assertThat(((ConfigurableApplicationContext) managementContext).isActive())
-				.isFalse();
+		assertThat(((ConfigurableApplicationContext) managementContext).isActive()).isFalse();
 	}
 
 	@Test
 	public void disabled() throws Exception {
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DisableConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DisableConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
@@ -319,13 +297,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void specificPortsViaProperties() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"server.port:" + ports.get().server,
-				"management.port:" + ports.get().management,
-				"management.security.enabled:false");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.port:" + ports.get().server,
+				"management.port:" + ports.get().management, "management.security.enabled:false");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
@@ -339,12 +314,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 		ServerSocket serverSocket = new ServerSocket();
 		serverSocket.bind(new InetSocketAddress(managementPort));
 		try {
-			EnvironmentTestUtils.addEnvironment(this.applicationContext,
-					"server.port:" + ports.get().server,
+			EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.port:" + ports.get().server,
 					"management.port:" + ports.get().management);
-			this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-					BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-					ErrorMvcAutoConfiguration.class);
+			this.applicationContext.register(RootConfig.class, EndpointConfig.class, BaseConfiguration.class,
+					EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 			this.thrown.expect(EmbeddedServletContainerException.class);
 			this.applicationContext.refresh();
 		}
@@ -355,14 +328,12 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void contextPath() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.contextPath:/test", "management.security.enabled:false");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				ServerPortConfig.class, PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.contextPath:/test",
+				"management.security.enabled:false");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, ServerPortConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class, JacksonAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class);
 		this.applicationContext.refresh();
@@ -372,34 +343,29 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideServerProperties() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"server.displayName:foo");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				ServerPortConfig.class, PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.displayName:foo");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, ServerPortConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class, JacksonAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
-		ServerProperties serverProperties = this.applicationContext
-				.getBean(ServerProperties.class);
+		ServerProperties serverProperties = this.applicationContext.getBean(ServerProperties.class);
 		assertThat(serverProperties.getDisplayName()).isEqualTo("foo");
 	}
 
 	@Test
 	public void portPropertiesOnSamePort() throws Exception {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
-		new ServerPortInfoApplicationContextInitializer()
-				.initialize(this.applicationContext);
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
+		new ServerPortInfoApplicationContextInitializer().initialize(this.applicationContext);
 		this.applicationContext.refresh();
-		Integer localServerPort = this.applicationContext.getEnvironment()
-				.getProperty("local.server.port", Integer.class);
-		Integer localManagementPort = this.applicationContext.getEnvironment()
-				.getProperty("local.management.port", Integer.class);
+		Integer localServerPort = this.applicationContext.getEnvironment().getProperty("local.server.port",
+				Integer.class);
+		Integer localManagementPort = this.applicationContext.getEnvironment().getProperty("local.management.port",
+				Integer.class);
 		assertThat(localServerPort).isNotNull();
 		assertThat(localManagementPort).isNotNull();
 		assertThat(localServerPort).isEqualTo(localManagementPort);
@@ -407,27 +373,24 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void portPropertiesOnDifferentPort() throws Exception {
-		new ServerPortInfoApplicationContextInitializer()
-				.initialize(this.applicationContext);
-		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class,
-				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ErrorMvcAutoConfiguration.class);
+		new ServerPortInfoApplicationContextInitializer().initialize(this.applicationContext);
+		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		Integer localServerPort = this.applicationContext.getEnvironment()
-				.getProperty("local.server.port", Integer.class);
-		Integer localManagementPort = this.applicationContext.getEnvironment()
-				.getProperty("local.management.port", Integer.class);
+		Integer localServerPort = this.applicationContext.getEnvironment().getProperty("local.server.port",
+				Integer.class);
+		Integer localManagementPort = this.applicationContext.getEnvironment().getProperty("local.management.port",
+				Integer.class);
 		assertThat(localServerPort).isNotNull();
 		assertThat(localManagementPort).isNotNull();
 		assertThat(localServerPort).isNotEqualTo(localManagementPort);
-		assertThat(this.applicationContext.getBean(ServerPortConfig.class).getCount())
-				.isEqualTo(2);
+		assertThat(this.applicationContext.getBean(ServerPortConfig.class).getCount()).isEqualTo(2);
 	}
 
 	@Test
 	public void singleRequestMappingInfoHandlerMappingBean() throws Exception {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		RequestMappingInfoHandlerMapping mapping = this.applicationContext
 				.getBean(RequestMappingInfoHandlerMapping.class);
@@ -436,9 +399,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void endpointsDefaultConfiguration() throws Exception {
-		this.applicationContext.register(LoggingConfig.class, RootConfig.class,
-				BaseConfiguration.class, ServerPortConfig.class,
-				EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.register(LoggingConfig.class, RootConfig.class, BaseConfiguration.class,
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		// /health, /metrics, /loggers, /env, /actuator, /heapdump, /auditevents
 		// (/shutdown is disabled by default)
@@ -447,10 +409,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void endpointsAllDisabled() throws Exception {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"ENDPOINTS_ENABLED:false");
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "ENDPOINTS_ENABLED:false");
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).isEmpty();
 	}
@@ -497,45 +458,39 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void shutdownEndpointEnabled() {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"endpoints.shutdown.enabled:true");
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "endpoints.shutdown.enabled:true");
 		this.applicationContext.refresh();
-		assertThat(this.applicationContext.getBeansOfType(ShutdownMvcEndpoint.class))
-				.hasSize(1);
+		assertThat(this.applicationContext.getBeansOfType(ShutdownMvcEndpoint.class)).hasSize(1);
 	}
 
 	@Test
 	public void actuatorEndpointEnabledIndividually() {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"endpoints.enabled:false", "endpoints.actuator.enabled:true");
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "endpoints.enabled:false",
+				"endpoints.actuator.enabled:true");
 		this.applicationContext.refresh();
-		assertThat(this.applicationContext.getBeansOfType(HalJsonMvcEndpoint.class))
-				.hasSize(1);
+		assertThat(this.applicationContext.getBeansOfType(HalJsonMvcEndpoint.class)).hasSize(1);
 	}
 
 	@Test
 	public void managementSpecificSslUsingDifferentPort() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.ssl.enabled=true",
-				"management.ssl.key-store=classpath:test.jks",
-				"management.ssl.key-password=password");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.ssl.enabled=true",
+				"management.ssl.key-store=classpath:test.jks", "management.ssl.key-password=password");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertHttpsContent("/controller", ports.get().management, null);
 		assertHttpsContent("/endpoint", ports.get().management, "endpointoutput");
 		assertHttpsContent("/error", ports.get().management, startsWith("{"));
-		ApplicationContext managementContext = this.applicationContext
-				.getBean(ManagementContextResolver.class).getApplicationContext();
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
-				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
+		ApplicationContext managementContext = this.applicationContext.getBean(ManagementContextResolver.class)
+				.getApplicationContext();
+		List<?> interceptors = (List<?>) ReflectionTestUtils
+				.getField(managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
 		assertThat(interceptors).hasSize(2);
 		ManagementServerProperties managementServerProperties = this.applicationContext
 				.getBean(ManagementServerProperties.class);
@@ -545,13 +500,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void managementSpecificSslUsingSamePortFails() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.ssl.enabled=true",
-				"management.ssl.key-store=classpath:test.jks",
-				"management.ssl.key-password=password");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ErrorMvcAutoConfiguration.class, ServerPortConfig.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.ssl.enabled=true",
+				"management.ssl.key-store=classpath:test.jks", "management.ssl.key-password=password");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class, ServerPortConfig.class);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Management-specific SSL cannot be configured as the "
 				+ "management server is not listening on a separate port");
@@ -559,35 +511,31 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void samePortCanBeUsedWhenManagementSslIsExplicitlyDisabled()
-			throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.ssl.enabled=false");
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ErrorMvcAutoConfiguration.class, ServerPortConfig.class);
+	public void samePortCanBeUsedWhenManagementSslIsExplicitlyDisabled() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.ssl.enabled=false");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class, ServerPortConfig.class);
 		this.applicationContext.refresh();
 	}
 
 	@Test
 	public void managementServerCanDisableSslWhenUsingADifferentPort() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
-				"server.ssl.key-password=password", "management.ssl.enabled=false");
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.ssl.enabled=true",
+				"server.ssl.key-store=classpath:test.jks", "server.ssl.key-password=password",
+				"management.ssl.enabled=false");
 
-		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
-				DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertHttpsContent("/controller", ports.get().server, "controlleroutput");
 		assertHttpsContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
 		assertContent("/error", ports.get().management, startsWith("{"));
-		ApplicationContext managementContext = this.applicationContext
-				.getBean(ManagementContextResolver.class).getApplicationContext();
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
-				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
+		ApplicationContext managementContext = this.applicationContext.getBean(ManagementContextResolver.class)
+				.getApplicationContext();
+		List<?> interceptors = (List<?>) ReflectionTestUtils
+				.getField(managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
 		assertThat(interceptors).hasSize(2);
 		ManagementServerProperties managementServerProperties = this.applicationContext
 				.getBean(ManagementServerProperties.class);
@@ -597,18 +545,16 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void tomcatManagementAccessLogUsesCustomPrefix() throws Exception {
-		this.applicationContext.register(TomcatContainerConfig.class, RootConfig.class,
-				EndpointConfig.class, DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"server.tomcat.accesslog.enabled: true");
+		this.applicationContext.register(TomcatContainerConfig.class, RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.tomcat.accesslog.enabled: true");
 		this.applicationContext.refresh();
-		ApplicationContext managementContext = this.applicationContext
-				.getBean(ManagementContextResolver.class).getApplicationContext();
+		ApplicationContext managementContext = this.applicationContext.getBean(ManagementContextResolver.class)
+				.getApplicationContext();
 		EmbeddedServletContainerFactory servletContainerFactory = managementContext
 				.getBean(EmbeddedServletContainerFactory.class);
-		assertThat(servletContainerFactory)
-				.isInstanceOf(TomcatEmbeddedServletContainerFactory.class);
+		assertThat(servletContainerFactory).isInstanceOf(TomcatEmbeddedServletContainerFactory.class);
 		AccessLogValve accessLogValve = findAccessLogValve(
 				((TomcatEmbeddedServletContainerFactory) servletContainerFactory));
 		assertThat(accessLogValve).isNotNull();
@@ -617,24 +563,21 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void undertowManagementAccessLogUsesCustomPrefix() throws Exception {
-		this.applicationContext.register(UndertowContainerConfig.class, RootConfig.class,
-				EndpointConfig.class, DifferentPortConfig.class, BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"server.undertow.accesslog.enabled: true");
+		this.applicationContext.register(UndertowContainerConfig.class, RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.undertow.accesslog.enabled: true");
 		this.applicationContext.refresh();
-		ApplicationContext managementContext = this.applicationContext
-				.getBean(ManagementContextResolver.class).getApplicationContext();
+		ApplicationContext managementContext = this.applicationContext.getBean(ManagementContextResolver.class)
+				.getApplicationContext();
 		EmbeddedServletContainerFactory servletContainerFactory = managementContext
 				.getBean(EmbeddedServletContainerFactory.class);
-		assertThat(servletContainerFactory)
-				.isInstanceOf(UndertowEmbeddedServletContainerFactory.class);
-		assertThat(((UndertowEmbeddedServletContainerFactory) servletContainerFactory)
-				.getAccessLogPrefix()).isEqualTo("management_access_log.");
+		assertThat(servletContainerFactory).isInstanceOf(UndertowEmbeddedServletContainerFactory.class);
+		assertThat(((UndertowEmbeddedServletContainerFactory) servletContainerFactory).getAccessLogPrefix())
+				.isEqualTo("management_access_log.");
 	}
 
-	private AccessLogValve findAccessLogValve(
-			TomcatEmbeddedServletContainerFactory container) {
+	private AccessLogValve findAccessLogValve(TomcatEmbeddedServletContainerFactory container) {
 		for (Valve engineValve : container.getEngineValves()) {
 			if (engineValve instanceof AccessLogValve) {
 				return (AccessLogValve) engineValve;
@@ -644,21 +587,17 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	private void endpointDisabled(String name, Class<? extends MvcEndpoint> type) {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				String.format("endpoints.%s.enabled:false", name));
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, String.format("endpoints.%s.enabled:false", name));
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(type)).isEmpty();
 	}
 
-	private void endpointEnabledOverride(String name, Class<? extends MvcEndpoint> type)
-			throws Exception {
-		this.applicationContext.register(LoggingConfig.class, RootConfig.class,
-				BaseConfiguration.class, ServerPortConfig.class,
-				EndpointWebMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"endpoints.enabled:false",
+	private void endpointEnabledOverride(String name, Class<? extends MvcEndpoint> type) throws Exception {
+		this.applicationContext.register(LoggingConfig.class, RootConfig.class, BaseConfiguration.class,
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "endpoints.enabled:false",
 				String.format("endpoints_%s_enabled:true", name));
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(type)).hasSize(1);
@@ -671,8 +610,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().management, null);
 	}
 
-	private void assertHttpsContent(String url, int port, Object expected)
-			throws Exception {
+	private void assertHttpsContent(String url, int port, Object expected) throws Exception {
 		assertContent("https", url, port, expected);
 	}
 
@@ -680,26 +618,21 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("http", url, port, expected);
 	}
 
-	private void assertContent(String scheme, String url, int port, Object expected)
-			throws Exception {
+	private void assertContent(String scheme, String url, int port, Object expected) throws Exception {
 
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder()
-						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
-				.build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
-				httpClient);
-		ClientHttpRequest request = requestFactory.createRequest(
-				new URI(scheme + "://localhost:" + port + url), HttpMethod.GET);
+				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		ClientHttpRequest request = requestFactory.createRequest(new URI(scheme + "://localhost:" + port + url),
+				HttpMethod.GET);
 		try {
 			ClientHttpResponse response = request.execute();
 			if (HttpStatus.NOT_FOUND.equals(response.getStatusCode())) {
 				throw new FileNotFoundException();
 			}
 			try {
-				String actual = StreamUtils.copyToString(response.getBody(),
-						Charset.forName("UTF-8"));
+				String actual = StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 				if (expected instanceof Matcher) {
 					assertThat(actual).is(Matched.by((Matcher<?>) expected));
 				}
@@ -713,8 +646,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		}
 		catch (Exception ex) {
 			if (expected == null) {
-				if (SocketException.class.isInstance(ex)
-						|| FileNotFoundException.class.isInstance(ex)) {
+				if (SocketException.class.isInstance(ex) || FileNotFoundException.class.isInstance(ex)) {
 					return;
 				}
 			}
@@ -724,8 +656,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	public boolean hasHeader(String url, int port, String header) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory
-				.createRequest(new URI("http://localhost:" + port + url), HttpMethod.GET);
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI("http://localhost:" + port + url),
+				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		return response.getHeaders().containsKey(header);
 	}
@@ -739,12 +671,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ PropertyPlaceholderAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ PropertyPlaceholderAutoConfiguration.class, EmbeddedServletContainerAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class, AuditAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
@@ -877,8 +807,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			private int count = 0;
 
 			@Override
-			public void postHandle(HttpServletRequest request,
-					HttpServletResponse response, Object handler,
+			public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 					ModelAndView modelAndView) throws Exception {
 				this.count++;
 			}
@@ -944,8 +873,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	}
 
-	private static class GrabManagementPort
-			implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+	private static class GrabManagementPort implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
 
 		private ApplicationContext rootContext;
 
@@ -968,8 +896,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	}
 
-	private static class SpecificEmbeddedServletContainerFactory
-			extends TomcatEmbeddedServletContainerFactory {
+	private static class SpecificEmbeddedServletContainerFactory extends TomcatEmbeddedServletContainerFactory {
 
 	}
 

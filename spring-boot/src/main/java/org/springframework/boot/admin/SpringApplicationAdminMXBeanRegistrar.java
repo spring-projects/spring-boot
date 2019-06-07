@@ -47,9 +47,8 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class SpringApplicationAdminMXBeanRegistrar
-		implements ApplicationContextAware, EnvironmentAware, InitializingBean,
-		DisposableBean, ApplicationListener<ApplicationReadyEvent> {
+public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware, EnvironmentAware,
+		InitializingBean, DisposableBean, ApplicationListener<ApplicationReadyEvent> {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
@@ -61,14 +60,12 @@ public class SpringApplicationAdminMXBeanRegistrar
 
 	private boolean ready = false;
 
-	public SpringApplicationAdminMXBeanRegistrar(String name)
-			throws MalformedObjectNameException {
+	public SpringApplicationAdminMXBeanRegistrar(String name) throws MalformedObjectNameException {
 		this.objectName = new ObjectName(name);
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		Assert.state(applicationContext instanceof ConfigurableApplicationContext,
 				"ApplicationContext does not implement ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
@@ -91,8 +88,7 @@ public class SpringApplicationAdminMXBeanRegistrar
 		MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 		server.registerMBean(new SpringApplicationAdmin(), this.objectName);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Application Admin MBean registered with name '"
-					+ this.objectName + "'");
+			logger.debug("Application Admin MBean registered with name '" + this.objectName + "'");
 		}
 	}
 
@@ -116,8 +112,7 @@ public class SpringApplicationAdminMXBeanRegistrar
 
 		@Override
 		public String getProperty(String key) {
-			return SpringApplicationAdminMXBeanRegistrar.this.environment
-					.getProperty(key);
+			return SpringApplicationAdminMXBeanRegistrar.this.environment.getProperty(key);
 		}
 
 		@Override

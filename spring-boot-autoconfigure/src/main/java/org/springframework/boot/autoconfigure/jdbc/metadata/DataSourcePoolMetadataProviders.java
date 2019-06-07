@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,18 +39,15 @@ public class DataSourcePoolMetadataProviders implements DataSourcePoolMetadataPr
 	 * collection of delegates to use.
 	 * @param providers the data source pool metadata providers
 	 */
-	public DataSourcePoolMetadataProviders(
-			Collection<? extends DataSourcePoolMetadataProvider> providers) {
-		this.providers = (providers != null)
-				? new ArrayList<DataSourcePoolMetadataProvider>(providers)
+	public DataSourcePoolMetadataProviders(Collection<? extends DataSourcePoolMetadataProvider> providers) {
+		this.providers = (providers != null) ? new ArrayList<DataSourcePoolMetadataProvider>(providers)
 				: Collections.<DataSourcePoolMetadataProvider>emptyList();
 	}
 
 	@Override
 	public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 		for (DataSourcePoolMetadataProvider provider : this.providers) {
-			DataSourcePoolMetadata metadata = provider
-					.getDataSourcePoolMetadata(dataSource);
+			DataSourcePoolMetadata metadata = provider.getDataSourcePoolMetadata(dataSource);
 			if (metadata != null) {
 				return metadata;
 			}

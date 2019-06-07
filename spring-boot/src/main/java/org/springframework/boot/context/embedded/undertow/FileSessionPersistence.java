@@ -48,8 +48,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	@Override
-	public void persistSessions(String deploymentName,
-			Map<String, PersistentSession> sessionData) {
+	public void persistSessions(String deploymentName, Map<String, PersistentSession> sessionData) {
 		try {
 			save(sessionData, getSessionFile(deploymentName));
 		}
@@ -58,8 +57,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		}
 	}
 
-	private void save(Map<String, PersistentSession> sessionData, File file)
-			throws IOException {
+	private void save(Map<String, PersistentSession> sessionData, File file) throws IOException {
 		ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));
 		try {
 			save(sessionData, stream);
@@ -69,19 +67,16 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		}
 	}
 
-	private void save(Map<String, PersistentSession> sessionData,
-			ObjectOutputStream stream) throws IOException {
+	private void save(Map<String, PersistentSession> sessionData, ObjectOutputStream stream) throws IOException {
 		Map<String, Serializable> session = new LinkedHashMap<String, Serializable>();
 		for (Map.Entry<String, PersistentSession> entry : sessionData.entrySet()) {
-			session.put(entry.getKey(),
-					new SerializablePersistentSession(entry.getValue()));
+			session.put(entry.getKey(), new SerializablePersistentSession(entry.getValue()));
 		}
 		stream.writeObject(session);
 	}
 
 	@Override
-	public Map<String, PersistentSession> loadSessionAttributes(String deploymentName,
-			final ClassLoader classLoader) {
+	public Map<String, PersistentSession> loadSessionAttributes(String deploymentName, final ClassLoader classLoader) {
 		try {
 			File file = getSessionFile(deploymentName);
 			if (file.exists()) {
@@ -96,8 +91,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 
 	private Map<String, PersistentSession> load(File file, ClassLoader classLoader)
 			throws IOException, ClassNotFoundException {
-		ObjectInputStream stream = new ConfigurableObjectInputStream(
-				new FileInputStream(file), classLoader);
+		ObjectInputStream stream = new ConfigurableObjectInputStream(new FileInputStream(file), classLoader);
 		try {
 			return load(stream);
 		}
@@ -106,13 +100,11 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		}
 	}
 
-	private Map<String, PersistentSession> load(ObjectInputStream stream)
-			throws ClassNotFoundException, IOException {
+	private Map<String, PersistentSession> load(ObjectInputStream stream) throws ClassNotFoundException, IOException {
 		Map<String, SerializablePersistentSession> session = readSession(stream);
 		long time = System.currentTimeMillis();
 		Map<String, PersistentSession> result = new LinkedHashMap<String, PersistentSession>();
-		for (Map.Entry<String, SerializablePersistentSession> entry : session
-				.entrySet()) {
+		for (Map.Entry<String, SerializablePersistentSession> entry : session.entrySet()) {
 			PersistentSession entrySession = entry.getValue().getPersistentSession();
 			if (entrySession.getExpiration().getTime() > time) {
 				result.put(entry.getKey(), entrySession);
@@ -122,8 +114,8 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, SerializablePersistentSession> readSession(
-			ObjectInputStream stream) throws ClassNotFoundException, IOException {
+	private Map<String, SerializablePersistentSession> readSession(ObjectInputStream stream)
+			throws ClassNotFoundException, IOException {
 		return ((Map<String, SerializablePersistentSession>) stream.readObject());
 	}
 
@@ -152,8 +144,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 
 		SerializablePersistentSession(PersistentSession session) {
 			this.expiration = session.getExpiration();
-			this.sessionData = new LinkedHashMap<String, Object>(
-					session.getSessionData());
+			this.sessionData = new LinkedHashMap<String, Object>(session.getSessionData());
 		}
 
 		public PersistentSession getPersistentSession() {

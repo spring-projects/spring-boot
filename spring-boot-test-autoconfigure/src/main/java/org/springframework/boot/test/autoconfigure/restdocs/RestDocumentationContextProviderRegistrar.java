@@ -34,16 +34,14 @@ import org.springframework.restdocs.ManualRestDocumentation;
 class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionRegistrar {
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
 				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
 		String outputDir = (String) annotationAttributes.get("outputDir");
 		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
-				.genericBeanDefinition(ManualRestDocumentation.class)
-				.addConstructorArgValue(outputDir).getBeanDefinition();
-		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(),
-				beanDefinition);
+				.genericBeanDefinition(ManualRestDocumentation.class).addConstructorArgValue(outputDir)
+				.getBeanDefinition();
+		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(), beanDefinition);
 	}
 
 }

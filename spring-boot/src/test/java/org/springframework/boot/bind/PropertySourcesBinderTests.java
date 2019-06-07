@@ -36,10 +36,8 @@ public class PropertySourcesBinderTests {
 
 	@Test
 	public void extractAllWithPrefix() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env, "foo.first=1",
-				"foo.second=2");
-		Map<String, Object> content = new PropertySourcesBinder(this.env)
-				.extractAll("foo");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env, "foo.first=1", "foo.second=2");
+		Map<String, Object> content = new PropertySourcesBinder(this.env).extractAll("foo");
 		assertThat(content.get("first")).isEqualTo("1");
 		assertThat(content.get("second")).isEqualTo("2");
 		assertThat(content).hasSize(2);
@@ -48,8 +46,7 @@ public class PropertySourcesBinderTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void extractNoPrefix() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env,
-				"foo.ctx.first=1", "foo.ctx.second=2");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env, "foo.ctx.first=1", "foo.ctx.second=2");
 		Map<String, Object> content = new PropertySourcesBinder(this.env).extractAll("");
 		assertThat(content.get("foo")).isInstanceOf(Map.class);
 		Map<String, Object> foo = (Map<String, Object>) content.get("foo");
@@ -63,8 +60,7 @@ public class PropertySourcesBinderTests {
 
 	@Test
 	public void bindToSimplePojo() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env,
-				"test.name=foo", "test.counter=42");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env, "test.name=foo", "test.counter=42");
 		TestBean bean = new TestBean();
 		new PropertySourcesBinder(this.env).bindTo("test", bean);
 		assertThat(bean.getName()).isEqualTo("foo");

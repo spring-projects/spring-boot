@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ public class MetricsDropwizardAutoConfiguration {
 
 	private final ReservoirFactory reservoirFactory;
 
-	public MetricsDropwizardAutoConfiguration(
-			ObjectProvider<ReservoirFactory> reservoirFactory) {
+	public MetricsDropwizardAutoConfiguration(ObjectProvider<ReservoirFactory> reservoirFactory) {
 		this.reservoirFactory = reservoirFactory.getIfAvailable();
 	}
 
@@ -57,10 +56,8 @@ public class MetricsDropwizardAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ DropwizardMetricServices.class, CounterService.class,
-			GaugeService.class })
-	public DropwizardMetricServices dropwizardMetricServices(
-			MetricRegistry metricRegistry) {
+	@ConditionalOnMissingBean({ DropwizardMetricServices.class, CounterService.class, GaugeService.class })
+	public DropwizardMetricServices dropwizardMetricServices(MetricRegistry metricRegistry) {
 		if (this.reservoirFactory == null) {
 			return new DropwizardMetricServices(metricRegistry);
 		}
@@ -70,10 +67,8 @@ public class MetricsDropwizardAutoConfiguration {
 	}
 
 	@Bean
-	public MetricReaderPublicMetrics dropwizardPublicMetrics(
-			MetricRegistry metricRegistry) {
-		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(
-				metricRegistry);
+	public MetricReaderPublicMetrics dropwizardPublicMetrics(MetricRegistry metricRegistry) {
+		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(metricRegistry);
 		return new MetricReaderPublicMetrics(reader);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,7 @@ public class TraceWebFilterAutoConfigurationTests {
 	@Test
 	public void skipsFilterIfPropertyDisabled() throws Exception {
 		load("endpoints.trace.filter.enabled:false");
-		assertThat(this.context.getBeansOfType(WebRequestTraceFilter.class).size())
-				.isEqualTo(0);
+		assertThat(this.context.getBeansOfType(WebRequestTraceFilter.class).size()).isEqualTo(0);
 	}
 
 	private void load(String... environment) {
@@ -79,8 +78,7 @@ public class TraceWebFilterAutoConfigurationTests {
 		if (config != null) {
 			context.register(config);
 		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				TraceRepositoryAutoConfiguration.class,
+		context.register(PropertyPlaceholderAutoConfiguration.class, TraceRepositoryAutoConfiguration.class,
 				TraceWebFilterAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
@@ -90,8 +88,8 @@ public class TraceWebFilterAutoConfigurationTests {
 	static class CustomTraceFilterConfig {
 
 		@Bean
-		public TestWebRequestTraceFilter testWebRequestTraceFilter(
-				TraceRepository repository, TraceProperties properties) {
+		public TestWebRequestTraceFilter testWebRequestTraceFilter(TraceRepository repository,
+				TraceProperties properties) {
 			return new TestWebRequestTraceFilter(repository, properties);
 		}
 
@@ -99,8 +97,7 @@ public class TraceWebFilterAutoConfigurationTests {
 
 	static class TestWebRequestTraceFilter extends WebRequestTraceFilter {
 
-		TestWebRequestTraceFilter(TraceRepository repository,
-				TraceProperties properties) {
+		TestWebRequestTraceFilter(TraceRepository repository, TraceProperties properties) {
 			super(repository, properties);
 		}
 

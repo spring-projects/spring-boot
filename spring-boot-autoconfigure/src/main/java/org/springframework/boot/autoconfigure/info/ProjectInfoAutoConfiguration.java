@@ -63,13 +63,11 @@ public class ProjectInfoAutoConfiguration {
 		return new GitProperties(loadFrom(this.properties.getGit().getLocation(), "git"));
 	}
 
-	@ConditionalOnResource(
-			resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
+	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
 	@ConditionalOnMissingBean
 	@Bean
 	public BuildProperties buildProperties() throws Exception {
-		return new BuildProperties(
-				loadFrom(this.properties.getBuild().getLocation(), "build"));
+		return new BuildProperties(loadFrom(this.properties.getBuild().getLocation(), "build"));
 	}
 
 	protected Properties loadFrom(Resource location, String prefix) throws IOException {
@@ -89,15 +87,13 @@ public class ProjectInfoAutoConfiguration {
 		private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader();
 			if (loader == null) {
 				loader = this.defaultResourceLoader;
 			}
 			PropertyResolver propertyResolver = context.getEnvironment();
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					propertyResolver, "spring.info.git.");
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(propertyResolver, "spring.info.git.");
 			String location = resolver.getProperty("location");
 			if (location == null) {
 				resolver = new RelaxedPropertyResolver(propertyResolver, "spring.git.");
@@ -106,14 +102,11 @@ public class ProjectInfoAutoConfiguration {
 					location = "classpath:git.properties";
 				}
 			}
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("GitResource");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("GitResource");
 			if (loader.getResource(location).exists()) {
-				return ConditionOutcome
-						.match(message.found("git info at").items(location));
+				return ConditionOutcome.match(message.found("git info at").items(location));
 			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("git info at").items(location));
+			return ConditionOutcome.noMatch(message.didNotFind("git info at").items(location));
 		}
 
 	}

@@ -110,14 +110,12 @@ public class BannerTests {
 		application.setBanner(banner);
 		this.context = application.run();
 		Banner printedBanner = (Banner) this.context.getBean("springBootBanner");
-		assertThat(ReflectionTestUtils.getField(printedBanner, "banner"))
-				.isEqualTo(banner);
-		verify(banner).printBanner(any(Environment.class),
-				this.sourceClassCaptor.capture(), any(PrintStream.class));
+		assertThat(ReflectionTestUtils.getField(printedBanner, "banner")).isEqualTo(banner);
+		verify(banner).printBanner(any(Environment.class), this.sourceClassCaptor.capture(), any(PrintStream.class));
 		reset(banner);
 		printedBanner.printBanner(this.context.getEnvironment(), null, System.out);
-		verify(banner).printBanner(any(Environment.class),
-				eq(this.sourceClassCaptor.getValue()), any(PrintStream.class));
+		verify(banner).printBanner(any(Environment.class), eq(this.sourceClassCaptor.getValue()),
+				any(PrintStream.class));
 	}
 
 	@Test
@@ -132,8 +130,7 @@ public class BannerTests {
 	static class DummyBanner implements Banner {
 
 		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass,
-				PrintStream out) {
+		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 			out.println("My Banner");
 		}
 

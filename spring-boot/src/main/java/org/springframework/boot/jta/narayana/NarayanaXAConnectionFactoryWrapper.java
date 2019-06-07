@@ -60,22 +60,17 @@ public class NarayanaXAConnectionFactoryWrapper implements XAConnectionFactoryWr
 	}
 
 	@Override
-	public ConnectionFactory wrapConnectionFactory(
-			XAConnectionFactory xaConnectionFactory) {
+	public ConnectionFactory wrapConnectionFactory(XAConnectionFactory xaConnectionFactory) {
 		XAResourceRecoveryHelper recoveryHelper = getRecoveryHelper(xaConnectionFactory);
 		this.recoveryManager.registerXAResourceRecoveryHelper(recoveryHelper);
-		return new ConnectionFactoryProxy(xaConnectionFactory,
-				new TransactionHelperImpl(this.transactionManager));
+		return new ConnectionFactoryProxy(xaConnectionFactory, new TransactionHelperImpl(this.transactionManager));
 	}
 
-	private XAResourceRecoveryHelper getRecoveryHelper(
-			XAConnectionFactory xaConnectionFactory) {
-		if (this.properties.getRecoveryJmsUser() == null
-				&& this.properties.getRecoveryJmsPass() == null) {
+	private XAResourceRecoveryHelper getRecoveryHelper(XAConnectionFactory xaConnectionFactory) {
+		if (this.properties.getRecoveryJmsUser() == null && this.properties.getRecoveryJmsPass() == null) {
 			return new JmsXAResourceRecoveryHelper(xaConnectionFactory);
 		}
-		return new JmsXAResourceRecoveryHelper(xaConnectionFactory,
-				this.properties.getRecoveryJmsUser(),
+		return new JmsXAResourceRecoveryHelper(xaConnectionFactory, this.properties.getRecoveryJmsUser(),
 				this.properties.getRecoveryJmsPass());
 	}
 

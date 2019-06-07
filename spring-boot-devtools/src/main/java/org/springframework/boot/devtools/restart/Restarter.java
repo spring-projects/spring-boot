@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,8 +129,7 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @see #initialize(String[])
 	 */
-	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup, RestartInitializer initializer) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
@@ -286,11 +285,9 @@ public class Restarter {
 		ClassLoader parent = this.applicationClassLoader;
 		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
-		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles,
-				this.logger);
+		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles, this.logger);
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Starting application " + this.mainClassName + " with URLs "
-					+ Arrays.asList(urls));
+			this.logger.debug("Starting application " + this.mainClassName + " with URLs " + Arrays.asList(urls));
 		}
 		return relaunch(classLoader);
 	}
@@ -302,8 +299,8 @@ public class Restarter {
 	 * @throws Exception in case of errors
 	 */
 	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
-		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
-				this.args, this.exceptionHandler);
+		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName, this.args,
+				this.exceptionHandler);
 		launcher.start();
 		launcher.join();
 		return launcher.getError();
@@ -403,11 +400,9 @@ public class Restarter {
 			}
 			if (instance instanceof Map) {
 				Map<?, ?> map = ((Map<?, ?>) instance);
-				for (Iterator<?> iterator = map.keySet().iterator(); iterator
-						.hasNext();) {
+				for (Iterator<?> iterator = map.keySet().iterator(); iterator.hasNext();) {
 					Object value = iterator.next();
-					if (value instanceof Class && ((Class<?>) value)
-							.getClassLoader() instanceof RestartClassLoader) {
+					if (value instanceof Class && ((Class<?>) value).getClassLoader() instanceof RestartClassLoader) {
 						iterator.remove();
 					}
 
@@ -441,8 +436,7 @@ public class Restarter {
 	void finish() {
 		synchronized (this.monitor) {
 			if (!isFinished()) {
-				this.logger = DeferredLog.replay(this.logger,
-						LogFactory.getLog(getClass()));
+				this.logger = DeferredLog.replay(this.logger, LogFactory.getLog(getClass()));
 				this.finished = true;
 			}
 		}
@@ -471,8 +465,8 @@ public class Restarter {
 	}
 
 	private void prepare(GenericApplicationContext applicationContext) {
-		ResourceLoader resourceLoader = new ClassLoaderFilesResourcePatternResolver(
-				applicationContext, this.classLoaderFiles);
+		ResourceLoader resourceLoader = new ClassLoaderFilesResourcePatternResolver(applicationContext,
+				this.classLoaderFiles);
 		applicationContext.setResourceLoader(resourceLoader);
 	}
 
@@ -486,8 +480,7 @@ public class Restarter {
 		}
 	}
 
-	public Object getOrAddAttribute(final String name,
-			final ObjectFactory<?> objectFactory) {
+	public Object getOrAddAttribute(final String name, final ObjectFactory<?> objectFactory) {
 		synchronized (this.attributes) {
 			if (!this.attributes.containsKey(name)) {
 				this.attributes.put(name, objectFactory.getObject());
@@ -558,8 +551,7 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @see #initialize(String[], boolean, RestartInitializer)
 	 */
-	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+	public static void initialize(String[] args, boolean forceReferenceCleanup, RestartInitializer initializer) {
 		initialize(args, forceReferenceCleanup, initializer, true);
 	}
 
@@ -575,13 +567,12 @@ public class Restarter {
 	 * @param restartOnInitialize if the restarter should be restarted immediately when
 	 * the {@link RestartInitializer} returns non {@code null} results
 	 */
-	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer, boolean restartOnInitialize) {
+	public static void initialize(String[] args, boolean forceReferenceCleanup, RestartInitializer initializer,
+			boolean restartOnInitialize) {
 		Restarter localInstance = null;
 		synchronized (INSTANCE_MONITOR) {
 			if (instance == null) {
-				localInstance = new Restarter(Thread.currentThread(), args,
-						forceReferenceCleanup, initializer);
+				localInstance = new Restarter(Thread.currentThread(), args, forceReferenceCleanup, initializer);
 				instance = localInstance;
 			}
 		}

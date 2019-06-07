@@ -72,8 +72,7 @@ public class AutoConfigurationExcludeFilterTests {
 
 	}
 
-	static class TestAutoConfigurationExcludeFilter
-			extends AutoConfigurationExcludeFilter {
+	static class TestAutoConfigurationExcludeFilter extends AutoConfigurationExcludeFilter {
 
 		@Override
 		protected List<String> getAutoConfigurations() {

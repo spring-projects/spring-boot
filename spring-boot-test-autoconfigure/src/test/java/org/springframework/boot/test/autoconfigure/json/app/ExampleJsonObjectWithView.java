@@ -54,8 +54,7 @@ public class ExampleJsonObjectWithView {
 			return false;
 		}
 		ExampleJsonObjectWithView other = (ExampleJsonObjectWithView) obj;
-		return ObjectUtils.nullSafeEquals(this.value, other.value)
-				&& ObjectUtils.nullSafeEquals(this.id, other.id);
+		return ObjectUtils.nullSafeEquals(this.value, other.value) && ObjectUtils.nullSafeEquals(this.id, other.id);
 	}
 
 	@Override

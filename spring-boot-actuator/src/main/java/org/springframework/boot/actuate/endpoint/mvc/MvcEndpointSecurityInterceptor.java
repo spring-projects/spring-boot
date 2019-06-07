@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 
-	private static final Log logger = LogFactory
-			.getLog(MvcEndpointSecurityInterceptor.class);
+	private static final Log logger = LogFactory.getLog(MvcEndpointSecurityInterceptor.class);
 
 	private final boolean secure;
 
@@ -59,14 +58,13 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
 		if (CorsUtils.isPreFlightRequest(request) || !this.secure) {
 			return true;
 		}
 		HandlerMethod handlerMethod = (HandlerMethod) handler;
-		if (HttpMethod.OPTIONS.matches(request.getMethod())
-				&& !(handlerMethod.getBean() instanceof MvcEndpoint)) {
+		if (HttpMethod.OPTIONS.matches(request.getMethod()) && !(handlerMethod.getBean() instanceof MvcEndpoint)) {
 			return true;
 		}
 		MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
@@ -97,13 +95,11 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	private boolean isSpringSecurityAvailable() {
-		return ClassUtils.isPresent(
-				"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
+		return ClassUtils.isPresent("org.springframework.security.config.annotation.web.WebSecurityConfigurer",
 				getClass().getClassLoader());
 	}
 
-	private void sendFailureResponse(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	private void sendFailureResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if (request.getUserPrincipal() != null) {
 			String roles = StringUtils.collectionToDelimitedString(this.roles, " ");
 			response.sendError(HttpStatus.FORBIDDEN.value(),
@@ -117,8 +113,7 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	private void logUnauthorizedAttempt() {
-		if (this.loggedUnauthorizedAttempt.compareAndSet(false, true)
-				&& logger.isInfoEnabled()) {
+		if (this.loggedUnauthorizedAttempt.compareAndSet(false, true) && logger.isInfoEnabled()) {
 			logger.info("Full authentication is required to access "
 					+ "actuator endpoints. Consider adding Spring Security "
 					+ "or set 'management.security.enabled' to false.");
@@ -131,8 +126,7 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 	private static class AuthoritiesValidator {
 
 		private boolean hasAuthority(String role) {
-			Authentication authentication = SecurityContextHolder.getContext()
-					.getAuthentication();
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			if (authentication != null) {
 				for (GrantedAuthority authority : authentication.getAuthorities()) {
 					if (authority.getAuthority().equals(role)) {

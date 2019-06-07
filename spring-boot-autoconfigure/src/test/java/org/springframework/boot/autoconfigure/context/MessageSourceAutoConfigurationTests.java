@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,24 +55,21 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testDefaultMessageSource() throws Exception {
 		load();
-		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
-				.isEqualTo("Foo message");
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("Foo message");
 	}
 
 	@Test
 	public void propertiesBundleWithSlashIsDetected() {
 		load("spring.messages.basename:test/messages");
 		assertThat(this.context.getBeansOfType(MessageSource.class)).hasSize(1);
-		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
-				.isEqualTo("bar");
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 	}
 
 	@Test
 	public void propertiesBundleWithDotIsDetected() {
 		load("spring.messages.basename:test.messages");
 		assertThat(this.context.getBeansOfType(MessageSource.class)).hasSize(1);
-		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
-				.isEqualTo("bar");
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 	}
 
 	@Test
@@ -85,18 +82,15 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testMultipleMessageSourceCreated() throws Exception {
 		load("spring.messages.basename:test/messages,test/messages2");
-		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
-				.isEqualTo("bar");
-		assertThat(this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK))
-				.isEqualTo("bar-bar");
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
+		assertThat(this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK)).isEqualTo("bar-bar");
 	}
 
 	@Test
 	public void testBadEncoding() throws Exception {
 		load("spring.messages.encoding:rubbish");
 		// Bad encoding just means the messages are ignored
-		assertThat(this.context.getMessage("foo", null, "blah", Locale.UK))
-				.isEqualTo("blah");
+		assertThat(this.context.getMessage("foo", null, "blah", Locale.UK)).isEqualTo("blah");
 	}
 
 	@Test
@@ -106,45 +100,37 @@ public class MessageSourceAutoConfigurationTests {
 		this.context.register(Config.class, MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
-				.isEqualTo("bar");
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 	}
 
 	@Test
 	public void testFallbackDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale()).isTrue();
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class).isFallbackToSystemLocale()).isTrue();
 	}
 
 	@Test
 	public void testFallbackTurnOff() throws Exception {
-		load("spring.messages.basename:test/messages",
-				"spring.messages.fallback-to-system-locale:false");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale()).isFalse();
+		load("spring.messages.basename:test/messages", "spring.messages.fallback-to-system-locale:false");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class).isFallbackToSystemLocale()).isFalse();
 	}
 
 	@Test
 	public void testFormatMessageDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isAlwaysUseMessageFormat()).isFalse();
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class).isAlwaysUseMessageFormat()).isFalse();
 	}
 
 	@Test
 	public void testFormatMessageOn() throws Exception {
-		load("spring.messages.basename:test/messages",
-				"spring.messages.always-use-message-format:true");
-		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isAlwaysUseMessageFormat()).isTrue();
+		load("spring.messages.basename:test/messages", "spring.messages.always-use-message-format:true");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class).isAlwaysUseMessageFormat()).isTrue();
 	}
 
 	@Test
 	public void existingMessageSourceIsPreferred() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomMessageSource.class,
-				MessageSourceAutoConfiguration.class,
+		this.context.register(CustomMessageSource.class, MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getMessage("foo", null, null, null)).isEqualTo("foo");
@@ -157,13 +143,10 @@ public class MessageSourceAutoConfigurationTests {
 		try {
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.messages.basename:test/messages");
-			this.context.register(MessageSourceAutoConfiguration.class,
-					PropertyPlaceholderAutoConfiguration.class);
+			EnvironmentTestUtils.addEnvironment(this.context, "spring.messages.basename:test/messages");
+			this.context.register(MessageSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 			this.context.refresh();
-			assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
-					.isEqualTo("bar");
+			assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 		}
 		finally {
 			parent.close();
@@ -173,8 +156,7 @@ public class MessageSourceAutoConfigurationTests {
 	private void load(String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
-		this.context.register(MessageSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(MessageSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}
 
@@ -192,20 +174,18 @@ public class MessageSourceAutoConfigurationTests {
 			return new MessageSource() {
 
 				@Override
-				public String getMessage(String code, Object[] args,
-						String defaultMessage, Locale locale) {
+				public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
 					return code;
 				}
 
 				@Override
-				public String getMessage(String code, Object[] args, Locale locale)
+				public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+					return code;
+				}
+
+				@Override
+				public String getMessage(MessageSourceResolvable resolvable, Locale locale)
 						throws NoSuchMessageException {
-					return code;
-				}
-
-				@Override
-				public String getMessage(MessageSourceResolvable resolvable,
-						Locale locale) throws NoSuchMessageException {
 					return resolvable.getCodes()[0];
 				}
 

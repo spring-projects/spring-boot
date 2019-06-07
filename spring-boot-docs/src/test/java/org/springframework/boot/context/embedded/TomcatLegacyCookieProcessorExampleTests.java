@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,9 @@ public class TomcatLegacyCookieProcessorExampleTests {
 	public void cookieProcessorIsCustomized() {
 		EmbeddedWebApplicationContext applicationContext = (EmbeddedWebApplicationContext) new SpringApplication(
 				TestConfiguration.class, LegacyCookieProcessorConfiguration.class).run();
-		Context context = (Context) ((TomcatEmbeddedServletContainer) applicationContext
-				.getEmbeddedServletContainer()).getTomcat().getHost().findChildren()[0];
-		assertThat(context.getCookieProcessor())
-				.isInstanceOf(LegacyCookieProcessor.class);
+		Context context = (Context) ((TomcatEmbeddedServletContainer) applicationContext.getEmbeddedServletContainer())
+				.getTomcat().getHost().findChildren()[0];
+		assertThat(context.getCookieProcessor()).isInstanceOf(LegacyCookieProcessor.class);
 	}
 
 	@Configuration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,7 @@ public class AggregateMetricReaderTests {
 	@Test
 	public void defaultKeyPattern() {
 		this.source.set(new Metric<Double>("foo.bar.spam.bucket.wham", 2.3));
-		assertThat(this.reader.findOne("aggregate.spam.bucket.wham").getValue())
-				.isEqualTo(2.3);
+		assertThat(this.reader.findOne("aggregate.spam.bucket.wham").getValue()).isEqualTo(2.3);
 	}
 
 	@Test
@@ -91,8 +90,7 @@ public class AggregateMetricReaderTests {
 	public void incrementCounter() {
 		this.source.increment(new Delta<Long>("foo.bar.counter.spam", 2L));
 		this.source.increment(new Delta<Long>("oof.rab.counter.spam", 3L));
-		assertThat(this.reader.findOne("aggregate.counter.spam").getValue())
-				.isEqualTo(5L);
+		assertThat(this.reader.findOne("aggregate.counter.spam").getValue()).isEqualTo(5L);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,37 +91,30 @@ public class GroovyCompiler {
 		this.loader = createLoader(configuration);
 
 		DependencyResolutionContext resolutionContext = new DependencyResolutionContext();
-		resolutionContext.addDependencyManagement(
-				new SpringBootDependenciesDependencyManagement());
+		resolutionContext.addDependencyManagement(new SpringBootDependenciesDependencyManagement());
 
 		AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(this.loader,
-				configuration.getRepositoryConfiguration(), resolutionContext,
-				configuration.isQuiet());
+				configuration.getRepositoryConfiguration(), resolutionContext, configuration.isQuiet());
 
 		GrapeEngineInstaller.install(grapeEngine);
 
-		this.loader.getConfiguration()
-				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
+		this.loader.getConfiguration().addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
 		if (configuration.isAutoconfigure()) {
-			this.compilerAutoConfigurations = ServiceLoader
-					.load(CompilerAutoConfiguration.class);
+			this.compilerAutoConfigurations = ServiceLoader.load(CompilerAutoConfiguration.class);
 		}
 		else {
 			this.compilerAutoConfigurations = Collections.emptySet();
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
-		this.transformations
-				.add(new DependencyManagementBomTransformation(resolutionContext));
-		this.transformations.add(new DependencyAutoConfigurationTransformation(
-				this.loader, resolutionContext, this.compilerAutoConfigurations));
+		this.transformations.add(new DependencyManagementBomTransformation(resolutionContext));
+		this.transformations.add(new DependencyAutoConfigurationTransformation(this.loader, resolutionContext,
+				this.compilerAutoConfigurations));
 		this.transformations.add(new GroovyBeansTransformation());
 		if (this.configuration.isGuessDependencies()) {
-			this.transformations.add(
-					new ResolveDependencyCoordinatesTransformation(resolutionContext));
+			this.transformations.add(new ResolveDependencyCoordinatesTransformation(resolutionContext));
 		}
-		for (ASTTransformation transformation : ServiceLoader
-				.load(SpringBootAstTransformation.class)) {
+		for (ASTTransformation transformation : ServiceLoader.load(SpringBootAstTransformation.class)) {
 			this.transformations.add(transformation);
 		}
 		Collections.sort(this.transformations, AnnotationAwareOrderComparator.INSTANCE);
@@ -140,11 +133,9 @@ public class GroovyCompiler {
 		return this.loader;
 	}
 
-	private ExtendedGroovyClassLoader createLoader(
-			GroovyCompilerConfiguration configuration) {
+	private ExtendedGroovyClassLoader createLoader(GroovyCompilerConfiguration configuration) {
 
-		ExtendedGroovyClassLoader loader = new ExtendedGroovyClassLoader(
-				configuration.getScope());
+		ExtendedGroovyClassLoader loader = new ExtendedGroovyClassLoader(configuration.getScope());
 
 		for (URL url : getExistingUrls()) {
 			loader.addURL(url);
@@ -181,16 +172,14 @@ public class GroovyCompiler {
 	 * @throws IOException in case of I/O errors
 	 * @throws CompilationFailedException in case of compilation errors
 	 */
-	public Class<?>[] compile(String... sources)
-			throws CompilationFailedException, IOException {
+	public Class<?>[] compile(String... sources) throws CompilationFailedException, IOException {
 
 		this.loader.clearCache();
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 
 		CompilerConfiguration configuration = this.loader.getConfiguration();
 
-		CompilationUnit compilationUnit = new CompilationUnit(configuration, null,
-				this.loader);
+		CompilationUnit compilationUnit = new CompilationUnit(configuration, null, this.loader);
 		ClassCollector collector = this.loader.createCollector(compilationUnit, null);
 		compilationUnit.setClassgenCallback(collector);
 
@@ -238,8 +227,7 @@ public class GroovyCompiler {
 			return phaseOperations;
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Phase operations not available from compilation unit");
+			throw new IllegalStateException("Phase operations not available from compilation unit");
 		}
 	}
 
@@ -280,8 +268,7 @@ public class GroovyCompiler {
 		public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
 				throws CompilationFailedException {
 
-			ImportCustomizer importCustomizer = new SmartImportCustomizer(source, context,
-					classNode);
+			ImportCustomizer importCustomizer = new SmartImportCustomizer(source, context, classNode);
 			ClassNode mainClassNode = MainClass.get(source.getAST().getClasses());
 
 			// Additional auto configuration
@@ -293,12 +280,10 @@ public class GroovyCompiler {
 					}
 					if (classNode.equals(mainClassNode)) {
 						autoConfiguration.applyToMainClass(GroovyCompiler.this.loader,
-								GroovyCompiler.this.configuration, context, source,
-								classNode);
+								GroovyCompiler.this.configuration, context, source, classNode);
 					}
-					autoConfiguration.apply(GroovyCompiler.this.loader,
-							GroovyCompiler.this.configuration, context, source,
-							classNode);
+					autoConfiguration.apply(GroovyCompiler.this.loader, GroovyCompiler.this.configuration, context,
+							source, classNode);
 				}
 			}
 			importCustomizer.call(source, context, classNode);
@@ -318,8 +303,8 @@ public class GroovyCompiler {
 				if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
 					return null; // No need to enhance this
 				}
-				if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
-						"Component", "*Service", "Repository", "Enable*")) {
+				if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration", "Component", "*Service",
+						"Repository", "Enable*")) {
 					return node;
 				}
 			}

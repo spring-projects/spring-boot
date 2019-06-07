@@ -42,8 +42,7 @@ public class OutputCaptureTests {
 		System.out.println("Hello");
 		this.outputCapture.reset();
 		System.out.println("World");
-		assertThat(this.outputCapture.toString()).doesNotContain("Hello")
-				.contains("World");
+		assertThat(this.outputCapture.toString()).doesNotContain("Hello").contains("World");
 	}
 
 }

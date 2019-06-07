@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,17 +84,14 @@ public class DataSourceJsonSerializationTests {
 		private ConversionService conversionService = new DefaultConversionService();
 
 		@Override
-		public void serialize(DataSource value, JsonGenerator jgen,
-				SerializerProvider provider) throws IOException, JsonProcessingException {
+		public void serialize(DataSource value, JsonGenerator jgen, SerializerProvider provider)
+				throws IOException, JsonProcessingException {
 			jgen.writeStartObject();
-			for (PropertyDescriptor property : BeanUtils
-					.getPropertyDescriptors(DataSource.class)) {
+			for (PropertyDescriptor property : BeanUtils.getPropertyDescriptors(DataSource.class)) {
 				Method reader = property.getReadMethod();
 				if (reader != null && property.getWriteMethod() != null
-						&& this.conversionService.canConvert(String.class,
-								property.getPropertyType())) {
-					jgen.writeObjectField(property.getName(),
-							ReflectionUtils.invokeMethod(reader, value));
+						&& this.conversionService.canConvert(String.class, property.getPropertyType())) {
+					jgen.writeObjectField(property.getName(), ReflectionUtils.invokeMethod(reader, value));
 				}
 			}
 			jgen.writeEndObject();
@@ -107,15 +104,13 @@ public class DataSourceJsonSerializationTests {
 		private ConversionService conversionService = new DefaultConversionService();
 
 		@Override
-		public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-				BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<BeanPropertyWriter>();
 			for (BeanPropertyWriter writer : beanProperties) {
-				AnnotatedMethod setter = beanDesc.findMethod(
-						"set" + StringUtils.capitalize(writer.getName()),
+				AnnotatedMethod setter = beanDesc.findMethod("set" + StringUtils.capitalize(writer.getName()),
 						new Class<?>[] { writer.getType().getRawClass() });
-				if (setter != null && this.conversionService.canConvert(String.class,
-						writer.getType().getRawClass())) {
+				if (setter != null && this.conversionService.canConvert(String.class, writer.getType().getRawClass())) {
 					result.add(writer);
 				}
 			}

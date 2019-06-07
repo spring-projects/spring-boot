@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,26 +89,20 @@ public class MvcEndpointPathConfigurationTests {
 				new Object[] { "auditevents", AuditEventsMvcEndpoint.class },
 				new Object[] { "autoconfig", AutoConfigurationReportEndpoint.class },
 				new Object[] { "beans", BeansEndpoint.class },
-				new Object[] { "configprops",
-						ConfigurationPropertiesReportEndpoint.class },
-				new Object[] { "docs", DocsMvcEndpoint.class },
-				new Object[] { "dump", DumpEndpoint.class },
-				new Object[] { "env", EnvironmentMvcEndpoint.class },
-				new Object[] { "flyway", FlywayEndpoint.class },
-				new Object[] { "health", HealthMvcEndpoint.class },
-				new Object[] { "info", InfoEndpoint.class },
+				new Object[] { "configprops", ConfigurationPropertiesReportEndpoint.class },
+				new Object[] { "docs", DocsMvcEndpoint.class }, new Object[] { "dump", DumpEndpoint.class },
+				new Object[] { "env", EnvironmentMvcEndpoint.class }, new Object[] { "flyway", FlywayEndpoint.class },
+				new Object[] { "health", HealthMvcEndpoint.class }, new Object[] { "info", InfoEndpoint.class },
 				new Object[] { "jolokia", JolokiaMvcEndpoint.class },
 				new Object[] { "liquibase", LiquibaseEndpoint.class },
 				new Object[] { "logfile", LogFileMvcEndpoint.class },
 				new Object[] { "loggers", LoggersMvcEndpoint.class },
 				new Object[] { "mappings", RequestMappingEndpoint.class },
 				new Object[] { "metrics", MetricsMvcEndpoint.class },
-				new Object[] { "shutdown", ShutdownEndpoint.class },
-				new Object[] { "trace", TraceEndpoint.class } };
+				new Object[] { "shutdown", ShutdownEndpoint.class }, new Object[] { "trace", TraceEndpoint.class } };
 	}
 
-	public MvcEndpointPathConfigurationTests(String endpointName,
-			Class<?> endpointClass) {
+	public MvcEndpointPathConfigurationTests(String endpointName, Class<?> endpointClass) {
 		this.endpointName = endpointName;
 		this.endpointClass = endpointClass;
 	}
@@ -118,10 +112,8 @@ public class MvcEndpointPathConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(TestConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints." + this.endpointName + ".path" + ":/custom/path",
-				"endpoints." + this.endpointName + ".enabled:true",
-				"logging.file:target/test.log");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints." + this.endpointName + ".path" + ":/custom/path",
+				"endpoints." + this.endpointName + ".enabled:true", "logging.file:target/test.log");
 		this.context.refresh();
 		assertThat(getConfiguredPath()).isEqualTo("/custom/path");
 	}
@@ -130,29 +122,24 @@ public class MvcEndpointPathConfigurationTests {
 		if (MvcEndpoint.class.isAssignableFrom(this.endpointClass)) {
 			return ((MvcEndpoint) this.context.getBean(this.endpointClass)).getPath();
 		}
-		for (MvcEndpoint endpoint : this.context.getBean(MvcEndpoints.class)
-				.getEndpoints()) {
-			if (endpoint instanceof EndpointMvcAdapter && this.endpointClass
-					.isInstance(((EndpointMvcAdapter) endpoint).getDelegate())) {
+		for (MvcEndpoint endpoint : this.context.getBean(MvcEndpoints.class).getEndpoints()) {
+			if (endpoint instanceof EndpointMvcAdapter
+					&& this.endpointClass.isInstance(((EndpointMvcAdapter) endpoint).getDelegate())) {
 				return ((EndpointMvcAdapter) endpoint).getPath();
 			}
 		}
-		throw new IllegalStateException(
-				"Could not get configured path for " + this.endpointClass);
+		throw new IllegalStateException("Could not get configured path for " + this.endpointClass);
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ EndpointAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, AuditAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class })
+	@ImportAutoConfiguration({ EndpointAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+			AuditAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class })
 
 	protected static class TestConfiguration {
 
 		@Bean
-		public ConditionEvaluationReport conditionEvaluationReport(
-				ConfigurableListableBeanFactory beanFactory) {
+		public ConditionEvaluationReport conditionEvaluationReport(ConfigurableListableBeanFactory beanFactory) {
 			return ConditionEvaluationReport.get(beanFactory);
 		}
 

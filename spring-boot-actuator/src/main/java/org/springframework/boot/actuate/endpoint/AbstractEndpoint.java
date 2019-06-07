@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,8 +101,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 
 	public void setId(String id) {
 		Assert.notNull(id, "Id must not be null");
-		Assert.isTrue(ID_PATTERN.matcher(id).matches(),
-				"Id must only contains letters, numbers and '_'");
+		Assert.isTrue(ID_PATTERN.matcher(id).matches(), "Id must only contains letters, numbers and '_'");
 		this.id = id;
 	}
 
@@ -117,8 +116,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 
 	@Override
 	public boolean isSensitive() {
-		return EndpointProperties.isSensitive(this.environment, this.sensitive,
-				this.sensitiveDefault);
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, this.sensitiveDefault);
 	}
 
 	public void setSensitive(Boolean sensitive) {

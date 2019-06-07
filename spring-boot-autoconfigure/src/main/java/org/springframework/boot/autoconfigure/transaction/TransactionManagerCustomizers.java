@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,12 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 public class TransactionManagerCustomizers {
 
-	private static final Log logger = LogFactory
-			.getLog(TransactionManagerCustomizers.class);
+	private static final Log logger = LogFactory.getLog(TransactionManagerCustomizers.class);
 
 	private final List<PlatformTransactionManagerCustomizer<?>> customizers;
 
-	public TransactionManagerCustomizers(
-			Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers != null)
-				? new ArrayList<PlatformTransactionManagerCustomizer<?>>(customizers)
+	public TransactionManagerCustomizers(Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
+		this.customizers = (customizers != null) ? new ArrayList<PlatformTransactionManagerCustomizer<?>>(customizers)
 				: null;
 	}
 
@@ -50,9 +47,7 @@ public class TransactionManagerCustomizers {
 		if (this.customizers != null) {
 			for (PlatformTransactionManagerCustomizer<?> customizer : this.customizers) {
 				Class<?> generic = ResolvableType
-						.forClass(PlatformTransactionManagerCustomizer.class,
-								customizer.getClass())
-						.resolveGeneric();
+						.forClass(PlatformTransactionManagerCustomizer.class, customizer.getClass()).resolveGeneric();
 				if (generic.isInstance(transactionManager)) {
 					customize(transactionManager, customizer);
 				}
@@ -70,8 +65,7 @@ public class TransactionManagerCustomizers {
 			// Possibly a lambda-defined customizer which we could not resolve the generic
 			// transaction manager type for
 			if (logger.isDebugEnabled()) {
-				logger.debug("Non-matching transaction manager type for customizer: "
-						+ customizer, ex);
+				logger.debug("Non-matching transaction manager type for customizer: " + customizer, ex);
 			}
 		}
 	}

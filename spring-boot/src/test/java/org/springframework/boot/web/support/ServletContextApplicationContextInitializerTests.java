@@ -36,31 +36,25 @@ public class ServletContextApplicationContextInitializerTests {
 
 	private final ServletContext servletContext = mock(ServletContext.class);
 
-	private final ConfigurableWebApplicationContext applicationContext = mock(
-			ConfigurableWebApplicationContext.class);
+	private final ConfigurableWebApplicationContext applicationContext = mock(ConfigurableWebApplicationContext.class);
 
 	@Test
 	public void servletContextIsSetOnTheApplicationContext() {
-		new ServletContextApplicationContextInitializer(this.servletContext)
-				.initialize(this.applicationContext);
+		new ServletContextApplicationContextInitializer(this.servletContext).initialize(this.applicationContext);
 		verify(this.applicationContext).setServletContext(this.servletContext);
 	}
 
 	@Test
 	public void applicationContextIsNotStoredInServletContextByDefault() {
-		new ServletContextApplicationContextInitializer(this.servletContext)
-				.initialize(this.applicationContext);
-		verify(this.servletContext, times(0)).setAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+		new ServletContextApplicationContextInitializer(this.servletContext).initialize(this.applicationContext);
+		verify(this.servletContext, times(0)).setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.applicationContext);
 	}
 
 	@Test
 	public void applicationContextCanBeStoredInServletContext() {
-		new ServletContextApplicationContextInitializer(this.servletContext, true)
-				.initialize(this.applicationContext);
-		verify(this.servletContext).setAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+		new ServletContextApplicationContextInitializer(this.servletContext, true).initialize(this.applicationContext);
+		verify(this.servletContext).setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.applicationContext);
 	}
 

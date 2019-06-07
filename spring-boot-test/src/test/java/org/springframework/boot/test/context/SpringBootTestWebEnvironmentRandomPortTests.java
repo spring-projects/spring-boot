@@ -40,8 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "value=123" })
-public class SpringBootTestWebEnvironmentRandomPortTests
-		extends AbstractSpringBootTestEmbeddedWebEnvironmentTests {
+public class SpringBootTestWebEnvironmentRandomPortTests extends AbstractSpringBootTestEmbeddedWebEnvironmentTests {
 
 	@Test
 	public void testRestTemplateShouldUseBuilder() throws Exception {
@@ -56,8 +55,7 @@ public class SpringBootTestWebEnvironmentRandomPortTests
 
 		@Bean
 		public RestTemplateBuilder restTemplateBuilder() {
-			return new RestTemplateBuilder()
-					.additionalMessageConverters(new MyConverter());
+			return new RestTemplateBuilder().additionalMessageConverters(new MyConverter());
 
 		}
 

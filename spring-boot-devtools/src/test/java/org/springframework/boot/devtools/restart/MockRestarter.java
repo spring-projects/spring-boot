@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,23 +63,21 @@ public class MockRestarter implements TestRule {
 	private void setup() {
 		Restarter.setInstance(this.mock);
 		given(this.mock.getInitialUrls()).willReturn(new URL[] {});
-		given(this.mock.getOrAddAttribute(anyString(), (ObjectFactory) any()))
-				.willAnswer(new Answer<Object>() {
+		given(this.mock.getOrAddAttribute(anyString(), (ObjectFactory) any())).willAnswer(new Answer<Object>() {
 
-					@Override
-					public Object answer(InvocationOnMock invocation) throws Throwable {
-						String name = (String) invocation.getArguments()[0];
-						ObjectFactory factory = (ObjectFactory) invocation
-								.getArguments()[1];
-						Object attribute = MockRestarter.this.attributes.get(name);
-						if (attribute == null) {
-							attribute = factory.getObject();
-							MockRestarter.this.attributes.put(name, attribute);
-						}
-						return attribute;
-					}
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				String name = (String) invocation.getArguments()[0];
+				ObjectFactory factory = (ObjectFactory) invocation.getArguments()[1];
+				Object attribute = MockRestarter.this.attributes.get(name);
+				if (attribute == null) {
+					attribute = factory.getObject();
+					MockRestarter.this.attributes.put(name, attribute);
+				}
+				return attribute;
+			}
 
-				});
+		});
 		given(this.mock.getThreadFactory()).willReturn(new ThreadFactory() {
 
 			@Override

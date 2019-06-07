@@ -48,11 +48,10 @@ public class SampleAtmosphereApplication {
 	public ServletRegistrationBean atmosphereServlet() {
 		// Dispatcher servlet is mapped to '/home' to allow the AtmosphereServlet
 		// to be mapped to '/chat'
-		ServletRegistrationBean registration = new ServletRegistrationBean(
-				new AtmosphereServlet(), "/chat/*");
+		ServletRegistrationBean registration = new ServletRegistrationBean(new AtmosphereServlet(), "/chat/*");
 		registration.addInitParameter("org.atmosphere.cpr.packages", "sample");
-		registration.addInitParameter("org.atmosphere.interceptor.HeartbeatInterceptor"
-				+ ".clientHeartbeatFrequencyInSeconds", "10");
+		registration.addInitParameter(
+				"org.atmosphere.interceptor.HeartbeatInterceptor" + ".clientHeartbeatFrequencyInSeconds", "10");
 		registration.setLoadOnStartup(0);
 		// Need to occur before the EmbeddedAtmosphereInitializer
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);

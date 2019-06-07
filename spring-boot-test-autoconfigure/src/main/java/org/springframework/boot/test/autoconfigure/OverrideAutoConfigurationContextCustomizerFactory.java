@@ -33,14 +33,13 @@ import org.springframework.test.context.MergedContextConfiguration;
  *
  * @author Phillip Webb
  */
-class OverrideAutoConfigurationContextCustomizerFactory
-		implements ContextCustomizerFactory {
+class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		OverrideAutoConfiguration annotation = AnnotatedElementUtils
-				.findMergedAnnotation(testClass, OverrideAutoConfiguration.class);
+		OverrideAutoConfiguration annotation = AnnotatedElementUtils.findMergedAnnotation(testClass,
+				OverrideAutoConfiguration.class);
 		if (annotation != null && !annotation.enabled()) {
 			return new DisableAutoConfigurationContextCustomizer();
 		}
@@ -50,14 +49,11 @@ class OverrideAutoConfigurationContextCustomizerFactory
 	/**
 	 * {@link ContextCustomizer} to disable full auto-configuration.
 	 */
-	private static class DisableAutoConfigurationContextCustomizer
-			implements ContextCustomizer {
+	private static class DisableAutoConfigurationContextCustomizer implements ContextCustomizer {
 
 		@Override
-		public void customizeContext(ConfigurableApplicationContext context,
-				MergedContextConfiguration mergedConfig) {
-			EnvironmentTestUtils.addEnvironment(context,
-					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false");
+		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
+			EnvironmentTestUtils.addEnvironment(context, EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false");
 		}
 
 		@Override

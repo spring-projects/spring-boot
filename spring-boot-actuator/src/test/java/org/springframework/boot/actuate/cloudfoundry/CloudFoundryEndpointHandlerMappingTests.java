@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,12 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryEndpointHandlerMappingTests
-		extends AbstractEndpointHandlerMappingTests {
+public class CloudFoundryEndpointHandlerMappingTests extends AbstractEndpointHandlerMappingTests {
 
 	@Test
-	public void getHandlerExecutionChainWhenEndpointHasPathShouldMapAgainstName()
-			throws Exception {
+	public void getHandlerExecutionChainWhenEndpointHasPathShouldMapAgainstName() throws Exception {
 		TestMvcEndpoint testMvcEndpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		testMvcEndpoint.setPath("something-else");
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
@@ -70,11 +68,9 @@ public class CloudFoundryEndpointHandlerMappingTests
 		handlerMapping.setPrefix("/test");
 		handlerMapping.setApplicationContext(context);
 		handlerMapping.afterPropertiesSet();
-		HandlerExecutionChain handler = handlerMapping
-				.getHandler(new MockHttpServletRequest("GET", "/test"));
+		HandlerExecutionChain handler = handlerMapping.getHandler(new MockHttpServletRequest("GET", "/test"));
 		HandlerMethod handlerMethod = (HandlerMethod) handler.getHandler();
-		assertThat(handlerMethod.getBean())
-				.isInstanceOf(CloudFoundryDiscoveryMvcEndpoint.class);
+		assertThat(handlerMethod.getBean()).isInstanceOf(CloudFoundryDiscoveryMvcEndpoint.class);
 	}
 
 	@Test
@@ -87,8 +83,7 @@ public class CloudFoundryEndpointHandlerMappingTests
 		handlerMapping.setPrefix("/test");
 		handlerMapping.setApplicationContext(context);
 		handlerMapping.afterPropertiesSet();
-		HandlerExecutionChain handler = handlerMapping
-				.getHandler(new MockHttpServletRequest("GET", "/test/health"));
+		HandlerExecutionChain handler = handlerMapping.getHandler(new MockHttpServletRequest("GET", "/test/health"));
 		HandlerMethod handlerMethod = (HandlerMethod) handler.getHandler();
 		Object handlerMethodBean = handlerMethod.getBean();
 		assertThat(handlerMethodBean).isInstanceOf(CloudFoundryHealthMvcEndpoint.class);

@@ -60,8 +60,7 @@ public class TestDatabaseAutoConfigurationTests {
 		DataSource datasource = this.context.getBean(DataSource.class);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
 		jdbcTemplate.execute("create table example (id int, name varchar);");
-		ConfigurableApplicationContext anotherContext = doLoad(
-				ExistingDataSourceConfiguration.class);
+		ConfigurableApplicationContext anotherContext = doLoad(ExistingDataSourceConfiguration.class);
 		try {
 			DataSource anotherDatasource = anotherContext.getBean(DataSource.class);
 			JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(anotherDatasource);
@@ -76,8 +75,7 @@ public class TestDatabaseAutoConfigurationTests {
 		this.context = doLoad(config, environment);
 	}
 
-	private ConfigurableApplicationContext doLoad(Class<?> config,
-			String... environment) {
+	private ConfigurableApplicationContext doLoad(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (config != null) {
 			ctx.register(config);
@@ -93,8 +91,8 @@ public class TestDatabaseAutoConfigurationTests {
 
 		@Bean
 		public DataSource dataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-					.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL);
+			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder().generateUniqueName(true)
+					.setType(EmbeddedDatabaseType.HSQL);
 			return builder.build();
 		}
 

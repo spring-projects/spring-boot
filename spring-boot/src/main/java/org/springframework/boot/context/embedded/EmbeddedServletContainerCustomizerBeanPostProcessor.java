@@ -37,8 +37,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class EmbeddedServletContainerCustomizerBeanPostProcessor
-		implements BeanPostProcessor, BeanFactoryAware {
+public class EmbeddedServletContainerCustomizerBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
 	private ListableBeanFactory beanFactory;
 
@@ -47,14 +46,12 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
 		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory,
-				"EmbeddedServletContainerCustomizerBeanPostProcessor can only be used "
-						+ "with a ListableBeanFactory");
+				"EmbeddedServletContainerCustomizerBeanPostProcessor can only be used " + "with a ListableBeanFactory");
 		this.beanFactory = (ListableBeanFactory) beanFactory;
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof ConfigurableEmbeddedServletContainer) {
 			postProcessBeforeInitialization((ConfigurableEmbeddedServletContainer) bean);
 		}
@@ -62,13 +59,11 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 
-	private void postProcessBeforeInitialization(
-			ConfigurableEmbeddedServletContainer bean) {
+	private void postProcessBeforeInitialization(ConfigurableEmbeddedServletContainer bean) {
 		for (EmbeddedServletContainerCustomizer customizer : getCustomizers()) {
 			customizer.customize(bean);
 		}
@@ -78,10 +73,7 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor
 		if (this.customizers == null) {
 			// Look up does not include the parent context
 			this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
-					this.beanFactory
-							.getBeansOfType(EmbeddedServletContainerCustomizer.class,
-									false, false)
-							.values());
+					this.beanFactory.getBeansOfType(EmbeddedServletContainerCustomizer.class, false, false).values());
 			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
 			this.customizers = Collections.unmodifiableList(this.customizers);
 		}

@@ -30,8 +30,7 @@ public class WhitespaceThrowableProxyConverter extends ThrowableProxyConverter {
 
 	@Override
 	protected String throwableProxyToString(IThrowableProxy tp) {
-		return CoreConstants.LINE_SEPARATOR + super.throwableProxyToString(tp)
-				+ CoreConstants.LINE_SEPARATOR;
+		return CoreConstants.LINE_SEPARATOR + super.throwableProxyToString(tp) + CoreConstants.LINE_SEPARATOR;
 	}
 
 }

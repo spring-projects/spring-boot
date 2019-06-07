@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  * @see BeanDefinition#setDependsOn(String[])
  */
-public abstract class AbstractDependsOnBeanFactoryPostProcessor
-		implements BeanFactoryPostProcessor {
+public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	private final Class<?> beanClass;
 
@@ -72,25 +71,23 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 
 	private Iterable<String> getBeanNames(ListableBeanFactory beanFactory) {
 		Set<String> names = new HashSet<String>();
-		names.addAll(Arrays.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				beanFactory, this.beanClass, true, false)));
-		for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				beanFactory, this.factoryBeanClass, true, false)) {
+		names.addAll(Arrays
+				.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, this.beanClass, true, false)));
+		for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
+				this.factoryBeanClass, true, false)) {
 			names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
 		}
 		return names;
 	}
 
-	private static BeanDefinition getBeanDefinition(String beanName,
-			ConfigurableListableBeanFactory beanFactory) {
+	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
 			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName,
-						(ConfigurableListableBeanFactory) parentBeanFactory);
+				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
 			}
 			throw ex;
 		}

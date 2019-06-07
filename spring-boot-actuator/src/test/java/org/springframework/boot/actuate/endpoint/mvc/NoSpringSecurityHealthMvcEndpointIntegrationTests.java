@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,15 +68,13 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void healthWhenRightRoleNotPresentShouldNotExposeHealthDetails()
-			throws Exception {
+	public void healthWhenRightRoleNotPresentShouldNotExposeHealthDetails() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/health").with(getRequestPostProcessor()))
-				.andExpect(status().isOk())
+		mockMvc.perform(get("/health").with(getRequestPostProcessor())).andExpect(status().isOk())
 				.andExpect(content().string("{\"status\":\"UP\"}"));
 	}
 
@@ -85,21 +83,18 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.security.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.security.enabled:false");
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/health")).andExpect(status().isOk())
-				.andExpect(content().string(containsString(
-						"\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\"}")));
+		mockMvc.perform(get("/health")).andExpect(status().isOk()).andExpect(
+				content().string(containsString("\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\"}")));
 	}
 
 	private RequestPostProcessor getRequestPostProcessor() {
 		return new RequestPostProcessor() {
 
 			@Override
-			public MockHttpServletRequest postProcessRequest(
-					MockHttpServletRequest request) {
+			public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
 				Principal principal = mock(Principal.class);
 				request.setUserPrincipal(principal);
 				return request;
@@ -108,11 +103,10 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		};
 	}
 
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			WebMvcAutoConfiguration.class })
 	@Configuration
 	static class TestConfiguration {
 

@@ -52,8 +52,7 @@ public final class Layouts {
 		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".war")) {
 			return new War();
 		}
-		if (file.isDirectory()
-				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".zip")) {
+		if (file.isDirectory() || file.getName().toLowerCase(Locale.ENGLISH).endsWith(".zip")) {
 			return new Expanded();
 		}
 		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
@@ -167,8 +166,7 @@ public final class Layouts {
 	public static class Module implements Layout {
 
 		private static final Set<LibraryScope> LIB_DESTINATION_SCOPES = new HashSet<LibraryScope>(
-				Arrays.asList(LibraryScope.COMPILE, LibraryScope.RUNTIME,
-						LibraryScope.CUSTOM));
+				Arrays.asList(LibraryScope.COMPILE, LibraryScope.RUNTIME, LibraryScope.CUSTOM));
 
 		@Override
 		public String getLauncherClassName() {

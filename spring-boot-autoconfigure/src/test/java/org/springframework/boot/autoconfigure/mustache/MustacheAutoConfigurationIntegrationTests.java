@@ -70,15 +70,13 @@ public class MustacheAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
-				String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port, String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
-		String body = new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port + "/partial", String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
@@ -112,10 +110,8 @@ public class MustacheAutoConfigurationIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ MustacheAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
+	@Import({ MustacheAutoConfiguration.class, EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 

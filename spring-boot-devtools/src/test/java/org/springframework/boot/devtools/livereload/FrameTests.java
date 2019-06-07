@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,8 +115,7 @@ public class FrameTests {
 
 	@Test
 	public void readMaskedTextFrame() throws Exception {
-		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x82, 0x0F, 0x0F, 0x0F, 0x0F,
-				0x4E, 0x4E };
+		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x82, 0x0F, 0x0F, 0x0F, 0x0F, 0x4E, 0x4E };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
 		assertThat(frame.getPayload()).isEqualTo(new byte[] { 0x41, 0x41 });

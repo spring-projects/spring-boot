@@ -50,8 +50,8 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 
 	@Override
 	public void beforeTestMethod(TestContext testContext) throws Exception {
-		if (Boolean.TRUE.equals(testContext.getAttribute(
-				DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
+		if (Boolean.TRUE.equals(
+				testContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
 			initMocks(testContext);
 			reinjectFields(testContext);
 		}
@@ -78,10 +78,8 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 		postProcessFields(testContext, new MockitoFieldHandler() {
 
 			@Override
-			public void handle(MockitoField mockitoField,
-					MockitoPostProcessor postProcessor) {
-				postProcessor.inject(mockitoField.field, mockitoField.target,
-						mockitoField.definition);
+			public void handle(MockitoField mockitoField, MockitoPostProcessor postProcessor) {
+				postProcessor.inject(mockitoField.field, mockitoField.target, mockitoField.definition);
 			}
 
 		});
@@ -91,13 +89,10 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 		postProcessFields(testContext, new MockitoFieldHandler() {
 
 			@Override
-			public void handle(MockitoField mockitoField,
-					MockitoPostProcessor postProcessor) {
+			public void handle(MockitoField mockitoField, MockitoPostProcessor postProcessor) {
 				ReflectionUtils.makeAccessible(mockitoField.field);
-				ReflectionUtils.setField(mockitoField.field,
-						testContext.getTestInstance(), null);
-				postProcessor.inject(mockitoField.field, mockitoField.target,
-						mockitoField.definition);
+				ReflectionUtils.setField(mockitoField.field, testContext.getTestInstance(), null);
+				postProcessor.inject(mockitoField.field, mockitoField.target, mockitoField.definition);
 			}
 
 		});
@@ -112,8 +107,7 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 			for (Definition definition : parser.getDefinitions()) {
 				Field field = parser.getField(definition);
 				if (field != null) {
-					handler.handle(new MockitoField(field, testContext.getTestInstance(),
-							definition), postProcessor);
+					handler.handle(new MockitoField(field, testContext.getTestInstance(), definition), postProcessor);
 				}
 			}
 		}
@@ -127,8 +121,7 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 		private final Set<Annotation> annotations = new LinkedHashSet<Annotation>();
 
 		@Override
-		public void doWith(Field field)
-				throws IllegalArgumentException, IllegalAccessException {
+		public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 			for (Annotation annotation : field.getDeclaredAnnotations()) {
 				if (annotation.annotationType().getName().startsWith("org.mockito")) {
 					this.annotations.add(annotation);

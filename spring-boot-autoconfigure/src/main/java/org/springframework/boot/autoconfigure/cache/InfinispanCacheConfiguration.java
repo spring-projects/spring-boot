@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ public class InfinispanCacheConfiguration {
 
 	private final ConfigurationBuilder defaultConfigurationBuilder;
 
-	public InfinispanCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers,
+	public InfinispanCacheConfiguration(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
 			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilder) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
@@ -63,10 +62,8 @@ public class InfinispanCacheConfiguration {
 	}
 
 	@Bean
-	public SpringEmbeddedCacheManager cacheManager(
-			EmbeddedCacheManager embeddedCacheManager) {
-		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(
-				embeddedCacheManager);
+	public SpringEmbeddedCacheManager cacheManager(EmbeddedCacheManager embeddedCacheManager) {
+		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(embeddedCacheManager);
 		return this.customizers.customize(cacheManager);
 	}
 
@@ -77,8 +74,7 @@ public class InfinispanCacheConfiguration {
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			for (String cacheName : cacheNames) {
-				cacheManager.defineConfiguration(cacheName,
-						getDefaultCacheConfiguration());
+				cacheManager.defineConfiguration(cacheName, getDefaultCacheConfiguration());
 			}
 		}
 		return cacheManager;

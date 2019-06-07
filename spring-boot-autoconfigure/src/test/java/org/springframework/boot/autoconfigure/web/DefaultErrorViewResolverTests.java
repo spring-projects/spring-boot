@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,21 +80,19 @@ public class DefaultErrorViewResolverTests {
 		this.resourceProperties = new ResourceProperties();
 		TemplateAvailabilityProviders templateAvailabilityProviders = new TestTemplateAvailabilityProviders(
 				this.templateAvailabilityProvider);
-		this.resolver = new DefaultErrorViewResolver(applicationContext,
-				this.resourceProperties, templateAvailabilityProviders);
+		this.resolver = new DefaultErrorViewResolver(applicationContext, this.resourceProperties,
+				templateAvailabilityProviders);
 	}
 
 	@Test
-	public void createWhenApplicationContextIsNullShouldThrowException()
-			throws Exception {
+	public void createWhenApplicationContextIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ApplicationContext must not be null");
 		new DefaultErrorViewResolver(null, new ResourceProperties());
 	}
 
 	@Test
-	public void createWhenResourcePropertiesIsNullShouldThrowException()
-			throws Exception {
+	public void createWhenResourcePropertiesIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ResourceProperties must not be null");
 		new DefaultErrorViewResolver(mock(ApplicationContext.class), null);
@@ -102,51 +100,43 @@ public class DefaultErrorViewResolverTests {
 
 	@Test
 	public void resolveWhenNoMatchShouldReturnNull() throws Exception {
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNull();
 	}
 
 	@Test
 	public void resolveWhenExactTemplateMatchShouldReturnTemplate() throws Exception {
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
-		verify(this.templateAvailabilityProvider).isTemplateAvailable(eq("error/404"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class));
+		verify(this.templateAvailabilityProvider).isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class));
 		verifyNoMoreInteractions(this.templateAvailabilityProvider);
 	}
 
 	@Test
 	public void resolveWhenSeries5xxTemplateMatchShouldReturnTemplate() throws Exception {
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/5xx"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.SERVICE_UNAVAILABLE, this.model);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/5xx"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.SERVICE_UNAVAILABLE,
+				this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/5xx");
 	}
 
 	@Test
 	public void resolveWhenSeries4xxTemplateMatchShouldReturnTemplate() throws Exception {
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/4xx");
 	}
 
 	@Test
 	public void resolveWhenExactResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/exact");
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
@@ -155,8 +145,7 @@ public class DefaultErrorViewResolverTests {
 	@Test
 	public void resolveWhenSeries4xxResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/4xx");
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("4xx/4xx");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
@@ -165,34 +154,28 @@ public class DefaultErrorViewResolverTests {
 	@Test
 	public void resolveWhenSeries5xxResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/5xx");
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.INTERNAL_SERVER_ERROR, this.model);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.INTERNAL_SERVER_ERROR,
+				this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("5xx/5xx");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
-	public void resolveWhenTemplateAndResourceMatchShouldFavorTemplate()
-			throws Exception {
+	public void resolveWhenTemplateAndResourceMatchShouldFavorTemplate() throws Exception {
 		setResourceLocation("/exact");
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
 	}
 
 	@Test
-	public void resolveWhenExactResourceMatchAndSeriesTemplateMatchShouldFavorResource()
-			throws Exception {
+	public void resolveWhenExactResourceMatchAndSeriesTemplateMatchShouldFavorResource() throws Exception {
 		setResourceLocation("/exact");
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
@@ -211,8 +194,8 @@ public class DefaultErrorViewResolverTests {
 
 	private void setResourceLocation(String path) {
 		String packageName = getClass().getPackage().getName();
-		this.resourceProperties.setStaticLocations(new String[] {
-				"classpath:" + packageName.replace('.', '/') + path + "/" });
+		this.resourceProperties
+				.setStaticLocations(new String[] { "classpath:" + packageName.replace('.', '/') + path + "/" });
 	}
 
 	private MockHttpServletResponse render(ModelAndView modelAndView) throws Exception {
@@ -221,8 +204,7 @@ public class DefaultErrorViewResolverTests {
 		return response;
 	}
 
-	private static class TestTemplateAvailabilityProviders
-			extends TemplateAvailabilityProviders {
+	private static class TestTemplateAvailabilityProviders extends TemplateAvailabilityProviders {
 
 		TestTemplateAvailabilityProviders(TemplateAvailabilityProvider provider) {
 			super(Collections.singletonList(provider));

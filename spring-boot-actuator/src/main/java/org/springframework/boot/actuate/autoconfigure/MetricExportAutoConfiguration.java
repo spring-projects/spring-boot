@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,13 +76,11 @@ public class MetricExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")
-	public SchedulingConfigurer metricWritersMetricExporter(
-			MetricExportProperties properties) {
+	public SchedulingConfigurer metricWritersMetricExporter(MetricExportProperties properties) {
 		Map<String, GaugeWriter> writers = new HashMap<String, GaugeWriter>();
 		MetricReader reader = this.endpointReader;
 		if (reader == null && !CollectionUtils.isEmpty(this.readers)) {
-			reader = new CompositeMetricReader(
-					this.readers.toArray(new MetricReader[this.readers.size()]));
+			reader = new CompositeMetricReader(this.readers.toArray(new MetricReader[this.readers.size()]));
 		}
 		if (reader == null && CollectionUtils.isEmpty(this.exporters)) {
 			return new NoOpSchedulingConfigurer();
@@ -95,8 +93,7 @@ public class MetricExportAutoConfiguration {
 			exporters.setReader(reader);
 			exporters.setWriters(writers);
 		}
-		exporters.setExporters((this.exporters != null) ? this.exporters
-				: Collections.<String, Exporter>emptyMap());
+		exporters.setExporters((this.exporters != null) ? this.exporters : Collections.<String, Exporter>emptyMap());
 		return exporters;
 	}
 
@@ -109,8 +106,8 @@ public class MetricExportAutoConfiguration {
 		@ConditionalOnProperty(prefix = "spring.metrics.export.statsd", name = "host")
 		public StatsdMetricWriter statsdMetricWriter(MetricExportProperties properties) {
 			MetricExportProperties.Statsd statsdProperties = properties.getStatsd();
-			return new StatsdMetricWriter(statsdProperties.getPrefix(),
-					statsdProperties.getHost(), statsdProperties.getPort());
+			return new StatsdMetricWriter(statsdProperties.getPrefix(), statsdProperties.getHost(),
+					statsdProperties.getPort());
 		}
 
 	}
@@ -127,8 +124,7 @@ public class MetricExportAutoConfiguration {
 		@ConditionalOnMissingBean
 		public MetricExportProperties metricExportProperties() {
 			MetricExportProperties export = new MetricExportProperties();
-			export.getRedis().setPrefix("spring.metrics"
-					+ ((this.prefix.length() > 0) ? "." : "") + this.prefix);
+			export.getRedis().setPrefix("spring.metrics" + ((this.prefix.length() > 0) ? "." : "") + this.prefix);
 			export.getAggregate().setPrefix(this.prefix);
 			export.getAggregate().setKeyPattern(this.aggregateKeyPattern);
 			return export;

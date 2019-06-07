@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public class DiskSpaceHealthIndicatorTests {
 		MockitoAnnotations.initMocks(this);
 		given(this.fileMock.exists()).willReturn(true);
 		given(this.fileMock.canRead()).willReturn(true);
-		this.healthIndicator = new DiskSpaceHealthIndicator(
-				createProperties(this.fileMock, THRESHOLD_BYTES));
+		this.healthIndicator = new DiskSpaceHealthIndicator(createProperties(this.fileMock, THRESHOLD_BYTES));
 	}
 
 	@Test
@@ -76,8 +75,7 @@ public class DiskSpaceHealthIndicatorTests {
 		assertThat(health.getDetails().get("total")).isEqualTo(THRESHOLD_BYTES * 10);
 	}
 
-	private DiskSpaceHealthIndicatorProperties createProperties(File path,
-			long threshold) {
+	private DiskSpaceHealthIndicatorProperties createProperties(File path, long threshold) {
 		DiskSpaceHealthIndicatorProperties properties = new DiskSpaceHealthIndicatorProperties();
 		properties.setPath(path);
 		properties.setThreshold(threshold);

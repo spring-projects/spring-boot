@@ -44,26 +44,22 @@ public class WebMvcTestAutoConfigurationIntegrationTests {
 
 	@Test
 	public void freemarkerAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(FreeMarkerAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(FreeMarkerAutoConfiguration.class));
 	}
 
 	@Test
 	public void groovyTemplatesAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(GroovyTemplateAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(GroovyTemplateAutoConfiguration.class));
 	}
 
 	@Test
 	public void mustacheAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(MustacheAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(MustacheAutoConfiguration.class));
 	}
 
 	@Test
 	public void thymeleafAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
 	}
 
 }

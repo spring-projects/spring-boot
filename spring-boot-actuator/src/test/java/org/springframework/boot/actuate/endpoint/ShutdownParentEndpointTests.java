@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,22 +49,18 @@ public class ShutdownParentEndpointTests {
 
 	@Test
 	public void shutdownChild() throws Exception {
-		this.context = new SpringApplicationBuilder(Config.class).child(Empty.class)
-				.web(false).run();
+		this.context = new SpringApplicationBuilder(Config.class).child(Empty.class).web(false).run();
 		CountDownLatch latch = this.context.getBean(Config.class).latch;
-		assertThat((String) getEndpointBean().invoke().get("message"))
-				.startsWith("Shutting down");
+		assertThat((String) getEndpointBean().invoke().get("message")).startsWith("Shutting down");
 		assertThat(this.context.isActive()).isTrue();
 		assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Test
 	public void shutdownParent() throws Exception {
-		this.context = new SpringApplicationBuilder(Empty.class).child(Config.class)
-				.web(false).run();
+		this.context = new SpringApplicationBuilder(Empty.class).child(Config.class).web(false).run();
 		CountDownLatch latch = this.context.getBean(Config.class).latch;
-		assertThat((String) getEndpointBean().invoke().get("message"))
-				.startsWith("Shutting down");
+		assertThat((String) getEndpointBean().invoke().get("message")).startsWith("Shutting down");
 		assertThat(this.context.isActive()).isTrue();
 		assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	@Override
 	public Map<String, Object> invoke() {
-		Collection<LoggerConfiguration> configurations = this.loggingSystem
-				.getLoggerConfigurations();
+		Collection<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		if (configurations == null) {
 			return Collections.emptyMap();
 		}
@@ -70,10 +69,8 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		return new TreeSet<LogLevel>(levels).descendingSet();
 	}
 
-	private Map<String, LoggerLevels> getLoggers(
-			Collection<LoggerConfiguration> configurations) {
-		Map<String, LoggerLevels> loggers = new LinkedHashMap<String, LoggerLevels>(
-				configurations.size());
+	private Map<String, LoggerLevels> getLoggers(Collection<LoggerConfiguration> configurations) {
+		Map<String, LoggerLevels> loggers = new LinkedHashMap<String, LoggerLevels>(configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
 			loggers.put(configuration.getName(), new LoggerLevels(configuration));
 		}
@@ -82,8 +79,7 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	public LoggerLevels invoke(String name) {
 		Assert.notNull(name, "Name must not be null");
-		LoggerConfiguration configuration = this.loggingSystem
-				.getLoggerConfiguration(name);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(name);
 		return (configuration != null) ? new LoggerLevels(configuration) : null;
 	}
 

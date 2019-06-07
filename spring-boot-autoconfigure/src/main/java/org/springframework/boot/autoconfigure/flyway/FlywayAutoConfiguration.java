@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,7 @@ import org.springframework.util.ObjectUtils;
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "flyway", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
 
 	@Bean
@@ -92,9 +91,8 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
-		public FlywayConfiguration(FlywayProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
-				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
+		public FlywayConfiguration(FlywayProperties properties, ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSource, @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
@@ -106,11 +104,9 @@ public class FlywayAutoConfiguration {
 		@PostConstruct
 		public void checkLocationExists() {
 			if (this.properties.isCheckLocation()) {
-				Assert.state(!this.properties.getLocations().isEmpty(),
-						"Migration script locations not configured");
+				Assert.state(!this.properties.getLocations().isEmpty(), "Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation();
-				Assert.state(exists, "Cannot find migrations location in: "
-						+ this.properties.getLocations()
+				Assert.state(exists, "Cannot find migrations location in: " + this.properties.getLocations()
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}
@@ -133,8 +129,7 @@ public class FlywayAutoConfiguration {
 		public Flyway flyway() {
 			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {
-				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
-						this.properties.getPassword(),
+				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(), this.properties.getPassword(),
 						this.properties.getInitSqls().toArray(new String[0]));
 			}
 			else if (this.flywayDataSource != null) {
@@ -178,8 +173,7 @@ public class FlywayAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class FlywayJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	protected static class FlywayJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public FlywayJpaDependencyConfiguration() {
 			super("flyway");
@@ -195,13 +189,11 @@ public class FlywayAutoConfiguration {
 		public void setLocations(String... locations) {
 			if (usesVendorLocation(locations)) {
 				try {
-					String url = (String) JdbcUtils
-							.extractDatabaseMetaData(getDataSource(), "getURL");
+					String url = (String) JdbcUtils.extractDatabaseMetaData(getDataSource(), "getURL");
 					DatabaseDriver vendor = DatabaseDriver.fromJdbcUrl(url);
 					if (vendor != DatabaseDriver.UNKNOWN) {
 						for (int i = 0; i < locations.length; i++) {
-							locations[i] = locations[i].replace(VENDOR_PLACEHOLDER,
-									vendor.getId());
+							locations[i] = locations[i].replace(VENDOR_PLACEHOLDER, vendor.getId());
 						}
 					}
 				}
@@ -226,8 +218,7 @@ public class FlywayAutoConfiguration {
 	/**
 	 * Convert a String or Number to a {@link MigrationVersion}.
 	 */
-	private static class StringOrNumberToMigrationVersionConverter
-			implements GenericConverter {
+	private static class StringOrNumberToMigrationVersionConverter implements GenericConverter {
 
 		private static final Set<ConvertiblePair> CONVERTIBLE_TYPES;
 
@@ -244,8 +235,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType,
-				TypeDescriptor targetType) {
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			String value = ObjectUtils.nullSafeToString(source);
 			return MigrationVersion.fromVersion(value);
 		}

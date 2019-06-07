@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * @author Craig Walls
  * @since 1.1.0
  */
-public class SpringSocialLinkedInCompilerAutoConfiguration
-		extends CompilerAutoConfiguration {
+public class SpringSocialLinkedInCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
@@ -39,10 +38,8 @@ public class SpringSocialLinkedInCompilerAutoConfiguration
 	}
 
 	@Override
-	public void applyDependencies(DependencyCustomizer dependencies)
-			throws CompilationFailedException {
-		dependencies
-				.ifAnyMissingClasses("org.springframework.social.linkedin.api.LinkedIn")
+	public void applyDependencies(DependencyCustomizer dependencies) throws CompilationFailedException {
+		dependencies.ifAnyMissingClasses("org.springframework.social.linkedin.api.LinkedIn")
 				.add("spring-boot-starter-social-linkedin");
 	}
 

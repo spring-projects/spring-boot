@@ -43,8 +43,7 @@ import org.springframework.util.StringUtils;
  */
 public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
-	private static final Map<Level, Level> DEFAULT_REMAPS = Collections
-			.singletonMap(Level.INFO, Level.DEBUG);
+	private static final Map<Level, Level> DEFAULT_REMAPS = Collections.singletonMap(Level.INFO, Level.DEBUG);
 
 	private String destinationLogger = Logger.ROOT_LOGGER_NAME;
 
@@ -68,8 +67,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 	protected void append(ILoggingEvent event) {
 		AppendableLogger logger = getLogger(this.destinationLogger);
 		Level remapped = this.remapLevels.get(event.getLevel());
-		logger.callAppenders(
-				(remapped != null) ? new RemappedLoggingEvent(event) : event);
+		logger.callAppenders((remapped != null) ? new RemappedLoggingEvent(event) : event);
 	}
 
 	protected AppendableLogger getLogger(String name) {
@@ -139,8 +137,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
 		@Override
 		public Level getLevel() {
-			Level remappedLevel = LevelRemappingAppender.this.remapLevels
-					.get(this.event.getLevel());
+			Level remappedLevel = LevelRemappingAppender.this.remapLevels.get(this.event.getLevel());
 			return (remappedLevel != null) ? remappedLevel : this.event.getLevel();
 		}
 

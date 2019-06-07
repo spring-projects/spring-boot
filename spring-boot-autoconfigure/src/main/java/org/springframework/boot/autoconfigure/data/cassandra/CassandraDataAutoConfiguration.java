@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,21 +71,19 @@ public class CassandraDataAutoConfiguration {
 
 	private final PropertyResolver propertyResolver;
 
-	public CassandraDataAutoConfiguration(BeanFactory beanFactory,
-			CassandraProperties properties, Cluster cluster, Environment environment) {
+	public CassandraDataAutoConfiguration(BeanFactory beanFactory, CassandraProperties properties, Cluster cluster,
+			Environment environment) {
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.cluster = cluster;
-		this.propertyResolver = new RelaxedPropertyResolver(environment,
-				"spring.data.cassandra.");
+		this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.data.cassandra.");
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
 		BasicCassandraMappingContext context = new BasicCassandraMappingContext();
-		List<String> packages = EntityScanPackages.get(this.beanFactory)
-				.getPackageNames();
+		List<String> packages = EntityScanPackages.get(this.beanFactory).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
 			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
@@ -93,8 +91,7 @@ public class CassandraDataAutoConfiguration {
 			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
 		}
 		if (StringUtils.hasText(this.properties.getKeyspaceName())) {
-			context.setUserTypeResolver(new SimpleUserTypeResolver(this.cluster,
-					this.properties.getKeyspaceName()));
+			context.setUserTypeResolver(new SimpleUserTypeResolver(this.cluster, this.properties.getKeyspaceName()));
 		}
 		return context;
 	}
@@ -107,24 +104,20 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Session.class)
-	public CassandraSessionFactoryBean session(CassandraConverter converter)
-			throws Exception {
+	public CassandraSessionFactoryBean session(CassandraConverter converter) throws Exception {
 		CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		String name = this.propertyResolver.getProperty("schemaAction",
-				SchemaAction.NONE.name());
-		SchemaAction schemaAction = SchemaAction
-				.valueOf(name.toUpperCase(Locale.ENGLISH));
+		String name = this.propertyResolver.getProperty("schemaAction", SchemaAction.NONE.name());
+		SchemaAction schemaAction = SchemaAction.valueOf(name.toUpperCase(Locale.ENGLISH));
 		session.setSchemaAction(schemaAction);
 		return session;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraTemplate cassandraTemplate(Session session,
-			CassandraConverter converter) throws Exception {
+	public CassandraTemplate cassandraTemplate(Session session, CassandraConverter converter) throws Exception {
 		return new CassandraTemplate(session, converter);
 	}
 

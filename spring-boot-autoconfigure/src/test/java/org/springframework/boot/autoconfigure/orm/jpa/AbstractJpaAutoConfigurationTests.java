@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void testNoDataSource() throws Exception {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				getAutoConfigureClass());
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		this.expected.expect(BeanCreationException.class);
 		this.expected.expectMessage("No qualifying bean");
 		this.expected.expectMessage("DataSource");
@@ -98,8 +97,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		setupTestConfiguration();
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
-		assertThat(this.context.getBean("transactionManager"))
-				.isInstanceOf(JpaTransactionManager.class);
+		assertThat(this.context.getBean("transactionManager")).isInstanceOf(JpaTransactionManager.class);
 	}
 
 	@Test
@@ -113,11 +111,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenFilterPresent()
-			throws Exception {
+	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenFilterPresent() throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(TestFilterConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		context.register(TestFilterConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
 		assertThat(getInterceptorBeans(context).length).isEqualTo(0);
@@ -125,8 +121,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff()
-			throws Exception {
+	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff() throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
@@ -138,8 +133,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void customJpaProperties() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b",
-				"spring.jpa.properties.a.b:c", "spring.jpa.properties.c:d");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c",
+				"spring.jpa.properties.c:d");
 		setupTestConfiguration();
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
@@ -152,10 +147,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
-		setupTestConfiguration(
-				TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
+		setupTestConfiguration(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
@@ -165,12 +158,10 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedEntityManagerFactoryIfAvailable() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
 		this.context.refresh();
-		EntityManagerFactory factoryBean = this.context
-				.getBean(EntityManagerFactory.class);
+		EntityManagerFactory factoryBean = this.context.getBean(EntityManagerFactory.class);
 		Map<String, Object> map = factoryBean.getProperties();
 		assertThat(map.get("configured")).isEqualTo("manually");
 	}
@@ -179,8 +170,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void usesManuallyDefinedTransactionManagerBeanIfAvailable() {
 		setupTestConfiguration(TestConfigurationWithTransactionManager.class);
 		this.context.refresh();
-		PlatformTransactionManager txManager = this.context
-				.getBean(PlatformTransactionManager.class);
+		PlatformTransactionManager txManager = this.context.getBean(PlatformTransactionManager.class);
 		assertThat(txManager).isInstanceOf(CustomJpaTransactionManager.class);
 	}
 
@@ -190,11 +180,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		Field field = LocalContainerEntityManagerFactoryBean.class
-				.getDeclaredField("persistenceUnitManager");
+		Field field = LocalContainerEntityManagerFactoryBean.class.getDeclaredField("persistenceUnitManager");
 		field.setAccessible(true);
-		assertThat(field.get(entityManagerFactoryBean))
-				.isEqualTo(this.context.getBean(PersistenceUnitManager.class));
+		assertThat(field.get(entityManagerFactoryBean)).isEqualTo(this.context.getBean(PersistenceUnitManager.class));
 	}
 
 	protected void setupTestConfiguration() {
@@ -202,9 +190,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	protected void setupTestConfiguration(Class<?> configClass) {
-		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
-				DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+		this.context.register(configClass, EmbeddedDataSourceConfiguration.class, DataSourceAutoConfiguration.class,
+				TransactionAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				getAutoConfigureClass());
 	}
 
 	private String[] getInterceptorBeans(ApplicationContext context) {
@@ -229,12 +217,11 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean
-			extends TestConfiguration {
+	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean extends TestConfiguration {
 
 		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-				DataSource dataSource, JpaVendorAdapter adapter) {
+		public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
+				JpaVendorAdapter adapter) {
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
@@ -249,12 +236,10 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory
-			extends TestConfiguration {
+	protected static class TestConfigurationWithEntityManagerFactory extends TestConfiguration {
 
 		@Bean
-		public EntityManagerFactory entityManagerFactory(DataSource dataSource,
-				JpaVendorAdapter adapter) {
+		public EntityManagerFactory entityManagerFactory(DataSource dataSource, JpaVendorAdapter adapter) {
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);

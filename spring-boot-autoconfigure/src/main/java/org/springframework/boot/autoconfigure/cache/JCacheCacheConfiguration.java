@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass({ Caching.class, JCacheCacheManager.class })
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
-@Conditional({ CacheCondition.class,
-		JCacheCacheConfiguration.JCacheAvailableCondition.class })
+@Conditional({ CacheCondition.class, JCacheCacheConfiguration.JCacheAvailableCondition.class })
 @Import(HazelcastJCacheCustomizationConfiguration.class)
 class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
@@ -76,8 +75,7 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader beanClassLoader;
 
-	JCacheCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers,
+	JCacheCacheConfiguration(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
 			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfiguration,
 			ObjectProvider<List<JCacheManagerCustomizer>> cacheManagerCustomizers,
 			ObjectProvider<List<JCachePropertiesCustomizer>> cachePropertiesCustomizers) {
@@ -114,14 +112,12 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	private CacheManager createCacheManager() throws IOException {
-		CachingProvider cachingProvider = getCachingProvider(
-				this.cacheProperties.getJcache().getProvider());
+		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties.getJcache().getProvider());
 		Properties properties = createCacheManagerProperties();
 		Resource configLocation = this.cacheProperties
 				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
-			return cachingProvider.getCacheManager(configLocation.getURI(),
-					this.beanClassLoader, properties);
+			return cachingProvider.getCacheManager(configLocation.getURI(), this.beanClassLoader, properties);
 		}
 		return cachingProvider.getCacheManager(null, this.beanClassLoader, properties);
 	}
@@ -192,29 +188,23 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	static class JCacheProviderAvailableCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("JCache");
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), "spring.cache.jcache.");
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(),
+					"spring.cache.jcache.");
 			if (resolver.containsProperty("provider")) {
-				return ConditionOutcome
-						.match(message.because("JCache provider specified"));
+				return ConditionOutcome.match(message.because("JCache provider specified"));
 			}
-			Iterator<CachingProvider> providers = Caching.getCachingProviders()
-					.iterator();
+			Iterator<CachingProvider> providers = Caching.getCachingProviders().iterator();
 			if (!providers.hasNext()) {
-				return ConditionOutcome
-						.noMatch(message.didNotFind("JSR-107 provider").atAll());
+				return ConditionOutcome.noMatch(message.didNotFind("JSR-107 provider").atAll());
 			}
 			providers.next();
 			if (providers.hasNext()) {
-				return ConditionOutcome
-						.noMatch(message.foundExactly("multiple JSR-107 providers"));
+				return ConditionOutcome.noMatch(message.foundExactly("multiple JSR-107 providers"));
 
 			}
-			return ConditionOutcome
-					.match(message.foundExactly("single JSR-107 provider"));
+			return ConditionOutcome.match(message.foundExactly("single JSR-107 provider"));
 		}
 
 	}

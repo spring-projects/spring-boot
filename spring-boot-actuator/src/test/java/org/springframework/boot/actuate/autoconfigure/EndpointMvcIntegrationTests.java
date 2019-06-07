@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,25 +85,23 @@ public class EndpointMvcIntegrationTests {
 
 	@Test
 	public void envEndpointNotHidden() throws InterruptedException {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port + "/env/user.dir", String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/env/user.dir",
+				String.class);
 		assertThat(body).isNotNull().contains("spring-boot-actuator");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
 	@Test
 	public void healthEndpointNotHidden() throws InterruptedException {
-		String body = new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port + "/health", String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/health", String.class);
 		assertThat(body).isNotNull().contains("status");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
 	@Configuration
 	@MinimalWebConfiguration
-	@Import({ ManagementServerPropertiesAutoConfiguration.class,
-			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
+	@Import({ ManagementServerPropertiesAutoConfiguration.class, JacksonAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	@RestController
 	protected static class Application {
 
@@ -114,22 +112,21 @@ public class EndpointMvcIntegrationTests {
 		}
 
 		@RequestMapping("/{name}/{env}/{bar}")
-		public Map<String, Object> master(@PathVariable String name,
-				@PathVariable String env, @PathVariable String label) {
+		public Map<String, Object> master(@PathVariable String name, @PathVariable String env,
+				@PathVariable String label) {
 			return Collections.singletonMap("foo", (Object) "bar");
 		}
 
 		@RequestMapping("/{name}/{env}")
-		public Map<String, Object> master(@PathVariable String name,
-				@PathVariable String env) {
+		public Map<String, Object> master(@PathVariable String name, @PathVariable String env) {
 			return Collections.singletonMap("foo", (Object) "bar");
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		public HttpMessageConverters messageConverters() {
-			return new HttpMessageConverters((this.converters != null) ? this.converters
-					: Collections.<HttpMessageConverter<?>>emptyList());
+			return new HttpMessageConverters(
+					(this.converters != null) ? this.converters : Collections.<HttpMessageConverter<?>>emptyList());
 		}
 
 		@Bean
@@ -154,11 +151,9 @@ public class EndpointMvcIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}
@@ -168,8 +163,8 @@ public class EndpointMvcIntegrationTests {
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		@Override
-		public void postHandle(HttpServletRequest request, HttpServletResponse response,
-				Object handler, ModelAndView modelAndView) throws Exception {
+		public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+				ModelAndView modelAndView) throws Exception {
 			this.latch.countDown();
 		}
 

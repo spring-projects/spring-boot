@@ -47,8 +47,7 @@ public class ByteArrayRandomAccessDataTests {
 		RandomAccessData data = new ByteArrayRandomAccessData(bytes);
 		data = data.getSubsection(1, 4).getSubsection(1, 2);
 		InputStream inputStream = data.getInputStream(ResourceAccess.PER_READ);
-		assertThat(FileCopyUtils.copyToByteArray(inputStream))
-				.isEqualTo(new byte[] { 2, 3 });
+		assertThat(FileCopyUtils.copyToByteArray(inputStream)).isEqualTo(new byte[] { 2, 3 });
 		assertThat(data.getSize()).isEqualTo(2L);
 	}
 

@@ -29,14 +29,12 @@ import org.springframework.util.StringUtils;
  */
 public final class LoggingFailureAnalysisReporter implements FailureAnalysisReporter {
 
-	private static final Log logger = LogFactory
-			.getLog(LoggingFailureAnalysisReporter.class);
+	private static final Log logger = LogFactory.getLog(LoggingFailureAnalysisReporter.class);
 
 	@Override
 	public void report(FailureAnalysis failureAnalysis) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Application failed to start due to an exception",
-					failureAnalysis.getCause());
+			logger.debug("Application failed to start due to an exception", failureAnalysis.getCause());
 		}
 		if (logger.isErrorEnabled()) {
 			logger.error(buildMessage(failureAnalysis));

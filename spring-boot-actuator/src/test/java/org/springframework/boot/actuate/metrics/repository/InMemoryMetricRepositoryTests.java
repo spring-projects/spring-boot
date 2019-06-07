@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,13 @@ public class InMemoryMetricRepositoryTests {
 	@Test
 	public void increment() {
 		this.repository.increment(new Delta<Integer>("foo", 1, new Date()));
-		assertThat(this.repository.findOne("foo").getValue().doubleValue()).isEqualTo(1.0,
-				offset(0.01));
+		assertThat(this.repository.findOne("foo").getValue().doubleValue()).isEqualTo(1.0, offset(0.01));
 	}
 
 	@Test
 	public void set() {
 		this.repository.set(new Metric<Double>("foo", 2.5, new Date()));
-		assertThat(this.repository.findOne("foo").getValue().doubleValue()).isEqualTo(2.5,
-				offset(0.01));
+		assertThat(this.repository.findOne("foo").getValue().doubleValue()).isEqualTo(2.5, offset(0.01));
 	}
 
 }

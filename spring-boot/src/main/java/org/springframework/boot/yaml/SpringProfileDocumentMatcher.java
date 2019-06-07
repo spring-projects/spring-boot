@@ -60,8 +60,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	public void addActiveProfiles(String... profiles) {
-		LinkedHashSet<String> set = new LinkedHashSet<String>(
-				Arrays.asList(this.activeProfiles));
+		LinkedHashSet<String> set = new LinkedHashSet<String>(Arrays.asList(this.activeProfiles));
 		Collections.addAll(set, profiles);
 		this.activeProfiles = set.toArray(new String[set.size()]);
 	}
@@ -87,8 +86,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 		SpringProperties springProperties = new SpringProperties();
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
-		PropertyValues propertyValues = new PropertySourcesPropertyValues(
-				propertySources);
+		PropertyValues propertyValues = new PropertySourcesPropertyValues(propertySources);
 		new RelaxedDataBinder(springProperties, "spring").bind(propertyValues);
 		List<String> profiles = springProperties.getProfiles();
 		return profiles;
@@ -96,8 +94,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	private ProfilesMatcher getProfilesMatcher() {
 		return (this.activeProfiles.length != 0)
-				? new ActiveProfilesMatcher(
-						new HashSet<String>(Arrays.asList(this.activeProfiles)))
+				? new ActiveProfilesMatcher(new HashSet<String>(Arrays.asList(this.activeProfiles)))
 				: new EmptyProfilesMatcher();
 	}
 
@@ -112,8 +109,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 				candidateType = ProfileType.NEGATIVE;
 			}
 			if (candidateType == type) {
-				extractedProfiles.add((type != ProfileType.POSITIVE)
-						? candidate.substring(1) : candidate);
+				extractedProfiles.add((type != ProfileType.POSITIVE) ? candidate.substring(1) : candidate);
 			}
 		}
 		return extractedProfiles;

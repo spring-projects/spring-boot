@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,8 +150,7 @@ public class JacksonProperties {
 		return this.defaultPropertyInclusion;
 	}
 
-	public void setDefaultPropertyInclusion(
-			JsonInclude.Include defaultPropertyInclusion) {
+	public void setDefaultPropertyInclusion(JsonInclude.Include defaultPropertyInclusion) {
 		this.defaultPropertyInclusion = defaultPropertyInclusion;
 	}
 

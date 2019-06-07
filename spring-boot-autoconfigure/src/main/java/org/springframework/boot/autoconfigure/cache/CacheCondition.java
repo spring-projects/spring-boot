@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,23 +37,18 @@ import org.springframework.core.type.ClassMetadata;
 class CacheCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String sourceClass = "";
 		if (metadata instanceof ClassMetadata) {
 			sourceClass = ((ClassMetadata) metadata).getClassName();
 		}
-		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache",
-				sourceClass);
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.cache.");
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache", sourceClass);
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(), "spring.cache.");
 		if (!resolver.containsProperty("type")) {
 			return ConditionOutcome.match(message.because("automatic cache type"));
 		}
-		CacheType cacheType = CacheConfigurations
-				.getType(((AnnotationMetadata) metadata).getClassName());
-		String value = resolver.getProperty("type").replace('-', '_')
-				.toUpperCase(Locale.ENGLISH);
+		CacheType cacheType = CacheConfigurations.getType(((AnnotationMetadata) metadata).getClassName());
+		String value = resolver.getProperty("type").replace('-', '_').toUpperCase(Locale.ENGLISH);
 		if (value.equals(cacheType.name())) {
 			return ConditionOutcome.match(message.because(value + " cache type"));
 		}

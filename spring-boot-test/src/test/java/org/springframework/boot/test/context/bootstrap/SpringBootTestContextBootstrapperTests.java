@@ -45,8 +45,7 @@ public class SpringBootTestContextBootstrapperTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("@WebAppConfiguration should only be used with "
 				+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
-				+ "environment. Please remove @WebAppConfiguration or reconfigure "
-				+ "@SpringBootTest.");
+				+ "environment. Please remove @WebAppConfiguration or reconfigure " + "@SpringBootTest.");
 		buildTestContext(SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class);
 	}
 
@@ -61,10 +60,8 @@ public class SpringBootTestContextBootstrapperTests {
 		BootstrapContext bootstrapContext = mock(BootstrapContext.class);
 		bootstrapper.setBootstrapContext(bootstrapContext);
 		given((Class) bootstrapContext.getTestClass()).willReturn(testClass);
-		CacheAwareContextLoaderDelegate contextLoaderDelegate = mock(
-				CacheAwareContextLoaderDelegate.class);
-		given(bootstrapContext.getCacheAwareContextLoaderDelegate())
-				.willReturn(contextLoaderDelegate);
+		CacheAwareContextLoaderDelegate contextLoaderDelegate = mock(CacheAwareContextLoaderDelegate.class);
+		given(bootstrapContext.getCacheAwareContextLoaderDelegate()).willReturn(contextLoaderDelegate);
 		bootstrapper.buildTestContext();
 	}
 

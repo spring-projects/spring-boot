@@ -57,10 +57,9 @@ public class DelegatingApplicationListenerTests {
 	@Test
 	public void orderedInitialize() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"context.listener.classes=" + MockInitB.class.getName() + ","
-						+ MockInitA.class.getName());
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
+				"context.listener.classes=" + MockInitB.class.getName() + "," + MockInitA.class.getName());
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
+				this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
 		assertThat(this.context.getBeanFactory().getSingleton("a")).isEqualTo("a");
@@ -69,16 +68,15 @@ public class DelegatingApplicationListenerTests {
 
 	@Test
 	public void noInitializers() throws Exception {
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
+				this.context.getEnvironment()));
 	}
 
 	@Test
 	public void emptyInitializers() throws Exception {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"context.listener.classes:");
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "context.listener.classes:");
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
+				this.context.getEnvironment()));
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -100,8 +98,7 @@ public class DelegatingApplicationListenerTests {
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
 					.getApplicationContext();
-			assertThat(applicationContext.getBeanFactory().getSingleton("a"))
-					.isEqualTo("a");
+			assertThat(applicationContext.getBeanFactory().getSingleton("a")).isEqualTo("a");
 			applicationContext.getBeanFactory().registerSingleton("b", "b");
 		}
 

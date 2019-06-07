@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,77 +84,61 @@ public class MvcEndpointSecurityInterceptorTests {
 	@Test
 	public void securityDisabledShouldAllowAccess() throws Exception {
 		this.securityInterceptor = new MvcEndpointSecurityInterceptor(false, this.roles);
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isTrue();
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isTrue();
 	}
 
 	@Test
 	public void endpointNotSensitiveShouldAllowAccess() throws Exception {
 		this.endpoint.setSensitive(false);
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isTrue();
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isTrue();
 	}
 
 	@Test
 	public void sensitiveEndpointIfRoleIsPresentShouldAllowAccess() throws Exception {
 		this.servletContext.declareRoles("SUPER_HERO");
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isTrue();
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isTrue();
 	}
 
 	@Test
-	public void sensitiveEndpointIfNotAuthenticatedShouldNotAllowAccess()
-			throws Exception {
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isFalse();
+	public void sensitiveEndpointIfNotAuthenticatedShouldNotAllowAccess() throws Exception {
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isFalse();
 		verify(this.response).sendError(HttpStatus.UNAUTHORIZED.value(),
 				"Full authentication is required to access this resource.");
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isFalse();
-		assertThat(this.output.toString())
-				.containsOnlyOnce("Full authentication is required to access actuator "
-						+ "endpoints. Consider adding Spring Security or set "
-						+ "'management.security.enabled' to false");
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isFalse();
+		assertThat(this.output.toString()).containsOnlyOnce("Full authentication is required to access actuator "
+				+ "endpoints. Consider adding Spring Security or set " + "'management.security.enabled' to false");
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleIsNotCorrectShouldNotAllowAccess()
-			throws Exception {
+	public void sensitiveEndpointIfRoleIsNotCorrectShouldNotAllowAccess() throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		this.servletContext.declareRoles("HERO");
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isFalse();
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isFalse();
 		verify(this.response).sendError(HttpStatus.FORBIDDEN.value(),
 				"Access is denied. User must have one of the these roles: SUPER_HERO");
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleNotCorrectShouldCheckAuthorities()
-			throws Exception {
+	public void sensitiveEndpointIfRoleNotCorrectShouldCheckAuthorities() throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		Authentication authentication = mock(Authentication.class);
-		Set<SimpleGrantedAuthority> authorities = Collections
-				.singleton(new SimpleGrantedAuthority("SUPER_HERO"));
+		Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("SUPER_HERO"));
 		doReturn(authorities).when(authentication).getAuthorities();
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isTrue();
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isTrue();
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleAndAuthoritiesNotCorrectShouldNotAllowAccess()
-			throws Exception {
+	public void sensitiveEndpointIfRoleAndAuthoritiesNotCorrectShouldNotAllowAccess() throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		Authentication authentication = mock(Authentication.class);
-		Set<SimpleGrantedAuthority> authorities = Collections
-				.singleton(new SimpleGrantedAuthority("HERO"));
+		Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("HERO"));
 		doReturn(authorities).when(authentication).getAuthorities();
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isFalse();
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response, this.handlerMethod)).isFalse();
 	}
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {

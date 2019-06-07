@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,41 +52,34 @@ class SsoSecurityConfigurer {
 	}
 
 	public void configure(HttpSecurity http) throws Exception {
-		OAuth2SsoProperties sso = this.applicationContext
-				.getBean(OAuth2SsoProperties.class);
+		OAuth2SsoProperties sso = this.applicationContext.getBean(OAuth2SsoProperties.class);
 		// Delay the processing of the filter until we know the
 		// SessionAuthenticationStrategy is available:
 		http.apply(new OAuth2ClientAuthenticationConfigurer(oauth2SsoFilter(sso)));
 		addAuthenticationEntryPoint(http, sso);
 	}
 
-	private void addAuthenticationEntryPoint(HttpSecurity http, OAuth2SsoProperties sso)
-			throws Exception {
+	private void addAuthenticationEntryPoint(HttpSecurity http, OAuth2SsoProperties sso) throws Exception {
 		ExceptionHandlingConfigurer<HttpSecurity> exceptions = http.exceptionHandling();
-		ContentNegotiationStrategy contentNegotiationStrategy = http
-				.getSharedObject(ContentNegotiationStrategy.class);
+		ContentNegotiationStrategy contentNegotiationStrategy = http.getSharedObject(ContentNegotiationStrategy.class);
 		if (contentNegotiationStrategy == null) {
 			contentNegotiationStrategy = new HeaderContentNegotiationStrategy();
 		}
-		MediaTypeRequestMatcher preferredMatcher = new MediaTypeRequestMatcher(
-				contentNegotiationStrategy, MediaType.APPLICATION_XHTML_XML,
-				new MediaType("image", "*"), MediaType.TEXT_HTML, MediaType.TEXT_PLAIN);
+		MediaTypeRequestMatcher preferredMatcher = new MediaTypeRequestMatcher(contentNegotiationStrategy,
+				MediaType.APPLICATION_XHTML_XML, new MediaType("image", "*"), MediaType.TEXT_HTML,
+				MediaType.TEXT_PLAIN);
 		preferredMatcher.setIgnoredMediaTypes(Collections.singleton(MediaType.ALL));
-		exceptions.defaultAuthenticationEntryPointFor(
-				new LoginUrlAuthenticationEntryPoint(sso.getLoginPath()),
+		exceptions.defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint(sso.getLoginPath()),
 				preferredMatcher);
 		// When multiple entry points are provided the default is the first one
-		exceptions.defaultAuthenticationEntryPointFor(
-				new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+		exceptions.defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
 				new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
 	}
 
-	private OAuth2ClientAuthenticationProcessingFilter oauth2SsoFilter(
-			OAuth2SsoProperties sso) {
-		OAuth2RestOperations restTemplate = this.applicationContext
-				.getBean(UserInfoRestTemplateFactory.class).getUserInfoRestTemplate();
-		ResourceServerTokenServices tokenServices = this.applicationContext
-				.getBean(ResourceServerTokenServices.class);
+	private OAuth2ClientAuthenticationProcessingFilter oauth2SsoFilter(OAuth2SsoProperties sso) {
+		OAuth2RestOperations restTemplate = this.applicationContext.getBean(UserInfoRestTemplateFactory.class)
+				.getUserInfoRestTemplate();
+		ResourceServerTokenServices tokenServices = this.applicationContext.getBean(ResourceServerTokenServices.class);
 		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
 				sso.getLoginPath());
 		filter.setRestTemplate(restTemplate);
@@ -100,18 +93,15 @@ class SsoSecurityConfigurer {
 
 		private OAuth2ClientAuthenticationProcessingFilter filter;
 
-		OAuth2ClientAuthenticationConfigurer(
-				OAuth2ClientAuthenticationProcessingFilter filter) {
+		OAuth2ClientAuthenticationConfigurer(OAuth2ClientAuthenticationProcessingFilter filter) {
 			this.filter = filter;
 		}
 
 		@Override
 		public void configure(HttpSecurity builder) throws Exception {
 			OAuth2ClientAuthenticationProcessingFilter ssoFilter = this.filter;
-			ssoFilter.setSessionAuthenticationStrategy(
-					builder.getSharedObject(SessionAuthenticationStrategy.class));
-			builder.addFilterAfter(ssoFilter,
-					AbstractPreAuthenticatedProcessingFilter.class);
+			ssoFilter.setSessionAuthenticationStrategy(builder.getSharedObject(SessionAuthenticationStrategy.class));
+			builder.addFilterAfter(ssoFilter, AbstractPreAuthenticatedProcessingFilter.class);
 		}
 
 	}

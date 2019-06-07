@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,11 +82,9 @@ public class TokenValidatorTests {
 			+ "r3F7aM9YpErzeYLrl0GhQr9BVJxOvXcVd4kmY+XkiCcrkyS1cnghnllh+LCwQu1s\n"
 			+ "YwIDAQAB\n-----END PUBLIC KEY-----";
 
-	private static final Map<String, String> INVALID_KEYS = Collections
-			.singletonMap("invalid-key", INVALID_KEY);
+	private static final Map<String, String> INVALID_KEYS = Collections.singletonMap("invalid-key", INVALID_KEY);
 
-	private static final Map<String, String> VALID_KEYS = Collections
-			.singletonMap("valid-key", VALID_KEY);
+	private static final Map<String, String> VALID_KEYS = Collections.singletonMap("valid-key", VALID_KEY);
 
 	@Before
 	public void setup() throws Exception {
@@ -95,28 +93,23 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationFailsTwiceShouldThrowException()
-			throws Exception {
+	public void validateTokenWhenKidValidationFailsTwiceShouldThrowException() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys", INVALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(INVALID_KEYS);
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		this.thrown
-				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_KEY_ID));
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.thrown.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_KEY_ID));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 	}
 
 	@Test
-	public void validateTokenWhenKidValidationSucceedsInTheSecondAttempt()
-			throws Exception {
+	public void validateTokenWhenKidValidationSucceedsInTheSecondAttempt() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys", INVALID_KEYS);
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 		verify(this.securityService).fetchTokenKeys();
 	}
 
@@ -126,8 +119,7 @@ public class TokenValidatorTests {
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 		verify(this.securityService).fetchTokenKeys();
 	}
 
@@ -137,8 +129,7 @@ public class TokenValidatorTests {
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 		verify(this.securityService, Mockito.never()).fetchTokenKeys();
 	}
 
@@ -149,22 +140,17 @@ public class TokenValidatorTests {
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		this.thrown.expect(
-				AuthorizationExceptionMatcher.withReason(Reason.INVALID_SIGNATURE));
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.thrown.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_SIGNATURE));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 	}
 
 	@Test
-	public void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException()
-			throws Exception {
+	public void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		String header = "{ \"alg\": \"HS256\",  \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		this.thrown.expect(AuthorizationExceptionMatcher
-				.withReason(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM));
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.thrown.expect(AuthorizationExceptionMatcher.withReason(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 	}
 
 	@Test
@@ -173,10 +159,8 @@ public class TokenValidatorTests {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"jti\": \"0236399c350c47f3ae77e67a75e75e7d\", \"exp\": 1477509977, \"scope\": [\"actuator.read\"]}";
-		this.thrown
-				.expect(AuthorizationExceptionMatcher.withReason(Reason.TOKEN_EXPIRED));
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.thrown.expect(AuthorizationExceptionMatcher.withReason(Reason.TOKEN_EXPIRED));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 	}
 
 	@Test
@@ -185,40 +169,33 @@ public class TokenValidatorTests {
 		given(this.securityService.getUaaUrl()).willReturn("https://other-uaa.com");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\", \"scope\": [\"actuator.read\"]}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
-		this.thrown
-				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_ISSUER));
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.thrown.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_ISSUER));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 	}
 
 	@Test
-	public void validateTokenWhenAudienceIsNotValidShouldThrowException()
-			throws Exception {
+	public void validateTokenWhenAudienceIsNotValidShouldThrowException() throws Exception {
 		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\", \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"foo.bar\"]}";
-		this.thrown.expect(
-				AuthorizationExceptionMatcher.withReason(Reason.INVALID_AUDIENCE));
-		this.tokenValidator.validate(
-				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
+		this.thrown.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_AUDIENCE));
+		this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 	}
 
 	private String getSignedToken(byte[] header, byte[] claims) throws Exception {
 		PrivateKey privateKey = getPrivateKey();
 		Signature signature = Signature.getInstance("SHA256WithRSA");
 		signature.initSign(privateKey);
-		byte[] content = dotConcat(Base64Utils.encodeUrlSafe(header),
-				Base64Utils.encode(claims));
+		byte[] content = dotConcat(Base64Utils.encodeUrlSafe(header), Base64Utils.encode(claims));
 		signature.update(content);
 		byte[] crypto = signature.sign();
-		byte[] token = dotConcat(Base64Utils.encodeUrlSafe(header),
-				Base64Utils.encodeUrlSafe(claims), Base64Utils.encodeUrlSafe(crypto));
+		byte[] token = dotConcat(Base64Utils.encodeUrlSafe(header), Base64Utils.encodeUrlSafe(claims),
+				Base64Utils.encodeUrlSafe(crypto));
 		return new String(token, UTF_8);
 	}
 
-	private PrivateKey getPrivateKey()
-			throws InvalidKeySpecException, NoSuchAlgorithmException {
+	private PrivateKey getPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
 		String signingKey = "-----BEGIN PRIVATE KEY-----\n"
 				+ "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDSbn2Xa72IOcxu\n"
 				+ "tcd+qQ6ufZ1VDe98EmpwO4VQrTd37U9kZtWU0KqeSkgnyzIWmlbyWOdbB4/v4uJa\n"

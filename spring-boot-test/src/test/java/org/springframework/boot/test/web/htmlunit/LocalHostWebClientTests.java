@@ -73,13 +73,11 @@ public class LocalHostWebClientTests {
 		client.setWebConnection(connection);
 		client.getPage("/test");
 		verify(connection).getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl())
-				.isEqualTo(new URL("http://localhost:8080/test"));
+		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8080/test"));
 	}
 
 	@Test
-	public void getPageWhenUrlIsRelativeAndHasPortWillUseLocalhostPort()
-			throws Exception {
+	public void getPageWhenUrlIsRelativeAndHasPortWillUseLocalhostPort() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "8181");
 		WebClient client = new LocalHostWebClient(environment);
@@ -87,8 +85,7 @@ public class LocalHostWebClientTests {
 		client.setWebConnection(connection);
 		client.getPage("/test");
 		verify(connection).getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl())
-				.isEqualTo(new URL("http://localhost:8181/test"));
+		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8181/test"));
 	}
 
 	private WebConnection mockConnection() throws MalformedURLException, IOException {

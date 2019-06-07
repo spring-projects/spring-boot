@@ -65,8 +65,7 @@ public class SpringBootConfigurationFinderTests {
 
 	@Test
 	public void findFromPackageWhenConfigurationIsFoundShouldReturnConfiguration() {
-		Class<?> config = this.finder
-				.findFromPackage("org.springframework.boot.test.context.example.scan");
+		Class<?> config = this.finder.findFromPackage("org.springframework.boot.test.context.example.scan");
 		assertThat(config).isEqualTo(ExampleConfig.class);
 	}
 

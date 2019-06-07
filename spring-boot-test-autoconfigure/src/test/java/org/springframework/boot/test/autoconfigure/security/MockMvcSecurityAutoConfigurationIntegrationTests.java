@@ -58,10 +58,8 @@ public class MockMvcSecurityAutoConfigurationIntegrationTests {
 
 	@Test
 	public void okResponseWithBasicAuthCredentialsForKnownUser() throws Exception {
-		this.mockMvc
-				.perform(get("/").header(HttpHeaders.AUTHORIZATION,
-						"Basic " + Base64Utils.encodeToString("user:secret".getBytes())))
-				.andExpect(status().isOk());
+		this.mockMvc.perform(get("/").header(HttpHeaders.AUTHORIZATION,
+				"Basic " + Base64Utils.encodeToString("user:secret".getBytes()))).andExpect(status().isOk());
 	}
 
 }

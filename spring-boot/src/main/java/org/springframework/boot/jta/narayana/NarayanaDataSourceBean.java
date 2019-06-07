@@ -60,8 +60,7 @@ public class NarayanaDataSourceBean implements DataSource {
 	}
 
 	@Override
-	public Connection getConnection(String username, String password)
-			throws SQLException {
+	public Connection getConnection(String username, String password) throws SQLException {
 		Properties properties = new Properties();
 		properties.put(TransactionalDriver.XADataSource, this.xaDataSource);
 		properties.put(TransactionalDriver.userName, username);

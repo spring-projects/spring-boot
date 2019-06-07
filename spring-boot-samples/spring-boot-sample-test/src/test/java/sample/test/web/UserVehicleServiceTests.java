@@ -39,8 +39,7 @@ import static org.mockito.Matchers.anyString;
  */
 public class UserVehicleServiceTests {
 
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"00000000000000000");
+	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -56,21 +55,18 @@ public class UserVehicleServiceTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.service = new UserVehicleService(this.userRepository,
-				this.vehicleDetailsService);
+		this.service = new UserVehicleService(this.userRepository, this.vehicleDetailsService);
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be null");
 		this.service.getVehicleDetails(null);
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException() throws Exception {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
 		this.thrown.expect(UserNameNotFoundException.class);
 		this.service.getVehicleDetails("sboot");
@@ -78,8 +74,7 @@ public class UserVehicleServiceTests {
 
 	@Test
 	public void getVehicleDetailsShouldReturnMakeAndModel() throws Exception {
-		given(this.userRepository.findByUsername(anyString()))
-				.willReturn(new User("sboot", VIN));
+		given(this.userRepository.findByUsername(anyString())).willReturn(new User("sboot", VIN));
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");
 		given(this.vehicleDetailsService.getVehicleDetails(VIN)).willReturn(details);
 		VehicleDetails actual = this.service.getVehicleDetails("sboot");

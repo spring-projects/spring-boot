@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,12 +68,9 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentServletRegisteredWithAppContext() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "jolokia.config[key1]:value1",
-				"jolokia.config[key2]:value2");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.context, "jolokia.config[key1]:value1", "jolokia.config[key2]:value2");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
@@ -82,19 +79,15 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentServletWithCustomPath() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.jolokia.path=/foo/bar");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.jolokia.path=/foo/bar");
 		this.context.register(EndpointsConfig.class, WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				JolokiaAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, JolokiaAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/foo/bar"))
-				.andExpect(MockMvcResultMatchers.content()
-						.string(Matchers.containsString("\"request\":{\"type\"")));
+				.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"request\":{\"type\"")));
 	}
 
 	@Test
@@ -109,17 +102,14 @@ public class JolokiaAutoConfigurationTests {
 
 	@Test
 	public void endpointEnabledAsOverride() throws Exception {
-		assertEndpointEnabled("endpoints.enabled:false",
-				"endpoints.jolokia.enabled:true");
+		assertEndpointEnabled("endpoints.enabled:false", "endpoints.jolokia.enabled:true");
 	}
 
 	private void assertEndpointDisabled(String... pairs) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, pairs);
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
+		this.context.register(Config.class, WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).isEmpty();
@@ -128,10 +118,8 @@ public class JolokiaAutoConfigurationTests {
 	private void assertEndpointEnabled(String... pairs) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, pairs);
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
+		this.context.register(Config.class, WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
@@ -141,11 +129,9 @@ public class JolokiaAutoConfigurationTests {
 	protected static class EndpointsConfig extends Config {
 
 		@Bean
-		public EndpointHandlerMapping endpointHandlerMapping(
-				Collection<? extends MvcEndpoint> endpoints) {
+		public EndpointHandlerMapping endpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
 			EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints);
-			mapping.setSecurityInterceptor(new MvcEndpointSecurityInterceptor(false,
-					Collections.<String>emptyList()));
+			mapping.setSecurityInterceptor(new MvcEndpointSecurityInterceptor(false, Collections.<String>emptyList()));
 			return mapping;
 		}
 

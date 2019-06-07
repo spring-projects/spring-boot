@@ -76,11 +76,9 @@ public class ApplicationHome {
 				InputStream inputStream = manifestResources.nextElement().openStream();
 				try {
 					Manifest manifest = new Manifest(inputStream);
-					String startClass = manifest.getMainAttributes()
-							.getValue("Start-Class");
+					String startClass = manifest.getMainAttributes().getValue("Start-Class");
 					if (startClass != null) {
-						return ClassUtils.forName(startClass,
-								getClass().getClassLoader());
+						return ClassUtils.forName(startClass, getClass().getClassLoader());
 					}
 				}
 				finally {
@@ -95,8 +93,7 @@ public class ApplicationHome {
 
 	private File findSource(Class<?> sourceClass) {
 		try {
-			ProtectionDomain domain = (sourceClass != null)
-					? sourceClass.getProtectionDomain() : null;
+			ProtectionDomain domain = (sourceClass != null) ? sourceClass.getProtectionDomain() : null;
 			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
 			URL location = (codeSource != null) ? codeSource.getLocation() : null;
 			File source = (location != null) ? findSource(location) : null;

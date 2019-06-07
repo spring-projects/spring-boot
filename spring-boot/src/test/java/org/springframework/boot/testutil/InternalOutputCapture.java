@@ -63,8 +63,7 @@ public class InternalOutputCapture implements TestRule {
 					try {
 						if (!InternalOutputCapture.this.matchers.isEmpty()) {
 							String output = InternalOutputCapture.this.toString();
-							Assert.assertThat(output,
-									allOf(InternalOutputCapture.this.matchers));
+							Assert.assertThat(output, allOf(InternalOutputCapture.this.matchers));
 						}
 					}
 					finally {

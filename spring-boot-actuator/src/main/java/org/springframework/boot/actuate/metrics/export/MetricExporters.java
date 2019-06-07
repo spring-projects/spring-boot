@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,7 @@ public class MetricExporters implements SchedulingConfigurer, Closeable {
 			TriggerProperties trigger = this.properties.findTrigger(name);
 			if (trigger != null) {
 				ExportRunner runner = new ExportRunner(exporter);
-				IntervalTask task = new IntervalTask(runner, trigger.getDelayMillis(),
-						trigger.getDelayMillis());
+				IntervalTask task = new IntervalTask(runner, trigger.getDelayMillis(), trigger.getDelayMillis());
 				taskRegistrar.addFixedDelayTask(task);
 			}
 		}
@@ -86,15 +85,13 @@ public class MetricExporters implements SchedulingConfigurer, Closeable {
 				this.exporters.put(name, exporter);
 				this.closeables.add(name);
 				ExportRunner runner = new ExportRunner(exporter);
-				IntervalTask task = new IntervalTask(runner, trigger.getDelayMillis(),
-						trigger.getDelayMillis());
+				IntervalTask task = new IntervalTask(runner, trigger.getDelayMillis(), trigger.getDelayMillis());
 				taskRegistrar.addFixedDelayTask(task);
 			}
 		}
 	}
 
-	private MetricCopyExporter getExporter(GaugeWriter writer,
-			TriggerProperties trigger) {
+	private MetricCopyExporter getExporter(GaugeWriter writer, TriggerProperties trigger) {
 		MetricCopyExporter exporter = new MetricCopyExporter(this.reader, writer);
 		exporter.setIncludes(trigger.getIncludes());
 		exporter.setExcludes(trigger.getExcludes());

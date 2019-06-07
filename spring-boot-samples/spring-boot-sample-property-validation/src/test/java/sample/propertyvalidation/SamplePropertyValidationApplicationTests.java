@@ -49,8 +49,7 @@ public class SamplePropertyValidationApplicationTests {
 	@Test
 	public void bindValidProperties() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:192.168.0.1",
-				"sample.port:9090");
+		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:192.168.0.1", "sample.port:9090");
 		this.context.refresh();
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
 		assertThat(properties.getHost()).isEqualTo("192.168.0.1");
@@ -60,8 +59,7 @@ public class SamplePropertyValidationApplicationTests {
 	@Test
 	public void bindInvalidHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:xxxxxx",
-				"sample.port:9090");
+		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:xxxxxx", "sample.port:9090");
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("xxxxxx");
 		this.context.refresh();
@@ -80,8 +78,7 @@ public class SamplePropertyValidationApplicationTests {
 	public void validatorOnlyCalledOnSupportedClass() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		this.context.register(ServerProperties.class); // our validator will not apply
-		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:192.168.0.1",
-				"sample.port:9090");
+		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:192.168.0.1", "sample.port:9090");
 		this.context.refresh();
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
 		assertThat(properties.getHost()).isEqualTo("192.168.0.1");

@@ -63,8 +63,7 @@ class DefinitionsParser {
 		ReflectionUtils.doWithFields(source, new FieldCallback() {
 
 			@Override
-			public void doWith(Field field)
-					throws IllegalArgumentException, IllegalAccessException {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 				parseElement(field);
 			}
 
@@ -72,28 +71,23 @@ class DefinitionsParser {
 	}
 
 	private void parseElement(AnnotatedElement element) {
-		for (MockBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
-				MockBean.class, MockBeans.class)) {
+		for (MockBean annotation : AnnotationUtils.getRepeatableAnnotations(element, MockBean.class, MockBeans.class)) {
 			parseMockBeanAnnotation(annotation, element);
 		}
-		for (SpyBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
-				SpyBean.class, SpyBeans.class)) {
+		for (SpyBean annotation : AnnotationUtils.getRepeatableAnnotations(element, SpyBean.class, SpyBeans.class)) {
 			parseSpyBeanAnnotation(annotation, element);
 		}
 	}
 
 	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element) {
 		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value());
-		Assert.state(!typesToMock.isEmpty(),
-				"Unable to deduce type to mock from " + element);
+		Assert.state(!typesToMock.isEmpty(), "Unable to deduce type to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
-			Assert.state(typesToMock.size() == 1,
-					"The name attribute can only be used when mocking a single class");
+			Assert.state(typesToMock.size() == 1, "The name attribute can only be used when mocking a single class");
 		}
 		for (ResolvableType typeToMock : typesToMock) {
-			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock,
-					annotation.extraInterfaces(), annotation.answer(),
-					annotation.serializable(), annotation.reset(),
+			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock, annotation.extraInterfaces(),
+					annotation.answer(), annotation.serializable(), annotation.reset(),
 					QualifierDefinition.forElement(element));
 			addDefinition(element, definition, "mock");
 		}
@@ -101,22 +95,18 @@ class DefinitionsParser {
 
 	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element) {
 		Set<ResolvableType> typesToSpy = getOrDeduceTypes(element, annotation.value());
-		Assert.state(!typesToSpy.isEmpty(),
-				"Unable to deduce type to spy from " + element);
+		Assert.state(!typesToSpy.isEmpty(), "Unable to deduce type to spy from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
-			Assert.state(typesToSpy.size() == 1,
-					"The name attribute can only be used when spying a single class");
+			Assert.state(typesToSpy.size() == 1, "The name attribute can only be used when spying a single class");
 		}
 		for (ResolvableType typeToSpy : typesToSpy) {
-			SpyDefinition definition = new SpyDefinition(annotation.name(), typeToSpy,
-					annotation.reset(), annotation.proxyTargetAware(),
-					QualifierDefinition.forElement(element));
+			SpyDefinition definition = new SpyDefinition(annotation.name(), typeToSpy, annotation.reset(),
+					annotation.proxyTargetAware(), QualifierDefinition.forElement(element));
 			addDefinition(element, definition, "spy");
 		}
 	}
 
-	private void addDefinition(AnnotatedElement element, Definition definition,
-			String type) {
+	private void addDefinition(AnnotatedElement element, Definition definition, String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
 		Assert.state(isNewDefinition, "Duplicate " + type + " definition " + definition);
 		if (element instanceof Field) {
@@ -125,8 +115,7 @@ class DefinitionsParser {
 		}
 	}
 
-	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element,
-			Class<?>[] value) {
+	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element, Class<?>[] value) {
 		Set<ResolvableType> types = new LinkedHashSet<ResolvableType>();
 		for (Class<?> clazz : value) {
 			types.add(ResolvableType.forClass(clazz));

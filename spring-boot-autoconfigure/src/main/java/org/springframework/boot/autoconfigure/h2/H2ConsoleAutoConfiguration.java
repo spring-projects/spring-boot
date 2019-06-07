@@ -48,8 +48,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass(WebServlet.class)
-@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled",
-		havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class H2ConsoleAutoConfiguration {
@@ -64,8 +63,7 @@ public class H2ConsoleAutoConfiguration {
 	public ServletRegistrationBean h2Console() {
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean registration = new ServletRegistrationBean(
-				new WebServlet(), urlMapping);
+		ServletRegistrationBean registration = new ServletRegistrationBean(new WebServlet(), urlMapping);
 		H2ConsoleProperties.Settings settings = this.properties.getSettings();
 		if (settings.isTrace()) {
 			registration.addInitParameter("trace", "");
@@ -79,8 +77,7 @@ public class H2ConsoleAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 	@ConditionalOnBean(ObjectPostProcessor.class)
-	@ConditionalOnProperty(prefix = "security.basic", name = "enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	static class H2ConsoleSecurityConfiguration {
 
 		@Bean
@@ -89,8 +86,7 @@ public class H2ConsoleAutoConfiguration {
 		}
 
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-		private static class H2ConsoleSecurityConfigurer
-				extends WebSecurityConfigurerAdapter {
+		private static class H2ConsoleSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 			@Autowired
 			private H2ConsoleProperties console;

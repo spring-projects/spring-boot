@@ -31,8 +31,7 @@ import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 public class AtomikosXAConnectionFactoryWrapper implements XAConnectionFactoryWrapper {
 
 	@Override
-	public ConnectionFactory wrapConnectionFactory(
-			XAConnectionFactory connectionFactory) {
+	public ConnectionFactory wrapConnectionFactory(XAConnectionFactory connectionFactory) {
 		AtomikosConnectionFactoryBean bean = new AtomikosConnectionFactoryBean();
 		bean.setXaConnectionFactory(connectionFactory);
 		return bean;

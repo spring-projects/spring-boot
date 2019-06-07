@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 	public void withoutPrefix() throws Exception {
 		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("b"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpointA, endpointB));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(endpointA, endpointB));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		assertThat(mapping.getHandler(request("GET", "/a")).getHandler())
@@ -68,23 +67,21 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 	public void withPrefix() throws Exception {
 		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("b"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpointA, endpointB));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(endpointA, endpointB));
 		mapping.setApplicationContext(this.context);
 		mapping.setPrefix("/a");
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/a"))
-				.getHandler()).isEqualTo(new HandlerMethod(endpointA, this.method));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
-				.getHandler()).isEqualTo(new HandlerMethod(endpointB, this.method));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/a")).getHandler())
+				.isEqualTo(new HandlerMethod(endpointA, this.method));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/b")).getHandler())
+				.isEqualTo(new HandlerMethod(endpointB, this.method));
 		assertThat(mapping.getHandler(request("GET", "/a"))).isNull();
 	}
 
 	@Test(expected = HttpRequestMethodNotSupportedException.class)
 	public void onlyGetHttpMethodForNonActionEndpoints() throws Exception {
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		assertThat(mapping.getHandler(request("GET", "/a"))).isNotNull();
@@ -94,8 +91,7 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 	@Test
 	public void postHttpMethodForActionEndpoints() throws Exception {
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		assertThat(mapping.getHandler(request("POST", "/a"))).isNotNull();
@@ -104,8 +100,7 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 	@Test(expected = HttpRequestMethodNotSupportedException.class)
 	public void onlyPostHttpMethodForActionEndpoints() throws Exception {
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		assertThat(mapping.getHandler(request("POST", "/a"))).isNotNull();
@@ -115,8 +110,7 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 	@Test
 	public void disabled() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(endpoint));
 		mapping.setDisabled(true);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
@@ -127,8 +121,7 @@ public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingT
 	public void duplicatePath() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint, other));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(endpoint, other));
 		mapping.setDisabled(true);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();

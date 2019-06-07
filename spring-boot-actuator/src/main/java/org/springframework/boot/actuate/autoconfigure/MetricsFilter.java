@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ import org.springframework.web.servlet.HandlerMapping;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 final class MetricsFilter extends OncePerRequestFilter {
 
-	private static final String ATTRIBUTE_STOP_WATCH = MetricsFilter.class.getName()
-			+ ".StopWatch";
+	private static final String ATTRIBUTE_STOP_WATCH = MetricsFilter.class.getName() + ".StopWatch";
 
 	private static final int UNDEFINED_HTTP_STATUS = 999;
 
@@ -81,8 +80,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 		KEY_REPLACERS = Collections.unmodifiableSet(replacements);
 	}
 
-	MetricsFilter(CounterService counterService, GaugeService gaugeService,
-			MetricFilterProperties properties) {
+	MetricsFilter(CounterService counterService, GaugeService gaugeService, MetricFilterProperties properties) {
 		this.counterService = counterService;
 		this.gaugeService = gaugeService;
 		this.properties = properties;
@@ -94,8 +92,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 		StopWatch stopWatch = createStopWatchIfNecessary(request);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
@@ -137,13 +134,11 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private void recordMetrics(HttpServletRequest request, int status, long time) {
 		String suffix = determineMetricNameSuffix(request);
 		submitMetrics(MetricsFilterSubmission.MERGED, request, status, time, suffix);
-		submitMetrics(MetricsFilterSubmission.PER_HTTP_METHOD, request, status, time,
-				suffix);
+		submitMetrics(MetricsFilterSubmission.PER_HTTP_METHOD, request, status, time, suffix);
 	}
 
 	private String determineMetricNameSuffix(HttpServletRequest request) {
-		Object bestMatchingPattern = request
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		Object bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (bestMatchingPattern != null) {
 			return fixSpecialCharacters(bestMatchingPattern.toString());
 		}
@@ -164,8 +159,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 		return result;
 	}
 
-	private void submitMetrics(MetricsFilterSubmission submission,
-			HttpServletRequest request, int status, long time, String suffix) {
+	private void submitMetrics(MetricsFilterSubmission submission, HttpServletRequest request, int status, long time,
+			String suffix) {
 		String prefix = "";
 		if (submission == MetricsFilterSubmission.PER_HTTP_METHOD) {
 			prefix = request.getMethod() + ".";

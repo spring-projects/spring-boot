@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,32 +216,27 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 		if (jwtConfigPresent && jwkConfigPresent) {
 			errors.reject("ambiguous.keyUri",
-					"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should"
-							+ " be configured.");
+					"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should" + " be configured.");
 		}
 		else {
 			if (jwtConfigPresent || jwkConfigPresent) {
 				// It's a JWT decoder
 				return;
 			}
-			if (!StringUtils.hasText(target.getUserInfoUri())
-					&& !StringUtils.hasText(target.getTokenInfoUri())) {
+			if (!StringUtils.hasText(target.getUserInfoUri()) && !StringUtils.hasText(target.getTokenInfoUri())) {
 				errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
-						"Missing tokenInfoUri and userInfoUri and there is no "
-								+ "JWT verifier key");
+						"Missing tokenInfoUri and userInfoUri and there is no " + "JWT verifier key");
 			}
 			if (StringUtils.hasText(target.getTokenInfoUri()) && isPreferTokenInfo()) {
 				if (!StringUtils.hasText(this.clientSecret)) {
-					errors.rejectValue("clientSecret", "missing.clientSecret",
-							"Missing client secret");
+					errors.rejectValue("clientSecret", "missing.clientSecret", "Missing client secret");
 				}
 			}
 		}
 	}
 
 	private int countBeans(Class<?> type) {
-		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type,
-				true, false).length;
+		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type, true, false).length;
 	}
 
 	public class Jwt {

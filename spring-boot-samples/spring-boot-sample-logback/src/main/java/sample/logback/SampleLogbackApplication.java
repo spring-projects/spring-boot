@@ -27,8 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SampleLogbackApplication {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(SampleLogbackApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(SampleLogbackApplication.class);
 
 	@PostConstruct
 	public void logSomething() {

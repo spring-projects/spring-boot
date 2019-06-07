@@ -56,8 +56,7 @@ public class PropertiesConfigurationFactoryPerformanceTests {
 
 	@BeforeClass
 	public static void init() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
-				"name=blah", "bar=blah");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "name=blah", "bar=blah");
 	}
 
 	@Theory

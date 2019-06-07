@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,8 +86,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@Before
 	public void setup() {
 		List<Transport> transports = Arrays.asList(
-				new WebSocketTransport(
-						new StandardWebSocketClient(new WsWebSocketContainer())),
+				new WebSocketTransport(new StandardWebSocketClient(new WsWebSocketContainer())),
 				new RestTemplateXhrTransport(new RestTemplate()));
 		this.sockJsClient = new SockJsClient(transports);
 	}
@@ -101,8 +100,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@Test
 	public void basicMessagingWithJsonResponse() throws Throwable {
 		Object result = performStompSubscription("/app/json");
-		assertThat(new String((byte[]) result))
-				.isEqualTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"));
+		assertThat(new String((byte[]) result)).isEqualTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"));
 	}
 
 	@Test
@@ -119,8 +117,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 		Iterator<MessageConverter> customizedIterator = customizedConverters.iterator();
 		Iterator<MessageConverter> defaultIterator = defaultConverters.iterator();
 		while (customizedIterator.hasNext()) {
-			assertThat(customizedIterator.next())
-					.isInstanceOf(defaultIterator.next().getClass());
+			assertThat(customizedIterator.next()).isInstanceOf(defaultIterator.next().getClass());
 		}
 	}
 
@@ -136,8 +133,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	private List<MessageConverter> getDefaultConverters() {
 		CompositeMessageConverter compositeDefaultConverter = new DelegatingWebSocketMessageBrokerConfiguration()
 				.brokerMessageConverter();
-		return (List<MessageConverter>) ReflectionTestUtils
-				.getField(compositeDefaultConverter, "converters");
+		return (List<MessageConverter>) ReflectionTestUtils.getField(compositeDefaultConverter, "converters");
 	}
 
 	private Object performStompSubscription(final String topic) throws Throwable {
@@ -153,8 +149,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 		StompSessionHandler handler = new StompSessionHandlerAdapter() {
 
 			@Override
-			public void afterConnected(StompSession session,
-					StompHeaders connectedHeaders) {
+			public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
 				session.subscribe(topic, new StompFrameHandler() {
 
 					@Override
@@ -177,8 +172,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 			}
 
 			@Override
-			public void handleException(StompSession session, StompCommand command,
-					StompHeaders headers, byte[] payload, Throwable exception) {
+			public void handleException(StompSession session, StompCommand command, StompHeaders headers,
+					byte[] payload, Throwable exception) {
 				failure.set(exception);
 				latch.countDown();
 			}
@@ -208,13 +203,10 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@EnableWebSocket
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			WebSocketMessagingAutoConfiguration.class,
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class, WebSocketMessagingAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
-	static class WebSocketMessagingConfiguration
-			extends AbstractWebSocketMessageBrokerConfigurer {
+	static class WebSocketMessagingConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
 
 		@Override
 		public void registerStompEndpoints(StompEndpointRegistry registry) {

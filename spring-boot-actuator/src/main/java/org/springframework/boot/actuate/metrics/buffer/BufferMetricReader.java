@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,8 +80,7 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 		return metrics;
 	}
 
-	private <T extends Number, B extends Buffer<T>> void collectMetrics(
-			Buffers<B> buffers, Predicate<String> predicate,
+	private <T extends Number, B extends Buffer<T>> void collectMetrics(Buffers<B> buffers, Predicate<String> predicate,
 			final List<Metric<?>> metrics) {
 		buffers.forEach(predicate, new BiConsumer<String, B>() {
 

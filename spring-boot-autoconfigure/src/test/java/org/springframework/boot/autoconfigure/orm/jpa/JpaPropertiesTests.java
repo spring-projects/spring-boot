@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,36 +63,29 @@ public class JpaPropertiesTests {
 	@Test
 	public void hibernate4NoCustomNamingStrategy() throws Exception {
 		JpaProperties properties = load(HibernateVersion.V4);
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties).contains(entry("hibernate.ejb.naming_strategy",
-				SpringNamingStrategy.class.getName()));
-		assertThat(hibernateProperties).doesNotContainKeys(
-				"hibernate.implicit_naming_strategy",
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties)
+				.contains(entry("hibernate.ejb.naming_strategy", SpringNamingStrategy.class.getName()));
+		assertThat(hibernateProperties).doesNotContainKeys("hibernate.implicit_naming_strategy",
 				"hibernate.physical_naming_strategy");
 	}
 
 	@Test
 	public void hibernate4CustomNamingStrategy() throws Exception {
 		JpaProperties properties = load(HibernateVersion.V4,
-				"spring.jpa.hibernate.naming.strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties).contains(entry("hibernate.ejb.naming_strategy",
-				"org.hibernate.cfg.EJB3NamingStrategy"));
-		assertThat(hibernateProperties).doesNotContainKeys(
-				"hibernate.implicit_naming_strategy",
+				"spring.jpa.hibernate.naming.strategy:" + "org.hibernate.cfg.EJB3NamingStrategy");
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties)
+				.contains(entry("hibernate.ejb.naming_strategy", "org.hibernate.cfg.EJB3NamingStrategy"));
+		assertThat(hibernateProperties).doesNotContainKeys("hibernate.implicit_naming_strategy",
 				"hibernate.physical_naming_strategy");
 	}
 
 	@Test
 	public void hibernate4CustomNamingStrategyViaJpaProperties() throws Exception {
 		JpaProperties properties = load(HibernateVersion.V4,
-				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
+				"spring.jpa.properties.hibernate.ejb.naming_strategy:" + "org.hibernate.cfg.EJB3NamingStrategy");
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
 		String actual = hibernateProperties.get("hibernate.ejb.naming_strategy");
 		// You can't override this one from spring.jpa.properties because it has an
 		// opinionated default
@@ -102,15 +95,11 @@ public class JpaPropertiesTests {
 	@Test
 	public void hibernate5NoCustomNamingStrategy() throws Exception {
 		JpaProperties properties = load(HibernateVersion.V5);
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties)
-				.doesNotContainKeys("hibernate.ejb.naming_strategy");
-		assertThat(hibernateProperties).containsEntry(
-				"hibernate.physical_naming_strategy",
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
+		assertThat(hibernateProperties).containsEntry("hibernate.physical_naming_strategy",
 				SpringPhysicalNamingStrategy.class.getName());
-		assertThat(hibernateProperties).containsEntry(
-				"hibernate.implicit_naming_strategy",
+		assertThat(hibernateProperties).containsEntry("hibernate.implicit_naming_strategy",
 				SpringImplicitNamingStrategy.class.getName());
 	}
 
@@ -119,13 +108,10 @@ public class JpaPropertiesTests {
 		JpaProperties properties = load(HibernateVersion.V5,
 				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
 				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties).contains(
-				entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties).contains(entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
 				entry("hibernate.physical_naming_strategy", "com.example.Physical"));
-		assertThat(hibernateProperties)
-				.doesNotContainKeys("hibernate.ejb.naming_strategy");
+		assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 	}
 
 	@Test
@@ -133,48 +119,37 @@ public class JpaPropertiesTests {
 		JpaProperties properties = load(HibernateVersion.V5,
 				"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
 				"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
 		// You can override them as we don't provide any default
-		assertThat(hibernateProperties).contains(
-				entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
+		assertThat(hibernateProperties).contains(entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
 				entry("hibernate.physical_naming_strategy", "com.example.Physical"));
-		assertThat(hibernateProperties)
-				.doesNotContainKeys("hibernate.ejb.naming_strategy");
+		assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 	}
 
 	@Test
 	public void useNewIdGeneratorMappingsDefaultHibernate4() throws Exception {
 		JpaProperties properties = load(HibernateVersion.V4);
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties)
-				.doesNotContainKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS);
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS);
 	}
 
 	@Test
 	public void useNewIdGeneratorMappingsDefaultHibernate5() throws Exception {
 		JpaProperties properties = load(HibernateVersion.V5);
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties).containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
 	}
 
 	@Test
 	public void useNewIdGeneratorMappingsTrue() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V5,
-				"spring.jpa.hibernate.use-new-id-generator-mappings:true");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+		JpaProperties properties = load(HibernateVersion.V5, "spring.jpa.hibernate.use-new-id-generator-mappings:true");
+		Map<String, String> hibernateProperties = properties.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties).containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 	}
 
 	@Test
 	public void determineDatabaseNoCheckIfDatabaseIsSet() throws SQLException {
-		JpaProperties properties = load(HibernateVersion.V5,
-				"spring.jpa.database=postgresql");
+		JpaProperties properties = load(HibernateVersion.V5, "spring.jpa.database=postgresql");
 		DataSource dataSource = mockStandaloneDataSource();
 		Database database = properties.determineDatabase(dataSource);
 		assertThat(database).isEqualTo(Database.POSTGRESQL);
@@ -184,24 +159,21 @@ public class JpaPropertiesTests {
 	@Test
 	public void determineDatabaseWithKnownUrl() {
 		JpaProperties properties = load(HibernateVersion.V5);
-		Database database = properties
-				.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+		Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(database).isEqualTo(Database.H2);
 	}
 
 	@Test
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
 		JpaProperties properties = load(HibernateVersion.V5, "spring.jpa.database=mysql");
-		Database database = properties
-				.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+		Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(database).isEqualTo(Database.MYSQL);
 	}
 
 	@Test
 	public void determineDatabaseWithUnknownUrl() {
 		JpaProperties properties = load(HibernateVersion.V5);
-		Database database = properties
-				.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
+		Database database = properties.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
 		assertThat(database).isEqualTo(Database.DEFAULT);
 	}
 

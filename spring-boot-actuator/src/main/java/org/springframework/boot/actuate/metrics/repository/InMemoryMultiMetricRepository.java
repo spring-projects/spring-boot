@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,7 @@ public class InMemoryMultiMetricRepository implements MultiMetricRepository {
 		}
 		for (Metric<?> metric : values) {
 			if (!metric.getName().startsWith(prefix)) {
-				metric = new Metric<Number>(prefix + metric.getName(), metric.getValue(),
-						metric.getTimestamp());
+				metric = new Metric<Number>(prefix + metric.getName(), metric.getValue(), metric.getTimestamp());
 			}
 			this.repository.set(metric);
 		}
@@ -78,8 +77,7 @@ public class InMemoryMultiMetricRepository implements MultiMetricRepository {
 			prefix = prefix + ".";
 		}
 		if (!delta.getName().startsWith(prefix)) {
-			delta = new Delta<Number>(prefix + delta.getName(), delta.getValue(),
-					delta.getTimestamp());
+			delta = new Delta<Number>(prefix + delta.getName(), delta.getValue(), delta.getTimestamp());
 		}
 		this.repository.increment(delta);
 		this.groups.add(group);

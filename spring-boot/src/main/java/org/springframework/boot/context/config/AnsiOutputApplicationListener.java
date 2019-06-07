@@ -38,17 +38,14 @@ public class AnsiOutputApplicationListener
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				event.getEnvironment(), "spring.output.ansi.");
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(event.getEnvironment(), "spring.output.ansi.");
 		if (resolver.containsProperty("enabled")) {
 			String enabled = resolver.getProperty("enabled");
-			AnsiOutput.setEnabled(
-					Enum.valueOf(Enabled.class, enabled.toUpperCase(Locale.ENGLISH)));
+			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class, enabled.toUpperCase(Locale.ENGLISH)));
 		}
 
 		if (resolver.containsProperty("console-available")) {
-			AnsiOutput.setConsoleAvailable(
-					resolver.getProperty("console-available", Boolean.class));
+			AnsiOutput.setConsoleAvailable(resolver.getProperty("console-available", Boolean.class));
 		}
 	}
 

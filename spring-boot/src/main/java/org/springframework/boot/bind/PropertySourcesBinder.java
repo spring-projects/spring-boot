@@ -101,8 +101,7 @@ public class PropertySourcesBinder {
 	 * @param target the object to bind to
 	 */
 	public void bindTo(String prefix, Object target) {
-		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
-				target);
+		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(target);
 		if (StringUtils.hasText(prefix)) {
 			factory.setTargetName(prefix);
 		}
@@ -118,8 +117,7 @@ public class PropertySourcesBinder {
 		}
 	}
 
-	private static PropertySources createPropertySources(
-			PropertySource<?> propertySource) {
+	private static PropertySources createPropertySources(PropertySource<?> propertySource) {
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addLast(propertySource);
 		return propertySources;

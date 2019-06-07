@@ -33,8 +33,7 @@ import static org.hamcrest.CoreMatchers.isA;
 @ClassPathExclusions("hibernate-validator-*.jar")
 public class ModifiedClassPathRunnerExclusionsTests {
 
-	private static final String EXCLUDED_RESOURCE = "META-INF/services/"
-			+ "javax.validation.spi.ValidationProvider";
+	private static final String EXCLUDED_RESOURCE = "META-INF/services/" + "javax.validation.spi.ValidationProvider";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -46,8 +45,7 @@ public class ModifiedClassPathRunnerExclusionsTests {
 
 	@Test
 	public void entriesAreFilteredFromThreadContextClassLoader() {
-		assertThat(Thread.currentThread().getContextClassLoader()
-				.getResource(EXCLUDED_RESOURCE)).isNull();
+		assertThat(Thread.currentThread().getContextClassLoader().getResource(EXCLUDED_RESOURCE)).isNull();
 	}
 
 	@Test

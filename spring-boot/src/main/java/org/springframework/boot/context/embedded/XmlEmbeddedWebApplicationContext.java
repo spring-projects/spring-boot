@@ -75,8 +75,7 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 	 * specified resource name
 	 * @param resourceNames relatively-qualified names of resources to load
 	 */
-	public XmlEmbeddedWebApplicationContext(Class<?> relativeClass,
-			String... resourceNames) {
+	public XmlEmbeddedWebApplicationContext(Class<?> relativeClass, String... resourceNames) {
 		load(relativeClass, resourceNames);
 		refresh();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	private final String property;
 
-	public AbstractEndpointTests(Class<?> configClass, Class<?> type, String id,
-			boolean sensitive, String property) {
+	public AbstractEndpointTests(Class<?> configClass, Class<?> type, String id, boolean sensitive, String property) {
 		this.configClass = configClass;
 		this.type = type;
 		this.id = id;
@@ -98,9 +97,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isSensitiveOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object>singletonMap(this.property + ".sensitive",
-						String.valueOf(!this.sensitive)));
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap(this.property + ".sensitive", String.valueOf(!this.sensitive)));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -128,8 +126,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isEnabledFallbackToEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test", Collections
-				.<String, Object>singletonMap(this.property + ".enabled", false));
+		PropertySource<?> propertySource = new MapPropertySource("test",
+				Collections.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -140,8 +138,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@SuppressWarnings("rawtypes")
 	public void isExplicitlyEnabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test", Collections
-				.<String, Object>singletonMap(this.property + ".enabled", false));
+		PropertySource<?> propertySource = new MapPropertySource("test",
+				Collections.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -193,8 +191,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	private void testGlobalEndpointsSensitive(boolean sensitive) {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test", Collections
-				.<String, Object>singletonMap("endpoints.sensitive", sensitive));
+		PropertySource<?> propertySource = new MapPropertySource("test",
+				Collections.<String, Object>singletonMap("endpoints.sensitive", sensitive));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();

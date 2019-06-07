@@ -38,8 +38,7 @@ import org.apache.maven.project.MavenProject;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Mojo(name = "stop", requiresProject = true,
-		defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST)
+@Mojo(name = "stop", requiresProject = true, defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST)
 public class StopMojo extends AbstractMojo {
 
 	/**
@@ -104,13 +103,11 @@ public class StopMojo extends AbstractMojo {
 		if (this.fork != null) {
 			return this.fork;
 		}
-		String property = this.project.getProperties()
-				.getProperty("_spring.boot.fork.enabled");
+		String property = this.project.getProperties().getProperty("_spring.boot.fork.enabled");
 		return Boolean.valueOf(property);
 	}
 
-	private void stopForkedProcess()
-			throws IOException, MojoFailureException, MojoExecutionException {
+	private void stopForkedProcess() throws IOException, MojoFailureException, MojoExecutionException {
 		JMXConnector connector = SpringApplicationAdminClient.connect(this.jmxPort);
 		try {
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
@@ -125,16 +122,13 @@ public class StopMojo extends AbstractMojo {
 		doStop(ManagementFactory.getPlatformMBeanServer());
 	}
 
-	private void doStop(MBeanServerConnection connection)
-			throws IOException, MojoExecutionException {
+	private void doStop(MBeanServerConnection connection) throws IOException, MojoExecutionException {
 		try {
 			new SpringApplicationAdminClient(connection, this.jmxName).stop();
 		}
 		catch (InstanceNotFoundException ex) {
-			throw new MojoExecutionException(
-					"Spring application lifecycle JMX bean not found (fork is " + ""
-							+ this.fork + "). Could not stop application gracefully",
-					ex);
+			throw new MojoExecutionException("Spring application lifecycle JMX bean not found (fork is " + ""
+					+ this.fork + "). Could not stop application gracefully", ex);
 		}
 	}
 

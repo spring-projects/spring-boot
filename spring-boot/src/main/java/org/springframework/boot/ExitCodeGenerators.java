@@ -42,8 +42,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 		addAll(exception, Arrays.asList(mappers));
 	}
 
-	public void addAll(Throwable exception,
-			Iterable<? extends ExitCodeExceptionMapper> mappers) {
+	public void addAll(Throwable exception, Iterable<? extends ExitCodeExceptionMapper> mappers) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mappers, "Mappers must not be null");
 		for (ExitCodeExceptionMapper mapper : mappers) {

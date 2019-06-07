@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,16 +43,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpoint> {
 
 	public LiquibaseEndpointTests() {
-		super(Config.class, LiquibaseEndpoint.class, "liquibase", true,
-				"endpoints.liquibase");
+		super(Config.class, LiquibaseEndpoint.class, "liquibase", true, "endpoints.liquibase");
 	}
 
 	@Test
 	public void invoke() throws Exception {
 		this.context.close();
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.generate-unique-name=true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.generate-unique-name=true");
 		this.context.register(PooledConfig.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
@@ -75,8 +73,7 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 	public void invokeWithCustomSchema() throws Exception {
 		this.context.close();
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"liquibase.default-schema=CUSTOMSCHEMA",
+		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.default-schema=CUSTOMSCHEMA",
 				"spring.datasource.generate-unique-name=true",
 				"spring.datasource.schema=classpath:/db/create-custom-schema.sql");
 		this.context.register(PooledConfig.class);

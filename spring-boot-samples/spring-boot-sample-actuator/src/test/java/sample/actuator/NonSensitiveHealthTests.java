@@ -36,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "endpoints.health.sensitive=false" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "endpoints.health.sensitive=false" })
 @DirtiesContext
 public class NonSensitiveHealthTests {
 
@@ -46,8 +45,7 @@ public class NonSensitiveHealthTests {
 
 	@Test
 	public void testSecureHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/health",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).doesNotContain("\"hello\":1");
 	}

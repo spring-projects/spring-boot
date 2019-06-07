@@ -47,8 +47,8 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(LoggingInitializationContext initializationContext,
-			String location, LogFile logFile) {
+	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
+			LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		if (initializationContext != null) {
 			applySystemProperties(initializationContext.getEnvironment(), logFile);

@@ -74,19 +74,16 @@ public class AutoConfigurationSorterTests {
 
 	private AutoConfigurationSorter sorter;
 
-	private AutoConfigurationMetadata autoConfigurationMetadata = mock(
-			AutoConfigurationMetadata.class);
+	private AutoConfigurationMetadata autoConfigurationMetadata = mock(AutoConfigurationMetadata.class);
 
 	@Before
 	public void setup() {
-		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(),
-				this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata);
 	}
 
 	@Test
 	public void byOrderAnnotation() throws Exception {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST));
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST));
 		assertThat(actual).containsExactly(HIGHEST, LOWEST);
 	}
 
@@ -110,23 +107,19 @@ public class AutoConfigurationSorterTests {
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfter() throws Exception {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfterWithClassNames() throws Exception {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
 	@Test
-	public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder()
-			throws Exception {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
+	public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder() throws Exception {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
@@ -147,33 +140,26 @@ public class AutoConfigurationSorterTests {
 	public void usesAnnotationPropertiesWhenPossible() throws Exception {
 		MetadataReaderFactory readerFactory = mock(MetadataReaderFactory.class);
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A2, B, C, W2, X);
-		this.sorter = new AutoConfigurationSorter(readerFactory,
-				this.autoConfigurationMetadata);
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
-	private AutoConfigurationMetadata getAutoConfigurationMetadata(String... classNames)
-			throws Exception {
+	private AutoConfigurationMetadata getAutoConfigurationMetadata(String... classNames) throws Exception {
 		Properties properties = new Properties();
 		for (String className : classNames) {
 			Class<?> type = ClassUtils.forName(className, null);
 			properties.put(type.getName(), "");
-			AutoConfigureOrder order = type
-					.getDeclaredAnnotation(AutoConfigureOrder.class);
+			AutoConfigureOrder order = type.getDeclaredAnnotation(AutoConfigureOrder.class);
 			if (order != null) {
-				properties.put(className + ".AutoConfigureOrder",
-						String.valueOf(order.value()));
+				properties.put(className + ".AutoConfigureOrder", String.valueOf(order.value()));
 			}
-			AutoConfigureBefore autoConfigureBefore = type
-					.getDeclaredAnnotation(AutoConfigureBefore.class);
+			AutoConfigureBefore autoConfigureBefore = type.getDeclaredAnnotation(AutoConfigureBefore.class);
 			if (autoConfigureBefore != null) {
 				properties.put(className + ".AutoConfigureBefore",
 						merge(autoConfigureBefore.value(), autoConfigureBefore.name()));
 			}
-			AutoConfigureAfter autoConfigureAfter = type
-					.getDeclaredAnnotation(AutoConfigureAfter.class);
+			AutoConfigureAfter autoConfigureAfter = type.getDeclaredAnnotation(AutoConfigureAfter.class);
 			if (autoConfigureAfter != null) {
 				properties.put(className + ".AutoConfigureAfter",
 						merge(autoConfigureAfter.value(), autoConfigureAfter.name()));
@@ -208,14 +194,12 @@ public class AutoConfigurationSorterTests {
 
 	}
 
-	@AutoConfigureAfter(
-			name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
+	@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
 	public static class AutoConfigureA2 {
 
 	}
 
-	@AutoConfigureAfter({ AutoConfigureC.class, AutoConfigureD.class,
-			AutoConfigureE.class })
+	@AutoConfigureAfter({ AutoConfigureC.class, AutoConfigureD.class, AutoConfigureE.class })
 	public static class AutoConfigureB {
 
 	}
@@ -238,8 +222,7 @@ public class AutoConfigurationSorterTests {
 
 	}
 
-	@AutoConfigureBefore(
-			name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
+	@AutoConfigureBefore(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
 	public static class AutoConfigureW2 {
 
 	}

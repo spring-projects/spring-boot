@@ -39,26 +39,23 @@ import org.springframework.core.Ordered;
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class AtomikosDependsOnBeanFactoryPostProcessor
-		implements BeanFactoryPostProcessor, Ordered {
+public class AtomikosDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	private static final String[] NO_BEANS = {};
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-			throws BeansException {
-		String[] transactionManagers = beanFactory
-				.getBeanNamesForType(UserTransactionManager.class, true, false);
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		String[] transactionManagers = beanFactory.getBeanNamesForType(UserTransactionManager.class, true, false);
 		for (String transactionManager : transactionManagers) {
 			addTransactionManagerDependencies(beanFactory, transactionManager);
 		}
 		addMessageDrivenContainerDependencies(beanFactory, transactionManagers);
 	}
 
-	private void addTransactionManagerDependencies(
-			ConfigurableListableBeanFactory beanFactory, String transactionManager) {
+	private void addTransactionManagerDependencies(ConfigurableListableBeanFactory beanFactory,
+			String transactionManager) {
 		BeanDefinition bean = beanFactory.getBeanDefinition(transactionManager);
 		Set<String> dependsOn = new LinkedHashSet<String>(asList(bean.getDependsOn()));
 		int initialSize = dependsOn.size();
@@ -69,26 +66,23 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 		}
 	}
 
-	private void addMessageDrivenContainerDependencies(
-			ConfigurableListableBeanFactory beanFactory, String[] transactionManagers) {
+	private void addMessageDrivenContainerDependencies(ConfigurableListableBeanFactory beanFactory,
+			String[] transactionManagers) {
 		String[] messageDrivenContainers = getBeanNamesForType(beanFactory,
 				"com.atomikos.jms.extra.MessageDrivenContainer");
 		for (String messageDrivenContainer : messageDrivenContainers) {
 			BeanDefinition bean = beanFactory.getBeanDefinition(messageDrivenContainer);
-			Set<String> dependsOn = new LinkedHashSet<String>(
-					asList(bean.getDependsOn()));
+			Set<String> dependsOn = new LinkedHashSet<String>(asList(bean.getDependsOn()));
 			dependsOn.addAll(asList(transactionManagers));
 			bean.setDependsOn(dependsOn.toArray(new String[dependsOn.size()]));
 		}
 	}
 
-	private void addDependencies(ConfigurableListableBeanFactory beanFactory, String type,
-			Set<String> dependsOn) {
+	private void addDependencies(ConfigurableListableBeanFactory beanFactory, String type, Set<String> dependsOn) {
 		dependsOn.addAll(asList(getBeanNamesForType(beanFactory, type)));
 	}
 
-	private String[] getBeanNamesForType(ConfigurableListableBeanFactory beanFactory,
-			String type) {
+	private String[] getBeanNamesForType(ConfigurableListableBeanFactory beanFactory, String type) {
 		try {
 			return beanFactory.getBeanNamesForType(Class.forName(type), true, false);
 		}

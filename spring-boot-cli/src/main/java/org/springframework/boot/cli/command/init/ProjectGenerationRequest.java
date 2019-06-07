@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -318,8 +318,7 @@ class ProjectGenerationRequest {
 			builder.setPath(sb.toString());
 
 			if (!this.dependencies.isEmpty()) {
-				builder.setParameter("dependencies",
-						StringUtils.collectionToCommaDelimitedString(this.dependencies));
+				builder.setParameter("dependencies", StringUtils.collectionToCommaDelimitedString(this.dependencies));
 			}
 
 			if (this.groupId != null) {
@@ -360,8 +359,7 @@ class ProjectGenerationRequest {
 			return builder.build();
 		}
 		catch (URISyntaxException ex) {
-			throw new ReportableException(
-					"Invalid service URL (" + ex.getMessage() + ")");
+			throw new ReportableException("Invalid service URL (" + ex.getMessage() + ")");
 		}
 	}
 
@@ -369,14 +367,13 @@ class ProjectGenerationRequest {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
-				throw new ReportableException(("No project type with id '" + this.type
-						+ "' - check the service capabilities (--list)"));
+				throw new ReportableException(
+						("No project type with id '" + this.type + "' - check the service capabilities (--list)"));
 			}
 			return result;
 		}
 		else if (isDetectType()) {
-			Map<String, ProjectType> types = new HashMap<String, ProjectType>(
-					metadata.getProjectTypes());
+			Map<String, ProjectType> types = new HashMap<String, ProjectType>(metadata.getProjectTypes());
 			if (this.build != null) {
 				filter(types, "build", this.build);
 			}
@@ -387,22 +384,19 @@ class ProjectGenerationRequest {
 				return types.values().iterator().next();
 			}
 			else if (types.isEmpty()) {
-				throw new ReportableException("No type found with build '" + this.build
-						+ "' and format '" + this.format
+				throw new ReportableException("No type found with build '" + this.build + "' and format '" + this.format
 						+ "' check the service capabilities (--list)");
 			}
 			else {
-				throw new ReportableException("Multiple types found with build '"
-						+ this.build + "' and format '" + this.format
-						+ "' use --type with a more specific value " + types.keySet());
+				throw new ReportableException("Multiple types found with build '" + this.build + "' and format '"
+						+ this.format + "' use --type with a more specific value " + types.keySet());
 			}
 		}
 		else {
 			ProjectType defaultType = metadata.getDefaultType();
 			if (defaultType == null) {
-				throw new ReportableException(
-						("No project type is set and no default is defined. "
-								+ "Check the service capabilities (--list)"));
+				throw new ReportableException(("No project type is set and no default is defined. "
+						+ "Check the service capabilities (--list)"));
 			}
 			return defaultType;
 		}
@@ -423,10 +417,8 @@ class ProjectGenerationRequest {
 		return null;
 	}
 
-	private static void filter(Map<String, ProjectType> projects, String tag,
-			String tagValue) {
-		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet()
-				.iterator(); it.hasNext();) {
+	private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
+		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<String, ProjectType> entry = it.next();
 			String value = entry.getValue().getTags().get(tag);
 			if (!tagValue.equals(value)) {

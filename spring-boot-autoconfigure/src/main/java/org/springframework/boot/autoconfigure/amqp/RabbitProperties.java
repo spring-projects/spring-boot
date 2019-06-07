@@ -497,8 +497,7 @@ public class RabbitProperties {
 		@NestedConfigurationProperty
 		private final AmqpContainer simple = new AmqpContainer();
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.auto-startup")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.auto-startup")
 		@Deprecated
 		public boolean isAutoStartup() {
 			return getSimple().isAutoStartup();
@@ -509,8 +508,7 @@ public class RabbitProperties {
 			getSimple().setAutoStartup(autoStartup);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.acknowledge-mode")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.acknowledge-mode")
 		@Deprecated
 		public AcknowledgeMode getAcknowledgeMode() {
 			return getSimple().getAcknowledgeMode();
@@ -521,8 +519,7 @@ public class RabbitProperties {
 			getSimple().setAcknowledgeMode(acknowledgeMode);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.concurrency")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.concurrency")
 		@Deprecated
 		public Integer getConcurrency() {
 			return getSimple().getConcurrency();
@@ -533,8 +530,7 @@ public class RabbitProperties {
 			getSimple().setConcurrency(concurrency);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.max-concurrency")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.max-concurrency")
 		@Deprecated
 		public Integer getMaxConcurrency() {
 			return getSimple().getMaxConcurrency();
@@ -545,8 +541,7 @@ public class RabbitProperties {
 			getSimple().setMaxConcurrency(maxConcurrency);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.prefetch")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.prefetch")
 		@Deprecated
 		public Integer getPrefetch() {
 			return getSimple().getPrefetch();
@@ -557,8 +552,7 @@ public class RabbitProperties {
 			getSimple().setPrefetch(prefetch);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.transaction-size")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.transaction-size")
 		@Deprecated
 		public Integer getTransactionSize() {
 			return getSimple().getTransactionSize();
@@ -569,8 +563,7 @@ public class RabbitProperties {
 			getSimple().setTransactionSize(transactionSize);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.default-requeue-rejected")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.default-requeue-rejected")
 		@Deprecated
 		public Boolean getDefaultRequeueRejected() {
 			return getSimple().getDefaultRequeueRejected();
@@ -581,8 +574,7 @@ public class RabbitProperties {
 			getSimple().setDefaultRequeueRejected(defaultRequeueRejected);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.idle-event-interval")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.idle-event-interval")
 		@Deprecated
 		public Long getIdleEventInterval() {
 			return getSimple().getIdleEventInterval();
@@ -593,8 +585,7 @@ public class RabbitProperties {
 			getSimple().setIdleEventInterval(idleEventInterval);
 		}
 
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.listener.simple.retry")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.retry")
 		@Deprecated
 		public ListenerRetry getRetry() {
 			return getSimple().getRetry();

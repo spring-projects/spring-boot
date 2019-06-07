@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	@BeforeClass
 	@AfterClass
 	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
 		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
@@ -102,8 +101,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"server.tomcat.basedir:target/foo", "server.port:9000");
+		EnvironmentTestUtils.addEnvironment(this.context, "server.tomcat.basedir:target/foo", "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertThat(server).isNotNull();
@@ -114,12 +112,10 @@ public class ServerPropertiesAutoConfigurationTests {
 	@Test
 	public void customizeWithJettyContainerFactory() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(CustomJettyContainerConfig.class,
-				ServerPropertiesAutoConfiguration.class,
+		this.context.register(CustomJettyContainerConfig.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		containerFactory = this.context
-				.getBean(AbstractEmbeddedServletContainerFactory.class);
+		containerFactory = this.context.getBean(AbstractEmbeddedServletContainerFactory.class);
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertThat(server).isNotNull();
 		// The server.port environment property was not explicitly set so the container
@@ -130,12 +126,10 @@ public class ServerPropertiesAutoConfigurationTests {
 	@Test
 	public void customizeWithUndertowContainerFactory() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(CustomUndertowContainerConfig.class,
-				ServerPropertiesAutoConfiguration.class,
+		this.context.register(CustomUndertowContainerConfig.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		containerFactory = this.context
-				.getBean(AbstractEmbeddedServletContainerFactory.class);
+		containerFactory = this.context.getBean(AbstractEmbeddedServletContainerFactory.class);
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertThat(server).isNotNull();
 		assertThat(containerFactory.getPort()).isEqualTo(3000);
@@ -145,8 +139,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	public void customizeTomcatWithCustomizer() throws Exception {
 		containerFactory = mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, CustomizeConfig.class,
-				ServerPropertiesAutoConfiguration.class,
+		this.context.register(Config.class, CustomizeConfig.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
@@ -160,8 +153,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	public void testAccidentalMultipleServerPropertiesBeans() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, MultiServerPropertiesBeanConfig.class,
-				ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.thrown.expect(ApplicationContextException.class);
 		this.thrown.expectMessage("Multiple ServerProperties");
 		this.context.refresh();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			fail("Did not error");
 		}
 		catch (Exception ex) {
-			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-					new SpringApplication(), new String[0], context, ex));
+			this.initializer.onApplicationEvent(
+					new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex));
 		}
 		assertThat(this.debugLog.size()).isNotEqualTo(0);
 		assertThat(this.infoLog.size()).isEqualTo(0);
@@ -150,8 +150,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			fail("Did not error");
 		}
 		catch (Exception ex) {
-			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-					new SpringApplication(), new String[0], context, ex));
+			this.initializer.onApplicationEvent(
+					new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex));
 		}
 		assertThat(this.debugLog.size()).isEqualTo(0);
 		assertThat(this.infoLog.size()).isNotEqualTo(0);
@@ -162,8 +162,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
-		ConditionEvaluationReport.get(context.getBeanFactory())
-				.recordExclusions(Arrays.asList("com.foo.Bar"));
+		ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(Arrays.asList("com.foo.Bar"));
 		context.refresh();
 		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		for (String message : this.debugLog) {
@@ -195,11 +194,9 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@Test
 	public void noErrorIfNotInitialized() throws Exception {
-		this.initializer
-				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
-						new String[0], null, new RuntimeException("Planned")));
-		assertThat(this.infoLog.get(0))
-				.contains("Unable to provide auto-configuration report");
+		this.initializer.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], null,
+				new RuntimeException("Planned")));
+		assertThat(this.infoLog.get(0)).contains("Unable to provide auto-configuration report");
 	}
 
 	public static class MockLogFactory extends LogFactoryImpl {

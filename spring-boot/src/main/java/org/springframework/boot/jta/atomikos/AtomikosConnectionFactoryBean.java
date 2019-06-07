@@ -31,8 +31,7 @@ import org.springframework.util.StringUtils;
  */
 @SuppressWarnings("serial")
 @ConfigurationProperties(prefix = "spring.jta.atomikos.connectionfactory")
-public class AtomikosConnectionFactoryBean
-		extends com.atomikos.jms.AtomikosConnectionFactoryBean
+public class AtomikosConnectionFactoryBean extends com.atomikos.jms.AtomikosConnectionFactoryBean
 		implements BeanNameAware, InitializingBean, DisposableBean {
 
 	private String beanName;

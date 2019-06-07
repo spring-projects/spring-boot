@@ -66,12 +66,10 @@ class SpringApplicationAdminClient {
 			return false; // Instance not available yet
 		}
 		catch (AttributeNotFoundException ex) {
-			throw new IllegalStateException("Unexpected: attribute 'Ready' not available",
-					ex);
+			throw new IllegalStateException("Unexpected: attribute 'Ready' not available", ex);
 		}
 		catch (ReflectionException ex) {
-			throw new MojoExecutionException("Failed to retrieve Ready attribute",
-					ex.getCause());
+			throw new MojoExecutionException("Failed to retrieve Ready attribute", ex.getCause());
 		}
 		catch (MBeanException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
@@ -87,8 +85,7 @@ class SpringApplicationAdminClient {
 	 * @throws IOException if an I/O error occurs
 	 * @throws InstanceNotFoundException if the lifecycle mbean cannot be found
 	 */
-	public void stop()
-			throws MojoExecutionException, IOException, InstanceNotFoundException {
+	public void stop() throws MojoExecutionException, IOException, InstanceNotFoundException {
 		try {
 			this.connection.invoke(this.objectName, "shutdown", null, null);
 		}

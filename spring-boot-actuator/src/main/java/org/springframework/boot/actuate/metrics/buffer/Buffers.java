@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ abstract class Buffers<B extends Buffer<?>> {
 
 	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<String, B>();
 
-	public void forEach(final Predicate<String> predicate,
-			final BiConsumer<String, B> consumer) {
+	public void forEach(final Predicate<String> predicate, final BiConsumer<String, B> consumer) {
 		this.buffers.forEach(new BiConsumer<String, B>() {
 
 			@Override

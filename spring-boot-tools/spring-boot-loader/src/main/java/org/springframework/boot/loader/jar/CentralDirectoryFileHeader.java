@@ -53,8 +53,8 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	CentralDirectoryFileHeader() {
 	}
 
-	CentralDirectoryFileHeader(byte[] header, int headerOffset, AsciiBytes name,
-			byte[] extra, AsciiBytes comment, long localHeaderOffset) {
+	CentralDirectoryFileHeader(byte[] header, int headerOffset, AsciiBytes name, byte[] extra, AsciiBytes comment,
+			long localHeaderOffset) {
 		super();
 		this.header = header;
 		this.headerOffset = headerOffset;
@@ -64,8 +64,8 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		this.localHeaderOffset = localHeaderOffset;
 	}
 
-	void load(byte[] data, int dataOffset, RandomAccessData variableData,
-			int variableOffset, JarEntryFilter filter) throws IOException {
+	void load(byte[] data, int dataOffset, RandomAccessData variableData, int variableOffset, JarEntryFilter filter)
+			throws IOException {
 		// Load fixed part
 		this.header = data;
 		this.headerOffset = dataOffset;
@@ -76,8 +76,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		// Load variable part
 		dataOffset += 46;
 		if (variableData != null) {
-			data = Bytes.get(variableData.getSubsection(variableOffset + 46,
-					nameLength + extraLength + commentLength));
+			data = Bytes.get(variableData.getSubsection(variableOffset + 46, nameLength + extraLength + commentLength));
 			dataOffset = 0;
 		}
 		this.name = new AsciiBytes(data, dataOffset, (int) nameLength);
@@ -88,12 +87,10 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		this.comment = NO_COMMENT;
 		if (extraLength > 0) {
 			this.extra = new byte[(int) extraLength];
-			System.arraycopy(data, (int) (dataOffset + nameLength), this.extra, 0,
-					this.extra.length);
+			System.arraycopy(data, (int) (dataOffset + nameLength), this.extra, 0, this.extra.length);
 		}
 		if (commentLength > 0) {
-			this.comment = new AsciiBytes(data,
-					(int) (dataOffset + nameLength + extraLength), (int) commentLength);
+			this.comment = new AsciiBytes(data, (int) (dataOffset + nameLength + extraLength), (int) commentLength);
 		}
 	}
 
@@ -170,12 +167,11 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	public CentralDirectoryFileHeader clone() {
 		byte[] header = new byte[46];
 		System.arraycopy(this.header, this.headerOffset, header, 0, header.length);
-		return new CentralDirectoryFileHeader(header, 0, this.name, header, this.comment,
-				this.localHeaderOffset);
+		return new CentralDirectoryFileHeader(header, 0, this.name, header, this.comment, this.localHeaderOffset);
 	}
 
-	public static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data,
-			int offset, JarEntryFilter filter) throws IOException {
+	public static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data, int offset,
+			JarEntryFilter filter) throws IOException {
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		byte[] bytes = Bytes.get(data.getSubsection(offset, 46));
 		fileHeader.load(bytes, 0, data, offset, filter);

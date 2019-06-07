@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.integration.config.IntegrationComponentScanRegistrar;
  * @author Artem Bilan
  * @author Phillip Webb
  */
-class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScanRegistrar
-		implements BeanFactoryAware {
+class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScanRegistrar implements BeanFactoryAware {
 
 	private BeanFactory beanFactory;
 
@@ -50,13 +49,10 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			final BeanDefinitionRegistry registry) {
-		super.registerBeanDefinitions(
-				new IntegrationComponentScanConfigurationMetaData(this.beanFactory),
-				registry);
+		super.registerBeanDefinitions(new IntegrationComponentScanConfigurationMetaData(this.beanFactory), registry);
 	}
 
-	private static class IntegrationComponentScanConfigurationMetaData
-			extends StandardAnnotationMetadata {
+	private static class IntegrationComponentScanConfigurationMetaData extends StandardAnnotationMetadata {
 
 		private final BeanFactory beanFactory;
 
@@ -67,8 +63,7 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 
 		@Override
 		public Map<String, Object> getAnnotationAttributes(String annotationName) {
-			Map<String, Object> attributes = super.getAnnotationAttributes(
-					annotationName);
+			Map<String, Object> attributes = super.getAnnotationAttributes(annotationName);
 			if (IntegrationComponentScan.class.getName().equals(annotationName)
 					&& AutoConfigurationPackages.has(this.beanFactory)) {
 				List<String> packages = AutoConfigurationPackages.get(this.beanFactory);

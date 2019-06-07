@@ -67,43 +67,36 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 
 	@Test
 	public void tomcat() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				TomcatConfig.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(TomcatConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void jetty() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				JettyConfig.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(JettyConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void undertow() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				UndertowConfig.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(UndertowConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void advancedConfig() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				AdvancedConfig.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(AdvancedConfig.class);
 		doTest(this.context, "/example/spring/hello");
 	}
 
-	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context,
-			String resourcePath) throws Exception {
+	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context, String resourcePath) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
-				new URI("http://localhost:"
-						+ context.getEmbeddedServletContainer().getPort() + resourcePath),
+				new URI("http://localhost:" + context.getEmbeddedServletContainer().getPort() + resourcePath),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		try {
-			String actual = StreamUtils.copyToString(response.getBody(),
-					Charset.forName("UTF-8"));
+			String actual = StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 			assertThat(actual).isEqualTo("Hello World");
 		}
 		finally {
@@ -114,8 +107,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	// Simple main method for testing in a browser
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		new AnnotationConfigEmbeddedWebApplicationContext(
-				JettyEmbeddedServletContainerFactory.class, Config.class);
+		new AnnotationConfigEmbeddedWebApplicationContext(JettyEmbeddedServletContainerFactory.class, Config.class);
 	}
 
 	@Configuration
@@ -183,16 +175,14 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
-			JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory(
-					0);
+			JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory(0);
 			factory.setContextPath(this.env.getProperty("context"));
 			return factory;
 		}
 
 		@Bean
 		public ServletRegistrationBean dispatcherRegistration() {
-			ServletRegistrationBean registration = new ServletRegistrationBean(
-					dispatcherServlet());
+			ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet());
 			registration.addUrlMappings("/spring/*");
 			return registration;
 		}

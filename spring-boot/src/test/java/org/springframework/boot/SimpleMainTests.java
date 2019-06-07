@@ -51,8 +51,7 @@ public class SimpleMainTests {
 
 	@Test
 	public void basePackageScan() throws Exception {
-		SpringApplication
-				.main(getArgs(ClassUtils.getPackageName(getClass()) + ".sampleconfig"));
+		SpringApplication.main(getArgs(ClassUtils.getPackageName(getClass()) + ".sampleconfig"));
 		assertThat(getOutput()).contains(SPRING_STARTUP);
 	}
 
@@ -70,18 +69,15 @@ public class SimpleMainTests {
 
 	@Test
 	public void mixedContext() throws Exception {
-		SpringApplication.main(getArgs(getClass().getName(),
-				"org/springframework/boot/sample-beans.xml"));
+		SpringApplication.main(getArgs(getClass().getName(), "org/springframework/boot/sample-beans.xml"));
 		assertThat(getOutput()).contains(SPRING_STARTUP);
 	}
 
 	private String[] getArgs(String... args) {
-		List<String> list = new ArrayList<String>(Arrays.asList(
-				"--spring.main.webEnvironment=false", "--spring.main.showBanner=OFF",
-				"--spring.main.registerShutdownHook=false"));
+		List<String> list = new ArrayList<String>(Arrays.asList("--spring.main.webEnvironment=false",
+				"--spring.main.showBanner=OFF", "--spring.main.registerShutdownHook=false"));
 		if (args.length > 0) {
-			list.add("--spring.main.sources="
-					+ StringUtils.arrayToCommaDelimitedString(args));
+			list.add("--spring.main.sources=" + StringUtils.arrayToCommaDelimitedString(args));
 		}
 		return list.toArray(new String[list.size()]);
 	}

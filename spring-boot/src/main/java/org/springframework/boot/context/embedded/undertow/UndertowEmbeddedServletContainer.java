@@ -67,8 +67,7 @@ import org.springframework.util.StringUtils;
  */
 public class UndertowEmbeddedServletContainer implements EmbeddedServletContainer {
 
-	private static final Log logger = LogFactory
-			.getLog(UndertowEmbeddedServletContainer.class);
+	private static final Log logger = LogFactory.getLog(UndertowEmbeddedServletContainer.class);
 
 	private final Object monitor = new Object();
 
@@ -98,8 +97,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 */
-	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, boolean autoStart, Compression compression) {
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager, String contextPath,
+			boolean autoStart, Compression compression) {
 		this(builder, manager, contextPath, false, autoStart, compression);
 	}
 
@@ -112,11 +111,9 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 */
-	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, boolean useForwardHeaders, boolean autoStart,
-			Compression compression) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
-				null);
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager, String contextPath,
+			boolean useForwardHeaders, boolean autoStart, Compression compression) {
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, null);
 	}
 
 	/**
@@ -129,9 +126,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in HTTP header
 	 */
-	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, boolean useForwardHeaders, boolean autoStart,
-			Compression compression, String serverHeader) {
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager, String contextPath,
+			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
@@ -156,8 +152,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 				}
 				this.undertow.start();
 				this.started = true;
-				UndertowEmbeddedServletContainer.logger
-						.info("Undertow started on port(s) " + getPortsDescription());
+				UndertowEmbeddedServletContainer.logger.info("Undertow started on port(s) " + getPortsDescription());
 			}
 			catch (Exception ex) {
 				try {
@@ -166,12 +161,10 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 						List<Port> actualPorts = getActualPorts();
 						failedPorts.removeAll(actualPorts);
 						if (failedPorts.size() == 1) {
-							throw new PortInUseException(
-									failedPorts.iterator().next().getNumber());
+							throw new PortInUseException(failedPorts.iterator().next().getNumber());
 						}
 					}
-					throw new EmbeddedServletContainerException(
-							"Unable to start embedded Undertow", ex);
+					throw new EmbeddedServletContainerException("Unable to start embedded Undertow", ex);
 				}
 				finally {
 					stopSilently();
@@ -242,8 +235,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
 		if (compression.getExcludedUserAgents() != null) {
 			for (String agent : compression.getExcludedUserAgents()) {
-				RequestHeaderAttribute agentHeader = new RequestHeaderAttribute(
-						new HttpString(HttpHeaders.USER_AGENT));
+				RequestHeaderAttribute agentHeader = new RequestHeaderAttribute(new HttpString(HttpHeaders.USER_AGENT));
 				predicates.add(Predicates.not(Predicates.regex(agentHeader, agent)));
 			}
 		}
@@ -280,8 +272,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
 		ReflectionUtils.makeAccessible(channelsField);
-		return (List<BoundChannel>) ReflectionUtils.getField(channelsField,
-				this.undertow);
+		return (List<BoundChannel>) ReflectionUtils.getField(channelsField, this.undertow);
 	}
 
 	private Port getPortFromChannel(BoundChannel channel) {
@@ -337,8 +328,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedServletContainerException("Unable to stop undertow",
-						ex);
+				throw new EmbeddedServletContainerException("Unable to stop undertow", ex);
 			}
 		}
 	}
@@ -413,12 +403,10 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 		@Override
 		public boolean resolve(HttpServerExchange value) {
-			String contentType = value.getResponseHeaders()
-					.getFirst(HttpHeaders.CONTENT_TYPE);
+			String contentType = value.getResponseHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 			if (contentType != null) {
 				for (MimeType mimeType : this.mimeTypes) {
-					if (mimeType
-							.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
+					if (mimeType.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
 						return true;
 					}
 				}

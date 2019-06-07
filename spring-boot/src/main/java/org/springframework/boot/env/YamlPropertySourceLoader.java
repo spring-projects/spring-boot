@@ -51,8 +51,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(String name, Resource resource, String profile)
-			throws IOException {
+	public PropertySource<?> load(String name, Resource resource, String profile) throws IOException {
 		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
 			Processor processor = new Processor(resource, profile);
 			Map<String, Object> source = processor.process();
@@ -83,17 +82,15 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 
 		@Override
 		protected Yaml createYaml() {
-			return new Yaml(new StrictMapAppenderConstructor(), new Representer(),
-					new DumperOptions(), new Resolver() {
-						@Override
-						public void addImplicitResolver(Tag tag, Pattern regexp,
-								String first) {
-							if (tag == Tag.TIMESTAMP) {
-								return;
-							}
-							super.addImplicitResolver(tag, regexp, first);
-						}
-					});
+			return new Yaml(new StrictMapAppenderConstructor(), new Representer(), new DumperOptions(), new Resolver() {
+				@Override
+				public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
+					if (tag == Tag.TIMESTAMP) {
+						return;
+					}
+					super.addImplicitResolver(tag, regexp, first);
+				}
+			});
 		}
 
 		public Map<String, Object> process() {

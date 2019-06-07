@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class TestRunner {
 	public void compileAndRunTests() throws Exception {
 		Object[] sources = this.compiler.compile(this.sources);
 		if (sources.length == 0) {
-			throw new RuntimeException(
-					"No classes found in '" + Arrays.toString(this.sources) + "'");
+			throw new RuntimeException("No classes found in '" + Arrays.toString(this.sources) + "'");
 		}
 
 		// Run in new thread to ensure that the context classloader is setup
@@ -126,8 +125,7 @@ public class TestRunner {
 		private boolean isJunitTest(Class<?> sourceClass) {
 			for (Method method : sourceClass.getMethods()) {
 				for (Annotation annotation : method.getAnnotations()) {
-					if (annotation.annotationType().getName()
-							.equals(JUNIT_TEST_ANNOTATION)) {
+					if (annotation.annotationType().getName().equals(JUNIT_TEST_ANNOTATION)) {
 						return true;
 					}
 				}
@@ -136,8 +134,7 @@ public class TestRunner {
 		}
 
 		private boolean isSpockTest(Class<?> sourceClass) {
-			return (this.spockSpecificationClass != null
-					&& this.spockSpecificationClass.isAssignableFrom(sourceClass));
+			return (this.spockSpecificationClass != null && this.spockSpecificationClass.isAssignableFrom(sourceClass));
 		}
 
 		@Override
@@ -147,18 +144,13 @@ public class TestRunner {
 					System.out.println("No tests found");
 				}
 				else {
-					ClassLoader contextClassLoader = Thread.currentThread()
-							.getContextClassLoader();
-					Class<?> delegateClass = contextClassLoader
-							.loadClass(DelegateTestRunner.class.getName());
-					Class<?> resultClass = contextClassLoader
-							.loadClass("org.junit.runner.Result");
-					Method runMethod = delegateClass.getMethod("run", Class[].class,
-							resultClass);
+					ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+					Class<?> delegateClass = contextClassLoader.loadClass(DelegateTestRunner.class.getName());
+					Class<?> resultClass = contextClassLoader.loadClass("org.junit.runner.Result");
+					Method runMethod = delegateClass.getMethod("run", Class[].class, resultClass);
 					Object result = resultClass.newInstance();
 					runMethod.invoke(null, this.testClasses, result);
-					boolean wasSuccessful = (Boolean) resultClass
-							.getMethod("wasSuccessful").invoke(result);
+					boolean wasSuccessful = (Boolean) resultClass.getMethod("wasSuccessful").invoke(result);
 					if (!wasSuccessful) {
 						throw new RuntimeException("Tests Failed.");
 					}

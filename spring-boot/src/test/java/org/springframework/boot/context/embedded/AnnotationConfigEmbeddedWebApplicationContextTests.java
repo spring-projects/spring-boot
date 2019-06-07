@@ -60,16 +60,15 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 	@Test
 	public void sessionScopeAvailable() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ExampleEmbeddedWebApplicationConfiguration.class,
-				SessionScopedComponent.class);
+				ExampleEmbeddedWebApplicationConfiguration.class, SessionScopedComponent.class);
 		verifyContext();
 	}
 
 	@Test
 	public void sessionScopeAvailableToServlet() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ExampleEmbeddedWebApplicationConfiguration.class,
-				ExampleServletWithAutowired.class, SessionScopedComponent.class);
+				ExampleEmbeddedWebApplicationConfiguration.class, ExampleServletWithAutowired.class,
+				SessionScopedComponent.class);
 		Servlet servlet = this.context.getBean(ExampleServletWithAutowired.class);
 		assertThat(servlet).isNotNull();
 	}
@@ -92,8 +91,7 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 	@Test
 	public void scanAndRefresh() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.scan(
-				ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
+		this.context.scan(ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}
@@ -105,8 +103,7 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		verifyContext();
 		// You can't initialize the application context and inject the servlet context
 		// because of a cycle - we'd like this to be not null but it never will be
-		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class)
-				.getServletContext()).isNull();
+		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class).getServletContext()).isNull();
 	}
 
 	@Test
@@ -114,13 +111,11 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		AnnotationConfigEmbeddedWebApplicationContext parent = new AnnotationConfigEmbeddedWebApplicationContext(
 				EmbeddedContainerConfiguration.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(EmbeddedContainerConfiguration.class,
-				ServletContextAwareConfiguration.class);
+		this.context.register(EmbeddedContainerConfiguration.class, ServletContextAwareConfiguration.class);
 		this.context.setParent(parent);
 		this.context.refresh();
 		verifyContext();
-		assertThat(this.context.getBean(ServletContextAwareConfiguration.class)
-				.getServletContext()).isNotNull();
+		assertThat(this.context.getBean(ServletContextAwareConfiguration.class).getServletContext()).isNotNull();
 	}
 
 	private void verifyContext() {
@@ -138,8 +133,7 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		private SessionScopedComponent component;
 
 		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
+		public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 			assertThat(this.component).isNotNull();
 		}
 
@@ -153,8 +147,7 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 
 	@Configuration
 	@EnableWebMvc
-	public static class ServletContextAwareEmbeddedConfiguration
-			implements ServletContextAware {
+	public static class ServletContextAwareEmbeddedConfiguration implements ServletContextAware {
 
 		private ServletContext servletContext;
 

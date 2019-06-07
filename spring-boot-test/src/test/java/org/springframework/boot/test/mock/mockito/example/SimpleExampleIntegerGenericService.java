@@ -21,8 +21,7 @@ package org.springframework.boot.test.mock.mockito.example;
  *
  * @author Phillip Webb
  */
-public class SimpleExampleIntegerGenericService
-		implements ExampleGenericService<Integer> {
+public class SimpleExampleIntegerGenericService implements ExampleGenericService<Integer> {
 
 	@Override
 	public Integer greeting() {

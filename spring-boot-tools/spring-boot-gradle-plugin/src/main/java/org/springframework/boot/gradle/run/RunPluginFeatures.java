@@ -47,8 +47,8 @@ public class RunPluginFeatures implements PluginFeatures {
 	}
 
 	private void mainClassNameFinder(Project project) {
-		FindMainClassTask findMainClassTask = project.getTasks()
-				.create(FIND_MAIN_CLASS_TASK_NAME, FindMainClassTask.class);
+		FindMainClassTask findMainClassTask = project.getTasks().create(FIND_MAIN_CLASS_TASK_NAME,
+				FindMainClassTask.class);
 		SourceSet mainSourceSet = SourceSets.findMainSourceSet(project);
 		if (mainSourceSet != null) {
 			findMainClassTask.setMainClassSourceSetOutput(mainSourceSet.getOutput());
@@ -64,24 +64,21 @@ public class RunPluginFeatures implements PluginFeatures {
 	}
 
 	private void addBootRunTask(final Project project) {
-		final JavaPluginConvention javaConvention = project.getConvention()
-				.getPlugin(JavaPluginConvention.class);
+		final JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
 
 		BootRunTask run = project.getTasks().create(RUN_APP_TASK_NAME, BootRunTask.class);
-		run.setDescription("Run the project with support for "
-				+ "auto-detecting main class and reloading static resources");
+		run.setDescription(
+				"Run the project with support for " + "auto-detecting main class and reloading static resources");
 		run.setGroup("application");
-		run.setClasspath(
-				javaConvention.getSourceSets().findByName("main").getRuntimeClasspath());
+		run.setClasspath(javaConvention.getSourceSets().findByName("main").getRuntimeClasspath());
 		run.getConventionMapping().map("main", new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				if (project.hasProperty("mainClassName")
-						&& project.property("mainClassName") != null) {
+				if (project.hasProperty("mainClassName") && project.property("mainClassName") != null) {
 					return project.property("mainClassName");
 				}
-				ExtraPropertiesExtension extraPropertiesExtension = (ExtraPropertiesExtension) project
-						.getExtensions().getByName("ext");
+				ExtraPropertiesExtension extraPropertiesExtension = (ExtraPropertiesExtension) project.getExtensions()
+						.getByName("ext");
 				if (extraPropertiesExtension.has("mainClassName")
 						&& extraPropertiesExtension.get("mainClassName") != null) {
 					return extraPropertiesExtension.get("mainClassName");

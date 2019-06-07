@@ -88,8 +88,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		// Logger initialization is deferred in case a ordered
 		// LogServletContextInitializer is being used
 		this.logger = LogFactory.getLog(getClass());
-		WebApplicationContext rootAppContext = createRootApplicationContext(
-				servletContext);
+		WebApplicationContext rootAppContext = createRootApplicationContext(servletContext);
 		if (rootAppContext != null) {
 			servletContext.addListener(new ContextLoaderListener(rootAppContext) {
 				@Override
@@ -99,31 +98,27 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			});
 		}
 		else {
-			this.logger.debug("No ContextLoaderListener registered, as "
-					+ "createRootApplicationContext() did not "
+			this.logger.debug("No ContextLoaderListener registered, as " + "createRootApplicationContext() did not "
 					+ "return an application context");
 		}
 	}
 
-	protected WebApplicationContext createRootApplicationContext(
-			ServletContext servletContext) {
+	protected WebApplicationContext createRootApplicationContext(ServletContext servletContext) {
 		SpringApplicationBuilder builder = createSpringApplicationBuilder();
 		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
 			this.logger.info("Root context already created (using as parent).");
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 			builder.initializers(new ParentContextApplicationContextInitializer(parent));
 		}
-		builder.initializers(
-				new ServletContextApplicationContextInitializer(servletContext));
+		builder.initializers(new ServletContextApplicationContextInitializer(servletContext));
 		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		builder = configure(builder);
 		builder.listeners(new WebEnvironmentPropertySourceInitializer(servletContext));
 		SpringApplication application = builder.build();
-		if (application.getSources().isEmpty() && AnnotationUtils
-				.findAnnotation(getClass(), Configuration.class) != null) {
+		if (application.getSources().isEmpty()
+				&& AnnotationUtils.findAnnotation(getClass(), Configuration.class) != null) {
 			application.getSources().add(getClass());
 		}
 		Assert.state(!application.getSources().isEmpty(),
@@ -156,10 +151,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		return (WebApplicationContext) application.run();
 	}
 
-	private ApplicationContext getExistingRootWebApplicationContext(
-			ServletContext servletContext) {
-		Object context = servletContext.getAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+	private ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
+		Object context = servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (context instanceof ApplicationContext) {
 			return (ApplicationContext) context;
 		}
@@ -192,8 +185,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			ConfigurableEnvironment environment = event.getEnvironment();
 			if (environment instanceof ConfigurableWebEnvironment) {
-				((ConfigurableWebEnvironment) environment)
-						.initPropertySources(this.servletContext, null);
+				((ConfigurableWebEnvironment) environment).initPropertySources(this.servletContext, null);
 			}
 		}
 

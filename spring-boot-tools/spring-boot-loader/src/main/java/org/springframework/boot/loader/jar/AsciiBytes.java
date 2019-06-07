@@ -100,8 +100,8 @@ final class AsciiBytes {
 			return false;
 		}
 		for (int i = 0; i < postfix.length; i++) {
-			if (this.bytes[this.offset + (this.length - 1)
-					- i] != postfix.bytes[postfix.offset + (postfix.length - 1) - i]) {
+			if (this.bytes[this.offset + (this.length - 1) - i] != postfix.bytes[postfix.offset + (postfix.length - 1)
+					- i]) {
 				return false;
 			}
 		}

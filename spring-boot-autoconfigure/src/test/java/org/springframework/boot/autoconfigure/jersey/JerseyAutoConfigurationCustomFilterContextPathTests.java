@@ -64,8 +64,7 @@ public class JerseyAutoConfigurationCustomFilterContextPathTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -96,9 +95,8 @@ public class JerseyAutoConfigurationCustomFilterContextPathTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

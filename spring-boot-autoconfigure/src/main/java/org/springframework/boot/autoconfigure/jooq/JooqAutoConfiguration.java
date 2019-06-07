@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,22 +54,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		TransactionAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class })
 public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(DataSourceConnectionProvider.class)
-	public DataSourceConnectionProvider dataSourceConnectionProvider(
-			DataSource dataSource) {
-		return new DataSourceConnectionProvider(
-				new TransactionAwareDataSourceProxy(dataSource));
+	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
+		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource));
 	}
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
-	public SpringTransactionProvider transactionProvider(
-			PlatformTransactionManager txManager) {
+	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}
 
@@ -99,11 +95,9 @@ public class JooqAutoConfiguration {
 
 		private final VisitListenerProvider[] visitListenerProviders;
 
-		public DslContextConfiguration(JooqProperties properties,
-				ConnectionProvider connectionProvider,
+		public DslContextConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
 				ObjectProvider<TransactionProvider> transactionProvider,
-				ObjectProvider<RecordMapperProvider> recordMapperProvider,
-				ObjectProvider<Settings> settings,
+				ObjectProvider<RecordMapperProvider> recordMapperProvider, ObjectProvider<Settings> settings,
 				ObjectProvider<RecordListenerProvider[]> recordListenerProviders,
 				ExecuteListenerProvider[] executeListenerProviders,
 				ObjectProvider<VisitListenerProvider[]> visitListenerProviders) {

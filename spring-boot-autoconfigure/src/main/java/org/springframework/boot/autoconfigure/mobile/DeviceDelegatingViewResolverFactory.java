@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ public class DeviceDelegatingViewResolverFactory {
 
 	private final DeviceDelegatingViewResolverProperties properties;
 
-	public DeviceDelegatingViewResolverFactory(
-			DeviceDelegatingViewResolverProperties properties) {
+	public DeviceDelegatingViewResolverFactory(DeviceDelegatingViewResolverProperties properties) {
 		this.properties = properties;
 	}
 
@@ -43,10 +42,8 @@ public class DeviceDelegatingViewResolverFactory {
 	 * @param delegatingOrder the order of the {@link LiteDeviceDelegatingViewResolver}
 	 * @return a {@link LiteDeviceDelegatingViewResolver} handling the specified resolver
 	 */
-	public LiteDeviceDelegatingViewResolver createViewResolver(ViewResolver delegate,
-			int delegatingOrder) {
-		LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
-				delegate);
+	public LiteDeviceDelegatingViewResolver createViewResolver(ViewResolver delegate, int delegatingOrder) {
+		LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(delegate);
 		resolver.setEnableFallback(this.properties.isEnableFallback());
 		resolver.setNormalPrefix(this.properties.getNormalPrefix());
 		resolver.setNormalSuffix(this.properties.getNormalSuffix());
@@ -68,8 +65,8 @@ public class DeviceDelegatingViewResolverFactory {
 	 */
 	public LiteDeviceDelegatingViewResolver createViewResolver(ViewResolver delegate) {
 		if (!(delegate instanceof Ordered)) {
-			throw new IllegalStateException("ViewResolver " + delegate
-					+ " should implement " + Ordered.class.getName());
+			throw new IllegalStateException(
+					"ViewResolver " + delegate + " should implement " + Ordered.class.getName());
 		}
 		int delegateOrder = ((Ordered) delegate).getOrder();
 		return createViewResolver(delegate, adjustOrder(delegateOrder));

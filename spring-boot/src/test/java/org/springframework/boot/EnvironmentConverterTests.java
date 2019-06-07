@@ -35,8 +35,7 @@ import static org.mockito.Mockito.mock;
  */
 public class EnvironmentConverterTests {
 
-	private final EnvironmentConverter environmentConverter = new EnvironmentConverter(
-			getClass().getClassLoader());
+	private final EnvironmentConverter environmentConverter = new EnvironmentConverter(getClass().getClassLoader());
 
 	@Test
 	public void convertedEnvironmentHasSameActiveProfiles() {
@@ -44,20 +43,17 @@ public class EnvironmentConverterTests {
 		originalEnvironment.setActiveProfiles("activeProfile1", "activeProfile2");
 		StandardEnvironment convertedEnvironment = this.environmentConverter
 				.convertToStandardEnvironmentIfNecessary(originalEnvironment);
-		assertThat(convertedEnvironment.getActiveProfiles())
-				.containsExactly("activeProfile1", "activeProfile2");
+		assertThat(convertedEnvironment.getActiveProfiles()).containsExactly("activeProfile1", "activeProfile2");
 	}
 
 	@Test
 	public void convertedEnvironmentHasSameConversionService() {
 		AbstractEnvironment originalEnvironment = new MockEnvironment();
-		ConfigurableConversionService conversionService = mock(
-				ConfigurableConversionService.class);
+		ConfigurableConversionService conversionService = mock(ConfigurableConversionService.class);
 		originalEnvironment.setConversionService(conversionService);
 		StandardEnvironment convertedEnvironment = this.environmentConverter
 				.convertToStandardEnvironmentIfNecessary(originalEnvironment);
-		assertThat(convertedEnvironment.getConversionService())
-				.isEqualTo(conversionService);
+		assertThat(convertedEnvironment.getConversionService()).isEqualTo(conversionService);
 	}
 
 	@Test

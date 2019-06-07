@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ public class ElasticsearchHealthIndicatorTests {
 	public void defaultConfigurationQueriesAllIndicesWith100msTimeout() {
 		TestActionFuture responseFuture = new TestActionFuture();
 		responseFuture.onResponse(new StubClusterHealthResponse());
-		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor
-				.forClass(ClusterHealthRequest.class);
+		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor.forClass(ClusterHealthRequest.class);
 		given(this.cluster.health(requestCaptor.capture())).willReturn(responseFuture);
 		Health health = this.indicator.health();
 		assertThat(responseFuture.getTimeout).isEqualTo(100L);
@@ -87,14 +86,11 @@ public class ElasticsearchHealthIndicatorTests {
 	public void certainIndices() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
 		responseFuture.onResponse(new StubClusterHealthResponse());
-		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor
-				.forClass(ClusterHealthRequest.class);
+		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor.forClass(ClusterHealthRequest.class);
 		given(this.cluster.health(requestCaptor.capture())).willReturn(responseFuture);
-		this.properties.getIndices()
-				.addAll(Arrays.asList("test-index-1", "test-index-2"));
+		this.properties.getIndices().addAll(Arrays.asList("test-index-1", "test-index-2"));
 		Health health = this.indicator.health();
-		assertThat(requestCaptor.getValue().indices()).contains("test-index-1",
-				"test-index-2");
+		assertThat(requestCaptor.getValue().indices()).contains("test-index-1", "test-index-2");
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
@@ -102,8 +98,7 @@ public class ElasticsearchHealthIndicatorTests {
 	public void customTimeout() {
 		TestActionFuture responseFuture = new TestActionFuture();
 		responseFuture.onResponse(new StubClusterHealthResponse());
-		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor
-				.forClass(ClusterHealthRequest.class);
+		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor.forClass(ClusterHealthRequest.class);
 		given(this.cluster.health(requestCaptor.capture())).willReturn(responseFuture);
 		this.properties.setResponseTimeout(1000L);
 		this.indicator.health();
@@ -114,8 +109,7 @@ public class ElasticsearchHealthIndicatorTests {
 	public void healthDetails() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
 		responseFuture.onResponse(new StubClusterHealthResponse());
-		given(this.cluster.health(any(ClusterHealthRequest.class)))
-				.willReturn(responseFuture);
+		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Map<String, Object> details = health.getDetails();
@@ -133,30 +127,25 @@ public class ElasticsearchHealthIndicatorTests {
 	public void redResponseMapsToDown() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
 		responseFuture.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.RED));
-		given(this.cluster.health(any(ClusterHealthRequest.class)))
-				.willReturn(responseFuture);
+		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
 		assertThat(this.indicator.health().getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
 	public void yellowResponseMapsToUp() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
-		responseFuture
-				.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.YELLOW));
-		given(this.cluster.health(any(ClusterHealthRequest.class)))
-				.willReturn(responseFuture);
+		responseFuture.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.YELLOW));
+		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
 		assertThat(this.indicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	public void responseTimeout() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
-		given(this.cluster.health(any(ClusterHealthRequest.class)))
-				.willReturn(responseFuture);
+		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(responseFuture);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error"))
-				.contains(ElasticsearchTimeoutException.class.getName());
+		assertThat((String) health.getDetails().get("error")).contains(ElasticsearchTimeoutException.class.getName());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -173,10 +162,8 @@ public class ElasticsearchHealthIndicatorTests {
 		}
 
 		private StubClusterHealthResponse(ClusterHealthStatus status) {
-			super("test-cluster", new String[0],
-					new ClusterState(null, 0, null, null, RoutingTable.builder().build(),
-							DiscoveryNodes.builder().build(),
-							ClusterBlocks.builder().build(), null, false));
+			super("test-cluster", new String[0], new ClusterState(null, 0, null, null, RoutingTable.builder().build(),
+					DiscoveryNodes.builder().build(), ClusterBlocks.builder().build(), null, false));
 			this.status = status;
 		}
 
@@ -222,14 +209,12 @@ public class ElasticsearchHealthIndicatorTests {
 
 	}
 
-	private static class TestActionFuture
-			extends PlainActionFuture<ClusterHealthResponse> {
+	private static class TestActionFuture extends PlainActionFuture<ClusterHealthResponse> {
 
 		private long getTimeout = -1L;
 
 		@Override
-		public ClusterHealthResponse actionGet(long timeoutMillis)
-				throws ElasticsearchException {
+		public ClusterHealthResponse actionGet(long timeoutMillis) throws ElasticsearchException {
 			this.getTimeout = timeoutMillis;
 			return super.actionGet(timeoutMillis);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,19 +42,16 @@ public class ResourceProperties implements ResourceLoaderAware, InitializingBean
 
 	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };
 
-	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-			"classpath:/META-INF/resources/", "classpath:/resources/",
-			"classpath:/static/", "classpath:/public/" };
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/META-INF/resources/",
+			"classpath:/resources/", "classpath:/static/", "classpath:/public/" };
 
 	private static final String[] RESOURCE_LOCATIONS;
 
 	static {
-		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length
-				+ SERVLET_RESOURCE_LOCATIONS.length];
-		System.arraycopy(SERVLET_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS, 0,
-				SERVLET_RESOURCE_LOCATIONS.length);
-		System.arraycopy(CLASSPATH_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS,
-				SERVLET_RESOURCE_LOCATIONS.length, CLASSPATH_RESOURCE_LOCATIONS.length);
+		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length + SERVLET_RESOURCE_LOCATIONS.length];
+		System.arraycopy(SERVLET_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS, 0, SERVLET_RESOURCE_LOCATIONS.length);
+		System.arraycopy(CLASSPATH_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS, SERVLET_RESOURCE_LOCATIONS.length,
+				CLASSPATH_RESOURCE_LOCATIONS.length);
 	}
 
 	/**
@@ -135,8 +132,7 @@ public class ResourceProperties implements ResourceLoaderAware, InitializingBean
 	}
 
 	List<Resource> getFaviconLocations() {
-		List<Resource> locations = new ArrayList<Resource>(
-				this.staticLocations.length + 1);
+		List<Resource> locations = new ArrayList<Resource>(this.staticLocations.length + 1);
 		if (this.resourceLoader != null) {
 			for (String location : this.staticLocations) {
 				locations.add(this.resourceLoader.getResource(location));
@@ -203,8 +199,8 @@ public class ResourceProperties implements ResourceLoaderAware, InitializingBean
 		 * settings are present.
 		 */
 		public Boolean getEnabled() {
-			return getEnabled(getStrategy().getFixed().isEnabled(),
-					getStrategy().getContent().isEnabled(), this.enabled);
+			return getEnabled(getStrategy().getFixed().isEnabled(), getStrategy().getContent().isEnabled(),
+					this.enabled);
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -239,8 +235,7 @@ public class ResourceProperties implements ResourceLoaderAware, InitializingBean
 			this.gzipped = gzipped;
 		}
 
-		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
-				Boolean chainEnabled) {
+		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled, Boolean chainEnabled) {
 			return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
 		}
 

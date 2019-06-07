@@ -65,8 +65,8 @@ public class JsonComponentModuleTests {
 
 	@Test
 	public void moduleShouldAllowInnerAbstractClasses() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, ComponentWithInnerAbstractClass.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(JsonComponentModule.class,
+				ComponentWithInnerAbstractClass.class);
 		JsonComponentModule module = context.getBean(JsonComponentModule.class);
 		assertSerialize(module);
 		context.close();
@@ -90,8 +90,7 @@ public class JsonComponentModuleTests {
 	private void assertDeserialize(Module module) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}",
-				NameAndAge.class);
+		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
 	}
@@ -109,8 +108,7 @@ public class JsonComponentModuleTests {
 	@JsonComponent
 	static class ComponentWithInnerAbstractClass {
 
-		private abstract static class AbstractSerializer
-				extends NameAndAgeJsonComponent.Serializer {
+		private abstract static class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
 
 		}
 

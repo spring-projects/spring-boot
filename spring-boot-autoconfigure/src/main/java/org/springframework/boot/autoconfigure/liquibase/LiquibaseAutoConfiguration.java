@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,7 @@ import org.springframework.util.ReflectionUtils;
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "liquibase", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {
 
 	@Configuration
@@ -79,8 +78,8 @@ public class LiquibaseAutoConfiguration {
 
 		private final DataSource liquibaseDataSource;
 
-		public LiquibaseConfiguration(LiquibaseProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+		public LiquibaseConfiguration(LiquibaseProperties properties, ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
@@ -91,12 +90,9 @@ public class LiquibaseAutoConfiguration {
 		@PostConstruct
 		public void checkChangelogExists() {
 			if (this.properties.isCheckChangeLogLocation()) {
-				Resource resource = this.resourceLoader
-						.getResource(this.properties.getChangeLog());
-				Assert.state(resource.exists(),
-						"Cannot find changelog location: " + resource
-								+ " (please add changelog or check your Liquibase "
-								+ "configuration)");
+				Resource resource = this.resourceLoader.getResource(this.properties.getChangeLog());
+				Assert.state(resource.exists(), "Cannot find changelog location: " + resource
+						+ " (please add changelog or check your Liquibase " + "configuration)");
 			}
 		}
 
@@ -137,8 +133,7 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private DataSource createNewDataSource() {
-			return DataSourceBuilder.create().url(this.properties.getUrl())
-					.username(this.properties.getUser())
+			return DataSourceBuilder.create().url(this.properties.getUrl()).username(this.properties.getUser())
 					.password(this.properties.getPassword()).build();
 		}
 
@@ -151,8 +146,7 @@ public class LiquibaseAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class LiquibaseJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	protected static class LiquibaseJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public LiquibaseJpaDependencyConfiguration() {
 			super("liquibase");

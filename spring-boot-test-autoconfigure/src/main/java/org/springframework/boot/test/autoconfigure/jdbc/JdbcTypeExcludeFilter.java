@@ -34,8 +34,7 @@ class JdbcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private final JdbcTest annotation;
 
 	JdbcTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				JdbcTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, JdbcTest.class);
 	}
 
 	@Override

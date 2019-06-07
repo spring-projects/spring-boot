@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,8 @@ public class CacheManagerCustomizers {
 
 	private final List<CacheManagerCustomizer<?>> customizers;
 
-	public CacheManagerCustomizers(
-			List<? extends CacheManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers != null)
-				? new ArrayList<CacheManagerCustomizer<?>>(customizers)
+	public CacheManagerCustomizers(List<? extends CacheManagerCustomizer<?>> customizers) {
+		this.customizers = (customizers != null) ? new ArrayList<CacheManagerCustomizer<?>>(customizers)
 				: Collections.<CacheManagerCustomizer<?>>emptyList();
 	}
 
@@ -56,8 +54,7 @@ public class CacheManagerCustomizers {
 	 */
 	public <T extends CacheManager> T customize(T cacheManager) {
 		for (CacheManagerCustomizer<?> customizer : this.customizers) {
-			Class<?> generic = ResolvableType
-					.forClass(CacheManagerCustomizer.class, customizer.getClass())
+			Class<?> generic = ResolvableType.forClass(CacheManagerCustomizer.class, customizer.getClass())
 					.resolveGeneric();
 			if (generic.isInstance(cacheManager)) {
 				customize(cacheManager, customizer);
@@ -75,9 +72,7 @@ public class CacheManagerCustomizers {
 			// Possibly a lambda-defined customizer which we could not resolve the generic
 			// cache manager type for
 			if (logger.isDebugEnabled()) {
-				logger.debug(
-						"Non-matching cache manager type for customizer: " + customizer,
-						ex);
+				logger.debug("Non-matching cache manager type for customizer: " + customizer, ex);
 			}
 		}
 	}

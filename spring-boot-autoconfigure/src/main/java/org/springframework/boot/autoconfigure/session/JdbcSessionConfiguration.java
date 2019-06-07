@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,15 +46,13 @@ class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JdbcSessionDatabaseInitializer jdbcSessionDatabaseInitializer(
-			DataSource dataSource, ResourceLoader resourceLoader,
-			SessionProperties properties) {
+	public JdbcSessionDatabaseInitializer jdbcSessionDatabaseInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader, SessionProperties properties) {
 		return new JdbcSessionDatabaseInitializer(dataSource, resourceLoader, properties);
 	}
 
 	@Configuration
-	public static class SpringBootJdbcHttpSessionConfiguration
-			extends JdbcHttpSessionConfiguration {
+	public static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
 
 		@Autowired
 		public void customize(SessionProperties sessionProperties) {

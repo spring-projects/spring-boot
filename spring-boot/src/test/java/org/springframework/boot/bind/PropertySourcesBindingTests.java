@@ -43,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@ContextConfiguration(classes = TestConfig.class,
-		loader = SpringApplicationBindContextLoader.class)
+@ContextConfiguration(classes = TestConfig.class, loader = SpringApplicationBindContextLoader.class)
 public class PropertySourcesBindingTests {
 
 	@Value("${foo:}")

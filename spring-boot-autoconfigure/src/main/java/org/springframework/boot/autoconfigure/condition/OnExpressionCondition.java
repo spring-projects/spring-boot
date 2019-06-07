@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,35 +36,30 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnExpressionCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		String expression = (String) metadata
-				.getAnnotationAttributes(ConditionalOnExpression.class.getName())
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 				.get("value");
 		expression = wrapIfNecessary(expression);
 		String rawExpression = expression;
 		expression = context.getEnvironment().resolvePlaceholders(expression);
-		ConditionMessage.Builder messageBuilder = ConditionMessage
-				.forCondition(ConditionalOnExpression.class, "(" + rawExpression + ")");
+		ConditionMessage.Builder messageBuilder = ConditionMessage.forCondition(ConditionalOnExpression.class,
+				"(" + rawExpression + ")");
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory != null) {
 			boolean result = evaluateExpression(beanFactory, expression);
 			return new ConditionOutcome(result, messageBuilder.resultedIn(result));
 		}
 		else {
-			return ConditionOutcome
-					.noMatch(messageBuilder.because("no BeanFactory available."));
+			return ConditionOutcome.noMatch(messageBuilder.because("no BeanFactory available."));
 		}
 	}
 
-	private Boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory,
-			String expression) {
+	private Boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}
-		BeanExpressionContext expressionContext = new BeanExpressionContext(beanFactory,
-				null);
+		BeanExpressionContext expressionContext = new BeanExpressionContext(beanFactory, null);
 		return (Boolean) resolver.evaluate(expression, expressionContext);
 	}
 

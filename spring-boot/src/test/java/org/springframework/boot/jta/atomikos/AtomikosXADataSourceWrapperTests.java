@@ -37,8 +37,7 @@ public class AtomikosXADataSourceWrapperTests {
 		AtomikosXADataSourceWrapper wrapper = new AtomikosXADataSourceWrapper();
 		DataSource wrapped = wrapper.wrapDataSource(dataSource);
 		assertThat(wrapped).isInstanceOf(AtomikosDataSourceBean.class);
-		assertThat(((AtomikosDataSourceBean) wrapped).getXaDataSource())
-				.isSameAs(dataSource);
+		assertThat(((AtomikosDataSourceBean) wrapped).getXaDataSource()).isSameAs(dataSource);
 	}
 
 }

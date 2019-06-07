@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,20 +66,17 @@ public class IntegrationAutoConfigurationTests {
 	public void integrationIsAvailable() {
 		load();
 		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
-		assertThat(this.context.getBean(IntegrationComponentScanAutoConfiguration.class))
-				.isNotNull();
+		assertThat(this.context.getBean(IntegrationComponentScanAutoConfiguration.class)).isNotNull();
 	}
 
 	@Test
 	public void explicitIntegrationComponentScan() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(IntegrationComponentScanConfiguration.class,
-				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.register(IntegrationComponentScanConfiguration.class, JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
-		assertThat(this.context
-				.getBeansOfType(IntegrationComponentScanAutoConfiguration.class))
-						.isEmpty();
+		assertThat(this.context.getBeansOfType(IntegrationComponentScanAutoConfiguration.class)).isEmpty();
 	}
 
 	@Test
@@ -88,8 +85,7 @@ public class IntegrationAutoConfigurationTests {
 		this.context.register(IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
-		assertThat(this.context.getBean(IntegrationComponentScanAutoConfiguration.class))
-				.isNotNull();
+		assertThat(this.context.getBean(IntegrationComponentScanAutoConfiguration.class)).isNotNull();
 	}
 
 	@Test
@@ -98,10 +94,8 @@ public class IntegrationAutoConfigurationTests {
 		AnnotationConfigApplicationContext parent = this.context;
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
-		this.context.register(JmxAutoConfiguration.class,
-				IntegrationAutoConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"SPRING_JMX_DEFAULT_DOMAIN=org.foo");
+		this.context.register(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "SPRING_JMX_DEFAULT_DOMAIN=org.foo");
 		this.context.refresh();
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
@@ -110,10 +104,8 @@ public class IntegrationAutoConfigurationTests {
 	public void jmxIntegrationEnabledByDefault() {
 		load();
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
-		assertDomains(mBeanServer, true, "org.springframework.integration",
-				"org.springframework.integration.monitor");
-		Object bean = this.context
-				.getBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
+		assertDomains(mBeanServer, true, "org.springframework.integration", "org.springframework.integration.monitor");
+		Object bean = this.context.getBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
 		assertThat(bean).isNotNull();
 	}
 
@@ -121,8 +113,7 @@ public class IntegrationAutoConfigurationTests {
 	public void disableJmxIntegration() {
 		load("spring.jmx.enabled=false");
 		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(IntegrationManagementConfigurer.class))
-				.isEmpty();
+		assertThat(this.context.getBeansOfType(IntegrationManagementConfigurer.class)).isEmpty();
 	}
 
 	@Test
@@ -130,20 +121,17 @@ public class IntegrationAutoConfigurationTests {
 		load("SPRING_JMX_DEFAULT_DOMAIN=org.foo");
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		assertDomains(mBeanServer, true, "org.foo");
-		assertDomains(mBeanServer, false, "org.springframework.integration",
-				"org.springframework.integration.monitor");
+		assertDomains(mBeanServer, false, "org.springframework.integration", "org.springframework.integration.monitor");
 	}
 
 	@Test
 	public void primaryExporterIsAllowed() {
 		load(CustomMBeanExporter.class);
 		assertThat(this.context.getBeansOfType(MBeanExporter.class)).hasSize(2);
-		assertThat(this.context.getBean(MBeanExporter.class))
-				.isSameAs(this.context.getBean("myMBeanExporter"));
+		assertThat(this.context.getBean(MBeanExporter.class)).isSameAs(this.context.getBean("myMBeanExporter"));
 	}
 
-	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
-			String... domains) {
+	private static void assertDomains(MBeanServer mBeanServer, boolean expected, String... domains) {
 		List<String> actual = Arrays.asList(mBeanServer.getDomains());
 		for (String domain : domains) {
 			assertThat(actual.contains(domain)).isEqualTo(expected);

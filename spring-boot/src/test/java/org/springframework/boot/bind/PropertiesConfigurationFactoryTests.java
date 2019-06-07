@@ -81,16 +81,14 @@ public class PropertiesConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void testMissingPropertyCausesValidationError() throws Exception {
-		this.validator = new SpringValidatorAdapter(
-				Validation.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 
 	@Test
 	@Deprecated
 	public void testValidationErrorCanBeSuppressed() throws Exception {
-		this.validator = new SpringValidatorAdapter(
-				Validation.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(Validation.buildDefaultValidatorFactory().getValidator());
 		setupFactory();
 		this.factory.setExceptionIfInvalid(false);
 		bindFoo("bar: blah");
@@ -218,8 +216,7 @@ public class PropertiesConfigurationFactoryTests {
 				FileProperties.class);
 		factory.setApplicationContext(new AnnotationConfigApplicationContext());
 		factory.setConversionService(new DefaultConversionService());
-		Properties properties = PropertiesLoaderUtils
-				.loadProperties(new ByteArrayResource("someFile: .".getBytes()));
+		Properties properties = PropertiesLoaderUtils.loadProperties(new ByteArrayResource("someFile: .".getBytes()));
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(new PropertiesPropertySource("test", properties));
 		factory.setPropertySources(propertySources);
@@ -234,8 +231,7 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	private Foo bindFoo(final String values) throws Exception {
-		Properties properties = PropertiesLoaderUtils
-				.loadProperties(new ByteArrayResource(values.getBytes()));
+		Properties properties = PropertiesLoaderUtils.loadProperties(new ByteArrayResource(values.getBytes()));
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(new PropertiesPropertySource("test", properties));
 		this.factory.setPropertySources(propertySources);

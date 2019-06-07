@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,18 +37,14 @@ public class SpockCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	}
 
 	@Override
-	public void applyDependencies(DependencyCustomizer dependencies)
-			throws CompilationFailedException {
-		dependencies.add("spock-core").add("junit").add("spring-test")
-				.add("hamcrest-library");
+	public void applyDependencies(DependencyCustomizer dependencies) throws CompilationFailedException {
+		dependencies.add("spock-core").add("junit").add("spring-test").add("hamcrest-library");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("spock.lang").addStarImports("org.junit")
-				.addStaticStars("org.junit.Assert")
-				.addStaticStars("org.hamcrest.MatcherAssert")
-				.addStaticStars("org.hamcrest.Matchers");
+		imports.addStarImports("spock.lang").addStarImports("org.junit").addStaticStars("org.junit.Assert")
+				.addStaticStars("org.hamcrest.MatcherAssert").addStaticStars("org.hamcrest.Matchers");
 	}
 
 }

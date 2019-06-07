@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ public class RepositoryConfigurationFactoryTests {
 			public void run() {
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
-						"spring-snapshot", "spring-milestone");
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local", "spring-snapshot",
+						"spring-milestone");
 			}
 		}, "user.home:src/test/resources/maven-settings/basic");
 	}
@@ -54,11 +54,9 @@ public class RepositoryConfigurationFactoryTests {
 			public void run() {
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				assertRepositoryConfiguration(repositoryConfiguration, "central",
-						"local");
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local");
 			}
-		}, "user.home:src/test/resources/maven-settings/basic",
-				"disableSpringSnapshotRepos:true");
+		}, "user.home:src/test/resources/maven-settings/basic", "disableSpringSnapshotRepos:true");
 	}
 
 	@Test
@@ -68,8 +66,8 @@ public class RepositoryConfigurationFactoryTests {
 			public void run() {
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
-						"spring-snapshot", "spring-milestone", "active-by-default");
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local", "spring-snapshot",
+						"spring-milestone", "active-by-default");
 			}
 		}, "user.home:src/test/resources/maven-settings/active-profile-repositories");
 	}
@@ -81,11 +79,10 @@ public class RepositoryConfigurationFactoryTests {
 			public void run() {
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
-						"spring-snapshot", "spring-milestone", "active-by-property");
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local", "spring-snapshot",
+						"spring-milestone", "active-by-property");
 			}
-		}, "user.home:src/test/resources/maven-settings/active-profile-repositories",
-				"foo:bar");
+		}, "user.home:src/test/resources/maven-settings/active-profile-repositories", "foo:bar");
 	}
 
 	@Test
@@ -95,16 +92,13 @@ public class RepositoryConfigurationFactoryTests {
 			public void run() {
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
-						"spring-snapshot", "spring-milestone", "interpolate-releases",
-						"interpolate-snapshots");
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local", "spring-snapshot",
+						"spring-milestone", "interpolate-releases", "interpolate-snapshots");
 			}
-		}, "user.home:src/test/resources/maven-settings/active-profile-repositories",
-				"interpolate:true");
+		}, "user.home:src/test/resources/maven-settings/active-profile-repositories", "interpolate:true");
 	}
 
-	private void assertRepositoryConfiguration(
-			List<RepositoryConfiguration> configurations, String... expectedNames) {
+	private void assertRepositoryConfiguration(List<RepositoryConfiguration> configurations, String... expectedNames) {
 		assertThat(configurations).hasSize(expectedNames.length);
 		Set<String> actualNames = new HashSet<String>();
 		for (RepositoryConfiguration configuration : configurations) {

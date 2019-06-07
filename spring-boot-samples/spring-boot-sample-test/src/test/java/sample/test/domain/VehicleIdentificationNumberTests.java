@@ -68,8 +68,7 @@ public class VehicleIdentificationNumberTests {
 	public void equalsAndHashCodeShouldBeBasedOnVin() throws Exception {
 		VehicleIdentificationNumber vin1 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin2 = new VehicleIdentificationNumber(SAMPLE_VIN);
-		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber(
-				"00000000000000000");
+		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber("00000000000000000");
 		assertThat(vin1.hashCode()).isEqualTo(vin2.hashCode());
 		assertThat(vin1).isEqualTo(vin1).isEqualTo(vin2).isNotEqualTo(vin3);
 	}

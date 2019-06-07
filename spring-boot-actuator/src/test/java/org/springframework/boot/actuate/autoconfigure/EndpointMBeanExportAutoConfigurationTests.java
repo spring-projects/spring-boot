@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,43 +63,34 @@ public class EndpointMBeanExportAutoConfigurationTests {
 	@Test
 	public void testEndpointMBeanExporterIsInstalled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
-				EndpointMBeanExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointMBeanExportAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(EndpointMBeanExporter.class)).isNotNull();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertThat(mbeanExporter.getServer()
-				.queryNames(getObjectName("*", "*,*", this.context), null)).isNotEmpty();
+		assertThat(mbeanExporter.getServer().queryNames(getObjectName("*", "*,*", this.context), null)).isNotEmpty();
 	}
 
 	@Test
-	public void testEndpointMBeanExporterIsNotInstalledIfManagedResource()
-			throws Exception {
+	public void testEndpointMBeanExporterIsNotInstalledIfManagedResource() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class,
-				ManagedEndpoint.class, EndpointMBeanExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class, ManagedEndpoint.class,
+				EndpointMBeanExportAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(EndpointMBeanExporter.class)).isNotNull();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertThat(mbeanExporter.getServer()
-				.queryNames(getObjectName("*", "*,*", this.context), null)).isEmpty();
+		assertThat(mbeanExporter.getServer().queryNames(getObjectName("*", "*,*", this.context), null)).isEmpty();
 	}
 
 	@Test
-	public void testEndpointMBeanExporterIsNotInstalledIfNestedInManagedResource()
-			throws Exception {
+	public void testEndpointMBeanExporterIsNotInstalledIfNestedInManagedResource() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class,
-				NestedInManagedEndpoint.class, EndpointMBeanExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class, NestedInManagedEndpoint.class,
+				EndpointMBeanExportAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(EndpointMBeanExporter.class)).isNotNull();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertThat(mbeanExporter.getServer()
-				.queryNames(getObjectName("*", "*,*", this.context), null)).isEmpty();
+		assertThat(mbeanExporter.getServer().queryNames(getObjectName("*", "*,*", this.context), null)).isEmpty();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -115,8 +106,8 @@ public class EndpointMBeanExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void testEndpointMBeanExporterWithProperties() throws IntrospectionException,
-			InstanceNotFoundException, MalformedObjectNameException, ReflectionException {
+	public void testEndpointMBeanExporterWithProperties() throws IntrospectionException, InstanceNotFoundException,
+			MalformedObjectNameException, ReflectionException {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("endpoints.jmx.domain", "test-domain");
 		environment.setProperty("endpoints.jmx.unique_names", "true");
@@ -130,13 +121,13 @@ public class EndpointMBeanExportAutoConfigurationTests {
 
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		assertThat(mbeanExporter.getServer().getMBeanInfo(ObjectNameManager.getInstance(
-				getObjectName("test-domain", "healthEndpoint", this.context).toString()
-						+ ",key1=value1,key2=value2"))).isNotNull();
+				getObjectName("test-domain", "healthEndpoint", this.context).toString() + ",key1=value1,key2=value2")))
+						.isNotNull();
 	}
 
 	@Test
-	public void testEndpointMBeanExporterInParentChild() throws IntrospectionException,
-			InstanceNotFoundException, MalformedObjectNameException, ReflectionException {
+	public void testEndpointMBeanExporterInParentChild() throws IntrospectionException, InstanceNotFoundException,
+			MalformedObjectNameException, ReflectionException {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
@@ -149,20 +140,18 @@ public class EndpointMBeanExportAutoConfigurationTests {
 		parent.close();
 	}
 
-	private ObjectName getObjectName(String domain, String beanKey,
-			ApplicationContext applicationContext) throws MalformedObjectNameException {
+	private ObjectName getObjectName(String domain, String beanKey, ApplicationContext applicationContext)
+			throws MalformedObjectNameException {
 		String name = "%s:type=Endpoint,name=%s";
 		if (applicationContext.getParent() != null) {
 			name = name + ",context=%s";
 		}
-		if (applicationContext.getEnvironment().getProperty("endpoints.jmx.unique_names",
-				Boolean.class, false)) {
-			name = name + ",identity=" + ObjectUtils
-					.getIdentityHexString(applicationContext.getBean(beanKey));
+		if (applicationContext.getEnvironment().getProperty("endpoints.jmx.unique_names", Boolean.class, false)) {
+			name = name + ",identity=" + ObjectUtils.getIdentityHexString(applicationContext.getBean(beanKey));
 		}
 		if (applicationContext.getParent() != null) {
-			return ObjectNameManager.getInstance(String.format(name, domain, beanKey,
-					ObjectUtils.getIdentityHexString(applicationContext)));
+			return ObjectNameManager.getInstance(
+					String.format(name, domain, beanKey, ObjectUtils.getIdentityHexString(applicationContext)));
 		}
 		return ObjectNameManager.getInstance(String.format(name, domain, beanKey));
 	}

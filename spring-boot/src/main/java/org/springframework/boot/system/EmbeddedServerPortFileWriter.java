@@ -40,15 +40,13 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.4.0
  */
-public class EmbeddedServerPortFileWriter
-		implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+public class EmbeddedServerPortFileWriter implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
 
 	private static final String DEFAULT_FILE_NAME = "application.port";
 
 	private static final String[] PROPERTY_VARIABLES = { "PORTFILE", "portfile" };
 
-	private static final Log logger = LogFactory
-			.getLog(EmbeddedServerPortFileWriter.class);
+	private static final Log logger = LogFactory.getLog(EmbeddedServerPortFileWriter.class);
 
 	private final File file;
 
@@ -127,8 +125,7 @@ public class EmbeddedServerPortFileWriter
 
 	private boolean isUpperCase(String name) {
 		for (int i = 0; i < name.length(); i++) {
-			if (Character.isLetter(name.charAt(i))
-					&& !Character.isUpperCase(name.charAt(i))) {
+			if (Character.isLetter(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
 				return false;
 			}
 		}

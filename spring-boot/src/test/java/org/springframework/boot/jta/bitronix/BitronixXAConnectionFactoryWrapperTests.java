@@ -37,8 +37,7 @@ public class BitronixXAConnectionFactoryWrapperTests {
 		BitronixXAConnectionFactoryWrapper wrapper = new BitronixXAConnectionFactoryWrapper();
 		ConnectionFactory wrapped = wrapper.wrapConnectionFactory(connectionFactory);
 		assertThat(wrapped).isInstanceOf(PoolingConnectionFactoryBean.class);
-		assertThat(((PoolingConnectionFactoryBean) wrapped).getConnectionFactory())
-				.isSameAs(connectionFactory);
+		assertThat(((PoolingConnectionFactoryBean) wrapped).getConnectionFactory()).isSameAs(connectionFactory);
 	}
 
 }

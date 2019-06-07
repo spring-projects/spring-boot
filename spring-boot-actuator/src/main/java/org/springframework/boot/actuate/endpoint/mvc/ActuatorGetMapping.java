@@ -38,8 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @RequestMapping(method = RequestMethod.GET,
-		produces = { ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON_VALUE,
-				MediaType.APPLICATION_JSON_VALUE })
+		produces = { ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE })
 @interface ActuatorGetMapping {
 
 	/**

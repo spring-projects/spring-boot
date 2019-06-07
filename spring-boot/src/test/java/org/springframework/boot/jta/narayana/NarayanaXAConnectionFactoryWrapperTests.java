@@ -42,21 +42,18 @@ public class NarayanaXAConnectionFactoryWrapperTests {
 
 	private TransactionManager transactionManager = mock(TransactionManager.class);
 
-	private NarayanaRecoveryManagerBean recoveryManager = mock(
-			NarayanaRecoveryManagerBean.class);
+	private NarayanaRecoveryManagerBean recoveryManager = mock(NarayanaRecoveryManagerBean.class);
 
 	private NarayanaProperties properties = mock(NarayanaProperties.class);
 
-	private NarayanaXAConnectionFactoryWrapper wrapper = new NarayanaXAConnectionFactoryWrapper(
-			this.transactionManager, this.recoveryManager, this.properties);
+	private NarayanaXAConnectionFactoryWrapper wrapper = new NarayanaXAConnectionFactoryWrapper(this.transactionManager,
+			this.recoveryManager, this.properties);
 
 	@Test
 	public void wrap() {
-		ConnectionFactory wrapped = this.wrapper
-				.wrapConnectionFactory(this.connectionFactory);
+		ConnectionFactory wrapped = this.wrapper.wrapConnectionFactory(this.connectionFactory);
 		assertThat(wrapped).isInstanceOf(ConnectionFactoryProxy.class);
-		verify(this.recoveryManager, times(1))
-				.registerXAResourceRecoveryHelper(any(JmsXAResourceRecoveryHelper.class));
+		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(any(JmsXAResourceRecoveryHelper.class));
 		verify(this.properties, times(1)).getRecoveryJmsUser();
 		verify(this.properties, times(1)).getRecoveryJmsPass();
 	}
@@ -65,11 +62,9 @@ public class NarayanaXAConnectionFactoryWrapperTests {
 	public void wrapWithCredentials() {
 		given(this.properties.getRecoveryJmsUser()).willReturn("userName");
 		given(this.properties.getRecoveryJmsPass()).willReturn("password");
-		ConnectionFactory wrapped = this.wrapper
-				.wrapConnectionFactory(this.connectionFactory);
+		ConnectionFactory wrapped = this.wrapper.wrapConnectionFactory(this.connectionFactory);
 		assertThat(wrapped).isInstanceOf(ConnectionFactoryProxy.class);
-		verify(this.recoveryManager, times(1))
-				.registerXAResourceRecoveryHelper(any(JmsXAResourceRecoveryHelper.class));
+		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(any(JmsXAResourceRecoveryHelper.class));
 		verify(this.properties, times(2)).getRecoveryJmsUser();
 		verify(this.properties, times(1)).getRecoveryJmsPass();
 	}

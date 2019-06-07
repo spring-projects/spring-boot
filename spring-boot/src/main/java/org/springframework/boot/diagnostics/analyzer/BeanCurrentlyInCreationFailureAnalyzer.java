@@ -33,12 +33,10 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-class BeanCurrentlyInCreationFailureAnalyzer
-		extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
+class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			BeanCurrentlyInCreationException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, BeanCurrentlyInCreationException cause) {
 		DependencyCycle dependencyCycle = findCycle(rootFailure);
 		if (dependencyCycle == null) {
 			return null;
@@ -69,8 +67,8 @@ class BeanCurrentlyInCreationFailureAnalyzer
 
 	private String buildMessage(DependencyCycle dependencyCycle) {
 		StringBuilder message = new StringBuilder();
-		message.append(String.format("The dependencies of some of the beans in the "
-				+ "application context form a cycle:%n%n"));
+		message.append(String
+				.format("The dependencies of some of the beans in the " + "application context form a cycle:%n%n"));
 		List<BeanInCycle> beansInCycle = dependencyCycle.getBeansInCycle();
 		int cycleStart = dependencyCycle.getCycleStart();
 		for (int i = 0; i < beansInCycle.size(); i++) {

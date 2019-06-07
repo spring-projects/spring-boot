@@ -37,8 +37,7 @@ import org.springframework.util.ObjectUtils;
  * @author Eric Bottard
  */
 public class ParentContextCloserApplicationListener
-		implements ApplicationListener<ParentContextAvailableEvent>,
-		ApplicationContextAware, Ordered {
+		implements ApplicationListener<ParentContextAvailableEvent>, ApplicationContextAware, Ordered {
 
 	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
@@ -62,8 +61,7 @@ public class ParentContextCloserApplicationListener
 	private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
 		if (child == this.context) {
 			if (child.getParent() instanceof ConfigurableApplicationContext) {
-				ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
-						.getParent();
+				ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child.getParent();
 				parent.addApplicationListener(createContextCloserListener(child));
 			}
 		}
@@ -75,30 +73,25 @@ public class ParentContextCloserApplicationListener
 	 * @param child the child context
 	 * @return the {@link ContextCloserListener} to use
 	 */
-	protected ContextCloserListener createContextCloserListener(
-			ConfigurableApplicationContext child) {
+	protected ContextCloserListener createContextCloserListener(ConfigurableApplicationContext child) {
 		return new ContextCloserListener(child);
 	}
 
 	/**
 	 * {@link ApplicationListener} to close the context.
 	 */
-	protected static class ContextCloserListener
-			implements ApplicationListener<ContextClosedEvent> {
+	protected static class ContextCloserListener implements ApplicationListener<ContextClosedEvent> {
 
 		private WeakReference<ConfigurableApplicationContext> childContext;
 
 		public ContextCloserListener(ConfigurableApplicationContext childContext) {
-			this.childContext = new WeakReference<ConfigurableApplicationContext>(
-					childContext);
+			this.childContext = new WeakReference<ConfigurableApplicationContext>(childContext);
 		}
 
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
 			ConfigurableApplicationContext context = this.childContext.get();
-			if ((context != null)
-					&& (event.getApplicationContext() == context.getParent())
-					&& context.isActive()) {
+			if ((context != null) && (event.getApplicationContext() == context.getParent()) && context.isActive()) {
 				context.close();
 			}
 		}
@@ -113,8 +106,7 @@ public class ParentContextCloserApplicationListener
 			}
 			if (obj instanceof ContextCloserListener) {
 				ContextCloserListener other = (ContextCloserListener) obj;
-				return ObjectUtils.nullSafeEquals(this.childContext.get(),
-						other.childContext.get());
+				return ObjectUtils.nullSafeEquals(this.childContext.get(), other.childContext.get());
 			}
 			return super.equals(obj);
 		}

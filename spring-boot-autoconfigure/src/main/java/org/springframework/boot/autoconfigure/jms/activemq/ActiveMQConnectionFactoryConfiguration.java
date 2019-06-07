@@ -46,13 +46,12 @@ import org.springframework.context.annotation.Configuration;
 class ActiveMQConnectionFactoryConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
-			havingValue = "false", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
+			matchIfMissing = true)
 	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
-		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.getIfAvailable())
-						.createConnectionFactory(ActiveMQConnectionFactory.class);
+		return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.getIfAvailable())
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 	@Configuration
@@ -60,33 +59,25 @@ class ActiveMQConnectionFactoryConfiguration {
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
-				havingValue = "true", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true",
+				matchIfMissing = false)
 		@ConfigurationProperties(prefix = "spring.activemq.pool.configuration")
-		public PooledConnectionFactory pooledJmsConnectionFactory(
-				ActiveMQProperties properties,
+		public PooledConnectionFactory pooledJmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
 			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(
-					new ActiveMQConnectionFactoryFactory(properties,
-							factoryCustomizers.getIfAvailable()).createConnectionFactory(
-									ActiveMQConnectionFactory.class));
+					new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.getIfAvailable())
+							.createConnectionFactory(ActiveMQConnectionFactory.class));
 			ActiveMQProperties.Pool pool = properties.getPool();
 			pooledConnectionFactory.setBlockIfSessionPoolIsFull(pool.isBlockIfFull());
-			pooledConnectionFactory
-					.setBlockIfSessionPoolIsFullTimeout(pool.getBlockIfFullTimeout());
-			pooledConnectionFactory
-					.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
+			pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(pool.getBlockIfFullTimeout());
+			pooledConnectionFactory.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
 			pooledConnectionFactory.setExpiryTimeout(pool.getExpiryTimeout());
 			pooledConnectionFactory.setIdleTimeout(pool.getIdleTimeout());
 			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
-			pooledConnectionFactory.setMaximumActiveSessionPerConnection(
-					pool.getMaximumActiveSessionPerConnection());
-			pooledConnectionFactory
-					.setReconnectOnException(pool.isReconnectOnException());
-			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
-					pool.getTimeBetweenExpirationCheck());
-			pooledConnectionFactory
-					.setUseAnonymousProducers(pool.isUseAnonymousProducers());
+			pooledConnectionFactory.setMaximumActiveSessionPerConnection(pool.getMaximumActiveSessionPerConnection());
+			pooledConnectionFactory.setReconnectOnException(pool.isReconnectOnException());
+			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(pool.getTimeBetweenExpirationCheck());
+			pooledConnectionFactory.setUseAnonymousProducers(pool.isUseAnonymousProducers());
 			return pooledConnectionFactory;
 		}
 

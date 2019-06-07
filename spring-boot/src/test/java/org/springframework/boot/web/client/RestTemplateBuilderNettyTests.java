@@ -42,8 +42,7 @@ public class RestTemplateBuilderNettyTests {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
 		assertThat(requestFactory).isInstanceOf(Netty4ClientHttpRequestFactory.class);
-		assertThat(ReflectionTestUtils.getField(requestFactory, "sslContext"))
-				.isNotNull();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "sslContext")).isNotNull();
 	}
 
 }

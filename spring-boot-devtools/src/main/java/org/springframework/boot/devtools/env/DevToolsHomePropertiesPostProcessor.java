@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	private static final String FILE_NAME = ".spring-boot-devtools.properties";
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		File home = getHomeFolder();
 		File propertyFile = (home != null) ? new File(home, FILE_NAME) : null;
 		if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
@@ -50,8 +49,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 			Properties properties;
 			try {
 				properties = PropertiesLoaderUtils.loadProperties(resource);
-				environment.getPropertySources().addFirst(
-						new PropertiesPropertySource("devtools-local", properties));
+				environment.getPropertySources().addFirst(new PropertiesPropertySource("devtools-local", properties));
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException("Unable to load " + FILE_NAME, ex);

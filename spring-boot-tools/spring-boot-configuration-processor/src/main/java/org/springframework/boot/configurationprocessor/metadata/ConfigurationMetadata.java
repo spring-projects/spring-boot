@@ -169,8 +169,7 @@ public class ConfigurationMetadata {
 
 	private List<ItemMetadata> getCandidates(String name) {
 		List<ItemMetadata> candidates = this.items.get(name);
-		return (candidates != null) ? new ArrayList<ItemMetadata>(candidates)
-				: new ArrayList<ItemMetadata>();
+		return (candidates != null) ? new ArrayList<ItemMetadata>(candidates) : new ArrayList<ItemMetadata>();
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {
@@ -194,8 +193,7 @@ public class ConfigurationMetadata {
 			if (SEPARATORS.contains(current)) {
 				dashed.append("-");
 			}
-			else if (Character.isUpperCase(current) && previous != null
-					&& !SEPARATORS.contains(previous)) {
+			else if (Character.isUpperCase(current) && previous != null && !SEPARATORS.contains(previous)) {
 				dashed.append("-").append(current);
 			}
 			else {

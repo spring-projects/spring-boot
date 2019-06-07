@@ -52,8 +52,8 @@ public class ShutdownSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword()).getForEntity("/", Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/",
+				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -63,9 +63,8 @@ public class ShutdownSampleActuatorApplicationTests {
 	@Test
 	public void testShutdown() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
-				.postForEntity("/shutdown", null, Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).postForEntity("/shutdown",
+				null, Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

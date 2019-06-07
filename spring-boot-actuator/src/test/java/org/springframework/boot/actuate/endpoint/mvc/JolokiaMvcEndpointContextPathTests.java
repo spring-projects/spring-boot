@@ -59,8 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(properties = "management.security.enabled=false")
-@ContextConfiguration(classes = { Config.class },
-		initializers = ContextPathListener.class)
+@ContextConfiguration(classes = { Config.class }, initializers = ContextPathListener.class)
 @DirtiesContext
 public class JolokiaMvcEndpointContextPathTests {
 
@@ -72,14 +71,12 @@ public class JolokiaMvcEndpointContextPathTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
-				"foo:bar");
+		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context, "foo:bar");
 	}
 
 	@Test
 	public void read() throws Exception {
-		this.mvc.perform(get("/admin/jolokia/read/java.lang:type=Memory"))
-				.andExpect(status().isOk())
+		this.mvc.perform(get("/admin/jolokia/read/java.lang:type=Memory")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
 	}
 
@@ -87,15 +84,13 @@ public class JolokiaMvcEndpointContextPathTests {
 	@EnableConfigurationProperties
 	@EnableWebMvc
 	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			JolokiaAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class })
 	public static class Config {
 
 	}
 
-	public static class ContextPathListener
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	public static class ContextPathListener implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext context) {

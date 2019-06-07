@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,13 +48,11 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	 * @param healthAggregator the health aggregator
 	 * @param healthIndicators the health indicators
 	 */
-	public HealthEndpoint(HealthAggregator healthAggregator,
-			Map<String, HealthIndicator> healthIndicators) {
+	public HealthEndpoint(HealthAggregator healthAggregator, Map<String, HealthIndicator> healthIndicators) {
 		super("health", false);
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
-		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
-				healthAggregator);
+		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(healthAggregator);
 		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
 			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
 		}

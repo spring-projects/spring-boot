@@ -38,8 +38,7 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(String name, Resource resource, String profile)
-			throws IOException {
+	public PropertySource<?> load(String name, Resource resource, String profile) throws IOException {
 		if (profile == null) {
 			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 			if (!properties.isEmpty()) {

@@ -43,12 +43,10 @@ public class RunArgumentsTests {
 
 	@Test
 	public void parseDebugFlags() {
-		String[] args = parseArgs(
-				"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
+		String[] args = parseArgs("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 		assertThat(args.length).isEqualTo(2);
 		assertThat(args[0]).isEqualTo("-Xdebug");
-		assertThat(args[1]).isEqualTo(
-				"-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
+		assertThat(args[1]).isEqualTo("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 	}
 
 	@Test

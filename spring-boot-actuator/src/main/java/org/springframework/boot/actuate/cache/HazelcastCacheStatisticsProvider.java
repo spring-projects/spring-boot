@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,12 @@ import org.springframework.cache.CacheManager;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class HazelcastCacheStatisticsProvider
-		implements CacheStatisticsProvider<HazelcastCache> {
+public class HazelcastCacheStatisticsProvider implements CacheStatisticsProvider<HazelcastCache> {
 
 	@Override
-	public CacheStatistics getCacheStatistics(CacheManager cacheManager,
-			HazelcastCache cache) {
+	public CacheStatistics getCacheStatistics(CacheManager cacheManager, HazelcastCache cache) {
 		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
-		LocalMapStats mapStatistics = ((IMap<?, ?>) cache.getNativeCache())
-				.getLocalMapStats();
+		LocalMapStats mapStatistics = ((IMap<?, ?>) cache.getNativeCache()).getLocalMapStats();
 		statistics.setSize(mapStatistics.getOwnedEntryCount());
 		statistics.setGetCacheCounts(mapStatistics.getHits(),
 				mapStatistics.getGetOperationCount() - mapStatistics.getHits());

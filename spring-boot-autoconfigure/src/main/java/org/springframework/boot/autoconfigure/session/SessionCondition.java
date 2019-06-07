@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,26 +35,18 @@ import org.springframework.core.type.AnnotationMetadata;
 class SessionCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Session Condition");
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.session.");
-		StoreType sessionStoreType = SessionStoreMappings
-				.getType(((AnnotationMetadata) metadata).getClassName());
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Session Condition");
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(), "spring.session.");
+		StoreType sessionStoreType = SessionStoreMappings.getType(((AnnotationMetadata) metadata).getClassName());
 		if (!resolver.containsProperty("store-type")) {
-			return ConditionOutcome.noMatch(
-					message.didNotFind("spring.session.store-type property").atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("spring.session.store-type property").atAll());
 		}
-		String value = resolver.getProperty("store-type").replace('-', '_')
-				.toUpperCase(Locale.ENGLISH);
+		String value = resolver.getProperty("store-type").replace('-', '_').toUpperCase(Locale.ENGLISH);
 		if (value.equals(sessionStoreType.name())) {
-			return ConditionOutcome.match(message
-					.found("spring.session.store-type property").items(sessionStoreType));
+			return ConditionOutcome.match(message.found("spring.session.store-type property").items(sessionStoreType));
 		}
-		return ConditionOutcome.noMatch(
-				message.found("spring.session.store-type property").items(value));
+		return ConditionOutcome.noMatch(message.found("spring.session.store-type property").items(value));
 	}
 
 }

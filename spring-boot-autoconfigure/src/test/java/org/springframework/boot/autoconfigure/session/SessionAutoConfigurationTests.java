@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,53 +75,45 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	public void backOffIfSessionRepositoryIsPresent() {
 		load(Collections.<Class<?>>singletonList(SessionRepositoryConfiguration.class),
 				"spring.session.store-type=mongo");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
+		MapSessionRepository repository = validateSessionRepository(MapSessionRepository.class);
 		assertThat(this.context.getBean("mySessionRepository")).isSameAs(repository);
 	}
 
 	@Test
 	public void hashMapSessionStore() {
 		load("spring.session.store-type=hash-map");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
+		MapSessionRepository repository = validateSessionRepository(MapSessionRepository.class);
 		assertThat(getSessionTimeout(repository)).isNull();
 	}
 
 	@Test
 	public void hashMapSessionStoreCustomTimeout() {
 		load("spring.session.store-type=hash-map", "server.session.timeout=3000");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
+		MapSessionRepository repository = validateSessionRepository(MapSessionRepository.class);
 		assertThat(getSessionTimeout(repository)).isEqualTo(3000);
 	}
 
 	@Test
 	public void springSessionTimeoutIsNotAValidProperty() {
 		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
+		MapSessionRepository repository = validateSessionRepository(MapSessionRepository.class);
 		assertThat(getSessionTimeout(repository)).isNull();
 	}
 
 	@Test
 	public void mongoSessionStore() {
-		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
-				"spring.session.store-type=mongo");
+		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class), "spring.session.store-type=mongo");
 		validateSessionRepository(MongoOperationsSessionRepository.class);
 	}
 
 	@Test
 	public void mongoSessionStoreWithCustomizations() {
-		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
-				"spring.session.store-type=mongo",
+		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class), "spring.session.store-type=mongo",
 				"spring.session.mongo.collection-name=foobar");
-		MongoOperationsSessionRepository repository = validateSessionRepository(
-				MongoOperationsSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("collectionName"))
-				.isEqualTo("foobar");
+		MongoOperationsSessionRepository repository = validateSessionRepository(MongoOperationsSessionRepository.class);
+		assertThat(new DirectFieldAccessor(repository).getPropertyValue("collectionName")).isEqualTo("foobar");
 	}
 
 	@Configuration
@@ -129,8 +121,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 		@Bean
 		public SessionRepository<?> mySessionRepository() {
-			return new MapSessionRepository(
-					Collections.<String, ExpiringSession>emptyMap());
+			return new MapSessionRepository(Collections.<String, ExpiringSession>emptyMap());
 		}
 
 	}

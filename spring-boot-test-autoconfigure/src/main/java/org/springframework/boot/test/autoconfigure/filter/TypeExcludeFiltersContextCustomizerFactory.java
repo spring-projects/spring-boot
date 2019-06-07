@@ -39,8 +39,7 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		TypeExcludeFilters annotation = AnnotatedElementUtils
-				.findMergedAnnotation(testClass, TypeExcludeFilters.class);
+		TypeExcludeFilters annotation = AnnotatedElementUtils.findMergedAnnotation(testClass, TypeExcludeFilters.class);
 		if (annotation != null) {
 			Set<Class<? extends TypeExcludeFilter>> filterClasses = new LinkedHashSet<Class<? extends TypeExcludeFilter>>(
 					Arrays.asList(annotation.value()));

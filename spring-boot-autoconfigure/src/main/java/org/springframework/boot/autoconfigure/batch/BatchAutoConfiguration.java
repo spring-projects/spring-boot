@@ -81,19 +81,15 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(DataSource.class)
-	public BatchDatabaseInitializer batchDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
+	public BatchDatabaseInitializer batchDatabaseInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
 		return new BatchDatabaseInitializer(dataSource, resourceLoader, this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled",
-			havingValue = "true", matchIfMissing = true)
-	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
-			JobLauncher jobLauncher, JobExplorer jobExplorer) {
-		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
-				jobLauncher, jobExplorer);
+	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer) {
+		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(jobLauncher, jobExplorer);
 		String jobNames = this.properties.getJob().getNames();
 		if (StringUtils.hasText(jobNames)) {
 			runner.setJobNames(jobNames);
@@ -124,8 +120,7 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
 	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository)
-			throws Exception {
+			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);
@@ -138,8 +133,7 @@ public class BatchAutoConfiguration {
 	}
 
 	@EnableConfigurationProperties(BatchProperties.class)
-	@ConditionalOnClass(value = PlatformTransactionManager.class,
-			name = "javax.persistence.EntityManagerFactory")
+	@ConditionalOnClass(value = PlatformTransactionManager.class, name = "javax.persistence.EntityManagerFactory")
 	@ConditionalOnMissingBean(BatchConfigurer.class)
 	@Configuration
 	protected static class JpaBatchConfiguration {
@@ -155,11 +149,10 @@ public class BatchAutoConfiguration {
 		// Boot in the JPA auto configuration.
 		@Bean
 		@ConditionalOnBean(name = "entityManagerFactory")
-		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
-				EntityManagerFactory entityManagerFactory,
+		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource, EntityManagerFactory entityManagerFactory,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			return new BasicBatchConfigurer(this.properties, dataSource,
-					entityManagerFactory, transactionManagerCustomizers.getIfAvailable());
+			return new BasicBatchConfigurer(this.properties, dataSource, entityManagerFactory,
+					transactionManagerCustomizers.getIfAvailable());
 		}
 
 		@Bean

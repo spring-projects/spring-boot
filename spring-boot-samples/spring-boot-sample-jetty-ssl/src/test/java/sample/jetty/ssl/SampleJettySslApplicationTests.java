@@ -47,8 +47,7 @@ public class SampleJettySslApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		TestRestTemplate testRestTemplate = new TestRestTemplate(HttpClientOption.SSL);
-		ResponseEntity<String> entity = testRestTemplate
-				.getForEntity("https://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = testRestTemplate.getForEntity("https://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}

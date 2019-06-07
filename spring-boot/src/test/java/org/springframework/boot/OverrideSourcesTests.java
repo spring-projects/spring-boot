@@ -53,8 +53,7 @@ public class OverrideSourcesTests {
 
 	@Test
 	public void primaryBeanInjectedProvingSourcesNotOverridden() {
-		this.context = SpringApplication.run(
-				new Object[] { MainConfiguration.class, TestConfiguration.class },
+		this.context = SpringApplication.run(new Object[] { MainConfiguration.class, TestConfiguration.class },
 				new String[] { "--spring.main.web_environment=false",
 						"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });
 		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("bar");

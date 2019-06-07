@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,7 @@ public class CassandraAutoConfiguration {
 	@ConditionalOnMissingBean
 	public Cluster cluster() {
 		CassandraProperties properties = this.properties;
-		Cluster.Builder builder = Cluster.builder()
-				.withClusterName(properties.getClusterName())
+		Cluster.Builder builder = Cluster.builder().withClusterName(properties.getClusterName())
 				.withPort(properties.getPort());
 		if (properties.getUsername() != null) {
 			builder.withCredentials(properties.getUsername(), properties.getPassword());

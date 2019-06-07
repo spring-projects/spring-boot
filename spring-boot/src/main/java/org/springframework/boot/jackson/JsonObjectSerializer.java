@@ -34,8 +34,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 public abstract class JsonObjectSerializer<T> extends JsonSerializer<T> {
 
 	@Override
-	public final void serialize(T value, JsonGenerator jgen, SerializerProvider provider)
-			throws IOException {
+	public final void serialize(T value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 		try {
 			jgen.writeStartObject();
 			serializeObject(value, jgen, provider);
@@ -56,7 +55,7 @@ public abstract class JsonObjectSerializer<T> extends JsonSerializer<T> {
 	 * @param provider the serializer provider
 	 * @throws IOException on error
 	 */
-	protected abstract void serializeObject(T value, JsonGenerator jgen,
-			SerializerProvider provider) throws IOException;
+	protected abstract void serializeObject(T value, JsonGenerator jgen, SerializerProvider provider)
+			throws IOException;
 
 }

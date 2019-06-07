@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,41 +35,30 @@ public class MultiProjectRepackagingTests {
 
 	@Test
 	public void repackageWithTransitiveFileDependency() throws Exception {
-		ProjectConnection project = new ProjectCreator()
-				.createProject("multi-project-transitive-file-dependency");
-		project.newBuild().forTasks("clean", "build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION).run();
-		File buildLibs = new File(
-				"target/multi-project-transitive-file-dependency/main/build/libs");
+		ProjectConnection project = new ProjectCreator().createProject("multi-project-transitive-file-dependency");
+		project.newBuild().forTasks("clean", "build").withArguments("-PbootVersion=" + BOOT_VERSION).run();
+		File buildLibs = new File("target/multi-project-transitive-file-dependency/main/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "main.jar"));
-		assertThat(jarFile.getEntry("BOOT-INF/lib/commons-logging-1.1.3.jar"))
-				.isNotNull();
+		assertThat(jarFile.getEntry("BOOT-INF/lib/commons-logging-1.1.3.jar")).isNotNull();
 		assertThat(jarFile.getEntry("BOOT-INF/lib/foo.jar")).isNotNull();
 		jarFile.close();
 	}
 
 	@Test
 	public void repackageWithCommonFileDependency() throws Exception {
-		ProjectConnection project = new ProjectCreator()
-				.createProject("multi-project-common-file-dependency");
-		project.newBuild().forTasks("clean", "build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION).run();
-		File buildLibs = new File(
-				"target/multi-project-common-file-dependency/build/libs");
-		JarFile jarFile = new JarFile(
-				new File(buildLibs, "multi-project-common-file-dependency.jar"));
+		ProjectConnection project = new ProjectCreator().createProject("multi-project-common-file-dependency");
+		project.newBuild().forTasks("clean", "build").withArguments("-PbootVersion=" + BOOT_VERSION).run();
+		File buildLibs = new File("target/multi-project-common-file-dependency/build/libs");
+		JarFile jarFile = new JarFile(new File(buildLibs, "multi-project-common-file-dependency.jar"));
 		assertThat(jarFile.getEntry("BOOT-INF/lib/foo.jar")).isNotNull();
 		jarFile.close();
 	}
 
 	@Test
 	public void repackageWithRuntimeProjectDependency() throws Exception {
-		ProjectConnection project = new ProjectCreator()
-				.createProject("multi-project-runtime-project-dependency");
-		project.newBuild().forTasks("clean", "build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION).run();
-		File buildLibs = new File(
-				"target/multi-project-runtime-project-dependency/projectA/build/libs");
+		ProjectConnection project = new ProjectCreator().createProject("multi-project-runtime-project-dependency");
+		project.newBuild().forTasks("clean", "build").withArguments("-PbootVersion=" + BOOT_VERSION).run();
+		File buildLibs = new File("target/multi-project-runtime-project-dependency/projectA/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "projectA.jar"));
 		assertThat(jarFile.getEntry("BOOT-INF/lib/projectB.jar")).isNotNull();
 		jarFile.close();

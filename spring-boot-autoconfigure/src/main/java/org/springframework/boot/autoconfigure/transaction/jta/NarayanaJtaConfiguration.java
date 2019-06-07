@@ -56,8 +56,8 @@ import org.springframework.util.StringUtils;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ JtaTransactionManager.class,
-		com.arjuna.ats.jta.UserTransaction.class, XAResourceRecoveryRegistry.class })
+@ConditionalOnClass({ JtaTransactionManager.class, com.arjuna.ats.jta.UserTransaction.class,
+		XAResourceRecoveryRegistry.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 @EnableConfigurationProperties(JtaProperties.class)
 public class NarayanaJtaConfiguration {
@@ -69,8 +69,7 @@ public class NarayanaJtaConfiguration {
 	public NarayanaJtaConfiguration(JtaProperties jtaProperties,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		this.jtaProperties = jtaProperties;
-		this.transactionManagerCustomizers = transactionManagerCustomizers
-				.getIfAvailable();
+		this.transactionManagerCustomizers = transactionManagerCustomizers.getIfAvailable();
 	}
 
 	@Bean
@@ -81,12 +80,10 @@ public class NarayanaJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NarayanaConfigurationBean narayanaConfiguration(
-			NarayanaProperties properties) {
+	public NarayanaConfigurationBean narayanaConfiguration(NarayanaProperties properties) {
 		properties.setLogDir(getLogDir().getAbsolutePath());
 		if (this.jtaProperties.getTransactionManagerId() != null) {
-			properties.setTransactionManagerId(
-					this.jtaProperties.getTransactionManagerId());
+			properties.setTransactionManagerId(this.jtaProperties.getTransactionManagerId());
 		}
 		return new NarayanaConfigurationBean(properties);
 	}
@@ -122,16 +119,14 @@ public class NarayanaJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NarayanaRecoveryManagerBean narayanaRecoveryManager(
-			RecoveryManagerService recoveryManagerService) {
+	public NarayanaRecoveryManagerBean narayanaRecoveryManager(RecoveryManagerService recoveryManagerService) {
 		return new NarayanaRecoveryManagerBean(recoveryManagerService);
 	}
 
 	@Bean
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager) {
-		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
-				userTransaction, transactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
 		if (this.transactionManagerCustomizers != null) {
 			this.transactionManagerCustomizers.customize(jtaTransactionManager);
 		}
@@ -140,11 +135,9 @@ public class NarayanaJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(XADataSourceWrapper.class)
-	public XADataSourceWrapper xaDataSourceWrapper(
-			NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
+	public XADataSourceWrapper xaDataSourceWrapper(NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
 			NarayanaProperties narayanaProperties) {
-		return new NarayanaXADataSourceWrapper(narayanaRecoveryManagerBean,
-				narayanaProperties);
+		return new NarayanaXADataSourceWrapper(narayanaRecoveryManagerBean, narayanaProperties);
 	}
 
 	@Bean
@@ -159,12 +152,10 @@ public class NarayanaJtaConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(XAConnectionFactoryWrapper.class)
-		public NarayanaXAConnectionFactoryWrapper xaConnectionFactoryWrapper(
-				TransactionManager transactionManager,
-				NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
-				NarayanaProperties narayanaProperties) {
-			return new NarayanaXAConnectionFactoryWrapper(transactionManager,
-					narayanaRecoveryManagerBean, narayanaProperties);
+		public NarayanaXAConnectionFactoryWrapper xaConnectionFactoryWrapper(TransactionManager transactionManager,
+				NarayanaRecoveryManagerBean narayanaRecoveryManagerBean, NarayanaProperties narayanaProperties) {
+			return new NarayanaXAConnectionFactoryWrapper(transactionManager, narayanaRecoveryManagerBean,
+					narayanaProperties);
 		}
 
 	}

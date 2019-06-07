@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,22 +61,19 @@ public class AutoConfigurationReportLoggingInitializer
 		applicationContext.addApplicationListener(new AutoConfigurationReportListener());
 		if (applicationContext instanceof GenericApplicationContext) {
 			// Get the report early in case the context fails to load
-			this.report = ConditionEvaluationReport
-					.get(this.applicationContext.getBeanFactory());
+			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());
 		}
 	}
 
 	protected void onApplicationEvent(ApplicationEvent event) {
 		ConfigurableApplicationContext initializerApplicationContext = AutoConfigurationReportLoggingInitializer.this.applicationContext;
 		if (event instanceof ContextRefreshedEvent) {
-			if (((ApplicationContextEvent) event)
-					.getApplicationContext() == initializerApplicationContext) {
+			if (((ApplicationContextEvent) event).getApplicationContext() == initializerApplicationContext) {
 				logAutoConfigurationReport();
 			}
 		}
 		else if (event instanceof ApplicationFailedEvent) {
-			if (((ApplicationFailedEvent) event)
-					.getApplicationContext() == initializerApplicationContext) {
+			if (((ApplicationFailedEvent) event).getApplicationContext() == initializerApplicationContext) {
 				logAutoConfigurationReport(true);
 			}
 		}
@@ -89,20 +86,15 @@ public class AutoConfigurationReportLoggingInitializer
 	public void logAutoConfigurationReport(boolean isCrashReport) {
 		if (this.report == null) {
 			if (this.applicationContext == null) {
-				this.logger.info("Unable to provide auto-configuration report "
-						+ "due to missing ApplicationContext");
+				this.logger.info("Unable to provide auto-configuration report " + "due to missing ApplicationContext");
 				return;
 			}
-			this.report = ConditionEvaluationReport
-					.get(this.applicationContext.getBeanFactory());
+			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());
 		}
 		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
-			if (isCrashReport && this.logger.isInfoEnabled()
-					&& !this.logger.isDebugEnabled()) {
-				this.logger.info(String
-						.format("%n%nError starting ApplicationContext. To display the "
-								+ "auto-configuration report re-run your application with "
-								+ "'debug' enabled."));
+			if (isCrashReport && this.logger.isInfoEnabled() && !this.logger.isDebugEnabled()) {
+				this.logger.info(String.format("%n%nError starting ApplicationContext. To display the "
+						+ "auto-configuration report re-run your application with " + "'debug' enabled."));
 			}
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug(new ConditionEvaluationReportMessage(this.report));

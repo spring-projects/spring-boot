@@ -34,8 +34,7 @@ class SpringBootTestContextCustomizerFactory implements ContextCustomizerFactory
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		if (AnnotatedElementUtils.findMergedAnnotation(testClass,
-				SpringBootTest.class) != null) {
+		if (AnnotatedElementUtils.findMergedAnnotation(testClass, SpringBootTest.class) != null) {
 			return new SpringBootTestContextCustomizer();
 		}
 		return null;

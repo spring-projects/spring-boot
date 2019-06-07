@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void customJestClient() {
-		load(CustomJestClient.class,
-				"spring.elasticsearch.jest.uris[0]=http://localhost:9200");
+		load(CustomJestClient.class, "spring.elasticsearch.jest.uris[0]=http://localhost:9200");
 		assertThat(this.context.getBeansOfType(JestClient.class)).hasSize(1);
 	}
 
@@ -88,11 +87,9 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void customizerOverridesAutoConfig() {
-		load(BuilderCustomizer.class,
-				"spring.elasticsearch.jest.uris=http://localhost:9200");
+		load(BuilderCustomizer.class, "spring.elasticsearch.jest.uris=http://localhost:9200");
 		JestHttpClient client = (JestHttpClient) this.context.getBean(JestClient.class);
-		assertThat(client.getGson())
-				.isSameAs(this.context.getBean(BuilderCustomizer.class).getGson());
+		assertThat(client.getGson()).isSameAs(this.context.getBean(BuilderCustomizer.class).getGson());
 	}
 
 	@Test
@@ -106,8 +103,7 @@ public class JestAutoConfigurationTests {
 	@Test
 	public void jestCanCommunicateWithElasticsearchInstance() throws IOException {
 		int port = SocketUtils.findAvailableTcpPort();
-		load(ElasticsearchAutoConfiguration.class,
-				"spring.data.elasticsearch.properties.path.home:target/elastic",
+		load(ElasticsearchAutoConfiguration.class, "spring.data.elasticsearch.properties.path.home:target/elastic",
 				"spring.data.elasticsearch.properties.http.enabled:true",
 				"spring.data.elasticsearch.properties.http.port:" + port,
 				"spring.elasticsearch.jest.uris:http://localhost:" + port);
@@ -119,8 +115,8 @@ public class JestAutoConfigurationTests {
 		client.execute(index);
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
-		assertThat(client.execute(new Search.Builder(searchSourceBuilder.toString())
-				.addIndex("foo").build()).getResponseCode()).isEqualTo(200);
+		assertThat(client.execute(new Search.Builder(searchSourceBuilder.toString()).addIndex("foo").build())
+				.getResponseCode()).isEqualTo(200);
 	}
 
 	private void load(String... environment) {

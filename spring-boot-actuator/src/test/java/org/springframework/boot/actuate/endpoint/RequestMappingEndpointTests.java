@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ public class RequestMappingEndpointTests {
 		mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.initApplicationContext();
-		this.endpoint.setHandlerMappings(
-				Collections.<AbstractUrlHandlerMapping>singletonList(mapping));
+		this.endpoint.setHandlerMappings(Collections.<AbstractUrlHandlerMapping>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
@@ -79,8 +78,7 @@ public class RequestMappingEndpointTests {
 
 	@Test
 	public void beanUrlMappingsProxy() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				MappingConfiguration.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(MappingConfiguration.class);
 		this.endpoint.setApplicationContext(context);
 		Map<String, Object> result = this.endpoint.invoke();
 		assertThat(result).hasSize(1);
@@ -102,8 +100,7 @@ public class RequestMappingEndpointTests {
 		assertThat(result).hasSize(1);
 		assertThat(result.keySet().iterator().next().contains("/dump")).isTrue();
 		@SuppressWarnings("unchecked")
-		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
-				.next();
+		Map<String, Object> handler = (Map<String, Object>) result.values().iterator().next();
 		assertThat(handler.containsKey("method")).isTrue();
 	}
 
@@ -113,14 +110,12 @@ public class RequestMappingEndpointTests {
 				Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
-		this.endpoint.setMethodMappings(
-				Collections.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
+		this.endpoint.setMethodMappings(Collections.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertThat(result).hasSize(1);
 		assertThat(result.keySet().iterator().next().contains("/dump")).isTrue();
 		@SuppressWarnings("unchecked")
-		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
-				.next();
+		Map<String, Object> handler = (Map<String, Object>) result.values().iterator().next();
 		assertThat(handler.containsKey("method")).isTrue();
 	}
 

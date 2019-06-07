@@ -83,8 +83,7 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * @return a {@link PropertySource}
 	 */
 	public PropertySource<?> toPropertySource() {
-		return new PropertiesPropertySource(getClass().getSimpleName(),
-				copy(this.entries));
+		return new PropertiesPropertySource(getClass().getSimpleName(), copy(this.entries));
 	}
 
 	private Properties copy(Properties properties) {

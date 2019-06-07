@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,11 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
  * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.mappings")
-public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>>
-		implements ApplicationContextAware {
+public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
 	private List<AbstractUrlHandlerMapping> handlerMappings = Collections.emptyList();
 
-	private List<AbstractHandlerMethodMapping<?>> methodMappings = Collections
-			.emptyList();
+	private List<AbstractHandlerMethodMapping<?>> methodMappings = Collections.emptyList();
 
 	private ApplicationContext applicationContext;
 
@@ -54,8 +52,7 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -86,8 +83,7 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected void extractMethodMappings(ApplicationContext applicationContext,
-			Map<String, Object> result) {
+	protected void extractMethodMappings(ApplicationContext applicationContext, Map<String, Object> result) {
 		if (applicationContext != null) {
 			for (Entry<String, AbstractHandlerMethodMapping> bean : applicationContext
 					.getBeansOfType(AbstractHandlerMethodMapping.class).entrySet()) {
@@ -103,16 +99,14 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 		}
 	}
 
-	protected void extractHandlerMappings(ApplicationContext applicationContext,
-			Map<String, Object> result) {
+	protected void extractHandlerMappings(ApplicationContext applicationContext, Map<String, Object> result) {
 		if (applicationContext != null) {
 			Map<String, AbstractUrlHandlerMapping> mappings = applicationContext
 					.getBeansOfType(AbstractUrlHandlerMapping.class);
 			for (Entry<String, AbstractUrlHandlerMapping> mapping : mappings.entrySet()) {
 				Map<String, Object> handlers = getHandlerMap(mapping.getValue());
 				for (Entry<String, Object> handler : handlers.entrySet()) {
-					result.put(handler.getKey(),
-							Collections.singletonMap("bean", mapping.getKey()));
+					result.put(handler.getKey(), Collections.singletonMap("bean", mapping.getKey()));
 				}
 			}
 		}
@@ -127,27 +121,24 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 		return mapping.getHandlerMap();
 	}
 
-	protected void extractHandlerMappings(
-			Collection<AbstractUrlHandlerMapping> handlerMappings,
+	protected void extractHandlerMappings(Collection<AbstractUrlHandlerMapping> handlerMappings,
 			Map<String, Object> result) {
 		for (AbstractUrlHandlerMapping mapping : handlerMappings) {
 			Map<String, Object> handlers = mapping.getHandlerMap();
 			for (Map.Entry<String, Object> entry : handlers.entrySet()) {
 				Class<? extends Object> handlerClass = entry.getValue().getClass();
-				result.put(entry.getKey(),
-						Collections.singletonMap("type", handlerClass.getName()));
+				result.put(entry.getKey(), Collections.singletonMap("type", handlerClass.getName()));
 			}
 		}
 	}
 
-	protected void extractMethodMappings(
-			Collection<AbstractHandlerMethodMapping<?>> methodMappings,
+	protected void extractMethodMappings(Collection<AbstractHandlerMethodMapping<?>> methodMappings,
 			Map<String, Object> result) {
 		for (AbstractHandlerMethodMapping<?> mapping : methodMappings) {
 			Map<?, HandlerMethod> methods = mapping.getHandlerMethods();
 			for (Map.Entry<?, HandlerMethod> entry : methods.entrySet()) {
-				result.put(String.valueOf(entry.getKey()), Collections
-						.singletonMap("method", String.valueOf(entry.getValue())));
+				result.put(String.valueOf(entry.getKey()),
+						Collections.singletonMap("method", String.valueOf(entry.getValue())));
 			}
 		}
 	}

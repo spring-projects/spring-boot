@@ -59,8 +59,7 @@ public class ArtifactsLibraries implements Libraries {
 
 	private final Log log;
 
-	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks,
-			Log log) {
+	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks, Log log) {
 		this.artifacts = artifacts;
 		this.unpacks = unpacks;
 		this.log = log;
@@ -78,8 +77,7 @@ public class ArtifactsLibraries implements Libraries {
 					name = artifact.getGroupId() + "-" + name;
 					this.log.debug("Renamed to: " + name);
 				}
-				callback.library(new Library(name, artifact.getFile(), scope,
-						isUnpackRequired(artifact)));
+				callback.library(new Library(name, artifact.getFile(), scope, isUnpackRequired(artifact)));
 			}
 		}
 	}

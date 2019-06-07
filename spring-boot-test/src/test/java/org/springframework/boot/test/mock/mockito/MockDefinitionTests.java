@@ -36,8 +36,7 @@ import static org.mockito.Mockito.mock;
  */
 public class MockDefinitionTests {
 
-	private static final ResolvableType EXAMPLE_SERVICE_TYPE = ResolvableType
-			.forClass(ExampleService.class);
+	private static final ResolvableType EXAMPLE_SERVICE_TYPE = ResolvableType.forClass(ExampleService.class);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -51,8 +50,7 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createWithDefaults() throws Exception {
-		MockDefinition definition = new MockDefinition(null, EXAMPLE_SERVICE_TYPE, null,
-				null, false, null, null);
+		MockDefinition definition = new MockDefinition(null, EXAMPLE_SERVICE_TYPE, null, null, false, null, null);
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
 		assertThat(definition.getExtraInterfaces()).isEmpty();
@@ -66,12 +64,11 @@ public class MockDefinitionTests {
 	public void createExplicit() throws Exception {
 		QualifierDefinition qualifier = mock(QualifierDefinition.class);
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
-				new Class<?>[] { ExampleExtraInterface.class },
-				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, qualifier);
+				new Class<?>[] { ExampleExtraInterface.class }, Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE,
+				qualifier);
 		assertThat(definition.getName()).isEqualTo("name");
 		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
-		assertThat(definition.getExtraInterfaces())
-				.containsExactly(ExampleExtraInterface.class);
+		assertThat(definition.getExtraInterfaces()).containsExactly(ExampleExtraInterface.class);
 		assertThat(definition.getAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
 		assertThat(definition.isSerializable()).isTrue();
 		assertThat(definition.getReset()).isEqualTo(MockReset.BEFORE);
@@ -82,15 +79,14 @@ public class MockDefinitionTests {
 	@Test
 	public void createMock() throws Exception {
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
-				new Class<?>[] { ExampleExtraInterface.class },
-				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, null);
+				new Class<?>[] { ExampleExtraInterface.class }, Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE,
+				null);
 		ExampleService mock = definition.createMock();
 		MockCreationSettings<?> settings = MockitoApi.get().getMockSettings(mock);
 		assertThat(mock).isInstanceOf(ExampleService.class);
 		assertThat(mock).isInstanceOf(ExampleExtraInterface.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
-		assertThat(settings.getDefaultAnswer())
-				.isEqualTo(Answers.RETURNS_SMART_NULLS.get());
+		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS.get());
 		assertThat(settings.isSerializable()).isTrue();
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
 	}

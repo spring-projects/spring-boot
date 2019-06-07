@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,8 +154,7 @@ public class HttpTunnelConnectionTests {
 		this.requestFactory.willRespond(HttpStatus.SERVICE_UNAVAILABLE);
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
-		this.outputCapture.expect(containsString(
-				"Did you forget to start it with remote debugging enabled?"));
+		this.outputCapture.expect(containsString("Did you forget to start it with remote debugging enabled?"));
 	}
 
 	@Test
@@ -163,9 +162,8 @@ public class HttpTunnelConnectionTests {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
-		this.outputCapture.expect(containsString(
-				"Failed to connect to remote application at http://localhost:"
-						+ this.port));
+		this.outputCapture
+				.expect(containsString("Failed to connect to remote application at http://localhost:" + this.port));
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {
@@ -173,8 +171,7 @@ public class HttpTunnelConnectionTests {
 	}
 
 	private TunnelChannel openTunnel(boolean singleThreaded) throws Exception {
-		HttpTunnelConnection connection = new HttpTunnelConnection(this.url,
-				this.requestFactory,
+		HttpTunnelConnection connection = new HttpTunnelConnection(this.url, this.requestFactory,
 				(singleThreaded ? new CurrentThreadExecutor() : null));
 		return connection.open(this.incomingChannel, this.closeable);
 	}

@@ -41,8 +41,7 @@ import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDr
 @Configuration
 @ConditionalOnClass(HtmlUnitDriver.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", matchIfMissing = true)
 public class MockMvcWebDriverAutoConfiguration {
 
 	private final Environment environment;
@@ -56,8 +55,7 @@ public class MockMvcWebDriverAutoConfiguration {
 	@ConditionalOnBean(MockMvc.class)
 	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc) {
 		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
-				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(this.environment,
-						BrowserVersion.CHROME));
+				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(this.environment, BrowserVersion.CHROME));
 	}
 
 	@Bean

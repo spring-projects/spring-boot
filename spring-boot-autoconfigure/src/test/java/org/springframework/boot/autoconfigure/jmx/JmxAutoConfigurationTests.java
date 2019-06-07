@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,10 +103,9 @@ public class JmxAutoConfigurationTests {
 		this.context.refresh();
 		MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
 		assertThat(mBeanExporter).isNotNull();
-		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
-				.getField(mBeanExporter, "namingStrategy");
-		assertThat(ReflectionTestUtils.getField(naming, "defaultDomain"))
-				.isEqualTo("my-test-domain");
+		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils.getField(mBeanExporter,
+				"namingStrategy");
+		assertThat(ReflectionTestUtils.getField(naming, "defaultDomain")).isEqualTo("my-test-domain");
 	}
 
 	@Test
@@ -136,11 +135,10 @@ public class JmxAutoConfigurationTests {
 	@Test
 	public void customJmxDomain() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomJmxDomainConfiguration.class,
-				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.register(CustomJmxDomainConfiguration.class, JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		IntegrationMBeanExporter mbeanExporter = this.context
-				.getBean(IntegrationMBeanExporter.class);
+		IntegrationMBeanExporter mbeanExporter = this.context.getBean(IntegrationMBeanExporter.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(mbeanExporter);
 		assertThat(dfa.getPropertyValue("domain")).isEqualTo("foo.my");
 	}

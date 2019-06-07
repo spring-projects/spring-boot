@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ public class WebMvcValidatorTests {
 	public void wrapLocalValidatorFactoryBean() {
 		WebMvcValidator wrapper = load(LocalValidatorFactoryBeanConfig.class);
 		assertThat(wrapper.supports(SampleData.class)).isTrue();
-		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(),
-				"test");
+		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "test");
 		wrapper.validate(new SampleData(40), errors);
 		assertThat(errors.getErrorCount()).isEqualTo(1);
 	}
@@ -65,8 +64,7 @@ public class WebMvcValidatorTests {
 	@Test
 	public void wrapperInvokesCallbackOnNonManagedBean() {
 		load(NonManagedBeanConfig.class);
-		LocalValidatorFactoryBean validator = this.context
-				.getBean(NonManagedBeanConfig.class).validator;
+		LocalValidatorFactoryBean validator = this.context.getBean(NonManagedBeanConfig.class).validator;
 		verify(validator, times(1)).setApplicationContext(any(ApplicationContext.class));
 		verify(validator, times(1)).afterPropertiesSet();
 		verify(validator, times(0)).destroy();
@@ -78,8 +76,7 @@ public class WebMvcValidatorTests {
 	@Test
 	public void wrapperDoesNotInvokeCallbackOnManagedBean() {
 		load(ManagedBeanConfig.class);
-		LocalValidatorFactoryBean validator = this.context
-				.getBean(ManagedBeanConfig.class).validator;
+		LocalValidatorFactoryBean validator = this.context.getBean(ManagedBeanConfig.class).validator;
 		verify(validator, times(0)).setApplicationContext(any(ApplicationContext.class));
 		verify(validator, times(0)).afterPropertiesSet();
 		verify(validator, times(0)).destroy();
@@ -114,8 +111,7 @@ public class WebMvcValidatorTests {
 	@Configuration
 	static class NonManagedBeanConfig {
 
-		private final LocalValidatorFactoryBean validator = mock(
-				LocalValidatorFactoryBean.class);
+		private final LocalValidatorFactoryBean validator = mock(LocalValidatorFactoryBean.class);
 
 		@Bean
 		public WebMvcValidator wrapper() {
@@ -127,8 +123,7 @@ public class WebMvcValidatorTests {
 	@Configuration
 	static class ManagedBeanConfig {
 
-		private final LocalValidatorFactoryBean validator = mock(
-				LocalValidatorFactoryBean.class);
+		private final LocalValidatorFactoryBean validator = mock(LocalValidatorFactoryBean.class);
 
 		@Bean
 		public WebMvcValidator wrapper() {

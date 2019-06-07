@@ -45,8 +45,7 @@ public class SimpleFormatter extends Formatter {
 		String throwable = getThrowable(record);
 		String thread = getThreadName();
 		return String.format(this.format, this.date, source, record.getLoggerName(),
-				record.getLevel().getLocalizedName(), message, throwable, thread,
-				this.pid);
+				record.getLevel().getLocalizedName(), message, throwable, thread, this.pid);
 	}
 
 	private String getThrowable(LogRecord record) {

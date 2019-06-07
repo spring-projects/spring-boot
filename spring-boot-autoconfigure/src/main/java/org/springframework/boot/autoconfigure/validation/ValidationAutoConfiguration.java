@@ -44,8 +44,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  */
 @Configuration
 @ConditionalOnClass(ExecutableValidator.class)
-@ConditionalOnResource(
-		resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
+@ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
 @Import(PrimaryDefaultValidatorPostProcessor.class)
 public class ValidationAutoConfiguration {
 
@@ -61,8 +60,8 @@ public class ValidationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public static MethodValidationPostProcessor methodValidationPostProcessor(
-			Environment environment, @Lazy Validator validator) {
+	public static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
+			@Lazy Validator validator) {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
 		processor.setProxyTargetClass(determineProxyTargetClass(environment));
 		processor.setValidator(validator);
@@ -70,8 +69,7 @@ public class ValidationAutoConfiguration {
 	}
 
 	private static boolean determineProxyTargetClass(Environment environment) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-				"spring.aop.");
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, "spring.aop.");
 		Boolean value = resolver.getProperty("proxyTargetClass", Boolean.class);
 		return (value != null) ? value : true;
 	}

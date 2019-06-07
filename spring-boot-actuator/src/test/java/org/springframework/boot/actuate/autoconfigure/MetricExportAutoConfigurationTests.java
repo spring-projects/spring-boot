@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,7 @@ public class MetricExportAutoConfigurationTests {
 	@Test
 	public void metricsFlushAutomatically() throws Exception {
 		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
-				MetricRepositoryAutoConfiguration.class,
-				MetricExportAutoConfiguration.class,
+				MetricRepositoryAutoConfiguration.class, MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
 		assertThat(gaugeService).isNotNull();
@@ -89,12 +88,9 @@ public class MetricExportAutoConfigurationTests {
 
 	@Test
 	public void defaultExporterWhenMessageChannelAvailable() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(
-				MessageChannelConfiguration.class,
-				MetricRepositoryAutoConfiguration.class,
-				MetricsChannelAutoConfiguration.class,
-				MetricExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(MessageChannelConfiguration.class,
+				MetricRepositoryAutoConfiguration.class, MetricsChannelAutoConfiguration.class,
+				MetricExportAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporter = this.context.getBean(MetricExporters.class);
 		assertThat(exporter).isNotNull();
 		assertThat(exporter.getExporters()).containsKey("messageChannelMetricWriter");
@@ -103,15 +99,13 @@ public class MetricExportAutoConfigurationTests {
 	@Test
 	public void provideAdditionalWriter() {
 		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
-				MetricRepositoryAutoConfiguration.class,
-				MetricExportAutoConfiguration.class,
+				MetricRepositoryAutoConfiguration.class, MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
 		assertThat(gaugeService).isNotNull();
 		gaugeService.submit("foo", 2.7);
 		MetricExporters exporters = this.context.getBean(MetricExporters.class);
-		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters()
-				.get("writer");
+		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get("writer");
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
 		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
@@ -120,16 +114,13 @@ public class MetricExportAutoConfigurationTests {
 
 	@Test
 	public void exportMetricsEndpoint() {
-		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
-				MetricEndpointConfiguration.class, MetricExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(WriterConfig.class, MetricEndpointConfiguration.class,
+				MetricExportAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporters = this.context.getBean(MetricExporters.class);
-		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters()
-				.get("writer");
+		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get("writer");
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
-		MetricsEndpointMetricReader reader = this.context.getBean("endpointReader",
-				MetricsEndpointMetricReader.class);
+		MetricsEndpointMetricReader reader = this.context.getBean("endpointReader", MetricsEndpointMetricReader.class);
 		Mockito.verify(reader, Mockito.atLeastOnce()).findAll();
 	}
 
@@ -137,8 +128,7 @@ public class MetricExportAutoConfigurationTests {
 	public void statsdMissingHost() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(WriterConfig.class, MetricEndpointConfiguration.class,
-				MetricExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				MetricExportAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(StatsdMetricWriter.class);
@@ -148,16 +138,13 @@ public class MetricExportAutoConfigurationTests {
 	@Test
 	public void statsdWithHost() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.metrics.export.statsd.host=localhost");
-		this.context.register(MetricEndpointConfiguration.class,
-				MetricExportAutoConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.metrics.export.statsd.host=localhost");
+		this.context.register(MetricEndpointConfiguration.class, MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		StatsdMetricWriter statsdWriter = this.context.getBean(StatsdMetricWriter.class);
 		assertThat(statsdWriter).isNotNull();
-		SchedulingConfigurer schedulingConfigurer = this.context
-				.getBean(SchedulingConfigurer.class);
+		SchedulingConfigurer schedulingConfigurer = this.context.getBean(SchedulingConfigurer.class);
 		Map<String, GaugeWriter> exporters = (Map<String, GaugeWriter>) ReflectionTestUtils
 				.getField(schedulingConfigurer, "writers");
 		assertThat(exporters).containsValue(statsdWriter);

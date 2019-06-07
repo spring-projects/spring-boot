@@ -59,8 +59,7 @@ final class Bytes {
 		return fill(inputStream, bytes, 0, bytes.length);
 	}
 
-	private static boolean fill(InputStream inputStream, byte[] bytes, int offset,
-			int length) throws IOException {
+	private static boolean fill(InputStream inputStream, byte[] bytes, int offset, int length) throws IOException {
 		while (length > 0) {
 			int read = inputStream.read(bytes, offset, length);
 			if (read == -1) {

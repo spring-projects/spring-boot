@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ public class ClassifierTests {
 	@Test
 	public void classifierInBootTask() throws Exception {
 		this.project = new ProjectCreator().createProject("classifier");
-		this.project.newBuild().forTasks("build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
+		this.project.newBuild().forTasks("build").withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 		checkFilesExist("classifier");
 	}
 
@@ -46,8 +45,7 @@ public class ClassifierTests {
 	public void classifierInBootExtension() throws Exception {
 		this.project = new ProjectCreator().createProject("classifier-extension");
 		this.project.newBuild().forTasks("build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info")
-				.run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info").run();
 	}
 
 	private void checkFilesExist(String name) throws Exception {

@@ -47,61 +47,49 @@ public class AnnotationsPropertySourceTests {
 
 	@Test
 	public void propertiesWhenHasNoAnnotationShouldBeEmpty() throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				NoAnnotation.class);
+		AnnotationsPropertySource source = new AnnotationsPropertySource(NoAnnotation.class);
 		assertThat(source.getPropertyNames()).isEmpty();
 		assertThat(source.getProperty("value")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName()
-			throws Exception {
+	public void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName() throws Exception {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName()
-			throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				TypeLevelWithPrefix.class);
+	public void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.value");
 		assertThat(source.getProperty("test.value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName()
-			throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				AttributeLevelWithPrefix.class);
+	public void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(AttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test");
 		assertThat(source.getProperty("test")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName()
-			throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				TypeAndAttributeLevelWithPrefix.class);
+	public void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeAndAttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.example");
 		assertThat(source.getProperty("test.example")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes()
-			throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				NotMappedAtTypeLevel.class);
+	public void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(NotMappedAtTypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("ignore")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes()
-			throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				NotMappedAtAttributeLevel.class);
+	public void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(NotMappedAtAttributeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("ignore")).isNull();
 	}
@@ -109,10 +97,9 @@ public class AnnotationsPropertySourceTests {
 	@Test
 	public void propertiesWhenContainsArraysShouldExpandNames() throws Exception {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(Arrays.class);
-		assertThat(source.getPropertyNames()).contains("strings[0]", "strings[1]",
-				"classes[0]", "classes[1]", "ints[0]", "ints[1]", "longs[0]", "longs[1]",
-				"floats[0]", "floats[1]", "doubles[0]", "doubles[1]", "booleans[0]",
-				"booleans[1]");
+		assertThat(source.getPropertyNames()).contains("strings[0]", "strings[1]", "classes[0]", "classes[1]",
+				"ints[0]", "ints[1]", "longs[0]", "longs[1]", "floats[0]", "floats[1]", "doubles[0]", "doubles[1]",
+				"booleans[0]", "booleans[1]");
 		assertThat(source.getProperty("strings[0]")).isEqualTo("a");
 		assertThat(source.getProperty("strings[1]")).isEqualTo("b");
 		assertThat(source.getProperty("classes[0]")).isEqualTo(Integer.class);
@@ -131,26 +118,21 @@ public class AnnotationsPropertySourceTests {
 
 	@Test
 	public void propertiesWhenHasCamelCaseShouldConvertToKebabCase() throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				CamelCaseToKebabCase.class);
+		AnnotationsPropertySource source = new AnnotationsPropertySource(CamelCaseToKebabCase.class);
 		assertThat(source.getPropertyNames()).contains("camel-case-to-kebab-case");
 	}
 
 	@Test
 	public void propertiesFromMetaAnnotationsAreMapped() throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertiesFromSingleMetaAnnotation.class);
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertiesFromSingleMetaAnnotation.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("foo");
 	}
 
 	@Test
-	public void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping()
-			throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertiesFromMultipleMetaAnnotations.class);
-		assertThat(source.getPropertyNames()).containsExactly("value", "test.value",
-				"test.example");
+	public void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertiesFromMultipleMetaAnnotations.class);
+		assertThat(source.getPropertyNames()).containsExactly("value", "test.value", "test.example");
 		assertThat(source.getProperty("value")).isEqualTo("alpha");
 		assertThat(source.getProperty("test.value")).isEqualTo("bravo");
 		assertThat(source.getProperty("test.example")).isEqualTo("charlie");
@@ -158,8 +140,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Test
 	public void propertyMappedAttributesCanBeAliased() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertyMappedAttributeWithAnAlias.class);
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedAttributeWithAnAlias.class);
 		assertThat(source.getPropertyNames()).containsExactly("aliasing.value");
 		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
 	}
@@ -171,8 +152,7 @@ public class AnnotationsPropertySourceTests {
 
 	@Test
 	public void typeLevelAnnotationOnSuperClass() {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				PropertyMappedAnnotationOnSuperClass.class);
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedAnnotationOnSuperClass.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
@@ -187,15 +167,13 @@ public class AnnotationsPropertySourceTests {
 
 	@Test
 	public void enumValueMapped() throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				EnumValueMapped.class);
+		AnnotationsPropertySource source = new AnnotationsPropertySource(EnumValueMapped.class);
 		assertThat(source.getProperty("testenum.value")).isEqualTo(EnumItem.TWO);
 	}
 
 	@Test
 	public void enumValueNotMapped() throws Exception {
-		AnnotationsPropertySource source = new AnnotationsPropertySource(
-				EnumValueNotMapped.class);
+		AnnotationsPropertySource source = new AnnotationsPropertySource(EnumValueNotMapped.class);
 		assertThat(source.containsProperty("testenum.value")).isFalse();
 	}
 
@@ -288,9 +266,8 @@ public class AnnotationsPropertySourceTests {
 
 	}
 
-	@ArraysAnnotation(strings = { "a", "b" }, classes = { Integer.class, Long.class },
-			ints = { 1, 2 }, longs = { 1, 2 }, floats = { 1.0f, 2.0f },
-			doubles = { 1.0, 2.0 }, booleans = { false, true })
+	@ArraysAnnotation(strings = { "a", "b" }, classes = { Integer.class, Long.class }, ints = { 1, 2 },
+			longs = { 1, 2 }, floats = { 1.0f, 2.0f }, doubles = { 1.0, 2.0 }, booleans = { false, true })
 	static class Arrays {
 
 	}
@@ -391,8 +368,7 @@ public class AnnotationsPropertySourceTests {
 
 	}
 
-	static class AliasedPropertyMappedAnnotationOnSuperClass
-			extends PropertyMappedAttributeWithAnAlias {
+	static class AliasedPropertyMappedAnnotationOnSuperClass extends PropertyMappedAttributeWithAnAlias {
 
 	}
 

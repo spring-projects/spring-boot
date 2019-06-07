@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -73,8 +72,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testMixedRepositoryConfiguration() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -83,8 +81,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testJpaRepositoryConfigurationWithNeo4jTemplate() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -93,18 +90,15 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Test
 	@Ignore
 	public void testJpaRepositoryConfigurationWithNeo4jOverlap() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled()
-			throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
+	public void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false",
 				"spring.data.neo4j.repositories.enabled:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
@@ -157,10 +151,8 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			List<String> names = new ArrayList<String>();
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
-					HibernateJpaAutoConfiguration.class,
-					JpaRepositoriesAutoConfiguration.class,
-					Neo4jDataAutoConfiguration.class,
-					Neo4jRepositoriesAutoConfiguration.class }) {
+					HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
+					Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}
 			return names.toArray(new String[names.size()]);

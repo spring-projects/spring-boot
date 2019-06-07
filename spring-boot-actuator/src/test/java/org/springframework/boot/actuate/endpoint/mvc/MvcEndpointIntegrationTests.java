@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ public class MvcEndpointIntegrationTests {
 
 	@Test
 	public void defaultJsonResponseIsNotIndented() throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
@@ -82,14 +82,12 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void jsonResponsesCanBeIndentedWhenSpringHateoasIsAutoConfigured()
-			throws Exception {
+	public void jsonResponsesCanBeIndentedWhenSpringHateoasIsAutoConfigured() throws Exception {
 		assertIndentedJsonResponse(SpringHateoasConfiguration.class);
 	}
 
 	@Test
-	public void jsonResponsesCanBeIndentedWhenSpringDataRestIsAutoConfigured()
-			throws Exception {
+	public void jsonResponsesCanBeIndentedWhenSpringDataRestIsAutoConfigured() throws Exception {
 		assertIndentedJsonResponse(SpringDataRestConfiguration.class);
 	}
 
@@ -103,8 +101,8 @@ public class MvcEndpointIntegrationTests {
 
 	@Test
 	public void jsonExtensionProvided() throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
@@ -121,12 +119,10 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void nonSensitiveEndpointsAreNotSecureByDefaultWithCustomContextPath()
-			throws Exception {
+	public void nonSensitiveEndpointsAreNotSecureByDefaultWithCustomContextPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.context-path:/management");
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/info")).andExpect(status().isOk());
 		mockMvc.perform(get("/management")).andExpect(status().isOk());
@@ -141,38 +137,32 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureByDefaultWithCustomContextPath()
-			throws Exception {
+	public void sensitiveEndpointsAreSecureByDefaultWithCustomContextPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.context-path:/management");
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithNonActuatorRoleWithCustomContextPath()
-			throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
+	public void sensitiveEndpointsAreSecureWithNonActuatorRoleWithCustomContextPath() throws Exception {
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.context-path:/management");
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isForbidden());
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithActuatorRoleWithCustomContextPath()
-			throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+	public void sensitiveEndpointsAreSecureWithActuatorRoleWithCustomContextPath() throws Exception {
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.context-path:/management");
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
 	}
@@ -181,8 +171,7 @@ public class MvcEndpointIntegrationTests {
 	public void endpointSecurityCanBeDisabledWithCustomContextPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.context-path:/management",
+		EnvironmentTestUtils.addEnvironment(this.context, "management.context-path:/management",
 				"management.security.enabled:false");
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
@@ -192,22 +181,19 @@ public class MvcEndpointIntegrationTests {
 	public void endpointSecurityCanBeDisabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.security.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.security.enabled:false");
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/beans")).andExpect(status().isOk());
 	}
 
 	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(configuration);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.serialization.indent-output:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.serialization.indent-output:true");
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/mappings"))
-				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
+		mockMvc.perform(get("/mappings")).andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
 
 	private MockMvc createMockMvc() {
@@ -228,12 +214,10 @@ public class MvcEndpointIntegrationTests {
 		return builder.build();
 	}
 
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			AuditAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	static class DefaultConfiguration {
 
 	}
@@ -245,15 +229,13 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Import(SecureConfiguration.class)
-	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class })
+	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
 	static class SpringDataRestConfiguration {
 
 	}
 
 	@Import(DefaultConfiguration.class)
-	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
-			ManagementWebSecurityAutoConfiguration.class })
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
 	static class SecureConfiguration {
 
 	}

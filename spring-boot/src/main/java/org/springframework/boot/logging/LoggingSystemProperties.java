@@ -51,8 +51,7 @@ class LoggingSystemProperties {
 	public void apply(LogFile logFile) {
 		RelaxedPropertyResolver propertyResolver = RelaxedPropertyResolver
 				.ignoringUnresolvableNestedPlaceholders(this.environment, "logging.");
-		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
-				"exception-conversion-word");
+		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD, "exception-conversion-word");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");
 		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
@@ -62,8 +61,8 @@ class LoggingSystemProperties {
 		}
 	}
 
-	private void setSystemProperty(RelaxedPropertyResolver propertyResolver,
-			String systemPropertyName, String propertyName) {
+	private void setSystemProperty(RelaxedPropertyResolver propertyResolver, String systemPropertyName,
+			String propertyName) {
 		setSystemProperty(systemPropertyName, propertyResolver.getProperty(propertyName));
 	}
 

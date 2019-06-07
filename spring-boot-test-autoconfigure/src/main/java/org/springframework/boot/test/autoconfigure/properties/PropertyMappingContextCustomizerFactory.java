@@ -34,8 +34,7 @@ class PropertyMappingContextCustomizerFactory implements ContextCustomizerFactor
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		AnnotationsPropertySource propertySource = new AnnotationsPropertySource(
-				testClass);
+		AnnotationsPropertySource propertySource = new AnnotationsPropertySource(testClass);
 		return new PropertyMappingContextCustomizer(propertySource);
 	}
 

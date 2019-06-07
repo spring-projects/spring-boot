@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 		String httpsUrl = getHttpsUrl();
 		SkipSslVerificationHttpRequestFactory requestFactory = new SkipSslVerificationHttpRequestFactory();
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
-		ResponseEntity<String> responseEntity = restTemplate.getForEntity(httpsUrl,
-				String.class);
+		ResponseEntity<String> responseEntity = restTemplate.getForEntity(httpsUrl, String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		this.thrown.expect(ResourceAccessException.class);
 		this.thrown.expectCause(isSSLHandshakeException());
@@ -73,11 +72,10 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	}
 
 	private String getHttpsUrl() {
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		return "https://localhost:" + this.container.getPort() + "/hello";
 	}

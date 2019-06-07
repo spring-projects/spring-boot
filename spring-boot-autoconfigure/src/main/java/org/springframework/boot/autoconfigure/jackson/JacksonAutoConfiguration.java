@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,12 +97,11 @@ public class JacksonAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class,
-			DateTimeSerializer.class, JacksonJodaDateFormat.class })
+	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class, DateTimeSerializer.class,
+			JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
 
-		private static final Log logger = LogFactory
-				.getLog(JodaDateTimeJacksonConfiguration.class);
+		private static final Log logger = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
 
 		private final JacksonProperties jacksonProperties;
 
@@ -115,30 +114,26 @@ public class JacksonAutoConfiguration {
 			SimpleModule module = new SimpleModule();
 			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
 			if (jacksonJodaFormat != null) {
-				module.addSerializer(DateTime.class,
-						new DateTimeSerializer(jacksonJodaFormat));
+				module.addSerializer(DateTime.class, new DateTimeSerializer(jacksonJodaFormat));
 			}
 			return module;
 		}
 
 		private JacksonJodaDateFormat getJacksonJodaDateFormat() {
 			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
-				return new JacksonJodaDateFormat(DateTimeFormat
-						.forPattern(this.jacksonProperties.getJodaDateTimeFormat())
-						.withZoneUTC());
+				return new JacksonJodaDateFormat(
+						DateTimeFormat.forPattern(this.jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
 			}
 			if (this.jacksonProperties.getDateFormat() != null) {
 				try {
-					return new JacksonJodaDateFormat(DateTimeFormat
-							.forPattern(this.jacksonProperties.getDateFormat())
-							.withZoneUTC());
+					return new JacksonJodaDateFormat(
+							DateTimeFormat.forPattern(this.jacksonProperties.getDateFormat()).withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
 					if (logger.isWarnEnabled()) {
 						logger.warn("spring.jackson.date-format could not be used to "
 								+ "configure formatting of Joda's DateTime. You may want "
-								+ "to configure spring.jackson.joda-date-time-format as "
-								+ "well.");
+								+ "to configure spring.jackson.joda-date-time-format as " + "well.");
 					}
 				}
 			}
@@ -196,10 +191,8 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		public StandardJackson2ObjectMapperBuilderCustomizer standardJacksonObjectMapperBuilderCustomizer(
-				ApplicationContext applicationContext,
-				JacksonProperties jacksonProperties) {
-			return new StandardJackson2ObjectMapperBuilderCustomizer(applicationContext,
-					jacksonProperties);
+				ApplicationContext applicationContext, JacksonProperties jacksonProperties) {
+			return new StandardJackson2ObjectMapperBuilderCustomizer(applicationContext, jacksonProperties);
 		}
 
 		private static final class StandardJackson2ObjectMapperBuilderCustomizer
@@ -209,8 +202,7 @@ public class JacksonAutoConfiguration {
 
 			private final JacksonProperties jacksonProperties;
 
-			StandardJackson2ObjectMapperBuilderCustomizer(
-					ApplicationContext applicationContext,
+			StandardJackson2ObjectMapperBuilderCustomizer(ApplicationContext applicationContext,
 					JacksonProperties jacksonProperties) {
 				this.applicationContext = applicationContext;
 				this.jacksonProperties = jacksonProperties;
@@ -225,8 +217,7 @@ public class JacksonAutoConfiguration {
 			public void customize(Jackson2ObjectMapperBuilder builder) {
 
 				if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
-					builder.serializationInclusion(
-							this.jacksonProperties.getDefaultPropertyInclusion());
+					builder.serializationInclusion(this.jacksonProperties.getDefaultPropertyInclusion());
 				}
 				if (this.jacksonProperties.getTimeZone() != null) {
 					builder.timeZone(this.jacksonProperties.getTimeZone());
@@ -242,8 +233,7 @@ public class JacksonAutoConfiguration {
 				configureLocale(builder);
 			}
 
-			private void configureFeatures(Jackson2ObjectMapperBuilder builder,
-					Map<?, Boolean> features) {
+			private void configureFeatures(Jackson2ObjectMapperBuilder builder, Map<?, Boolean> features) {
 				for (Entry<?, Boolean> entry : features.entrySet()) {
 					if (entry.getValue() != null && entry.getValue()) {
 						builder.featuresToEnable(entry.getKey());
@@ -261,19 +251,16 @@ public class JacksonAutoConfiguration {
 				if (dateFormat != null) {
 					try {
 						Class<?> dateFormatClass = ClassUtils.forName(dateFormat, null);
-						builder.dateFormat(
-								(DateFormat) BeanUtils.instantiateClass(dateFormatClass));
+						builder.dateFormat((DateFormat) BeanUtils.instantiateClass(dateFormatClass));
 					}
 					catch (ClassNotFoundException ex) {
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-								dateFormat);
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
 						// Since Jackson 2.6.3 we always need to set a TimeZone (see
 						// gh-4170). If none in our properties fallback to the Jackson's
 						// default
 						TimeZone timeZone = this.jacksonProperties.getTimeZone();
 						if (timeZone == null) {
-							timeZone = new ObjectMapper().getSerializationConfig()
-									.getTimeZone();
+							timeZone = new ObjectMapper().getSerializationConfig().getTimeZone();
 						}
 						simpleDateFormat.setTimeZone(timeZone);
 						builder.dateFormat(simpleDateFormat);
@@ -281,8 +268,7 @@ public class JacksonAutoConfiguration {
 				}
 			}
 
-			private void configurePropertyNamingStrategy(
-					Jackson2ObjectMapperBuilder builder) {
+			private void configurePropertyNamingStrategy(Jackson2ObjectMapperBuilder builder) {
 				// We support a fully qualified class name extending Jackson's
 				// PropertyNamingStrategy or a string value corresponding to the constant
 				// names in PropertyNamingStrategy which hold default provided
@@ -290,8 +276,7 @@ public class JacksonAutoConfiguration {
 				String strategy = this.jacksonProperties.getPropertyNamingStrategy();
 				if (strategy != null) {
 					try {
-						configurePropertyNamingStrategyClass(builder,
-								ClassUtils.forName(strategy, null));
+						configurePropertyNamingStrategyClass(builder, ClassUtils.forName(strategy, null));
 					}
 					catch (ClassNotFoundException ex) {
 						configurePropertyNamingStrategyField(builder, strategy);
@@ -299,24 +284,21 @@ public class JacksonAutoConfiguration {
 				}
 			}
 
-			private void configurePropertyNamingStrategyClass(
-					Jackson2ObjectMapperBuilder builder,
+			private void configurePropertyNamingStrategyClass(Jackson2ObjectMapperBuilder builder,
 					Class<?> propertyNamingStrategyClass) {
-				builder.propertyNamingStrategy((PropertyNamingStrategy) BeanUtils
-						.instantiateClass(propertyNamingStrategyClass));
+				builder.propertyNamingStrategy(
+						(PropertyNamingStrategy) BeanUtils.instantiateClass(propertyNamingStrategyClass));
 			}
 
-			private void configurePropertyNamingStrategyField(
-					Jackson2ObjectMapperBuilder builder, String fieldName) {
+			private void configurePropertyNamingStrategyField(Jackson2ObjectMapperBuilder builder, String fieldName) {
 				// Find the field (this way we automatically support new constants
 				// that may be added by Jackson in the future)
-				Field field = ReflectionUtils.findField(PropertyNamingStrategy.class,
-						fieldName, PropertyNamingStrategy.class);
-				Assert.notNull(field, "Constant named '" + fieldName + "' not found on "
-						+ PropertyNamingStrategy.class.getName());
+				Field field = ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
+						PropertyNamingStrategy.class);
+				Assert.notNull(field,
+						"Constant named '" + fieldName + "' not found on " + PropertyNamingStrategy.class.getName());
 				try {
-					builder.propertyNamingStrategy(
-							(PropertyNamingStrategy) field.get(null));
+					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);
@@ -324,10 +306,8 @@ public class JacksonAutoConfiguration {
 			}
 
 			private void configureModules(Jackson2ObjectMapperBuilder builder) {
-				Collection<Module> moduleBeans = getBeans(this.applicationContext,
-						Module.class);
-				builder.modulesToInstall(
-						moduleBeans.toArray(new Module[moduleBeans.size()]));
+				Collection<Module> moduleBeans = getBeans(this.applicationContext, Module.class);
+				builder.modulesToInstall(moduleBeans.toArray(new Module[moduleBeans.size()]));
 			}
 
 			private void configureLocale(Jackson2ObjectMapperBuilder builder) {
@@ -337,10 +317,8 @@ public class JacksonAutoConfiguration {
 				}
 			}
 
-			private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
-					Class<T> type) {
-				return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type)
-						.values();
+			private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory, Class<T> type) {
+				return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type).values();
 			}
 
 		}

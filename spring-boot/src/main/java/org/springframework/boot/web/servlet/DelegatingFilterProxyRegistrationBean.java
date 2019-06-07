@@ -74,8 +74,7 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -85,8 +84,7 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 
 	@Override
 	public Filter getFilter() {
-		return new DelegatingFilterProxy(this.targetBeanName,
-				getWebApplicationContext()) {
+		return new DelegatingFilterProxy(this.targetBeanName, getWebApplicationContext()) {
 
 			@Override
 			protected void initFilterBean() throws ServletException {

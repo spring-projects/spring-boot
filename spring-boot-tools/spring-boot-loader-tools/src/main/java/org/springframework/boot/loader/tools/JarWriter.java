@@ -78,8 +78,7 @@ public class JarWriter implements LoaderClassesWriter {
 	 * @throws IOException if the file cannot be opened
 	 * @throws FileNotFoundException if the file cannot be found
 	 */
-	public JarWriter(File file, LaunchScript launchScript)
-			throws FileNotFoundException, IOException {
+	public JarWriter(File file, LaunchScript launchScript) throws FileNotFoundException, IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		if (launchScript != null) {
 			fileOutputStream.write(launchScript.toByteArray());
@@ -126,19 +125,16 @@ public class JarWriter implements LoaderClassesWriter {
 		this.writeEntries(jarFile, new IdentityEntryTransformer());
 	}
 
-	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer)
-			throws IOException {
+	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
-			ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
-					jarFile.getInputStream(entry));
+			ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry));
 			try {
 				if (inputStream.hasZipHeader() && entry.getMethod() != ZipEntry.STORED) {
 					new CrcAndSize(inputStream).setupStoredEntry(entry);
 					inputStream.close();
-					inputStream = new ZipHeaderPeekInputStream(
-							jarFile.getInputStream(entry));
+					inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry));
 				}
 				else {
 					entry.setCompressedSize(-1);
@@ -173,8 +169,7 @@ public class JarWriter implements LoaderClassesWriter {
 	 * @param library the library
 	 * @throws IOException if the write fails
 	 */
-	public void writeNestedLibrary(String destination, Library library)
-			throws IOException {
+	public void writeNestedLibrary(String destination, Library library) throws IOException {
 		File file = library.getFile();
 		JarEntry entry = new JarEntry(destination + library.getName());
 		entry.setTime(getNestedLibraryTime(file));
@@ -225,8 +220,7 @@ public class JarWriter implements LoaderClassesWriter {
 	@Override
 	public void writeLoaderClasses(String loaderJarResourceName) throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(loaderJarResourceName);
-		JarInputStream inputStream = new JarInputStream(
-				new BufferedInputStream(loaderJar.openStream()));
+		JarInputStream inputStream = new JarInputStream(new BufferedInputStream(loaderJar.openStream()));
 		JarEntry entry;
 		while ((entry = inputStream.getNextJarEntry()) != null) {
 			if (entry.getName().endsWith(".class")) {
@@ -334,8 +328,7 @@ public class JarWriter implements LoaderClassesWriter {
 			super(in);
 			this.header = new byte[4];
 			this.headerLength = in.read(this.header);
-			this.headerStream = new ByteArrayInputStream(this.header, 0,
-					this.headerLength);
+			this.headerStream = new ByteArrayInputStream(this.header, 0, this.headerLength);
 		}
 
 		@Override
@@ -358,8 +351,7 @@ public class JarWriter implements LoaderClassesWriter {
 
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
-			int read = (this.headerStream != null) ? this.headerStream.read(b, off, len)
-					: -1;
+			int read = (this.headerStream != null) ? this.headerStream.read(b, off, len) : -1;
 			if (read <= 0) {
 				return readRemainder(b, off, len);
 			}

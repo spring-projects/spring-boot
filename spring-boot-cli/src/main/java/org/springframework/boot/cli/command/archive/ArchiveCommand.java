@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,7 @@ import org.springframework.util.Assert;
  */
 abstract class ArchiveCommand extends OptionParsingCommand {
 
-	protected ArchiveCommand(String name, String description,
-			OptionHandler optionHandler) {
+	protected ArchiveCommand(String name, String description, OptionHandler optionHandler) {
 		super(name, description, optionHandler);
 	}
 
@@ -113,35 +112,28 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		@Override
 		protected void doOptions() {
 			this.includeOption = option("include",
-					"Pattern applied to directories on the classpath to find files to "
-							+ "include in the resulting ").withRequiredArg()
-									.withValuesSeparatedBy(",").defaultsTo("");
-			this.excludeOption = option("exclude",
-					"Pattern applied to directories on the classpath to find files to "
-							+ "exclude from the resulting " + this.type).withRequiredArg()
-									.withValuesSeparatedBy(",").defaultsTo("");
+					"Pattern applied to directories on the classpath to find files to " + "include in the resulting ")
+							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
+			this.excludeOption = option("exclude", "Pattern applied to directories on the classpath to find files to "
+					+ "exclude from the resulting " + this.type).withRequiredArg().withValuesSeparatedBy(",")
+							.defaultsTo("");
 		}
 
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
-			List<?> nonOptionArguments = new ArrayList<Object>(
-					options.nonOptionArguments());
-			Assert.isTrue(nonOptionArguments.size() >= 2, "The name of the resulting "
-					+ this.type + " and at least one source file must be specified");
+			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
+			Assert.isTrue(nonOptionArguments.size() >= 2,
+					"The name of the resulting " + this.type + " and at least one source file must be specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
-			Assert.isTrue(
-					output.getName().toLowerCase(Locale.ENGLISH)
-							.endsWith("." + this.type),
-					"The output '" + output + "' is not a "
-							+ this.type.toUpperCase(Locale.ENGLISH) + " file.");
+			Assert.isTrue(output.getName().toLowerCase(Locale.ENGLISH).endsWith("." + this.type),
+					"The output '" + output + "' is not a " + this.type.toUpperCase(Locale.ENGLISH) + " file.");
 			deleteIfExists(output);
 
 			GroovyCompiler compiler = createCompiler(options);
 
 			List<URL> classpath = getClassPathUrls(compiler);
-			List<MatchedResource> classpathEntries = findMatchingClasspathEntries(
-					classpath, options);
+			List<MatchedResource> classpathEntries = findMatchingClasspathEntries(classpath, options);
 
 			String[] sources = new SourceOptions(nonOptionArguments).getSourcesArray();
 			Class<?>[] compiledClasses = compiler.compile(sources);
@@ -155,16 +147,15 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private void deleteIfExists(File file) {
 			if (file.exists() && !file.delete()) {
-				throw new IllegalStateException(
-						"Failed to delete existing file " + file.getPath());
+				throw new IllegalStateException("Failed to delete existing file " + file.getPath());
 			}
 		}
 
 		private GroovyCompiler createCompiler(OptionSet options) {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(
-					options, this, repositoryConfiguration);
+			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(options, this,
+					repositoryConfiguration);
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
 			groovyCompiler.getAstTransformations().add(0, new GrabAnnotationTransform());
 			return groovyCompiler;
@@ -174,10 +165,9 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			return new ArrayList<URL>(Arrays.asList(compiler.getLoader().getURLs()));
 		}
 
-		private List<MatchedResource> findMatchingClasspathEntries(List<URL> classpath,
-				OptionSet options) throws IOException {
-			ResourceMatcher matcher = new ResourceMatcher(
-					options.valuesOf(this.includeOption),
+		private List<MatchedResource> findMatchingClasspathEntries(List<URL> classpath, OptionSet options)
+				throws IOException {
+			ResourceMatcher matcher = new ResourceMatcher(options.valuesOf(this.includeOption),
 					options.valuesOf(this.excludeOption));
 			List<File> roots = new ArrayList<File>();
 			for (URL classpathEntry : classpath) {
@@ -186,9 +176,8 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			return matcher.find(roots);
 		}
 
-		private void writeJar(File file, Class<?>[] compiledClasses,
-				List<MatchedResource> classpathEntries, List<URL> dependencies)
-				throws FileNotFoundException, IOException, URISyntaxException {
+		private void writeJar(File file, Class<?>[] compiledClasses, List<MatchedResource> classpathEntries,
+				List<URL> dependencies) throws FileNotFoundException, IOException, URISyntaxException {
 			final List<Library> libraries;
 			JarWriter writer = new JarWriter(file);
 			try {
@@ -216,8 +205,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			});
 		}
 
-		private List<Library> createLibraries(List<URL> dependencies)
-				throws URISyntaxException {
+		private List<Library> createLibraries(List<URL> dependencies) throws URISyntaxException {
 			List<Library> libraries = new ArrayList<Library>();
 			for (URL dependency : dependencies) {
 				File file = new File(dependency.toURI());
@@ -226,12 +214,10 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			return libraries;
 		}
 
-		private void addManifest(JarWriter writer, Class<?>[] compiledClasses)
-				throws IOException {
+		private void addManifest(JarWriter writer, Class<?>[] compiledClasses) throws IOException {
 			Manifest manifest = new Manifest();
 			manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-			manifest.getMainAttributes().putValue(
-					PackagedSpringApplicationLauncher.SOURCE_ENTRY,
+			manifest.getMainAttributes().putValue(PackagedSpringApplicationLauncher.SOURCE_ENTRY,
 					commaDelimitedClassNames(compiledClasses));
 			writer.writeManifest(manifest);
 		}
@@ -252,18 +238,16 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 					.getResources("org/springframework/boot/groovy/**");
 			for (Resource resource : resources) {
 				String url = resource.getURL().toString();
-				addResource(writer, resource,
-						url.substring(url.indexOf("org/springframework/boot/groovy/")));
+				addResource(writer, resource, url.substring(url.indexOf("org/springframework/boot/groovy/")));
 			}
 		}
 
-		protected final void addClass(JarWriter writer, Class<?> sourceClass)
-				throws IOException {
+		protected final void addClass(JarWriter writer, Class<?> sourceClass) throws IOException {
 			addClass(writer, sourceClass.getClassLoader(), sourceClass.getName());
 		}
 
-		protected final void addClass(JarWriter writer, ClassLoader classLoader,
-				String sourceClass) throws IOException {
+		protected final void addClass(JarWriter writer, ClassLoader classLoader, String sourceClass)
+				throws IOException {
 			if (classLoader == null) {
 				classLoader = Thread.currentThread().getContextClassLoader();
 			}
@@ -272,14 +256,12 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			writer.writeEntry(this.layout.getClassesLocation() + name, stream);
 		}
 
-		private void addResource(JarWriter writer, Resource resource, String name)
-				throws IOException {
+		private void addResource(JarWriter writer, Resource resource, String name) throws IOException {
 			InputStream stream = resource.getInputStream();
 			writer.writeEntry(name, stream);
 		}
 
-		private List<Library> addClasspathEntries(JarWriter writer,
-				List<MatchedResource> entries) throws IOException {
+		private List<Library> addClasspathEntries(JarWriter writer, List<MatchedResource> entries) throws IOException {
 			List<Library> libraries = new ArrayList<Library>();
 			for (MatchedResource entry : entries) {
 				if (entry.isRoot()) {
@@ -292,8 +274,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			return libraries;
 		}
 
-		protected void writeClasspathEntry(JarWriter writer, MatchedResource entry)
-				throws IOException {
+		protected void writeClasspathEntry(JarWriter writer, MatchedResource entry) throws IOException {
 			writer.writeEntry(entry.getName(), new FileInputStream(entry.getFile()));
 		}
 
@@ -333,8 +314,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			for (AnnotatedNode classNode : nodes) {
 				List<AnnotationNode> annotations = classNode.getAnnotations();
 				for (AnnotationNode node : new ArrayList<AnnotationNode>(annotations)) {
-					if (node.getClassNode().getNameWithoutPackage()
-							.equals("GrabResolver")) {
+					if (node.getClassNode().getNameWithoutPackage().equals("GrabResolver")) {
 						node.setMember("initClass", new ConstantExpression(false));
 					}
 				}

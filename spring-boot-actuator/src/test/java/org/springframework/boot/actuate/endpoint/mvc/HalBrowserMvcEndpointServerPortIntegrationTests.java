@@ -50,8 +50,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.port=0" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.port=0" })
 @DirtiesContext
 public class HalBrowserMvcEndpointServerPortIntegrationTests {
 
@@ -62,9 +61,8 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 	public void links() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/actuator", HttpMethod.GET,
-				new HttpEntity<Void>(null, headers), String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().exchange("http://localhost:" + this.port + "/actuator",
+				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"_links\":");
 		assertThat(entity.getBody()).contains(":" + this.port);
@@ -74,9 +72,8 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 	public void linksWithTrailingSlash() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
-				new HttpEntity<Void>(null, headers), String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().exchange("http://localhost:" + this.port + "/actuator/",
+				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"_links\":");
 		assertThat(entity.getBody()).contains(":" + this.port);
@@ -86,12 +83,11 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 	public void browserRedirect() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
-				new HttpEntity<Void>(null, headers), String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().exchange("http://localhost:" + this.port + "/actuator/",
+				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation()).isEqualTo(
-				URI.create("http://localhost:" + this.port + "/actuator/browser.html"));
+		assertThat(entity.getHeaders().getLocation())
+				.isEqualTo(URI.create("http://localhost:" + this.port + "/actuator/browser.html"));
 	}
 
 	@MinimalActuatorHypermediaApplication
@@ -101,8 +97,7 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		@RequestMapping("")
 		public ResourceSupport home() {
 			ResourceSupport resource = new ResourceSupport();
-			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/")
-					.withSelfRel());
+			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/").withSelfRel());
 			return resource;
 		}
 

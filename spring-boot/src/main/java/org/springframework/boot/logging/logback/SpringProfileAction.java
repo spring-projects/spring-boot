@@ -54,8 +54,7 @@ class SpringProfileAction extends Action implements InPlayListener {
 	}
 
 	@Override
-	public void begin(InterpretationContext ic, String name, Attributes attributes)
-			throws ActionException {
+	public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
 		this.depth++;
 		if (this.depth != 1) {
 			return;
@@ -67,8 +66,8 @@ class SpringProfileAction extends Action implements InPlayListener {
 	}
 
 	private boolean acceptsProfiles(InterpretationContext ic, Attributes attributes) {
-		String[] profileNames = StringUtils.trimArrayElements(StringUtils
-				.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE)));
+		String[] profileNames = StringUtils
+				.trimArrayElements(StringUtils.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE)));
 		if (this.environment == null || profileNames.length == 0) {
 			return false;
 		}

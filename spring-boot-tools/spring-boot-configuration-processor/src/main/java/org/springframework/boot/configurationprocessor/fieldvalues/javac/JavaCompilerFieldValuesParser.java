@@ -122,8 +122,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return defaultValue;
 		}
 
-		private Object getValue(ExpressionTree expression, Object defaultValue)
-				throws Exception {
+		private Object getValue(ExpressionTree expression, Object defaultValue) throws Exception {
 			Object literalValue = expression.getLiteralValue();
 			if (literalValue != null) {
 				return literalValue;

@@ -47,8 +47,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class SpringApplicationJsonEnvironmentPostProcessor
-		implements EnvironmentPostProcessor, Ordered {
+public class SpringApplicationJsonEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
 	private static final String SERVLET_ENVIRONMENT_CLASS = "org.springframework.web."
 			+ "context.support.StandardServletEnvironment";
@@ -58,8 +57,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
 
-	private static final Log logger = LogFactory
-			.getLog(SpringApplicationJsonEnvironmentPostProcessor.class);
+	private static final Log logger = LogFactory.getLog(SpringApplicationJsonEnvironmentPostProcessor.class);
 
 	private int order = DEFAULT_ORDER;
 
@@ -73,10 +71,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	}
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
-		String json = environment.resolvePlaceholders(
-				"${spring.application.json:${SPRING_APPLICATION_JSON:}}");
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+		String json = environment.resolvePlaceholders("${spring.application.json:${SPRING_APPLICATION_JSON:}}");
 		if (StringUtils.hasText(json)) {
 			processJson(environment, json);
 		}
@@ -87,8 +83,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 			JsonParser parser = JsonParserFactory.getJsonParser();
 			Map<String, Object> map = parser.parseMap(json);
 			if (!map.isEmpty()) {
-				addJsonPropertySource(environment,
-						new MapPropertySource("spring.application.json", flatten(map)));
+				addJsonPropertySource(environment, new MapPropertySource("spring.application.json", flatten(map)));
 			}
 		}
 		catch (Exception ex) {
@@ -107,8 +102,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		return result;
 	}
 
-	private void flatten(String prefix, Map<String, Object> result,
-			Map<String, Object> map) {
+	private void flatten(String prefix, Map<String, Object> result, Map<String, Object> map) {
 		prefix = (prefix != null) ? prefix + "." : "";
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			extract(prefix + entry.getKey(), result, entry.getValue());
@@ -132,8 +126,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		}
 	}
 
-	private void addJsonPropertySource(ConfigurableEnvironment environment,
-			PropertySource<?> source) {
+	private void addJsonPropertySource(ConfigurableEnvironment environment, PropertySource<?> source) {
 		MutablePropertySources sources = environment.getPropertySources();
 		String name = findPropertySource(sources);
 		if (sources.contains(name)) {
@@ -145,8 +138,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	}
 
 	private String findPropertySource(MutablePropertySources sources) {
-		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null) && sources
-				.contains(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME)) {
+		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)
+				&& sources.contains(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME)) {
 			return StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME;
 
 		}

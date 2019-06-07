@@ -60,19 +60,16 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 	}
 
 	@Override
-	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
-			ResolvableType type) {
-		return new GsonTester<Object>(resourceLoadClass, type,
-				new GsonBuilder().create());
+	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type) {
+		return new GsonTester<Object>(resourceLoadClass, type, new GsonBuilder().create());
 	}
 
 	abstract static class InitFieldsBaseClass {
 
 		public GsonTester<ExampleObject> base;
 
-		public GsonTester<ExampleObject> baseSet = new GsonTester<ExampleObject>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new GsonBuilder().create());
+		public GsonTester<ExampleObject> baseSet = new GsonTester<ExampleObject>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());
 
 	}
 
@@ -80,9 +77,8 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public GsonTester<List<ExampleObject>> test;
 
-		public GsonTester<ExampleObject> testSet = new GsonTester<ExampleObject>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new GsonBuilder().create());
+		public GsonTester<ExampleObject> testSet = new GsonTester<ExampleObject>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());
 
 	}
 

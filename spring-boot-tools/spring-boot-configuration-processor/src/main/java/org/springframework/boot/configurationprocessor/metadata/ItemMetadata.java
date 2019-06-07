@@ -42,9 +42,8 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 
 	private ItemDeprecation deprecation;
 
-	ItemMetadata(ItemType itemType, String prefix, String name, String type,
-			String sourceType, String sourceMethod, String description,
-			Object defaultValue, ItemDeprecation deprecation) {
+	ItemMetadata(ItemType itemType, String prefix, String name, String type, String sourceType, String sourceMethod,
+			String description, Object defaultValue, ItemDeprecation deprecation) {
 		super();
 		this.itemType = itemType;
 		this.name = buildName(prefix, name);
@@ -132,8 +131,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		this.deprecation = deprecation;
 	}
 
-	protected void buildToStringProperty(StringBuilder string, String property,
-			Object value) {
+	protected void buildToStringProperty(StringBuilder string, String property, Object value) {
 		if (value != null) {
 			string.append(" ").append(property).append(":").append(value);
 		}
@@ -148,10 +146,8 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 			return false;
 		}
 		ItemMetadata other = (ItemMetadata) o;
-		return nullSafeEquals(this.itemType, other.itemType)
-				&& nullSafeEquals(this.name, other.name)
-				&& nullSafeEquals(this.type, other.type)
-				&& nullSafeEquals(this.description, other.description)
+		return nullSafeEquals(this.itemType, other.itemType) && nullSafeEquals(this.name, other.name)
+				&& nullSafeEquals(this.type, other.type) && nullSafeEquals(this.description, other.description)
 				&& nullSafeEquals(this.sourceType, other.sourceType)
 				&& nullSafeEquals(this.sourceMethod, other.sourceMethod)
 				&& nullSafeEquals(this.defaultValue, other.defaultValue)
@@ -201,17 +197,14 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		return getName().compareTo(o.getName());
 	}
 
-	public static ItemMetadata newGroup(String name, String type, String sourceType,
-			String sourceMethod) {
-		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType,
-				sourceMethod, null, null, null);
+	public static ItemMetadata newGroup(String name, String type, String sourceType, String sourceMethod) {
+		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType, sourceMethod, null, null, null);
 	}
 
-	public static ItemMetadata newProperty(String prefix, String name, String type,
-			String sourceType, String sourceMethod, String description,
-			Object defaultValue, ItemDeprecation deprecation) {
-		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType,
-				sourceMethod, description, defaultValue, deprecation);
+	public static ItemMetadata newProperty(String prefix, String name, String type, String sourceType,
+			String sourceMethod, String description, Object defaultValue, ItemDeprecation deprecation) {
+		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType, sourceMethod, description,
+				defaultValue, deprecation);
 	}
 
 	/**

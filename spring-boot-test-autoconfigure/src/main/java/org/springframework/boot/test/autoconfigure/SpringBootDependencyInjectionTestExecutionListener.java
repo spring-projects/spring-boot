@@ -35,8 +35,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * @author Phillip Webb
  * @since 1.4.1
  */
-public class SpringBootDependencyInjectionTestExecutionListener
-		extends DependencyInjectionTestExecutionListener {
+public class SpringBootDependencyInjectionTestExecutionListener extends DependencyInjectionTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
@@ -71,10 +70,8 @@ public class SpringBootDependencyInjectionTestExecutionListener
 			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<Class<? extends TestExecutionListener>>(
 					listeners.size());
 			for (Class<? extends TestExecutionListener> listener : listeners) {
-				updated.add(
-						listener.equals(DependencyInjectionTestExecutionListener.class)
-								? SpringBootDependencyInjectionTestExecutionListener.class
-								: listener);
+				updated.add(listener.equals(DependencyInjectionTestExecutionListener.class)
+						? SpringBootDependencyInjectionTestExecutionListener.class : listener);
 			}
 			return updated;
 		}

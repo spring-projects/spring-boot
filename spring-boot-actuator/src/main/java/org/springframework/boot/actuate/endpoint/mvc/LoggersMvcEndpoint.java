@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 	@ActuatorPostMapping("/{name:.*}")
 	@ResponseBody
 	@HypermediaDisabled
-	public Object set(@PathVariable String name,
-			@RequestBody Map<String, String> configuration) {
+	public Object set(@PathVariable String name, @RequestBody Map<String, String> configuration) {
 		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
 			// disabled
@@ -79,8 +78,7 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 	private LogLevel getLogLevel(Map<String, String> configuration) {
 		String level = configuration.get("configuredLevel");
 		try {
-			return (level != null) ? LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH))
-					: null;
+			return (level != null) ? LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH)) : null;
 		}
 		catch (IllegalArgumentException ex) {
 			throw new InvalidLogLevelException(level);

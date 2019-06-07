@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ import org.springframework.jmx.support.JmxUtils;
  * @since 1.2.0
  */
 @Configuration
-@AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
-		DataSourceAutoConfiguration.class })
+@AutoConfigureBefore({ XADataSourceAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @ConditionalOnProperty(prefix = "spring.datasource", name = "jndi-name")
 @EnableConfigurationProperties(DataSourceProperties.class)
@@ -64,8 +63,7 @@ public class JndiDataSourceAutoConfiguration {
 	}
 
 	private void excludeMBeanIfNecessary(Object candidate, String beanName) {
-		for (MBeanExporter mbeanExporter : this.context
-				.getBeansOfType(MBeanExporter.class).values()) {
+		for (MBeanExporter mbeanExporter : this.context.getBeansOfType(MBeanExporter.class).values()) {
 			if (JmxUtils.isMBean(candidate.getClass())) {
 				mbeanExporter.addExcludedBean(beanName);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ class ApplicationBuilder {
 
 	private final String containerVersion;
 
-	ApplicationBuilder(TemporaryFolder temp, String packaging, String container,
-			String containerVersion) {
+	ApplicationBuilder(TemporaryFolder temp, String packaging, String container, String containerVersion) {
 		this.temp = temp;
 		this.packaging = packaging;
 		this.container = container;
@@ -67,8 +66,7 @@ class ApplicationBuilder {
 	}
 
 	File buildApplication() throws Exception {
-		File containerFolder = new File(this.temp.getRoot(),
-				this.container + "-" + this.containerVersion);
+		File containerFolder = new File(this.temp.getRoot(), this.container + "-" + this.containerVersion);
 		if (containerFolder.exists()) {
 			return new File(containerFolder, "app/target/app-0.0.1." + this.packaging);
 		}
@@ -91,33 +89,27 @@ class ApplicationBuilder {
 		if (resourcesJar.exists()) {
 			return resourcesJar;
 		}
-		JarOutputStream resourcesJarStream = new JarOutputStream(
-				new FileOutputStream(resourcesJar));
+		JarOutputStream resourcesJarStream = new JarOutputStream(new FileOutputStream(resourcesJar));
 		resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/"));
 		resourcesJarStream.closeEntry();
-		resourcesJarStream.putNextEntry(
-				new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
+		resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
 		resourcesJarStream.write("nested".getBytes());
 		resourcesJarStream.closeEntry();
 		resourcesJarStream.close();
 		return resourcesJar;
 	}
 
-	private void writePom(File appFolder, File resourcesJar)
-			throws FileNotFoundException, IOException {
+	private void writePom(File appFolder, File resourcesJar) throws FileNotFoundException, IOException {
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("packaging", this.packaging);
 		context.put("container", this.container);
 		context.put("bootVersion", Versions.getBootVersion());
 		context.put("resourcesJarPath", resourcesJar.getAbsolutePath());
-		context.put("containerVersion",
-				"current".equals(this.containerVersion) ? ""
-						: String.format("<%s.version>%s</%s.version>", this.container,
-								this.containerVersion, this.container));
+		context.put("containerVersion", "current".equals(this.containerVersion) ? ""
+				: String.format("<%s.version>%s</%s.version>", this.container, this.containerVersion, this.container));
 		context.put("additionalDependencies", getAdditionalDependencies());
 		FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
-		Mustache.compiler().escapeHTML(false)
-				.compile(new FileReader("src/test/resources/pom-template.xml"))
+		Mustache.compiler().escapeHTML(false).compile(new FileReader("src/test/resources/pom-template.xml"))
 				.execute(context, out);
 		out.close();
 	}
@@ -137,14 +129,12 @@ class ApplicationBuilder {
 	private void copyApplicationSource(File appFolder) throws IOException {
 		File examplePackage = new File(appFolder, "src/main/java/com/example");
 		examplePackage.mkdirs();
-		FileCopyUtils.copy(
-				new File("src/test/java/com/example/ResourceHandlingApplication.java"),
+		FileCopyUtils.copy(new File("src/test/java/com/example/ResourceHandlingApplication.java"),
 				new File(examplePackage, "ResourceHandlingApplication.java"));
 		if ("war".equals(this.packaging)) {
 			File srcMainWebapp = new File(appFolder, "src/main/webapp");
 			srcMainWebapp.mkdirs();
-			FileCopyUtils.copy("webapp resource",
-					new FileWriter(new File(srcMainWebapp, "webapp-resource.txt")));
+			FileCopyUtils.copy("webapp resource", new FileWriter(new File(srcMainWebapp, "webapp-resource.txt")));
 		}
 	}
 

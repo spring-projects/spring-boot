@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,7 @@ public class ShellPropertiesTests {
 
 	@Test
 	public void testBindingAuth() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.auth.type=spring");
+		ShellProperties props = load(ShellProperties.class, "management.shell.auth.type=spring");
 		assertThat(props.getAuth().getType()).isEqualTo("spring");
 	}
 
@@ -80,8 +79,7 @@ public class ShellPropertiesTests {
 
 	@Test
 	public void testBindingCommandRefreshInterval() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.command-refresh-interval=1");
+		ShellProperties props = load(ShellProperties.class, "management.shell.command-refresh-interval=1");
 		assertThat(props.getCommandRefreshInterval()).isEqualTo(1);
 	}
 
@@ -90,39 +88,33 @@ public class ShellPropertiesTests {
 		ShellProperties props = load(ShellProperties.class,
 				"management.shell.command-path-patterns=pattern1, pattern2");
 		assertThat(props.getCommandPathPatterns().length).isEqualTo(2);
-		Assert.assertArrayEquals(new String[] { "pattern1", "pattern2" },
-				props.getCommandPathPatterns());
+		Assert.assertArrayEquals(new String[] { "pattern1", "pattern2" }, props.getCommandPathPatterns());
 	}
 
 	@Test
 	public void testBindingConfigPathPatterns() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.config-path-patterns=pattern1, pattern2");
+		ShellProperties props = load(ShellProperties.class, "management.shell.config-path-patterns=pattern1, pattern2");
 		assertThat(props.getConfigPathPatterns().length).isEqualTo(2);
-		Assert.assertArrayEquals(new String[] { "pattern1", "pattern2" },
-				props.getConfigPathPatterns());
+		Assert.assertArrayEquals(new String[] { "pattern1", "pattern2" }, props.getConfigPathPatterns());
 	}
 
 	@Test
 	public void testBindingDisabledPlugins() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.disabled-plugins=pattern1, pattern2");
+		ShellProperties props = load(ShellProperties.class, "management.shell.disabled-plugins=pattern1, pattern2");
 		assertThat(props.getDisabledPlugins().length).isEqualTo(2);
 		assertThat(props.getDisabledPlugins()).containsExactly("pattern1", "pattern2");
 	}
 
 	@Test
 	public void testBindingDisabledCommands() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.disabled-commands=pattern1, pattern2");
+		ShellProperties props = load(ShellProperties.class, "management.shell.disabled-commands=pattern1, pattern2");
 		assertThat(props.getDisabledCommands()).containsExactly("pattern1", "pattern2");
 	}
 
 	@Test
 	public void testBindingSsh() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.ssh.enabled=true", "management.shell.ssh.port=2222",
-				"management.shell.ssh.key-path=~/.ssh/test.pem");
+		ShellProperties props = load(ShellProperties.class, "management.shell.ssh.enabled=true",
+				"management.shell.ssh.port=2222", "management.shell.ssh.key-path=~/.ssh/test.pem");
 		Properties p = props.asCrshShellConfig();
 		assertThat(p.get("crash.ssh.port")).isEqualTo("2222");
 		assertThat(p.get("crash.ssh.keypath")).isEqualTo("~/.ssh/test.pem");
@@ -130,9 +122,8 @@ public class ShellPropertiesTests {
 
 	@Test
 	public void testBindingSshIgnored() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.ssh.enabled=false", "management.shell.ssh.port=2222",
-				"management.shell.ssh.key-path=~/.ssh/test.pem");
+		ShellProperties props = load(ShellProperties.class, "management.shell.ssh.enabled=false",
+				"management.shell.ssh.port=2222", "management.shell.ssh.key-path=~/.ssh/test.pem");
 		Properties p = props.asCrshShellConfig();
 		assertThat(p.get("crash.ssh.port")).isNull();
 		assertThat(p.get("crash.ssh.keypath")).isNull();
@@ -140,8 +131,7 @@ public class ShellPropertiesTests {
 
 	@Test
 	public void testBindingTelnet() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.telnet.enabled=true",
+		ShellProperties props = load(ShellProperties.class, "management.shell.telnet.enabled=true",
 				"management.shell.telnet.port=2222");
 		Properties p = props.asCrshShellConfig();
 		assertThat(p.get("crash.telnet.port")).isEqualTo("2222");
@@ -149,8 +139,7 @@ public class ShellPropertiesTests {
 
 	@Test
 	public void testBindingTelnetIgnored() {
-		ShellProperties props = load(ShellProperties.class,
-				"management.shell.telnet.enabled=false",
+		ShellProperties props = load(ShellProperties.class, "management.shell.telnet.enabled=false",
 				"management.shell.telnet.port=2222");
 		Properties p = props.asCrshShellConfig();
 		assertThat(p.get("crash.telnet.port")).isNull();
@@ -195,16 +184,14 @@ public class ShellPropertiesTests {
 
 	@Test
 	public void testDefaultPasswordAutoGeneratedIfUnresolvedPlaceholder() {
-		SimpleAuthenticationProperties security = load(
-				SimpleAuthenticationProperties.class,
+		SimpleAuthenticationProperties security = load(SimpleAuthenticationProperties.class,
 				"management.shell.auth.simple.user.password=${ADMIN_PASSWORD}");
 		assertThat(security.getUser().isDefaultPassword()).isTrue();
 	}
 
 	@Test
 	public void testDefaultPasswordAutoGeneratedIfEmpty() {
-		SimpleAuthenticationProperties security = load(
-				SimpleAuthenticationProperties.class,
+		SimpleAuthenticationProperties security = load(SimpleAuthenticationProperties.class,
 				"management.shell.auth.simple.user.password=");
 		assertThat(security.getUser().isDefaultPassword()).isTrue();
 	}
@@ -246,9 +233,9 @@ public class ShellPropertiesTests {
 
 	@SuppressWarnings("deprecation")
 	@Configuration
-	@EnableConfigurationProperties({ ShellProperties.class,
-			JaasAuthenticationProperties.class, KeyAuthenticationProperties.class,
-			SimpleAuthenticationProperties.class, SpringAuthenticationProperties.class })
+	@EnableConfigurationProperties({ ShellProperties.class, JaasAuthenticationProperties.class,
+			KeyAuthenticationProperties.class, SimpleAuthenticationProperties.class,
+			SpringAuthenticationProperties.class })
 	static class TestConfiguration {
 
 	}

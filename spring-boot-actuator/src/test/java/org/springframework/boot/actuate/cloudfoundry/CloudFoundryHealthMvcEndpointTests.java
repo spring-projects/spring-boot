@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,11 @@ import static org.mockito.Mockito.mock;
 public class CloudFoundryHealthMvcEndpointTests {
 
 	@Test
-	public void cloudFoundryHealthEndpointShouldAlwaysReturnAllHealthDetails()
-			throws Exception {
+	public void cloudFoundryHealthEndpointShouldAlwaysReturnAllHealthDetails() throws Exception {
 		HealthEndpoint endpoint = mock(HealthEndpoint.class);
 		given(endpoint.isEnabled()).willReturn(true);
 		CloudFoundryHealthMvcEndpoint mvc = new CloudFoundryHealthMvcEndpoint(endpoint);
-		given(endpoint.invoke())
-				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		given(endpoint.invoke()).willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		given(endpoint.isSensitive()).willReturn(false);
 		Object result = mvc.invoke(null, null);
 		assertThat(result instanceof Health).isTrue();

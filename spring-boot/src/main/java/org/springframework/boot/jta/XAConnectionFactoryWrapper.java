@@ -36,7 +36,6 @@ public interface XAConnectionFactoryWrapper {
 	 * @return the wrapped connection factory
 	 * @throws Exception if the connection factory cannot be wrapped
 	 */
-	ConnectionFactory wrapConnectionFactory(XAConnectionFactory connectionFactory)
-			throws Exception;
+	ConnectionFactory wrapConnectionFactory(XAConnectionFactory connectionFactory) throws Exception;
 
 }

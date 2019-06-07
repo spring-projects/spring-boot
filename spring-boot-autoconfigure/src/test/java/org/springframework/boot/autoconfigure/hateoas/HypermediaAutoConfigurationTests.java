@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,13 +88,10 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EnableHypermediaSupportConfig.class, BaseConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.serialization.INDENT_OUTPUT:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.serialization.INDENT_OUTPUT:true");
 		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
-				ObjectMapper.class);
-		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isFalse();
+		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper", ObjectMapper.class);
+		assertThat(objectMapper.getSerializationConfig().isEnabled(SerializationFeature.INDENT_OUTPUT)).isFalse();
 	}
 
 	@Test
@@ -102,13 +99,10 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.serialization.INDENT_OUTPUT:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.serialization.INDENT_OUTPUT:true");
 		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
-				ObjectMapper.class);
-		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isTrue();
+		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper", ObjectMapper.class);
+		assertThat(objectMapper.getSerializationConfig().isEnabled(SerializationFeature.INDENT_OUTPUT)).isTrue();
 	}
 
 	@Test
@@ -117,12 +111,11 @@ public class HypermediaAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
-		RequestMappingHandlerAdapter handlerAdapter = this.context
-				.getBean(RequestMappingHandlerAdapter.class);
+		RequestMappingHandlerAdapter handlerAdapter = this.context.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes())
-						.contains(MediaType.APPLICATION_JSON, MediaTypes.HAL_JSON);
+				assertThat(converter.getSupportedMediaTypes()).contains(MediaType.APPLICATION_JSON,
+						MediaTypes.HAL_JSON);
 			}
 		}
 	}
@@ -132,22 +125,18 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.hateoas.use-hal-as-default-json-media-type:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.hateoas.use-hal-as-default-json-media-type:false");
 		this.context.refresh();
-		RequestMappingHandlerAdapter handlerAdapter = this.context
-				.getBean(RequestMappingHandlerAdapter.class);
+		RequestMappingHandlerAdapter handlerAdapter = this.context.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes())
-						.containsExactly(MediaTypes.HAL_JSON);
+				assertThat(converter.getSupportedMediaTypes()).containsExactly(MediaTypes.HAL_JSON);
 			}
 		}
 	}
 
-	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HypermediaAutoConfiguration.class })
+	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, HypermediaAutoConfiguration.class })
 	static class BaseConfig {
 
 	}

@@ -48,8 +48,7 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 						RestClientExcludeFilter.class.getClassLoader()));
 			}
 			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(
-						"Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
+				throw new IllegalStateException("Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
 			}
 			includes.add(JsonComponent.class);
 		}
@@ -59,8 +58,7 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private final RestClientTest annotation;
 
 	RestClientExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				RestClientTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, RestClientTest.class);
 	}
 
 	@Override

@@ -37,20 +37,19 @@ public class NarayanaXADataSourceWrapperTests {
 
 	private XADataSource dataSource = mock(XADataSource.class);
 
-	private NarayanaRecoveryManagerBean recoveryManager = mock(
-			NarayanaRecoveryManagerBean.class);
+	private NarayanaRecoveryManagerBean recoveryManager = mock(NarayanaRecoveryManagerBean.class);
 
 	private NarayanaProperties properties = mock(NarayanaProperties.class);
 
-	private NarayanaXADataSourceWrapper wrapper = new NarayanaXADataSourceWrapper(
-			this.recoveryManager, this.properties);
+	private NarayanaXADataSourceWrapper wrapper = new NarayanaXADataSourceWrapper(this.recoveryManager,
+			this.properties);
 
 	@Test
 	public void wrap() {
 		DataSource wrapped = this.wrapper.wrapDataSource(this.dataSource);
 		assertThat(wrapped).isInstanceOf(NarayanaDataSourceBean.class);
-		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(
-				any(DataSourceXAResourceRecoveryHelper.class));
+		verify(this.recoveryManager, times(1))
+				.registerXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));
 		verify(this.properties, times(1)).getRecoveryDbUser();
 		verify(this.properties, times(1)).getRecoveryDbPass();
 	}
@@ -61,8 +60,8 @@ public class NarayanaXADataSourceWrapperTests {
 		given(this.properties.getRecoveryDbPass()).willReturn("password");
 		DataSource wrapped = this.wrapper.wrapDataSource(this.dataSource);
 		assertThat(wrapped).isInstanceOf(NarayanaDataSourceBean.class);
-		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(
-				any(DataSourceXAResourceRecoveryHelper.class));
+		verify(this.recoveryManager, times(1))
+				.registerXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));
 		verify(this.properties, times(2)).getRecoveryDbUser();
 		verify(this.properties, times(1)).getRecoveryDbPass();
 	}

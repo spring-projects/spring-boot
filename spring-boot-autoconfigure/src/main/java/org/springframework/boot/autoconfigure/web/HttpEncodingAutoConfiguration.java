@@ -43,8 +43,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @EnableConfigurationProperties(HttpEncodingProperties.class)
 @ConditionalOnWebApplication
 @ConditionalOnClass(CharacterEncodingFilter.class)
-@ConditionalOnProperty(prefix = "spring.http.encoding", value = "enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.http.encoding", value = "enabled", matchIfMissing = true)
 public class HttpEncodingAutoConfiguration {
 
 	private final HttpEncodingProperties properties;
@@ -68,8 +67,7 @@ public class HttpEncodingAutoConfiguration {
 		return new LocaleCharsetMappingsCustomizer(this.properties);
 	}
 
-	private static class LocaleCharsetMappingsCustomizer
-			implements EmbeddedServletContainerCustomizer, Ordered {
+	private static class LocaleCharsetMappingsCustomizer implements EmbeddedServletContainerCustomizer, Ordered {
 
 		private final HttpEncodingProperties properties;
 

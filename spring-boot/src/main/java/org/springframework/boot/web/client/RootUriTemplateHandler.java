@@ -89,11 +89,9 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	 * @param rootUri the root URI
 	 * @return the added {@link RootUriTemplateHandler}.
 	 */
-	public static RootUriTemplateHandler addTo(RestTemplate restTemplate,
-			String rootUri) {
+	public static RootUriTemplateHandler addTo(RestTemplate restTemplate, String rootUri) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
-		RootUriTemplateHandler handler = new RootUriTemplateHandler(rootUri,
-				restTemplate.getUriTemplateHandler());
+		RootUriTemplateHandler handler = new RootUriTemplateHandler(rootUri, restTemplate.getUriTemplateHandler());
 		restTemplate.setUriTemplateHandler(handler);
 		return handler;
 	}

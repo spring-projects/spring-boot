@@ -146,8 +146,7 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void metricEndpointCustomPublicMetrics() {
-		load(CustomPublicMetricsConfig.class, PublicMetricsAutoConfiguration.class,
-				EndpointAutoConfiguration.class);
+		load(CustomPublicMetricsConfig.class, PublicMetricsAutoConfiguration.class, EndpointAutoConfiguration.class);
 		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
 		Map<String, Object> metrics = endpoint.invoke();
 
@@ -163,16 +162,15 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void autoConfigurationAuditEndpoints() {
 		load(EndpointAutoConfiguration.class, ConditionEvaluationReport.class);
-		assertThat(this.context.getBean(AutoConfigurationReportEndpoint.class))
-				.isNotNull();
+		assertThat(this.context.getBean(AutoConfigurationReportEndpoint.class)).isNotNull();
 	}
 
 	@Test
 	public void testInfoEndpoint() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "info.foo:bar");
-		this.context.register(ProjectInfoAutoConfiguration.class,
-				InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.register(ProjectInfoAutoConfiguration.class, InfoContributorAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
 		this.context.refresh();
 
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
@@ -184,10 +182,8 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testInfoEndpointNoGitProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.info.git.location:classpath:nonexistent");
-		this.context.register(InfoContributorAutoConfiguration.class,
-				EndpointAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.info.git.location:classpath:nonexistent");
+		this.context.register(InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertThat(endpoint).isNotNull();
@@ -198,8 +194,7 @@ public class EndpointAutoConfigurationTests {
 	public void testInfoEndpointOrdering() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "info.name:foo");
-		this.context.register(CustomInfoContributorsConfig.class,
-				ProjectInfoAutoConfiguration.class,
+		this.context.register(CustomInfoContributorsConfig.class, ProjectInfoAutoConfiguration.class,
 				InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 
@@ -215,8 +210,8 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testFlywayEndpoint() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.register(EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
 		this.context.refresh();
 		FlywayEndpoint endpoint = this.context.getBean(FlywayEndpoint.class);
 		assertThat(endpoint).isNotNull();
@@ -226,8 +221,8 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testFlywayEndpointWithMultipleFlywayBeans() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MultipleFlywayBeansConfig.class,
-				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.register(MultipleFlywayBeansConfig.class, FlywayAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(Flyway.class)).hasSize(2);
 		assertThat(this.context.getBeansOfType(FlywayEndpoint.class)).hasSize(1);
@@ -236,8 +231,8 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testLiquibaseEndpoint() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.register(EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
 		this.context.refresh();
 		LiquibaseEndpoint endpoint = this.context.getBean(LiquibaseEndpoint.class);
 		assertThat(endpoint).isNotNull();
@@ -247,8 +242,8 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testLiquibaseEndpointWithMultipleSpringLiquibaseBeans() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MultipleLiquibaseBeansConfig.class,
-				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.register(MultipleLiquibaseBeansConfig.class, LiquibaseAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(SpringLiquibase.class)).hasSize(2);
 		assertThat(this.context.getBeansOfType(LiquibaseEndpoint.class)).hasSize(1);
@@ -314,12 +309,9 @@ public class EndpointAutoConfigurationTests {
 
 			GitFullInfoContributor(Resource location) throws BindException, IOException {
 				if (location.exists()) {
-					Properties gitInfoProperties = PropertiesLoaderUtils
-							.loadProperties(location);
-					PropertiesPropertySource gitPropertySource = new PropertiesPropertySource(
-							"git", gitInfoProperties);
-					this.content = new PropertySourcesBinder(gitPropertySource)
-							.extractAll("git");
+					Properties gitInfoProperties = PropertiesLoaderUtils.loadProperties(location);
+					PropertiesPropertySource gitPropertySource = new PropertiesPropertySource("git", gitInfoProperties);
+					this.content = new PropertySourcesBinder(gitPropertySource).extractAll("git");
 				}
 			}
 
@@ -339,14 +331,12 @@ public class EndpointAutoConfigurationTests {
 
 		@Bean
 		public DataSource dataSourceOne() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest")
-					.username("sa").build();
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest").username("sa").build();
 		}
 
 		@Bean
 		public DataSource dataSourceTwo() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest2")
-					.username("sa").build();
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest2").username("sa").build();
 		}
 
 	}

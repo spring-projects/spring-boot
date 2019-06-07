@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,16 +58,14 @@ public class ConditionalOnJndiTests {
 	@Before
 	public void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
-		Thread.currentThread().setContextClassLoader(
-				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
+		Thread.currentThread().setContextClassLoader(new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
 	@After
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
-			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-					this.initialContextFactory);
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);
 		}
 		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
@@ -108,23 +106,20 @@ public class ConditionalOnJndiTests {
 
 	@Test
 	public void jndiLocationNotFound() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
-				mockMetaData("java:/a"));
+		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a"));
 		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
 	public void jndiLocationFound() {
 		this.condition.setFoundLocation("java:/b");
-		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
-				mockMetaData("java:/a", "java:/b"));
+		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a", "java:/b"));
 		assertThat(outcome.isMatch()).isTrue();
 	}
 
 	private void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
-		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				TestableInitialContextFactory.class.getName());
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestableInitialContextFactory.class.getName());
 	}
 
 	private void assertPresent(boolean expected) {
@@ -144,8 +139,7 @@ public class ConditionalOnJndiTests {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		attributes.put("value", value);
-		given(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()))
-				.willReturn(attributes);
+		given(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName())).willReturn(attributes);
 		return metadata;
 	}
 

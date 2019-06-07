@@ -34,8 +34,7 @@ class DataMongoTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter
 	private final DataMongoTest annotation;
 
 	DataMongoTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				DataMongoTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, DataMongoTest.class);
 	}
 
 	@Override

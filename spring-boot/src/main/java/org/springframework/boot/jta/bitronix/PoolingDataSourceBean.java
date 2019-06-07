@@ -47,8 +47,7 @@ import org.springframework.util.StringUtils;
  */
 @SuppressWarnings("serial")
 @ConfigurationProperties(prefix = "spring.jta.bitronix.datasource")
-public class PoolingDataSourceBean extends PoolingDataSource
-		implements BeanNameAware, InitializingBean {
+public class PoolingDataSourceBean extends PoolingDataSource implements BeanNameAware, InitializingBean {
 
 	private static final ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<PoolingDataSourceBean>();
 
@@ -102,8 +101,7 @@ public class PoolingDataSourceBean extends PoolingDataSource
 	}
 
 	@Override
-	public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean)
-			throws Exception {
+	public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean) throws Exception {
 		if (xaFactory instanceof DirectXADataSource) {
 			xaFactory = ((DirectXADataSource) xaFactory).getDataSource();
 		}
@@ -147,8 +145,7 @@ public class PoolingDataSourceBean extends PoolingDataSource
 		}
 
 		@Override
-		public XAConnection getXAConnection(String user, String password)
-				throws SQLException {
+		public XAConnection getXAConnection(String user, String password) throws SQLException {
 			return this.dataSource.getXAConnection(user, password);
 		}
 

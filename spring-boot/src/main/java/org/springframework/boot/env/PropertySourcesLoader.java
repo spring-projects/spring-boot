@@ -63,8 +63,7 @@ public class PropertySourcesLoader {
 	public PropertySourcesLoader(MutablePropertySources propertySources) {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		this.propertySources = propertySources;
-		this.loaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-				getClass().getClassLoader());
+		this.loaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, getClass().getClassLoader());
 	}
 
 	/**
@@ -98,8 +97,7 @@ public class PropertySourcesLoader {
 	 * @return the loaded property source or {@code null}
 	 * @throws IOException if the source cannot be loaded
 	 */
-	public PropertySource<?> load(Resource resource, String name, String profile)
-			throws IOException {
+	public PropertySource<?> load(Resource resource, String name, String profile) throws IOException {
 		return load(resource, null, name, profile);
 	}
 
@@ -119,14 +117,12 @@ public class PropertySourcesLoader {
 	 * @return the loaded property source or {@code null}
 	 * @throws IOException if the source cannot be loaded
 	 */
-	public PropertySource<?> load(Resource resource, String group, String name,
-			String profile) throws IOException {
+	public PropertySource<?> load(Resource resource, String group, String name, String profile) throws IOException {
 		if (isFile(resource)) {
 			String sourceName = generatePropertySourceName(name, profile);
 			for (PropertySourceLoader loader : this.loaders) {
 				if (canLoadFileExtension(loader, resource)) {
-					PropertySource<?> specific = loader.load(sourceName, resource,
-							profile);
+					PropertySource<?> specific = loader.load(sourceName, resource, profile);
 					addPropertySource(group, specific);
 					return specific;
 				}
@@ -136,8 +132,8 @@ public class PropertySourcesLoader {
 	}
 
 	private boolean isFile(Resource resource) {
-		return resource != null && resource.exists() && StringUtils
-				.hasText(StringUtils.getFilenameExtension(resource.getFilename()));
+		return resource != null && resource.exists()
+				&& StringUtils.hasText(StringUtils.getFilenameExtension(resource.getFilename()));
 	}
 
 	private String generatePropertySourceName(String name, String profile) {
@@ -182,8 +178,7 @@ public class PropertySourcesLoader {
 		if (source instanceof EnumerableCompositePropertySource) {
 			return (EnumerableCompositePropertySource) source;
 		}
-		EnumerableCompositePropertySource composite = new EnumerableCompositePropertySource(
-				name);
+		EnumerableCompositePropertySource composite = new EnumerableCompositePropertySource(name);
 		return composite;
 	}
 

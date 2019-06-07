@@ -74,8 +74,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 
 	@Override
 	public String toString() {
-		return "JsonContent " + this.json
-				+ ((this.type != null) ? " created from " + this.type : "");
+		return "JsonContent " + this.json + ((this.type != null) ? " created from " + this.type : "");
 	}
 
 }

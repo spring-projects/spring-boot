@@ -49,8 +49,7 @@ public class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 	@Test
 	public void replacesDefinedDataSourceWithExplicit() throws Exception {
 		// Look that the datasource is replaced with an H2 DB.
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("H2");
 	}
 
@@ -61,15 +60,15 @@ public class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 		@Bean
 		@Primary
 		public DataSource dataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-					.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL);
+			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder().generateUniqueName(true)
+					.setType(EmbeddedDatabaseType.HSQL);
 			return builder.build();
 		}
 
 		@Bean
 		public DataSource secondaryDataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-					.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL);
+			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder().generateUniqueName(true)
+					.setType(EmbeddedDatabaseType.HSQL);
 			return builder.build();
 		}
 

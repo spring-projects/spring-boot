@@ -44,8 +44,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  */
 @Configuration
 @ConditionalOnClass(name = ArtemisConnectionFactoryFactory.EMBEDDED_JMS_CLASS)
-@ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 class ArtemisEmbeddedServerConfiguration {
 
 	private final ArtemisProperties properties;
@@ -69,14 +69,12 @@ class ArtemisEmbeddedServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public org.apache.activemq.artemis.core.config.Configuration artemisConfiguration() {
-		return new ArtemisEmbeddedConfigurationFactory(this.properties)
-				.createConfiguration();
+		return new ArtemisEmbeddedConfigurationFactory(this.properties).createConfiguration();
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public EmbeddedJMS artemisServer(
-			org.apache.activemq.artemis.core.config.Configuration configuration,
+	public EmbeddedJMS artemisServer(org.apache.activemq.artemis.core.config.Configuration configuration,
 			JMSConfiguration jmsConfiguration) {
 		EmbeddedJMS server = new EmbeddedJMS();
 		customize(configuration);
@@ -86,8 +84,7 @@ class ArtemisEmbeddedServerConfiguration {
 		return server;
 	}
 
-	private void customize(
-			org.apache.activemq.artemis.core.config.Configuration configuration) {
+	private void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
 		if (this.configurationCustomizers != null) {
 			AnnotationAwareOrderComparator.sort(this.configurationCustomizers);
 			for (ArtemisConfigurationCustomizer customizer : this.configurationCustomizers) {

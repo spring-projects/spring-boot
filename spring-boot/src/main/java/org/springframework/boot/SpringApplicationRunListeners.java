@@ -37,8 +37,7 @@ class SpringApplicationRunListeners {
 
 	private final List<SpringApplicationRunListener> listeners;
 
-	SpringApplicationRunListeners(Log log,
-			Collection<? extends SpringApplicationRunListener> listeners) {
+	SpringApplicationRunListeners(Log log, Collection<? extends SpringApplicationRunListener> listeners) {
 		this.log = log;
 		this.listeners = new ArrayList<SpringApplicationRunListener>(listeners);
 	}
@@ -73,8 +72,8 @@ class SpringApplicationRunListeners {
 		}
 	}
 
-	private void callFinishedListener(SpringApplicationRunListener listener,
-			ConfigurableApplicationContext context, Throwable exception) {
+	private void callFinishedListener(SpringApplicationRunListener listener, ConfigurableApplicationContext context,
+			Throwable exception) {
 		try {
 			listener.finished(context, exception);
 		}

@@ -46,8 +46,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @see EmbeddedWebApplicationContext
  * @see AnnotationConfigWebApplicationContext
  */
-public class AnnotationConfigEmbeddedWebApplicationContext
-		extends EmbeddedWebApplicationContext {
+public class AnnotationConfigEmbeddedWebApplicationContext extends EmbeddedWebApplicationContext {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
@@ -121,8 +120,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.reader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
-		this.getBeanFactory().registerSingleton(
-				AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+		this.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
 				beanNameGenerator);
 	}
 
@@ -154,8 +152,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext
 	 */
 	public final void register(Class<?>... annotatedClasses) {
 		this.annotatedClasses = annotatedClasses;
-		Assert.notEmpty(annotatedClasses,
-				"At least one annotated class must be specified");
+		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
 	}
 
 	/**

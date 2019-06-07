@@ -90,8 +90,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@Test
 	public void testValidationWithSetter() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"test.foo=spam");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "test.foo=spam");
 		this.context.register(TestConfigurationWithValidatingSetter.class);
 		assertBindingFailure(1);
 	}
@@ -99,8 +98,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@Test
 	public void unknownFieldFailureMessageContainsDetailsOfPropertyOrigin() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"com.example.baz=spam");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "com.example.baz=spam");
 		this.context.register(TestConfiguration.class);
 		try {
 			this.context.refresh();
@@ -109,11 +107,9 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		catch (BeanCreationException ex) {
 			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex
 					.getRootCause();
-			assertThat(bex.getMessage())
-					.startsWith("Failed to bind 'com.example.baz' from '"
-							+ TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME
-							+ "' to 'baz' " + "property on '"
-							+ TestConfiguration.class.getName());
+			assertThat(bex.getMessage()).startsWith("Failed to bind 'com.example.baz' from '"
+					+ TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME + "' to 'baz' " + "property on '"
+					+ TestConfiguration.class.getName());
 		}
 	}
 
@@ -160,8 +156,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfigurationWithValidationAndInterface.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ValidatedPropertiesImpl.class).getFoo())
-				.isEqualTo("bar");
+		assertThat(this.context.getBean(ValidatedPropertiesImpl.class).getFoo()).isEqualTo("bar");
 	}
 
 	@Test
@@ -187,8 +182,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		env.setProperty("test.foo", "bar");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(env);
-		this.context.register(TestConfigurationWithCustomValidator.class,
-				PropertyWithValidatingSetter.class);
+		this.context.register(TestConfigurationWithCustomValidator.class, PropertyWithValidatingSetter.class);
 		assertBindingFailure(1);
 	}
 
@@ -210,8 +204,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, property);
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue())
-				.isEqualTo(FooEnum.FOO);
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue()).isEqualTo(FooEnum.FOO);
 		this.context.close();
 	}
 
@@ -228,20 +221,17 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, property);
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValues())
-				.contains(expected);
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValues()).contains(expected);
 		this.context.close();
 	}
 
 	@Test
 	public void testValueBindingForDefaults() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"default.value=foo");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "default.value=foo");
 		this.context.register(PropertyWithValue.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithValue.class).getValue())
-				.isEqualTo("foo");
+		assertThat(this.context.getBean(PropertyWithValue.class).getValue()).isEqualTo("foo");
 	}
 
 	@Test
@@ -250,8 +240,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext() {
 			@Override
 			protected void onRefresh() throws BeansException {
-				assertThat(ConfigurationPropertiesWithFactoryBean.factoryBeanInit)
-						.as("Init too early").isFalse();
+				assertThat(ConfigurationPropertiesWithFactoryBean.factoryBeanInit).as("Init too early").isFalse();
 				super.onRefresh();
 			}
 		};
@@ -261,26 +250,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 		this.context.registerBeanDefinition("test", beanDefinition);
 		this.context.refresh();
-		assertThat(ConfigurationPropertiesWithFactoryBean.factoryBeanInit).as("No init")
-				.isTrue();
+		assertThat(ConfigurationPropertiesWithFactoryBean.factoryBeanInit).as("No init").isTrue();
 	}
 
 	@Test
 	public void configurationPropertiesWithCharArray() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"test.chars=word");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "test.chars=word");
 		this.context.register(PropertyWithCharArray.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithCharArray.class).getChars())
-				.isEqualTo("word".toCharArray());
+		assertThat(this.context.getBean(PropertyWithCharArray.class).getChars()).isEqualTo("word".toCharArray());
 	}
 
 	@Test
 	public void configurationPropertiesWithArrayExpansion() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"test.chars[4]=s");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "test.chars[4]=s");
 		this.context.register(PropertyWithCharArrayExpansion.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithCharArrayExpansion.class).getChars())
@@ -290,8 +275,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@Test
 	public void notWritablePropertyException() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"test.madeup:word");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "test.madeup:word");
 		this.context.register(PropertyWithCharArray.class);
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("test");
@@ -300,20 +284,19 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void relaxedPropertyNamesSame() throws Exception {
-		testRelaxedPropertyNames("test.FOO_BAR=test1", "test.FOO_BAR=test2",
-				"test.BAR-B-A-Z=testa", "test.BAR-B-A-Z=testb");
+		testRelaxedPropertyNames("test.FOO_BAR=test1", "test.FOO_BAR=test2", "test.BAR-B-A-Z=testa",
+				"test.BAR-B-A-Z=testb");
 	}
 
 	@Test
 	public void relaxedPropertyNamesMixed() throws Exception {
-		testRelaxedPropertyNames("test.FOO_BAR=test2", "test.foo-bar=test1",
-				"test.BAR-B-A-Z=testb", "test.bar_b_a_z=testa");
+		testRelaxedPropertyNames("test.FOO_BAR=test2", "test.foo-bar=test1", "test.BAR-B-A-Z=testb",
+				"test.bar_b_a_z=testa");
 	}
 
 	private void testRelaxedPropertyNames(String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				environment);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, environment);
 		this.context.register(RelaxedPropertyNames.class);
 		this.context.refresh();
 		RelaxedPropertyNames bean = this.context.getBean(RelaxedPropertyNames.class);
@@ -325,19 +308,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	public void nestedProperties() throws Exception {
 		// gh-3539
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"TEST_NESTED_VALUE=test1");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "TEST_NESTED_VALUE=test1");
 		this.context.register(PropertyWithNestedValue.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithNestedValue.class).getNested()
-				.getValue()).isEqualTo("test1");
+		assertThat(this.context.getBean(PropertyWithNestedValue.class).getNested().getValue()).isEqualTo("test1");
 	}
 
 	@Test
 	public void bindWithoutConfigurationPropertiesAnnotation() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name:foo");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "name:foo");
 		this.context.register(ConfigurationPropertiesWithoutAnnotation.class);
 
 		this.thrown.expect(IllegalArgumentException.class);
@@ -350,19 +330,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MultiplePropertySourcesPlaceholderConfigurer.class);
 		this.context.refresh();
-		assertThat(this.output.toString()).contains(
-				"Multiple PropertySourcesPlaceholderConfigurer beans registered");
+		assertThat(this.output.toString()).contains("Multiple PropertySourcesPlaceholderConfigurer beans registered");
 	}
 
 	@Test
 	public void propertiesWithMap() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"test.map.foo=bar");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "test.map.foo=bar");
 		this.context.register(PropertiesWithMap.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertiesWithMap.class).getMap())
-				.containsEntry("foo", "bar");
+		assertThat(this.context.getBean(PropertiesWithMap.class).getMap()).containsEntry("foo", "bar");
 	}
 
 	private void assertBindingFailure(int errorCount) {
@@ -379,16 +356,13 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@Test
 	public void customProtocolResolverIsInvoked() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"test.resource=application.properties");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "test.resource=application.properties");
 		ProtocolResolver protocolResolver = mock(ProtocolResolver.class);
-		given(protocolResolver.resolve(anyString(), any(ResourceLoader.class)))
-				.willReturn(null);
+		given(protocolResolver.resolve(anyString(), any(ResourceLoader.class))).willReturn(null);
 		this.context.addProtocolResolver(protocolResolver);
 		this.context.register(PropertiesWithResource.class);
 		this.context.refresh();
-		verify(protocolResolver).resolve(eq("application.properties"),
-				any(ResourceLoader.class));
+		verify(protocolResolver).resolve(eq("application.properties"), any(ResourceLoader.class));
 	}
 
 	@Test
@@ -399,13 +373,11 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.addProtocolResolver(new TestProtocolResolver());
 		this.context.register(PropertiesWithResource.class);
 		this.context.refresh();
-		Resource resource = this.context.getBean(PropertiesWithResource.class)
-				.getResource();
+		Resource resource = this.context.getBean(PropertiesWithResource.class).getResource();
 		assertThat(resource).isNotNull();
 		assertThat(resource).isInstanceOf(ClassPathResource.class);
 		assertThat(resource.exists()).isTrue();
-		assertThat(((ClassPathResource) resource).getPath())
-				.isEqualTo("application.properties");
+		assertThat(((ClassPathResource) resource).getPath()).isEqualTo("application.properties");
 	}
 
 	@Configuration

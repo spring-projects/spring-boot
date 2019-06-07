@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		DevToolsSettings settings = DevToolsSettings.get();
 		List<URL> reloadableUrls = new ArrayList<URL>(urls.length);
 		for (URL url : urls) {
-			if ((settings.isRestartInclude(url) || isFolderUrl(url.toString()))
-					&& !settings.isRestartExclude(url)) {
+			if ((settings.isRestartInclude(url) || isFolderUrl(url.toString())) && !settings.isRestartExclude(url)) {
 				reloadableUrls.add(url);
 			}
 		}
@@ -107,9 +106,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			return getUrlsFromManifestClassPathAttribute(url, jarFile);
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException(
-					"Failed to read Class-Path attribute from manifest of jar " + url,
-					ex);
+			throw new IllegalStateException("Failed to read Class-Path attribute from manifest of jar " + url, ex);
 		}
 	}
 
@@ -126,14 +123,12 @@ final class ChangeableUrls implements Iterable<URL> {
 		return null;
 	}
 
-	private static List<URL> getUrlsFromManifestClassPathAttribute(URL jarUrl,
-			JarFile jarFile) throws IOException {
+	private static List<URL> getUrlsFromManifestClassPathAttribute(URL jarUrl, JarFile jarFile) throws IOException {
 		Manifest manifest = jarFile.getManifest();
 		if (manifest == null) {
 			return Collections.<URL>emptyList();
 		}
-		String classPath = manifest.getMainAttributes()
-				.getValue(Attributes.Name.CLASS_PATH);
+		String classPath = manifest.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
 		if (!StringUtils.hasText(classPath)) {
 			return Collections.emptyList();
 		}
@@ -151,8 +146,7 @@ final class ChangeableUrls implements Iterable<URL> {
 				}
 			}
 			catch (MalformedURLException ex) {
-				throw new IllegalStateException(
-						"Class-Path attribute contains malformed URL", ex);
+				throw new IllegalStateException("Class-Path attribute contains malformed URL", ex);
 			}
 		}
 		if (!nonExistentEntries.isEmpty()) {

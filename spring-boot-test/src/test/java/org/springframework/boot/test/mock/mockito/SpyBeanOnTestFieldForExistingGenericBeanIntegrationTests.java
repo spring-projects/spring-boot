@@ -56,8 +56,7 @@ public class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
 	}
 
 	@Configuration
-	@Import({ ExampleGenericServiceCaller.class,
-			SimpleExampleIntegerGenericService.class })
+	@Import({ ExampleGenericServiceCaller.class, SimpleExampleIntegerGenericService.class })
 	static class SpyBeanOnTestFieldForExistingBeanConfig {
 
 		@Bean

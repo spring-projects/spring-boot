@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private boolean initialized = false;
 
-	DataSourceInitializer(DataSourceProperties properties,
-			ApplicationContext applicationContext) {
+	DataSourceInitializer(DataSourceProperties properties, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.applicationContext = applicationContext;
 	}
@@ -72,8 +71,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 			logger.debug("Initialization disabled (not running DDL scripts)");
 			return;
 		}
-		if (this.applicationContext.getBeanNamesForType(DataSource.class, false,
-				false).length > 0) {
+		if (this.applicationContext.getBeanNamesForType(DataSource.class, false, false).length > 0) {
 			this.dataSource = this.applicationContext.getBean(DataSource.class);
 		}
 		if (this.dataSource == null) {
@@ -84,15 +82,13 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	}
 
 	private void runSchemaScripts() {
-		List<Resource> scripts = getScripts("spring.datasource.schema",
-				this.properties.getSchema(), "schema");
+		List<Resource> scripts = getScripts("spring.datasource.schema", this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
 			String username = this.properties.getSchemaUsername();
 			String password = this.properties.getSchemaPassword();
 			runScripts(scripts, username, password);
 			try {
-				this.applicationContext
-						.publishEvent(new DataSourceInitializedEvent(this.dataSource));
+				this.applicationContext.publishEvent(new DataSourceInitializedEvent(this.dataSource));
 				// The listener might not be registered yet, so don't rely on it.
 				if (!this.initialized) {
 					runDataScripts();
@@ -100,8 +96,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 				}
 			}
 			catch (IllegalStateException ex) {
-				logger.warn("Could not send event to complete DataSource initialization ("
-						+ ex.getMessage() + ")");
+				logger.warn("Could not send event to complete DataSource initialization (" + ex.getMessage() + ")");
 			}
 		}
 	}
@@ -121,15 +116,13 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	}
 
 	private void runDataScripts() {
-		List<Resource> scripts = getScripts("spring.datasource.data",
-				this.properties.getData(), "data");
+		List<Resource> scripts = getScripts("spring.datasource.data", this.properties.getData(), "data");
 		String username = this.properties.getDataUsername();
 		String password = this.properties.getDataPassword();
 		runScripts(scripts, username, password);
 	}
 
-	private List<Resource> getScripts(String propertyName, List<String> resources,
-			String fallback) {
+	private List<Resource> getScripts(String propertyName, List<String> resources, String fallback) {
 		if (resources != null) {
 			return getResources(propertyName, resources, true);
 		}
@@ -140,8 +133,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		return getResources(propertyName, fallbackResources, false);
 	}
 
-	private List<Resource> getResources(String propertyName, List<String> locations,
-			boolean validate) {
+	private List<Resource> getResources(String propertyName, List<String> locations, boolean validate) {
 		List<Resource> resources = new ArrayList<Resource>();
 		for (String location : locations) {
 			for (Resource resource : doGetResources(location)) {
@@ -158,14 +150,13 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private Resource[] doGetResources(String location) {
 		try {
-			SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(
-					this.applicationContext, Collections.singletonList(location));
+			SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(this.applicationContext,
+					Collections.singletonList(location));
 			factory.afterPropertiesSet();
 			return factory.getObject();
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to load resources from " + location,
-					ex);
+			throw new IllegalStateException("Unable to load resources from " + location, ex);
 		}
 	}
 
@@ -185,9 +176,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		DataSource dataSource = this.dataSource;
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			dataSource = DataSourceBuilder.create(this.properties.getClassLoader())
-					.driverClassName(this.properties.determineDriverClassName())
-					.url(this.properties.determineUrl()).username(username)
-					.password(password).build();
+					.driverClassName(this.properties.determineDriverClassName()).url(this.properties.determineUrl())
+					.username(username).password(password).build();
 		}
 		DatabasePopulatorUtils.execute(populator, dataSource);
 	}

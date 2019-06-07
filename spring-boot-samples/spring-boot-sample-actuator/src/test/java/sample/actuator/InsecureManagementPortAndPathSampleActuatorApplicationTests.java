@@ -42,8 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.port=0", "management.context-path=/admin",
-				"management.security.enabled=false" })
+		properties = { "management.port=0", "management.context-path=/admin", "management.security.enabled=false" })
 @DirtiesContext
 public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 
@@ -71,25 +70,23 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/health",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
 
 	@Test
 	public void testMissing() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/missing",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}

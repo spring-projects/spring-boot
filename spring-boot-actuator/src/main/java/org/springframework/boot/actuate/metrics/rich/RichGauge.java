@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,7 @@ public final class RichGauge {
 		this.count = 1;
 	}
 
-	public RichGauge(String name, double value, double alpha, double mean, double max,
-			double min, long count) {
+	public RichGauge(String name, double value, double alpha, double mean, double max, double min, long count) {
 		this.name = name;
 		this.value = value;
 		this.alpha = alpha;
@@ -230,9 +229,8 @@ public final class RichGauge {
 
 	@Override
 	public String toString() {
-		return "Gauge [name = " + this.name + ", value = " + this.value + ", alpha = "
-				+ this.alpha + ", average = " + this.average + ", max = " + this.max
-				+ ", min = " + this.min + ", count = " + this.count + "]";
+		return "Gauge [name = " + this.name + ", value = " + this.value + ", alpha = " + this.alpha + ", average = "
+				+ this.average + ", max = " + this.max + ", min = " + this.min + ", count = " + this.count + "]";
 	}
 
 }

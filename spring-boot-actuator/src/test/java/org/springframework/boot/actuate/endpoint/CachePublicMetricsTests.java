@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class CachePublicMetricsTests {
 
 	@Before
 	public void setup() {
-		this.cacheManagers.put("cacheManager",
-				new ConcurrentMapCacheManager("foo", "bar"));
+		this.cacheManagers.put("cacheManager", new ConcurrentMapCacheManager("foo", "bar"));
 	}
 
 	@Test
@@ -58,8 +57,7 @@ public class CachePublicMetricsTests {
 		CachePublicMetrics cpm = new CachePublicMetrics(this.cacheManagers,
 				providers(new ConcurrentMapCacheStatisticsProvider()));
 		Map<String, Number> metrics = metrics(cpm);
-		assertThat(metrics).containsOnly(entry("cache.foo.size", 0L),
-				entry("cache.bar.size", 0L));
+		assertThat(metrics).containsOnly(entry("cache.foo.size", 0L), entry("cache.bar.size", 0L));
 	}
 
 	@Test
@@ -72,21 +70,19 @@ public class CachePublicMetricsTests {
 
 	@Test
 	public void cacheMetricsWithMultipleCacheManagers() {
-		this.cacheManagers.put("anotherCacheManager",
-				new ConcurrentMapCacheManager("foo"));
+		this.cacheManagers.put("anotherCacheManager", new ConcurrentMapCacheManager("foo"));
 		CachePublicMetrics cpm = new CachePublicMetrics(this.cacheManagers,
 				providers(new ConcurrentMapCacheStatisticsProvider()));
 		Map<String, Number> metrics = metrics(cpm);
-		assertThat(metrics).containsOnly(entry("cache.cacheManager_foo.size", 0L),
-				entry("cache.bar.size", 0L),
+		assertThat(metrics).containsOnly(entry("cache.cacheManager_foo.size", 0L), entry("cache.bar.size", 0L),
 				entry("cache.anotherCacheManager_foo.size", 0L));
 	}
 
 	@Test
 	public void cacheMetricsWithTransactionAwareCacheDecorator() {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		cacheManager.setCaches(Collections.singletonList(
-				new TransactionAwareCacheDecorator(new ConcurrentMapCache("foo"))));
+		cacheManager.setCaches(
+				Collections.singletonList(new TransactionAwareCacheDecorator(new ConcurrentMapCache("foo"))));
 		cacheManager.afterPropertiesSet();
 		this.cacheManagers.put("cacheManager", cacheManager);
 		CachePublicMetrics cpm = new CachePublicMetrics(this.cacheManagers,
@@ -105,8 +101,7 @@ public class CachePublicMetricsTests {
 		return result;
 	}
 
-	private Collection<CacheStatisticsProvider<?>> providers(
-			CacheStatisticsProvider<?>... providers) {
+	private Collection<CacheStatisticsProvider<?>> providers(CacheStatisticsProvider<?>... providers) {
 		return Arrays.asList(providers);
 	}
 

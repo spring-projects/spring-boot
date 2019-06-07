@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ public class ProjectInfoAutoConfigurationTests {
 	@Test
 	public void gitPropertiesUnavailableIfResourceNotAvailable() {
 		load();
-		Map<String, GitProperties> beans = this.context
-				.getBeansOfType(GitProperties.class);
+		Map<String, GitProperties> beans = this.context.getBeansOfType(GitProperties.class);
 		assertThat(beans).hasSize(0);
 	}
 
@@ -62,8 +61,7 @@ public class ProjectInfoAutoConfigurationTests {
 				"spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties");
 		GitProperties gitProperties = this.context.getBean(GitProperties.class);
 		assertThat(gitProperties.getBranch()).isNull();
-		assertThat(gitProperties.getCommitId())
-				.isEqualTo("f95038ec09e29d8f91982fd1cbcc0f3b131b1d0a");
+		assertThat(gitProperties.getCommitId()).isEqualTo("f95038ec09e29d8f91982fd1cbcc0f3b131b1d0a");
 		assertThat(gitProperties.getCommitTime().getTime()).isEqualTo(1456995720000L);
 	}
 
@@ -72,8 +70,7 @@ public class ProjectInfoAutoConfigurationTests {
 		load("spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-epoch.properties");
 		GitProperties gitProperties = this.context.getBean(GitProperties.class);
 		assertThat(gitProperties.getBranch()).isEqualTo("master");
-		assertThat(gitProperties.getCommitId())
-				.isEqualTo("5009933788f5f8c687719de6a697074ff80b1b69");
+		assertThat(gitProperties.getCommitId()).isEqualTo("5009933788f5f8c687719de6a697074ff80b1b69");
 		assertThat(gitProperties.getCommitTime().getTime()).isEqualTo(1457103850000L);
 	}
 
@@ -117,8 +114,7 @@ public class ProjectInfoAutoConfigurationTests {
 	@Test
 	public void buildPropertiesCustomInvalidLocation() {
 		load("spring.info.build.location=classpath:/org/acme/no-build-info.properties");
-		Map<String, BuildProperties> beans = this.context
-				.getBeansOfType(BuildProperties.class);
+		Map<String, BuildProperties> beans = this.context.getBeansOfType(BuildProperties.class);
 		assertThat(beans).hasSize(0);
 	}
 
@@ -126,8 +122,7 @@ public class ProjectInfoAutoConfigurationTests {
 	public void buildPropertiesFallbackWithBuildInfoBean() {
 		load(CustomInfoPropertiesConfiguration.class);
 		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
-		assertThat(buildProperties)
-				.isSameAs(this.context.getBean("customBuildProperties"));
+		assertThat(buildProperties).isSameAs(this.context.getBean("customBuildProperties"));
 	}
 
 	private void load(String... environment) {
@@ -139,8 +134,7 @@ public class ProjectInfoAutoConfigurationTests {
 		if (config != null) {
 			context.register(config);
 		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				ProjectInfoAutoConfiguration.class);
+		context.register(PropertyPlaceholderAutoConfiguration.class, ProjectInfoAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(context, environment);
 		context.refresh();
 		this.context = context;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,23 +53,20 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 	@Before
 	public void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
-		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				TestableInitialContextFactory.class.getName());
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestableInitialContextFactory.class.getName());
 	}
 
 	@Before
 	public void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
-		Thread.currentThread().setContextClassLoader(
-				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
+		Thread.currentThread().setContextClassLoader(new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
 	@After
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
-			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-					this.initialContextFactory);
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);
 		}
 		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
@@ -95,8 +92,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 
 	@Test
 	public void detectWithXAConnectionFactory() {
-		ConnectionFactory connectionFactory = configureConnectionFactory(
-				"java:/XAConnectionFactory");
+		ConnectionFactory connectionFactory = configureConnectionFactory("java:/XAConnectionFactory");
 		load();
 		assertConnectionFactory(connectionFactory);
 	}
@@ -117,8 +113,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 
 	private void assertConnectionFactory(ConnectionFactory connectionFactory) {
 		assertThat(this.context.getBeansOfType(ConnectionFactory.class)).hasSize(1);
-		assertThat(this.context.getBean(ConnectionFactory.class))
-				.isSameAs(connectionFactory);
+		assertThat(this.context.getBean(ConnectionFactory.class)).isSameAs(connectionFactory);
 	}
 
 	private void load(String... environment) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,11 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * instance to configure
 	 * @param consumerFactory the {@link ConsumerFactory} to use
 	 */
-	public void configure(
-			ConcurrentKafkaListenerContainerFactory<Object, Object> listenerContainerFactory,
+	public void configure(ConcurrentKafkaListenerContainerFactory<Object, Object> listenerContainerFactory,
 			ConsumerFactory<Object, Object> consumerFactory) {
 		listenerContainerFactory.setConsumerFactory(consumerFactory);
 		Listener container = this.properties.getListener();
-		ContainerProperties containerProperties = listenerContainerFactory
-				.getContainerProperties();
+		ContainerProperties containerProperties = listenerContainerFactory.getContainerProperties();
 		if (container.getAckMode() != null) {
 			containerProperties.setAckMode(container.getAckMode());
 		}

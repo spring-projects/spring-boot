@@ -50,15 +50,14 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		if (!this.propertySource.isEmpty()) {
 			context.getEnvironment().getPropertySources().addFirst(this.propertySource);
 		}
-		context.getBeanFactory().registerSingleton(
-				PropertyMappingCheckBeanPostProcessor.class.getName(),
+		context.getBeanFactory().registerSingleton(PropertyMappingCheckBeanPostProcessor.class.getName(),
 				new PropertyMappingCheckBeanPostProcessor());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj != null && getClass().equals(obj.getClass()) && this.propertySource
-				.equals(((PropertyMappingContextCustomizer) obj).propertySource));
+		return (obj != null && getClass().equals(obj.getClass())
+				&& this.propertySource.equals(((PropertyMappingContextCustomizer) obj).propertySource));
 	}
 
 	@Override
@@ -73,8 +72,7 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 	static class PropertyMappingCheckBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			Class<?> beanClass = bean.getClass();
 			Set<Class<?>> components = new LinkedHashSet<Class<?>>();
 			Set<Class<?>> propertyMappings = new LinkedHashSet<Class<?>>();
@@ -93,19 +91,17 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 				beanClass = beanClass.getSuperclass();
 			}
 			if (!components.isEmpty() && !propertyMappings.isEmpty()) {
-				throw new IllegalStateException("The @PropertyMapping "
-						+ getAnnotationsDescription(propertyMappings)
+				throw new IllegalStateException("The @PropertyMapping " + getAnnotationsDescription(propertyMappings)
 						+ " cannot be used in combination with the @Component "
 						+ getAnnotationsDescription(components));
 			}
 			return bean;
 		}
 
-		private boolean isAnnotated(Annotation element,
-				Class<? extends Annotation> annotationType) {
+		private boolean isAnnotated(Annotation element, Class<? extends Annotation> annotationType) {
 			try {
-				return element.annotationType().equals(annotationType) || AnnotationUtils
-						.findAnnotation(element.annotationType(), annotationType) != null;
+				return element.annotationType().equals(annotationType)
+						|| AnnotationUtils.findAnnotation(element.annotationType(), annotationType) != null;
 			}
 			catch (Throwable ex) {
 				return false;
@@ -123,8 +119,7 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
 

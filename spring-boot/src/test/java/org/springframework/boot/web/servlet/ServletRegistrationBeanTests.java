@@ -69,10 +69,8 @@ public class ServletRegistrationBeanTests {
 	@Before
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addServlet(anyString(), (Servlet) anyObject()))
-				.willReturn(this.registration);
-		given(this.servletContext.addFilter(anyString(), (Filter) anyObject()))
-				.willReturn(this.filterRegistration);
+		given(this.servletContext.addServlet(anyString(), (Servlet) anyObject())).willReturn(this.registration);
+		given(this.servletContext.addFilter(anyString(), (Filter) anyObject())).willReturn(this.filterRegistration);
 	}
 
 	@Test
@@ -87,8 +85,7 @@ public class ServletRegistrationBeanTests {
 	@Test
 	public void startupWithDoubleRegistration() throws Exception {
 		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet);
-		given(this.servletContext.addServlet(anyString(), (Servlet) anyObject()))
-				.willReturn(null);
+		given(this.servletContext.addServlet(anyString(), (Servlet) anyObject())).willReturn(null);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);
 		verify(this.registration, never()).setAsyncSupported(true);
@@ -182,8 +179,7 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void setMappingReplacesValue() throws Exception {
-		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet, "/a",
-				"/b");
+		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet, "/a", "/b");
 		bean.setUrlMappings(new LinkedHashSet<String>(Arrays.asList("/c", "/d")));
 		bean.onStartup(this.servletContext);
 		verify(this.registration).addMapping("/c", "/d");
@@ -191,8 +187,7 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void modifyInitParameters() throws Exception {
-		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet, "/a",
-				"/b");
+		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet, "/a", "/b");
 		bean.addInitParameter("a", "b");
 		bean.getInitParameters().put("a", "c");
 		bean.onStartup(this.servletContext);

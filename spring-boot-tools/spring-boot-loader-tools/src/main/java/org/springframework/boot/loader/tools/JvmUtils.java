@@ -31,8 +31,7 @@ abstract class JvmUtils {
 	/**
 	 * Various search locations for tools, including the odd Java 6 OSX jar.
 	 */
-	private static final String[] TOOLS_LOCATIONS = { "lib/tools.jar", "../lib/tools.jar",
-			"../Classes/classes.jar" };
+	private static final String[] TOOLS_LOCATIONS = { "lib/tools.jar", "../lib/tools.jar", "../Classes/classes.jar" };
 
 	public static ClassLoader getToolsClassLoader() {
 		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
@@ -57,8 +56,7 @@ abstract class JvmUtils {
 
 	private static String getJavaHome() {
 		try {
-			return new File(System.getProperty("java.home")).toURI().toURL()
-					.toExternalForm();
+			return new File(System.getProperty("java.home")).toURI().toURL().toExternalForm();
 		}
 		catch (MalformedURLException ex) {
 			throw new IllegalStateException("Cannot locate java.home", ex);

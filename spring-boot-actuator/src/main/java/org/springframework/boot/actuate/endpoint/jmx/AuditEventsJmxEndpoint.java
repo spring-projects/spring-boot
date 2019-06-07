@@ -41,34 +41,27 @@ public class AuditEventsJmxEndpoint extends AbstractJmxEndpoint {
 
 	private final AuditEventRepository auditEventRepository;
 
-	public AuditEventsJmxEndpoint(ObjectMapper objectMapper,
-			AuditEventRepository auditEventRepository) {
+	public AuditEventsJmxEndpoint(ObjectMapper objectMapper, AuditEventRepository auditEventRepository) {
 		super(objectMapper);
 		Assert.notNull(auditEventRepository, "AuditEventRepository must not be null");
 		this.auditEventRepository = auditEventRepository;
 	}
 
-	@ManagedOperation(
-			description = "Retrieves a list of audit events meeting the given criteria")
+	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String dateAfter) {
-		List<AuditEvent> auditEvents = this.auditEventRepository
-				.find(parseDate(dateAfter));
+		List<AuditEvent> auditEvents = this.auditEventRepository.find(parseDate(dateAfter));
 		return convert(auditEvents);
 	}
 
-	@ManagedOperation(
-			description = "Retrieves a list of audit events meeting the given criteria")
+	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String dateAfter, String principal) {
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal,
-				parseDate(dateAfter));
+		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal, parseDate(dateAfter));
 		return convert(auditEvents);
 	}
 
-	@ManagedOperation(
-			description = "Retrieves a list of audit events meeting the given criteria")
+	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String principal, String dateAfter, String type) {
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal,
-				parseDate(dateAfter), type);
+		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal, parseDate(dateAfter), type);
 		return convert(auditEvents);
 	}
 

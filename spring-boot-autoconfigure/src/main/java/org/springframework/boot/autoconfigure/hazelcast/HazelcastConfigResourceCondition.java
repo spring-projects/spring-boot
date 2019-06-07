@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,16 +35,14 @@ public abstract class HazelcastConfigResourceCondition extends ResourceCondition
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
 	protected HazelcastConfigResourceCondition(String prefix, String propertyName) {
-		super("Hazelcast", prefix, propertyName, "file:./hazelcast.xml",
-				"classpath:/hazelcast.xml");
+		super("Hazelcast", prefix, propertyName, "file:./hazelcast.xml", "classpath:/hazelcast.xml");
 	}
 
 	@Override
-	protected ConditionOutcome getResourceOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	protected ConditionOutcome getResourceOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (System.getProperty(CONFIG_SYSTEM_PROPERTY) != null) {
-			return ConditionOutcome.match(startConditionMessage()
-					.because("System property '" + CONFIG_SYSTEM_PROPERTY + "' is set."));
+			return ConditionOutcome
+					.match(startConditionMessage().because("System property '" + CONFIG_SYSTEM_PROPERTY + "' is set."));
 		}
 		return super.getResourceOutcome(context, metadata);
 	}

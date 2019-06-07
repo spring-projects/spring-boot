@@ -35,8 +35,7 @@ public class JavaExecutable {
 
 	public JavaExecutable() {
 		String javaHome = System.getProperty("java.home");
-		Assert.state(StringUtils.hasLength(javaHome),
-				"Unable to find java executable due to missing 'java.home'");
+		Assert.state(StringUtils.hasLength(javaHome), "Unable to find java executable due to missing 'java.home'");
 		this.file = findInJavaHome(javaHome);
 	}
 

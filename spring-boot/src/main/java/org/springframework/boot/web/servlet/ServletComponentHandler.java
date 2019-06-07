@@ -48,23 +48,19 @@ abstract class ServletComponentHandler {
 		return this.typeFilter;
 	}
 
-	protected String[] extractUrlPatterns(String attribute,
-			Map<String, Object> attributes) {
+	protected String[] extractUrlPatterns(String attribute, Map<String, Object> attributes) {
 		String[] value = (String[]) attributes.get("value");
 		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
 		if (urlPatterns.length > 0) {
-			Assert.state(value.length == 0,
-					"The urlPatterns and value attributes are mutually exclusive.");
+			Assert.state(value.length == 0, "The urlPatterns and value attributes are mutually exclusive.");
 			return urlPatterns;
 		}
 		return value;
 	}
 
-	protected final Map<String, String> extractInitParameters(
-			Map<String, Object> attributes) {
+	protected final Map<String, String> extractInitParameters(Map<String, Object> attributes) {
 		Map<String, String> initParameters = new HashMap<String, String>();
-		for (AnnotationAttributes initParam : (AnnotationAttributes[]) attributes
-				.get("initParams")) {
+		for (AnnotationAttributes initParam : (AnnotationAttributes[]) attributes.get("initParams")) {
 			String name = (String) initParam.get("name");
 			String value = (String) initParam.get("value");
 			initParameters.put(name, value);
@@ -72,8 +68,7 @@ abstract class ServletComponentHandler {
 		return initParameters;
 	}
 
-	void handle(ScannedGenericBeanDefinition beanDefinition,
-			BeanDefinitionRegistry registry) {
+	void handle(ScannedGenericBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 				.getAnnotationAttributes(this.annotationType.getName());
 		if (attributes != null) {
@@ -81,7 +76,7 @@ abstract class ServletComponentHandler {
 		}
 	}
 
-	protected abstract void doHandle(Map<String, Object> attributes,
-			ScannedGenericBeanDefinition beanDefinition, BeanDefinitionRegistry registry);
+	protected abstract void doHandle(Map<String, Object> attributes, ScannedGenericBeanDefinition beanDefinition,
+			BeanDefinitionRegistry registry);
 
 }

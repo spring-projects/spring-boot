@@ -36,8 +36,8 @@ class SpyDefinition extends Definition {
 
 	private final ResolvableType typeToSpy;
 
-	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset,
-			boolean proxyTargetAware, QualifierDefinition qualifier) {
+	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset, boolean proxyTargetAware,
+			QualifierDefinition qualifier) {
 		super(name, reset, proxyTargetAware, qualifier);
 		Assert.notNull(typeToSpy, "TypeToSpy must not be null");
 		this.typeToSpy = typeToSpy;
@@ -71,9 +71,8 @@ class SpyDefinition extends Definition {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", getName())
-				.append("typeToSpy", this.typeToSpy).append("reset", getReset())
-				.toString();
+		return new ToStringCreator(this).append("name", getName()).append("typeToSpy", this.typeToSpy)
+				.append("reset", getReset()).toString();
 	}
 
 	public <T> T createSpy(Object instance) {

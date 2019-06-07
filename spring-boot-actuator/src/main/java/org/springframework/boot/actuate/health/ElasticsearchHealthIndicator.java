@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 
 	private final ElasticsearchHealthIndicatorProperties properties;
 
-	public ElasticsearchHealthIndicator(Client client,
-			ElasticsearchHealthIndicatorProperties properties) {
+	public ElasticsearchHealthIndicator(Client client, ElasticsearchHealthIndicatorProperties properties) {
 		this.client = client;
 		this.properties = properties;
 	}
@@ -47,8 +46,8 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		List<String> indices = this.properties.getIndices();
 		ClusterHealthResponse response = this.client.admin().cluster()
-				.health(Requests.clusterHealthRequest(indices.isEmpty() ? allIndices
-						: indices.toArray(new String[indices.size()])))
+				.health(Requests.clusterHealthRequest(
+						indices.isEmpty() ? allIndices : indices.toArray(new String[indices.size()])))
 				.actionGet(this.properties.getResponseTimeout());
 
 		switch (response.getStatus()) {

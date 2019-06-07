@@ -33,8 +33,8 @@ import org.springframework.boot.gradle.PluginFeatures;
  */
 public class DependencyManagementPluginFeatures implements PluginFeatures {
 
-	private static final String SPRING_BOOT_VERSION = DependencyManagementPluginFeatures.class
-			.getPackage().getImplementationVersion();
+	private static final String SPRING_BOOT_VERSION = DependencyManagementPluginFeatures.class.getPackage()
+			.getImplementationVersion();
 
 	private static final String SPRING_BOOT_BOM = "org.springframework.boot:spring-boot-starter-parent:"
 			+ SPRING_BOOT_VERSION;

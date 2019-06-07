@@ -59,8 +59,7 @@ class TypeElementMembers {
 
 	private final FieldValuesParser fieldValuesParser;
 
-	TypeElementMembers(ProcessingEnvironment env, FieldValuesParser fieldValuesParser,
-			TypeElement element) {
+	TypeElementMembers(ProcessingEnvironment env, FieldValuesParser fieldValuesParser, TypeElement element) {
 		this.env = env;
 		this.typeUtils = new TypeUtils(this.env);
 		this.fieldValuesParser = fieldValuesParser;
@@ -68,17 +67,14 @@ class TypeElementMembers {
 	}
 
 	private void process(TypeElement element) {
-		for (ExecutableElement method : ElementFilter
-				.methodsIn(element.getEnclosedElements())) {
+		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
 			processMethod(method);
 		}
-		for (VariableElement field : ElementFilter
-				.fieldsIn(element.getEnclosedElements())) {
+		for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
 			processField(field);
 		}
 		try {
-			Map<String, Object> fieldValues = this.fieldValuesParser
-					.getFieldValues(element);
+			Map<String, Object> fieldValues = this.fieldValuesParser.getFieldValues(element);
 			for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {
 				if (!this.fieldValues.containsKey(entry.getKey())) {
 					this.fieldValues.put(entry.getKey(), entry.getValue());
@@ -90,8 +86,7 @@ class TypeElementMembers {
 		}
 
 		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
-		if (superType != null && superType instanceof TypeElement
-				&& !OBJECT_CLASS_NAME.equals(superType.toString())) {
+		if (superType != null && superType instanceof TypeElement && !OBJECT_CLASS_NAME.equals(superType.toString())) {
 			process((TypeElement) superType);
 		}
 	}
@@ -104,8 +99,7 @@ class TypeElementMembers {
 			}
 			else if (isSetter(method)) {
 				String propertyName = getAccessorName(name);
-				List<ExecutableElement> matchingSetters = this.publicSetters
-						.get(propertyName);
+				List<ExecutableElement> matchingSetters = this.publicSetters.get(propertyName);
 				if (matchingSetters == null) {
 					matchingSetters = new ArrayList<ExecutableElement>();
 					this.publicSetters.put(propertyName, matchingSetters);
@@ -118,8 +112,7 @@ class TypeElementMembers {
 		}
 	}
 
-	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates,
-			TypeMirror type) {
+	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
 		for (ExecutableElement candidate : candidates) {
 			TypeMirror paramType = candidate.getParameters().get(0).asType();
 			if (this.env.getTypeUtils().isSameType(paramType, type)) {
@@ -131,27 +124,24 @@ class TypeElementMembers {
 
 	private boolean isGetter(ExecutableElement method) {
 		String name = method.getSimpleName().toString();
-		return ((name.startsWith("get") && name.length() > 3)
-				|| (name.startsWith("is") && name.length() > 2))
-				&& method.getParameters().isEmpty()
-				&& (TypeKind.VOID != method.getReturnType().getKind());
+		return ((name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2))
+				&& method.getParameters().isEmpty() && (TypeKind.VOID != method.getReturnType().getKind());
 	}
 
 	private boolean isSetter(ExecutableElement method) {
 		final String name = method.getSimpleName().toString();
-		return (name.startsWith("set") && name.length() > 3
-				&& method.getParameters().size() == 1 && isSetterReturnType(method));
+		return (name.startsWith("set") && name.length() > 3 && method.getParameters().size() == 1
+				&& isSetterReturnType(method));
 	}
 
 	private boolean isSetterReturnType(ExecutableElement method) {
 		TypeMirror returnType = method.getReturnType();
-		return (TypeKind.VOID == returnType.getKind() || this.env.getTypeUtils()
-				.isSameType(method.getEnclosingElement().asType(), returnType));
+		return (TypeKind.VOID == returnType.getKind()
+				|| this.env.getTypeUtils().isSameType(method.getEnclosingElement().asType(), returnType));
 	}
 
 	private String getAccessorName(String methodName) {
-		String name = (methodName.startsWith("is") ? methodName.substring(2)
-				: methodName.substring(3));
+		String name = (methodName.startsWith("is") ? methodName.substring(2) : methodName.substring(3));
 		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 		return name;
 	}
@@ -179,8 +169,7 @@ class TypeElementMembers {
 				return candidate;
 			}
 			TypeMirror alternative = this.typeUtils.getWrapperOrPrimitiveFor(type);
-			if (alternative != null
-					&& this.env.getTypeUtils().isSameType(returnType, alternative)) {
+			if (alternative != null && this.env.getTypeUtils().isSameType(returnType, alternative)) {
 				return candidate;
 			}
 		}

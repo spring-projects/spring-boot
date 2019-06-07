@@ -60,8 +60,7 @@ class GsonHttpMessageConvertersConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(
-				name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "gson", matchIfMissing = false)
 		static class GsonPreferred {
 

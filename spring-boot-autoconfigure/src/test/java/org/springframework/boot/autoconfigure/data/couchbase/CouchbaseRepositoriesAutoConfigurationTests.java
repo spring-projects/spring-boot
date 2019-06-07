@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void disableRepository() {
-		load(DefaultConfiguration.class,
-				"spring.data.couchbase.repositories.enabled=false");
+		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.enabled=false");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
@@ -81,9 +80,8 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 		if (config != null) {
 			context.register(config);
 		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
-				CouchbaseRepositoriesAutoConfiguration.class);
+		context.register(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,42 +48,35 @@ public class ElasticsearchDataAutoConfigurationTests {
 
 	@Test
 	public void templateBackOffWithNoClient() {
-		this.context = new AnnotationConfigApplicationContext(
-				ElasticsearchDataAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(ElasticsearchTemplate.class))
-				.isEmpty();
+		this.context = new AnnotationConfigApplicationContext(ElasticsearchDataAutoConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(ElasticsearchTemplate.class)).isEmpty();
 	}
 
 	@Test
 	public void templateExists() {
 		load("spring.data.elasticsearch.properties.path.data:target/data",
 				"spring.data.elasticsearch.properties.path.logs:target/logs");
-		assertThat(this.context.getBeanNamesForType(ElasticsearchTemplate.class))
-				.hasSize(1);
+		assertThat(this.context.getBeanNamesForType(ElasticsearchTemplate.class)).hasSize(1);
 	}
 
 	@Test
 	public void mappingContextExists() {
 		load("spring.data.elasticsearch.properties.path.data:target/data",
 				"spring.data.elasticsearch.properties.path.logs:target/logs");
-		assertThat(
-				this.context.getBeanNamesForType(SimpleElasticsearchMappingContext.class))
-						.hasSize(1);
+		assertThat(this.context.getBeanNamesForType(SimpleElasticsearchMappingContext.class)).hasSize(1);
 	}
 
 	@Test
 	public void converterExists() {
 		load("spring.data.elasticsearch.properties.path.data:target/data",
 				"spring.data.elasticsearch.properties.path.logs:target/logs");
-		assertThat(this.context.getBeanNamesForType(ElasticsearchConverter.class))
-				.hasSize(1);
+		assertThat(this.context.getBeanNamesForType(ElasticsearchConverter.class)).hasSize(1);
 	}
 
 	private void load(String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, environment);
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class,
+		context.register(PropertyPlaceholderAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		context.refresh();
 		this.context = context;

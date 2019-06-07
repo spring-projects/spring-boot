@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,8 @@ public class MetricFilterProperties {
 	private Set<MetricsFilterSubmission> counterSubmissions;
 
 	public MetricFilterProperties() {
-		this.gaugeSubmissions = new HashSet<MetricsFilterSubmission>(
-				EnumSet.of(MetricsFilterSubmission.MERGED));
-		this.counterSubmissions = new HashSet<MetricsFilterSubmission>(
-				EnumSet.of(MetricsFilterSubmission.MERGED));
+		this.gaugeSubmissions = new HashSet<MetricsFilterSubmission>(EnumSet.of(MetricsFilterSubmission.MERGED));
+		this.counterSubmissions = new HashSet<MetricsFilterSubmission>(EnumSet.of(MetricsFilterSubmission.MERGED));
 	}
 
 	public Set<MetricsFilterSubmission> getGaugeSubmissions() {
@@ -73,8 +71,7 @@ public class MetricFilterProperties {
 		return shouldSubmit(this.counterSubmissions, submission);
 	}
 
-	private boolean shouldSubmit(Set<MetricsFilterSubmission> submissions,
-			MetricsFilterSubmission submission) {
+	private boolean shouldSubmit(Set<MetricsFilterSubmission> submissions, MetricsFilterSubmission submission) {
 		return submissions != null && submissions.contains(submission);
 	}
 

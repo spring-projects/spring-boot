@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,7 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(GroovyTemplateAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(GroovyTemplateAutoConfiguration.class);
 
 	@Configuration
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
@@ -75,8 +74,7 @@ public class GroovyTemplateAutoConfiguration {
 
 		private final MarkupTemplateEngine templateEngine;
 
-		public GroovyMarkupConfiguration(ApplicationContext applicationContext,
-				GroovyTemplateProperties properties,
+		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties,
 				ObjectProvider<MarkupTemplateEngine> templateEngine) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
@@ -86,13 +84,11 @@ public class GroovyTemplateAutoConfiguration {
 		@PostConstruct
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
-				TemplateLocation location = new TemplateLocation(
-						this.properties.getResourceLoaderPath());
+				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
 				if (!location.exists(this.applicationContext)) {
 					logger.warn("Cannot find template location: " + location
 							+ " (please add some templates, check your Groovy "
-							+ "configuration, or set spring.groovy.template."
-							+ "check-template-location=false)");
+							+ "configuration, or set spring.groovy.template." + "check-template-location=false)");
 				}
 			}
 		}
@@ -106,11 +102,9 @@ public class GroovyTemplateAutoConfiguration {
 		 */
 		private boolean isUsingGroovyAllJar() {
 			try {
-				ProtectionDomain domain = MarkupTemplateEngine.class
-						.getProtectionDomain();
+				ProtectionDomain domain = MarkupTemplateEngine.class.getProtectionDomain();
 				CodeSource codeSource = domain.getCodeSource();
-				if (codeSource != null
-						&& codeSource.getLocation().toString().contains("-all")) {
+				if (codeSource != null && codeSource.getLocation().toString().contains("-all")) {
 					return true;
 				}
 				return false;
@@ -136,8 +130,7 @@ public class GroovyTemplateAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
-			UrlBasedViewResolver.class })
+	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class, UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication
 	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {

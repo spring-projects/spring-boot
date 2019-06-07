@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  */
-public class HibernateJpaAutoConfigurationTests
-		extends AbstractJpaAutoConfigurationTests {
+public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -69,8 +68,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testDataScriptWithMissingDdl() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.data:classpath:/city.sql",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.data:classpath:/city.sql",
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql");
 		setupTestConfiguration();
@@ -84,26 +82,23 @@ public class HibernateJpaAutoConfigurationTests
 	// and Hibernate hasn't initialized yet at that point
 	@Test(expected = BeanCreationException.class)
 	public void testDataScript() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.data:classpath:/city.sql");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.data:classpath:/city.sql");
 		setupTestConfiguration();
 		this.context.refresh();
-		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
-				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class)).queryForObject("SELECT COUNT(*) from CITY",
+				Integer.class)).isEqualTo(1);
 	}
 
 	@Test
 	public void testCustomNamingStrategy() throws Exception {
 		HibernateVersion.setRunning(HibernateVersion.V4);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.hibernate.naming.strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
+				"spring.jpa.hibernate.naming.strategy:" + "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap()
-				.get("hibernate.ejb.naming_strategy");
+		String actual = (String) bean.getJpaPropertyMap().get("hibernate.ejb.naming_strategy");
 		assertThat(actual).isEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
 	}
 
@@ -111,14 +106,12 @@ public class HibernateJpaAutoConfigurationTests
 	public void testCustomNamingStrategyViaJpaProperties() throws Exception {
 		HibernateVersion.setRunning(HibernateVersion.V4);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
+				"spring.jpa.properties.hibernate.ejb.naming_strategy:" + "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap()
-				.get("hibernate.ejb.naming_strategy");
+		String actual = (String) bean.getJpaPropertyMap().get("hibernate.ejb.naming_strategy");
 		// You can't override this one from spring.jpa.properties because it has an
 		// opinionated default
 		assertThat(actual).isNotEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
@@ -126,10 +119,8 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testFlywayPlusValidation() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
-				"flyway.locations:classpath:db/city",
-				"spring.jpa.hibernate.ddl-auto:validate");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false",
+				"flyway.locations:classpath:db/city", "spring.jpa.hibernate.ddl-auto:validate");
 		setupTestConfiguration();
 		this.context.register(FlywayAutoConfiguration.class);
 		this.context.refresh();
@@ -137,8 +128,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testLiquibasePlusValidation() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false",
 				"liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
 				"spring.jpa.hibernate.ddl-auto:validate");
 		setupTestConfiguration();
@@ -151,23 +141,19 @@ public class HibernateJpaAutoConfigurationTests
 		this.context.register(JtaAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
-		Map<String, Object> jpaPropertyMap = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class)
+		Map<String, Object> jpaPropertyMap = this.context.getBean(LocalContainerEntityManagerFactoryBean.class)
 				.getJpaPropertyMap();
-		assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"))
-				.isInstanceOf(SpringJtaPlatform.class);
+		assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform")).isInstanceOf(SpringJtaPlatform.class);
 	}
 
 	@Test
 	public void testCustomJtaPlatform() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.properties.hibernate.transaction.jta.platform:"
-						+ TestJtaPlatform.class.getName());
+				"spring.jpa.properties.hibernate.transaction.jta.platform:" + TestJtaPlatform.class.getName());
 		this.context.register(JtaAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
-		Map<String, Object> jpaPropertyMap = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class)
+		Map<String, Object> jpaPropertyMap = this.context.getBean(LocalContainerEntityManagerFactoryBean.class)
 				.getJpaPropertyMap();
 		assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"))
 				.isEqualTo(TestJtaPlatform.class.getName());
@@ -175,13 +161,11 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.transaction.default-timeout:30",
 				"spring.transaction.rollback-on-commit-failure:true");
 		setupTestConfiguration();
 		this.context.refresh();
-		JpaTransactionManager transactionManager = this.context
-				.getBean(JpaTransactionManager.class);
+		JpaTransactionManager transactionManager = this.context.getBean(JpaTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}

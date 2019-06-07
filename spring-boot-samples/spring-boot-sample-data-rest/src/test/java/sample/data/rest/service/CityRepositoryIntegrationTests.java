@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,17 +50,15 @@ public class CityRepositoryIntegrationTests {
 
 	@Test
 	public void findByNameAndCountry() {
-		City city = this.repository.findByNameAndCountryAllIgnoringCase("Melbourne",
-				"Australia");
+		City city = this.repository.findByNameAndCountryAllIgnoringCase("Melbourne", "Australia");
 		assertThat(city).isNotNull();
 		assertThat(city.getName()).isEqualTo("Melbourne");
 	}
 
 	@Test
 	public void findContaining() {
-		Page<City> cities = this.repository
-				.findByNameContainingAndCountryContainingAllIgnoringCase("", "UK",
-						new PageRequest(0, 10));
+		Page<City> cities = this.repository.findByNameContainingAndCountryContainingAllIgnoringCase("", "UK",
+				new PageRequest(0, 10));
 		assertThat(cities.getTotalElements()).isEqualTo(3L);
 	}
 

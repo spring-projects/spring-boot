@@ -35,8 +35,7 @@ import org.springframework.context.annotation.Configuration;
 @Deprecated
 public class RemoteShellStarterDeprecatedWarningAutoConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(RemoteShellStarterDeprecatedWarningAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(RemoteShellStarterDeprecatedWarningAutoConfiguration.class);
 
 	@PostConstruct
 	public void logWarning() {

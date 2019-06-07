@@ -71,15 +71,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableConfigurationProperties(DevToolsProperties.class)
 public class RemoteDevToolsAutoConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(RemoteDevToolsAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(RemoteDevToolsAutoConfiguration.class);
 
 	private final DevToolsProperties properties;
 
 	private final ServerProperties serverProperties;
 
-	public RemoteDevToolsAutoConfiguration(DevToolsProperties properties,
-			ServerProperties serverProperties) {
+	public RemoteDevToolsAutoConfiguration(DevToolsProperties properties, ServerProperties serverProperties) {
 		this.properties = properties;
 		this.serverProperties = serverProperties;
 	}
@@ -88,8 +86,7 @@ public class RemoteDevToolsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public AccessManager remoteDevToolsAccessManager() {
 		RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
-		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(),
-				remoteProperties.getSecret());
+		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(), remoteProperties.getSecret());
 	}
 
 	@Bean
@@ -112,8 +109,7 @@ public class RemoteDevToolsAutoConfiguration {
 	/**
 	 * Configuration for remote update and restarts.
 	 */
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartConfiguration {
 
 		@Autowired
@@ -130,8 +126,7 @@ public class RemoteDevToolsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public HttpRestartServer remoteRestartHttpRestartServer(
-				SourceFolderUrlFilter sourceFolderUrlFilter) {
+		public HttpRestartServer remoteRestartHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
 			return new HttpRestartServer(sourceFolderUrlFilter);
 		}
 
@@ -152,8 +147,7 @@ public class RemoteDevToolsAutoConfiguration {
 	/**
 	 * Configuration for remote debug HTTP tunneling.
 	 */
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.debug", name = "enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.debug", name = "enabled", matchIfMissing = true)
 	static class RemoteDebugTunnelConfiguration {
 
 		@Autowired
@@ -178,8 +172,7 @@ public class RemoteDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteDebugHttpTunnelServer")
 		public HttpTunnelServer remoteDebugHttpTunnelServer() {
-			return new HttpTunnelServer(
-					new SocketTargetServerConnection(new RemoteDebugPortProvider()));
+			return new HttpTunnelServer(new SocketTargetServerConnection(new RemoteDebugPortProvider()));
 		}
 
 	}
@@ -195,8 +188,7 @@ public class RemoteDevToolsAutoConfiguration {
 		}
 
 		@Order(SecurityProperties.IGNORED_ORDER + 2)
-		static class RemoteRestartWebSecurityConfigurer
-				extends WebSecurityConfigurerAdapter {
+		static class RemoteRestartWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 			@Autowired
 			private DevToolsProperties properties;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,19 +35,16 @@ import org.springframework.util.StringUtils;
 abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 
 	@Override
-	public LaunchedApplication launchApplication(JvmLauncher javaLauncher)
-			throws Exception {
+	public LaunchedApplication launchApplication(JvmLauncher javaLauncher) throws Exception {
 		int port = SocketUtils.findAvailableTcpPort();
-		LaunchedJvm applicationJvm = javaLauncher.launch("app",
-				createApplicationClassPath(), "com.example.DevToolsTestApplication",
-				"--server.port=" + port, "--spring.devtools.remote.secret=secret");
-		LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
-				"remote-spring-application", createRemoteSpringApplicationClassPath(),
-				RemoteSpringApplication.class.getName(),
+		LaunchedJvm applicationJvm = javaLauncher.launch("app", createApplicationClassPath(),
+				"com.example.DevToolsTestApplication", "--server.port=" + port,
+				"--spring.devtools.remote.secret=secret");
+		LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch("remote-spring-application",
+				createRemoteSpringApplicationClassPath(), RemoteSpringApplication.class.getName(),
 				"--spring.devtools.remote.secret=secret", "http://localhost:" + port);
-		return new LaunchedApplication(new File("target/remote"),
-				applicationJvm.getStandardOut(), applicationJvm.getProcess(),
-				remoteSpringApplicationJvm.getProcess());
+		return new LaunchedApplication(new File("target/remote"), applicationJvm.getStandardOut(),
+				applicationJvm.getProcess(), remoteSpringApplicationJvm.getProcess());
 	}
 
 	protected abstract String createApplicationClassPath() throws Exception;
@@ -56,8 +53,7 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 		File remoteDirectory = new File("target/remote");
 		FileSystemUtils.deleteRecursively(remoteDirectory);
 		remoteDirectory.mkdirs();
-		FileSystemUtils.copyRecursively(new File("target/test-classes/com"),
-				new File("target/remote/com"));
+		FileSystemUtils.copyRecursively(new File("target/test-classes/com"), new File("target/remote/com"));
 		List<String> entries = new ArrayList<String>();
 		entries.add("target/remote");
 		for (File jar : new File("target/dependencies").listFiles()) {

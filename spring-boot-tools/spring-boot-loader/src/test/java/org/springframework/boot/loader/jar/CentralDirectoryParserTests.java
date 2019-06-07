@@ -66,10 +66,8 @@ public class CentralDirectoryParserTests {
 		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
 		InOrder ordered = inOrder(visitor);
-		ordered.verify(visitor).visitStart(any(CentralDirectoryEndRecord.class),
-				any(RandomAccessData.class));
-		ordered.verify(visitor, atLeastOnce())
-				.visitFileHeader(any(CentralDirectoryFileHeader.class), anyInt());
+		ordered.verify(visitor).visitStart(any(CentralDirectoryEndRecord.class), any(RandomAccessData.class));
+		ordered.verify(visitor, atLeastOnce()).visitFileHeader(any(CentralDirectoryFileHeader.class), anyInt());
 		ordered.verify(visitor).visitEnd();
 	}
 
@@ -99,13 +97,11 @@ public class CentralDirectoryParserTests {
 		private List<CentralDirectoryFileHeader> headers = new ArrayList<CentralDirectoryFileHeader>();
 
 		@Override
-		public void visitStart(CentralDirectoryEndRecord endRecord,
-				RandomAccessData centralDirectoryData) {
+		public void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
 		}
 
 		@Override
-		public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
-				int dataOffset) {
+		public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
 			this.headers.add(fileHeader.clone());
 		}
 

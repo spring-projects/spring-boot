@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,66 +54,60 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 
 	@Test
 	public void createFromConfigClass() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				BaseConfiguration.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(BaseConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
 	public void contextAlreadyHasDispatcherServletWithDefaultName() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				DispatcherServletConfiguration.class, BaseConfiguration.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(DispatcherServletConfiguration.class,
+				BaseConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
 	public void contextAlreadyHasDispatcherServlet() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				SpringServletConfiguration.class, BaseConfiguration.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(SpringServletConfiguration.class,
+				BaseConfiguration.class);
 		verifyContext();
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
-				.isEqualTo(2);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(2);
 	}
 
 	@Test
 	public void contextAlreadyHasNonDispatcherServlet() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				NonSpringServletConfiguration.class, BaseConfiguration.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(NonSpringServletConfiguration.class,
+				BaseConfiguration.class);
 		verifyContext(); // the non default servlet is still registered
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
-				.isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(0);
 	}
 
 	@Test
 	public void contextAlreadyHasNonServlet() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				NonServletConfiguration.class, BaseConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
-				.isEqualTo(0);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(NonServletConfiguration.class,
+				BaseConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(0);
 		assertThat(this.context.getBeanNamesForType(Servlet.class).length).isEqualTo(0);
 	}
 
 	@Test
 	public void contextAlreadyHasDispatcherServletAndRegistration() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				DispatcherServletWithRegistrationConfiguration.class,
-				BaseConfiguration.class);
+				DispatcherServletWithRegistrationConfiguration.class, BaseConfiguration.class);
 		verifyContext();
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
-				.isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(1);
 	}
 
 	@Test
 	public void containerHasNoServletContext() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				EnsureContainerHasNoServletContext.class, BaseConfiguration.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(EnsureContainerHasNoServletContext.class,
+				BaseConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
 	public void customizeContainerThroughCallback() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				CallbackEmbeddedContainerCustomizer.class, BaseConfiguration.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(CallbackEmbeddedContainerCustomizer.class,
+				BaseConfiguration.class);
 		verifyContext();
 		assertThat(getContainerFactory().getPort()).isEqualTo(9000);
 	}
@@ -121,8 +115,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	@Test
 	public void initParametersAreConfiguredOnTheServletContext() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"server.context_parameters.a:alpha", "server.context_parameters.b:bravo");
+		EnvironmentTestUtils.addEnvironment(this.context, "server.context_parameters.a:alpha",
+				"server.context_parameters.b:bravo");
 		this.context.register(BaseConfiguration.class);
 		this.context.refresh();
 
@@ -133,11 +127,9 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 
 	private void verifyContext() {
 		MockEmbeddedServletContainerFactory containerFactory = getContainerFactory();
-		Servlet servlet = this.context.getBean(
-				DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
+		Servlet servlet = this.context.getBean(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
 				Servlet.class);
-		verify(containerFactory.getServletContext()).addServlet("dispatcherServlet",
-				servlet);
+		verify(containerFactory.getServletContext()).addServlet("dispatcherServlet", servlet);
 	}
 
 	private MockEmbeddedServletContainerFactory getContainerFactory() {
@@ -145,10 +137,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ EmbeddedContainerConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class })
+	@Import({ EmbeddedContainerConfiguration.class, EmbeddedServletContainerAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, ServerPropertiesAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}
@@ -191,8 +181,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		public FrameworkServlet dispatcherServlet() {
 			return new FrameworkServlet() {
 				@Override
-				protected void doService(HttpServletRequest request,
-						HttpServletResponse response) throws Exception {
+				protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
 				}
 			};
 		}
@@ -228,8 +217,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	public static class EnsureContainerHasNoServletContext implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof ConfigurableEmbeddedServletContainer) {
 				MockEmbeddedServletContainerFactory containerFactory = (MockEmbeddedServletContainerFactory) bean;
 				assertThat(containerFactory.getServletContext()).isNull();
@@ -245,8 +233,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	}
 
 	@Component
-	public static class CallbackEmbeddedContainerCustomizer
-			implements EmbeddedServletContainerCustomizer {
+	public static class CallbackEmbeddedContainerCustomizer implements EmbeddedServletContainerCustomizer {
 
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {

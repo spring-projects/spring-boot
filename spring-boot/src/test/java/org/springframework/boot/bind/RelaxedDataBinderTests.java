@@ -180,8 +180,7 @@ public class RelaxedDataBinderTests {
 		BindingResult result = bind(target, "info[foo]: bar");
 		assertThat(result.getErrorCount()).isEqualTo(2);
 		for (FieldError error : result.getFieldErrors()) {
-			System.err.println(
-					new StaticMessageSource().getMessage(error, Locale.getDefault()));
+			System.err.println(new StaticMessageSource().getMessage(error, Locale.getDefault()));
 		}
 	}
 
@@ -191,8 +190,7 @@ public class RelaxedDataBinderTests {
 		RelaxedDataBinder binder = getBinder(target, null);
 		binder.setAllowedFields("foo");
 		binder.setIgnoreUnknownFields(false);
-		BindingResult result = bind(binder, target,
-				"foo: bar\n" + "value: 123\n" + "bar: spam");
+		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n" + "bar: spam");
 		assertThat(target.getValue()).isEqualTo(0);
 		assertThat(target.getFoo()).isEqualTo("bar");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -205,8 +203,7 @@ public class RelaxedDataBinderTests {
 		// Disallowed fields are not unknown...
 		binder.setDisallowedFields("foo", "bar");
 		binder.setIgnoreUnknownFields(false);
-		BindingResult result = bind(binder, target,
-				"foo: bar\n" + "value: 123\n" + "bar: spam");
+		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n" + "bar: spam");
 		assertThat(target.getValue()).isEqualTo(123);
 		assertThat(target.getFoo()).isNull();
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -260,8 +257,7 @@ public class RelaxedDataBinderTests {
 	public void testBindNestedListOfBeanWithList() throws Exception {
 		TargetWithNestedListOfBeanWithList target = new TargetWithNestedListOfBeanWithList();
 		bind(target, "nested[0].nested[0].foo: bar\nnested[1].nested[0].foo: foo");
-		assertThat(target.getNested().get(0).getNested().get(0).getFoo())
-				.isEqualTo("bar");
+		assertThat(target.getNested().get(0).getNested().get(0).getFoo()).isEqualTo("bar");
 	}
 
 	@Test
@@ -413,10 +409,8 @@ public class RelaxedDataBinderTests {
 		bind(target, "nested.foo: bar.key\n" + "nested[bar.key].spam: bucket\n"
 				+ "nested[bar.key].value: 123\nnested[bar.key].foo: crap");
 		assertThat(target.getNested()).hasSize(2);
-		Map<String, Object> nestedMap = (Map<String, Object>) target.getNested()
-				.get("bar.key");
-		assertThat(nestedMap).as("nested map should be registered with 'bar.key'")
-				.isNotNull();
+		Map<String, Object> nestedMap = (Map<String, Object>) target.getNested().get("bar.key");
+		assertThat(nestedMap).as("nested map should be registered with 'bar.key'").isNotNull();
 		assertThat(nestedMap).hasSize(3);
 		assertThat(nestedMap.get("value")).isEqualTo("123");
 		assertThat(target.getNested().get("foo")).isEqualTo("bar.key");
@@ -427,12 +421,10 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindDoubleNestedMap() throws Exception {
 		TargetWithNestedMap target = new TargetWithNestedMap();
-		bind(target, "nested.foo: bar\n" + "nested.bar.spam: bucket\n"
-				+ "nested.bar.value: 123\nnested.bar.foo: crap");
+		bind(target, "nested.foo: bar\n" + "nested.bar.spam: bucket\n" + "nested.bar.value: 123\nnested.bar.foo: crap");
 		assertThat(target.getNested()).hasSize(2);
 		assertThat(((Map<String, Object>) target.getNested().get("bar"))).hasSize(3);
-		assertThat(((Map<String, Object>) target.getNested().get("bar")).get("value"))
-				.isEqualTo("123");
+		assertThat(((Map<String, Object>) target.getNested().get("bar")).get("value")).isEqualTo("123");
 		assertThat(target.getNested().get("foo")).isEqualTo("bar");
 		assertThat(target.getNested().containsValue(target.getNested())).isFalse();
 	}
@@ -440,8 +432,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindNestedMapOfListOfString() throws Exception {
 		TargetWithNestedMapOfListOfString target = new TargetWithNestedMapOfListOfString();
-		bind(target, "nested.foo[0]: bar\n" + "nested.bar[0]: bucket\n"
-				+ "nested.bar[1]: 123\nnested.bar[2]: crap");
+		bind(target, "nested.foo[0]: bar\n" + "nested.bar[0]: bucket\n" + "nested.bar[1]: 123\nnested.bar[2]: crap");
 		assertThat(target.getNested()).hasSize(2);
 		assertThat(target.getNested().get("bar")).hasSize(3);
 		assertThat(target.getNested().get("bar").get(1)).isEqualTo("123");
@@ -486,8 +477,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindErrorNotWritableWithPrefix() throws Exception {
 		VanillaTarget target = new VanillaTarget();
-		BindingResult result = bind(target, "spam: bar\n" + "vanilla.value: 123",
-				"vanilla");
+		BindingResult result = bind(target, "spam: bar\n" + "vanilla.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 		assertThat(target.getValue()).isEqualTo(123);
 	}
@@ -498,8 +488,7 @@ public class RelaxedDataBinderTests {
 		RelaxedDataBinder binder = getBinder(target, null);
 		binder.setIgnoreUnknownFields(false);
 		binder.setIgnoreNestedProperties(true);
-		BindingResult result = bind(binder, target,
-				"foo: bar\n" + "value: 123\n" + "nested.bar: spam");
+		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n" + "nested.bar: spam");
 		assertThat(target.getValue()).isEqualTo(123);
 		assertThat(target.getFoo()).isEqualTo("bar");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -511,8 +500,7 @@ public class RelaxedDataBinderTests {
 		RelaxedDataBinder binder = getBinder(target, "foo");
 		binder.setIgnoreUnknownFields(false);
 		binder.setIgnoreNestedProperties(true);
-		BindingResult result = bind(binder, target,
-				"foo.foo: bar\n" + "foo.value: 123\n" + "foo.nested.bar: spam");
+		BindingResult result = bind(binder, target, "foo.foo: bar\n" + "foo.value: 123\n" + "foo.nested.bar: spam");
 		assertThat(target.getValue()).isEqualTo(123);
 		assertThat(target.getFoo()).isEqualTo("bar");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -521,8 +509,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMap() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target, "spam: bar\n" + "vanilla.value: 123",
-				"vanilla");
+		BindingResult result = bind(target, "spam: bar\n" + "vanilla.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 		assertThat(target.get("value")).isEqualTo("123");
 	}
@@ -530,8 +517,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMapWithClashInProperties() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target,
-				"vanilla.spam: bar\n" + "vanilla.spam.value: 123", "vanilla");
+		BindingResult result = bind(target, "vanilla.spam: bar\n" + "vanilla.spam.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 		assertThat(target).hasSize(2);
 		assertThat(target.get("spam")).isEqualTo("bar");
@@ -541,8 +527,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMapWithDeepClashInProperties() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target,
-				"vanilla.spam.foo: bar\n" + "vanilla.spam.foo.value: 123", "vanilla");
+		BindingResult result = bind(target, "vanilla.spam.foo: bar\n" + "vanilla.spam.foo.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) target.get("spam");
@@ -552,8 +537,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMapWithDifferentDeepClashInProperties() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target,
-				"vanilla.spam.bar: bar\n" + "vanilla.spam.bar.value: 123", "vanilla");
+		BindingResult result = bind(target, "vanilla.spam.bar: bar\n" + "vanilla.spam.bar.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) target.get("spam");
@@ -563,8 +547,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindShallowMap() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target, "vanilla.spam: bar\n" + "vanilla.value: 123",
-				"vanilla");
+		BindingResult result = bind(target, "vanilla.spam: bar\n" + "vanilla.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 		assertThat(target.get("value")).isEqualTo("123");
 	}
@@ -572,8 +555,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMapNestedMap() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target, "spam: bar\n" + "vanilla.foo.value: 123",
-				"vanilla");
+		BindingResult result = bind(target, "spam: bar\n" + "vanilla.foo.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) target.get("foo");
@@ -702,8 +684,7 @@ public class RelaxedDataBinderTests {
 		return bind(target, values, null);
 	}
 
-	private BindingResult bind(Object target, String values, String namePrefix)
-			throws Exception {
+	private BindingResult bind(Object target, String values, String namePrefix) throws Exception {
 		return bind(getBinder(target, namePrefix), target, values);
 	}
 
@@ -717,10 +698,8 @@ public class RelaxedDataBinderTests {
 		return binder;
 	}
 
-	private BindingResult bind(DataBinder binder, Object target, String values)
-			throws Exception {
-		Properties properties = PropertiesLoaderUtils
-				.loadProperties(new ByteArrayResource(values.getBytes()));
+	private BindingResult bind(DataBinder binder, Object target, String values) throws Exception {
+		Properties properties = PropertiesLoaderUtils.loadProperties(new ByteArrayResource(values.getBytes()));
 		binder.bind(new MutablePropertyValues(properties));
 		binder.validate();
 
@@ -743,8 +722,7 @@ public class RelaxedDataBinderTests {
 
 	}
 
-	public static class RequiredKeysValidator
-			implements ConstraintValidator<RequiredKeys, Map<String, Object>> {
+	public static class RequiredKeysValidator implements ConstraintValidator<RequiredKeys, Map<String, Object>> {
 
 		private String[] fields;
 
@@ -754,13 +732,12 @@ public class RelaxedDataBinderTests {
 		}
 
 		@Override
-		public boolean isValid(Map<String, Object> value,
-				ConstraintValidatorContext context) {
+		public boolean isValid(Map<String, Object> value, ConstraintValidatorContext context) {
 			boolean valid = true;
 			for (String field : this.fields) {
 				if (!value.containsKey(field)) {
-					context.buildConstraintViolationWithTemplate(
-							"Missing field ''" + field + "''").addConstraintViolation();
+					context.buildConstraintViolationWithTemplate("Missing field ''" + field + "''")
+							.addConstraintViolation();
 					valid = false;
 				}
 			}

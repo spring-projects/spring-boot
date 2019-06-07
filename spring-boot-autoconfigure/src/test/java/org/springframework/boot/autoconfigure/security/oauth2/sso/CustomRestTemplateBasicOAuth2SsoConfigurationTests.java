@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,11 +46,11 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest
-@TestPropertySource(properties = { "security.oauth2.client.clientId=client",
-		"security.oauth2.client.clientSecret=secret",
-		"security.oauth2.client.userAuthorizationUri=https://example.com/oauth/authorize",
-		"security.oauth2.client.accessTokenUri=https://example.com/oauth/token",
-		"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
+@TestPropertySource(
+		properties = { "security.oauth2.client.clientId=client", "security.oauth2.client.clientSecret=secret",
+				"security.oauth2.client.userAuthorizationUri=https://example.com/oauth/authorize",
+				"security.oauth2.client.accessTokenUri=https://example.com/oauth/token",
+				"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
 public class CustomRestTemplateBasicOAuth2SsoConfigurationTests {
 
 	@Autowired

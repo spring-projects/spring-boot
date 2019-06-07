@@ -59,8 +59,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	}
 
 	@Override
-	public void processResource(String resource, InputStream is,
-			List<Relocator> relocators) throws IOException {
+	public void processResource(String resource, InputStream is, List<Relocator> relocators) throws IOException {
 		Properties properties = new Properties();
 		properties.load(is);
 		is.close();
@@ -68,8 +67,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 			String name = (String) entry.getKey();
 			String value = (String) entry.getValue();
 			String existing = this.data.getProperty(name);
-			this.data.setProperty(name,
-					(existing != null) ? existing + "," + value : value);
+			this.data.setProperty(name, (existing != null) ? existing + "," + value : value);
 		}
 	}
 

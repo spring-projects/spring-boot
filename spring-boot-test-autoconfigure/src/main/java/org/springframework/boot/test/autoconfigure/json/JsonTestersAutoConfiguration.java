@@ -66,8 +66,7 @@ public class JsonTestersAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	public FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
-		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class,
-				null);
+		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class, null);
 	}
 
 	@Configuration
@@ -77,10 +76,8 @@ public class JsonTestersAutoConfiguration {
 		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(ObjectMapper.class)
-		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(
-				ObjectMapper mapper) {
-			return new JsonTesterFactoryBean<JacksonTester<?>, ObjectMapper>(
-					JacksonTester.class, mapper);
+		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
+			return new JsonTesterFactoryBean<JacksonTester<?>, ObjectMapper>(JacksonTester.class, mapper);
 		}
 
 	}
@@ -129,14 +126,12 @@ public class JsonTestersAutoConfiguration {
 			Constructor<?>[] constructors = this.objectType.getDeclaredConstructors();
 			for (Constructor<?> constructor : constructors) {
 				if (constructor.getParameterTypes().length == 1
-						&& constructor.getParameterTypes()[0]
-								.isInstance(this.marshaller)) {
+						&& constructor.getParameterTypes()[0].isInstance(this.marshaller)) {
 					ReflectionUtils.makeAccessible(constructor);
 					return (T) BeanUtils.instantiateClass(constructor, this.marshaller);
 				}
 			}
-			throw new IllegalStateException(
-					this.objectType + " does not have a usable constructor");
+			throw new IllegalStateException(this.objectType + " does not have a usable constructor");
 		}
 
 		@Override
@@ -149,18 +144,15 @@ public class JsonTestersAutoConfiguration {
 	/**
 	 * {@link BeanPostProcessor} used to initialize JSON testers.
 	 */
-	private static class JsonMarshalTestersBeanPostProcessor
-			extends InstantiationAwareBeanPostProcessorAdapter {
+	private static class JsonMarshalTestersBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
 
 		@Override
-		public Object postProcessAfterInitialization(final Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(final Object bean, String beanName) throws BeansException {
 
 			ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
 
 				@Override
-				public void doWith(Field field)
-						throws IllegalArgumentException, IllegalAccessException {
+				public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 					processField(bean, field);
 				}
 
@@ -175,8 +167,7 @@ public class JsonTestersAutoConfiguration {
 				ReflectionUtils.makeAccessible(field);
 				Object tester = ReflectionUtils.getField(field, bean);
 				if (tester != null) {
-					ReflectionTestUtils.invokeMethod(tester, "initialize",
-							bean.getClass(), type);
+					ReflectionTestUtils.invokeMethod(tester, "initialize", bean.getClass(), type);
 				}
 			}
 		}

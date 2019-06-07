@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
-public class DataSourceProperties
-		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
+public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
 
 	private ClassLoader classLoader;
 
@@ -170,8 +169,7 @@ public class DataSourceProperties
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
-				.get(this.classLoader);
+		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(this.classLoader);
 	}
 
 	/**
@@ -180,9 +178,8 @@ public class DataSourceProperties
 	 * this instance
 	 */
 	public DataSourceBuilder initializeDataSourceBuilder() {
-		return DataSourceBuilder.create(getClassLoader()).type(getType())
-				.driverClassName(determineDriverClassName()).url(determineUrl())
-				.username(determineUsername()).password(determinePassword());
+		return DataSourceBuilder.create(getClassLoader()).type(getType()).driverClassName(determineDriverClassName())
+				.url(determineUrl()).username(determineUsername()).password(determinePassword());
 	}
 
 	public String getName() {
@@ -229,8 +226,7 @@ public class DataSourceProperties
 	 */
 	public String determineDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(driverClassIsLoadable(),
-					"Cannot load driver class: " + this.driverClassName);
+			Assert.state(driverClassIsLoadable(), "Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
 		String driverClassName = null;
@@ -244,8 +240,8 @@ public class DataSourceProperties
 		}
 
 		if (!StringUtils.hasText(driverClassName)) {
-			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
-					this.environment, "driver class");
+			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection, this.environment,
+					"driver class");
 		}
 		return driverClassName;
 	}
@@ -288,8 +284,7 @@ public class DataSourceProperties
 		}
 		String url = this.embeddedDatabaseConnection.getUrl(determineDatabaseName());
 		if (!StringUtils.hasText(url)) {
-			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
-					this.environment, "url");
+			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection, this.environment, "url");
 		}
 		return url;
 	}
@@ -509,18 +504,17 @@ public class DataSourceProperties
 
 	static class DataSourceBeanCreationException extends BeanCreationException {
 
-		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
-				Environment environment, String property) {
+		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection, Environment environment,
+				String property) {
 			super(getMessage(connection, environment, property));
 		}
 
-		private static String getMessage(EmbeddedDatabaseConnection connection,
-				Environment environment, String property) {
+		private static String getMessage(EmbeddedDatabaseConnection connection, Environment environment,
+				String property) {
 			StringBuilder message = new StringBuilder();
-			message.append("Cannot determine embedded database " + property
-					+ " for database type " + connection + ". ");
-			message.append("If you want an embedded database please put a supported "
-					+ "one on the classpath. ");
+			message.append(
+					"Cannot determine embedded database " + property + " for database type " + connection + ". ");
+			message.append("If you want an embedded database please put a supported " + "one on the classpath. ");
 			message.append("If you have database settings to be loaded from a "
 					+ "particular profile you may need to active it");
 			if (environment != null) {
@@ -530,8 +524,7 @@ public class DataSourceProperties
 				}
 				else {
 					message.append(" (the profiles \""
-							+ StringUtils.arrayToCommaDelimitedString(
-									environment.getActiveProfiles())
+							+ StringUtils.arrayToCommaDelimitedString(environment.getActiveProfiles())
 							+ "\" are currently active)");
 
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	@Override
 	public Collection<Metric<?>> metrics() {
 		if (this.applicationContext instanceof EmbeddedWebApplicationContext) {
-			Manager manager = getManager(
-					(EmbeddedWebApplicationContext) this.applicationContext);
+			Manager manager = getManager((EmbeddedWebApplicationContext) this.applicationContext);
 			if (manager != null) {
 				return metrics(manager);
 			}
@@ -58,8 +57,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private Manager getManager(EmbeddedWebApplicationContext applicationContext) {
-		EmbeddedServletContainer embeddedServletContainer = applicationContext
-				.getEmbeddedServletContainer();
+		EmbeddedServletContainer embeddedServletContainer = applicationContext.getEmbeddedServletContainer();
 		if (embeddedServletContainer instanceof TomcatEmbeddedServletContainer) {
 			return getManager((TomcatEmbeddedServletContainer) embeddedServletContainer);
 		}
@@ -67,8 +65,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private Manager getManager(TomcatEmbeddedServletContainer servletContainer) {
-		for (Container container : servletContainer.getTomcat().getHost()
-				.findChildren()) {
+		for (Container container : servletContainer.getTomcat().getHost().findChildren()) {
 			if (container instanceof Context) {
 				return ((Context) container).getManager();
 			}
@@ -79,8 +76,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	private Collection<Metric<?>> metrics(Manager manager) {
 		List<Metric<?>> metrics = new ArrayList<Metric<?>>(2);
 		if (manager instanceof ManagerBase) {
-			addMetric(metrics, "httpsessions.max",
-					((ManagerBase) manager).getMaxActiveSessions());
+			addMetric(metrics, "httpsessions.max", ((ManagerBase) manager).getMaxActiveSessions());
 		}
 		addMetric(metrics, "httpsessions.active", manager.getActiveSessions());
 		return metrics;
@@ -91,8 +87,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 

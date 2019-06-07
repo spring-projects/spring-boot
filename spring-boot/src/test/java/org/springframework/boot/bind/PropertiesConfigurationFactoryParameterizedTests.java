@@ -45,8 +45,7 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 
 	private String targetName;
 
-	private PropertiesConfigurationFactory<Foo> factory = new PropertiesConfigurationFactory<Foo>(
-			Foo.class);
+	private PropertiesConfigurationFactory<Foo> factory = new PropertiesConfigurationFactory<Foo>(Foo.class);
 
 	@Parameters
 	public static Object[] parameters() {
@@ -98,8 +97,7 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 	}
 
 	private Foo bindFoo(final String values) throws Exception {
-		Properties properties = PropertiesLoaderUtils
-				.loadProperties(new ByteArrayResource(values.getBytes()));
+		Properties properties = PropertiesLoaderUtils.loadProperties(new ByteArrayResource(values.getBytes()));
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(new PropertiesPropertySource("test", properties));
 		this.factory.setPropertySources(propertySources);

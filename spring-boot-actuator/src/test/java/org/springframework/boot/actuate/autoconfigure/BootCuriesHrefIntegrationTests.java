@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,64 +49,54 @@ public class BootCuriesHrefIntegrationTests {
 	@Test
 	public void basicCuriesHref() {
 		int port = load("endpoints.docs.curies.enabled:true", "server.port:0");
-		assertThat(getCurieHref("http://localhost:" + port + "/actuator")).isEqualTo(
-				"http://localhost:" + port + "/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref("http://localhost:" + port + "/actuator"))
+				.isEqualTo("http://localhost:" + port + "/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesHrefWithCustomContextPath() {
-		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
-				"server.context-path:/context");
+		int port = load("endpoints.docs.curies.enabled:true", "server.port:0", "server.context-path:/context");
 		assertThat(getCurieHref("http://localhost:" + port + "/context/actuator"))
-				.isEqualTo("http://localhost:" + port
-						+ "/context/docs/#spring_boot_actuator__{rel}");
+				.isEqualTo("http://localhost:" + port + "/context/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesHrefWithCustomServletPath() {
-		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
-				"server.servlet-path:/servlet");
+		int port = load("endpoints.docs.curies.enabled:true", "server.port:0", "server.servlet-path:/servlet");
 		assertThat(getCurieHref("http://localhost:" + port + "/servlet/actuator"))
-				.isEqualTo("http://localhost:" + port
-						+ "/servlet/docs/#spring_boot_actuator__{rel}");
+				.isEqualTo("http://localhost:" + port + "/servlet/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesHrefWithCustomServletAndContextPaths() {
-		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
-				"server.context-path:/context", "server.servlet-path:/servlet");
+		int port = load("endpoints.docs.curies.enabled:true", "server.port:0", "server.context-path:/context",
+				"server.servlet-path:/servlet");
 		assertThat(getCurieHref("http://localhost:" + port + "/context/servlet/actuator"))
-				.isEqualTo("http://localhost:" + port
-						+ "/context/servlet/docs/#spring_boot_actuator__{rel}");
+				.isEqualTo("http://localhost:" + port + "/context/servlet/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesHrefWithCustomServletContextAndManagementContextPaths() {
-		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
-				"server.context-path:/context", "server.servlet-path:/servlet",
-				"management.context-path:/management");
-		assertThat(getCurieHref("http://localhost:" + port
-				+ "/context/servlet/management/")).isEqualTo("http://localhost:" + port
-						+ "/context/servlet/management/docs/#spring_boot_actuator__{rel}");
+		int port = load("endpoints.docs.curies.enabled:true", "server.port:0", "server.context-path:/context",
+				"server.servlet-path:/servlet", "management.context-path:/management");
+		assertThat(getCurieHref("http://localhost:" + port + "/context/servlet/management/")).isEqualTo(
+				"http://localhost:" + port + "/context/servlet/management/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void serverPathsAreIgnoredWithSeparateManagementPort() {
-		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
-				"server.context-path:/context", "server.servlet-path:/servlet",
-				"management.port:0");
-		assertThat(getCurieHref("http://localhost:" + port + "/actuator/")).isEqualTo(
-				"http://localhost:" + port + "/docs/#spring_boot_actuator__{rel}");
+		int port = load("endpoints.docs.curies.enabled:true", "server.port:0", "server.context-path:/context",
+				"server.servlet-path:/servlet", "management.port:0");
+		assertThat(getCurieHref("http://localhost:" + port + "/actuator/"))
+				.isEqualTo("http://localhost:" + port + "/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void managementContextPathWithSeparateManagementPort() {
-		int port = load("endpoints.docs.curies.enabled:true",
-				"management.context-path:/management", "server.port:0",
+		int port = load("endpoints.docs.curies.enabled:true", "management.context-path:/management", "server.port:0",
 				"management.port:0");
 		assertThat(getCurieHref("http://localhost:" + port + "/management/"))
-				.isEqualTo("http://localhost:" + port
-						+ "/management/docs/#spring_boot_actuator__{rel}");
+				.isEqualTo("http://localhost:" + port + "/management/docs/#spring_boot_actuator__{rel}");
 	}
 
 	private int load(String... properties) {
@@ -115,8 +105,7 @@ public class BootCuriesHrefIntegrationTests {
 
 			@Override
 			public URL getResource(String name) {
-				if ("META-INF/resources/spring-boot-actuator/docs/index.html"
-						.equals(name)) {
+				if ("META-INF/resources/spring-boot-actuator/docs/index.html".equals(name)) {
 					return super.getResource("actuator-docs-index.html");
 				}
 				return super.getResource(name);
@@ -127,15 +116,12 @@ public class BootCuriesHrefIntegrationTests {
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
-		return Integer.parseInt(
-				this.context.getEnvironment().getProperty("local.management.port"));
+		return Integer.parseInt(this.context.getEnvironment().getProperty("local.management.port"));
 	}
 
 	private String getCurieHref(String uri) {
-		ResponseEntity<String> response = new TestRestTemplate().getForEntity(uri,
-				String.class);
-		JSONArray bootCuriesHrefs = JsonPath.parse(response.getBody())
-				.read("_links.curies[?(@.name == 'boot')].href");
+		ResponseEntity<String> response = new TestRestTemplate().getForEntity(uri, String.class);
+		JSONArray bootCuriesHrefs = JsonPath.parse(response.getBody()).read("_links.curies[?(@.name == 'boot')].href");
 		assertThat(bootCuriesHrefs).hasSize(1);
 		return (String) bootCuriesHrefs.get(0);
 	}

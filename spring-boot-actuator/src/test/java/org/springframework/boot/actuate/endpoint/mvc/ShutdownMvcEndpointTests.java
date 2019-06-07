@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  *
  */
-@SpringBootTest(properties = { "management.security.enabled=false",
-		"endpoints.shutdown.enabled=true" })
+@SpringBootTest(properties = { "management.security.enabled=false", "endpoints.shutdown.enabled=true" })
 @RunWith(SpringRunner.class)
 public class ShutdownMvcEndpointTests {
 
@@ -76,26 +75,21 @@ public class ShutdownMvcEndpointTests {
 
 	@Test
 	public void contentTypeDefaultsToActuatorV1Json() throws Exception {
-		this.mvc.perform(post("/shutdown")).andExpect(status().isOk())
-				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
-		assertThat(this.context.getBean(CountDownLatch.class).await(30, TimeUnit.SECONDS))
-				.isTrue();
+		this.mvc.perform(post("/shutdown")).andExpect(status().isOk()).andExpect(
+				header().string("Content-Type", "application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+		assertThat(this.context.getBean(CountDownLatch.class).await(30, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Test
 	public void contentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(post("/shutdown").header(HttpHeaders.ACCEPT,
-				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
-				.andExpect(header().string("Content-Type",
-						MediaType.APPLICATION_JSON_UTF8_VALUE));
-		assertThat(this.context.getBean(CountDownLatch.class).await(30, TimeUnit.SECONDS))
-				.isTrue();
+		this.mvc.perform(post("/shutdown").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk())
+				.andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE));
+		assertThat(this.context.getBean(CountDownLatch.class).await(30, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Configuration
-	@Import({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
 	public static class TestConfiguration {
@@ -121,10 +115,8 @@ public class ShutdownMvcEndpointTests {
 		}
 
 		@Override
-		public void setApplicationContext(ApplicationContext context)
-				throws BeansException {
-			ConfigurableApplicationContext mockContext = mock(
-					ConfigurableApplicationContext.class);
+		public void setApplicationContext(ApplicationContext context) throws BeansException {
+			ConfigurableApplicationContext mockContext = mock(ConfigurableApplicationContext.class);
 			willAnswer(new Answer<Void>() {
 
 				@Override

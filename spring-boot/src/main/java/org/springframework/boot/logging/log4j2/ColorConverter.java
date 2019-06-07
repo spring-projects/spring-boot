@@ -91,8 +91,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	 */
 	public static ColorConverter newInstance(Configuration config, String[] options) {
 		if (options.length < 1) {
-			LOGGER.error("Incorrect number of options on style. "
-					+ "Expected at least 1, received {}", options.length);
+			LOGGER.error("Incorrect number of options on style. " + "Expected at least 1, received {}", options.length);
 			return null;
 		}
 		if (options[0] == null) {
@@ -132,8 +131,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		}
 	}
 
-	protected void appendAnsiString(StringBuilder toAppendTo, String in,
-			AnsiElement element) {
+	protected void appendAnsiString(StringBuilder toAppendTo, String in, AnsiElement element) {
 		toAppendTo.append(AnsiOutput.toString(element, in));
 	}
 

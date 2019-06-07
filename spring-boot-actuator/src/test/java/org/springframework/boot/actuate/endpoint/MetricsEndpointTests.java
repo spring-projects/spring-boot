@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 	@Test
 	public void ordered() {
 		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
-		publicMetrics
-				.add(new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3));
+		publicMetrics.add(new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3));
 		publicMetrics.add(new TestPublicMetrics(1, this.metric1));
 		Map<String, Object> metrics = new MetricsEndpoint(publicMetrics).invoke();
 		Iterator<Entry<String, Object>> iterator = metrics.entrySet().iterator();

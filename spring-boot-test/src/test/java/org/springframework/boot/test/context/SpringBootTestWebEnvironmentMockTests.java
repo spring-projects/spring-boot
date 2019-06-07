@@ -78,8 +78,7 @@ public class SpringBootTestWebEnvironmentMockTests {
 
 	@Test
 	public void resourcePath() throws Exception {
-		assertThat(ReflectionTestUtils.getField(this.servletContext, "resourceBasePath"))
-				.isEqualTo("src/main/webapp");
+		assertThat(ReflectionTestUtils.getField(this.servletContext, "resourceBasePath")).isEqualTo("src/main/webapp");
 	}
 
 	@Configuration

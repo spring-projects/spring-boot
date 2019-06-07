@@ -32,8 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 
-	private static final Log logger = LogFactory
-			.getLog(TomcatEmbeddedWebappClassLoader.class);
+	private static final Log logger = LogFactory.getLog(TomcatEmbeddedWebappClassLoader.class);
 
 	public TomcatEmbeddedWebappClassLoader() {
 		super();
@@ -44,8 +43,7 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	}
 
 	@Override
-	public synchronized Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
+	public synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		Class<?> result = findExistingLoadedClass(name);
 		result = (result != null) ? result : doLoadClass(name);
 		if (result == null) {
@@ -109,12 +107,11 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	private void checkPackageAccess(String name) throws ClassNotFoundException {
 		if (this.securityManager != null && name.lastIndexOf('.') >= 0) {
 			try {
-				this.securityManager
-						.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
+				this.securityManager.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
 			}
 			catch (SecurityException ex) {
-				throw new ClassNotFoundException("Security Violation, attempt to use "
-						+ "Restricted Class: " + name, ex);
+				throw new ClassNotFoundException("Security Violation, attempt to use " + "Restricted Class: " + name,
+						ex);
 			}
 		}
 	}

@@ -54,8 +54,7 @@ class JsonLoader {
 			return null;
 		}
 		if (source.toString().endsWith(".json")) {
-			return getJson(
-					new ClassPathResource(source.toString(), this.resourceLoadClass));
+			return getJson(new ClassPathResource(source.toString(), this.resourceLoadClass));
 		}
 		return source.toString();
 	}
@@ -88,8 +87,7 @@ class JsonLoader {
 
 	String getJson(InputStream source) {
 		try {
-			return FileCopyUtils
-					.copyToString(new InputStreamReader(source, this.charset));
+			return FileCopyUtils.copyToString(new InputStreamReader(source, this.charset));
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Unable to load JSON from InputStream", ex);

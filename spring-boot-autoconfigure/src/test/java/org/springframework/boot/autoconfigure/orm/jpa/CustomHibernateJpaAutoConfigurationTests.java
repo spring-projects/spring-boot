@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,35 +63,28 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	public void testDefaultDdlAutoForMySql() throws Exception {
 		// Set up environment so we get a MySQL database but don't require server to be
 		// running...
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.database:mysql",
-				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
-				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.database:mysql",
+				"spring.datasource.url:jdbc:mysql://localhost/nonexistent", "spring.datasource.initialize:false",
+				"spring.jpa.database:MYSQL");
 		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource)
-				.get("hibernate.hbm2ddl.auto");
+		String actual = bean.getHibernateProperties(dataSource).get("hibernate.hbm2ddl.auto");
 		// Default is generic and safe
 		assertThat(actual).isNull();
 	}
 
 	@Test
 	public void testDefaultDdlAutoForEmbedded() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
+		this.context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource)
-				.get("hibernate.hbm2ddl.auto");
+		String actual = bean.getHibernateProperties(dataSource).get("hibernate.hbm2ddl.auto");
 		assertThat(actual).isEqualTo("create-drop");
 	}
 
@@ -100,10 +93,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
 						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator");
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
@@ -113,15 +104,12 @@ public class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testDefaultDatabaseForH2() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.url:jdbc:h2:mem:testdb",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:h2:mem:testdb",
 				"spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
-		HibernateJpaVendorAdapter bean = this.context
-				.getBean(HibernateJpaVendorAdapter.class);
+		HibernateJpaVendorAdapter bean = this.context.getBean(HibernateJpaVendorAdapter.class);
 		Database database = (Database) ReflectionTestUtils.getField(bean, "database");
 		assertThat(database).isEqualTo(Database.H2);
 	}
@@ -140,8 +128,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 			DataSource dataSource = mock(DataSource.class);
 			try {
 				given(dataSource.getConnection()).willReturn(mock(Connection.class));
-				given(dataSource.getConnection().getMetaData())
-						.willReturn(mock(DatabaseMetaData.class));
+				given(dataSource.getConnection().getMetaData()).willReturn(mock(DatabaseMetaData.class));
 			}
 			catch (SQLException ex) {
 				// Do nothing

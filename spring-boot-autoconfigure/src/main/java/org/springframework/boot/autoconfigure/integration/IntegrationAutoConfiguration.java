@@ -70,13 +70,10 @@ public class IntegrationAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
-	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
-	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true",
-			matchIfMissing = true)
-	protected static class IntegrationJmxConfiguration
-			implements EnvironmentAware, BeanFactoryAware {
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+	protected static class IntegrationJmxConfiguration implements EnvironmentAware, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 
@@ -89,8 +86,7 @@ public class IntegrationAutoConfiguration {
 
 		@Override
 		public void setEnvironment(Environment environment) {
-			this.propertyResolver = new RelaxedPropertyResolver(environment,
-					"spring.jmx.");
+			this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.jmx.");
 		}
 
 		@Bean
@@ -113,18 +109,14 @@ public class IntegrationAutoConfiguration {
 	 * Integration management configuration.
 	 */
 	@Configuration
-	@ConditionalOnClass({ EnableIntegrationManagement.class,
-			EnableIntegrationMBeanExport.class })
+	@ConditionalOnClass({ EnableIntegrationManagement.class, EnableIntegrationMBeanExport.class })
 	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
-			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
-			search = SearchStrategy.CURRENT)
-	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true",
-			matchIfMissing = true)
+			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration
-		@EnableIntegrationManagement(defaultCountsEnabled = "true",
-				defaultStatsEnabled = "true")
+		@EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}

@@ -45,8 +45,7 @@ public class SampleNarayanaApplicationTests {
 	}
 
 	private Condition<String> substring(final int times, final String substring) {
-		return new Condition<String>(
-				"containing '" + substring + "' " + times + " times") {
+		return new Condition<String>("containing '" + substring + "' " + times + " times") {
 
 			@Override
 			public boolean matches(String value) {

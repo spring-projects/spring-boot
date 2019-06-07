@@ -44,14 +44,12 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseWordsUnderscore() {
-		assertThat(toDashedCase("Word_With_underscore"))
-				.isEqualTo("word-with-underscore");
+		assertThat(toDashedCase("Word_With_underscore")).isEqualTo("word-with-underscore");
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderscores() {
-		assertThat(toDashedCase("Word___With__underscore"))
-				.isEqualTo("word---with--underscore");
+		assertThat(toDashedCase("Word___With__underscore")).isEqualTo("word---with--underscore");
 	}
 
 	@Test

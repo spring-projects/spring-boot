@@ -119,13 +119,11 @@ class WebDriverScope implements Scope {
 		context.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
 
 			@Override
-			public void postProcessBeanFactory(
-					ConfigurableListableBeanFactory beanFactory) throws BeansException {
+			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 				for (String beanClass : BEAN_CLASSES) {
-					for (String beanName : beanFactory.getBeanNamesForType(
-							ClassUtils.resolveClassName(beanClass, null))) {
-						BeanDefinition definition = beanFactory
-								.getBeanDefinition(beanName);
+					for (String beanName : beanFactory
+							.getBeanNamesForType(ClassUtils.resolveClassName(beanClass, null))) {
+						BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
 						if (!StringUtils.hasLength(definition.getScope())) {
 							definition.setScope(NAME);
 						}
@@ -143,8 +141,7 @@ class WebDriverScope implements Scope {
 	 */
 	public static WebDriverScope getFrom(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext) {
-			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory()
-					.getRegisteredScope(NAME);
+			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory().getRegisteredScope(NAME);
 			return (scope instanceof WebDriverScope) ? (WebDriverScope) scope : null;
 		}
 		return null;

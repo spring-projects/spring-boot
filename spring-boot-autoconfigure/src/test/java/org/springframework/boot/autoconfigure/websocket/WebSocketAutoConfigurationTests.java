@@ -62,8 +62,7 @@ public class WebSocketAutoConfigurationTests {
 	@BeforeClass
 	@AfterClass
 	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
 		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
@@ -79,8 +78,7 @@ public class WebSocketAutoConfigurationTests {
 				WebSocketAutoConfiguration.JettyWebSocketConfiguration.class);
 	}
 
-	private void serverContainerIsAvailableFromTheServletContext(
-			Class<?>... configuration) {
+	private void serverContainerIsAvailableFromTheServletContext(Class<?>... configuration) {
 		this.context.register(configuration);
 		this.context.refresh();
 		Object serverContainer = this.context.getServletContext()

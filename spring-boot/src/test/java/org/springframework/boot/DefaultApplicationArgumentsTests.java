@@ -33,8 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultApplicationArgumentsTests {
 
-	private static final String[] ARGS = new String[] { "--foo=bar", "--foo=baz",
-			"--debug", "spring", "boot" };
+	private static final String[] ARGS = new String[] { "--foo=bar", "--foo=baz", "--debug", "spring", "boot" };
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -70,8 +69,7 @@ public class DefaultApplicationArgumentsTests {
 	@Test
 	public void getOptionValues() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getOptionValues("foo"))
-				.isEqualTo(Arrays.asList("bar", "baz"));
+		assertThat(arguments.getOptionValues("foo")).isEqualTo(Arrays.asList("bar", "baz"));
 		assertThat(arguments.getOptionValues("debug")).isEmpty();
 		assertThat(arguments.getOptionValues("spring")).isNull();
 	}
@@ -84,8 +82,7 @@ public class DefaultApplicationArgumentsTests {
 
 	@Test
 	public void getNoNonOptionArgs() throws Exception {
-		ApplicationArguments arguments = new DefaultApplicationArguments(
-				new String[] { "--debug" });
+		ApplicationArguments arguments = new DefaultApplicationArguments(new String[] { "--debug" });
 		assertThat(arguments.getNonOptionArgs()).isEmpty();
 	}
 

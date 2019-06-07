@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,14 +65,11 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	public void testCompositeSource() throws Exception {
 		EnvironmentEndpoint report = getEndpointBean();
 		CompositePropertySource source = new CompositePropertySource("composite");
-		source.addPropertySource(new MapPropertySource("one",
-				Collections.singletonMap("foo", (Object) "bar")));
-		source.addPropertySource(new MapPropertySource("two",
-				Collections.singletonMap("foo", (Object) "spam")));
+		source.addPropertySource(new MapPropertySource("one", Collections.singletonMap("foo", (Object) "bar")));
+		source.addPropertySource(new MapPropertySource("two", Collections.singletonMap("foo", (Object) "spam")));
 		this.context.getEnvironment().getPropertySources().addFirst(source);
 		Map<String, Object> env = report.invoke();
-		assertThat(((Map<String, Object>) env.get("composite:one")).get("foo"))
-				.isEqualTo("bar");
+		assertThat(((Map<String, Object>) env.get("composite:one")).get("foo")).isEqualTo("bar");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,8 +82,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("VCAP_SERVICES", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		Map<String, Object> systemProperties = (Map<String, Object>) env
-				.get("systemProperties");
+		Map<String, Object> systemProperties = (Map<String, Object>) env.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
 		assertThat(systemProperties.get("mySecret")).isEqualTo("******");
@@ -108,17 +104,13 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("foo.mycredentials.uri", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		Map<String, Object> systemProperties = (Map<String, Object>) env
-				.get("systemProperties");
-		assertThat(systemProperties.get("my.services.amqp-free.credentials.uri"))
-				.isEqualTo("******");
+		Map<String, Object> systemProperties = (Map<String, Object>) env.get("systemProperties");
+		assertThat(systemProperties.get("my.services.amqp-free.credentials.uri")).isEqualTo("******");
 		assertThat(systemProperties.get("credentials.http_api_uri")).isEqualTo("******");
-		assertThat(systemProperties.get("my.services.cleardb-free.credentials"))
-				.isEqualTo("******");
+		assertThat(systemProperties.get("my.services.cleardb-free.credentials")).isEqualTo("******");
 		assertThat(systemProperties.get("foo.mycredentials.uri")).isEqualTo("******");
-		clearSystemProperties("my.services.amqp-free.credentials.uri",
-				"credentials.http_api_uri", "my.services.cleardb-free.credentials",
-				"foo.mycredentials.uri");
+		clearSystemProperties("my.services.amqp-free.credentials.uri", "credentials.http_api_uri",
+				"my.services.cleardb-free.credentials", "foo.mycredentials.uri");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -129,8 +121,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		EnvironmentEndpoint report = getEndpointBean();
 		report.setKeysToSanitize("key");
 		Map<String, Object> env = report.invoke();
-		Map<String, Object> systemProperties = (Map<String, Object>) env
-				.get("systemProperties");
+		Map<String, Object> systemProperties = (Map<String, Object>) env.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("123456");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
 		clearSystemProperties("dbPassword", "apiKey");
@@ -144,8 +135,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		EnvironmentEndpoint report = getEndpointBean();
 		report.setKeysToSanitize(".*pass.*");
 		Map<String, Object> env = report.invoke();
-		Map<String, Object> systemProperties = (Map<String, Object>) env
-				.get("systemProperties");
+		Map<String, Object> systemProperties = (Map<String, Object>) env.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("123456");
 		clearSystemProperties("dbPassword", "apiKey");
@@ -155,16 +145,14 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void testKeySanitizationWithCustomKeysByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.env.keys-to-sanitize: key");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.env.keys-to-sanitize: key");
 		this.context.register(Config.class);
 		this.context.refresh();
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		Map<String, Object> systemProperties = (Map<String, Object>) env
-				.get("systemProperties");
+		Map<String, Object> systemProperties = (Map<String, Object>) env.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("123456");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
 		clearSystemProperties("dbPassword", "apiKey");
@@ -174,16 +162,14 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void testKeySanitizationWithCustomPatternByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.env.keys-to-sanitize: .*pass.*");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.env.keys-to-sanitize: .*pass.*");
 		this.context.register(Config.class);
 		this.context.refresh();
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		Map<String, Object> systemProperties = (Map<String, Object>) env
-				.get("systemProperties");
+		Map<String, Object> systemProperties = (Map<String, Object>) env.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("123456");
 		clearSystemProperties("dbPassword", "apiKey");
@@ -191,19 +177,16 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment()
-			throws Exception {
+	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.env.keys-to-sanitize: .*pass.*, key");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.env.keys-to-sanitize: .*pass.*, key");
 		this.context.register(Config.class);
 		this.context.refresh();
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		Map<String, Object> systemProperties = (Map<String, Object>) env
-				.get("systemProperties");
+		Map<String, Object> systemProperties = (Map<String, Object>) env.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
 		clearSystemProperties("dbPassword", "apiKey");
@@ -213,8 +196,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void propertyWithPlaceholderResolved() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "my.foo: ${bar.blah}",
-				"bar.blah: hello");
+		EnvironmentTestUtils.addEnvironment(this.context, "my.foo: ${bar.blah}", "bar.blah: hello");
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();
@@ -240,8 +222,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void propertyWithSensitivePlaceholderResolved() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"my.foo: http://${bar.password}://hello", "bar.password: hello");
+		EnvironmentTestUtils.addEnvironment(this.context, "my.foo: http://${bar.password}://hello",
+				"bar.password: hello");
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();
@@ -254,23 +236,20 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void propertyWithSensitivePlaceholderNotResolved() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"my.foo: http://${bar.password}://hello");
+		EnvironmentTestUtils.addEnvironment(this.context, "my.foo: http://${bar.password}://hello");
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
 		Map<String, Object> testProperties = (Map<String, Object>) env.get("test");
-		assertThat(testProperties.get("my.foo"))
-				.isEqualTo("http://${bar.password}://hello");
+		assertThat(testProperties.get("my.foo")).isEqualTo("http://${bar.password}://hello");
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void propertyWithTypeOtherThanStringShouldNotFail() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		MutablePropertySources propertySources = this.context.getEnvironment()
-				.getPropertySources();
+		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new HashMap<String, Object>();
 		source.put("foo", Collections.singletonMap("bar", "baz"));
 		propertySources.addFirst(new MapPropertySource("test", source));
@@ -287,12 +266,9 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void multipleSourcesWithSameProperty() {
 		this.context = new AnnotationConfigApplicationContext();
-		MutablePropertySources propertySources = this.context.getEnvironment()
-				.getPropertySources();
-		propertySources.addFirst(new MapPropertySource("one",
-				Collections.<String, Object>singletonMap("a", "alpha")));
-		propertySources.addFirst(new MapPropertySource("two",
-				Collections.<String, Object>singletonMap("a", "apple")));
+		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
+		propertySources.addFirst(new MapPropertySource("one", Collections.<String, Object>singletonMap("a", "alpha")));
+		propertySources.addFirst(new MapPropertySource("two", Collections.<String, Object>singletonMap("a", "apple")));
 		this.context.register(Config.class);
 		this.context.refresh();
 		EnvironmentEndpoint report = getEndpointBean();

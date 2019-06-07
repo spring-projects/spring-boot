@@ -45,7 +45,6 @@ public interface EmbeddedServletContainerFactory {
 	 * @return a fully configured and started {@link EmbeddedServletContainer}
 	 * @see EmbeddedServletContainer#stop()
 	 */
-	EmbeddedServletContainer getEmbeddedServletContainer(
-			ServletContextInitializer... initializers);
+	EmbeddedServletContainer getEmbeddedServletContainer(ServletContextInitializer... initializers);
 
 }

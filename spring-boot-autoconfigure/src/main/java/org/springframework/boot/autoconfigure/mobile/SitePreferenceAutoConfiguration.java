@@ -43,11 +43,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ SitePreferenceHandlerInterceptor.class,
-		SitePreferenceHandlerMethodArgumentResolver.class })
+@ConditionalOnClass({ SitePreferenceHandlerInterceptor.class, SitePreferenceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(DeviceResolverAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.mobile.sitepreference", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.mobile.sitepreference", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @ConditionalOnWebApplication
 public class SitePreferenceAutoConfiguration {
 
@@ -63,15 +62,13 @@ public class SitePreferenceAutoConfiguration {
 	}
 
 	@Configuration
-	protected static class SitePreferenceMvcConfiguration
-			extends WebMvcConfigurerAdapter {
+	protected static class SitePreferenceMvcConfiguration extends WebMvcConfigurerAdapter {
 
 		private final SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor;
 
 		private final SitePreferenceHandlerMethodArgumentResolver sitePreferenceHandlerMethodArgumentResolver;
 
-		protected SitePreferenceMvcConfiguration(
-				SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor,
+		protected SitePreferenceMvcConfiguration(SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor,
 				org.springframework.mobile.device.site.SitePreferenceHandlerMethodArgumentResolver sitePreferenceHandlerMethodArgumentResolver) {
 			this.sitePreferenceHandlerInterceptor = sitePreferenceHandlerInterceptor;
 			this.sitePreferenceHandlerMethodArgumentResolver = sitePreferenceHandlerMethodArgumentResolver;
@@ -83,8 +80,7 @@ public class SitePreferenceAutoConfiguration {
 		}
 
 		@Override
-		public void addArgumentResolvers(
-				List<HandlerMethodArgumentResolver> argumentResolvers) {
+		public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 			argumentResolvers.add(this.sitePreferenceHandlerMethodArgumentResolver);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,34 +55,28 @@ public class AuditAutoConfigurationTests {
 
 	@Test
 	public void ownAuditEventRepository() throws Exception {
-		registerAndRefresh(CustomAuditEventRepositoryConfiguration.class,
-				AuditAutoConfiguration.class);
-		assertThat(this.context.getBean(AuditEventRepository.class))
-				.isInstanceOf(TestAuditEventRepository.class);
+		registerAndRefresh(CustomAuditEventRepositoryConfiguration.class, AuditAutoConfiguration.class);
+		assertThat(this.context.getBean(AuditEventRepository.class)).isInstanceOf(TestAuditEventRepository.class);
 	}
 
 	@Test
 	public void ownAuthenticationAuditListener() throws Exception {
-		registerAndRefresh(CustomAuthenticationAuditListenerConfiguration.class,
-				AuditAutoConfiguration.class);
+		registerAndRefresh(CustomAuthenticationAuditListenerConfiguration.class, AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AbstractAuthenticationAuditListener.class))
 				.isInstanceOf(TestAuthenticationAuditListener.class);
 	}
 
 	@Test
 	public void ownAuthorizationAuditListener() throws Exception {
-		registerAndRefresh(CustomAuthorizationAuditListenerConfiguration.class,
-				AuditAutoConfiguration.class);
+		registerAndRefresh(CustomAuthorizationAuditListenerConfiguration.class, AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AbstractAuthorizationAuditListener.class))
 				.isInstanceOf(TestAuthorizationAuditListener.class);
 	}
 
 	@Test
 	public void ownAuditListener() throws Exception {
-		registerAndRefresh(CustomAuditListenerConfiguration.class,
-				AuditAutoConfiguration.class);
-		assertThat(this.context.getBean(AbstractAuditListener.class))
-				.isInstanceOf(TestAuditListener.class);
+		registerAndRefresh(CustomAuditListenerConfiguration.class, AuditAutoConfiguration.class);
+		assertThat(this.context.getBean(AbstractAuditListener.class)).isInstanceOf(TestAuditListener.class);
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
@@ -114,8 +108,7 @@ public class AuditAutoConfigurationTests {
 
 	}
 
-	protected static class TestAuthenticationAuditListener
-			extends AbstractAuthenticationAuditListener {
+	protected static class TestAuthenticationAuditListener extends AbstractAuthenticationAuditListener {
 
 		@Override
 		public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
@@ -137,8 +130,7 @@ public class AuditAutoConfigurationTests {
 
 	}
 
-	protected static class TestAuthorizationAuditListener
-			extends AbstractAuthorizationAuditListener {
+	protected static class TestAuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 
 		@Override
 		public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {

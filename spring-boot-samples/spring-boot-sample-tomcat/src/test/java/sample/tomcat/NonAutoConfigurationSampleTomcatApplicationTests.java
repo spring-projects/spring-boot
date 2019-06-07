@@ -63,13 +63,10 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	@ComponentScan(
-			basePackageClasses = { SampleController.class, HelloWorldService.class })
+			HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
 	public static class NonAutoConfigurationSampleTomcatApplication {
 
 		public static void main(String[] args) throws Exception {

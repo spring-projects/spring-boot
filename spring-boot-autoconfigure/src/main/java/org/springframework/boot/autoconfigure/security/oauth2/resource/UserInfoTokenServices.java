@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,12 +97,10 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 
 	private OAuth2Authentication extractAuthentication(Map<String, Object> map) {
 		Object principal = getPrincipal(map);
-		List<GrantedAuthority> authorities = this.authoritiesExtractor
-				.extractAuthorities(map);
-		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null,
-				null, null, null, null);
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				principal, "N/A", authorities);
+		List<GrantedAuthority> authorities = this.authoritiesExtractor.extractAuthorities(map);
+		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null, null, null, null, null);
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(principal, "N/A",
+				authorities);
 		token.setDetails(map);
 		return new OAuth2Authentication(request, token);
 	}
@@ -135,21 +133,17 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 				resource.setClientId(this.clientId);
 				restTemplate = new OAuth2RestTemplate(resource);
 			}
-			OAuth2AccessToken existingToken = restTemplate.getOAuth2ClientContext()
-					.getAccessToken();
+			OAuth2AccessToken existingToken = restTemplate.getOAuth2ClientContext().getAccessToken();
 			if (existingToken == null || !accessToken.equals(existingToken.getValue())) {
-				DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(
-						accessToken);
+				DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
 				token.setTokenType(this.tokenType);
 				restTemplate.getOAuth2ClientContext().setAccessToken(token);
 			}
 			return restTemplate.getForEntity(path, Map.class).getBody();
 		}
 		catch (Exception ex) {
-			this.logger.warn("Could not fetch user details: " + ex.getClass() + ", "
-					+ ex.getMessage());
-			return Collections.<String, Object>singletonMap("error",
-					"Could not fetch user details");
+			this.logger.warn("Could not fetch user details: " + ex.getClass() + ", " + ex.getMessage());
+			return Collections.<String, Object>singletonMap("error", "Could not fetch user details");
 		}
 	}
 

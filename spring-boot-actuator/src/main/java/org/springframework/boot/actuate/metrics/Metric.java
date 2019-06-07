@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,7 @@ public class Metric<T extends Number> {
 	 * @return a new {@link Metric} instance
 	 */
 	public Metric<Long> increment(int amount) {
-		return new Metric<Long>(this.getName(),
-				Long.valueOf(this.getValue().longValue() + amount));
+		return new Metric<Long>(this.getName(), Long.valueOf(this.getValue().longValue() + amount));
 	}
 
 	/**
@@ -130,8 +129,7 @@ public class Metric<T extends Number> {
 
 	@Override
 	public String toString() {
-		return "Metric [name=" + this.name + ", value=" + this.value + ", timestamp="
-				+ this.timestamp + "]";
+		return "Metric [name=" + this.name + ", value=" + this.value + ", timestamp=" + this.timestamp + "]";
 	}
 
 }

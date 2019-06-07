@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,48 +43,40 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 @Configuration
 @ConditionalOnClass({ OAuth2AccessToken.class })
 @ConditionalOnBean(GlobalMethodSecurityConfiguration.class)
-public class OAuth2MethodSecurityConfiguration
-		implements BeanFactoryPostProcessor, ApplicationContextAware {
+public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcessor, ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-			throws BeansException {
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		OAuth2ExpressionHandlerInjectionPostProcessor processor = new OAuth2ExpressionHandlerInjectionPostProcessor(
 				this.applicationContext);
 		beanFactory.addBeanPostProcessor(processor);
 	}
 
-	private static class OAuth2ExpressionHandlerInjectionPostProcessor
-			implements BeanPostProcessor {
+	private static class OAuth2ExpressionHandlerInjectionPostProcessor implements BeanPostProcessor {
 
 		private ApplicationContext applicationContext;
 
-		OAuth2ExpressionHandlerInjectionPostProcessor(
-				ApplicationContext applicationContext) {
+		OAuth2ExpressionHandlerInjectionPostProcessor(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof DefaultMethodSecurityExpressionHandler
 					&& !(bean instanceof OAuth2MethodSecurityExpressionHandler)) {
-				return getExpressionHandler(
-						(DefaultMethodSecurityExpressionHandler) bean);
+				return getExpressionHandler((DefaultMethodSecurityExpressionHandler) bean);
 			}
 			return bean;
 		}
@@ -93,8 +85,7 @@ public class OAuth2MethodSecurityConfiguration
 				DefaultMethodSecurityExpressionHandler bean) {
 			OAuth2MethodSecurityExpressionHandler handler = new OAuth2MethodSecurityExpressionHandler();
 			handler.setApplicationContext(this.applicationContext);
-			AuthenticationTrustResolver trustResolver = findInContext(
-					AuthenticationTrustResolver.class);
+			AuthenticationTrustResolver trustResolver = findInContext(AuthenticationTrustResolver.class);
 			if (trustResolver != null) {
 				handler.setTrustResolver(trustResolver);
 			}
@@ -103,8 +94,7 @@ public class OAuth2MethodSecurityConfiguration
 		}
 
 		private <T> T findInContext(Class<T> type) {
-			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					this.applicationContext, type).length == 1) {
+			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.applicationContext, type).length == 1) {
 				return this.applicationContext.getBean(type);
 			}
 			return null;

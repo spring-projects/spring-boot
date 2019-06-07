@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,15 +64,12 @@ public class JerseyAutoConfigurationServletContainerTests {
 
 	@Test
 	public void existingJerseyServletIsAmended() {
-		assertThat(output.toString())
-				.contains("Configuring existing registration for Jersey servlet");
-		assertThat(output.toString()).contains(
-				"Servlet " + Application.class.getName() + " was not registered");
+		assertThat(output.toString()).contains("Configuring existing registration for Jersey servlet");
+		assertThat(output.toString()).contains("Servlet " + Application.class.getName() + " was not registered");
 	}
 
-	@ImportAutoConfiguration({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@ImportAutoConfiguration({ EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	@Import(ContainerConfiguration.class)
 	@Path("/hello")
 	public static class Application extends ResourceConfig {

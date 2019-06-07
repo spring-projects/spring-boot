@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 @EnableSpringDataWebSupport
 @ConditionalOnWebApplication
-@ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class,
-		WebMvcConfigurerAdapter.class })
+@ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class, WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
 @AutoConfigureAfter(RepositoryRestMvcAutoConfiguration.class)
 public class SpringDataWebAutoConfiguration {

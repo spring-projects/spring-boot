@@ -40,8 +40,7 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 	 * @param initializers the initializers that should be invoked
 	 * @since 1.2.1
 	 */
-	public ServletContextInitializerConfiguration(
-			ServletContextInitializer... initializers) {
+	public ServletContextInitializerConfiguration(ServletContextInitializer... initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = initializers;
 	}

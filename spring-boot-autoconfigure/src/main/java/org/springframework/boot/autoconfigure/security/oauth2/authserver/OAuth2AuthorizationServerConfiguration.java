@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,11 +63,9 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @ConditionalOnMissingBean(AuthorizationServerConfigurer.class)
 @ConditionalOnBean(AuthorizationServerEndpointsConfiguration.class)
 @EnableConfigurationProperties(AuthorizationServerProperties.class)
-public class OAuth2AuthorizationServerConfiguration
-		extends AuthorizationServerConfigurerAdapter {
+public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
-	private static final Log logger = LogFactory
-			.getLog(OAuth2AuthorizationServerConfiguration.class);
+	private static final Log logger = LogFactory.getLog(OAuth2AuthorizationServerConfiguration.class);
 
 	private final BaseClientDetails details;
 
@@ -80,10 +78,8 @@ public class OAuth2AuthorizationServerConfiguration
 	private final AuthorizationServerProperties properties;
 
 	public OAuth2AuthorizationServerConfiguration(BaseClientDetails details,
-			AuthenticationManager authenticationManager,
-			ObjectProvider<TokenStore> tokenStore,
-			ObjectProvider<AccessTokenConverter> tokenConverter,
-			AuthorizationServerProperties properties) {
+			AuthenticationManager authenticationManager, ObjectProvider<TokenStore> tokenStore,
+			ObjectProvider<AccessTokenConverter> tokenConverter, AuthorizationServerProperties properties) {
 		this.details = details;
 		this.authenticationManager = authenticationManager;
 		this.tokenStore = tokenStore.getIfAvailable();
@@ -93,38 +89,29 @@ public class OAuth2AuthorizationServerConfiguration
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		ClientDetailsServiceBuilder<InMemoryClientDetailsServiceBuilder>.ClientBuilder builder = clients
-				.inMemory().withClient(this.details.getClientId());
-		builder.secret(this.details.getClientSecret())
-				.resourceIds(this.details.getResourceIds().toArray(new String[0]))
-				.authorizedGrantTypes(
-						this.details.getAuthorizedGrantTypes().toArray(new String[0]))
-				.authorities(
-						AuthorityUtils.authorityListToSet(this.details.getAuthorities())
-								.toArray(new String[0]))
+		ClientDetailsServiceBuilder<InMemoryClientDetailsServiceBuilder>.ClientBuilder builder = clients.inMemory()
+				.withClient(this.details.getClientId());
+		builder.secret(this.details.getClientSecret()).resourceIds(this.details.getResourceIds().toArray(new String[0]))
+				.authorizedGrantTypes(this.details.getAuthorizedGrantTypes().toArray(new String[0]))
+				.authorities(AuthorityUtils.authorityListToSet(this.details.getAuthorities()).toArray(new String[0]))
 				.scopes(this.details.getScope().toArray(new String[0]));
 
 		if (this.details.getAutoApproveScopes() != null) {
-			builder.autoApprove(
-					this.details.getAutoApproveScopes().toArray(new String[0]));
+			builder.autoApprove(this.details.getAutoApproveScopes().toArray(new String[0]));
 		}
 		if (this.details.getAccessTokenValiditySeconds() != null) {
-			builder.accessTokenValiditySeconds(
-					this.details.getAccessTokenValiditySeconds());
+			builder.accessTokenValiditySeconds(this.details.getAccessTokenValiditySeconds());
 		}
 		if (this.details.getRefreshTokenValiditySeconds() != null) {
-			builder.refreshTokenValiditySeconds(
-					this.details.getRefreshTokenValiditySeconds());
+			builder.refreshTokenValiditySeconds(this.details.getRefreshTokenValiditySeconds());
 		}
 		if (this.details.getRegisteredRedirectUri() != null) {
-			builder.redirectUris(
-					this.details.getRegisteredRedirectUri().toArray(new String[0]));
+			builder.redirectUris(this.details.getRegisteredRedirectUri().toArray(new String[0]));
 		}
 	}
 
 	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-			throws Exception {
+	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 		if (this.tokenConverter != null) {
 			endpoints.accessTokenConverter(this.tokenConverter);
 		}
@@ -137,8 +124,7 @@ public class OAuth2AuthorizationServerConfiguration
 	}
 
 	@Override
-	public void configure(AuthorizationServerSecurityConfigurer security)
-			throws Exception {
+	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 		if (this.properties.getCheckTokenAccess() != null) {
 			security.checkTokenAccess(this.properties.getCheckTokenAccess());
 		}
@@ -163,9 +149,7 @@ public class OAuth2AuthorizationServerConfiguration
 		public void init() {
 			String prefix = "security.oauth2.client";
 			boolean defaultSecret = this.credentials.isDefaultSecret();
-			logger.info(String.format(
-					"Initialized OAuth2 Client%n%n%s.client-id = %s%n"
-							+ "%s.client-secret = %s%n%n",
+			logger.info(String.format("Initialized OAuth2 Client%n%n%s.client-id = %s%n" + "%s.client-secret = %s%n%n",
 					prefix, this.credentials.getClientId(), prefix,
 					defaultSecret ? this.credentials.getClientSecret() : "****"));
 		}
@@ -191,10 +175,9 @@ public class OAuth2AuthorizationServerConfiguration
 			}
 			details.setClientId(this.client.getClientId());
 			details.setClientSecret(this.client.getClientSecret());
-			details.setAuthorizedGrantTypes(Arrays.asList("authorization_code",
-					"password", "client_credentials", "implicit", "refresh_token"));
-			details.setAuthorities(
-					AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
+			details.setAuthorizedGrantTypes(
+					Arrays.asList("authorization_code", "password", "client_credentials", "implicit", "refresh_token"));
+			details.setAuthorities(AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
 			details.setRegisteredRedirectUri(Collections.<String>emptySet());
 			return details;
 		}

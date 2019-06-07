@@ -74,8 +74,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	}
 
 	@Override
-	protected Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
+	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		Handler.setUseFastConnectionExceptions(true);
 		try {
 			try {
@@ -87,8 +86,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 					// This should never happen as the IllegalArgumentException indicates
 					// that the package has already been defined and, therefore,
 					// getPackage(name) should not return null.
-					throw new AssertionError("Package " + name + " has already been "
-							+ "defined but it could not be found");
+					throw new AssertionError(
+							"Package " + name + " has already been " + "defined but it could not be found");
 				}
 			}
 			return super.loadClass(name, resolve);
@@ -119,8 +118,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 						// indicates that the package has already been defined and,
 						// therefore, getPackage(name) should not have returned null.
 						throw new AssertionError(
-								"Package " + packageName + " has already been defined "
-										+ "but it could not be found");
+								"Package " + packageName + " has already been defined " + "but it could not be found");
 					}
 				}
 			}
@@ -138,13 +136,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 						try {
 							URLConnection connection = url.openConnection();
 							if (connection instanceof JarURLConnection) {
-								JarFile jarFile = ((JarURLConnection) connection)
-										.getJarFile();
+								JarFile jarFile = ((JarURLConnection) connection).getJarFile();
 								if (jarFile.getEntry(classEntryName) != null
 										&& jarFile.getEntry(packageEntryName) != null
 										&& jarFile.getManifest() != null) {
-									definePackage(packageName, jarFile.getManifest(),
-											url);
+									definePackage(packageName, jarFile.getManifest(), url);
 									return null;
 								}
 							}

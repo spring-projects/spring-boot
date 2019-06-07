@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,7 @@ public class CachePublicMetrics implements PublicMetrics {
 	@Override
 	public Collection<Metric<?>> metrics() {
 		Collection<Metric<?>> metrics = new HashSet<Metric<?>>();
-		for (Map.Entry<String, List<CacheManagerBean>> entry : getCacheManagerBeans()
-				.entrySet()) {
+		for (Map.Entry<String, List<CacheManagerBean>> entry : getCacheManagerBeans().entrySet()) {
 			addMetrics(metrics, entry.getKey(), entry.getValue());
 		}
 		return metrics;
@@ -80,15 +79,13 @@ public class CachePublicMetrics implements PublicMetrics {
 		MultiValueMap<String, CacheManagerBean> cacheManagerNamesByCacheName = new LinkedMultiValueMap<String, CacheManagerBean>();
 		for (Map.Entry<String, CacheManager> entry : this.cacheManagers.entrySet()) {
 			for (String cacheName : entry.getValue().getCacheNames()) {
-				cacheManagerNamesByCacheName.add(cacheName,
-						new CacheManagerBean(entry.getKey(), entry.getValue()));
+				cacheManagerNamesByCacheName.add(cacheName, new CacheManagerBean(entry.getKey(), entry.getValue()));
 			}
 		}
 		return cacheManagerNamesByCacheName;
 	}
 
-	private void addMetrics(Collection<Metric<?>> metrics, String cacheName,
-			List<CacheManagerBean> cacheManagerBeans) {
+	private void addMetrics(Collection<Metric<?>> metrics, String cacheName, List<CacheManagerBean> cacheManagerBeans) {
 		for (CacheManagerBean cacheManagerBean : cacheManagerBeans) {
 			CacheManager cacheManager = cacheManagerBean.getCacheManager();
 			Cache cache = unwrapIfNecessary(cacheManager.getCache(cacheName));
@@ -105,8 +102,7 @@ public class CachePublicMetrics implements PublicMetrics {
 	}
 
 	private Cache unwrapIfNecessary(Cache cache) {
-		if (ClassUtils.isPresent(
-				"org.springframework.cache.transaction.TransactionAwareCacheDecorator",
+		if (ClassUtils.isPresent("org.springframework.cache.transaction.TransactionAwareCacheDecorator",
 				getClass().getClassLoader())) {
 			return TransactionAwareCacheDecoratorHandler.unwrapIfNecessary(cache);
 		}
@@ -117,12 +113,10 @@ public class CachePublicMetrics implements PublicMetrics {
 	private CacheStatistics getCacheStatistics(Cache cache, CacheManager cacheManager) {
 		if (this.statisticsProviders != null) {
 			for (CacheStatisticsProvider provider : this.statisticsProviders) {
-				Class<?> cacheType = ResolvableType
-						.forClass(CacheStatisticsProvider.class, provider.getClass())
+				Class<?> cacheType = ResolvableType.forClass(CacheStatisticsProvider.class, provider.getClass())
 						.resolveGeneric();
 				if (cacheType.isInstance(cache)) {
-					CacheStatistics statistics = provider.getCacheStatistics(cacheManager,
-							cache);
+					CacheStatistics statistics = provider.getCacheStatistics(cacheManager, cache);
 					if (statistics != null) {
 						return statistics;
 					}

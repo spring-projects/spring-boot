@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,11 +57,9 @@ public class BootGlobalAuthenticationConfiguration {
 		return new BootGlobalAuthenticationConfigurationAdapter(context);
 	}
 
-	private static class BootGlobalAuthenticationConfigurationAdapter
-			extends GlobalAuthenticationConfigurerAdapter {
+	private static class BootGlobalAuthenticationConfigurationAdapter extends GlobalAuthenticationConfigurerAdapter {
 
-		private static final Log logger = LogFactory
-				.getLog(BootGlobalAuthenticationConfiguration.class);
+		private static final Log logger = LogFactory.getLog(BootGlobalAuthenticationConfiguration.class);
 
 		private final ApplicationContext context;
 

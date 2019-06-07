@@ -92,8 +92,8 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class SessionScopedConfiguration {
 
 		@Bean
-		public FilterRegistrationBean oauth2ClientFilterRegistration(
-				OAuth2ClientContextFilter filter, SecurityProperties security) {
+		public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter,
+				SecurityProperties security) {
 			FilterRegistrationBean registration = new FilterRegistrationBean();
 			registration.setFilter(filter);
 			registration.setOrder(security.getFilterOrder() - 10);
@@ -133,10 +133,8 @@ public class OAuth2RestOperationsConfiguration {
 		@Bean
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public DefaultOAuth2ClientContext oauth2ClientContext() {
-			DefaultOAuth2ClientContext context = new DefaultOAuth2ClientContext(
-					new DefaultAccessTokenRequest());
-			Authentication principal = SecurityContextHolder.getContext()
-					.getAuthentication();
+			DefaultOAuth2ClientContext context = new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest());
+			Authentication principal = SecurityContextHolder.getContext().getAuthentication();
 			if (principal instanceof OAuth2Authentication) {
 				OAuth2Authentication authentication = (OAuth2Authentication) principal;
 				Object details = authentication.getDetails();
@@ -157,19 +155,15 @@ public class OAuth2RestOperationsConfiguration {
 	static class OAuth2ClientIdCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			PropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), "security.oauth2.client.");
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			PropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(),
+					"security.oauth2.client.");
 			String clientId = resolver.getProperty("client-id");
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("OAuth Client ID");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("OAuth Client ID");
 			if (StringUtils.hasLength(clientId)) {
-				return ConditionOutcome.match(message
-						.foundExactly("security.oauth2.client.client-id property"));
+				return ConditionOutcome.match(message.foundExactly("security.oauth2.client.client-id property"));
 			}
-			return ConditionOutcome.noMatch(message
-					.didNotFind("security.oauth2.client.client-id property").atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("security.oauth2.client.client-id property").atAll());
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,7 @@ public class TunnelClientTests {
 	public void typicalTraffic() throws Exception {
 		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
 		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(this.listenPort));
 		channel.write(ByteBuffer.wrap("hello".getBytes()));
 		ByteBuffer buffer = ByteBuffer.allocate(5);
 		channel.read(buffer);
@@ -82,8 +81,7 @@ public class TunnelClientTests {
 	public void socketChannelClosedTriggersTunnelClose() throws Exception {
 		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
 		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(this.listenPort));
 		Thread.sleep(200);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
@@ -96,8 +94,7 @@ public class TunnelClientTests {
 	public void stopTriggersTunnelClose() throws Exception {
 		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
 		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(this.listenPort));
 		Thread.sleep(200);
 		client.stop();
 		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
@@ -111,8 +108,7 @@ public class TunnelClientTests {
 		TunnelClientListener listener = mock(TunnelClientListener.class);
 		client.addListener(listener);
 		client.start();
-		SocketChannel channel = SocketChannel
-				.open(new InetSocketAddress(this.listenPort));
+		SocketChannel channel = SocketChannel.open(new InetSocketAddress(this.listenPort));
 		Thread.sleep(200);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
@@ -130,8 +126,7 @@ public class TunnelClientTests {
 		private int openedTimes;
 
 		@Override
-		public WritableByteChannel open(WritableByteChannel incomingChannel,
-				Closeable closeable) throws Exception {
+		public WritableByteChannel open(WritableByteChannel incomingChannel, Closeable closeable) throws Exception {
 			this.openedTimes++;
 			this.open = true;
 			return new TunnelChannel(incomingChannel, closeable);

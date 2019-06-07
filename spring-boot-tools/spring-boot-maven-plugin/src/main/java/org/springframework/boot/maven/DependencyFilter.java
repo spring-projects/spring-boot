@@ -74,8 +74,8 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 		if (!dependency.getArtifactId().equals(artifact.getArtifactId())) {
 			return false;
 		}
-		return (dependency.getClassifier() == null || artifact.getClassifier() != null
-				&& dependency.getClassifier().equals(artifact.getClassifier()));
+		return (dependency.getClassifier() == null
+				|| artifact.getClassifier() != null && dependency.getClassifier().equals(artifact.getClassifier()));
 	}
 
 	protected final List<? extends FilterableDependency> getFilters() {

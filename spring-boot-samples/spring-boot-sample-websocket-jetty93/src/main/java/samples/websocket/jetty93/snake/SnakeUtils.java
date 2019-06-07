@@ -47,8 +47,7 @@ public final class SnakeUtils {
 		float saturation = (random.nextInt(2000) + 1000) / 10000f;
 		float luminance = 0.9f;
 		Color color = Color.getHSBColor(hue, saturation, luminance);
-		return '#' + Integer.toHexString((color.getRGB() & 0xffffff) | 0x1000000)
-				.substring(1);
+		return '#' + Integer.toHexString((color.getRGB() & 0xffffff) | 0x1000000).substring(1);
 	}
 
 	public static Location getRandomLocation() {

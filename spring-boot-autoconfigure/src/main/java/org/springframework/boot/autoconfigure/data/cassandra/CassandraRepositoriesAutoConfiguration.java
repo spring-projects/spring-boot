@@ -38,8 +38,8 @@ import org.springframework.data.cassandra.repository.support.CassandraRepository
  */
 @Configuration
 @ConditionalOnClass({ Session.class, CassandraRepository.class })
-@ConditionalOnProperty(prefix = "spring.data.cassandra.repositories", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.cassandra.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @ConditionalOnMissingBean(CassandraRepositoryFactoryBean.class)
 @Import(CassandraRepositoriesAutoConfigureRegistrar.class)
 public class CassandraRepositoriesAutoConfiguration {

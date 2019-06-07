@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,7 @@ public class SpringIntegrationMetricReader implements MetricReader {
 		}
 	}
 
-	private void addChannelMetrics(List<Metric<?>> result, String name,
-			MessageChannelMetrics metrics) {
+	private void addChannelMetrics(List<Metric<?>> result, String name, MessageChannelMetrics metrics) {
 		String prefix = "integration.channel." + name;
 		result.addAll(getStatistics(prefix + ".errorRate", metrics.getErrorRate()));
 		result.add(new Metric<Long>(prefix + ".sendCount", metrics.getSendCountLong()));
@@ -91,8 +90,7 @@ public class SpringIntegrationMetricReader implements MetricReader {
 		}
 	}
 
-	private void addHandlerMetrics(List<Metric<?>> result, String name,
-			MessageHandlerMetrics metrics) {
+	private void addHandlerMetrics(List<Metric<?>> result, String name, MessageHandlerMetrics metrics) {
 		String prefix = "integration.handler." + name;
 		result.addAll(getStatistics(prefix + ".duration", metrics.getDuration()));
 		long activeCount = metrics.getActiveCountLong();
@@ -105,11 +103,9 @@ public class SpringIntegrationMetricReader implements MetricReader {
 		}
 	}
 
-	private void addSourceMetrics(List<Metric<?>> result, String name,
-			MessageSourceMetrics sourceMetrics) {
+	private void addSourceMetrics(List<Metric<?>> result, String name, MessageSourceMetrics sourceMetrics) {
 		String prefix = "integration.source." + name;
-		result.add(new Metric<Long>(prefix + ".messageCount",
-				sourceMetrics.getMessageCountLong()));
+		result.add(new Metric<Long>(prefix + ".messageCount", sourceMetrics.getMessageCountLong()));
 	}
 
 	private Collection<? extends Metric<?>> getStatistics(String name, Statistics stats) {

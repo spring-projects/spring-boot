@@ -39,12 +39,10 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 
 	public YamlJavaBeanPropertyConstructor(Class<?> theRoot) {
 		super(theRoot);
-		this.yamlClassConstructors.put(NodeId.mapping,
-				new CustomPropertyConstructMapping());
+		this.yamlClassConstructors.put(NodeId.mapping, new CustomPropertyConstructMapping());
 	}
 
-	public YamlJavaBeanPropertyConstructor(Class<?> theRoot,
-			Map<Class<?>, Map<String, String>> propertyAliases) {
+	public YamlJavaBeanPropertyConstructor(Class<?> theRoot, Map<Class<?>, Map<String, String>> propertyAliases) {
 		this(theRoot);
 		for (Class<?> key : propertyAliases.keySet()) {
 			Map<String, String> map = propertyAliases.get(key);
@@ -83,10 +81,8 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 	class CustomPropertyConstructMapping extends ConstructMapping {
 
 		@Override
-		protected Property getProperty(Class<?> type, String name)
-				throws IntrospectionException {
-			Map<String, Property> forType = YamlJavaBeanPropertyConstructor.this.properties
-					.get(type);
+		protected Property getProperty(Class<?> type, String name) throws IntrospectionException {
+			Map<String, Property> forType = YamlJavaBeanPropertyConstructor.this.properties.get(type);
 			Property property = (forType != null) ? forType.get(name) : null;
 			return (property != null) ? property : super.getProperty(type, name);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	@Before
 	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
-				this.securityService, "my-app-id");
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 		this.endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		this.handlerMethod = new HandlerMethod(this.endpoint, "invoke");
 		this.request = new MockHttpServletRequest();
@@ -76,56 +75,43 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.request.setMethod("OPTIONS");
 		this.request.addHeader(HttpHeaders.ORIGIN, "https://example.com");
 		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		assertThat(preHandle).isTrue();
 	}
 
 	@Test
 	public void preHandleWhenTokenIsMissingShouldReturnFalse() throws Exception {
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		assertThat(preHandle).isFalse();
-		assertThat(this.response.getStatus())
-				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus().value());
+		assertThat(this.response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus().value());
 		assertThat(this.response.getContentAsString()).contains("security_error");
-		assertThat(this.response.getContentType())
-				.isEqualTo(MediaType.APPLICATION_JSON.toString());
+		assertThat(this.response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
 	}
 
 	@Test
 	public void preHandleWhenTokenIsNotBearerShouldReturnFalse() throws Exception {
 		this.request.addHeader("Authorization", mockAccessToken());
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		assertThat(preHandle).isFalse();
-		assertThat(this.response.getStatus())
-				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus().value());
+		assertThat(this.response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus().value());
 	}
 
 	@Test
 	public void preHandleWhenApplicationIdIsNullShouldReturnFalse() throws Exception {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
-				this.securityService, null);
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, null);
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		assertThat(preHandle).isFalse();
-		assertThat(this.response.getStatus())
-				.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus().value());
+		assertThat(this.response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus().value());
 	}
 
 	@Test
-	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse()
-			throws Exception {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null,
-				"my-app-id");
+	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse() throws Exception {
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null, "my-app-id");
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		assertThat(preHandle).isFalse();
-		assertThat(this.response.getStatus())
-				.isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus().value());
+		assertThat(this.response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus().value());
 	}
 
 	@Test
@@ -136,29 +122,24 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.request.addHeader("Authorization", "bearer " + accessToken);
 		BDDMockito.given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
 				.willReturn(AccessLevel.RESTRICTED);
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		assertThat(preHandle).isFalse();
-		assertThat(this.response.getStatus())
-				.isEqualTo(Reason.ACCESS_DENIED.getStatus().value());
+		assertThat(this.response.getStatus()).isEqualTo(Reason.ACCESS_DENIED.getStatus().value());
 	}
 
 	@Test
 	public void preHandleSuccessfulWithFullAccess() throws Exception {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
-		BDDMockito.given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
-				.willReturn(AccessLevel.FULL);
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		BDDMockito.given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(AccessLevel.FULL);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		verify(this.tokenValidator).validate(tokenArgumentCaptor.capture());
 		Token token = tokenArgumentCaptor.getValue();
 		assertThat(token.toString()).isEqualTo(accessToken);
 		assertThat(preHandle).isTrue();
 		assertThat(this.response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(this.request.getAttribute("cloudFoundryAccessLevel"))
-				.isEqualTo(AccessLevel.FULL);
+		assertThat(this.request.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.FULL);
 	}
 
 	@Test
@@ -169,16 +150,14 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		BDDMockito.given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
 				.willReturn(AccessLevel.RESTRICTED);
-		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
-				this.handlerMethod);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response, this.handlerMethod);
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		verify(this.tokenValidator).validate(tokenArgumentCaptor.capture());
 		Token token = tokenArgumentCaptor.getValue();
 		assertThat(token.toString()).isEqualTo(accessToken);
 		assertThat(preHandle).isTrue();
 		assertThat(this.response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(this.request.getAttribute("cloudFoundryAccessLevel"))
-				.isEqualTo(AccessLevel.RESTRICTED);
+		assertThat(this.request.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.RESTRICTED);
 	}
 
 	private String mockAccessToken() {

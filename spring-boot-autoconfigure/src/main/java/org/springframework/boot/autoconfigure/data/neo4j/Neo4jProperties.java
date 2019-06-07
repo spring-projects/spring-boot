@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,8 +137,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 		}
 	}
 
-	private void configureDriverFromUri(DriverConfiguration driverConfiguration,
-			String uri) {
+	private void configureDriverFromUri(DriverConfiguration driverConfiguration, String uri) {
 		driverConfiguration.setDriverClassName(deduceDriverFromUri());
 		driverConfiguration.setURI(uri);
 	}
@@ -156,18 +155,15 @@ public class Neo4jProperties implements ApplicationContextAware {
 			if ("bolt".equals(scheme)) {
 				return BOLT_DRIVER;
 			}
-			throw new IllegalArgumentException(
-					"Could not deduce driver to use based on URI '" + uri + "'");
+			throw new IllegalArgumentException("Could not deduce driver to use based on URI '" + uri + "'");
 		}
 		catch (URISyntaxException ex) {
-			throw new IllegalArgumentException(
-					"Invalid URI for spring.data.neo4j.uri '" + this.uri + "'", ex);
+			throw new IllegalArgumentException("Invalid URI for spring.data.neo4j.uri '" + this.uri + "'", ex);
 		}
 	}
 
 	private void configureDriverWithDefaults(DriverConfiguration driverConfiguration) {
-		if (getEmbedded().isEnabled()
-				&& ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
+		if (getEmbedded().isEnabled() && ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
 			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
 			return;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @ConditionalOnClass({ Resource.class, RequestMapping.class, Plugin.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class,
-		RepositoryRestMvcAutoConfiguration.class })
+		HttpMessageConvertersAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
 @EnableConfigurationProperties(HateoasProperties.class)
 @Import(HypermediaHttpMessageConverterConfiguration.class)
 public class HypermediaAutoConfiguration {
@@ -89,14 +88,12 @@ public class HypermediaAutoConfiguration {
 	 * {@link BeanPostProcessor} to apply any {@link Jackson2ObjectMapperBuilder}
 	 * configuration to the HAL {@link ObjectMapper}.
 	 */
-	private static class HalObjectMapperConfigurer
-			implements BeanPostProcessor, BeanFactoryAware {
+	private static class HalObjectMapperConfigurer implements BeanPostProcessor, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof ObjectMapper && "_halObjectMapper".equals(beanName)) {
 				postProcessHalObjectMapper((ObjectMapper) bean);
 			}
@@ -105,8 +102,7 @@ public class HypermediaAutoConfiguration {
 
 		private void postProcessHalObjectMapper(ObjectMapper objectMapper) {
 			try {
-				Jackson2ObjectMapperBuilder builder = this.beanFactory
-						.getBean(Jackson2ObjectMapperBuilder.class);
+				Jackson2ObjectMapperBuilder builder = this.beanFactory.getBean(Jackson2ObjectMapperBuilder.class);
 				builder.configure(objectMapper);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
@@ -115,8 +111,7 @@ public class HypermediaAutoConfiguration {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
 

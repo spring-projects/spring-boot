@@ -41,8 +41,7 @@ public class StartUpLoggerTests {
 	@Test
 	public void sourceClassIncluded() {
 		new StartupInfoLogger(getClass()).logStarting(this.log);
-		assertThat(this.output.toString())
-				.contains("Starting " + getClass().getSimpleName());
+		assertThat(this.output.toString()).contains("Starting " + getClass().getSimpleName());
 	}
 
 }

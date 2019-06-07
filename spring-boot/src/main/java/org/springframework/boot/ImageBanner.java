@@ -68,16 +68,15 @@ public class ImageBanner implements Banner {
 	}
 
 	@Override
-	public void printBanner(Environment environment, Class<?> sourceClass,
-			PrintStream out) {
+	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 		String headless = System.getProperty("java.awt.headless");
 		try {
 			System.setProperty("java.awt.headless", "true");
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
-			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass()
-					+ ": '" + ex.getMessage() + "')");
+			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass() + ": '" + ex.getMessage()
+					+ "')");
 			logger.debug("Image banner printing failure", ex);
 		}
 		finally {
@@ -90,10 +89,8 @@ public class ImageBanner implements Banner {
 		}
 	}
 
-	private void printBanner(Environment environment, PrintStream out)
-			throws IOException {
-		PropertyResolver properties = new RelaxedPropertyResolver(environment,
-				"banner.image.");
+	private void printBanner(Environment environment, PrintStream out) throws IOException {
+		PropertyResolver properties = new RelaxedPropertyResolver(environment, "banner.image.");
 		int width = properties.getProperty("width", Integer.class, 76);
 		int height = properties.getProperty("height", Integer.class, 0);
 		int margin = properties.getProperty("margin", Integer.class, 2);
@@ -121,15 +118,13 @@ public class ImageBanner implements Banner {
 			double aspectRatio = (double) width / image.getWidth() * 0.5;
 			height = (int) Math.ceil(image.getHeight() * aspectRatio);
 		}
-		BufferedImage resized = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
+		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Image scaled = image.getScaledInstance(width, height, Image.SCALE_DEFAULT);
 		resized.getGraphics().drawImage(scaled, 0, 0, null);
 		return resized;
 	}
 
-	private void printBanner(BufferedImage image, int margin, boolean invert,
-			PrintStream out) {
+	private void printBanner(BufferedImage image, int margin, boolean invert, PrintStream out) {
 		AnsiElement background = (invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT);
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));

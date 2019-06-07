@@ -70,8 +70,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private final WebMvcTest annotation;
 
 	WebMvcTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				WebMvcTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, WebMvcTest.class);
 	}
 
 	@Override

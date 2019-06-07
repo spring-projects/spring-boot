@@ -48,8 +48,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	private static final String TEST_TOPIC = "testTopic";
 
 	@ClassRule
-	public static final KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true,
-			TEST_TOPIC);
+	public static final KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true, TEST_TOPIC);
 
 	private AnnotationConfigApplicationContext context;
 
@@ -67,13 +66,10 @@ public class KafkaAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testEndToEnd() throws Exception {
-		load(KafkaConfig.class,
-				"spring.kafka.bootstrap-servers:" + kafkaEmbedded.getBrokersAsString(),
-				"spring.kafka.consumer.group-id=testGroup",
-				"spring.kafka.consumer.auto-offset-reset=earliest");
+		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + kafkaEmbedded.getBrokersAsString(),
+				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.consumer.auto-offset-reset=earliest");
 		@SuppressWarnings("unchecked")
-		KafkaTemplate<String, String> template = this.context
-				.getBean(KafkaTemplate.class);
+		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
 		template.send(TEST_TOPIC, "foo", "bar");
 		Listener listener = this.context.getBean(Listener.class);
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
@@ -85,8 +81,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 		this.context = doLoad(new Class<?>[] { config }, environment);
 	}
 
-	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs,
-			String... environment) {
+	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(KafkaAutoConfiguration.class);
@@ -118,8 +113,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 		private volatile String key;
 
 		@KafkaListener(topics = TEST_TOPIC)
-		public void listen(String foo,
-				@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
+		public void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();

@@ -57,8 +57,7 @@ public class RestClientTestNoComponentIntegrationTests {
 	@Test
 	public void manuallyCreateBean() throws Exception {
 		ExampleRestClient client = new ExampleRestClient(this.restTemplateBuilder);
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(client.test()).isEqualTo("hello");
 	}
 

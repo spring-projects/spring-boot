@@ -59,22 +59,19 @@ public class RestClientTestTwoComponentsIntegrationTests {
 	public void serverShouldNotWork() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to use auto-configured");
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 	}
 
 	@Test
 	public void client1RestCallViaCustomizer() throws Exception {
-		this.customizer.getServer(this.client1.getRestTemplate())
-				.expect(requestTo("/test"))
+		this.customizer.getServer(this.client1.getRestTemplate()).expect(requestTo("/test"))
 				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(this.client1.test()).isEqualTo("hello");
 	}
 
 	@Test
 	public void client2RestCallViaCustomizer() throws Exception {
-		this.customizer.getServer(this.client2.getRestTemplate())
-				.expect(requestTo("/test"))
+		this.customizer.getServer(this.client2.getRestTemplate()).expect(requestTo("/test"))
 				.andRespond(withSuccess("there", MediaType.TEXT_HTML));
 		assertThat(this.client2.test()).isEqualTo("there");
 	}

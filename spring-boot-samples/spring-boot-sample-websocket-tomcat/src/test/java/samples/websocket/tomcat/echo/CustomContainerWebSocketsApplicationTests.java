@@ -50,44 +50,36 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-		classes = { SampleTomcatWebSocketApplication.class,
-				CustomContainerConfiguration.class },
+@SpringBootTest(classes = { SampleTomcatWebSocketApplication.class, CustomContainerConfiguration.class },
 		webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 public class CustomContainerWebSocketsApplicationTests {
 
-	private static Log logger = LogFactory
-			.getLog(CustomContainerWebSocketsApplicationTests.class);
+	private static Log logger = LogFactory.getLog(CustomContainerWebSocketsApplicationTests.class);
 
 	private static int PORT = SocketUtils.findAvailableTcpPort();
 
 	@Test
 	public void echoEndpoint() throws Exception {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + PORT
-								+ "/ws/echo/websocket")
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class)
+						.properties("websocket.uri:ws://localhost:" + PORT + "/ws/echo/websocket")
 						.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
-		AtomicReference<String> messagePayloadReference = context
-				.getBean(ClientConfiguration.class).messagePayload;
+		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
 		assertThat(count).isEqualTo(0);
-		assertThat(messagePayloadReference.get())
-				.isEqualTo("Did you say \"Hello world!\"?");
+		assertThat(messagePayloadReference.get()).isEqualTo("Did you say \"Hello world!\"?");
 	}
 
 	@Test
 	public void reverseEndpoint() throws Exception {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-						.properties(
-								"websocket.uri:ws://localhost:" + PORT + "/ws/reverse")
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class)
+						.properties("websocket.uri:ws://localhost:" + PORT + "/ws/reverse")
 						.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
-		AtomicReference<String> messagePayloadReference = context
-				.getBean(ClientConfiguration.class).messagePayload;
+		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
 		assertThat(count).isEqualTo(0);
 		assertThat(messagePayloadReference.get()).isEqualTo("Reversed: !dlrow olleH");
@@ -127,8 +119,7 @@ public class CustomContainerWebSocketsApplicationTests {
 		@Bean
 		public WebSocketConnectionManager wsConnectionManager() {
 
-			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
-					handler(), this.webSocketUri);
+			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(), handler(), this.webSocketUri);
 			manager.setAutoStartup(true);
 
 			return manager;
@@ -141,8 +132,7 @@ public class CustomContainerWebSocketsApplicationTests {
 
 		@Bean
 		public SimpleClientWebSocketHandler handler() {
-			return new SimpleClientWebSocketHandler(greetingService(), this.latch,
-					this.messagePayload);
+			return new SimpleClientWebSocketHandler(greetingService(), this.latch, this.messagePayload);
 		}
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,20 +41,16 @@ import org.springframework.validation.DataBinder;
 class OnBootstrapHostsCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
-		PropertyResolver resolver = new PropertyResolver(
-				((ConfigurableEnvironment) environment).getPropertySources(),
+		PropertyResolver resolver = new PropertyResolver(((ConfigurableEnvironment) environment).getPropertySources(),
 				"spring.couchbase");
 		Map.Entry<String, Object> entry = resolver.resolveProperty("bootstrap-hosts");
 		if (entry != null) {
-			return ConditionOutcome.match(ConditionMessage
-					.forCondition(OnBootstrapHostsCondition.class.getName())
+			return ConditionOutcome.match(ConditionMessage.forCondition(OnBootstrapHostsCondition.class.getName())
 					.found("property").items("spring.couchbase.bootstrap-hosts"));
 		}
-		return ConditionOutcome.noMatch(ConditionMessage
-				.forCondition(OnBootstrapHostsCondition.class.getName())
+		return ConditionOutcome.noMatch(ConditionMessage.forCondition(OnBootstrapHostsCondition.class.getName())
 				.didNotFind("property").items("spring.couchbase.bootstrap-hosts"));
 	}
 
@@ -78,8 +74,7 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 				for (String relaxedKey : keys) {
 					String key = prefix + relaxedKey;
 					if (this.content.containsKey(relaxedKey)) {
-						return new AbstractMap.SimpleEntry<String, Object>(key,
-								this.content.get(relaxedKey));
+						return new AbstractMap.SimpleEntry<String, Object>(key, this.content.get(relaxedKey));
 					}
 				}
 			}

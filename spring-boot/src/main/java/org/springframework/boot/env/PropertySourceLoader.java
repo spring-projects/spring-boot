@@ -47,7 +47,6 @@ public interface PropertySourceLoader {
 	 * @return a property source or {@code null}
 	 * @throws IOException if the source cannot be loaded
 	 */
-	PropertySource<?> load(String name, Resource resource, String profile)
-			throws IOException;
+	PropertySource<?> load(String name, Resource resource, String profile) throws IOException;
 
 }

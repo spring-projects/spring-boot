@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class TestCommand extends OptionParsingCommand {
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
 			SourceOptions sourceOptions = new SourceOptions(options);
-			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
-					options, this);
+			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(options, this);
 			this.runner = new TestRunner(configuration, sourceOptions.getSourcesArray());
 			this.runner.compileAndRunTests();
 			return ExitStatus.OK.hangup();
@@ -60,11 +59,10 @@ public class TestCommand extends OptionParsingCommand {
 		 * Simple adapter class to present the {@link OptionSet} as a
 		 * {@link TestRunnerConfiguration}.
 		 */
-		private class TestRunnerConfigurationAdapter extends
-				OptionSetGroovyCompilerConfiguration implements TestRunnerConfiguration {
+		private class TestRunnerConfigurationAdapter extends OptionSetGroovyCompilerConfiguration
+				implements TestRunnerConfiguration {
 
-			TestRunnerConfigurationAdapter(OptionSet options,
-					CompilerOptionHandler optionHandler) {
+			TestRunnerConfigurationAdapter(OptionSet options, CompilerOptionHandler optionHandler) {
 				super(options, optionHandler);
 			}
 

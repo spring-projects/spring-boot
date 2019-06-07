@@ -25,8 +25,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-		implements Ordered {
+public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter implements Ordered {
 
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 

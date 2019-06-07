@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,25 +40,20 @@ public class SpringLoadedTests {
 	private static final String SPRING_LOADED_VERSION = Versions.getSpringLoadedVersion();
 
 	@Test
-	public void defaultJvmArgsArePreservedWhenLoadedAgentIsConfigured()
-			throws IOException {
-		ProjectConnection project = new ProjectCreator()
-				.createProject("spring-loaded-jvm-args");
-		project.newBuild().forTasks("bootRun")
-				.withArguments("-PbootVersion=" + BOOT_VERSION,
-						"-PspringLoadedVersion=" + SPRING_LOADED_VERSION, "--stacktrace")
-				.run();
+	public void defaultJvmArgsArePreservedWhenLoadedAgentIsConfigured() throws IOException {
+		ProjectConnection project = new ProjectCreator().createProject("spring-loaded-jvm-args");
+		project.newBuild().forTasks("bootRun").withArguments("-PbootVersion=" + BOOT_VERSION,
+				"-PspringLoadedVersion=" + SPRING_LOADED_VERSION, "--stacktrace").run();
 
 		List<String> output = getOutput();
 		assertOutputContains("-DSOME_ARG=someValue", output);
 		assertOutputContains("-Xverify:none", output);
-		assertOutputMatches("-javaagent:.*springloaded-" + SPRING_LOADED_VERSION + ".jar",
-				output);
+		assertOutputMatches("-javaagent:.*springloaded-" + SPRING_LOADED_VERSION + ".jar", output);
 	}
 
 	private List<String> getOutput() throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(
-				new File("target/spring-loaded-jvm-args/build/output.txt")));
+		BufferedReader reader = new BufferedReader(
+				new FileReader(new File("target/spring-loaded-jvm-args/build/output.txt")));
 		try {
 			List<String> lines = new ArrayList<String>();
 

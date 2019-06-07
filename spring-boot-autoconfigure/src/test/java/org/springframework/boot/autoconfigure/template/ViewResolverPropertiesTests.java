@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public class ViewResolverPropertiesTests {
 
 	@Test
 	public void defaultContentType() {
-		assertThat(new ViewResolverProperties().getContentType())
-				.hasToString("text/html;charset=UTF-8");
+		assertThat(new ViewResolverProperties().getContentType()).hasToString("text/html;charset=UTF-8");
 	}
 
 	@Test
@@ -64,8 +63,7 @@ public class ViewResolverPropertiesTests {
 		ViewResolverProperties properties = new ViewResolverProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain;foo=bar"));
 		properties.setCharset(Charset.forName("UTF-16"));
-		assertThat(properties.getContentType())
-				.hasToString("text/plain;charset=UTF-16;foo=bar");
+		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-16;foo=bar");
 	}
 
 	private static class ViewResolverProperties extends AbstractViewResolverProperties {

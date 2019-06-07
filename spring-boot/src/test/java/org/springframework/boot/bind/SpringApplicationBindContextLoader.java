@@ -41,20 +41,16 @@ class SpringApplicationBindContextLoader extends AbstractContextLoader {
 	private static final String[] NO_SUFFIXES = new String[] {};
 
 	@Override
-	public ApplicationContext loadContext(MergedContextConfiguration config)
-			throws Exception {
+	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
 		SpringApplication application = new SpringApplication();
 		application.setMainApplicationClass(config.getTestClass());
 		application.setWebEnvironment(false);
-		application.setSources(
-				new LinkedHashSet<Object>(Arrays.asList(config.getClasses())));
+		application.setSources(new LinkedHashSet<Object>(Arrays.asList(config.getClasses())));
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		properties.put("spring.jmx.enabled", "false");
-		properties.putAll(TestPropertySourceUtils
-				.convertInlinedPropertiesToMap(config.getPropertySourceProperties()));
-		environment.getPropertySources().addAfter(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+		properties.putAll(TestPropertySourceUtils.convertInlinedPropertiesToMap(config.getPropertySourceProperties()));
+		environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				new MapPropertySource("integrationTest", properties));
 		application.setEnvironment(environment);
 		return application.run();

@@ -46,8 +46,7 @@ public class YamlConfigurationFactoryTests {
 
 	@SuppressWarnings("deprecation")
 	private Foo createFoo(final String yaml) throws Exception {
-		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(
-				Foo.class);
+		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(Foo.class);
 		factory.setYaml(yaml);
 		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
@@ -59,8 +58,7 @@ public class YamlConfigurationFactoryTests {
 
 	@SuppressWarnings("deprecation")
 	private Jee createJee(final String yaml) throws Exception {
-		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(
-				Jee.class);
+		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(Jee.class);
 		factory.setYaml(yaml);
 		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
@@ -90,8 +88,7 @@ public class YamlConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void missingPropertyCausesValidationError() throws Exception {
-		this.validator = new SpringValidatorAdapter(
-				Validation.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 

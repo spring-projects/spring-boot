@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,14 +55,12 @@ public class WebServicesAutoConfiguration {
 	}
 
 	@Bean
-	public ServletRegistrationBean messageDispatcherServlet(
-			ApplicationContext applicationContext) {
+	public ServletRegistrationBean messageDispatcherServlet(ApplicationContext applicationContext) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
 		servlet.setApplicationContext(applicationContext);
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean registration = new ServletRegistrationBean(servlet,
-				urlMapping);
+		ServletRegistrationBean registration = new ServletRegistrationBean(servlet, urlMapping);
 		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
 		for (Map.Entry<String, String> entry : servletProperties.getInit().entrySet()) {

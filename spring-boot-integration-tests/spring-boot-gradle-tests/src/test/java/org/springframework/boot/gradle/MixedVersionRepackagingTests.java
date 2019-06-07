@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,16 +49,12 @@ public class MixedVersionRepackagingTests {
 	@Test
 	public void singleVersionIsIncludedInJar() throws IOException {
 		project.newBuild().forTasks("clean", "build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true",
-						"-PexcludeDevtools=false")
-				.run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true", "-PexcludeDevtools=false").run();
 		File buildLibs = new File("target/mixed-version-repackaging/build/libs");
 		File repackageFile = new File(buildLibs, "mixed-version-repackaging.jar");
 		assertThat(repackageFile.exists()).isTrue();
-		assertThat(new JarFile(repackageFile))
-				.has(entryNamed("BOOT-INF/lib/guava-18.0.jar"));
-		assertThat(new JarFile(repackageFile))
-				.has(not(entryNamed("BOOT-INF/lib/guava-16.0.jar")));
+		assertThat(new JarFile(repackageFile)).has(entryNamed("BOOT-INF/lib/guava-18.0.jar"));
+		assertThat(new JarFile(repackageFile)).has(not(entryNamed("BOOT-INF/lib/guava-16.0.jar")));
 	}
 
 	private Condition<JarFile> entryNamed(String name) {

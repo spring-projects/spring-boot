@@ -79,8 +79,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  */
-public class JettyEmbeddedServletContainerFactoryTests
-		extends AbstractEmbeddedServletContainerFactoryTests {
+public class JettyEmbeddedServletContainerFactoryTests extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {
@@ -126,10 +125,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
-		Connector connector = ((JettyEmbeddedServletContainer) this.container).getServer()
-				.getConnectors()[0];
-		assertThat(((ServerConnector) connector).getHost())
-				.isEqualTo(localhost.getHostAddress());
+		Connector connector = ((JettyEmbeddedServletContainer) this.container).getServer().getConnectors()[0];
+		assertThat(((ServerConnector) connector).getHost()).isEqualTo(localhost.getHostAddress());
 	}
 
 	@Test
@@ -161,40 +158,34 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container.start();
 
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
-				.getConnectors()[0];
-		SslConnectionFactory connectionFactory = connector
-				.getConnectionFactory(SslConnectionFactory.class);
-		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
-				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
-		assertThat(connectionFactory.getSslContextFactory().getExcludeCipherSuites())
-				.isEmpty();
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer().getConnectors()[0];
+		SslConnectionFactory connectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
+		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites()).containsExactly("ALPHA", "BRAVO",
+				"CHARLIE");
+		assertThat(connectionFactory.getSslContextFactory().getExcludeCipherSuites()).isEmpty();
 	}
 
 	@Test
 	public void stopCalledWithoutStart() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
-		this.container = factory
-				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.stop();
 		Server server = ((JettyEmbeddedServletContainer) this.container).getServer();
 		assertThat(server.isStopped()).isTrue();
 	}
 
 	@Override
-	protected void addConnector(final int port,
-			AbstractEmbeddedServletContainerFactory factory) {
-		((JettyEmbeddedServletContainerFactory) factory)
-				.addServerCustomizers(new JettyServerCustomizer() {
+	protected void addConnector(final int port, AbstractEmbeddedServletContainerFactory factory) {
+		((JettyEmbeddedServletContainerFactory) factory).addServerCustomizers(new JettyServerCustomizer() {
 
-					@Override
-					public void customize(Server server) {
-						ServerConnector connector = new ServerConnector(server);
-						connector.setPort(port);
-						server.addConnector(connector);
-					}
+			@Override
+			public void customize(Server server) {
+				ServerConnector connector = new ServerConnector(server);
+				connector.setPort(port);
+				server.addConnector(connector);
+			}
 
-				});
+		});
 	}
 
 	@Test
@@ -213,10 +204,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container.start();
 
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
-				.getConnectors()[0];
-		SslConnectionFactory connectionFactory = connector
-				.getConnectionFactory(SslConnectionFactory.class);
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer().getConnectors()[0];
+		SslConnectionFactory connectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
 
 		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
 				.isEqualTo(new String[] { "TLSv1.1", "TLSv1.2" });
@@ -238,10 +227,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container.start();
 
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
-				.getConnectors()[0];
-		SslConnectionFactory connectionFactory = connector
-				.getConnectionFactory(SslConnectionFactory.class);
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer().getConnectors()[0];
+		SslConnectionFactory connectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
 
 		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
 				.isEqualTo(new String[] { "TLSv1.1" });
@@ -256,24 +243,20 @@ public class JettyEmbeddedServletContainerFactoryTests
 
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(ssl);
-		factory.setAddress(
-				InetAddress.getByAddress(InetAddress.getLocalHost().getAddress()));
+		factory.setAddress(InetAddress.getByAddress(InetAddress.getLocalHost().getAddress()));
 
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
-				.getConnectors()[0];
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer().getConnectors()[0];
 		assertThat(connector.getHost()).isEqualTo(factory.getAddress().getHostAddress());
 	}
 
-	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
-			int expected) {
+	private void assertTimeout(JettyEmbeddedServletContainerFactory factory, int expected) {
 		this.container = factory.getEmbeddedServletContainer();
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		Handler[] handlers = jettyContainer.getServer()
-				.getChildHandlersByClass(WebAppContext.class);
+		Handler[] handlers = jettyContainer.getServer().getChildHandlersByClass(WebAppContext.class);
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
 		int actual = webAppContext.getSessionHandler().getMaxInactiveInterval();
 		assertThat(actual).isEqualTo(expected);
@@ -293,8 +276,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 				server.setHandler(collection);
 			}
 		}));
-		this.container = factory
-				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 	}
@@ -317,8 +299,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		factory.setThreadPool(null);
 		assertThat(factory.getThreadPool()).isNull();
 		this.container = factory.getEmbeddedServletContainer();
-		assertThat(((JettyEmbeddedServletContainer) this.container).getServer()
-				.getThreadPool()).isNotNull();
+		assertThat(((JettyEmbeddedServletContainer) this.container).getServer().getThreadPool()).isNotNull();
 	}
 
 	@Test
@@ -327,8 +308,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		ThreadPool threadPool = mock(ThreadPool.class);
 		factory.setThreadPool(threadPool);
 		this.container = factory.getEmbeddedServletContainer();
-		assertThat(((JettyEmbeddedServletContainer) this.container).getServer()
-				.getThreadPool()).isSameAs(threadPool);
+		assertThat(((JettyEmbeddedServletContainer) this.container).getServer().getThreadPool()).isSameAs(threadPool);
 	}
 
 	@Test
@@ -346,8 +326,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 					}
 
 					@Override
-					public void doFilter(ServletRequest request, ServletResponse response,
-							FilterChain chain) throws IOException, ServletException {
+					public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+							throws IOException, ServletException {
 						chain.doFilter(request, response);
 					}
 
@@ -366,8 +346,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 			jettyContainer.start();
 		}
 		finally {
-			QueuedThreadPool threadPool = (QueuedThreadPool) jettyContainer.getServer()
-					.getThreadPool();
+			QueuedThreadPool threadPool = (QueuedThreadPool) jettyContainer.getServer().getThreadPool();
 			assertThat(threadPool.isRunning()).isFalse();
 		}
 	}
@@ -402,8 +381,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 			jettyContainer.start();
 		}
 		finally {
-			QueuedThreadPool threadPool = (QueuedThreadPool) jettyContainer.getServer()
-					.getThreadPool();
+			QueuedThreadPool threadPool = (QueuedThreadPool) jettyContainer.getServer().getThreadPool();
 			assertThat(threadPool.isRunning()).isFalse();
 		}
 	}
@@ -428,8 +406,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 	@Override
 	@SuppressWarnings("serial")
 	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
-	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes,
-			String[] excludedUserAgents) throws Exception {
+	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes, String[] excludedUserAgents)
+			throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		final String testContent = new String(chars);
@@ -443,24 +421,23 @@ public class JettyEmbeddedServletContainerFactoryTests
 			compression.setExcludedUserAgents(excludedUserAgents);
 		}
 		factory.setCompression(compression);
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new HttpServlet() {
-					@Override
-					protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-							throws ServletException, IOException {
-						resp.setContentLength(contentSize);
-						resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/plain");
-						resp.getWriter().print(testContent);
-					}
-				}, "/test.txt"));
+		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(new HttpServlet() {
+			@Override
+			protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+					throws ServletException, IOException {
+				resp.setContentLength(contentSize);
+				resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/plain");
+				resp.getWriter().print(testContent);
+			}
+		}, "/test.txt"));
 		this.container.start();
 		return testContent;
 	}
 
 	@Override
 	protected JspServlet getJspServlet() throws Exception {
-		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
-				.getServer().getHandler();
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container).getServer()
+				.getHandler();
 		ServletHolder holder = context.getServletHandler().getServlet("jsp");
 		if (holder == null) {
 			return null;
@@ -472,22 +449,21 @@ public class JettyEmbeddedServletContainerFactoryTests
 
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
-		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
-				.getServer().getHandler();
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container).getServer()
+				.getHandler();
 		return context.getMimeTypes().getMimeMap();
 	}
 
 	@Override
 	protected Charset getCharset(Locale locale) {
-		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
-				.getServer().getHandler();
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container).getServer()
+				.getHandler();
 		String charsetName = context.getLocaleEncoding(locale);
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 	@Override
-	protected void handleExceptionCausedByBlockedPort(RuntimeException ex,
-			int blockedPort) {
+	protected void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}

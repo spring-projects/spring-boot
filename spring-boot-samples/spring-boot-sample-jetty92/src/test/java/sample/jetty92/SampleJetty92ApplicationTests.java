@@ -64,14 +64,11 @@ public class SampleJetty92ApplicationTests {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
-				requestEntity, byte[].class);
+		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET, requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		GZIPInputStream inflater = new GZIPInputStream(
-				new ByteArrayInputStream(entity.getBody()));
+		GZIPInputStream inflater = new GZIPInputStream(new ByteArrayInputStream(entity.getBody()));
 		try {
-			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
-					.isEqualTo("Hello World");
+			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8"))).isEqualTo("Hello World");
 		}
 		finally {
 			inflater.close();

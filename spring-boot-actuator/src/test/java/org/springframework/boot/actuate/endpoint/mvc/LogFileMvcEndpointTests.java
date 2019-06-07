@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,7 @@ public class LogFileMvcEndpointTests {
 	@Test
 	public void notAvailableWithoutLogFile() throws Exception {
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		MockHttpServletRequest request = new MockHttpServletRequest(
-				HttpMethod.HEAD.name(), "/logfile");
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
@@ -72,8 +71,7 @@ public class LogFileMvcEndpointTests {
 	public void notAvailableWithMissingLogFile() throws Exception {
 		this.environment.setProperty("logging.file", "no_test.log");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		MockHttpServletRequest request = new MockHttpServletRequest(
-				HttpMethod.HEAD.name(), "/logfile");
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
@@ -82,8 +80,7 @@ public class LogFileMvcEndpointTests {
 	public void availableWithLogFile() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		MockHttpServletRequest request = new MockHttpServletRequest(
-				HttpMethod.HEAD.name(), "/logfile");
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
@@ -93,8 +90,7 @@ public class LogFileMvcEndpointTests {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		this.mvc.setEnabled(false);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		MockHttpServletRequest request = new MockHttpServletRequest(
-				HttpMethod.HEAD.name(), "/logfile");
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
@@ -103,8 +99,7 @@ public class LogFileMvcEndpointTests {
 	public void invokeGetsContent() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
-				"/logfile");
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(), "/logfile");
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.getContentAsString()).isEqualTo("--TEST--");
@@ -114,8 +109,7 @@ public class LogFileMvcEndpointTests {
 	public void invokeGetsContentExternalFile() throws Exception {
 		this.mvc.setExternalFile(this.logFile);
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
-				"/logfile");
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(), "/logfile");
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat("--TEST--").isEqualTo(response.getContentAsString());

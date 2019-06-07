@@ -59,8 +59,8 @@ public abstract class TestJarCreator {
 		}
 	}
 
-	private static void writeNestedEntry(String name, boolean unpackNested,
-			JarOutputStream jarOutputStream) throws Exception, IOException {
+	private static void writeNestedEntry(String name, boolean unpackNested, JarOutputStream jarOutputStream)
+			throws Exception, IOException {
 		JarEntry nestedEntry = new JarEntry(name);
 		byte[] nestedJarData = getNestedJarData();
 		nestedEntry.setSize(nestedJarData.length);
@@ -89,8 +89,7 @@ public abstract class TestJarCreator {
 		return byteArrayOutputStream.toByteArray();
 	}
 
-	private static void writeManifest(JarOutputStream jarOutputStream, String name)
-			throws Exception {
+	private static void writeManifest(JarOutputStream jarOutputStream, String name) throws Exception {
 		writeDirEntry(jarOutputStream, "META-INF/");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Built-By", name);
@@ -100,14 +99,12 @@ public abstract class TestJarCreator {
 		jarOutputStream.closeEntry();
 	}
 
-	private static void writeDirEntry(JarOutputStream jarOutputStream, String name)
-			throws IOException {
+	private static void writeDirEntry(JarOutputStream jarOutputStream, String name) throws IOException {
 		jarOutputStream.putNextEntry(new JarEntry(name));
 		jarOutputStream.closeEntry();
 	}
 
-	private static void writeEntry(JarOutputStream jarOutputStream, String name, int data)
-			throws IOException {
+	private static void writeEntry(JarOutputStream jarOutputStream, String name, int data) throws IOException {
 		jarOutputStream.putNextEntry(new JarEntry(name));
 		jarOutputStream.write(new byte[] { (byte) data });
 		jarOutputStream.closeEntry();

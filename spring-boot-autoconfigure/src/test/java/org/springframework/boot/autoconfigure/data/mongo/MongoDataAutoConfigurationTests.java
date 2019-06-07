@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,35 +74,31 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	public void templateExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length)
-				.isEqualTo(1);
+		this.context = new AnnotationConfigApplicationContext(PropertyPlaceholderAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length).isEqualTo(1);
 	}
 
 	@Test
 	public void gridFsTemplateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.mongodb.gridFsDatabase:grid");
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.gridFsDatabase:grid");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(GridFsTemplate.class).length)
-				.isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(GridFsTemplate.class).length).isEqualTo(1);
 	}
 
 	@Test
 	public void customConversions() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomConversionsConfig.class);
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate template = this.context.getBean(MongoTemplate.class);
-		assertThat(template.getConverter().getConversionService()
-				.canConvert(MongoClient.class, Boolean.class)).isTrue();
+		assertThat(template.getConverter().getConversionService().canConvert(MongoClient.class, Boolean.class))
+				.isTrue();
 	}
 
 	@Test
@@ -110,11 +106,9 @@ public class MongoDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
-		this.context.register(MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class);
+		this.context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		assertDomainTypesDiscovered(this.context.getBean(MongoMappingContext.class),
-				City.class);
+		assertDomainTypesDiscovered(this.context.getBean(MongoMappingContext.class), City.class);
 	}
 
 	@Test
@@ -147,50 +141,42 @@ public class MongoDataAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EntityScanConfig.class,
-				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class);
+		this.context.register(EntityScanConfig.class, PropertyPlaceholderAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		MongoMappingContext mappingContext = this.context
-				.getBean(MongoMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		MongoMappingContext mappingContext = this.context.getBean(MongoMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class, Country.class);
 	}
 
 	@Test
 	public void registersDefaultSimpleTypesWithMappingContext() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class);
+		this.context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoMappingContext context = this.context.getBean(MongoMappingContext.class);
 		MongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
 		assertThat(entity.getPersistentProperty("date").isEntity()).isFalse();
 	}
 
-	public void testFieldNamingStrategy(String strategy,
-			Class<? extends FieldNamingStrategy> expectedType) {
+	public void testFieldNamingStrategy(String strategy, Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
 		if (strategy != null) {
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.data.mongodb.field-naming-strategy:" + strategy);
+			EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.field-naming-strategy:" + strategy);
 		}
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		MongoMappingContext mappingContext = this.context
-				.getBean(MongoMappingContext.class);
-		FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
-				.getField(mappingContext, "fieldNamingStrategy");
+		MongoMappingContext mappingContext = this.context.getBean(MongoMappingContext.class);
+		FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils.getField(mappingContext,
+				"fieldNamingStrategy");
 		assertThat(fieldNamingStrategy.getClass()).isEqualTo(expectedType);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext,
-			Class<?>... types) {
-		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {
+		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils.getField(mappingContext, "initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(types);
 	}
 

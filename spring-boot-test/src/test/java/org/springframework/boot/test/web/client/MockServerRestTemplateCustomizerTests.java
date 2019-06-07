@@ -57,8 +57,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void createWhenExpectationManagerClassIsNullShouldThrowException()
-			throws Exception {
+	public void createWhenExpectationManagerClassIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ExpectationManager must not be null");
 		new MockServerRestTemplateCustomizer(null);
@@ -77,8 +76,7 @@ public class MockServerRestTemplateCustomizerTests {
 	public void detectRootUriShouldDefaultToTrue() throws Exception {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
 				UnorderedRequestExpectationManager.class);
-		customizer.customize(
-				new RestTemplateBuilder().rootUri("https://example.com").build());
+		customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(RootUriRequestExpectationManager.class);
 	}
@@ -86,8 +84,7 @@ public class MockServerRestTemplateCustomizerTests {
 	@Test
 	public void setDetectRootUriShouldDisableRootUriDetection() throws Exception {
 		this.customizer.setDetectRootUri(false);
-		this.customizer.customize(
-				new RestTemplateBuilder().rootUri("https://example.com").build());
+		this.customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
 
@@ -110,8 +107,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void getServerWhenMultipleServersAreBoundShouldThrowException()
-			throws Exception {
+	public void getServerWhenMultipleServersAreBoundShouldThrowException() throws Exception {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
 		this.thrown.expect(IllegalStateException.class);
@@ -124,8 +120,7 @@ public class MockServerRestTemplateCustomizerTests {
 	public void getServerWhenSingleServerIsBoundShouldReturnServer() throws Exception {
 		RestTemplate template = new RestTemplate();
 		this.customizer.customize(template);
-		assertThat(this.customizer.getServer())
-				.isEqualTo(this.customizer.getServer(template));
+		assertThat(this.customizer.getServer()).isEqualTo(this.customizer.getServer(template));
 	}
 
 	@Test
@@ -135,8 +130,7 @@ public class MockServerRestTemplateCustomizerTests {
 		this.customizer.customize(template1);
 		this.customizer.customize(template2);
 		assertThat(this.customizer.getServer(template1)).isNotNull();
-		assertThat(this.customizer.getServer(template2)).isNotNull()
-				.isNotSameAs(this.customizer.getServer(template1));
+		assertThat(this.customizer.getServer(template2)).isNotNull().isNotSameAs(this.customizer.getServer(template1));
 	}
 
 	@Test
@@ -163,14 +157,10 @@ public class MockServerRestTemplateCustomizerTests {
 		RestTemplate template2 = new RestTemplate();
 		this.customizer.customize(template1);
 		this.customizer.customize(template2);
-		RequestExpectationManager manager1 = this.customizer.getExpectationManagers()
-				.get(template1);
-		RequestExpectationManager manager2 = this.customizer.getExpectationManagers()
-				.get(template2);
-		assertThat(this.customizer.getServer(template1)).extracting("expectationManager")
-				.containsOnly(manager1);
-		assertThat(this.customizer.getServer(template2)).extracting("expectationManager")
-				.containsOnly(manager2);
+		RequestExpectationManager manager1 = this.customizer.getExpectationManagers().get(template1);
+		RequestExpectationManager manager2 = this.customizer.getExpectationManagers().get(template2);
+		assertThat(this.customizer.getServer(template1)).extracting("expectationManager").containsOnly(manager1);
+		assertThat(this.customizer.getServer(template2)).extracting("expectationManager").containsOnly(manager2);
 	}
 
 }

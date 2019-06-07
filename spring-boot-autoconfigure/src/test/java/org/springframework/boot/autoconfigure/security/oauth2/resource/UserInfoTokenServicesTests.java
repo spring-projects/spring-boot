@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public class UserInfoTokenServicesTests {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
-	private UserInfoTokenServices services = new UserInfoTokenServices(
-			"https://example.com", "foo");
+	private UserInfoTokenServices services = new UserInfoTokenServices("https://example.com", "foo");
 
 	private BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
 
@@ -65,37 +64,31 @@ public class UserInfoTokenServicesTests {
 		this.resource.setClientId("foo");
 		given(this.template.getForEntity(any(String.class), eq(Map.class)))
 				.willReturn(new ResponseEntity<Map>(this.map, HttpStatus.OK));
-		given(this.template.getAccessToken())
-				.willReturn(new DefaultOAuth2AccessToken("FOO"));
+		given(this.template.getAccessToken()).willReturn(new DefaultOAuth2AccessToken("FOO"));
 		given(this.template.getResource()).willReturn(this.resource);
-		given(this.template.getOAuth2ClientContext())
-				.willReturn(mock(OAuth2ClientContext.class));
+		given(this.template.getOAuth2ClientContext()).willReturn(mock(OAuth2ClientContext.class));
 	}
 
 	@Test
 	public void sunnyDay() {
 		this.services.setRestTemplate(this.template);
-		assertThat(this.services.loadAuthentication("FOO").getName())
-				.isEqualTo("unknown");
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("unknown");
 	}
 
 	@Test
 	public void badToken() {
 		this.services.setRestTemplate(this.template);
 		given(this.template.getForEntity(any(String.class), eq(Map.class)))
-				.willThrow(new UserRedirectRequiredException("foo:bar",
-						Collections.<String, String>emptyMap()));
+				.willThrow(new UserRedirectRequiredException("foo:bar", Collections.<String, String>emptyMap()));
 		this.expected.expect(InvalidTokenException.class);
-		assertThat(this.services.loadAuthentication("FOO").getName())
-				.isEqualTo("unknown");
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("unknown");
 	}
 
 	@Test
 	public void userId() {
 		this.map.put("userid", "spencer");
 		this.services.setRestTemplate(this.template);
-		assertThat(this.services.loadAuthentication("FOO").getName())
-				.isEqualTo("spencer");
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("spencer");
 	}
 
 }

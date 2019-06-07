@@ -37,8 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 public class UserEntityTests {
 
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"00000000000000000");
+	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

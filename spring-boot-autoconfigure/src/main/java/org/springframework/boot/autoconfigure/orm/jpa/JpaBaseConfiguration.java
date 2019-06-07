@@ -83,8 +83,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		this.dataSource = dataSource;
 		this.properties = properties;
 		this.jtaTransactionManager = jtaTransactionManager.getIfAvailable();
-		this.transactionManagerCustomizers = transactionManagerCustomizers
-				.getIfAvailable();
+		this.transactionManagerCustomizers = transactionManagerCustomizers.getIfAvailable();
 	}
 
 	@Bean
@@ -110,26 +109,22 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
-			JpaVendorAdapter jpaVendorAdapter,
+	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
-		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
-				jpaVendorAdapter, this.properties.getProperties(),
-				persistenceUnitManager.getIfAvailable());
+		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
+				this.properties.getProperties(), persistenceUnitManager.getIfAvailable());
 		builder.setCallback(getVendorCallback());
 		return builder;
 	}
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean({ LocalContainerEntityManagerFactoryBean.class,
-			EntityManagerFactory.class })
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-			EntityManagerFactoryBuilder factoryBuilder) {
+	@ConditionalOnMissingBean({ LocalContainerEntityManagerFactoryBean.class, EntityManagerFactory.class })
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder factoryBuilder) {
 		Map<String, Object> vendorProperties = getVendorProperties();
 		customizeVendorProperties(vendorProperties);
-		return factoryBuilder.dataSource(this.dataSource).packages(getPackagesToScan())
-				.properties(vendorProperties).jta(isJta()).build();
+		return factoryBuilder.dataSource(this.dataSource).packages(getPackagesToScan()).properties(vendorProperties)
+				.jta(isJta()).build();
 	}
 
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
@@ -149,8 +144,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	protected String[] getPackagesToScan() {
-		List<String> packages = EntityScanPackages.get(this.beanFactory)
-				.getPackageNames();
+		List<String> packages = EntityScanPackages.get(this.beanFactory).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
 			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
@@ -197,10 +191,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@Configuration
 	@ConditionalOnWebApplication
 	@ConditionalOnClass(WebMvcConfigurerAdapter.class)
-	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
-			OpenEntityManagerInViewFilter.class })
-	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view",
-			havingValue = "true", matchIfMissing = true)
+	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class, OpenEntityManagerInViewFilter.class })
+	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
 	protected static class JpaWebConfiguration {
 
 		// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when

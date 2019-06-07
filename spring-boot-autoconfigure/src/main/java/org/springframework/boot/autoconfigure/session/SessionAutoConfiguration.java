@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ import org.springframework.session.SessionRepository;
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class,
-		RedisAutoConfiguration.class })
+		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class })
 public class SessionAutoConfiguration {
 
@@ -97,16 +96,14 @@ public class SessionAutoConfiguration {
 		@PostConstruct
 		public void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
-			if (storeType != StoreType.NONE
-					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
+			if (storeType != StoreType.NONE && this.sessionRepositoryProvider.getIfAvailable() == null) {
 				if (storeType != null) {
 					throw new IllegalArgumentException("No session repository could be "
-							+ "auto-configured, check your configuration (session store "
-							+ "type is '" + storeType.name().toLowerCase(Locale.ENGLISH)
-							+ "')");
+							+ "auto-configured, check your configuration (session store " + "type is '"
+							+ storeType.name().toLowerCase(Locale.ENGLISH) + "')");
 				}
-				throw new IllegalArgumentException("No Spring Session store is "
-						+ "configured: set the 'spring.session.store-type' property");
+				throw new IllegalArgumentException(
+						"No Spring Session store is " + "configured: set the 'spring.session.store-type' property");
 			}
 		}
 

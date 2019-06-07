@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,12 @@ import org.springframework.core.type.AnnotationMetadata;
  * @see EnableAutoConfiguration
  */
 @Deprecated
-public class EnableAutoConfigurationImportSelector
-		extends AutoConfigurationImportSelector {
+public class EnableAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
 
 	@Override
 	protected boolean isEnabled(AnnotationMetadata metadata) {
 		if (getClass().equals(EnableAutoConfigurationImportSelector.class)) {
-			return getEnvironment().getProperty(
-					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
-					true);
+			return getEnvironment().getProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class, true);
 		}
 		return true;
 	}

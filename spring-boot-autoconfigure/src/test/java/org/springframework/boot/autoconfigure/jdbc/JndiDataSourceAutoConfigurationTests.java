@@ -55,23 +55,20 @@ public class JndiDataSourceAutoConfigurationTests {
 	@Before
 	public void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
-		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				TestableInitialContextFactory.class.getName());
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestableInitialContextFactory.class.getName());
 	}
 
 	@Before
 	public void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
-		Thread.currentThread().setContextClassLoader(
-				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
+		Thread.currentThread().setContextClassLoader(new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
 	@After
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
-			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-					this.initialContextFactory);
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);
 		}
 		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
@@ -83,14 +80,12 @@ public class JndiDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void dataSourceIsAvailableFromJndi()
-			throws IllegalStateException, NamingException {
+	public void dataSourceIsAvailableFromJndi() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.jndi-name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.jndi-name:foo");
 		this.context.register(JndiDataSourceAutoConfiguration.class);
 		this.context.refresh();
 
@@ -99,43 +94,35 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void mbeanDataSourceIsExcludedFromExport()
-			throws IllegalStateException, NamingException {
+	public void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.jndi-name:foo");
-		this.context.register(JndiDataSourceAutoConfiguration.class,
-				MBeanExporterConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.jndi-name:foo");
+		this.context.register(JndiDataSourceAutoConfiguration.class, MBeanExporterConfiguration.class);
 		this.context.refresh();
 
 		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
-		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
-				.getPropertyValue("excludedBeans");
+		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter).getPropertyValue("excludedBeans");
 		assertThat(excludedBeans).containsExactly("dataSource");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void mbeanDataSourceIsExcludedFromExportByAllExporters()
-			throws IllegalStateException, NamingException {
+	public void mbeanDataSourceIsExcludedFromExportByAllExporters() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.jndi-name:foo");
-		this.context.register(JndiDataSourceAutoConfiguration.class,
-				MBeanExporterConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.jndi-name:foo");
+		this.context.register(JndiDataSourceAutoConfiguration.class, MBeanExporterConfiguration.class,
 				AnotherMBeanExporterConfiguration.class);
 		this.context.refresh();
 
 		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
-		for (MBeanExporter exporter : this.context.getBeansOfType(MBeanExporter.class)
-				.values()) {
+		for (MBeanExporter exporter : this.context.getBeansOfType(MBeanExporter.class).values()) {
 			Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
 					.getPropertyValue("excludedBeans");
 			assertThat(excludedBeans).containsExactly("dataSource");
@@ -144,27 +131,22 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void standardDataSourceIsNotExcludedFromExport()
-			throws IllegalStateException, NamingException {
+	public void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException, NamingException {
 		DataSource dataSource = mock(DataSource.class);
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.jndi-name:foo");
-		this.context.register(JndiDataSourceAutoConfiguration.class,
-				MBeanExporterConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.jndi-name:foo");
+		this.context.register(JndiDataSourceAutoConfiguration.class, MBeanExporterConfiguration.class);
 		this.context.refresh();
 
 		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
-		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
-				.getPropertyValue("excludedBeans");
+		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter).getPropertyValue("excludedBeans");
 		assertThat(excludedBeans).isEmpty();
 	}
 
-	private void configureJndi(String name, DataSource dataSource)
-			throws IllegalStateException, NamingException {
+	private void configureJndi(String name, DataSource dataSource) throws IllegalStateException, NamingException {
 		TestableInitialContextFactory.bind(name, dataSource);
 	}
 

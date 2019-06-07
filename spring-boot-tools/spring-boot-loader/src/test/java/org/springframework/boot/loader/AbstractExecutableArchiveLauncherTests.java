@@ -50,8 +50,7 @@ public class AbstractExecutableArchiveLauncherTests {
 
 	protected File createJarArchive(String name, String entryPrefix) throws IOException {
 		File archive = this.temp.newFile(name);
-		JarOutputStream jarOutputStream = new JarOutputStream(
-				new FileOutputStream(archive));
+		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(archive));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/classes/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/lib/"));
@@ -80,8 +79,7 @@ public class AbstractExecutableArchiveLauncherTests {
 				entryFile.mkdirs();
 			}
 			else {
-				FileCopyUtils.copy(jarFile.getInputStream(entry),
-						new FileOutputStream(entryFile));
+				FileCopyUtils.copy(jarFile.getInputStream(entry), new FileOutputStream(entryFile));
 			}
 		}
 		jarFile.close();

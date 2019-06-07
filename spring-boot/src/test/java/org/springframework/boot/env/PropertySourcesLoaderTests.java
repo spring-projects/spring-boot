@@ -31,8 +31,7 @@ public class PropertySourcesLoaderTests {
 
 	@Test
 	public void fileExtensions() {
-		assertThat(this.loader.getAllFileExtensions()).containsOnly("yml", "yaml",
-				"properties", "xml");
+		assertThat(this.loader.getAllFileExtensions()).containsOnly("yml", "yaml", "properties", "xml");
 	}
 
 }

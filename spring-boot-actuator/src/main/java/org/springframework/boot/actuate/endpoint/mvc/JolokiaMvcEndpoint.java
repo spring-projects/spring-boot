@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ import org.springframework.web.util.UrlPathHelper;
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 @HypermediaDisabled
-public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint implements
-		InitializingBean, ApplicationContextAware, ServletContextAware, DisposableBean {
+public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint
+		implements InitializingBean, ApplicationContextAware, ServletContextAware, DisposableBean {
 
 	private final ServletWrappingController controller = new ServletWrappingController();
 
@@ -71,8 +71,7 @@ public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint implements
 	}
 
 	@Override
-	public final void setApplicationContext(ApplicationContext context)
-			throws BeansException {
+	public final void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.controller.setApplicationContext(context);
 	}
 
@@ -82,10 +81,8 @@ public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint implements
 	}
 
 	@RequestMapping("/**")
-	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		return this.controller.handleRequest(new PathStripper(request, getPath()),
-				response);
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		return this.controller.handleRequest(new PathStripper(request, getPath()), response);
 	}
 
 	private static class PathStripper extends HttpServletRequestWrapper {
@@ -102,8 +99,8 @@ public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint implements
 
 		@Override
 		public String getPathInfo() {
-			String value = this.urlPathHelper.decodeRequestString(
-					(HttpServletRequest) getRequest(), super.getRequestURI());
+			String value = this.urlPathHelper.decodeRequestString((HttpServletRequest) getRequest(),
+					super.getRequestURI());
 			if (value.contains(this.path)) {
 				value = value.substring(value.indexOf(this.path) + this.path.length());
 			}

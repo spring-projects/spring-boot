@@ -65,8 +65,7 @@ public abstract class AbstractLoggingSystemTests {
 		return getLogFile(file, path, true);
 	}
 
-	protected final LogFile getLogFile(String file, String path,
-			boolean applyToSystemProperties) {
+	protected final LogFile getLogFile(String file, String path, boolean applyToSystemProperties) {
 		LogFile logFile = new LogFile(file, path);
 		if (applyToSystemProperties) {
 			logFile.applyToSystemProperties();

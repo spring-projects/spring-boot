@@ -27,14 +27,12 @@ import org.springframework.test.web.client.MockRestServiceServer;
  *
  * @author Phillip Webb
  */
-class MockRestServiceServerResetTestExecutionListener
-		extends AbstractTestExecutionListener {
+class MockRestServiceServerResetTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
 		ApplicationContext applicationContext = testContext.getApplicationContext();
-		String[] names = applicationContext
-				.getBeanNamesForType(MockRestServiceServer.class, false, false);
+		String[] names = applicationContext.getBeanNamesForType(MockRestServiceServer.class, false, false);
 		for (String name : names) {
 			applicationContext.getBean(name, MockRestServiceServer.class).reset();
 		}

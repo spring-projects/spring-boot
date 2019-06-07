@@ -83,14 +83,12 @@ class TypeUtils {
 		this.mapType = getDeclaredType(types, Map.class, 2);
 	}
 
-	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
-			int numberOfTypeArgs) {
+	private TypeMirror getDeclaredType(Types types, Class<?> typeClass, int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
 		for (int i = 0; i < typeArgs.length; i++) {
 			typeArgs[i] = types.getWildcardType(null, null);
 		}
-		TypeElement typeElement = this.env.getElementUtils()
-				.getTypeElement(typeClass.getName());
+		TypeElement typeElement = this.env.getElementUtils().getTypeElement(typeClass.getName());
 		try {
 			return types.getDeclaredType(typeElement, typeArgs);
 		}
@@ -139,8 +137,7 @@ class TypeUtils {
 	}
 
 	public String getJavaDoc(Element element) {
-		String javadoc = (element != null)
-				? this.env.getElementUtils().getDocComment(element) : null;
+		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = javadoc.replaceAll("[\r\n]+", "").trim();
 		}
@@ -150,8 +147,7 @@ class TypeUtils {
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
 		Class<?> candidate = getWrapperFor(typeMirror);
 		if (candidate != null) {
-			return this.env.getElementUtils().getTypeElement(candidate.getName())
-					.asType();
+			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
 		}
 		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
 		if (primitiveKind != null) {
@@ -184,8 +180,7 @@ class TypeUtils {
 		public String visitDeclared(DeclaredType type, Void none) {
 			TypeElement enclosingElement = getEnclosingTypeElement(type);
 			if (enclosingElement != null) {
-				return getQualifiedName(enclosingElement) + "$"
-						+ type.asElement().getSimpleName().toString();
+				return getQualifiedName(enclosingElement) + "$" + type.asElement().getSimpleName().toString();
 			}
 			String qualifiedName = getQualifiedName(type.asElement());
 			if (type.getTypeArguments().isEmpty()) {
@@ -228,14 +223,12 @@ class TypeUtils {
 			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
 			if (enclosingElement != null) {
 				return getQualifiedName(enclosingElement) + "$"
-						+ ((DeclaredType) element.asType()).asElement().getSimpleName()
-								.toString();
+						+ ((DeclaredType) element.asType()).asElement().getSimpleName().toString();
 			}
 			if (element instanceof TypeElement) {
 				return ((TypeElement) element).getQualifiedName().toString();
 			}
-			throw new IllegalStateException(
-					"Could not extract qualified name from " + element);
+			throw new IllegalStateException("Could not extract qualified name from " + element);
 		}
 
 		private TypeElement getEnclosingTypeElement(TypeMirror type) {

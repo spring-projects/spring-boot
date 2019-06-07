@@ -74,8 +74,7 @@ public class SpringProfileDocumentMatcherTests {
 	@Test
 	public void matchesList() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
-		Properties properties = getProperties(
-				String.format("spring.profiles:%n  - bar%n  - spam"));
+		Properties properties = getProperties(String.format("spring.profiles:%n  - bar%n  - spam"));
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 

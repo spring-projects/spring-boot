@@ -31,8 +31,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class ServletContextApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
+public class ServletContextApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
 
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 
@@ -74,8 +74,7 @@ public class ServletContextApplicationContextInitializer implements
 	public void initialize(ConfigurableWebApplicationContext applicationContext) {
 		applicationContext.setServletContext(this.servletContext);
 		if (this.addApplicationContextAttribute) {
-			this.servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+			this.servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 					applicationContext);
 		}
 

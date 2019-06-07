@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 		mapping.setApplicationContext(this.context);
 		mapping.setSecurityInterceptor(securityInterceptor);
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors())
-				.contains(securityInterceptor);
+		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors()).contains(securityInterceptor);
 	}
 
 	@Test
@@ -60,13 +59,11 @@ public abstract class AbstractEndpointHandlerMappingTests {
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors())
-				.hasSize(1);
+		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors()).hasSize(1);
 	}
 
 	@Test
-	public void securityInterceptorShouldBePresentAfterCorsInterceptorForCorsRequest()
-			throws Exception {
+	public void securityInterceptorShouldBePresentAfterCorsInterceptorForCorsRequest() throws Exception {
 		HandlerInterceptor securityInterceptor = mock(HandlerInterceptor.class);
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
 		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
@@ -77,8 +74,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 		MockHttpServletRequest request = request("POST", "/a");
 		request.addHeader("Origin", "https://example.com");
 		assertThat(mapping.getHandler(request).getInterceptors().length).isEqualTo(3);
-		assertThat(mapping.getHandler(request).getInterceptors()[2])
-				.isEqualTo(securityInterceptor);
+		assertThat(mapping.getHandler(request).getInterceptors()[2]).isEqualTo(securityInterceptor);
 	}
 
 	@Test
@@ -133,8 +129,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 
 	}
 
-	private static class TestEndpointHandlerMapping<E extends MvcEndpoint>
-			extends AbstractEndpointHandlerMapping<E> {
+	private static class TestEndpointHandlerMapping<E extends MvcEndpoint> extends AbstractEndpointHandlerMapping<E> {
 
 		TestEndpointHandlerMapping(Collection<E> endpoints) {
 			super(endpoints);

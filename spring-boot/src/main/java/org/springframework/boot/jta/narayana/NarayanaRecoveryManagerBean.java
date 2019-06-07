@@ -51,19 +51,16 @@ public class NarayanaRecoveryManagerBean implements InitializingBean, Disposable
 		this.recoveryManagerService.destroy();
 	}
 
-	void registerXAResourceRecoveryHelper(
-			XAResourceRecoveryHelper xaResourceRecoveryHelper) {
+	void registerXAResourceRecoveryHelper(XAResourceRecoveryHelper xaResourceRecoveryHelper) {
 		getXARecoveryModule().addXAResourceRecoveryHelper(xaResourceRecoveryHelper);
 	}
 
 	private XARecoveryModule getXARecoveryModule() {
-		XARecoveryModule xaRecoveryModule = XARecoveryModule
-				.getRegisteredXARecoveryModule();
+		XARecoveryModule xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
 		if (xaRecoveryModule != null) {
 			return xaRecoveryModule;
 		}
-		throw new IllegalStateException(
-				"XARecoveryModule is not registered with recovery manager");
+		throw new IllegalStateException("XARecoveryModule is not registered with recovery manager");
 	}
 
 }

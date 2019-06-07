@@ -59,23 +59,21 @@ public class PropertySourcesPropertyValuesTests {
 			}
 
 		});
-		this.propertySources.addFirst(new MapPropertySource("map",
-				Collections.<String, Object>singletonMap("name", "${foo}")));
+		this.propertySources
+				.addFirst(new MapPropertySource("map", Collections.<String, Object>singletonMap("name", "${foo}")));
 	}
 
 	@Test
 	public void testTypesPreserved() {
 		Map<String, Object> map = Collections.<String, Object>singletonMap("name", 123);
 		this.propertySources.replace("map", new MapPropertySource("map", map));
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources);
 		assertThat(propertyValues.getPropertyValues()[0].getValue()).isEqualTo(123);
 	}
 
 	@Test
 	public void testSize() {
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources);
 		assertThat(propertyValues.getPropertyValues().length).isEqualTo(1);
 	}
 
@@ -88,8 +86,7 @@ public class PropertySourcesPropertyValuesTests {
 		map.put("four", 4);
 		map.put("five", 5);
 		this.propertySources.addFirst(new MapPropertySource("ordered", map));
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources);
 		PropertyValue[] values = propertyValues.getPropertyValues();
 		assertThat(values).hasSize(6);
 		Collection<String> names = new ArrayList<String>();
@@ -101,8 +98,7 @@ public class PropertySourcesPropertyValuesTests {
 
 	@Test
 	public void testNonEnumeratedValue() {
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources);
 		assertThat(propertyValues.getPropertyValue("foo").getValue()).isEqualTo("bar");
 	}
 
@@ -112,15 +108,13 @@ public class PropertySourcesPropertyValuesTests {
 		CompositePropertySource composite = new CompositePropertySource("composite");
 		composite.addPropertySource(map);
 		this.propertySources.replace("map", composite);
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources);
 		assertThat(propertyValues.getPropertyValue("foo").getValue()).isEqualTo("bar");
 	}
 
 	@Test
 	public void testEnumeratedValue() {
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources);
 		assertThat(propertyValues.getPropertyValue("name").getValue()).isEqualTo("bar");
 	}
 
@@ -137,18 +131,16 @@ public class PropertySourcesPropertyValuesTests {
 			}
 
 		});
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources, (Collection<String>) null,
-				Collections.singleton("baz"));
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources,
+				(Collection<String>) null, Collections.singleton("baz"));
 		assertThat(propertyValues.getPropertyValue("baz").getValue()).isEqualTo("bar");
 	}
 
 	@Test
 	public void testOverriddenValue() {
-		this.propertySources.addFirst(new MapPropertySource("new",
-				Collections.<String, Object>singletonMap("name", "spam")));
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
+		this.propertySources
+				.addFirst(new MapPropertySource("new", Collections.<String, Object>singletonMap("name", "spam")));
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(this.propertySources);
 		assertThat(propertyValues.getPropertyValue("name").getValue()).isEqualTo("spam");
 	}
 
@@ -164,8 +156,8 @@ public class PropertySourcesPropertyValuesTests {
 	public void testPlaceholdersBindingNonEnumerable() {
 		FooBean target = new FooBean();
 		DataBinder binder = new DataBinder(target);
-		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
-				(Collection<String>) null, Collections.singleton("foo")));
+		binder.bind(new PropertySourcesPropertyValues(this.propertySources, (Collection<String>) null,
+				Collections.singleton("foo")));
 		assertThat(target.getFoo()).isEqualTo("bar");
 	}
 
@@ -191,8 +183,8 @@ public class PropertySourcesPropertyValuesTests {
 			}
 
 		});
-		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
-				(Collection<String>) null, Collections.singleton("name")));
+		binder.bind(new PropertySourcesPropertyValues(this.propertySources, (Collection<String>) null,
+				Collections.singleton("name")));
 		assertThat(target.getName()).isNull();
 	}
 
@@ -238,8 +230,7 @@ public class PropertySourcesPropertyValuesTests {
 		this.propertySources.addFirst(new MapPropertySource("f", first));
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
 		assertThat(target.getList()).hasSize(1);
-		assertThat(target.getList().get(0).getDescription())
-				.isEqualTo("another description");
+		assertThat(target.getList().get(0).getDescription()).isEqualTo("another description");
 		assertThat(target.getList().get(0).getName()).isNull();
 	}
 

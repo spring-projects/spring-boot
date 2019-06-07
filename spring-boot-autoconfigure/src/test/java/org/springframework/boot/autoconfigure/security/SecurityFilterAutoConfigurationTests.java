@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 public class SecurityFilterAutoConfigurationTests {
 
 	@Test
-	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration()
-			throws Exception {
+	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration() throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.setServletContext(new MockServletContext());
 		try {
@@ -58,13 +57,10 @@ public class SecurityFilterAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class,
-			ConverterBean.class })
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebSecurity.class,
-			SecurityFilterAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
+	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class, ConverterBean.class })
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class, WebSecurity.class,
+			SecurityFilterAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 

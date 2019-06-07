@@ -57,8 +57,7 @@ public class RelaxedPropertyResolverTests {
 		this.source.put("myobject", "object");
 		this.source.put("myInteger", 123);
 		this.source.put("myClass", "java.lang.String");
-		this.environment.getPropertySources()
-				.addFirst(new MapPropertySource("test", this.source));
+		this.environment.getPropertySources().addFirst(new MapPropertySource("test", this.source));
 		this.resolver = new RelaxedPropertyResolver(this.environment);
 	}
 
@@ -79,8 +78,7 @@ public class RelaxedPropertyResolverTests {
 
 	@Test
 	public void getRequiredPropertyWithType() throws Exception {
-		assertThat(this.resolver.getRequiredProperty("my-integer", Integer.class))
-				.isEqualTo(123);
+		assertThat(this.resolver.getRequiredProperty("my-integer", Integer.class)).isEqualTo(123);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("required key [my-missing] not found");
 		this.resolver.getRequiredProperty("my-missing", Integer.class);
@@ -112,17 +110,14 @@ public class RelaxedPropertyResolverTests {
 
 	@Test
 	public void getPropertyWithTypeAndDefault() throws Exception {
-		assertThat(this.resolver.getProperty("my-integer", Integer.class, 345))
-				.isEqualTo(123);
-		assertThat(this.resolver.getProperty("my-missing", Integer.class, 345))
-				.isEqualTo(345);
+		assertThat(this.resolver.getProperty("my-integer", Integer.class, 345)).isEqualTo(123);
+		assertThat(this.resolver.getProperty("my-missing", Integer.class, 345)).isEqualTo(345);
 	}
 
 	@Test
 	@Deprecated
 	public void getPropertyAsClass() throws Exception {
-		assertThat(this.resolver.getPropertyAsClass("my-class", String.class))
-				.isEqualTo(String.class);
+		assertThat(this.resolver.getPropertyAsClass("my-class", String.class)).isEqualTo(String.class);
 		assertThat(this.resolver.getPropertyAsClass("my-missing", String.class)).isNull();
 	}
 
@@ -194,8 +189,7 @@ public class RelaxedPropertyResolverTests {
 		properties.put(fullPropertyName, "propertiesPassword");
 		propertySource = new PropertiesPropertySource("properties", properties);
 		sources.addLast(propertySource);
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
-				environment, propertyPrefix);
+		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, propertyPrefix);
 		String directProperty = propertyResolver.getProperty(propertyName);
 		Map<String, Object> subProperties = propertyResolver.getSubProperties("");
 		String subProperty = (String) subProperties.get(propertyName);

@@ -117,8 +117,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	/**
 	 * Thread local used to attach and track handlers.
 	 */
-	private static class LoggedExceptionHandlerThreadLocal
-			extends ThreadLocal<SpringBootExceptionHandler> {
+	private static class LoggedExceptionHandlerThreadLocal extends ThreadLocal<SpringBootExceptionHandler> {
 
 		@Override
 		protected SpringBootExceptionHandler initialValue() {

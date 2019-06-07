@@ -64,8 +64,7 @@ public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message",
-				String.class);
+		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat("{\"subject\":\"Jersey\"}").isEqualTo(response.getBody());
 	}
@@ -123,9 +122,9 @@ public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			JacksonAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, JacksonAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class SampleJpaApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(xpath("//tbody/tr").nodeCount(4));
+		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(xpath("//tbody/tr").nodeCount(4));
 	}
 
 }

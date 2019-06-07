@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "endpoints.configprops")
-public class ConfigurationPropertiesReportEndpoint
-		extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
+public class ConfigurationPropertiesReportEndpoint extends AbstractEndpoint<Map<String, Object>>
+		implements ApplicationContextAware {
 
 	private static final String CONFIGURATION_PROPERTIES_FILTER_ID = "configurationPropertiesFilter";
 
@@ -107,10 +107,8 @@ public class ConfigurationPropertiesReportEndpoint
 
 	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
-				context);
-		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
-				beanFactoryMetaData);
+		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(context);
+		Map<String, Object> beans = getConfigurationPropertiesBeans(context, beanFactoryMetaData);
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
@@ -126,8 +124,7 @@ public class ConfigurationPropertiesReportEndpoint
 		return result;
 	}
 
-	private ConfigurationBeanFactoryMetaData getBeanFactoryMetaData(
-			ApplicationContext context) {
+	private ConfigurationBeanFactoryMetaData getBeanFactoryMetaData(ApplicationContext context) {
 		Map<String, ConfigurationBeanFactoryMetaData> beans = context
 				.getBeansOfType(ConfigurationBeanFactoryMetaData.class);
 		if (beans.size() == 1) {
@@ -136,14 +133,12 @@ public class ConfigurationPropertiesReportEndpoint
 		return null;
 	}
 
-	private Map<String, Object> getConfigurationPropertiesBeans(
-			ApplicationContext context,
+	private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext context,
 			ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
 		Map<String, Object> beans = new HashMap<String, Object>();
 		beans.putAll(context.getBeansWithAnnotation(ConfigurationProperties.class));
 		if (beanFactoryMetaData != null) {
-			beans.putAll(beanFactoryMetaData
-					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
+			beans.putAll(beanFactoryMetaData.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
 		}
 		return beans;
 	}
@@ -156,17 +151,15 @@ public class ConfigurationPropertiesReportEndpoint
 	 * @param prefix the prefix
 	 * @return the serialized instance
 	 */
-	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean,
-			String prefix) {
+	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean, String prefix) {
 		try {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> result = new HashMap<String, Object>(
-					mapper.convertValue(bean, Map.class));
+			Map<String, Object> result = new HashMap<String, Object>(mapper.convertValue(bean, Map.class));
 			return result;
 		}
 		catch (Exception ex) {
-			return new HashMap<String, Object>(Collections.<String, Object>singletonMap(
-					"error", "Cannot serialize '" + prefix + "'"));
+			return new HashMap<String, Object>(
+					Collections.<String, Object>singletonMap("error", "Cannot serialize '" + prefix + "'"));
 		}
 	}
 
@@ -193,10 +186,9 @@ public class ConfigurationPropertiesReportEndpoint
 	}
 
 	private void applyConfigurationPropertiesFilter(ObjectMapper mapper) {
-		mapper.setAnnotationIntrospector(
-				new ConfigurationPropertiesAnnotationIntrospector());
-		mapper.setFilterProvider(new SimpleFilterProvider()
-				.setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
+		mapper.setAnnotationIntrospector(new ConfigurationPropertiesAnnotationIntrospector());
+		mapper.setFilterProvider(
+				new SimpleFilterProvider().setDefaultFilter(new ConfigurationPropertiesPropertyFilter()));
 	}
 
 	/**
@@ -206,13 +198,12 @@ public class ConfigurationPropertiesReportEndpoint
 	 * @param beanName the bean name
 	 * @return the prefix
 	 */
-	private String extractPrefix(ApplicationContext context,
-			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName) {
-		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
-				ConfigurationProperties.class);
+	private String extractPrefix(ApplicationContext context, ConfigurationBeanFactoryMetaData beanFactoryMetaData,
+			String beanName) {
+		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName, ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {
-			ConfigurationProperties override = beanFactoryMetaData
-					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
+			ConfigurationProperties override = beanFactoryMetaData.findFactoryAnnotation(beanName,
+					ConfigurationProperties.class);
 			if (override != null) {
 				// The @Bean-level @ConfigurationProperties overrides the one at type
 				// level when binding. Arguably we should render them both, but this one
@@ -273,8 +264,7 @@ public class ConfigurationPropertiesReportEndpoint
 	 * properties.
 	 */
 	@SuppressWarnings("serial")
-	private static class ConfigurationPropertiesAnnotationIntrospector
-			extends JacksonAnnotationIntrospector {
+	private static class ConfigurationPropertiesAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
 		@Override
 		public Object findFilterId(Annotated a) {
@@ -297,11 +287,9 @@ public class ConfigurationPropertiesReportEndpoint
 	 * <li>Properties that throw an exception when retrieving their value.
 	 * </ul>
 	 */
-	private static class ConfigurationPropertiesPropertyFilter
-			extends SimpleBeanPropertyFilter {
+	private static class ConfigurationPropertiesPropertyFilter extends SimpleBeanPropertyFilter {
 
-		private static final Log logger = LogFactory
-				.getLog(ConfigurationPropertiesPropertyFilter.class);
+		private static final Log logger = LogFactory.getLog(ConfigurationPropertiesPropertyFilter.class);
 
 		@Override
 		protected boolean include(BeanPropertyWriter writer) {
@@ -318,14 +306,13 @@ public class ConfigurationPropertiesReportEndpoint
 		}
 
 		@Override
-		public void serializeAsField(Object pojo, JsonGenerator jgen,
-				SerializerProvider provider, PropertyWriter writer) throws Exception {
+		public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider,
+				PropertyWriter writer) throws Exception {
 			if (writer instanceof BeanPropertyWriter) {
 				try {
 					if (pojo == ((BeanPropertyWriter) writer).get(pojo)) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("Skipping '" + writer.getFullName() + "' on '"
-									+ pojo.getClass().getName()
+							logger.debug("Skipping '" + writer.getFullName() + "' on '" + pojo.getClass().getName()
 									+ "' as it is self-referential");
 						}
 						return;
@@ -333,9 +320,8 @@ public class ConfigurationPropertiesReportEndpoint
 				}
 				catch (Exception ex) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Skipping '" + writer.getFullName() + "' on '"
-								+ pojo.getClass().getName() + "' as an exception "
-								+ "was thrown when retrieving its value", ex);
+						logger.debug("Skipping '" + writer.getFullName() + "' on '" + pojo.getClass().getName()
+								+ "' as an exception " + "was thrown when retrieving its value", ex);
 					}
 					return;
 				}
@@ -351,8 +337,8 @@ public class ConfigurationPropertiesReportEndpoint
 	protected static class GenericSerializerModifier extends BeanSerializerModifier {
 
 		@Override
-		public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-				BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<BeanPropertyWriter>();
 			for (BeanPropertyWriter writer : beanProperties) {
 				boolean readable = isReadable(beanDesc, writer);
@@ -373,15 +359,11 @@ public class ConfigurationPropertiesReportEndpoint
 			// should be kosher. Lists and Maps are also auto-detected by default since
 			// that's what the metadata generator does. This filter is not used if there
 			// is JSON metadata for the property, so it's mainly for user-defined beans.
-			return (setter != null)
-					|| ClassUtils.getPackageName(parentType)
-							.equals(ClassUtils.getPackageName(type))
-					|| Map.class.isAssignableFrom(type)
-					|| Collection.class.isAssignableFrom(type);
+			return (setter != null) || ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
+					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
 		}
 
-		private AnnotatedMethod findSetter(BeanDescription beanDesc,
-				BeanPropertyWriter writer) {
+		private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String name = "set" + StringUtils.capitalize(writer.getName());
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });

@@ -42,16 +42,13 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 		for (ObjectError error : cause.getAllErrors()) {
 			if (error instanceof FieldError) {
 				FieldError fieldError = (FieldError) error;
-				description.append(String.format("%n    Property: %s",
-						cause.getObjectName() + "." + fieldError.getField()));
 				description.append(
-						String.format("%n    Value: %s", fieldError.getRejectedValue()));
+						String.format("%n    Property: %s", cause.getObjectName() + "." + fieldError.getField()));
+				description.append(String.format("%n    Value: %s", fieldError.getRejectedValue()));
 			}
-			description.append(
-					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
+			description.append(String.format("%n    Reason: %s%n", error.getDefaultMessage()));
 		}
-		return new FailureAnalysis(description.toString(),
-				"Update your application's configuration", cause);
+		return new FailureAnalysis(description.toString(), "Update your application's configuration", cause);
 	}
 
 }

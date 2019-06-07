@@ -73,12 +73,10 @@ public class DataJpaTestIntegrationTests {
 
 	@Test
 	public void testEntityManagerPersistAndGetId() throws Exception {
-		Long id = this.entities.persistAndGetId(new ExampleEntity("spring", "123"),
-				Long.class);
+		Long id = this.entities.persistAndGetId(new ExampleEntity("spring", "123"), Long.class);
 		assertThat(id).isNotNull();
-		String reference = this.jdbcTemplate.queryForObject(
-				"SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?", new Object[] { id },
-				String.class);
+		String reference = this.jdbcTemplate.queryForObject("SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?",
+				new Object[] { id }, String.class);
 		assertThat(reference).isEqualTo("123");
 	}
 
@@ -93,8 +91,7 @@ public class DataJpaTestIntegrationTests {
 
 	@Test
 	public void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
 	}
 
@@ -106,14 +103,12 @@ public class DataJpaTestIntegrationTests {
 
 	@Test
 	public void flywayAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(FlywayAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(FlywayAutoConfiguration.class));
 	}
 
 	@Test
 	public void liquibaseAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
 	}
 
 }

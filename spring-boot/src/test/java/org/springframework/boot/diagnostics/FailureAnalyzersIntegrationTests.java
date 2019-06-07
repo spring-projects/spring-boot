@@ -46,8 +46,7 @@ public class FailureAnalyzersIntegrationTests {
 			fail("Application started successfully");
 		}
 		catch (Exception ex) {
-			assertThat(this.outputCapture.toString())
-					.contains("APPLICATION FAILED TO START");
+			assertThat(this.outputCapture.toString()).contains("APPLICATION FAILED TO START");
 		}
 	}
 

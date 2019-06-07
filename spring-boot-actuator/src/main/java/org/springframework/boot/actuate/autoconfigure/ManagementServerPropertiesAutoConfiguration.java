@@ -48,8 +48,7 @@ public class ManagementServerPropertiesAutoConfiguration {
 	// In case security auto configuration hasn't been included
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnClass(
-			name = "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
+	@ConditionalOnClass(name = "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
 	public SecurityProperties securityProperties() {
 		return new SecurityProperties();
 	}

@@ -54,15 +54,14 @@ import org.springframework.validation.Validator;
  * @param <T> the target type
  * @author Dave Syer
  */
-public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
-		ApplicationContextAware, MessageSourceAware, InitializingBean {
+public class PropertiesConfigurationFactory<T>
+		implements FactoryBean<T>, ApplicationContextAware, MessageSourceAware, InitializingBean {
 
 	private static final char[] EXACT_DELIMITERS = { '_', '.', '[' };
 
 	private static final char[] TARGET_NAME_DELIMITERS = { '_', '.' };
 
-	private static final Log logger = LogFactory
-			.getLog(PropertiesConfigurationFactory.class);
+	private static final Log logger = LogFactory.getLog(PropertiesConfigurationFactory.class);
 
 	private boolean ignoreUnknownFields = true;
 
@@ -254,17 +253,14 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 				throw ex;
 			}
 			PropertiesConfigurationFactory.logger
-					.error("Failed to load Properties validation bean. "
-							+ "Your Properties may be invalid.", ex);
+					.error("Failed to load Properties validation bean. " + "Your Properties may be invalid.", ex);
 		}
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
-		RelaxedDataBinder dataBinder = (this.targetName != null)
-				? new RelaxedDataBinder(this.target, this.targetName)
+		RelaxedDataBinder dataBinder = (this.targetName != null) ? new RelaxedDataBinder(this.target, this.targetName)
 				: new RelaxedDataBinder(this.target);
-		if (this.validator != null
-				&& this.validator.supports(dataBinder.getTarget().getClass())) {
+		if (this.validator != null && this.validator.supports(dataBinder.getTarget().getClass())) {
 			dataBinder.setValidator(this.validator);
 		}
 		if (this.conversionService != null) {
@@ -276,14 +272,13 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		customizeBinder(dataBinder);
 		if (this.applicationContext != null) {
-			ResourceEditorRegistrar resourceEditorRegistrar = new ResourceEditorRegistrar(
-					this.applicationContext, this.applicationContext.getEnvironment());
+			ResourceEditorRegistrar resourceEditorRegistrar = new ResourceEditorRegistrar(this.applicationContext,
+					this.applicationContext.getEnvironment());
 			resourceEditorRegistrar.registerCustomEditors(dataBinder);
 		}
 		Iterable<String> relaxedTargetNames = getRelaxedTargetNames();
 		Set<String> names = getNames(relaxedTargetNames);
-		PropertyValues propertyValues = getPropertySourcesPropertyValues(names,
-				relaxedTargetNames);
+		PropertyValues propertyValues = getPropertySourcesPropertyValues(names, relaxedTargetNames);
 		dataBinder.bind(propertyValues);
 		if (this.validator != null) {
 			dataBinder.validate();
@@ -292,15 +287,14 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private Iterable<String> getRelaxedTargetNames() {
-		return (this.target != null && StringUtils.hasLength(this.targetName))
-				? new RelaxedNames(this.targetName) : null;
+		return (this.target != null && StringUtils.hasLength(this.targetName)) ? new RelaxedNames(this.targetName)
+				: null;
 	}
 
 	private Set<String> getNames(Iterable<String> prefixes) {
 		Set<String> names = new LinkedHashSet<String>();
 		if (this.target != null) {
-			PropertyDescriptor[] descriptors = BeanUtils
-					.getPropertyDescriptors(this.target.getClass());
+			PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(this.target.getClass());
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
 				if (!name.equals("class")) {
@@ -324,12 +318,9 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		return names;
 	}
 
-	private PropertyValues getPropertySourcesPropertyValues(Set<String> names,
-			Iterable<String> relaxedTargetNames) {
-		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names,
-				relaxedTargetNames);
-		return new PropertySourcesPropertyValues(this.propertySources, names, includes,
-				this.resolvePlaceholders);
+	private PropertyValues getPropertySourcesPropertyValues(Set<String> names, Iterable<String> relaxedTargetNames) {
+		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names, relaxedTargetNames);
+		return new PropertySourcesPropertyValues(this.propertySources, names, includes, this.resolvePlaceholders);
 	}
 
 	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names,
@@ -347,8 +338,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			for (String relaxedTargetName : relaxedTargetNames) {
 				relaxedNames.add(relaxedTargetName);
 			}
-			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true,
-					relaxedNames);
+			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true, relaxedNames);
 		}
 		// Not ideal, we basically can't filter anything
 		return PropertyNamePatternsMatcher.ALL;
@@ -358,17 +348,13 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		return this.target != null && Map.class.isAssignableFrom(this.target.getClass());
 	}
 
-	private void checkForBindingErrors(RelaxedDataBinder dataBinder)
-			throws BindException {
+	private void checkForBindingErrors(RelaxedDataBinder dataBinder) throws BindException {
 		BindingResult errors = dataBinder.getBindingResult();
 		if (errors.hasErrors()) {
 			logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				logger.error(
-						(this.messageSource != null)
-								? this.messageSource.getMessage(error,
-										Locale.getDefault()) + " (" + error + ")"
-								: error);
+				logger.error((this.messageSource != null)
+						? this.messageSource.getMessage(error, Locale.getDefault()) + " (" + error + ")" : error);
 			}
 			if (this.exceptionIfInvalid) {
 				throw new BindException(errors);

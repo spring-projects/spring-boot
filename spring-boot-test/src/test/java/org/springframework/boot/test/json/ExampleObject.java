@@ -49,8 +49,7 @@ public class ExampleObject {
 			return false;
 		}
 		ExampleObject other = (ExampleObject) obj;
-		return ObjectUtils.nullSafeEquals(this.name, other.name)
-				&& ObjectUtils.nullSafeEquals(this.age, other.age);
+		return ObjectUtils.nullSafeEquals(this.name, other.name) && ObjectUtils.nullSafeEquals(this.age, other.age);
 	}
 
 	@Override

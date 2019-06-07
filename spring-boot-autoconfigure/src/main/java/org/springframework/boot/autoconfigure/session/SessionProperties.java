@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,10 +168,8 @@ public class SessionProperties {
 				if (this.enabled != null) {
 					return this.enabled;
 				}
-				boolean defaultTableName = DEFAULT_TABLE_NAME
-						.equals(Jdbc.this.getTableName());
-				boolean customSchema = !DEFAULT_SCHEMA_LOCATION
-						.equals(Jdbc.this.getSchema());
+				boolean defaultTableName = DEFAULT_TABLE_NAME.equals(Jdbc.this.getTableName());
+				boolean customSchema = !DEFAULT_SCHEMA_LOCATION.equals(Jdbc.this.getSchema());
 				return (defaultTableName || customSchema);
 			}
 

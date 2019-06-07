@@ -46,8 +46,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  */
-public class ContextIdApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+public class ContextIdApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	/**
 	 * Placeholder pattern to resolve for application name. The following order is used to
@@ -108,8 +108,7 @@ public class ContextIdApplicationContextInitializer implements
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.resolvePlaceholders(this.name);
 		String index = environment.resolvePlaceholders(INDEX_PATTERN);
-		String profiles = StringUtils
-				.arrayToCommaDelimitedString(environment.getActiveProfiles());
+		String profiles = StringUtils.arrayToCommaDelimitedString(environment.getActiveProfiles());
 		if (StringUtils.hasText(profiles)) {
 			name = name + ":" + profiles;
 		}

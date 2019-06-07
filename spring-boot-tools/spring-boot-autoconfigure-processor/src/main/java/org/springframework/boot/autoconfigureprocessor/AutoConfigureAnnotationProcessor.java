@@ -55,8 +55,7 @@ import javax.tools.StandardLocation;
 		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
 public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
-	protected static final String PROPERTIES_PATH = "META-INF/"
-			+ "spring-autoconfigure-metadata.properties";
+	protected static final String PROPERTIES_PATH = "META-INF/" + "spring-autoconfigure-metadata.properties";
 
 	private Map<String, String> annotations;
 
@@ -69,16 +68,11 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	protected void addAnnotations(Map<String, String> annotations) {
-		annotations.put("Configuration",
-				"org.springframework.context.annotation.Configuration");
-		annotations.put("ConditionalOnClass",
-				"org.springframework.boot.autoconfigure.condition.ConditionalOnClass");
-		annotations.put("AutoConfigureBefore",
-				"org.springframework.boot.autoconfigure.AutoConfigureBefore");
-		annotations.put("AutoConfigureAfter",
-				"org.springframework.boot.autoconfigure.AutoConfigureAfter");
-		annotations.put("AutoConfigureOrder",
-				"org.springframework.boot.autoconfigure.AutoConfigureOrder");
+		annotations.put("Configuration", "org.springframework.context.annotation.Configuration");
+		annotations.put("ConditionalOnClass", "org.springframework.boot.autoconfigure.condition.ConditionalOnClass");
+		annotations.put("AutoConfigureBefore", "org.springframework.boot.autoconfigure.AutoConfigureBefore");
+		annotations.put("AutoConfigureAfter", "org.springframework.boot.autoconfigure.AutoConfigureAfter");
+		annotations.put("AutoConfigureOrder", "org.springframework.boot.autoconfigure.AutoConfigureOrder");
 	}
 
 	@Override
@@ -87,8 +81,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	public boolean process(Set<? extends TypeElement> annotations,
-			RoundEnvironment roundEnv) {
+	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		for (Map.Entry<String, String> entry : this.annotations.entrySet()) {
 			process(roundEnv, entry.getKey(), entry.getValue());
 		}
@@ -103,36 +96,30 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		return false;
 	}
 
-	private void process(RoundEnvironment roundEnv, String propertyKey,
-			String annotationName) {
-		TypeElement annotationType = this.processingEnv.getElementUtils()
-				.getTypeElement(annotationName);
+	private void process(RoundEnvironment roundEnv, String propertyKey, String annotationName) {
+		TypeElement annotationType = this.processingEnv.getElementUtils().getTypeElement(annotationName);
 		if (annotationType != null) {
 			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
 				Element enclosingElement = element.getEnclosingElement();
-				if (enclosingElement != null
-						&& enclosingElement.getKind() == ElementKind.PACKAGE) {
+				if (enclosingElement != null && enclosingElement.getKind() == ElementKind.PACKAGE) {
 					processElement(element, propertyKey, annotationName);
 				}
 			}
 		}
 	}
 
-	private void processElement(Element element, String propertyKey,
-			String annotationName) {
+	private void processElement(Element element, String propertyKey, String annotationName) {
 		try {
 			String qualifiedName = getQualifiedName(element);
 			AnnotationMirror annotation = getAnnotation(element, annotationName);
 			if (qualifiedName != null && annotation != null) {
 				List<Object> values = getValues(annotation);
-				this.properties.put(qualifiedName + "." + propertyKey,
-						toCommaDelimitedString(values));
+				this.properties.put(qualifiedName + "." + propertyKey, toCommaDelimitedString(values));
 				this.properties.put(qualifiedName, "");
 			}
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Error processing configuration meta-data on " + element, ex);
+			throw new IllegalStateException("Error processing configuration meta-data on " + element, ex);
 		}
 	}
 
@@ -159,8 +146,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	@SuppressWarnings("unchecked")
 	private List<Object> getValues(AnnotationMirror annotation) {
 		List<Object> result = new ArrayList<Object>();
-		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
-				.getElementValues().entrySet()) {
+		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation.getElementValues()
+				.entrySet()) {
 			String attributeName = entry.getKey().getSimpleName().toString();
 			if ("name".equals(attributeName) || "value".equals(attributeName)) {
 				Object value = entry.getValue().getValue();
@@ -189,8 +176,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
 			if (enclosingElement != null) {
 				return getQualifiedName(enclosingElement) + "$"
-						+ ((DeclaredType) element.asType()).asElement().getSimpleName()
-								.toString();
+						+ ((DeclaredType) element.asType()).asElement().getSimpleName().toString();
 			}
 			if (element instanceof TypeElement) {
 				return ((TypeElement) element).getQualifiedName().toString();
@@ -212,8 +198,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private void writeProperties() throws IOException {
 		if (!this.properties.isEmpty()) {
-			FileObject file = this.processingEnv.getFiler()
-					.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
+			FileObject file = this.processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "",
+					PROPERTIES_PATH);
 			OutputStream outputStream = file.openOutputStream();
 			try {
 				this.properties.store(outputStream, null);

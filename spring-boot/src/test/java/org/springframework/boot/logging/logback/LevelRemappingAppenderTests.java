@@ -81,8 +81,7 @@ public class LevelRemappingAppenderTests {
 		this.appender.append(mockLogEvent(Level.DEBUG));
 		this.appender.append(mockLogEvent(Level.ERROR));
 		verify(this.logger, times(2)).callAppenders(this.logCaptor.capture());
-		assertThat(this.logCaptor.getAllValues().get(0).getLevel())
-				.isEqualTo(Level.TRACE);
+		assertThat(this.logCaptor.getAllValues().get(0).getLevel()).isEqualTo(Level.TRACE);
 		assertThat(this.logCaptor.getAllValues().get(1).getLevel()).isEqualTo(Level.WARN);
 	}
 
@@ -90,8 +89,7 @@ public class LevelRemappingAppenderTests {
 	public void notRemapped() throws Exception {
 		this.appender.append(mockLogEvent(Level.TRACE));
 		verify(this.logger).callAppenders(this.logCaptor.capture());
-		assertThat(this.logCaptor.getAllValues().get(0).getLevel())
-				.isEqualTo(Level.TRACE);
+		assertThat(this.logCaptor.getAllValues().get(0).getLevel()).isEqualTo(Level.TRACE);
 	}
 
 	private ILoggingEvent mockLogEvent(Level level) {

@@ -44,8 +44,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "endpoints.trace.filter", name = "enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "endpoints.trace.filter", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(TraceProperties.class)
 public class TraceWebFilterAutoConfiguration {
 
@@ -55,8 +54,7 @@ public class TraceWebFilterAutoConfiguration {
 
 	private final ErrorAttributes errorAttributes;
 
-	public TraceWebFilterAutoConfiguration(TraceRepository traceRepository,
-			TraceProperties traceProperties,
+	public TraceWebFilterAutoConfiguration(TraceRepository traceRepository, TraceProperties traceProperties,
 			ObjectProvider<ErrorAttributes> errorAttributes) {
 		this.traceRepository = traceRepository;
 		this.traceProperties = traceProperties;
@@ -66,8 +64,7 @@ public class TraceWebFilterAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
-		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository,
-				this.traceProperties);
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository, this.traceProperties);
 		if (this.errorAttributes != null) {
 			filter.setErrorAttributes(this.errorAttributes);
 		}

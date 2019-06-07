@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,17 +108,15 @@ public class ServerPropertiesTests {
 	@Test
 	public void testAddressBinding() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.address", "127.0.0.1")));
+		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.address", "127.0.0.1")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
-		assertThat(this.properties.getAddress())
-				.isEqualTo(InetAddress.getByName("127.0.0.1"));
+		assertThat(this.properties.getAddress()).isEqualTo(InetAddress.getByName("127.0.0.1"));
 	}
 
 	@Test
 	public void testPortBinding() throws Exception {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.port", "9000")));
+		new RelaxedDataBinder(this.properties, "server")
+				.bind(new MutablePropertyValues(Collections.singletonMap("server.port", "9000")));
 		assertThat(this.properties.getPort().intValue()).isEqualTo(9000);
 	}
 
@@ -130,8 +128,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void testServerHeader() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.server-header", "Custom Server")));
+		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.server-header", "Custom Server")));
 		assertThat(this.properties.getServerHeader()).isEqualTo("Custom Server");
 	}
 
@@ -146,8 +143,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void testServletPathAsMapping() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servletPath", "/foo/*")));
+		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.servletPath", "/foo/*")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
@@ -156,8 +152,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void testServletPathAsPrefix() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servletPath", "/foo")));
+		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.servletPath", "/foo")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
@@ -178,8 +173,7 @@ public class ServerPropertiesTests {
 		bindProperties(map);
 		this.properties.customize(tomcatContainer);
 		assertThat(tomcatContainer.getEngineValves()).hasSize(1);
-		assertThat(tomcatContainer.getEngineValves()).first()
-				.isInstanceOf(AccessLogValve.class);
+		assertThat(tomcatContainer.getEngineValves()).first().isInstanceOf(AccessLogValve.class);
 	}
 
 	@Test
@@ -189,8 +183,8 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.accesslog.enabled", "true");
 		bindProperties(map);
 		this.properties.customize(tomcatContainer);
-		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
-				.getFileDateFormat()).isEqualTo(".yyyy-MM-dd");
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next()).getFileDateFormat())
+				.isEqualTo(".yyyy-MM-dd");
 	}
 
 	@Test
@@ -201,8 +195,8 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.accesslog.file-date-format", "yyyy-MM-dd.HH");
 		bindProperties(map);
 		this.properties.customize(tomcatContainer);
-		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
-				.getFileDateFormat()).isEqualTo("yyyy-MM-dd.HH");
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next()).getFileDateFormat())
+				.isEqualTo("yyyy-MM-dd.HH");
 	}
 
 	@Test
@@ -212,8 +206,7 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.accesslog.enabled", "true");
 		bindProperties(map);
 		this.properties.customize(tomcatContainer);
-		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
-				.isBuffered()).isTrue();
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next()).isBuffered()).isTrue();
 	}
 
 	@Test
@@ -224,8 +217,7 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.accesslog.buffered", "false");
 		bindProperties(map);
 		this.properties.customize(tomcatContainer);
-		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
-				.isBuffered()).isFalse();
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next()).isBuffered()).isFalse();
 	}
 
 	@Test
@@ -251,8 +243,7 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
-		assertThat(tomcat.getInternalProxies())
-				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		assertThat(tomcat.getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(10);
 	}
 
@@ -262,9 +253,8 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		bindProperties(map);
 		this.properties.customize(tomcatContainer);
-		Valve[] valves = ((TomcatEmbeddedServletContainer) tomcatContainer
-				.getEmbeddedServletContainer()).getTomcat().getHost().getPipeline()
-						.getValves();
+		Valve[] valves = ((TomcatEmbeddedServletContainer) tomcatContainer.getEmbeddedServletContainer()).getTomcat()
+				.getHost().getPipeline().getValves();
 		assertThat(valves).hasAtLeastOneElementOfType(ErrorReportValve.class);
 		for (Valve valve : valves) {
 			if (valve instanceof ErrorReportValve) {
@@ -283,49 +273,46 @@ public class ServerPropertiesTests {
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getRedirectContextRoot()).isEqualTo(false);
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-		Context context = (Context) ((TomcatEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer()).getTomcat().getHost().findChildren()[0];
+		Context context = (Context) ((TomcatEmbeddedServletContainer) factory.getEmbeddedServletContainer()).getTomcat()
+				.getHost().findChildren()[0];
 		assertThat(context.getMapperContextRootRedirectEnabled()).isTrue();
 		this.properties.customize(factory);
-		context = (Context) ((TomcatEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer()).getTomcat().getHost().findChildren()[0];
+		context = (Context) ((TomcatEmbeddedServletContainer) factory.getEmbeddedServletContainer()).getTomcat()
+				.getHost().findChildren()[0];
 		assertThat(context.getMapperContextRootRedirectEnabled()).isFalse();
 	}
 
 	@Test
 	public void testTrailingSlashOfContextPathIsRemoved() {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.contextPath", "/foo/")));
+		new RelaxedDataBinder(this.properties, "server")
+				.bind(new MutablePropertyValues(Collections.singletonMap("server.contextPath", "/foo/")));
 		assertThat(this.properties.getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testSlashOfContextPathIsDefaultValue() {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.contextPath", "/")));
+		new RelaxedDataBinder(this.properties, "server")
+				.bind(new MutablePropertyValues(Collections.singletonMap("server.contextPath", "/")));
 		assertThat(this.properties.getContextPath()).isEqualTo("");
 	}
 
 	@Test
 	public void testCustomizeTomcat() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(
-				ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory, never()).setContextPath("");
 	}
 
 	@Test
 	public void testDefaultDisplayName() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(
-				ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory).setDisplayName("application");
 	}
 
 	@Test
 	public void testCustomizeDisplayName() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(
-				ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.setDisplayName("TestName");
 		this.properties.customize(factory);
 		verify(factory).setDisplayName("TestName");
@@ -346,8 +333,7 @@ public class ServerPropertiesTests {
 		customizeSessionProperties(new UndertowEmbeddedServletContainerFactory(0));
 	}
 
-	private void customizeSessionProperties(
-			AbstractEmbeddedServletContainerFactory factory) {
+	private void customizeSessionProperties(AbstractEmbeddedServletContainerFactory factory) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.session.timeout", "123");
 		map.put("server.session.tracking-modes", "cookie,url");
@@ -361,20 +347,17 @@ public class ServerPropertiesTests {
 		bindProperties(map);
 		this.properties.customize(factory);
 		final AtomicReference<ServletContext> servletContextReference = new AtomicReference<ServletContext>();
-		EmbeddedServletContainer container = factory
-				.getEmbeddedServletContainer(new ServletContextInitializer() {
+		EmbeddedServletContainer container = factory.getEmbeddedServletContainer(new ServletContextInitializer() {
 
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						servletContextReference.set(servletContext);
-					}
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContextReference.set(servletContext);
+			}
 
-				});
+		});
 		try {
 			container.start();
-			SessionCookieConfig sessionCookieConfig = servletContextReference.get()
-					.getSessionCookieConfig();
+			SessionCookieConfig sessionCookieConfig = servletContextReference.get().getSessionCookieConfig();
 			assertThat(factory.getSessionTimeout()).isEqualTo(123);
 			assertThat(sessionCookieConfig.getName()).isEqualTo("testname");
 			assertThat(sessionCookieConfig.getDomain()).isEqualTo("testdomain");
@@ -384,8 +367,7 @@ public class ServerPropertiesTests {
 			assertThat(sessionCookieConfig.isSecure()).isTrue();
 			assertThat(sessionCookieConfig.getMaxAge()).isEqualTo(60);
 			assertThat(servletContextReference.get().getEffectiveSessionTrackingModes())
-					.isEqualTo(EnumSet.of(SessionTrackingMode.COOKIE,
-							SessionTrackingMode.URL));
+					.isEqualTo(EnumSet.of(SessionTrackingMode.COOKIE, SessionTrackingMode.URL));
 		}
 		finally {
 			container.stop();
@@ -416,16 +398,14 @@ public class ServerPropertiesTests {
 		bindProperties(map);
 		this.properties.customize(factory);
 		final AtomicReference<ServletContext> servletContextReference = new AtomicReference<ServletContext>();
-		EmbeddedServletContainer container = factory
-				.getEmbeddedServletContainer(new ServletContextInitializer() {
+		EmbeddedServletContainer container = factory.getEmbeddedServletContainer(new ServletContextInitializer() {
 
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						servletContextReference.set(servletContext);
-					}
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContextReference.set(servletContext);
+			}
 
-				});
+		});
 		try {
 			container.start();
 			assertThat(servletContextReference.get().getEffectiveSessionTrackingModes())
@@ -438,8 +418,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeTomcatPort() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(
-				ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.setPort(8080);
 		this.properties.customize(factory);
 		verify(factory).setPort(8080);
@@ -450,8 +429,7 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
-		assertThat(this.properties.getTomcat().getUriEncoding())
-				.isEqualTo(Charset.forName("US-ASCII"));
+		assertThat(this.properties.getTomcat().getUriEncoding()).isEqualTo(Charset.forName("US-ASCII"));
 	}
 
 	@Test
@@ -532,8 +510,8 @@ public class ServerPropertiesTests {
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(factory);
 		EmbeddedServletContainer container = factory.getEmbeddedServletContainer();
-		assertThat(((TomcatEmbeddedServletContainer) container).getTomcat().getEngine()
-				.getBackgroundProcessorDelay()).isEqualTo(10);
+		assertThat(((TomcatEmbeddedServletContainer) container).getTomcat().getEngine().getBackgroundProcessorDelay())
+				.isEqualTo(10);
 		container.stop();
 	}
 
@@ -545,8 +523,8 @@ public class ServerPropertiesTests {
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(factory);
 		EmbeddedServletContainer container = factory.getEmbeddedServletContainer();
-		assertThat(((TomcatEmbeddedServletContainer) container).getTomcat().getEngine()
-				.getBackgroundProcessorDelay()).isEqualTo(5);
+		assertThat(((TomcatEmbeddedServletContainer) container).getTomcat().getEngine().getBackgroundProcessorDelay())
+				.isEqualTo(5);
 		container.stop();
 	}
 
@@ -578,8 +556,7 @@ public class ServerPropertiesTests {
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
 				+ "0:0:0:0:0:0:0:1|::1";
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
@@ -611,15 +588,14 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accept-count", "10");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
 		embeddedContainer.start();
 		try {
-			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
-					.getProtocolHandler()).getAcceptCount()).isEqualTo(10);
+			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector().getProtocolHandler())
+					.getAcceptCount()).isEqualTo(10);
 		}
 		finally {
 			embeddedContainer.stop();
@@ -631,15 +607,14 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-connections", "5");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
 		embeddedContainer.start();
 		try {
-			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
-					.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector().getProtocolHandler())
+					.getMaxConnections()).isEqualTo(5);
 		}
 		finally {
 			embeddedContainer.stop();
@@ -651,15 +626,13 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-http-post-size", "10000");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
 		embeddedContainer.start();
 		try {
-			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
-					.isEqualTo(10000);
+			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000);
 		}
 		finally {
 			embeddedContainer.stop();
@@ -671,15 +644,13 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-http-post-size", "-1");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
 		embeddedContainer.start();
 		try {
-			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
-					.isEqualTo(-1);
+			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1);
 		}
 		finally {
 			embeddedContainer.stop();
@@ -692,15 +663,13 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.max-http-post-size", "2000");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
 		embeddedContainer.start();
 		try {
-			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
-					.isEqualTo(2000);
+			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize()).isEqualTo(2000);
 		}
 		finally {
 			embeddedContainer.stop();
@@ -717,8 +686,7 @@ public class ServerPropertiesTests {
 		map.put("server.undertow.accesslog.dir", "test-logs");
 		map.put("server.undertow.accesslog.rotate", "false");
 		bindProperties(map);
-		UndertowEmbeddedServletContainerFactory container = spy(
-				new UndertowEmbeddedServletContainerFactory());
+		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
 		this.properties.getUndertow().customizeUndertow(this.properties, container);
 		verify(container).setAccessLogEnabled(true);
 		verify(container).setAccessLogPattern("foo");
@@ -749,8 +717,7 @@ public class ServerPropertiesTests {
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		assertThat(container.getTldSkipPatterns()).contains(expectedJars);
-		assertThat(container.getTldSkipPatterns()).contains("junit-*.jar",
-				"spring-boot-*.jar");
+		assertThat(container.getTldSkipPatterns()).contains("junit-*.jar", "spring-boot-*.jar");
 	}
 
 	@Test
@@ -767,8 +734,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void defaultUseForwardHeadersUndertow() throws Exception {
-		UndertowEmbeddedServletContainerFactory container = spy(
-				new UndertowEmbeddedServletContainerFactory());
+		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(false);
 	}
@@ -776,8 +742,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void setUseForwardHeadersUndertow() throws Exception {
 		this.properties.setUseForwardHeaders(true);
-		UndertowEmbeddedServletContainerFactory container = spy(
-				new UndertowEmbeddedServletContainerFactory());
+		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
@@ -785,16 +750,14 @@ public class ServerPropertiesTests {
 	@Test
 	public void deduceUseForwardHeadersUndertow() throws Exception {
 		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
-		UndertowEmbeddedServletContainerFactory container = spy(
-				new UndertowEmbeddedServletContainerFactory());
+		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
 
 	@Test
 	public void defaultUseForwardHeadersJetty() throws Exception {
-		JettyEmbeddedServletContainerFactory container = spy(
-				new JettyEmbeddedServletContainerFactory());
+		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(false);
 	}
@@ -802,8 +765,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void setUseForwardHeadersJetty() throws Exception {
 		this.properties.setUseForwardHeaders(true);
-		JettyEmbeddedServletContainerFactory container = spy(
-				new JettyEmbeddedServletContainerFactory());
+		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
@@ -811,8 +773,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void deduceUseForwardHeadersJetty() throws Exception {
 		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
-		JettyEmbeddedServletContainerFactory container = spy(
-				new JettyEmbeddedServletContainerFactory());
+		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
@@ -822,36 +783,31 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.session.store-dir", "myfolder");
 		bindProperties(map);
-		JettyEmbeddedServletContainerFactory container = spy(
-				new JettyEmbeddedServletContainerFactory());
+		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setSessionStoreDir(new File("myfolder"));
 	}
 
 	@Test
 	public void skipNullElementsForUndertow() throws Exception {
-		UndertowEmbeddedServletContainerFactory container = mock(
-				UndertowEmbeddedServletContainerFactory.class);
+		UndertowEmbeddedServletContainerFactory container = mock(UndertowEmbeddedServletContainerFactory.class);
 		this.properties.customize(container);
 		verify(container, never()).setAccessLogEnabled(anyBoolean());
 	}
 
 	@Test
 	public void tomcatAcceptCountMatchesProtocolDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getAcceptCount())
-				.isEqualTo(getDefaultProtocol().getAcceptCount());
+		assertThat(this.properties.getTomcat().getAcceptCount()).isEqualTo(getDefaultProtocol().getAcceptCount());
 	}
 
 	@Test
 	public void tomcatMaxConnectionsMatchesProtocolDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getMaxConnections())
-				.isEqualTo(getDefaultProtocol().getMaxConnections());
+		assertThat(this.properties.getTomcat().getMaxConnections()).isEqualTo(getDefaultProtocol().getMaxConnections());
 	}
 
 	@Test
 	public void tomcatMaxThreadsMatchesProtocolDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getMaxThreads())
-				.isEqualTo(getDefaultProtocol().getMaxThreads());
+		assertThat(this.properties.getTomcat().getMaxThreads()).isEqualTo(getDefaultProtocol().getMaxThreads());
 	}
 
 	@Test
@@ -862,8 +818,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void tomcatMaxHttpPostSizeMatchesConnectorDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getMaxHttpPostSize())
-				.isEqualTo(getDefaultConnector().getMaxPostSize());
+		assertThat(this.properties.getTomcat().getMaxHttpPostSize()).isEqualTo(getDefaultConnector().getMaxPostSize());
 	}
 
 	@Test
@@ -892,9 +847,8 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void tomcatAccessLogRequestAttributesEnabledMatchesDefault() {
-		assertThat(
-				this.properties.getTomcat().getAccesslog().isRequestAttributesEnabled())
-						.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
+		assertThat(this.properties.getTomcat().getAccesslog().isRequestAttributesEnabled())
+				.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
 	}
 
 	@Test
@@ -905,19 +859,16 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void jettyMaxHttpPostSizeMatchesDefault() throws Exception {
-		JettyEmbeddedServletContainerFactory jettyFactory = new JettyEmbeddedServletContainerFactory(
-				0);
+		JettyEmbeddedServletContainerFactory jettyFactory = new JettyEmbeddedServletContainerFactory(0);
 		JettyEmbeddedServletContainer jetty = (JettyEmbeddedServletContainer) jettyFactory
 				.getEmbeddedServletContainer(new ServletContextInitializer() {
 
 					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
+					public void onStartup(ServletContext servletContext) throws ServletException {
 						servletContext.addServlet("formPost", new HttpServlet() {
 
 							@Override
-							protected void doPost(HttpServletRequest req,
-									HttpServletResponse resp)
+							protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 									throws ServletException, IOException {
 								req.getParameterMap();
 							}
@@ -927,8 +878,7 @@ public class ServerPropertiesTests {
 
 				});
 		jetty.start();
-		org.eclipse.jetty.server.Connector connector = jetty.getServer()
-				.getConnectors()[0];
+		org.eclipse.jetty.server.Connector connector = jetty.getServer().getConnectors()[0];
 		final AtomicReference<Throwable> failure = new AtomicReference<Throwable>();
 		connector.addBean(new HttpChannel.Listener() {
 
@@ -961,17 +911,13 @@ public class ServerPropertiesTests {
 				data.append("a");
 			}
 			body.add("data", data.toString());
-			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(
-					body, headers);
-			template.postForEntity(
-					URI.create("http://localhost:" + jetty.getPort() + "/form"), entity,
-					Void.class);
+			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(body,
+					headers);
+			template.postForEntity(URI.create("http://localhost:" + jetty.getPort() + "/form"), entity, Void.class);
 			assertThat(failure.get()).isNotNull();
 			String message = failure.get().getCause().getMessage();
-			int defaultMaxPostSize = Integer
-					.valueOf(message.substring(message.lastIndexOf(' ')).trim());
-			assertThat(this.properties.getJetty().getMaxHttpPostSize())
-					.isEqualTo(defaultMaxPostSize);
+			int defaultMaxPostSize = Integer.valueOf(message.substring(message.lastIndexOf(' ')).trim());
+			assertThat(this.properties.getJetty().getMaxHttpPostSize()).isEqualTo(defaultMaxPostSize);
 		}
 		finally {
 			jetty.stop();
@@ -989,14 +935,12 @@ public class ServerPropertiesTests {
 	}
 
 	private AbstractProtocol<?> getDefaultProtocol() throws Exception {
-		return (AbstractProtocol<?>) Class
-				.forName(TomcatEmbeddedServletContainerFactory.DEFAULT_PROTOCOL)
+		return (AbstractProtocol<?>) Class.forName(TomcatEmbeddedServletContainerFactory.DEFAULT_PROTOCOL)
 				.newInstance();
 	}
 
 	private void bindProperties(Map<String, String> map) {
-		new RelaxedDataBinder(this.properties, "server")
-				.bind(new MutablePropertyValues(map));
+		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(map));
 	}
 
 }

@@ -54,19 +54,16 @@ public class MockMvcAutoConfiguration {
 
 	private final WebMvcProperties webMvcProperties;
 
-	MockMvcAutoConfiguration(WebApplicationContext context,
-			WebMvcProperties webMvcProperties) {
+	MockMvcAutoConfiguration(WebApplicationContext context, WebMvcProperties webMvcProperties) {
 		this.context = context;
 		this.webMvcProperties = webMvcProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(MockMvcBuilder.class)
-	public DefaultMockMvcBuilder mockMvcBuilder(
-			List<MockMvcBuilderCustomizer> customizers) {
+	public DefaultMockMvcBuilder mockMvcBuilder(List<MockMvcBuilderCustomizer> customizers) {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.context);
-		builder.addDispatcherServletCustomizer(
-				new MockMvcDispatcherServletCustomizer(this.webMvcProperties));
+		builder.addDispatcherServletCustomizer(new MockMvcDispatcherServletCustomizer(this.webMvcProperties));
 		for (MockMvcBuilderCustomizer customizer : customizers) {
 			customizer.customize(builder);
 		}
@@ -85,8 +82,7 @@ public class MockMvcAutoConfiguration {
 		return builder.build();
 	}
 
-	private static class MockMvcDispatcherServletCustomizer
-			implements DispatcherServletCustomizer {
+	private static class MockMvcDispatcherServletCustomizer implements DispatcherServletCustomizer {
 
 		private final WebMvcProperties webMvcProperties;
 
@@ -96,12 +92,10 @@ public class MockMvcAutoConfiguration {
 
 		@Override
 		public void customize(DispatcherServlet dispatcherServlet) {
-			dispatcherServlet.setDispatchOptionsRequest(
-					this.webMvcProperties.isDispatchOptionsRequest());
-			dispatcherServlet.setDispatchTraceRequest(
-					this.webMvcProperties.isDispatchTraceRequest());
-			dispatcherServlet.setThrowExceptionIfNoHandlerFound(
-					this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
+			dispatcherServlet.setDispatchOptionsRequest(this.webMvcProperties.isDispatchOptionsRequest());
+			dispatcherServlet.setDispatchTraceRequest(this.webMvcProperties.isDispatchTraceRequest());
+			dispatcherServlet
+					.setThrowExceptionIfNoHandlerFound(this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
 		}
 
 	}

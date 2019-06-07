@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ import org.springframework.util.StringUtils;
  * @author Arthur Kalimullin
  * @since 1.1.0
  */
-public class DataSourceHealthIndicator extends AbstractHealthIndicator
-		implements InitializingBean {
+public class DataSourceHealthIndicator extends AbstractHealthIndicator implements InitializingBean {
 
 	private static final String DEFAULT_QUERY = "SELECT 1";
 
@@ -87,8 +86,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.state(this.dataSource != null,
-				"DataSource for DataSourceHealthIndicator must be specified");
+		Assert.state(this.dataSource != null, "DataSource for DataSourceHealthIndicator must be specified");
 	}
 
 	@Override
@@ -108,8 +106,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		if (StringUtils.hasText(validationQuery)) {
 			try {
 				// Avoid calling getObject as it breaks MySQL on Java 7
-				List<Object> results = this.jdbcTemplate.query(validationQuery,
-						new SingleColumnRowMapper());
+				List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
 				Object result = DataAccessUtils.requiredSingleResult(results);
 				builder.withDetail("hello", result);
 			}
@@ -122,8 +119,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	private String getProduct() {
 		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
 			@Override
-			public String doInConnection(Connection connection)
-					throws SQLException, DataAccessException {
+			public String doInConnection(Connection connection) throws SQLException, DataAccessException {
 				return connection.getMetaData().getDatabaseProductName();
 			}
 		});

@@ -106,8 +106,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void fileExists() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(String.format("File %s must exist",
-				new File("/does/not/exist").getAbsolutePath()));
+		this.thrown.expectMessage(String.format("File %s must exist", new File("/does/not/exist").getAbsolutePath()));
 		new RandomAccessDataFile(new File("/does/not/exist"));
 	}
 
@@ -121,8 +120,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void fileExistsWithConcurrentReads() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(String.format("File %s must exist",
-				new File("/does/not/exist").getAbsolutePath()));
+		this.thrown.expectMessage(String.format("File %s must exist", new File("/does/not/exist").getAbsolutePath()));
 		new RandomAccessDataFile(new File("/does/not/exist"), 1);
 	}
 
@@ -225,8 +223,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsectionZeroLength() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 0);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
-				.isEqualTo(-1);
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read()).isEqualTo(-1);
 	}
 
 	@Test
@@ -246,8 +243,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 1);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
-				.isEqualTo(1);
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read()).isEqualTo(1);
 	}
 
 	@Test
@@ -296,8 +292,7 @@ public class RandomAccessDataFileTests {
 
 				@Override
 				public Boolean call() throws Exception {
-					InputStream subsectionInputStream = RandomAccessDataFileTests.this.file
-							.getSubsection(0, 256)
+					InputStream subsectionInputStream = RandomAccessDataFileTests.this.file.getSubsection(0, 256)
 							.getInputStream(ResourceAccess.PER_READ);
 					byte[] b = new byte[256];
 					subsectionInputStream.read(b);
@@ -325,22 +320,19 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void seekFailuresDoNotPreventSubsequentReads() throws Exception {
-		FilePool filePool = (FilePool) ReflectionTestUtils.getField(this.file,
-				"filePool");
+		FilePool filePool = (FilePool) ReflectionTestUtils.getField(this.file, "filePool");
 		FilePool spiedPool = spy(filePool);
 		ReflectionTestUtils.setField(this.file, "filePool", spiedPool);
 		willAnswer(new Answer<RandomAccessFile>() {
 
 			@Override
 			public RandomAccessFile answer(InvocationOnMock invocation) throws Throwable {
-				RandomAccessFile originalFile = (RandomAccessFile) invocation
-						.callRealMethod();
+				RandomAccessFile originalFile = (RandomAccessFile) invocation.callRealMethod();
 				if (new MockUtil().isSpy(originalFile)) {
 					return originalFile;
 				}
 				RandomAccessFile spiedFile = spy(originalFile);
-				willThrow(new IOException("Seek failed")).given(spiedFile)
-						.seek(anyLong());
+				willThrow(new IOException("Seek failed")).given(spiedFile).seek(anyLong());
 				return spiedFile;
 			}
 

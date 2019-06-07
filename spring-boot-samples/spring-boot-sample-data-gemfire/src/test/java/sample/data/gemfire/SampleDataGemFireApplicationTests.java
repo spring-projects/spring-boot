@@ -63,8 +63,7 @@ public class SampleDataGemFireApplicationTests {
 		this.service.save(createGemstone("Pearl"));
 		this.service.save(createGemstone("Sapphire"));
 		assertThat(this.service.count()).isEqualTo(4);
-		assertThat(this.service.list())
-				.contains(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire"));
+		assertThat(this.service.list()).contains(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire"));
 		try {
 			this.service.save(createGemstone("Quartz"));
 		}
@@ -72,8 +71,7 @@ public class SampleDataGemFireApplicationTests {
 			// expected
 		}
 		assertThat(this.service.count()).isEqualTo(4);
-		assertThat(this.service.list())
-				.contains(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire"));
+		assertThat(this.service.list()).contains(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire"));
 		assertThat(this.service.get("Diamond")).isEqualTo(createGemstone("Diamond"));
 		assertThat(this.service.get("Pearl")).isEqualTo(createGemstone("Pearl"));
 	}

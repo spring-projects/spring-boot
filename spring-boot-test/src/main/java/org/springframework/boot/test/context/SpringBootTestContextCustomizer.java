@@ -45,8 +45,8 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
-		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(
-				mergedContextConfiguration.getTestClass(), SpringBootTest.class);
+		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(mergedContextConfiguration.getTestClass(),
+				SpringBootTest.class);
 		if (annotation.webEnvironment().isEmbedded()) {
 			registerTestRestTemplate(context);
 		}
@@ -60,8 +60,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 
 	}
 
-	private void registerTestRestTemplate(ConfigurableApplicationContext context,
-			BeanDefinitionRegistry registry) {
+	private void registerTestRestTemplate(ConfigurableApplicationContext context, BeanDefinitionRegistry registry) {
 		registry.registerBeanDefinition(TestRestTemplate.class.getName(),
 				new RootBeanDefinition(TestRestTemplateFactory.class));
 	}
@@ -82,8 +81,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 	/**
 	 * {@link FactoryBean} used to create and configure a {@link TestRestTemplate}.
 	 */
-	public static class TestRestTemplateFactory
-			implements FactoryBean<TestRestTemplate>, ApplicationContextAware {
+	public static class TestRestTemplateFactory implements FactoryBean<TestRestTemplate>, ApplicationContextAware {
 
 		private static final HttpClientOption[] DEFAULT_OPTIONS = {};
 
@@ -92,14 +90,13 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 		private TestRestTemplate object;
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
 			boolean sslEnabled = isSslEnabled(applicationContext);
 			TestRestTemplate template = new TestRestTemplate(builder.build(), null, null,
 					sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
-			LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-					applicationContext.getEnvironment(), sslEnabled ? "https" : "http");
+			LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(applicationContext.getEnvironment(),
+					sslEnabled ? "https" : "http");
 			template.setUriTemplateHandler(handler);
 			this.object = template;
 		}
@@ -115,8 +112,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private RestTemplateBuilder getRestTemplateBuilder(
-				ApplicationContext applicationContext) {
+		private RestTemplateBuilder getRestTemplateBuilder(ApplicationContext applicationContext) {
 			try {
 				return applicationContext.getBean(RestTemplateBuilder.class);
 			}

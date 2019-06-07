@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,34 +64,26 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceExists() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "url:jdbc:h2:mem:testdb");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "url:jdbc:h2:mem:testdb");
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
-		assertThat(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class))
-				.isNotNull();
+		assertThat(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class)).isNotNull();
 	}
 
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "url:jdbc:h2:mem:testdb");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "url:jdbc:h2:mem:testdb");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "timeBetweenEvictionRunsMillis:10000");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "minEvictableIdleTimeMillis:12345");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "timeBetweenEvictionRunsMillis:10000");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "minEvictableIdleTimeMillis:12345");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "jdbcInterceptors:SlowQueryReport");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "validationInterval:9999");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "jdbcInterceptors:SlowQueryReport");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "validationInterval:9999");
 		this.context.refresh();
-		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
-				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertThat(ds.getUrl()).isEqualTo("jdbc:h2:mem:testdb");
 		assertThat(ds.isTestWhileIdle()).isTrue();
 		assertThat(ds.isTestOnBorrow()).isTrue();
@@ -103,10 +95,8 @@ public class TomcatDataSourceConfigurationTests {
 		assertDataSourceHasInterceptors(ds);
 	}
 
-	private void assertDataSourceHasInterceptors(DataSourceProxy ds)
-			throws ClassNotFoundException {
-		PoolProperties.InterceptorDefinition[] interceptors = ds
-				.getJdbcInterceptorsAsArray();
+	private void assertDataSourceHasInterceptors(DataSourceProxy ds) throws ClassNotFoundException {
+		PoolProperties.InterceptorDefinition[] interceptors = ds.getJdbcInterceptorsAsArray();
 		for (PoolProperties.InterceptorDefinition interceptor : interceptors) {
 			if (SlowQueryReport.class == interceptor.getInterceptorClass()) {
 				return;
@@ -118,11 +108,9 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceDefaultsPreserved() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "url:jdbc:h2:mem:testdb");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "url:jdbc:h2:mem:testdb");
 		this.context.refresh();
-		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
-				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertThat(ds.getTimeBetweenEvictionRunsMillis()).isEqualTo(5000);
 		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(60000);
 		assertThat(ds.getMaxWait()).isEqualTo(30000);
@@ -144,8 +132,7 @@ public class TomcatDataSourceConfigurationTests {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		public DataSource dataSource() {
-			return DataSourceBuilder.create()
-					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
+			return DataSourceBuilder.create().type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public class ConfigurationPropertiesReportEndpointTests
 		extends AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
 
 	public ConfigurationPropertiesReportEndpointTests() {
-		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",
-				true, "endpoints.configprops");
+		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops", true, "endpoints.configprops");
 	}
 
 	@Test
@@ -56,8 +55,7 @@ public class ConfigurationPropertiesReportEndpointTests
 	public void testNaming() throws Exception {
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("testProperties");
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties.get("testProperties");
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("test");
 		assertThat(nestedProperties.get("properties")).isNotNull();
@@ -118,8 +116,7 @@ public class ConfigurationPropertiesReportEndpointTests
 	@Test
 	public void testKeySanitizationWithCustomKeysByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.configprops.keys-to-sanitize:property");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.configprops.keys-to-sanitize:property");
 		this.context.register(Config.class);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
@@ -135,8 +132,7 @@ public class ConfigurationPropertiesReportEndpointTests
 	@Test
 	public void testKeySanitizationWithCustomPatternByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.configprops.keys-to-sanitize: .*pass.*");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.configprops.keys-to-sanitize: .*pass.*");
 		this.context.register(Config.class);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
@@ -150,11 +146,9 @@ public class ConfigurationPropertiesReportEndpointTests
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment()
-			throws Exception {
+	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.configprops.keys-to-sanitize: .*pass.*, property");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.configprops.keys-to-sanitize: .*pass.*, property");
 		this.context.register(Config.class);
 		this.context.refresh();
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
@@ -168,8 +162,7 @@ public class ConfigurationPropertiesReportEndpointTests
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testKeySanitizationWithCustomPatternUsingCompositeKeys()
-			throws Exception {
+	public void testKeySanitizationWithCustomPatternUsingCompositeKeys() throws Exception {
 		// gh-4415
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -181,8 +174,7 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
 		assertThat(nestedProperties).isNotNull();
-		Map<String, Object> secrets = (Map<String, Object>) nestedProperties
-				.get("secrets");
+		Map<String, Object> secrets = (Map<String, Object>) nestedProperties.get("secrets");
 		Map<String, Object> hidden = (Map<String, Object>) nestedProperties.get("hidden");
 		assertThat(secrets.get("mine")).isEqualTo("******");
 		assertThat(secrets.get("yours")).isEqualTo("******");
@@ -221,8 +213,7 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
 		assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);
-		List<List<Object>> listOfLists = (List<List<Object>>) nestedProperties
-				.get("listOfListItems");
+		List<List<Object>> listOfLists = (List<List<Object>>) nestedProperties.get("listOfListItems");
 		assertThat(listOfLists).hasSize(1);
 		List<Object> list = listOfLists.get(0);
 		assertThat(list).hasSize(1);

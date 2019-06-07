@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 	private List<MockClientHttpRequest> executedRequests = new ArrayList<MockClientHttpRequest>();
 
 	@Override
-	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
-			throws IOException {
+	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
 		return new MockRequest(uri, httpMethod);
 	}
 
@@ -95,8 +94,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 			if (response == null) {
 				response = new Response(0, null, HttpStatus.GONE);
 			}
-			return ((Response) response)
-					.asHttpResponse(MockClientHttpRequestFactory.this.seq);
+			return ((Response) response).asHttpResponse(MockClientHttpRequestFactory.this.seq);
 		}
 
 	}
@@ -116,15 +114,12 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 		}
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
-			MockClientHttpResponse httpResponse = new MockClientHttpResponse(this.payload,
-					this.status);
+			MockClientHttpResponse httpResponse = new MockClientHttpResponse(this.payload, this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);
-				httpResponse.getHeaders()
-						.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-				httpResponse.getHeaders().add("x-seq",
-						Long.toString(seq.incrementAndGet()));
+				httpResponse.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
+				httpResponse.getHeaders().add("x-seq", Long.toString(seq.incrementAndGet()));
 			}
 			return httpResponse;
 		}

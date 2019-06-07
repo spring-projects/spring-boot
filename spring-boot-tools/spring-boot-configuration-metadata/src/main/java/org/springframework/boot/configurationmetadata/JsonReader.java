@@ -40,8 +40,7 @@ class JsonReader {
 
 	private final DescriptionExtractor descriptionExtractor = new DescriptionExtractor();
 
-	public RawConfigurationMetadata read(InputStream in, Charset charset)
-			throws IOException {
+	public RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
 		try {
 			JSONObject json = readJson(in, charset);
 			List<ConfigurationMetadataSource> groups = parseAllSources(json);
@@ -60,8 +59,7 @@ class JsonReader {
 		}
 	}
 
-	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root)
-			throws Exception {
+	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root) throws Exception {
 		List<ConfigurationMetadataSource> result = new ArrayList<ConfigurationMetadataSource>();
 		if (!root.has("groups")) {
 			return result;
@@ -74,8 +72,7 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root)
-			throws Exception {
+	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root) throws Exception {
 		List<ConfigurationMetadataItem> result = new ArrayList<ConfigurationMetadataItem>();
 		if (!root.has("properties")) {
 			return result;
@@ -88,8 +85,7 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root)
-			throws Exception {
+	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root) throws Exception {
 		List<ConfigurationMetadataHint> result = new ArrayList<ConfigurationMetadataHint>();
 		if (!root.has("hints")) {
 			return result;
@@ -108,8 +104,7 @@ class JsonReader {
 		source.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		source.setDescription(description);
-		source.setShortDescription(
-				this.descriptionExtractor.getShortDescription(description));
+		source.setShortDescription(this.descriptionExtractor.getShortDescription(description));
 		source.setSourceType(json.optString("sourceType", null));
 		source.setSourceMethod(json.optString("sourceMethod", null));
 		return source;
@@ -121,8 +116,7 @@ class JsonReader {
 		item.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		item.setDescription(description);
-		item.setShortDescription(
-				this.descriptionExtractor.getShortDescription(description));
+		item.setShortDescription(this.descriptionExtractor.getShortDescription(description));
 		item.setDefaultValue(readItemValue(json.opt("defaultValue")));
 		item.setDeprecation(parseDeprecation(json));
 		item.setSourceType(json.optString("sourceType", null));
@@ -141,8 +135,7 @@ class JsonReader {
 				valueHint.setValue(readItemValue(value.get("value")));
 				String description = value.optString("description", null);
 				valueHint.setDescription(description);
-				valueHint.setShortDescription(
-						this.descriptionExtractor.getShortDescription(description));
+				valueHint.setShortDescription(this.descriptionExtractor.getShortDescription(description));
 				hint.getValueHints().add(valueHint);
 			}
 		}
@@ -157,8 +150,7 @@ class JsonReader {
 					Iterator<?> keys = parameters.keys();
 					while (keys.hasNext()) {
 						String key = (String) keys.next();
-						valueProvider.getParameters().put(key,
-								readItemValue(parameters.get(key)));
+						valueProvider.getParameters().put(key, readItemValue(parameters.get(key)));
 					}
 				}
 				hint.getValueProviders().add(valueProvider);
@@ -171,11 +163,9 @@ class JsonReader {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			Deprecation deprecation = new Deprecation();
-			deprecation.setLevel(parseDeprecationLevel(
-					deprecationJsonObject.optString("level", null)));
+			deprecation.setLevel(parseDeprecationLevel(deprecationJsonObject.optString("level", null)));
 			deprecation.setReason(deprecationJsonObject.optString("reason", null));
-			deprecation
-					.setReplacement(deprecationJsonObject.optString("replacement", null));
+			deprecation.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
 		return (object.optBoolean("deprecated") ? new Deprecation() : null);

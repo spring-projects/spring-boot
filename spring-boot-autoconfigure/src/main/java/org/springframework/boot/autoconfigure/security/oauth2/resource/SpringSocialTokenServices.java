@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class SpringSocialTokenServices implements ResourceServerTokenServices {
 
 	private final String clientId;
 
-	public SpringSocialTokenServices(OAuth2ConnectionFactory<?> connectionFactory,
-			String clientId) {
+	public SpringSocialTokenServices(OAuth2ConnectionFactory<?> connectionFactory, String clientId) {
 		this.connectionFactory = connectionFactory;
 		this.clientId = clientId;
 	}
@@ -61,10 +60,8 @@ public class SpringSocialTokenServices implements ResourceServerTokenServices {
 
 	private OAuth2Authentication extractAuthentication(UserProfile user) {
 		String principal = user.getUsername();
-		List<GrantedAuthority> authorities = AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER");
-		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null,
-				null, null, null, null);
+		List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER");
+		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null, null, null, null, null);
 		return new OAuth2Authentication(request,
 				new UsernamePasswordAuthenticationToken(principal, "N/A", authorities));
 	}

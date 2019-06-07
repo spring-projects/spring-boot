@@ -50,57 +50,50 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * @since 1.5.0
  */
 @Configuration
-@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
 @ConditionalOnBean(MvcEndpoints.class)
 @AutoConfigureAfter(EndpointWebMvcAutoConfiguration.class)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class CloudFoundryActuatorAutoConfiguration {
 
 	@Bean
-	public CloudFoundryEndpointHandlerMapping cloudFoundryEndpointHandlerMapping(
-			MvcEndpoints mvcEndpoints, RestTemplateBuilder restTemplateBuilder,
-			Environment environment) {
+	public CloudFoundryEndpointHandlerMapping cloudFoundryEndpointHandlerMapping(MvcEndpoints mvcEndpoints,
+			RestTemplateBuilder restTemplateBuilder, Environment environment) {
 		Set<NamedMvcEndpoint> endpoints = new LinkedHashSet<NamedMvcEndpoint>(
 				mvcEndpoints.getEndpoints(NamedMvcEndpoint.class));
-		HandlerInterceptor securityInterceptor = getSecurityInterceptor(
-				restTemplateBuilder, environment);
+		HandlerInterceptor securityInterceptor = getSecurityInterceptor(restTemplateBuilder, environment);
 		CorsConfiguration corsConfiguration = getCorsConfiguration();
-		CloudFoundryEndpointHandlerMapping mapping = new CloudFoundryEndpointHandlerMapping(
-				endpoints, corsConfiguration, securityInterceptor);
+		CloudFoundryEndpointHandlerMapping mapping = new CloudFoundryEndpointHandlerMapping(endpoints,
+				corsConfiguration, securityInterceptor);
 		mapping.setPrefix("/cloudfoundryapplication");
 		return mapping;
 	}
 
-	private HandlerInterceptor getSecurityInterceptor(
-			RestTemplateBuilder restTemplateBuilder, Environment environment) {
-		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
-				restTemplateBuilder, environment);
+	private HandlerInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
+			Environment environment) {
+		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restTemplateBuilder,
+				environment);
 		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
-		HandlerInterceptor securityInterceptor = new CloudFoundrySecurityInterceptor(
-				tokenValidator, cloudfoundrySecurityService,
-				environment.getProperty("vcap.application.application_id"));
+		HandlerInterceptor securityInterceptor = new CloudFoundrySecurityInterceptor(tokenValidator,
+				cloudfoundrySecurityService, environment.getProperty("vcap.application.application_id"));
 		return securityInterceptor;
 	}
 
-	private CloudFoundrySecurityService getCloudFoundrySecurityService(
-			RestTemplateBuilder restTemplateBuilder, Environment environment) {
-		RelaxedPropertyResolver cloudFoundryProperties = new RelaxedPropertyResolver(
-				environment, "management.cloudfoundry.");
+	private CloudFoundrySecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
+			Environment environment) {
+		RelaxedPropertyResolver cloudFoundryProperties = new RelaxedPropertyResolver(environment,
+				"management.cloudfoundry.");
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
-		boolean skipSslValidation = cloudFoundryProperties
-				.getProperty("skip-ssl-validation", Boolean.class, false);
-		return (cloudControllerUrl != null) ? new CloudFoundrySecurityService(
-				restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
+		boolean skipSslValidation = cloudFoundryProperties.getProperty("skip-ssl-validation", Boolean.class, false);
+		return (cloudControllerUrl != null)
+				? new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
 	private CorsConfiguration getCorsConfiguration() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
-		corsConfiguration.setAllowedMethods(
-				Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
-		corsConfiguration.setAllowedHeaders(
-				Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
+		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
+		corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
 		return corsConfiguration;
 	}
 
@@ -116,13 +109,11 @@ public class CloudFoundryActuatorAutoConfiguration {
 			return new CloudFoundryIgnoredRequestCustomizer();
 		}
 
-		private static class CloudFoundryIgnoredRequestCustomizer
-				implements IgnoredRequestCustomizer {
+		private static class CloudFoundryIgnoredRequestCustomizer implements IgnoredRequestCustomizer {
 
 			@Override
 			public void customize(WebSecurity.IgnoredRequestConfigurer configurer) {
-				configurer.requestMatchers(
-						new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+				configurer.requestMatchers(new AntPathRequestMatcher("/cloudfoundryapplication/**"));
 			}
 
 		}

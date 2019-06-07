@@ -46,15 +46,14 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
 public class BuildInfo extends DefaultTask {
 
 	@OutputFile
-	private File outputFile = getProject().file(new File(getProject().getBuildDir(),
-			"resources/main/META-INF/build-info.properties"));
+	private File outputFile = getProject()
+			.file(new File(getProject().getBuildDir(), "resources/main/META-INF/build-info.properties"));
 
 	@Input
 	private String projectGroup = getProject().getGroup().toString();
 
 	@Input
-	private String projectArtifact = ((Jar) getProject().getTasks()
-			.getByName(JavaPlugin.JAR_TASK_NAME)).getBaseName();
+	private String projectArtifact = ((Jar) getProject().getTasks().getByName(JavaPlugin.JAR_TASK_NAME)).getBaseName();
 
 	@Input
 	private String projectVersion = getProject().getVersion().toString();
@@ -69,9 +68,8 @@ public class BuildInfo extends DefaultTask {
 	public void generateBuildProperties() {
 		try {
 			new BuildPropertiesWriter(this.outputFile)
-					.writeBuildProperties(new ProjectDetails(this.projectGroup,
-							this.projectArtifact, this.projectVersion, this.projectName,
-							coerceToStringValues(this.additionalProperties)));
+					.writeBuildProperties(new ProjectDetails(this.projectGroup, this.projectArtifact,
+							this.projectVersion, this.projectName, coerceToStringValues(this.additionalProperties)));
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);

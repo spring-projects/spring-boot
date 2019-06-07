@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = { "management.contextPath:/admin",
-		"management.security.enabled=false" })
+@TestPropertySource(properties = { "management.contextPath:/admin", "management.security.enabled=false" })
 @DirtiesContext
 public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 
@@ -72,36 +71,32 @@ public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 
 	@Test
 	public void actuatorHomeJson() throws Exception {
-		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test
 	public void actuatorHomeWithTrailingSlashJson() throws Exception {
-		this.mockMvc.perform(get("/admin/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+		this.mockMvc.perform(get("/admin/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test
 	public void actuatorHomeHtml() throws Exception {
-		this.mockMvc.perform(get("/admin/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isFound()).andExpect(header().string(
-						HttpHeaders.LOCATION, "http://localhost/admin/browser.html"));
+		this.mockMvc.perform(get("/admin/").accept(MediaType.TEXT_HTML)).andExpect(status().isFound())
+				.andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/admin/browser.html"));
 	}
 
 	@Test
 	public void actuatorBrowserHtml() throws Exception {
-		this.mockMvc
-				.perform(get("/admin/browser.html").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+		this.mockMvc.perform(get("/admin/browser.html").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().string(containsString("entryPoint: '/admin'")));
 	}
 
 	@Test
 	public void trace() throws Exception {
-		this.mockMvc.perform(get("/admin/trace").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$._links").doesNotExist())
-				.andExpect(jsonPath("$").isArray());
+		this.mockMvc.perform(get("/admin/trace").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$._links").doesNotExist()).andExpect(jsonPath("$").isArray());
 	}
 
 	@Test
@@ -113,10 +108,8 @@ public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 			}
 			path = (path.startsWith("/") ? path.substring(1) : path);
 			path = (path.length() > 0) ? path : "self";
-			this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
-					.andExpect(status().isOk())
-					.andExpect(jsonPath("$._links.%s.href", path)
-							.value("http://localhost/admin" + endpoint.getPath()));
+			this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+					.andExpect(jsonPath("$._links.%s.href", path).value("http://localhost/admin" + endpoint.getPath()));
 		}
 	}
 
@@ -127,8 +120,7 @@ public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 		@RequestMapping("")
 		public ResourceSupport home() {
 			ResourceSupport resource = new ResourceSupport();
-			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/")
-					.withSelfRel());
+			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/").withSelfRel());
 			return resource;
 		}
 

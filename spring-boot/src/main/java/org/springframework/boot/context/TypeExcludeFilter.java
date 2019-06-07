@@ -57,10 +57,9 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 	}
 
 	@Override
-	public boolean match(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		if (this.beanFactory instanceof ListableBeanFactory
-				&& getClass().equals(TypeExcludeFilter.class)) {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		if (this.beanFactory instanceof ListableBeanFactory && getClass().equals(TypeExcludeFilter.class)) {
 			Collection<TypeExcludeFilter> delegates = ((ListableBeanFactory) this.beanFactory)
 					.getBeansOfType(TypeExcludeFilter.class).values();
 			for (TypeExcludeFilter delegate : delegates) {
@@ -74,14 +73,12 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 
 	@Override
 	public boolean equals(Object obj) {
-		throw new IllegalStateException(
-				"TypeExcludeFilter " + getClass() + " has not implemented equals");
+		throw new IllegalStateException("TypeExcludeFilter " + getClass() + " has not implemented equals");
 	}
 
 	@Override
 	public int hashCode() {
-		throw new IllegalStateException(
-				"TypeExcludeFilter " + getClass() + " has not implemented hashCode");
+		throw new IllegalStateException("TypeExcludeFilter " + getClass() + " has not implemented hashCode");
 	}
 
 }

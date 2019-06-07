@@ -58,8 +58,7 @@ public class FilterRegistrationIntegrationTests {
 	}
 
 	private void load(Class<?> configuration) {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ContainerConfiguration.class, configuration);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(ContainerConfiguration.class, configuration);
 	}
 
 	@Configuration

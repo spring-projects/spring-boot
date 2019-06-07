@@ -44,8 +44,7 @@ public class SampleController {
 	@GetMapping("/")
 	@ResponseBody
 	public Map<String, String> hello() {
-		return Collections.singletonMap("message",
-				this.helloWorldService.getHelloMessage());
+		return Collections.singletonMap("message", this.helloWorldService.getHelloMessage());
 	}
 
 	@PostMapping("/")

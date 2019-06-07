@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,18 +45,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass({ AuthenticationManager.class,
-		GlobalAuthenticationConfigurerAdapter.class })
+@ConditionalOnClass({ AuthenticationManager.class, GlobalAuthenticationConfigurerAdapter.class })
 @EnableConfigurationProperties
-@Import({ SpringBootWebSecurityConfiguration.class,
-		AuthenticationManagerConfiguration.class,
+@Import({ SpringBootWebSecurityConfiguration.class, AuthenticationManagerConfiguration.class,
 		BootGlobalAuthenticationConfiguration.class, SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
-	public DefaultAuthenticationEventPublisher authenticationEventPublisher(
-			ApplicationEventPublisher publisher) {
+	public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
 	}
 

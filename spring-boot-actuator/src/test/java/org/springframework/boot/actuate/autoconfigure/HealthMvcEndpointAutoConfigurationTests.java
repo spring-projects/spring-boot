@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
-				.invoke(request, null);
+		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class).invoke(request, null);
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("foo")).isNull();
 	}
@@ -80,11 +79,9 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.security.enabled=false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.security.enabled=false");
 		this.context.refresh();
-		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
-				.invoke(null, null);
+		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class).invoke(null, null);
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Health map = (Health) health.getDetails().get("test");
 		assertThat(map.getDetails().get("foo")).isEqualTo("bar");
@@ -96,33 +93,28 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.security.roles[0]=super");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.security.roles[0]=super");
 		this.context.refresh();
 		HealthMvcEndpoint health = this.context.getBean(HealthMvcEndpoint.class);
-		assertThat(ReflectionTestUtils.getField(health, "roles"))
-				.isEqualTo(Arrays.asList("super"));
+		assertThat(ReflectionTestUtils.getField(health, "roles")).isEqualTo(Arrays.asList("super"));
 	}
 
 	@Test
 	public void endpointConditionalOnMissingBean() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class,
-				TestHealthMvcEndpointConfiguration.class);
+		this.context.register(TestConfiguration.class, TestHealthMvcEndpointConfiguration.class);
 		this.context.refresh();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
-				.invoke(request, null);
+		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class).invoke(request, null);
 		assertThat(health.getDetails()).isNotEmpty();
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
-			JacksonAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class, JacksonAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class, EndpointAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Bean
@@ -133,9 +125,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
-			JacksonAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class, JacksonAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
 	static class TestHealthMvcEndpointConfiguration {
 
@@ -153,8 +144,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		}
 
 		@Override
-		protected boolean exposeHealthDetails(HttpServletRequest request,
-				Principal principal) {
+		protected boolean exposeHealthDetails(HttpServletRequest request, Principal principal) {
 			return true;
 		}
 

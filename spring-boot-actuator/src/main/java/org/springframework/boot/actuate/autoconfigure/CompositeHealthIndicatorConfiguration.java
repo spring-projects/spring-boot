@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,19 +42,16 @@ public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndi
 		if (beans.size() == 1) {
 			return createHealthIndicator(beans.values().iterator().next());
 		}
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator);
 		for (Map.Entry<String, S> entry : beans.entrySet()) {
-			composite.addHealthIndicator(entry.getKey(),
-					createHealthIndicator(entry.getValue()));
+			composite.addHealthIndicator(entry.getKey(), createHealthIndicator(entry.getValue()));
 		}
 		return composite;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected H createHealthIndicator(S source) {
-		Class<?>[] generics = ResolvableType
-				.forClass(CompositeHealthIndicatorConfiguration.class, getClass())
+		Class<?>[] generics = ResolvableType.forClass(CompositeHealthIndicatorConfiguration.class, getClass())
 				.resolveGenerics();
 		Class<H> indicatorClass = (Class<H>) generics[0];
 		Class<S> sourceClass = (Class<S>) generics[1];
@@ -62,8 +59,8 @@ public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndi
 			return indicatorClass.getConstructor(sourceClass).newInstance(source);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create indicator " + indicatorClass
-					+ " for source " + sourceClass, ex);
+			throw new IllegalStateException(
+					"Unable to create indicator " + indicatorClass + " for source " + sourceClass, ex);
 		}
 	}
 

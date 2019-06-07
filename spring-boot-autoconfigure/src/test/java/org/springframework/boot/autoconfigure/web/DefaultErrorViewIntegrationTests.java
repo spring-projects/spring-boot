@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class DefaultErrorViewIntegrationTests {
 
 	@Test
 	public void testErrorForBrowserClient() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
+		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("<html>");
@@ -77,8 +76,7 @@ public class DefaultErrorViewIntegrationTests {
 		MvcResult response = this.mockMvc
 				.perform(get("/error")
 						.requestAttr("javax.servlet.error.exception",
-								new RuntimeException(
-										"<script>alert('Hello World')</script>"))
+								new RuntimeException("<script>alert('Hello World')</script>"))
 						.accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
@@ -90,12 +88,8 @@ public class DefaultErrorViewIntegrationTests {
 	@Test
 	public void testErrorWithSpelEscape() throws Exception {
 		String spel = "${T(" + getClass().getName() + ").injectCall()}";
-		MvcResult response = this.mockMvc
-				.perform(
-						get("/error")
-								.requestAttr("javax.servlet.error.exception",
-										new RuntimeException(spel))
-								.accept(MediaType.TEXT_HTML))
+		MvcResult response = this.mockMvc.perform(get("/error")
+				.requestAttr("javax.servlet.error.exception", new RuntimeException(spel)).accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).doesNotContain("injection");
@@ -108,8 +102,7 @@ public class DefaultErrorViewIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,35 +42,33 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 
 	@Test
 	public void links() throws Exception {
-		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test
 	public void health() throws Exception {
-		this.mockMvc.perform(get("/admin/health").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+		this.mockMvc.perform(get("/admin/health").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$._links").doesNotExist());
 	}
 
 	@Test
 	public void adminLinks() throws Exception {
-		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test
 	public void docs() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/admin/docs/").accept(MediaType.TEXT_HTML))
+		MvcResult response = this.mockMvc.perform(get("/admin/docs/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
 		System.err.println(response.getResponse().getContentAsString());
 	}
 
 	@Test
 	public void browser() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isFound()).andReturn();
+		MvcResult response = this.mockMvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isFound())
+				.andReturn();
 		assertThat(response.getResponse().getHeaders("location").get(0))
 				.isEqualTo("http://localhost/browser/index.html#/");
 	}

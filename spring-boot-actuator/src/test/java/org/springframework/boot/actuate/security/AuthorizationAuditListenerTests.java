@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class AuthorizationAuditListenerTests {
 
 	private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
 
-	private final ApplicationEventPublisher publisher = mock(
-			ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
 	@Before
 	public void init() {
@@ -54,47 +53,35 @@ public class AuthorizationAuditListenerTests {
 
 	@Test
 	public void testAuthenticationCredentialsNotFound() {
-		AuditApplicationEvent event = handleAuthorizationEvent(
-				new AuthenticationCredentialsNotFoundEvent(this,
-						Collections.<ConfigAttribute>singletonList(
-								new SecurityConfig("USER")),
-						new AuthenticationCredentialsNotFoundException("Bad user")));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
+		AuditApplicationEvent event = handleAuthorizationEvent(new AuthenticationCredentialsNotFoundEvent(this,
+				Collections.<ConfigAttribute>singletonList(new SecurityConfig("USER")),
+				new AuthenticationCredentialsNotFoundException("Bad user")));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
 	}
 
 	@Test
 	public void testAuthorizationFailure() {
-		AuditApplicationEvent event = handleAuthorizationEvent(
-				new AuthorizationFailureEvent(this,
-						Collections.<ConfigAttribute>singletonList(
-								new SecurityConfig("USER")),
-						new UsernamePasswordAuthenticationToken("user", "password"),
-						new AccessDeniedException("Bad user")));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+		AuditApplicationEvent event = handleAuthorizationEvent(new AuthorizationFailureEvent(this,
+				Collections.<ConfigAttribute>singletonList(new SecurityConfig("USER")),
+				new UsernamePasswordAuthenticationToken("user", "password"), new AccessDeniedException("Bad user")));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
 	}
 
 	@Test
 	public void testDetailsAreIncludedInAuditEvent() throws Exception {
 		Object details = new Object();
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-				"user", "password");
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user",
+				"password");
 		authentication.setDetails(details);
-		AuditApplicationEvent event = handleAuthorizationEvent(
-				new AuthorizationFailureEvent(this,
-						Collections.<ConfigAttribute>singletonList(
-								new SecurityConfig("USER")),
-						authentication, new AccessDeniedException("Bad user")));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+		AuditApplicationEvent event = handleAuthorizationEvent(new AuthorizationFailureEvent(this,
+				Collections.<ConfigAttribute>singletonList(new SecurityConfig("USER")), authentication,
+				new AccessDeniedException("Bad user")));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
 		assertThat(event.getAuditEvent().getData()).containsEntry("details", details);
 	}
 
-	private AuditApplicationEvent handleAuthorizationEvent(
-			AbstractAuthorizationEvent event) {
-		ArgumentCaptor<AuditApplicationEvent> eventCaptor = ArgumentCaptor
-				.forClass(AuditApplicationEvent.class);
+	private AuditApplicationEvent handleAuthorizationEvent(AbstractAuthorizationEvent event) {
+		ArgumentCaptor<AuditApplicationEvent> eventCaptor = ArgumentCaptor.forClass(AuditApplicationEvent.class);
 		this.listener.onApplicationEvent(event);
 		verify(this.publisher).publishEvent(eventCaptor.capture());
 		return eventCaptor.getValue();

@@ -48,14 +48,11 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
-		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
-				EnableConfigurationProperties.class.getName(), false);
-		Object[] type = (attributes != null) ? (Object[]) attributes.getFirst("value")
-				: null;
+		MultiValueMap<String, Object> attributes = metadata
+				.getAllAnnotationAttributes(EnableConfigurationProperties.class.getName(), false);
+		Object[] type = (attributes != null) ? (Object[]) attributes.getFirst("value") : null;
 		if (type == null || type.length == 0) {
-			return new String[] {
-					ConfigurationPropertiesBindingPostProcessorRegistrar.class
-							.getName() };
+			return new String[] { ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() };
 		}
 		return new String[] { ConfigurationPropertiesBeanRegistrar.class.getName(),
 				ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() };
@@ -64,20 +61,16 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 	/**
 	 * {@link ImportBeanDefinitionRegistrar} for configuration properties support.
 	 */
-	public static class ConfigurationPropertiesBeanRegistrar
-			implements ImportBeanDefinitionRegistrar {
+	public static class ConfigurationPropertiesBeanRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata metadata,
-				BeanDefinitionRegistry registry) {
+		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 			MultiValueMap<String, Object> attributes = metadata
-					.getAllAnnotationAttributes(
-							EnableConfigurationProperties.class.getName(), false);
+					.getAllAnnotationAttributes(EnableConfigurationProperties.class.getName(), false);
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
 				String prefix = extractPrefix(type);
-				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
-						: type.getName());
+				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName() : type.getName());
 				if (!registry.containsBeanDefinition(name)) {
 					registerBeanDefinition(registry, type, name);
 				}
@@ -85,8 +78,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 		}
 
 		private String extractPrefix(Class<?> type) {
-			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
-					ConfigurationProperties.class);
+			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type, ConfigurationProperties.class);
 			if (annotation != null) {
 				return annotation.prefix();
 			}
@@ -105,18 +97,14 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			return result;
 		}
 
-		private void registerBeanDefinition(BeanDefinitionRegistry registry,
-				Class<?> type, String name) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(type);
+		private void registerBeanDefinition(BeanDefinitionRegistry registry, Class<?> type, String name) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(type);
 			AbstractBeanDefinition beanDefinition = builder.getBeanDefinition();
 			registry.registerBeanDefinition(name, beanDefinition);
 
-			ConfigurationProperties properties = AnnotationUtils.findAnnotation(type,
-					ConfigurationProperties.class);
-			Assert.notNull(properties,
-					"No " + ConfigurationProperties.class.getSimpleName()
-							+ " annotation found on  '" + type.getName() + "'.");
+			ConfigurationProperties properties = AnnotationUtils.findAnnotation(type, ConfigurationProperties.class);
+			Assert.notNull(properties, "No " + ConfigurationProperties.class.getSimpleName() + " annotation found on  '"
+					+ type.getName() + "'.");
 		}
 
 	}

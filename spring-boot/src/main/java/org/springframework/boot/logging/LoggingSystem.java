@@ -58,12 +58,10 @@ public abstract class LoggingSystem {
 
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
-		systems.put("ch.qos.logback.core.Appender",
-				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
+		systems.put("ch.qos.logback.core.Appender", "org.springframework.boot.logging.logback.LogbackLoggingSystem");
 		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("java.util.logging.LogManager",
-				"org.springframework.boot.logging.java.JavaLoggingSystem");
+		systems.put("java.util.logging.LogManager", "org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
 	}
 
@@ -82,8 +80,7 @@ public abstract class LoggingSystem {
 	 * @param logFile the log output file that should be written or {@code null} for
 	 * console only output
 	 */
-	public void initialize(LoggingInitializationContext initializationContext,
-			String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 	}
 
 	/**
@@ -166,8 +163,7 @@ public abstract class LoggingSystem {
 	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
 		try {
 			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
-			return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-					.newInstance(classLoader);
+			return (LoggingSystem) systemClass.getConstructor(ClassLoader.class).newInstance(classLoader);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

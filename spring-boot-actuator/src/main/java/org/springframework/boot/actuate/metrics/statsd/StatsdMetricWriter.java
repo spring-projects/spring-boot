@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 	 * @param port the port for the statsd server
 	 */
 	public StatsdMetricWriter(String prefix, String host, int port) {
-		this(new NonBlockingStatsDClient(trimPrefix(prefix), host, port,
-				new LoggingStatsdErrorHandler()));
+		this(new NonBlockingStatsDClient(trimPrefix(prefix), host, port, new LoggingStatsdErrorHandler()));
 	}
 
 	/**
@@ -88,15 +87,13 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 
 	@Override
 	public void increment(Delta<?> delta) {
-		this.client.count(sanitizeMetricName(delta.getName()),
-				delta.getValue().longValue());
+		this.client.count(sanitizeMetricName(delta.getName()), delta.getValue().longValue());
 	}
 
 	@Override
 	public void set(Metric<?> value) {
 		String name = sanitizeMetricName(value.getName());
-		if (name.contains("timer.") && !name.contains("gauge.")
-				&& !name.contains("counter.")) {
+		if (name.contains("timer.") && !name.contains("gauge.") && !name.contains("counter.")) {
 			this.client.recordExecutionTime(name, value.getValue().longValue());
 		}
 		else {
@@ -128,13 +125,11 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 		return name.replace(":", "-");
 	}
 
-	private static final class LoggingStatsdErrorHandler
-			implements StatsDClientErrorHandler {
+	private static final class LoggingStatsdErrorHandler implements StatsDClientErrorHandler {
 
 		@Override
 		public void handle(Exception e) {
-			logger.debug("Failed to write metric. Exception: " + e.getClass()
-					+ ", message: " + e.getMessage());
+			logger.debug("Failed to write metric. Exception: " + e.getClass() + ", message: " + e.getMessage());
 		}
 
 	}

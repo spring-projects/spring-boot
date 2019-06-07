@@ -44,8 +44,7 @@ public class JsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
 
-	public void write(ConfigurationMetadata metadata, OutputStream outputStream)
-			throws IOException {
+	public void write(ConfigurationMetadata metadata, OutputStream outputStream) throws IOException {
 		try {
 			JSONObject object = new JSONOrderedObject();
 			JsonConverter converter = new JsonConverter();
@@ -77,8 +76,7 @@ public class JsonMarshaller {
 		JSONArray properties = object.optJSONArray("properties");
 		if (properties != null) {
 			for (int i = 0; i < properties.length(); i++) {
-				metadata.add(toItemMetadata((JSONObject) properties.get(i),
-						ItemType.PROPERTY));
+				metadata.add(toItemMetadata((JSONObject) properties.get(i), ItemType.PROPERTY));
 			}
 		}
 		JSONArray hints = object.optJSONArray("hints");
@@ -90,8 +88,7 @@ public class JsonMarshaller {
 		return metadata;
 	}
 
-	private ItemMetadata toItemMetadata(JSONObject object, ItemType itemType)
-			throws Exception {
+	private ItemMetadata toItemMetadata(JSONObject object, ItemType itemType) throws Exception {
 		String name = object.getString("name");
 		String type = object.optString("type", null);
 		String description = object.optString("description", null);
@@ -99,8 +96,8 @@ public class JsonMarshaller {
 		String sourceMethod = object.optString("sourceMethod", null);
 		Object defaultValue = readItemValue(object.opt("defaultValue"));
 		ItemDeprecation deprecation = toItemDeprecation(object);
-		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod,
-				description, defaultValue, deprecation);
+		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod, description, defaultValue,
+				deprecation);
 	}
 
 	private ItemDeprecation toItemDeprecation(JSONObject object) throws Exception {
@@ -109,8 +106,7 @@ public class JsonMarshaller {
 			ItemDeprecation deprecation = new ItemDeprecation();
 			deprecation.setLevel(deprecationJsonObject.optString("level", null));
 			deprecation.setReason(deprecationJsonObject.optString("reason", null));
-			deprecation
-					.setReplacement(deprecationJsonObject.optString("replacement", null));
+			deprecation.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
 		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);

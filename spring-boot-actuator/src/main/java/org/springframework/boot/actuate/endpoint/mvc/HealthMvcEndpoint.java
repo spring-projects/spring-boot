@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "endpoints.health")
-public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint>
-		implements EnvironmentAware {
+public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint> implements EnvironmentAware {
 
 	private final boolean secure;
 
@@ -75,8 +74,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		this(delegate, secure, null);
 	}
 
-	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure,
-			List<String> roles) {
+	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure, List<String> roles) {
 		super(delegate);
 		this.secure = secure;
 		setupDefaultStatusMapping();
@@ -90,8 +88,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.securityPropertyResolver = new RelaxedPropertyResolver(environment,
-				"management.security.");
+		this.securityPropertyResolver = new RelaxedPropertyResolver(environment, "management.security.");
 	}
 
 	/**
@@ -182,8 +179,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		return cached.getHealth();
 	}
 
-	protected boolean exposeHealthDetails(HttpServletRequest request,
-			Principal principal) {
+	protected boolean exposeHealthDetails(HttpServletRequest request, Principal principal) {
 		if (!this.secure) {
 			return true;
 		}
@@ -209,15 +205,15 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		if (this.roles != null) {
 			return this.roles;
 		}
-		String[] roles = StringUtils.commaDelimitedListToStringArray(
-				this.securityPropertyResolver.getProperty("roles", "ROLE_ACTUATOR"));
+		String[] roles = StringUtils
+				.commaDelimitedListToStringArray(this.securityPropertyResolver.getProperty("roles", "ROLE_ACTUATOR"));
 		roles = StringUtils.trimArrayElements(roles);
 		return Arrays.asList(roles);
 	}
 
 	private boolean isSpringSecurityAuthentication(Principal principal) {
-		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
-				null) && principal instanceof Authentication;
+		return ClassUtils.isPresent("org.springframework.security.core.Authentication", null)
+				&& principal instanceof Authentication;
 	}
 
 	/**

@@ -142,8 +142,7 @@ public class CommonsLoggingLiquibaseLoggerTests {
 		verify(this.delegate, never()).error("severe");
 	}
 
-	private class MockCommonsLoggingLiquibaseLogger
-			extends CommonsLoggingLiquibaseLogger {
+	private class MockCommonsLoggingLiquibaseLogger extends CommonsLoggingLiquibaseLogger {
 
 		@Override
 		protected Log createLogger(String name) {

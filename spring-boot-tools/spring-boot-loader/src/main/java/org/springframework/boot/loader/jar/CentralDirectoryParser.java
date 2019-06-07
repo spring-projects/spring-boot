@@ -46,8 +46,7 @@ class CentralDirectoryParser {
 	 * @return the actual archive data without any prefix bytes
 	 * @throws IOException on error
 	 */
-	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes)
-			throws IOException {
+	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes) throws IOException {
 		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
 		if (skipPrefixBytes) {
 			data = getArchiveData(endRecord, data);
@@ -59,22 +58,20 @@ class CentralDirectoryParser {
 		return data;
 	}
 
-	private void parseEntries(CentralDirectoryEndRecord endRecord,
-			RandomAccessData centralDirectoryData) throws IOException {
+	private void parseEntries(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData)
+			throws IOException {
 		byte[] bytes = Bytes.get(centralDirectoryData);
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		int dataOffset = 0;
 		for (int i = 0; i < endRecord.getNumberOfRecords(); i++) {
 			fileHeader.load(bytes, dataOffset, null, 0, null);
 			visitFileHeader(dataOffset, fileHeader);
-			dataOffset += this.CENTRAL_DIRECTORY_HEADER_BASE_SIZE
-					+ fileHeader.getName().length() + fileHeader.getComment().length()
-					+ fileHeader.getExtra().length;
+			dataOffset += this.CENTRAL_DIRECTORY_HEADER_BASE_SIZE + fileHeader.getName().length()
+					+ fileHeader.getComment().length() + fileHeader.getExtra().length;
 		}
 	}
 
-	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,
-			RandomAccessData data) {
+	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord, RandomAccessData data) {
 		long offset = endRecord.getStartOfArchive(data);
 		if (offset == 0) {
 			return data;
@@ -82,8 +79,7 @@ class CentralDirectoryParser {
 		return data.getSubsection(offset, data.getSize() - offset);
 	}
 
-	private void visitStart(CentralDirectoryEndRecord endRecord,
-			RandomAccessData centralDirectoryData) {
+	private void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
 		for (CentralDirectoryVisitor visitor : this.visitors) {
 			visitor.visitStart(endRecord, centralDirectoryData);
 		}

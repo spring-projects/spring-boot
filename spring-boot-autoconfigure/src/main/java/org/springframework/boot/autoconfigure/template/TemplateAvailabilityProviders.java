@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class TemplateAvailabilityProviders {
 			CACHE_LIMIT, 0.75f, true) {
 
 		@Override
-		protected boolean removeEldestEntry(
-				Map.Entry<String, TemplateAvailabilityProvider> eldest) {
+		protected boolean removeEldestEntry(Map.Entry<String, TemplateAvailabilityProvider> eldest) {
 			if (size() > CACHE_LIMIT) {
 				TemplateAvailabilityProviders.this.resolved.remove(eldest.getKey());
 				return true;
@@ -85,16 +84,14 @@ public class TemplateAvailabilityProviders {
 	 */
 	public TemplateAvailabilityProviders(ClassLoader classLoader) {
 		Assert.notNull(classLoader, "ClassLoader must not be null");
-		this.providers = SpringFactoriesLoader
-				.loadFactories(TemplateAvailabilityProvider.class, classLoader);
+		this.providers = SpringFactoriesLoader.loadFactories(TemplateAvailabilityProvider.class, classLoader);
 	}
 
 	/**
 	 * Create a new {@link TemplateAvailabilityProviders} instance.
 	 * @param providers the underlying providers
 	 */
-	protected TemplateAvailabilityProviders(
-			Collection<? extends TemplateAvailabilityProvider> providers) {
+	protected TemplateAvailabilityProviders(Collection<? extends TemplateAvailabilityProvider> providers) {
 		Assert.notNull(providers, "Providers must not be null");
 		this.providers = new ArrayList<TemplateAvailabilityProvider>(providers);
 	}
@@ -113,11 +110,10 @@ public class TemplateAvailabilityProviders {
 	 * @param applicationContext the application context
 	 * @return a {@link TemplateAvailabilityProvider} or null
 	 */
-	public TemplateAvailabilityProvider getProvider(String view,
-			ApplicationContext applicationContext) {
+	public TemplateAvailabilityProvider getProvider(String view, ApplicationContext applicationContext) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		return getProvider(view, applicationContext.getEnvironment(),
-				applicationContext.getClassLoader(), applicationContext);
+		return getProvider(view, applicationContext.getEnvironment(), applicationContext.getClassLoader(),
+				applicationContext);
 	}
 
 	/**
@@ -128,15 +124,15 @@ public class TemplateAvailabilityProviders {
 	 * @param resourceLoader the resource loader
 	 * @return a {@link TemplateAvailabilityProvider} or null
 	 */
-	public TemplateAvailabilityProvider getProvider(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
+	public TemplateAvailabilityProvider getProvider(String view, Environment environment, ClassLoader classLoader,
+			ResourceLoader resourceLoader) {
 		Assert.notNull(view, "View must not be null");
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
-				environment, "spring.template.provider.");
+		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment,
+				"spring.template.provider.");
 		if (!propertyResolver.getProperty("cache", Boolean.class, true)) {
 			return findProvider(view, environment, classLoader, resourceLoader);
 		}
@@ -152,24 +148,21 @@ public class TemplateAvailabilityProviders {
 		return (provider != NONE) ? provider : null;
 	}
 
-	private TemplateAvailabilityProvider findProvider(String view,
-			Environment environment, ClassLoader classLoader,
+	private TemplateAvailabilityProvider findProvider(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
 		for (TemplateAvailabilityProvider candidate : this.providers) {
-			if (candidate.isTemplateAvailable(view, environment, classLoader,
-					resourceLoader)) {
+			if (candidate.isTemplateAvailable(view, environment, classLoader, resourceLoader)) {
 				return candidate;
 			}
 		}
 		return null;
 	}
 
-	private static class NoTemplateAvailabilityProvider
-			implements TemplateAvailabilityProvider {
+	private static class NoTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 		@Override
-		public boolean isTemplateAvailable(String view, Environment environment,
-				ClassLoader classLoader, ResourceLoader resourceLoader) {
+		public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
+				ResourceLoader resourceLoader) {
 			return false;
 		}
 

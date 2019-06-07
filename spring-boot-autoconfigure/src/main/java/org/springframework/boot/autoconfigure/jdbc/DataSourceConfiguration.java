@@ -38,8 +38,7 @@ import org.springframework.context.annotation.Configuration;
 abstract class DataSourceConfiguration {
 
 	@SuppressWarnings("unchecked")
-	protected static <T> T createDataSource(DataSourceProperties properties,
-			Class<? extends DataSource> type) {
+	protected static <T> T createDataSource(DataSourceProperties properties, Class<? extends DataSource> type) {
 		return (T) properties.initializeDataSourceBuilder().type(type).build();
 	}
 
@@ -49,18 +48,16 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type",
-			havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource",
+			matchIfMissing = true)
 	static class Tomcat {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
-		public org.apache.tomcat.jdbc.pool.DataSource dataSource(
-				DataSourceProperties properties) {
-			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(
-					properties, org.apache.tomcat.jdbc.pool.DataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver
-					.fromJdbcUrl(properties.determineUrl());
+		public org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties) {
+			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(properties,
+					org.apache.tomcat.jdbc.pool.DataSource.class);
+			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
 			String validationQuery = databaseDriver.getValidationQuery();
 			if (validationQuery != null) {
 				dataSource.setTestOnBorrow(true);
@@ -77,8 +74,8 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type",
-			havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource",
+			matchIfMissing = true)
 	static class Hikari {
 
 		@Bean
@@ -97,20 +94,17 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type",
-			havingValue = "org.apache.commons.dbcp.BasicDataSource",
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource",
 			matchIfMissing = true)
 	@Deprecated
 	static class Dbcp {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp")
-		public org.apache.commons.dbcp.BasicDataSource dataSource(
-				DataSourceProperties properties) {
-			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(
-					properties, org.apache.commons.dbcp.BasicDataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver
-					.fromJdbcUrl(properties.determineUrl());
+		public org.apache.commons.dbcp.BasicDataSource dataSource(DataSourceProperties properties) {
+			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(properties,
+					org.apache.commons.dbcp.BasicDataSource.class);
+			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
 			String validationQuery = databaseDriver.getValidationQuery();
 			if (validationQuery != null) {
 				dataSource.setTestOnBorrow(true);
@@ -127,17 +121,14 @@ abstract class DataSourceConfiguration {
 	@Configuration
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type",
-			havingValue = "org.apache.commons.dbcp2.BasicDataSource",
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource",
 			matchIfMissing = true)
 	static class Dbcp2 {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
-		public org.apache.commons.dbcp2.BasicDataSource dataSource(
-				DataSourceProperties properties) {
-			return createDataSource(properties,
-					org.apache.commons.dbcp2.BasicDataSource.class);
+		public org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties) {
+			return createDataSource(properties, org.apache.commons.dbcp2.BasicDataSource.class);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,27 +47,23 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 	private Set<Class<?>> customTypes;
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Collection<MvcEndpoint> existing = BeanFactoryUtils
-				.beansOfTypeIncludingAncestors(this.applicationContext, MvcEndpoint.class)
-				.values();
+				.beansOfTypeIncludingAncestors(this.applicationContext, MvcEndpoint.class).values();
 		this.endpoints.addAll(existing);
 		this.customTypes = findEndpointClasses(existing);
 		@SuppressWarnings("rawtypes")
 		Collection<Endpoint> delegates = BeanFactoryUtils
-				.beansOfTypeIncludingAncestors(this.applicationContext, Endpoint.class)
-				.values();
+				.beansOfTypeIncludingAncestors(this.applicationContext, Endpoint.class).values();
 		for (Endpoint<?> endpoint : delegates) {
 			if (isGenericEndpoint(endpoint.getClass()) && endpoint.isEnabled()) {
 				EndpointMvcAdapter adapter = new EndpointMvcAdapter(endpoint);
-				String path = determinePath(endpoint,
-						this.applicationContext.getEnvironment());
+				String path = determinePath(endpoint, this.applicationContext.getEnvironment());
 				if (path != null) {
 					adapter.setPath(path);
 				}
@@ -109,13 +105,12 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 	}
 
 	private boolean isGenericEndpoint(Class<?> type) {
-		return !this.customTypes.contains(type)
-				&& !MvcEndpoint.class.isAssignableFrom(type);
+		return !this.customTypes.contains(type) && !MvcEndpoint.class.isAssignableFrom(type);
 	}
 
 	private String determinePath(Endpoint<?> endpoint, Environment environment) {
-		ConfigurationProperties configurationProperties = AnnotationUtils
-				.findAnnotation(endpoint.getClass(), ConfigurationProperties.class);
+		ConfigurationProperties configurationProperties = AnnotationUtils.findAnnotation(endpoint.getClass(),
+				ConfigurationProperties.class);
 		if (configurationProperties != null) {
 			return environment.getProperty(configurationProperties.prefix() + ".path");
 		}

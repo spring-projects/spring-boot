@@ -30,8 +30,7 @@ import org.springframework.boot.jta.XADataSourceWrapper;
 public class AtomikosXADataSourceWrapper implements XADataSourceWrapper {
 
 	@Override
-	public AtomikosDataSourceBean wrapDataSource(XADataSource dataSource)
-			throws Exception {
+	public AtomikosDataSourceBean wrapDataSource(XADataSource dataSource) throws Exception {
 		AtomikosDataSourceBean bean = new AtomikosDataSourceBean();
 		bean.setXaDataSource(dataSource);
 		return bean;

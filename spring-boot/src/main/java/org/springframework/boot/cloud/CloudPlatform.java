@@ -35,8 +35,7 @@ public enum CloudPlatform {
 
 		@Override
 		public boolean isActive(Environment environment) {
-			return environment.containsProperty("VCAP_APPLICATION")
-					|| environment.containsProperty("VCAP_SERVICES");
+			return environment.containsProperty("VCAP_APPLICATION") || environment.containsProperty("VCAP_SERVICES");
 		}
 
 	},

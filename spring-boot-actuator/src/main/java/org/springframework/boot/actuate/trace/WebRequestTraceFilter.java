@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,8 +100,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		long startTime = System.nanoTime();
 		Map<String, Object> trace = getTrace(request);
@@ -114,14 +113,13 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		finally {
 			addTimeTaken(trace, startTime);
 			addSessionIdIfNecessary(request, trace);
-			enhanceTrace(trace, (status != response.getStatus())
-					? new CustomStatusResponseWrapper(response, status) : response);
+			enhanceTrace(trace,
+					(status != response.getStatus()) ? new CustomStatusResponseWrapper(response, status) : response);
 			this.repository.add(trace);
 		}
 	}
 
-	private void addSessionIdIfNecessary(HttpServletRequest request,
-			Map<String, Object> trace) {
+	private void addSessionIdIfNecessary(HttpServletRequest request, Map<String, Object> trace) {
 		HttpSession session = request.getSession(false);
 		if (isIncluded(Include.SESSION_ID)) {
 			add(trace, "sessionId", (session != null) ? session.getId() : null);
@@ -129,8 +127,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	}
 
 	protected Map<String, Object> getTrace(HttpServletRequest request) {
-		Throwable exception = (Throwable) request
-				.getAttribute("javax.servlet.error.exception");
+		Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
 		Principal userPrincipal = request.getUserPrincipal();
 		Map<String, Object> trace = new LinkedHashMap<String, Object>();
 		Map<String, Object> headers = new LinkedHashMap<String, Object>();
@@ -150,8 +147,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			add(trace, "contextPath", request.getContextPath());
 		}
 		if (isIncluded(Include.USER_PRINCIPAL)) {
-			add(trace, "userPrincipal",
-					(userPrincipal != null) ? userPrincipal.getName() : null);
+			add(trace, "userPrincipal", (userPrincipal != null) ? userPrincipal.getName() : null);
 		}
 		if (isIncluded(Include.PARAMETERS)) {
 			add(trace, "parameters", getParameterMapCopy(request));
@@ -168,10 +164,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (isIncluded(Include.REMOTE_USER)) {
 			add(trace, "remoteUser", request.getRemoteUser());
 		}
-		if (isIncluded(Include.ERRORS) && exception != null
-				&& this.errorAttributes != null) {
-			add(trace, "error", this.errorAttributes
-					.getErrorAttributes(new ServletRequestAttributes(request), true));
+		if (isIncluded(Include.ERRORS) && exception != null && this.errorAttributes != null) {
+			add(trace, "error", this.errorAttributes.getErrorAttributes(new ServletRequestAttributes(request), true));
 		}
 		return trace;
 	}
@@ -254,8 +248,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private void logTrace(HttpServletRequest request, Map<String, Object> trace) {
 		if (logger.isTraceEnabled()) {
-			logger.trace("Processing request " + request.getMethod() + " "
-					+ request.getRequestURI());
+			logger.trace("Processing request " + request.getMethod() + " " + request.getRequestURI());
 			if (this.dumpRequests) {
 				logger.trace("Headers: " + trace.get("headers"));
 			}
@@ -276,8 +269,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		this.errorAttributes = errorAttributes;
 	}
 
-	private static final class CustomStatusResponseWrapper
-			extends HttpServletResponseWrapper {
+	private static final class CustomStatusResponseWrapper extends HttpServletResponseWrapper {
 
 		private final int status;
 

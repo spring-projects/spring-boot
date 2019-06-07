@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,8 @@ import org.springframework.util.ClassUtils;
  */
 public class DataSourceBuilder {
 
-	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
-			"org.apache.tomcat.jdbc.pool.DataSource",
-			"com.zaxxer.hikari.HikariDataSource",
-			"org.apache.commons.dbcp.BasicDataSource", // deprecated
+	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] { "org.apache.tomcat.jdbc.pool.DataSource",
+			"com.zaxxer.hikari.HikariDataSource", "org.apache.commons.dbcp.BasicDataSource", // deprecated
 			"org.apache.commons.dbcp2.BasicDataSource" };
 
 	private Class<? extends DataSource> type;
@@ -74,8 +72,7 @@ public class DataSourceBuilder {
 	}
 
 	private void maybeGetDriverClassName() {
-		if (!this.properties.containsKey("driverClassName")
-				&& this.properties.containsKey("url")) {
+		if (!this.properties.containsKey("driverClassName") && this.properties.containsKey("url")) {
 			String url = this.properties.get("url");
 			String driverClass = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
 			this.properties.put("driverClassName", driverClass);
@@ -84,8 +81,7 @@ public class DataSourceBuilder {
 
 	private void bind(DataSource result) {
 		MutablePropertyValues properties = new MutablePropertyValues(this.properties);
-		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl")
-				.withAlias("username", "user").bind(properties);
+		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl").withAlias("username", "user").bind(properties);
 	}
 
 	public DataSourceBuilder type(Class<? extends DataSource> type) {
@@ -120,8 +116,7 @@ public class DataSourceBuilder {
 		}
 		for (String name : DATA_SOURCE_TYPE_NAMES) {
 			try {
-				return (Class<? extends DataSource>) ClassUtils.forName(name,
-						this.classLoader);
+				return (Class<? extends DataSource>) ClassUtils.forName(name, this.classLoader);
 			}
 			catch (Exception ex) {
 				// Swallow and continue

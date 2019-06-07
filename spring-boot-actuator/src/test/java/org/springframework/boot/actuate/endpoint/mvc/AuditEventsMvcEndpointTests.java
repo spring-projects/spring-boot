@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,17 +75,15 @@ public class AuditEventsMvcEndpointTests {
 
 	@Test
 	public void contentTypeDefaultsToActuatorV1Json() throws Exception {
-		this.mvc.perform(get("/auditevents")).andExpect(status().isOk())
-				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+		this.mvc.perform(get("/auditevents")).andExpect(status().isOk()).andExpect(
+				header().string("Content-Type", "application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void contentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/auditevents").header(HttpHeaders.ACCEPT,
-				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
-				.andExpect(header().string("Content-Type",
-						MediaType.APPLICATION_JSON_UTF8_VALUE));
+		this.mvc.perform(get("/auditevents").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk())
+				.andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test
@@ -97,33 +95,27 @@ public class AuditEventsMvcEndpointTests {
 
 	@Test
 	public void invokeFilterByDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T13:00:00+0000"))
-				.andExpect(status().isOk())
+		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T13:00:00+0000")).andExpect(status().isOk())
 				.andExpect(content().string("{\"events\":[]}"));
 	}
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents")
-				.param("principal", "user").param("after", "2016-11-01T10:00:00+0000"))
+		this.mvc.perform(get("/auditevents").param("principal", "user").param("after", "2016-11-01T10:00:00+0000"))
 				.andExpect(status().isOk())
-				.andExpect(content().string(
-						containsString("\"principal\":\"user\",\"type\":\"login\"")))
+				.andExpect(content().string(containsString("\"principal\":\"user\",\"type\":\"login\"")))
 				.andExpect(content().string(not(containsString("admin"))));
 	}
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfterAndType() throws Exception {
-		this.mvc.perform(get("/auditevents").param("principal", "admin")
-				.param("after", "2016-11-01T10:00:00+0000").param("type", "logout"))
-				.andExpect(status().isOk())
-				.andExpect(content().string(
-						containsString("\"principal\":\"admin\",\"type\":\"logout\"")))
+		this.mvc.perform(get("/auditevents").param("principal", "admin").param("after", "2016-11-01T10:00:00+0000")
+				.param("type", "logout")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"principal\":\"admin\",\"type\":\"logout\"")))
 				.andExpect(content().string(not(containsString("login"))));
 	}
 
-	@Import({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration

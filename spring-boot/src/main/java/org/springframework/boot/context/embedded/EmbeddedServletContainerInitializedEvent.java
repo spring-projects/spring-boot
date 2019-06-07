@@ -31,8 +31,7 @@ public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 
 	private final EmbeddedWebApplicationContext applicationContext;
 
-	public EmbeddedServletContainerInitializedEvent(
-			EmbeddedWebApplicationContext applicationContext,
+	public EmbeddedServletContainerInitializedEvent(EmbeddedWebApplicationContext applicationContext,
 			EmbeddedServletContainer source) {
 		super(source);
 		this.applicationContext = applicationContext;

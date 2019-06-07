@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,7 @@ public class EndpointProperties {
 		if (enabled != null) {
 			return enabled;
 		}
-		if (environment != null
-				&& environment.containsProperty(ENDPOINTS_ENABLED_PROPERTY)) {
+		if (environment != null && environment.containsProperty(ENDPOINTS_ENABLED_PROPERTY)) {
 			return environment.getProperty(ENDPOINTS_ENABLED_PROPERTY, Boolean.class);
 		}
 		return true;
@@ -85,13 +84,11 @@ public class EndpointProperties {
 	 * defined
 	 * @return if the endpoint is sensitive
 	 */
-	public static boolean isSensitive(Environment environment, Boolean sensitive,
-			boolean sensitiveDefault) {
+	public static boolean isSensitive(Environment environment, Boolean sensitive, boolean sensitiveDefault) {
 		if (sensitive != null) {
 			return sensitive;
 		}
-		if (environment != null
-				&& environment.containsProperty(ENDPOINTS_SENSITIVE_PROPERTY)) {
+		if (environment != null && environment.containsProperty(ENDPOINTS_SENSITIVE_PROPERTY)) {
 			return environment.getProperty(ENDPOINTS_SENSITIVE_PROPERTY, Boolean.class);
 		}
 		return sensitiveDefault;

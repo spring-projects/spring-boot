@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.context_path=/admin" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.context_path=/admin" })
 @DirtiesContext
 public class ManagementPathSampleActuatorApplicationTests {
 
@@ -48,8 +47,7 @@ public class ManagementPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/admin/health",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

@@ -40,8 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.security.enabled:false" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.security.enabled:false" })
 @DirtiesContext
 @ActiveProfiles("unsecure-management")
 public class InsecureManagementSampleActuatorApplicationTests {
@@ -69,8 +68,7 @@ public class InsecureManagementSampleActuatorApplicationTests {
 			// ignore;
 		}
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

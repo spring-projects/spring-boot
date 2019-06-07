@@ -61,8 +61,7 @@ public class RootUriTemplateHandlerTests {
 		this.uri = new URI("https://example.com/hello");
 		this.handler = new RootUriTemplateHandler("https://example.com", this.delegate);
 		given(this.delegate.expand(anyString(), anyMap())).willReturn(this.uri);
-		given(this.delegate.expand(anyString(), (Object[]) anyVararg()))
-				.willReturn(this.uri);
+		given(this.delegate.expand(anyString(), (Object[]) anyVararg())).willReturn(this.uri);
 	}
 
 	@Test
@@ -88,8 +87,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandMapVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot()
-			throws Exception {
+	public void expandMapVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() throws Exception {
 		HashMap<String, Object> uriVariables = new HashMap<String, Object>();
 		URI expanded = this.handler.expand("https://spring.io/hello", uriVariables);
 		verify(this.delegate).expand("https://spring.io/hello", uriVariables);
@@ -105,8 +103,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandArrayVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot()
-			throws Exception {
+	public void expandArrayVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() throws Exception {
 		Object[] uriVariables = new Object[0];
 		URI expanded = this.handler.expand("https://spring.io/hello", uriVariables);
 		verify(this.delegate).expand("https://spring.io/hello", uriVariables);

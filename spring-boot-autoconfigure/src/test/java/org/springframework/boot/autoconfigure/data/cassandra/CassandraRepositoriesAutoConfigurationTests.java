@@ -88,18 +88,14 @@ public class CassandraRepositoriesAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private Set<Class<?>> getInitialEntitySet() {
-		BasicCassandraMappingContext mappingContext = this.context
-				.getBean(BasicCassandraMappingContext.class);
-		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
-				"initialEntitySet");
+		BasicCassandraMappingContext mappingContext = this.context.getBean(BasicCassandraMappingContext.class);
+		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext, "initialEntitySet");
 	}
 
 	private void addConfigurations(Class<?>... configurations) {
 		this.context.register(configurations);
-		this.context.register(CassandraAutoConfiguration.class,
-				CassandraRepositoriesAutoConfiguration.class,
-				CassandraDataAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(CassandraAutoConfiguration.class, CassandraRepositoriesAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}
 
@@ -128,8 +124,8 @@ public class CassandraRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = { Session.class },
-			type = FilterType.ASSIGNABLE_TYPE))
+	@ComponentScan(
+			excludeFilters = @ComponentScan.Filter(classes = { Session.class }, type = FilterType.ASSIGNABLE_TYPE))
 	static class TestExcludeConfiguration {
 
 	}

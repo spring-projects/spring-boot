@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,10 @@ public class DefaultMetricNamingStrategy implements ObjectNamingStrategy {
 	private ObjectNamingStrategy namingStrategy = new KeyNamingStrategy();
 
 	@Override
-	public ObjectName getObjectName(Object managedBean, String beanKey)
-			throws MalformedObjectNameException {
+	public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
 		ObjectName objectName = this.namingStrategy.getObjectName(managedBean, beanKey);
 		String domain = objectName.getDomain();
-		Hashtable<String, String> table = new Hashtable<String, String>(
-				objectName.getKeyPropertyList());
+		Hashtable<String, String> table = new Hashtable<String, String>(objectName.getKeyPropertyList());
 		String name = objectName.getKeyProperty("name");
 		if (name != null) {
 			table.remove("name");
@@ -55,8 +53,7 @@ public class DefaultMetricNamingStrategy implements ObjectNamingStrategy {
 				table.put((parts.length > 2) ? "name" : "value", parts[1]);
 			}
 			if (parts.length > 2) {
-				table.put("value",
-						name.substring(parts[0].length() + parts[1].length() + 2));
+				table.put("value", name.substring(parts[0].length() + parts[1].length() + 2));
 			}
 		}
 		return new ObjectName(domain, table);

@@ -40,8 +40,8 @@ import org.springframework.data.couchbase.repository.support.CouchbaseRepository
 @Configuration
 @ConditionalOnClass({ Bucket.class, CouchbaseRepository.class })
 @ConditionalOnBean(RepositoryOperationsMapping.class)
-@ConditionalOnProperty(prefix = "spring.data.couchbase.repositories", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.couchbase.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @ConditionalOnMissingBean(CouchbaseRepositoryFactoryBean.class)
 @Import(CouchbaseRepositoriesRegistrar.class)
 public class CouchbaseRepositoriesAutoConfiguration {

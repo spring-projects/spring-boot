@@ -44,8 +44,7 @@ public class SpringBootTestActiveProfileTests {
 
 	@Test
 	public void profiles() throws Exception {
-		assertThat(this.context.getEnvironment().getActiveProfiles())
-				.containsExactly("override");
+		assertThat(this.context.getEnvironment().getActiveProfiles()).containsExactly("override");
 	}
 
 	@Configuration

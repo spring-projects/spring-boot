@@ -21,8 +21,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-@Document(indexName = "city", type = "city", shards = 1, replicas = 0,
-		refreshInterval = "-1")
+@Document(indexName = "city", type = "city", shards = 1, replicas = 0, refreshInterval = "-1")
 public class City implements Serializable {
 
 	private static final long serialVersionUID = 1L;

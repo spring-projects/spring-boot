@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,7 @@ class ServiceCapabilitiesReportGenerator {
 		return report.toString();
 	}
 
-	private void reportAvailableDependencies(InitializrServiceMetadata metadata,
-			StringBuilder report) {
+	private void reportAvailableDependencies(InitializrServiceMetadata metadata, StringBuilder report) {
 		report.append("Available dependencies:" + NEW_LINE);
 		report.append("-----------------------" + NEW_LINE);
 		List<Dependency> dependencies = getSortedDependencies(metadata);
@@ -93,8 +92,7 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
-		ArrayList<Dependency> dependencies = new ArrayList<Dependency>(
-				metadata.getDependencies());
+		ArrayList<Dependency> dependencies = new ArrayList<Dependency>(metadata.getDependencies());
 		Collections.sort(dependencies, new Comparator<Dependency>() {
 			@Override
 			public int compare(Dependency o1, Dependency o2) {
@@ -104,16 +102,14 @@ class ServiceCapabilitiesReportGenerator {
 		return dependencies;
 	}
 
-	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata,
-			StringBuilder report) {
+	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata, StringBuilder report) {
 		report.append("Available project types:" + NEW_LINE);
 		report.append("------------------------" + NEW_LINE);
 		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<Entry<String, ProjectType>>(
 				new Comparator<Entry<String, ProjectType>>() {
 
 					@Override
-					public int compare(Entry<String, ProjectType> o1,
-							Entry<String, ProjectType> o2) {
+					public int compare(Entry<String, ProjectType> o1, Entry<String, ProjectType> o2) {
 						return o1.getKey().compareTo(o2.getKey());
 					}
 
@@ -146,12 +142,10 @@ class ServiceCapabilitiesReportGenerator {
 		report.append("]");
 	}
 
-	private void reportDefaults(StringBuilder report,
-			InitializrServiceMetadata metadata) {
+	private void reportDefaults(StringBuilder report, InitializrServiceMetadata metadata) {
 		report.append("Defaults:" + NEW_LINE);
 		report.append("---------" + NEW_LINE);
-		List<String> defaultsKeys = new ArrayList<String>(
-				metadata.getDefaults().keySet());
+		List<String> defaultsKeys = new ArrayList<String>(metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {
 			String defaultsValue = metadata.getDefaults().get(defaultsKey);
