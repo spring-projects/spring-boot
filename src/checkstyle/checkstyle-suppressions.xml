@@ -8,7 +8,7 @@
 	<suppress files="[\\/]transaction-logs[\\/]" checks=".*" />
 	<suppress files="[\\/]target[\\/]" checks=".*" />
 	<suppress files="[\\/]build.log" checks=".*" />
-	<suppress files=".+\.[jar|git|ico|p12]" checks=".*" />
+	<suppress files=".+\.(jar|git|ico|p12)" checks=".*" />
 	<suppress files="eclipse[\\/]spring-boot-project.setup" checks="NoHttp"/>
 	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
