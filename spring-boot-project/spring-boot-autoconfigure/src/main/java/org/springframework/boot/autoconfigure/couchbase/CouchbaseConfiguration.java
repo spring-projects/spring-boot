@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,9 @@ public class CouchbaseConfiguration {
 	@Primary
 	@DependsOn("couchbaseClient")
 	public ClusterInfo couchbaseClusterInfo() {
-		return couchbaseCluster().clusterManager(this.properties.getBucket().getName(),
-				this.properties.getBucket().getPassword()).info();
+		return couchbaseCluster()
+				.clusterManager(this.properties.getBucket().getName(), this.properties.getBucket().getPassword())
+				.info();
 	}
 
 	@Bean
@@ -88,17 +89,14 @@ public class CouchbaseConfiguration {
 	 * @param properties the couchbase properties to use
 	 * @return the {@link DefaultCouchbaseEnvironment} builder.
 	 */
-	protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
-			CouchbaseProperties properties) {
+	protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
 		CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
 		CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
-		DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment
-				.builder();
+		DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment.builder();
 		if (timeouts.getConnect() != null) {
 			builder = builder.connectTimeout(timeouts.getConnect().toMillis());
 		}
-		builder = builder.keyValueServiceConfig(
-				KeyValueServiceConfig.create(endpoints.getKeyValue()));
+		builder = builder.keyValueServiceConfig(KeyValueServiceConfig.create(endpoints.getKeyValue()));
 		if (timeouts.getKeyValue() != null) {
 			builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
 		}
@@ -108,8 +106,7 @@ public class CouchbaseConfiguration {
 			builder = builder.viewServiceConfig(getViewServiceConfig(endpoints));
 		}
 		if (timeouts.getSocketConnect() != null) {
-			builder = builder
-					.socketConnectTimeout((int) timeouts.getSocketConnect().toMillis());
+			builder = builder.socketConnectTimeout((int) timeouts.getSocketConnect().toMillis());
 		}
 		if (timeouts.getView() != null) {
 			builder = builder.viewTimeout(timeouts.getView().toMillis());

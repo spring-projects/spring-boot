@@ -832,8 +832,7 @@ public class RabbitProperties {
 		}
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.rabbitmq.template.default-receive-queue")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.template.default-receive-queue")
 		public String getQueue() {
 			return getDefaultReceiveQueue();
 		}

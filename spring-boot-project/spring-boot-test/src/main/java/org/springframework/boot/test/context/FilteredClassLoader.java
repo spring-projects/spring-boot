@@ -48,8 +48,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * @param hiddenClasses the classes to hide
 	 */
 	public FilteredClassLoader(Class<?>... hiddenClasses) {
-		this(Collections.singleton(ClassFilter.of(hiddenClasses)),
-				Collections.emptyList());
+		this(Collections.singleton(ClassFilter.of(hiddenClasses)), Collections.emptyList());
 	}
 
 	/**
@@ -57,8 +56,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * @param hiddenPackages the packages to hide
 	 */
 	public FilteredClassLoader(String... hiddenPackages) {
-		this(Collections.singleton(PackageFilter.of(hiddenPackages)),
-				Collections.emptyList());
+		this(Collections.singleton(PackageFilter.of(hiddenPackages)), Collections.emptyList());
 	}
 
 	/**
@@ -68,8 +66,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	 * @since 2.1.0
 	 */
 	public FilteredClassLoader(ClassPathResource... hiddenResources) {
-		this(Collections.emptyList(),
-				Collections.singleton(ClassPathResourceFilter.of(hiddenResources)));
+		this(Collections.emptyList(), Collections.singleton(ClassPathResourceFilter.of(hiddenResources)));
 	}
 
 	/**
@@ -92,8 +89,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	}
 
 	@Override
-	protected Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
+	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		for (Predicate<String> filter : this.classesFilters) {
 			if (filter.test(name)) {
 				throw new ClassNotFoundException();
@@ -202,8 +198,7 @@ public class FilteredClassLoader extends URLClassLoader {
 		@Override
 		public boolean test(String resourceName) {
 			for (ClassPathResource hiddenResource : this.hiddenResources) {
-				if (hiddenResource.getFilename() != null
-						&& resourceName.equals(hiddenResource.getPath())) {
+				if (hiddenResource.getFilename() != null && resourceName.equals(hiddenResource.getPath())) {
 					return true;
 				}
 			}

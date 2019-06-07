@@ -59,36 +59,31 @@ public class DataJdbcTestIntegrationTests {
 
 	@Test
 	public void testRepository() {
-		this.jdbcTemplate.update(
-				"INSERT INTO EXAMPLE_ENTITY (id, name, reference) VALUES (1, 'a', 'alpha')");
-		this.jdbcTemplate.update(
-				"INSERT INTO EXAMPLE_ENTITY (id, name, reference) VALUES (2, 'b', 'bravo')");
+		this.jdbcTemplate.update("INSERT INTO EXAMPLE_ENTITY (id, name, reference) VALUES (1, 'a', 'alpha')");
+		this.jdbcTemplate.update("INSERT INTO EXAMPLE_ENTITY (id, name, reference) VALUES (2, 'b', 'bravo')");
 		assertThat(this.repository.findAll()).hasSize(2);
 	}
 
 	@Test
 	public void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
 	}
 
 	@Test
 	public void didNotInjectExampleComponent() {
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(
-				() -> this.applicationContext.getBean(ExampleComponent.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
 	}
 
 	@Test
 	public void flywayAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(FlywayAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(FlywayAutoConfiguration.class));
 	}
 
 	@Test
 	public void liquibaseAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
 	}
 
 }

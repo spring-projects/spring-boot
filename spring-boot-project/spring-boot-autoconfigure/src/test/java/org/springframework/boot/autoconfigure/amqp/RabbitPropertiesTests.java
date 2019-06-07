@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,8 +108,7 @@ public class RabbitPropertiesTests {
 
 	@Test
 	public void determineVirtualHostReturnsVirtualHostOfFirstAddress() {
-		this.properties.setAddresses(
-				"rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
 	}
 
@@ -122,8 +121,7 @@ public class RabbitPropertiesTests {
 	@Test
 	public void determineVirtualHostReturnsPropertyWhenFirstAddressHasNoVirtualHost() {
 		this.properties.setVirtualHost("alpha");
-		this.properties
-				.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
 	}
 
@@ -152,8 +150,7 @@ public class RabbitPropertiesTests {
 
 	@Test
 	public void determineUsernameReturnsUsernameOfFirstAddress() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,"
-				+ "rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha," + "rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determineUsername()).isEqualTo("user");
 	}
 
@@ -166,8 +163,7 @@ public class RabbitPropertiesTests {
 	@Test
 	public void determineUsernameReturnsPropertyWhenFirstAddressHasNoUsername() {
 		this.properties.setUsername("alice");
-		this.properties.setAddresses("rabbit1.example.com:1234/alpha,"
-				+ "user:secret@rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("rabbit1.example.com:1234/alpha," + "user:secret@rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determineUsername()).isEqualTo("alice");
 	}
 
@@ -184,8 +180,7 @@ public class RabbitPropertiesTests {
 
 	@Test
 	public void determinePasswordReturnsPasswordOfFirstAddress() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,"
-				+ "rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha," + "rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determinePassword()).isEqualTo("secret");
 	}
 
@@ -198,8 +193,7 @@ public class RabbitPropertiesTests {
 	@Test
 	public void determinePasswordReturnsPropertyWhenFirstAddressHasNoPassword() {
 		this.properties.setPassword("12345678");
-		this.properties.setAddresses("rabbit1.example.com:1234/alpha,"
-				+ "user:secret@rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("rabbit1.example.com:1234/alpha," + "user:secret@rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determinePassword()).isEqualTo("12345678");
 	}
 
@@ -210,48 +204,40 @@ public class RabbitPropertiesTests {
 
 	@Test
 	public void customAddresses() {
-		this.properties.setAddresses(
-				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
-		assertThat(this.properties.getAddresses()).isEqualTo(
-				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+		assertThat(this.properties.getAddresses())
+				.isEqualTo("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 	}
 
 	@Test
 	public void determineAddressesReturnsAddressesWithJustHostAndPort() {
-		this.properties.setAddresses(
-				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
-		assertThat(this.properties.determineAddresses())
-				.isEqualTo("rabbit1.example.com:1234,rabbit2.example.com:5672");
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+		assertThat(this.properties.determineAddresses()).isEqualTo("rabbit1.example.com:1234,rabbit2.example.com:5672");
 	}
 
 	@Test
 	public void determineAddressesUsesHostAndPortPropertiesWhenNoAddressesSet() {
 		this.properties.setHost("rabbit.example.com");
 		this.properties.setPort(1234);
-		assertThat(this.properties.determineAddresses())
-				.isEqualTo("rabbit.example.com:1234");
+		assertThat(this.properties.determineAddresses()).isEqualTo("rabbit.example.com:1234");
 	}
 
 	@Test
 	public void simpleContainerUseConsistentDefaultValues() {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		SimpleMessageListenerContainer container = factory.createListenerContainer();
-		RabbitProperties.SimpleContainer simple = this.properties.getListener()
-				.getSimple();
+		RabbitProperties.SimpleContainer simple = this.properties.getListener().getSimple();
 		assertThat(simple.isAutoStartup()).isEqualTo(container.isAutoStartup());
-		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal",
-				simple.isMissingQueuesFatal());
+		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", simple.isMissingQueuesFatal());
 	}
 
 	@Test
 	public void directContainerUseConsistentDefaultValues() {
 		DirectRabbitListenerContainerFactory factory = new DirectRabbitListenerContainerFactory();
 		DirectMessageListenerContainer container = factory.createListenerContainer();
-		RabbitProperties.DirectContainer direct = this.properties.getListener()
-				.getDirect();
+		RabbitProperties.DirectContainer direct = this.properties.getListener().getDirect();
 		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
-		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal",
-				direct.isMissingQueuesFatal());
+		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", direct.isMissingQueuesFatal());
 	}
 
 }

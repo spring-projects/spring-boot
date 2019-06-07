@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
  */
 public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 
-	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class
-			.getName() + ".START_TIME";
+	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class.getName()
+			+ ".START_TIME";
 
 	private final MeterRegistry meterRegistry;
 
@@ -46,30 +46,25 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 
 	private final String metricName;
 
-	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName) {
+	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName) {
 		this.meterRegistry = meterRegistry;
 		this.tagProvider = tagProvider;
 		this.metricName = metricName;
 	}
 
 	@Override
-	public Mono<ClientResponse> filter(ClientRequest clientRequest,
-			ExchangeFunction exchangeFunction) {
+	public Mono<ClientResponse> filter(ClientRequest clientRequest, ExchangeFunction exchangeFunction) {
 		return exchangeFunction.exchange(clientRequest).doOnEach((signal) -> {
 			if (!signal.isOnComplete()) {
 				Long startTime = signal.getContext().get(METRICS_WEBCLIENT_START_TIME);
 				ClientResponse clientResponse = signal.get();
 				Throwable throwable = signal.getThrowable();
-				Iterable<Tag> tags = this.tagProvider.tags(clientRequest, clientResponse,
-						throwable);
-				Timer.builder(this.metricName).tags(tags)
-						.description("Timer of WebClient operation")
-						.register(this.meterRegistry)
-						.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+				Iterable<Tag> tags = this.tagProvider.tags(clientRequest, clientResponse, throwable);
+				Timer.builder(this.metricName).tags(tags).description("Timer of WebClient operation")
+						.register(this.meterRegistry).record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
 			}
-		}).subscriberContext((context) -> context.put(METRICS_WEBCLIENT_START_TIME,
-				System.nanoTime()));
+		}).subscriberContext((context) -> context.put(METRICS_WEBCLIENT_START_TIME, System.nanoTime()));
 	}
 
 }

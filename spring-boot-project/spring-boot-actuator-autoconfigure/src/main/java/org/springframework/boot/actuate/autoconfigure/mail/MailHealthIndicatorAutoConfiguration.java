@@ -46,13 +46,12 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @ConditionalOnEnabledHealthIndicator("mail")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(MailSenderAutoConfiguration.class)
-public class MailHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
+public class MailHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 
 	private final Map<String, JavaMailSenderImpl> mailSenders;
 
-	public MailHealthIndicatorAutoConfiguration(
-			Map<String, JavaMailSenderImpl> mailSenders) {
+	public MailHealthIndicatorAutoConfiguration(Map<String, JavaMailSenderImpl> mailSenders) {
 		this.mailSenders = mailSenders;
 	}
 

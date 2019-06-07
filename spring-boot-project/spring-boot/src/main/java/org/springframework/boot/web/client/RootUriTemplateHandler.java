@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,11 +90,9 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	 * @param rootUri the root URI
 	 * @return the added {@link RootUriTemplateHandler}.
 	 */
-	public static RootUriTemplateHandler addTo(RestTemplate restTemplate,
-			String rootUri) {
+	public static RootUriTemplateHandler addTo(RestTemplate restTemplate, String rootUri) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
-		RootUriTemplateHandler handler = new RootUriTemplateHandler(rootUri,
-				restTemplate.getUriTemplateHandler());
+		RootUriTemplateHandler handler = new RootUriTemplateHandler(rootUri, restTemplate.getUriTemplateHandler());
 		restTemplate.setUriTemplateHandler(handler);
 		return handler;
 	}

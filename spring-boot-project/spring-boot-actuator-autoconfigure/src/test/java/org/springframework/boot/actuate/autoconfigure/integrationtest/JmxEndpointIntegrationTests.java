@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,52 +46,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JmxEndpointIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
-					EndpointAutoConfiguration.class, JmxEndpointAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
+					JmxEndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class,
 					HttpTraceAutoConfiguration.class))
-			.withConfiguration(
-					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
+			.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 
 	@Test
 	public void jmxEndpointsAreExposed() {
 		this.contextRunner.run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			checkEndpointMBeans(mBeanServer,
-					new String[] { "beans", "conditions", "configprops", "env", "health",
-							"info", "mappings", "threaddump", "httptrace" },
-					new String[] { "shutdown" });
+			checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env", "health",
+					"info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });
 		});
 	}
 
 	@Test
 	public void jmxEndpointsCanBeExcluded() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.jmx.exposure.exclude:*")
-				.run((context) -> {
-					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-					checkEndpointMBeans(mBeanServer, new String[0],
-							new String[] { "beans", "conditions", "configprops", "env",
-									"health", "mappings", "shutdown", "threaddump",
-									"httptrace" });
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.exclude:*").run((context) -> {
+			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+			checkEndpointMBeans(mBeanServer, new String[0], new String[] { "beans", "conditions", "configprops", "env",
+					"health", "mappings", "shutdown", "threaddump", "httptrace" });
 
-				});
+		});
 	}
 
 	@Test
 	public void singleJmxEndpointCanBeExposed() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.jmx.exposure.include=beans")
-				.run((context) -> {
-					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-					checkEndpointMBeans(mBeanServer, new String[] { "beans" },
-							new String[] { "conditions", "configprops", "env", "health",
-									"mappings", "shutdown", "threaddump", "httptrace" });
-				});
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=beans").run((context) -> {
+			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+			checkEndpointMBeans(mBeanServer, new String[] { "beans" }, new String[] { "conditions", "configprops",
+					"env", "health", "mappings", "shutdown", "threaddump", "httptrace" });
+		});
 	}
 
-	private void checkEndpointMBeans(MBeanServer mBeanServer, String[] enabledEndpoints,
-			String[] disabledEndpoints) {
+	private void checkEndpointMBeans(MBeanServer mBeanServer, String[] enabledEndpoints, String[] disabledEndpoints) {
 		for (String enabledEndpoint : enabledEndpoints) {
 			assertThat(isRegistered(mBeanServer, getDefaultObjectName(enabledEndpoint)))
 					.as(String.format("Endpoint %s", enabledEndpoint)).isTrue();
@@ -112,14 +100,12 @@ public class JmxEndpointIntegrationTests {
 		}
 	}
 
-	private MBeanInfo getMBeanInfo(MBeanServer mBeanServer, ObjectName objectName)
-			throws InstanceNotFoundException {
+	private MBeanInfo getMBeanInfo(MBeanServer mBeanServer, ObjectName objectName) throws InstanceNotFoundException {
 		try {
 			return mBeanServer.getMBeanInfo(objectName);
 		}
 		catch (ReflectionException | IntrospectionException ex) {
-			throw new IllegalStateException(
-					"Failed to retrieve MBeanInfo for ObjectName " + objectName, ex);
+			throw new IllegalStateException("Failed to retrieve MBeanInfo for ObjectName " + objectName, ex);
 		}
 	}
 
@@ -129,8 +115,8 @@ public class JmxEndpointIntegrationTests {
 
 	private ObjectName getObjectName(String domain, String endpointId) {
 		try {
-			return new ObjectName(String.format("%s:type=Endpoint,name=%s", domain,
-					StringUtils.capitalize(endpointId)));
+			return new ObjectName(
+					String.format("%s:type=Endpoint,name=%s", domain, StringUtils.capitalize(endpointId)));
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new IllegalStateException("Invalid object name", ex);

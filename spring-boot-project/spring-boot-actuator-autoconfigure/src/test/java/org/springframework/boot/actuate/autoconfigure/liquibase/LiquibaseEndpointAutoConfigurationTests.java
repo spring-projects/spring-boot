@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,46 +38,37 @@ import static org.mockito.Mockito.mock;
 public class LiquibaseEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(LiquibaseEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(LiquibaseEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withUserConfiguration(LiquibaseConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(LiquibaseEndpoint.class));
+		this.contextRunner.withUserConfiguration(LiquibaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(LiquibaseConfiguration.class)
 				.withPropertyValues("management.endpoint.liquibase.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LiquibaseEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
 	public void disablesCloseOfDataSourceWhenEndpointIsEnabled() {
-		this.contextRunner
-				.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(LiquibaseEndpoint.class);
-					assertThat(context.getBean(DataSourceClosingSpringLiquibase.class))
-							.hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated",
-									false);
-				});
+		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(LiquibaseEndpoint.class);
+			assertThat(context.getBean(DataSourceClosingSpringLiquibase.class))
+					.hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", false);
+		});
 	}
 
 	@Test
 	public void doesNotDisableCloseOfDataSourceWhenEndpointIsDisabled() {
-		this.contextRunner
-				.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
-				.withPropertyValues("management.endpoint.liquibase.enabled:false")
-				.run((context) -> {
+		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
+				.withPropertyValues("management.endpoint.liquibase.enabled:false").run((context) -> {
 					assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class);
-					DataSourceClosingSpringLiquibase bean = context
-							.getBean(DataSourceClosingSpringLiquibase.class);
-					assertThat(bean).hasFieldOrPropertyWithValue(
-							"closeDataSourceOnceMigrated", true);
+					DataSourceClosingSpringLiquibase bean = context.getBean(DataSourceClosingSpringLiquibase.class);
+					assertThat(bean).hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", true);
 				});
 	}
 
@@ -101,11 +92,10 @@ public class LiquibaseEndpointAutoConfigurationTests {
 				private boolean propertiesSet = false;
 
 				@Override
-				public void setCloseDataSourceOnceMigrated(
-						boolean closeDataSourceOnceMigrated) {
+				public void setCloseDataSourceOnceMigrated(boolean closeDataSourceOnceMigrated) {
 					if (this.propertiesSet) {
-						throw new IllegalStateException("setCloseDataSourceOnceMigrated "
-								+ "invoked after afterPropertiesSet");
+						throw new IllegalStateException(
+								"setCloseDataSourceOnceMigrated " + "invoked after afterPropertiesSet");
 					}
 					super.setCloseDataSourceOnceMigrated(closeDataSourceOnceMigrated);
 				}

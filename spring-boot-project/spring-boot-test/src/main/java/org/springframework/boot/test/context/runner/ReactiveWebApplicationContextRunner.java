@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,31 +54,26 @@ public final class ReactiveWebApplicationContextRunner extends
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
-	public ReactiveWebApplicationContextRunner(
-			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory) {
+	public ReactiveWebApplicationContextRunner(Supplier<ConfigurableReactiveWebApplicationContext> contextFactory) {
 		super(contextFactory);
 	}
 
-	private ReactiveWebApplicationContextRunner(
-			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
+	private ReactiveWebApplicationContextRunner(Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<Configurations> configurations) {
-		super(contextFactory, initializers, environmentProperties, systemProperties,
-				classLoader, parent, configurations);
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
+			ApplicationContext parent, List<Configurations> configurations) {
+		super(contextFactory, initializers, environmentProperties, systemProperties, classLoader, parent,
+				configurations);
 	}
 
 	@Override
 	protected ReactiveWebApplicationContextRunner newInstance(
 			Supplier<ConfigurableReactiveWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableReactiveWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<Configurations> configurations) {
-		return new ReactiveWebApplicationContextRunner(contextFactory, initializers,
-				environmentProperties, systemProperties, classLoader, parent,
-				configurations);
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
+			ApplicationContext parent, List<Configurations> configurations) {
+		return new ReactiveWebApplicationContextRunner(contextFactory, initializers, environmentProperties,
+				systemProperties, classLoader, parent, configurations);
 	}
 
 }

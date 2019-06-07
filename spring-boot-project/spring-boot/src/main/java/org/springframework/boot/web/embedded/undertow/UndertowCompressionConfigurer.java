@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ final class UndertowCompressionConfigurer {
 	 * @param httpHandler the HTTP handler to wrap
 	 * @return the wrapped HTTP handler if compression is enabled, or the handler itself
 	 */
-	public static HttpHandler configureCompression(Compression compression,
-			HttpHandler httpHandler) {
+	public static HttpHandler configureCompression(Compression compression, HttpHandler httpHandler) {
 		if (compression == null || !compression.getEnabled()) {
 			return httpHandler;
 		}
@@ -65,13 +64,11 @@ final class UndertowCompressionConfigurer {
 
 	private static Predicate[] getCompressionPredicates(Compression compression) {
 		List<Predicate> predicates = new ArrayList<>();
-		predicates.add(
-				new MaxSizePredicate((int) compression.getMinResponseSize().toBytes()));
+		predicates.add(new MaxSizePredicate((int) compression.getMinResponseSize().toBytes()));
 		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
 		if (compression.getExcludedUserAgents() != null) {
 			for (String agent : compression.getExcludedUserAgents()) {
-				RequestHeaderAttribute agentHeader = new RequestHeaderAttribute(
-						new HttpString(HttpHeaders.USER_AGENT));
+				RequestHeaderAttribute agentHeader = new RequestHeaderAttribute(new HttpString(HttpHeaders.USER_AGENT));
 				predicates.add(Predicates.not(Predicates.regex(agentHeader, agent)));
 			}
 		}
@@ -91,12 +88,10 @@ final class UndertowCompressionConfigurer {
 
 		@Override
 		public boolean resolve(HttpServerExchange value) {
-			String contentType = value.getResponseHeaders()
-					.getFirst(HttpHeaders.CONTENT_TYPE);
+			String contentType = value.getResponseHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 			if (contentType != null) {
 				for (MimeType mimeType : this.mimeTypes) {
-					if (mimeType
-							.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
+					if (mimeType.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
 						return true;
 					}
 				}

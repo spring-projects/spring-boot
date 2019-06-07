@@ -38,9 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-		properties = { "app.datasource.url=jdbc:h2:mem:configurable;DB_CLOSE_DELAY=-1",
-				"app.datasource.configuration.maximum-pool-size=42" })
+@SpringBootTest(properties = { "app.datasource.url=jdbc:h2:mem:configurable;DB_CLOSE_DELAY=-1",
+		"app.datasource.configuration.maximum-pool-size=42" })
 @Import(ConfigurableDataSourceExample.ConfigurableDataSourceConfiguration.class)
 public class ConfigurableDataSourceExampleTests {
 
@@ -51,8 +50,7 @@ public class ConfigurableDataSourceExampleTests {
 	public void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
 		HikariDataSource dataSource = this.context.getBean(HikariDataSource.class);
-		assertThat(dataSource.getConnection().getMetaData().getURL())
-				.isEqualTo("jdbc:h2:mem:configurable");
+		assertThat(dataSource.getConnection().getMetaData().getURL()).isEqualTo("jdbc:h2:mem:configurable");
 		assertThat(dataSource.getMaximumPoolSize()).isEqualTo(42);
 	}
 

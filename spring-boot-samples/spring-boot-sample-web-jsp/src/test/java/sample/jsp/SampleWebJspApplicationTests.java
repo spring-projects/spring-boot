@@ -59,12 +59,10 @@ public class SampleWebJspApplicationTests {
 	public void customErrorPage() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		RequestEntity<Void> request = new RequestEntity<>(headers, HttpMethod.GET,
-				URI.create("/foo"));
+		RequestEntity<Void> request = new RequestEntity<>(headers, HttpMethod.GET, URI.create("/foo"));
 		ResponseEntity<String> entity = this.restTemplate.exchange(request, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(entity.getBody())
-				.contains("Something went wrong: 500 Internal Server Error");
+		assertThat(entity.getBody()).contains("Something went wrong: 500 Internal Server Error");
 	}
 
 }

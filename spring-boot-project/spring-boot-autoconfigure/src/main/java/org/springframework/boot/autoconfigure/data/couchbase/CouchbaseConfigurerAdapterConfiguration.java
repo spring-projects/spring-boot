@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,8 @@ class CouchbaseConfigurerAdapterConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CouchbaseConfigurer springBootCouchbaseConfigurer() throws Exception {
-		return new SpringBootCouchbaseConfigurer(
-				this.configuration.couchbaseEnvironment(),
-				this.configuration.couchbaseCluster(),
-				this.configuration.couchbaseClusterInfo(),
+		return new SpringBootCouchbaseConfigurer(this.configuration.couchbaseEnvironment(),
+				this.configuration.couchbaseCluster(), this.configuration.couchbaseClusterInfo(),
 				this.configuration.couchbaseClient());
 	}
 

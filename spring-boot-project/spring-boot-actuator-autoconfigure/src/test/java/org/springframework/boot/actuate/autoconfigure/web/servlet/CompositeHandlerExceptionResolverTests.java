@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ public class CompositeHandlerExceptionResolverTests {
 		load(TestConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
-		ModelAndView resolved = resolver.resolveException(this.request, this.response,
-				null, new HttpRequestMethodNotSupportedException("POST"));
+		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
+				new HttpRequestMethodNotSupportedException("POST"));
 		assertThat(resolved.getViewName()).isEqualTo("test-view");
 	}
 
@@ -62,8 +62,8 @@ public class CompositeHandlerExceptionResolverTests {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
-		ModelAndView resolved = resolver.resolveException(this.request, this.response,
-				null, new HttpRequestMethodNotSupportedException("POST"));
+		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
+				new HttpRequestMethodNotSupportedException("POST"));
 		assertThat(resolved).isNotNull();
 	}
 
@@ -98,8 +98,8 @@ public class CompositeHandlerExceptionResolverTests {
 	static class TestHandlerExceptionResolver implements HandlerExceptionResolver {
 
 		@Override
-		public ModelAndView resolveException(HttpServletRequest request,
-				HttpServletResponse response, Object handler, Exception ex) {
+		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+				Exception ex) {
 			return new ModelAndView("test-view");
 		}
 

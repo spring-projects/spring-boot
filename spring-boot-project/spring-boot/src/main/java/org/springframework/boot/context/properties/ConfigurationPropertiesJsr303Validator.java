@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 final class ConfigurationPropertiesJsr303Validator implements Validator {
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-			"javax.validation.ValidatorFactory",
-			"javax.validation.bootstrap.GenericBootstrap" };
+			"javax.validation.ValidatorFactory", "javax.validation.bootstrap.GenericBootstrap" };
 
 	private final Delegate delegate;
 

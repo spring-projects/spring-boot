@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,15 +47,13 @@ class SpringPropertyAction extends Action {
 	}
 
 	@Override
-	public void begin(InterpretationContext context, String elementName,
-			Attributes attributes) throws ActionException {
+	public void begin(InterpretationContext context, String elementName, Attributes attributes) throws ActionException {
 		String name = attributes.getValue(NAME_ATTRIBUTE);
 		String source = attributes.getValue(SOURCE_ATTRIBUTE);
 		Scope scope = ActionUtil.stringToScope(attributes.getValue(SCOPE_ATTRIBUTE));
 		String defaultValue = attributes.getValue(DEFAULT_VALUE_ATTRIBUTE);
 		if (OptionHelper.isEmpty(name) || OptionHelper.isEmpty(source)) {
-			addError(
-					"The \"name\" and \"source\" attributes of <springProperty> must be set");
+			addError("The \"name\" and \"source\" attributes of <springProperty> must be set");
 		}
 		ActionUtil.setProperty(context, name, getValue(source, defaultValue), scope);
 	}
@@ -72,8 +70,7 @@ class SpringPropertyAction extends Action {
 		int lastDot = source.lastIndexOf('.');
 		if (lastDot > 0) {
 			String prefix = source.substring(0, lastDot + 1);
-			return this.environment.getProperty(prefix + source.substring(lastDot + 1),
-					defaultValue);
+			return this.environment.getProperty(prefix + source.substring(lastDot + 1), defaultValue);
 		}
 		return defaultValue;
 	}

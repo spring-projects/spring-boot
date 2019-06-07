@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public class ConfigurationsTests {
 
 	@Test
 	public void createWhenClassesIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestConfigurations(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations(null))
 				.withMessageContaining("Classes must not be null");
 	}
 
@@ -51,21 +50,18 @@ public class ConfigurationsTests {
 	public void createShouldSortClasses() {
 		TestSortedConfigurations configurations = new TestSortedConfigurations(
 				Arrays.asList(OutputStream.class, InputStream.class));
-		assertThat(configurations.getClasses()).containsExactly(InputStream.class,
-				OutputStream.class);
+		assertThat(configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
 	}
 
 	@Test
 	public void getClassesShouldMergeByClassAndSort() {
-		Configurations c1 = new TestSortedConfigurations(
-				Arrays.asList(OutputStream.class, InputStream.class));
+		Configurations c1 = new TestSortedConfigurations(Arrays.asList(OutputStream.class, InputStream.class));
 		Configurations c2 = new TestConfigurations(Arrays.asList(Short.class));
-		Configurations c3 = new TestSortedConfigurations(
-				Arrays.asList(String.class, Integer.class));
+		Configurations c3 = new TestSortedConfigurations(Arrays.asList(String.class, Integer.class));
 		Configurations c4 = new TestConfigurations(Arrays.asList(Long.class, Byte.class));
 		Class<?>[] classes = Configurations.getClasses(c1, c2, c3, c4);
-		assertThat(classes).containsExactly(Short.class, Long.class, Byte.class,
-				InputStream.class, Integer.class, OutputStream.class, String.class);
+		assertThat(classes).containsExactly(Short.class, Long.class, Byte.class, InputStream.class, Integer.class,
+				OutputStream.class, String.class);
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

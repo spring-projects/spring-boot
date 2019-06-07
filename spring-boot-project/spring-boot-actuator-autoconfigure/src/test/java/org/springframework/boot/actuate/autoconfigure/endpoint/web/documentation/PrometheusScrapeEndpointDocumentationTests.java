@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class PrometheusScrapeEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+public class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void prometheus() throws Exception {
-		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk())
-				.andDo(document("prometheus"));
+		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus"));
 	}
 
 	@Configuration
@@ -52,8 +50,8 @@ public class PrometheusScrapeEndpointDocumentationTests
 		@Bean
 		public PrometheusScrapeEndpoint endpoint() {
 			CollectorRegistry collectorRegistry = new CollectorRegistry(true);
-			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry(
-					(key) -> null, collectorRegistry, Clock.SYSTEM);
+			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((key) -> null, collectorRegistry,
+					Clock.SYSTEM);
 			new JvmMemoryMetrics().bindTo(meterRegistry);
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}

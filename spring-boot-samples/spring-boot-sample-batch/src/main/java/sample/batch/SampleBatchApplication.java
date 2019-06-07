@@ -45,8 +45,7 @@ public class SampleBatchApplication {
 
 		return new Tasklet() {
 			@Override
-			public RepeatStatus execute(StepContribution contribution,
-					ChunkContext context) {
+			public RepeatStatus execute(StepContribution contribution, ChunkContext context) {
 				return RepeatStatus.FINISHED;
 			}
 		};
@@ -66,8 +65,7 @@ public class SampleBatchApplication {
 	public static void main(String[] args) {
 		// System.exit is common for Batch applications since the exit code can be used to
 		// drive a workflow
-		System.exit(SpringApplication
-				.exit(SpringApplication.run(SampleBatchApplication.class, args)));
+		System.exit(SpringApplication.exit(SpringApplication.run(SampleBatchApplication.class, args)));
 	}
 
 }

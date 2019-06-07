@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,58 +41,51 @@ public class EmbeddedServletContainerWarPackagingIntegrationTests
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
 		return AbstractEmbeddedServletContainerIntegrationTests.parameters("war",
-				Arrays.asList(PackagedApplicationLauncher.class,
-						ExplodedApplicationLauncher.class));
+				Arrays.asList(PackagedApplicationLauncher.class, ExplodedApplicationLauncher.class));
 	}
 
-	public EmbeddedServletContainerWarPackagingIntegrationTests(String name,
-			AbstractApplicationLauncher launcher) {
+	public EmbeddedServletContainerWarPackagingIntegrationTests(String name, AbstractApplicationLauncher launcher) {
 		super(name, launcher);
 	}
 
 	@Test
 	public void nestedMetaInfResourceIsAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest
-				.getForEntity("/nested-meta-inf-resource.txt", String.class);
+		ResponseEntity<String> entity = this.rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void nestedMetaInfResourceIsAvailableViaServletContext() {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/servletContext?/nested-meta-inf-resource.txt", String.class);
+		ResponseEntity<String> entity = this.rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void nestedJarIsNotAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest
-				.getForEntity("/WEB-INF/lib/resources-1.0.jar", String.class);
+		ResponseEntity<String> entity = this.rest.getForEntity("/WEB-INF/lib/resources-1.0.jar", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
 	public void applicationClassesAreNotAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/WEB-INF/classes/com/example/ResourceHandlingApplication.class",
-				String.class);
+		ResponseEntity<String> entity = this.rest
+				.getForEntity("/WEB-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
 	public void webappResourcesAreAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest.getForEntity("/webapp-resource.txt",
-				String.class);
+		ResponseEntity<String> entity = this.rest.getForEntity("/webapp-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void loaderClassesAreNotAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/org/springframework/boot/loader/Launcher.class", String.class);
+		ResponseEntity<String> entity = this.rest.getForEntity("/org/springframework/boot/loader/Launcher.class",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		entity = this.rest.getForEntity(
-				"/org/springframework/../springframework/boot/loader/Launcher.class",
+		entity = this.rest.getForEntity("/org/springframework/../springframework/boot/loader/Launcher.class",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}

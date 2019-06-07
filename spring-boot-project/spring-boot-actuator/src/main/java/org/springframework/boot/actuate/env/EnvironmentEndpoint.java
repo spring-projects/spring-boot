@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,66 +86,54 @@ public class EnvironmentEndpoint {
 		return getEnvironmentEntryDescriptor(toMatch);
 	}
 
-	private EnvironmentDescriptor getEnvironmentDescriptor(
-			Predicate<String> propertyNamePredicate) {
+	private EnvironmentDescriptor getEnvironmentDescriptor(Predicate<String> propertyNamePredicate) {
 		PlaceholdersResolver resolver = getResolver();
 		List<PropertySourceDescriptor> propertySources = new ArrayList<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> {
 			if (source instanceof EnumerablePropertySource) {
-				propertySources.add(
-						describeSource(sourceName, (EnumerablePropertySource<?>) source,
-								resolver, propertyNamePredicate));
+				propertySources.add(describeSource(sourceName, (EnumerablePropertySource<?>) source, resolver,
+						propertyNamePredicate));
 			}
 		});
-		return new EnvironmentDescriptor(
-				Arrays.asList(this.environment.getActiveProfiles()), propertySources);
+		return new EnvironmentDescriptor(Arrays.asList(this.environment.getActiveProfiles()), propertySources);
 	}
 
-	private EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(
-			String propertyName) {
-		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(
-				propertyName);
+	private EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(String propertyName) {
+		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(propertyName);
 		PropertySummaryDescriptor summary = getPropertySummaryDescriptor(descriptors);
-		return new EnvironmentEntryDescriptor(summary,
-				Arrays.asList(this.environment.getActiveProfiles()),
+		return new EnvironmentEntryDescriptor(summary, Arrays.asList(this.environment.getActiveProfiles()),
 				toPropertySourceDescriptors(descriptors));
 	}
 
 	private List<PropertySourceEntryDescriptor> toPropertySourceDescriptors(
 			Map<String, PropertyValueDescriptor> descriptors) {
 		List<PropertySourceEntryDescriptor> result = new ArrayList<>();
-		descriptors.forEach((name, property) -> result
-				.add(new PropertySourceEntryDescriptor(name, property)));
+		descriptors.forEach((name, property) -> result.add(new PropertySourceEntryDescriptor(name, property)));
 		return result;
 	}
 
-	private PropertySummaryDescriptor getPropertySummaryDescriptor(
-			Map<String, PropertyValueDescriptor> descriptors) {
+	private PropertySummaryDescriptor getPropertySummaryDescriptor(Map<String, PropertyValueDescriptor> descriptors) {
 		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
 			if (entry.getValue() != null) {
-				return new PropertySummaryDescriptor(entry.getKey(),
-						entry.getValue().getValue());
+				return new PropertySummaryDescriptor(entry.getKey(), entry.getValue().getValue());
 			}
 		}
 		return null;
 	}
 
-	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(
-			String propertyName) {
+	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(String propertyName) {
 		Map<String, PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
 		PlaceholdersResolver resolver = getResolver();
-		getPropertySourcesAsMap().forEach((sourceName, source) -> propertySources
-				.put(sourceName, source.containsProperty(propertyName)
-						? describeValueOf(propertyName, source, resolver) : null));
+		getPropertySourcesAsMap().forEach((sourceName, source) -> propertySources.put(sourceName,
+				source.containsProperty(propertyName) ? describeValueOf(propertyName, source, resolver) : null));
 		return propertySources;
 	}
 
-	private PropertySourceDescriptor describeSource(String sourceName,
-			EnumerablePropertySource<?> source, PlaceholdersResolver resolver,
-			Predicate<String> namePredicate) {
+	private PropertySourceDescriptor describeSource(String sourceName, EnumerablePropertySource<?> source,
+			PlaceholdersResolver resolver, Predicate<String> namePredicate) {
 		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
-		Stream.of(source.getPropertyNames()).filter(namePredicate).forEach(
-				(name) -> properties.put(name, describeValueOf(name, source, resolver)));
+		Stream.of(source.getPropertyNames()).filter(namePredicate)
+				.forEach((name) -> properties.put(name, describeValueOf(name, source, resolver)));
 		return new PropertySourceDescriptor(sourceName, properties);
 	}
 
@@ -153,8 +141,7 @@ public class EnvironmentEndpoint {
 	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source,
 			PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
-		String origin = ((source instanceof OriginLookup)
-				? getOrigin((OriginLookup<Object>) source, name) : null);
+		String origin = ((source instanceof OriginLookup) ? getOrigin((OriginLookup<Object>) source, name) : null);
 		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
 	}
 
@@ -164,15 +151,13 @@ public class EnvironmentEndpoint {
 	}
 
 	private PlaceholdersResolver getResolver() {
-		return new PropertySourcesPlaceholdersSanitizingResolver(getPropertySources(),
-				this.sanitizer);
+		return new PropertySourcesPlaceholdersSanitizingResolver(getPropertySources(), this.sanitizer);
 	}
 
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
 		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		for (PropertySource<?> source : getPropertySources()) {
-			if (!ConfigurationPropertySources
-					.isAttachedConfigurationPropertySource(source)) {
+			if (!ConfigurationPropertySources.isAttachedConfigurationPropertySource(source)) {
 				extract("", map, source);
 			}
 		}
@@ -186,11 +171,9 @@ public class EnvironmentEndpoint {
 		return new StandardEnvironment().getPropertySources();
 	}
 
-	private void extract(String root, Map<String, PropertySource<?>> map,
-			PropertySource<?> source) {
+	private void extract(String root, Map<String, PropertySource<?>> map, PropertySource<?> source) {
 		if (source instanceof CompositePropertySource) {
-			for (PropertySource<?> nest : ((CompositePropertySource) source)
-					.getPropertySources()) {
+			for (PropertySource<?> nest : ((CompositePropertySource) source).getPropertySources()) {
 				extract(source.getName() + ":", map, nest);
 			}
 		}
@@ -207,17 +190,13 @@ public class EnvironmentEndpoint {
 	 * {@link PropertySourcesPlaceholdersResolver} that sanitizes sensitive placeholders
 	 * if present.
 	 */
-	private static class PropertySourcesPlaceholdersSanitizingResolver
-			extends PropertySourcesPlaceholdersResolver {
+	private static class PropertySourcesPlaceholdersSanitizingResolver extends PropertySourcesPlaceholdersResolver {
 
 		private final Sanitizer sanitizer;
 
-		PropertySourcesPlaceholdersSanitizingResolver(Iterable<PropertySource<?>> sources,
-				Sanitizer sanitizer) {
-			super(sources,
-					new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
-							SystemPropertyUtils.PLACEHOLDER_SUFFIX,
-							SystemPropertyUtils.VALUE_SEPARATOR, true));
+		PropertySourcesPlaceholdersSanitizingResolver(Iterable<PropertySource<?>> sources, Sanitizer sanitizer) {
+			super(sources, new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
+					SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR, true));
 			this.sanitizer = sanitizer;
 		}
 
@@ -241,8 +220,7 @@ public class EnvironmentEndpoint {
 
 		private final List<PropertySourceDescriptor> propertySources;
 
-		private EnvironmentDescriptor(List<String> activeProfiles,
-				List<PropertySourceDescriptor> propertySources) {
+		private EnvironmentDescriptor(List<String> activeProfiles, List<PropertySourceDescriptor> propertySources) {
 			this.activeProfiles = activeProfiles;
 			this.propertySources = propertySources;
 		}
@@ -269,8 +247,7 @@ public class EnvironmentEndpoint {
 
 		private final List<PropertySourceEntryDescriptor> propertySources;
 
-		private EnvironmentEntryDescriptor(PropertySummaryDescriptor property,
-				List<String> activeProfiles,
+		private EnvironmentEntryDescriptor(PropertySummaryDescriptor property, List<String> activeProfiles,
 				List<PropertySourceEntryDescriptor> propertySources) {
 			this.property = property;
 			this.activeProfiles = activeProfiles;
@@ -325,8 +302,7 @@ public class EnvironmentEndpoint {
 
 		private final Map<String, PropertyValueDescriptor> properties;
 
-		private PropertySourceDescriptor(String name,
-				Map<String, PropertyValueDescriptor> properties) {
+		private PropertySourceDescriptor(String name, Map<String, PropertyValueDescriptor> properties) {
 			this.name = name;
 			this.properties = properties;
 		}
@@ -351,8 +327,7 @@ public class EnvironmentEndpoint {
 
 		private final PropertyValueDescriptor property;
 
-		private PropertySourceEntryDescriptor(String name,
-				PropertyValueDescriptor property) {
+		private PropertySourceEntryDescriptor(String name, PropertyValueDescriptor property) {
 			this.name = name;
 			this.property = property;
 		}

@@ -47,8 +47,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ArrayBinderTests {
 
-	private static final Bindable<List<Integer>> INTEGER_LIST = Bindable
-			.listOf(Integer.class);
+	private static final Bindable<List<Integer>> INTEGER_LIST = Bindable.listOf(Integer.class);
 
 	private static final Bindable<Integer[]> INTEGER_ARRAY = Bindable.of(Integer[].class);
 
@@ -78,10 +77,10 @@ public class ArrayBinderTests {
 		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
 		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")),
-				eq(Bindable.of(Integer.class)), any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
-				eq(INTEGER_LIST), any(), isA(List.class));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
+				any(), eq(1));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(INTEGER_LIST), any(),
+				isA(List.class));
 	}
 
 	@Test
@@ -145,11 +144,10 @@ public class ArrayBinderTests {
 		source.put("foo[1]", "1");
 		source.put("foo[3]", "3");
 		this.sources.add(source);
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("foo", INTEGER_ARRAY))
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", INTEGER_ARRAY))
 				.satisfies((ex) -> {
-					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
-							.getCause()).getUnboundProperties();
+					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+							.getUnboundProperties();
 					assertThat(unbound.size()).isEqualTo(1);
 					ConfigurationProperty property = unbound.iterator().next();
 					assertThat(property.getName().toString()).isEqualTo("foo[3]");
@@ -192,8 +190,7 @@ public class ArrayBinderTests {
 		Integer[] existing = new Integer[2];
 		existing[0] = 1000;
 		existing[1] = 1001;
-		Integer[] result = this.binder
-				.bind("foo", INTEGER_ARRAY.withExistingValue(existing)).get();
+		Integer[] result = this.binder.bind("foo", INTEGER_ARRAY.withExistingValue(existing)).get();
 		assertThat(result).containsExactly(1);
 	}
 
@@ -211,10 +208,10 @@ public class ArrayBinderTests {
 		Bindable<Integer[]> target = INTEGER_ARRAY;
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")),
-				eq(Bindable.of(Integer.class)), any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
-				eq(target), any(), isA(Integer[].class));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
+				any(), eq(1));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
+				isA(Integer[].class));
 	}
 
 	@Test
@@ -280,8 +277,8 @@ public class ArrayBinderTests {
 		source.put("foo[0]", "java.lang.RuntimeException");
 		source.put("foo[1]", "java.lang.IllegalStateException");
 		this.sources.add(source);
-		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get())
-				.containsExactly(RuntimeException.class, IllegalStateException.class);
+		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get()).containsExactly(RuntimeException.class,
+				IllegalStateException.class);
 	}
 
 	@Test
@@ -290,8 +287,8 @@ public class ArrayBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "java.lang.RuntimeException,java.lang.IllegalStateException");
 		this.sources.add(source);
-		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get())
-				.containsExactly(RuntimeException.class, IllegalStateException.class);
+		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get()).containsExactly(RuntimeException.class,
+				IllegalStateException.class);
 	}
 
 }

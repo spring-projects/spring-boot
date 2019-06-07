@@ -82,15 +82,14 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
-@AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class,
-		CodecsAutoConfiguration.class, ValidationAutoConfiguration.class })
+@AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
+		ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter",
-			name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled", matchIfMissing = true)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
@@ -116,9 +115,8 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
-		public WebFluxConfig(ResourceProperties resourceProperties,
-				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
+		public WebFluxConfig(ResourceProperties resourceProperties, WebFluxProperties webFluxProperties,
+				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
 				ObjectProvider<ViewResolver> viewResolvers) {
@@ -127,8 +125,7 @@ public class WebFluxAutoConfiguration {
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers;
 			this.codecCustomizers = codecCustomizers;
-			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
-					.getIfAvailable();
+			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer.getIfAvailable();
 			this.viewResolvers = viewResolvers;
 		}
 
@@ -139,8 +136,7 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
-			this.codecCustomizers.orderedStream()
-					.forEach((customizer) -> customizer.customize(configurer));
+			this.codecCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configurer));
 		}
 
 		@Override
@@ -150,17 +146,15 @@ public class WebFluxAutoConfiguration {
 				return;
 			}
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				ResourceHandlerRegistration registration = registry
-						.addResourceHandler("/webjars/**")
+				ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				configureResourceCaching(registration);
 				customizeResourceHandlerRegistration(registration);
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
-				ResourceHandlerRegistration registration = registry
-						.addResourceHandler(staticPathPattern).addResourceLocations(
-								this.resourceProperties.getStaticLocations());
+				ResourceHandlerRegistration registration = registry.addResourceHandler(staticPathPattern)
+						.addResourceLocations(this.resourceProperties.getStaticLocations());
 				configureResourceCaching(registration);
 				customizeResourceHandlerRegistration(registration);
 			}
@@ -168,8 +162,7 @@ public class WebFluxAutoConfiguration {
 
 		private void configureResourceCaching(ResourceHandlerRegistration registration) {
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
-			ResourceProperties.Cache.Cachecontrol cacheControl = this.resourceProperties
-					.getCache().getCachecontrol();
+			ResourceProperties.Cache.Cachecontrol cacheControl = this.resourceProperties.getCache().getCachecontrol();
 			if (cachePeriod != null && cacheControl.getMaxAge() == null) {
 				cacheControl.setMaxAge(cachePeriod);
 			}
@@ -198,8 +191,7 @@ public class WebFluxAutoConfiguration {
 			return this.beanFactory.getBeansOfType(type).values();
 		}
 
-		private void customizeResourceHandlerRegistration(
-				ResourceHandlerRegistration registration) {
+		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
@@ -212,8 +204,7 @@ public class WebFluxAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
 	@Configuration
-	public static class EnableWebFluxConfiguration
-			extends DelegatingWebFluxConfiguration {
+	public static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
 
@@ -228,8 +219,7 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		@Override
 		public FormattingConversionService webFluxConversionService() {
-			WebConversionService conversionService = new WebConversionService(
-					this.webFluxProperties.getDateFormat());
+			WebConversionService conversionService = new WebConversionService(this.webFluxProperties.getDateFormat());
 			addFormatters(conversionService);
 			return conversionService;
 		}
@@ -237,8 +227,7 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		@Override
 		public Validator webFluxValidator() {
-			if (!ClassUtils.isPresent("javax.validation.Validator",
-					getClass().getClassLoader())) {
+			if (!ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
 				return super.webFluxValidator();
 			}
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());
@@ -246,8 +235,8 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
-			if (this.webFluxRegistrations != null && this.webFluxRegistrations
-					.getRequestMappingHandlerAdapter() != null) {
+			if (this.webFluxRegistrations != null
+					&& this.webFluxRegistrations.getRequestMappingHandlerAdapter() != null) {
 				return this.webFluxRegistrations.getRequestMappingHandlerAdapter();
 			}
 			return super.createRequestMappingHandlerAdapter();
@@ -255,8 +244,8 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
-			if (this.webFluxRegistrations != null && this.webFluxRegistrations
-					.getRequestMappingHandlerMapping() != null) {
+			if (this.webFluxRegistrations != null
+					&& this.webFluxRegistrations.getRequestMappingHandlerMapping() != null) {
 				return this.webFluxRegistrations.getRequestMappingHandlerMapping();
 			}
 			return super.createRequestMappingHandlerMapping();

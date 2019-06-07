@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,13 +50,11 @@ public class MetadataStoreTests {
 		File classesLocation = new File(app, "target/classes");
 		File metaInf = new File(classesLocation, "META-INF");
 		metaInf.mkdirs();
-		File additionalMetadata = new File(metaInf,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadata = new File(metaInf, "additional-spring-configuration-metadata.json");
 		additionalMetadata.createNewFile();
-		assertThat(
-				this.metadataStore.locateAdditionalMetadataFile(new File(classesLocation,
-						"META-INF/additional-spring-configuration-metadata.json")))
-								.isEqualTo(additionalMetadata);
+		assertThat(this.metadataStore.locateAdditionalMetadataFile(
+				new File(classesLocation, "META-INF/additional-spring-configuration-metadata.json")))
+						.isEqualTo(additionalMetadata);
 	}
 
 	@Test
@@ -66,13 +64,11 @@ public class MetadataStoreTests {
 		File resourcesLocation = new File(app, "build/resources/main");
 		File metaInf = new File(resourcesLocation, "META-INF");
 		metaInf.mkdirs();
-		File additionalMetadata = new File(metaInf,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadata = new File(metaInf, "additional-spring-configuration-metadata.json");
 		additionalMetadata.createNewFile();
-		assertThat(
-				this.metadataStore.locateAdditionalMetadataFile(new File(classesLocation,
-						"META-INF/additional-spring-configuration-metadata.json")))
-								.isEqualTo(additionalMetadata);
+		assertThat(this.metadataStore.locateAdditionalMetadataFile(
+				new File(classesLocation, "META-INF/additional-spring-configuration-metadata.json")))
+						.isEqualTo(additionalMetadata);
 	}
 
 	@Test
@@ -82,13 +78,11 @@ public class MetadataStoreTests {
 		File resourcesLocation = new File(app, "build/resources/main");
 		File metaInf = new File(resourcesLocation, "META-INF");
 		metaInf.mkdirs();
-		File additionalMetadata = new File(metaInf,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadata = new File(metaInf, "additional-spring-configuration-metadata.json");
 		additionalMetadata.createNewFile();
-		assertThat(
-				this.metadataStore.locateAdditionalMetadataFile(new File(classesLocation,
-						"META-INF/additional-spring-configuration-metadata.json")))
-								.isEqualTo(additionalMetadata);
+		assertThat(this.metadataStore.locateAdditionalMetadataFile(
+				new File(classesLocation, "META-INF/additional-spring-configuration-metadata.json")))
+						.isEqualTo(additionalMetadata);
 	}
 
 	@Test
@@ -97,14 +91,12 @@ public class MetadataStoreTests {
 		File location = new File(app, "src/main/resources");
 		File metaInf = new File(location, "META-INF");
 		metaInf.mkdirs();
-		File additionalMetadata = new File(metaInf,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadata = new File(metaInf, "additional-spring-configuration-metadata.json");
 		additionalMetadata.createNewFile();
-		given(this.environment.getOptions()).willReturn(Collections.singletonMap(
-				ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION,
-				location.getAbsolutePath()));
-		assertThat(this.metadataStore.locateAdditionalMetadataFile(new File(app, "foo")))
-				.isEqualTo(additionalMetadata);
+		given(this.environment.getOptions()).willReturn(
+				Collections.singletonMap(ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION,
+						location.getAbsolutePath()));
+		assertThat(this.metadataStore.locateAdditionalMetadataFile(new File(app, "foo"))).isEqualTo(additionalMetadata);
 	}
 
 }

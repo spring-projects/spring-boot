@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,15 +65,12 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 	private static List<Object> createParameters(String packaging, String container,
 			List<Class<? extends AbstractApplicationLauncher>> applicationLaunchers) {
 		List<Object> parameters = new ArrayList<>();
-		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder,
-				packaging, container);
+		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder, packaging, container);
 		for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {
 			try {
-				AbstractApplicationLauncher launcher = launcherClass
-						.getDeclaredConstructor(ApplicationBuilder.class)
+				AbstractApplicationLauncher launcher = launcherClass.getDeclaredConstructor(ApplicationBuilder.class)
 						.newInstance(applicationBuilder);
-				String name = StringUtils.capitalize(container) + ": "
-						+ launcher.getDescription(packaging);
+				String name = StringUtils.capitalize(container) + ": " + launcher.getDescription(packaging);
 				parameters.add(new Object[] { name, launcher });
 			}
 			catch (Exception ex) {
@@ -83,8 +80,7 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 		return parameters;
 	}
 
-	protected AbstractEmbeddedServletContainerIntegrationTests(String name,
-			AbstractApplicationLauncher launcher) {
+	protected AbstractEmbeddedServletContainerIntegrationTests(String name, AbstractApplicationLauncher launcher) {
 		this.launcher = launcher;
 		this.rest.setErrorHandler(new ResponseErrorHandler() {
 
@@ -103,14 +99,12 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 			@Override
 			public URI expand(String uriTemplate, Object... uriVariables) {
-				return URI.create(
-						"http://localhost:" + launcher.getHttpPort() + uriTemplate);
+				return URI.create("http://localhost:" + launcher.getHttpPort() + uriTemplate);
 			}
 
 			@Override
 			public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
-				return URI.create(
-						"http://localhost:" + launcher.getHttpPort() + uriTemplate);
+				return URI.create("http://localhost:" + launcher.getHttpPort() + uriTemplate);
 			}
 
 		});

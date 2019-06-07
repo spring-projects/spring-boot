@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 	@Test
 	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener() {
 		Ordered injectionListener = new DependencyInjectionTestExecutionListener();
-		assertThat(this.reportListener.getOrder())
-				.isEqualTo(injectionListener.getOrder());
+		assertThat(this.reportListener.getOrder()).isEqualTo(injectionListener.getOrder());
 	}
 
 	@Test
@@ -82,8 +81,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		given(testContext.getApplicationContext()).willThrow(new RuntimeException());
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.reportListener.prepareTestInstance(testContext))
+		assertThatIllegalStateException().isThrownBy(() -> this.reportListener.prepareTestInstance(testContext))
 				.isEqualTo(originalFailure);
 	}
 

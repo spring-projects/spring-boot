@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	private void verifyGradleVersion() {
 		if (GradleVersion.current().compareTo(GradleVersion.version("4.4")) < 0) {
-			throw new GradleException("Spring Boot plugin requires Gradle 4.4 or later."
-					+ " The current version is " + GradleVersion.current());
+			throw new GradleException("Spring Boot plugin requires Gradle 4.4 or later." + " The current version is "
+					+ GradleVersion.current());
 		}
 	}
 
@@ -95,27 +95,20 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	private Configuration createBootArchivesConfiguration(Project project) {
-		Configuration bootArchives = project.getConfigurations()
-				.create(BOOT_ARCHIVES_CONFIGURATION_NAME);
+		Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
 		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
 		return bootArchives;
 	}
 
 	private void registerPluginActions(Project project, Configuration bootArchives) {
-		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(
-				bootArchives.getArtifacts());
-		List<PluginApplicationAction> actions = Arrays.asList(
-				new JavaPluginAction(singlePublishedArtifact),
-				new WarPluginAction(singlePublishedArtifact),
-				new MavenPluginAction(bootArchives.getUploadTaskName()),
-				new DependencyManagementPluginAction(), new ApplicationPluginAction(),
-				new KotlinPluginAction());
+		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives.getArtifacts());
+		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
+				new WarPluginAction(singlePublishedArtifact), new MavenPluginAction(bootArchives.getUploadTaskName()),
+				new DependencyManagementPluginAction(), new ApplicationPluginAction(), new KotlinPluginAction());
 		for (PluginApplicationAction action : actions) {
-			Class<? extends Plugin<? extends Project>> pluginClass = action
-					.getPluginClass();
+			Class<? extends Plugin<? extends Project>> pluginClass = action.getPluginClass();
 			if (pluginClass != null) {
-				project.getPlugins().withType(pluginClass,
-						(plugin) -> action.execute(project));
+				project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project));
 			}
 		}
 	}
@@ -126,29 +119,25 @@ public class SpringBootPlugin implements Plugin<Project> {
 			ResolvableDependencies incoming = configuration.getIncoming();
 			incoming.afterResolve((resolvableDependencies) -> {
 				if (incoming.equals(resolvableDependencies)) {
-					unresolvedDependenciesAnalyzer.analyze(configuration
-							.getResolvedConfiguration().getLenientConfiguration()
-							.getUnresolvedModuleDependencies());
+					unresolvedDependenciesAnalyzer.analyze(configuration.getResolvedConfiguration()
+							.getLenientConfiguration().getUnresolvedModuleDependencies());
 				}
 			});
 		});
-		project.getGradle().buildFinished(
-				(buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
+		project.getGradle().buildFinished((buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
 
 	private static String determineSpringBootVersion() {
-		String implementationVersion = DependencyManagementPluginAction.class.getPackage()
-				.getImplementationVersion();
+		String implementationVersion = DependencyManagementPluginAction.class.getPackage().getImplementationVersion();
 		if (implementationVersion != null) {
 			return implementationVersion;
 		}
-		URL codeSourceLocation = DependencyManagementPluginAction.class
-				.getProtectionDomain().getCodeSource().getLocation();
+		URL codeSourceLocation = DependencyManagementPluginAction.class.getProtectionDomain().getCodeSource()
+				.getLocation();
 		try {
 			URLConnection connection = codeSourceLocation.openConnection();
 			if (connection instanceof JarURLConnection) {
-				return getImplementationVersion(
-						((JarURLConnection) connection).getJarFile());
+				return getImplementationVersion(((JarURLConnection) connection).getJarFile());
 			}
 			try (JarFile jarFile = new JarFile(new File(codeSourceLocation.toURI()))) {
 				return getImplementationVersion(jarFile);
@@ -160,8 +149,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	private static String getImplementationVersion(JarFile jarFile) throws IOException {
-		return jarFile.getManifest().getMainAttributes()
-				.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+		return jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
 	}
 
 }

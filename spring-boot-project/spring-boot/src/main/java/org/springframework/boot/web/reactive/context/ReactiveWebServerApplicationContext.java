@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class ReactiveWebServerApplicationContext
-		extends GenericReactiveWebApplicationContext
+public class ReactiveWebServerApplicationContext extends GenericReactiveWebApplicationContext
 		implements ConfigurableWebServerApplicationContext {
 
 	private volatile ServerManager serverManager;
@@ -79,8 +78,7 @@ public class ReactiveWebServerApplicationContext
 			createWebServer();
 		}
 		catch (Throwable ex) {
-			throw new ApplicationContextException("Unable to start reactive web server",
-					ex);
+			throw new ApplicationContextException("Unable to start reactive web server", ex);
 		}
 	}
 
@@ -100,18 +98,14 @@ public class ReactiveWebServerApplicationContext
 	 */
 	protected ReactiveWebServerFactory getWebServerFactory() {
 		// Use bean names so that we don't consider the hierarchy
-		String[] beanNames = getBeanFactory()
-				.getBeanNamesForType(ReactiveWebServerFactory.class);
+		String[] beanNames = getBeanFactory().getBeanNamesForType(ReactiveWebServerFactory.class);
 		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
-					"Unable to start ReactiveWebApplicationContext due to missing "
-							+ "ReactiveWebServerFactory bean.");
+					"Unable to start ReactiveWebApplicationContext due to missing " + "ReactiveWebServerFactory bean.");
 		}
 		if (beanNames.length > 1) {
-			throw new ApplicationContextException(
-					"Unable to start ReactiveWebApplicationContext due to multiple "
-							+ "ReactiveWebServerFactory beans : "
-							+ StringUtils.arrayToCommaDelimitedString(beanNames));
+			throw new ApplicationContextException("Unable to start ReactiveWebApplicationContext due to multiple "
+					+ "ReactiveWebServerFactory beans : " + StringUtils.arrayToCommaDelimitedString(beanNames));
 		}
 		return getBeanFactory().getBean(beanNames[0], ReactiveWebServerFactory.class);
 	}
@@ -202,10 +196,8 @@ public class ReactiveWebServerApplicationContext
 			this.server = factory.getWebServer(this);
 		}
 
-		private Mono<Void> handleUninitialized(ServerHttpRequest request,
-				ServerHttpResponse response) {
-			throw new IllegalStateException(
-					"The HttpHandler has not yet been initialized");
+		private Mono<Void> handleUninitialized(ServerHttpRequest request, ServerHttpResponse response) {
+			throw new IllegalStateException("The HttpHandler has not yet been initialized");
 		}
 
 		@Override
@@ -225,8 +217,7 @@ public class ReactiveWebServerApplicationContext
 			return (manager != null) ? manager.server : null;
 		}
 
-		public static void start(ServerManager manager,
-				Supplier<HttpHandler> handlerSupplier) {
+		public static void start(ServerManager manager, Supplier<HttpHandler> handlerSupplier) {
 			if (manager != null && manager.server != null) {
 				manager.handler = handlerSupplier.get();
 				manager.server.start();

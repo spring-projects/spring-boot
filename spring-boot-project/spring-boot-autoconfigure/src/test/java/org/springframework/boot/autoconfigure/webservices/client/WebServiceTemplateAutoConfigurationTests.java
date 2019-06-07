@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WebServiceTemplateAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguredBuilderShouldNotHaveMarshallerAndUnmarshaller() {
@@ -63,16 +62,14 @@ public class WebServiceTemplateAutoConfigurationTests {
 		this.contextRunner.run(assertWebServiceTemplateBuilder((builder) -> {
 			WebServiceTemplate webServiceTemplate = builder.build();
 			assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
-			WebServiceMessageSender messageSender = webServiceTemplate
-					.getMessageSenders()[0];
+			WebServiceMessageSender messageSender = webServiceTemplate.getMessageSenders()[0];
 			assertThat(messageSender).isInstanceOf(ClientHttpRequestMessageSender.class);
 		}));
 	}
 
 	@Test
 	public void webServiceTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
-		this.contextRunner
-				.withUserConfiguration(CustomWebServiceTemplateBuilderConfig.class)
+		this.contextRunner.withUserConfiguration(CustomWebServiceTemplateBuilderConfig.class)
 				.run(assertWebServiceTemplateBuilder((builder) -> {
 					WebServiceTemplate webServiceTemplate = builder.build();
 					assertThat(webServiceTemplate.getMarshaller())
@@ -108,8 +105,7 @@ public class WebServiceTemplateAutoConfigurationTests {
 	static class DirtyWebServiceTemplateConfig {
 
 		@Bean
-		public WebServiceTemplate webServiceTemplateOne(
-				WebServiceTemplateBuilder builder) {
+		public WebServiceTemplate webServiceTemplateOne(WebServiceTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}
@@ -119,8 +115,7 @@ public class WebServiceTemplateAutoConfigurationTests {
 		}
 
 		@Bean
-		public WebServiceTemplate webServiceTemplateTwo(
-				WebServiceTemplateBuilder builder) {
+		public WebServiceTemplate webServiceTemplateTwo(WebServiceTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}

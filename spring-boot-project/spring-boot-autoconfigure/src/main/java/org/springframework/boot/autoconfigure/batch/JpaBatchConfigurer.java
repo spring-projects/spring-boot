@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,16 +46,14 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
 	protected JpaBatchConfigurer(BatchProperties properties, DataSource dataSource,
-			TransactionManagerCustomizers transactionManagerCustomizers,
-			EntityManagerFactory entityManagerFactory) {
+			TransactionManagerCustomizers transactionManagerCustomizers, EntityManagerFactory entityManagerFactory) {
 		super(properties, dataSource, transactionManagerCustomizers);
 		this.entityManagerFactory = entityManagerFactory;
 	}
 
 	@Override
 	protected String determineIsolationLevel() {
-		logger.warn(
-				"JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
+		logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
 		return "ISOLATION_DEFAULT";
 	}
 

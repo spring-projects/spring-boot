@@ -73,8 +73,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HealthIndicatorRegistry.class)
-	public HealthIndicatorRegistry healthIndicatorRegistry(
-			ApplicationContext applicationContext) {
+	public HealthIndicatorRegistry healthIndicatorRegistry(ApplicationContext applicationContext) {
 		return HealthIndicatorRegistryBeans.get(applicationContext);
 	}
 
@@ -88,8 +87,7 @@ public class HealthIndicatorAutoConfiguration {
 				Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 				Map<String, HealthIndicator> healthIndicators) {
 			return new ReactiveHealthIndicatorRegistryFactory()
-					.createReactiveHealthIndicatorRegistry(reactiveHealthIndicators,
-							healthIndicators);
+					.createReactiveHealthIndicatorRegistry(reactiveHealthIndicators, healthIndicators);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class NettyReactiveWebServerFactoryTests
-		extends AbstractReactiveWebServerFactoryTests {
+public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected NettyReactiveWebServerFactory getFactory() {
@@ -53,8 +52,7 @@ public class NettyReactiveWebServerFactoryTests
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
-		assertThatExceptionOfType(PortInUseException.class)
-				.isThrownBy(factory.getWebServer(new EchoHandler())::start)
+		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
 				.satisfies(this::portMatchesRequirement);
 	}
 
@@ -68,8 +66,7 @@ public class NettyReactiveWebServerFactoryTests
 		NettyServerCustomizer[] customizers = new NettyServerCustomizer[2];
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(NettyServerCustomizer.class);
-			given(customizers[i].apply(any(HttpServer.class)))
-					.will((invocation) -> invocation.getArgument(0));
+			given(customizers[i].apply(any(HttpServer.class))).will((invocation) -> invocation.getArgument(0));
 		}
 		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		this.webServer = factory.getWebServer(new EchoHandler());

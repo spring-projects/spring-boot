@@ -39,10 +39,8 @@ public class ScheduledTasksEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ScheduledTasksEndpoint scheduledTasksEndpoint(
-			ObjectProvider<ScheduledTaskHolder> holders) {
-		return new ScheduledTasksEndpoint(
-				holders.orderedStream().collect(Collectors.toList()));
+	public ScheduledTasksEndpoint scheduledTasksEndpoint(ObjectProvider<ScheduledTaskHolder> holders) {
+		return new ScheduledTasksEndpoint(holders.orderedStream().collect(Collectors.toList()));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,38 +75,27 @@ public class MongoPropertiesTests {
 		builder.requiredReplicaSetName("testReplicaSetName");
 		MongoClientOptions options = builder.build();
 		MongoProperties properties = new MongoProperties();
-		MongoClient client = new MongoClientFactory(properties, null)
-				.createMongoClient(options);
+		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(options);
 		MongoClientOptions wrapped = client.getMongoClientOptions();
 		assertThat(wrapped.isAlwaysUseMBeans()).isEqualTo(options.isAlwaysUseMBeans());
-		assertThat(wrapped.getConnectionsPerHost())
-				.isEqualTo(options.getConnectionsPerHost());
+		assertThat(wrapped.getConnectionsPerHost()).isEqualTo(options.getConnectionsPerHost());
 		assertThat(wrapped.getConnectTimeout()).isEqualTo(options.getConnectTimeout());
-		assertThat(wrapped.isCursorFinalizerEnabled())
-				.isEqualTo(options.isCursorFinalizerEnabled());
+		assertThat(wrapped.isCursorFinalizerEnabled()).isEqualTo(options.isCursorFinalizerEnabled());
 		assertThat(wrapped.getDescription()).isEqualTo(options.getDescription());
 		assertThat(wrapped.getMaxWaitTime()).isEqualTo(options.getMaxWaitTime());
 		assertThat(wrapped.getSocketTimeout()).isEqualTo(options.getSocketTimeout());
 		assertThat(wrapped.isSocketKeepAlive()).isEqualTo(options.isSocketKeepAlive());
 		assertThat(wrapped.getThreadsAllowedToBlockForConnectionMultiplier())
 				.isEqualTo(options.getThreadsAllowedToBlockForConnectionMultiplier());
-		assertThat(wrapped.getMinConnectionsPerHost())
-				.isEqualTo(options.getMinConnectionsPerHost());
-		assertThat(wrapped.getMaxConnectionIdleTime())
-				.isEqualTo(options.getMaxConnectionIdleTime());
-		assertThat(wrapped.getMaxConnectionLifeTime())
-				.isEqualTo(options.getMaxConnectionLifeTime());
-		assertThat(wrapped.getHeartbeatFrequency())
-				.isEqualTo(options.getHeartbeatFrequency());
-		assertThat(wrapped.getMinHeartbeatFrequency())
-				.isEqualTo(options.getMinHeartbeatFrequency());
-		assertThat(wrapped.getHeartbeatConnectTimeout())
-				.isEqualTo(options.getHeartbeatConnectTimeout());
-		assertThat(wrapped.getHeartbeatSocketTimeout())
-				.isEqualTo(options.getHeartbeatSocketTimeout());
+		assertThat(wrapped.getMinConnectionsPerHost()).isEqualTo(options.getMinConnectionsPerHost());
+		assertThat(wrapped.getMaxConnectionIdleTime()).isEqualTo(options.getMaxConnectionIdleTime());
+		assertThat(wrapped.getMaxConnectionLifeTime()).isEqualTo(options.getMaxConnectionLifeTime());
+		assertThat(wrapped.getHeartbeatFrequency()).isEqualTo(options.getHeartbeatFrequency());
+		assertThat(wrapped.getMinHeartbeatFrequency()).isEqualTo(options.getMinHeartbeatFrequency());
+		assertThat(wrapped.getHeartbeatConnectTimeout()).isEqualTo(options.getHeartbeatConnectTimeout());
+		assertThat(wrapped.getHeartbeatSocketTimeout()).isEqualTo(options.getHeartbeatSocketTimeout());
 		assertThat(wrapped.getLocalThreshold()).isEqualTo(options.getLocalThreshold());
-		assertThat(wrapped.getRequiredReplicaSetName())
-				.isEqualTo(options.getRequiredReplicaSetName());
+		assertThat(wrapped.getRequiredReplicaSetName()).isEqualTo(options.getRequiredReplicaSetName());
 	}
 
 	@Test
@@ -115,8 +104,7 @@ public class MongoPropertiesTests {
 		properties.setHost("localhost");
 		properties.setPort(27017);
 		properties.setUri("mongodb://mongo1.example.com:12345");
-		MongoClient client = new MongoClientFactory(properties, null)
-				.createMongoClient(null);
+		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
@@ -127,8 +115,7 @@ public class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("localhost");
 		properties.setPort(27017);
-		MongoClient client = new MongoClientFactory(properties, null)
-				.createMongoClient(null);
+		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
@@ -138,8 +125,7 @@ public class MongoPropertiesTests {
 	public void onlyUriSetShouldUseThat() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo1.example.com:12345");
-		MongoClient client = new MongoClientFactory(properties, null)
-				.createMongoClient(null);
+		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
@@ -148,15 +134,13 @@ public class MongoPropertiesTests {
 	@Test
 	public void noCustomAddressAndNoUriUsesDefaultUri() {
 		MongoProperties properties = new MongoProperties();
-		MongoClient client = new MongoClientFactory(properties, null)
-				.createMongoClient(null);
+		MongoClient client = new MongoClientFactory(properties, null).createMongoClient(null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 27017);
 	}
 
-	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
-			int expectedPort) {
+	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
 		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
 		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
 	}

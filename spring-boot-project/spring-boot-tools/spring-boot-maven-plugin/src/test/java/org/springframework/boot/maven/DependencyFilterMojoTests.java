@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,34 +41,29 @@ public class DependencyFilterMojoTests {
 
 	@Test
 	public void filterDependencies() throws MojoExecutionException {
-		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.emptyList(), "com.foo");
+		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 
 		Artifact artifact = createArtifact("com.bar", "one");
-		Set<Artifact> artifacts = mojo.filterDependencies(
-				createArtifact("com.foo", "one"), createArtifact("com.foo", "two"),
-				artifact);
+		Set<Artifact> artifacts = mojo.filterDependencies(createArtifact("com.foo", "one"),
+				createArtifact("com.foo", "two"), artifact);
 		assertThat(artifacts).hasSize(1);
 		assertThat(artifacts.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
 	public void filterGroupIdExactMatch() throws MojoExecutionException {
-		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.emptyList(), "com.foo");
+		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 
 		Artifact artifact = createArtifact("com.foo.bar", "one");
-		Set<Artifact> artifacts = mojo.filterDependencies(
-				createArtifact("com.foo", "one"), createArtifact("com.foo", "two"),
-				artifact);
+		Set<Artifact> artifacts = mojo.filterDependencies(createArtifact("com.foo", "one"),
+				createArtifact("com.foo", "two"), artifact);
 		assertThat(artifacts).hasSize(1);
 		assertThat(artifacts.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
 	public void filterScopeKeepOrder() throws MojoExecutionException {
-		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.emptyList(), "",
+		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "",
 				new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
 		Artifact one = createArtifact("com.foo", "one");
 		Artifact two = createArtifact("com.foo", "two", Artifact.SCOPE_SYSTEM);
@@ -79,8 +74,7 @@ public class DependencyFilterMojoTests {
 
 	@Test
 	public void filterGroupIdKeepOrder() throws MojoExecutionException {
-		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.emptyList(), "com.foo");
+		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 		Artifact one = createArtifact("com.foo", "one");
 		Artifact two = createArtifact("com.bar", "two");
 		Artifact three = createArtifact("com.bar", "three");
@@ -94,8 +88,7 @@ public class DependencyFilterMojoTests {
 		Exclude exclude = new Exclude();
 		exclude.setGroupId("com.bar");
 		exclude.setArtifactId("two");
-		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.singletonList(exclude), "");
+		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.singletonList(exclude), "");
 		Artifact one = createArtifact("com.foo", "one");
 		Artifact two = createArtifact("com.bar", "two");
 		Artifact three = createArtifact("com.bar", "three");
@@ -108,8 +101,7 @@ public class DependencyFilterMojoTests {
 		return createArtifact(groupId, artifactId, null);
 	}
 
-	private static Artifact createArtifact(String groupId, String artifactId,
-			String scope) {
+	private static Artifact createArtifact(String groupId, String artifactId, String scope) {
 		Artifact a = mock(Artifact.class);
 		given(a.getGroupId()).willReturn(groupId);
 		given(a.getArtifactId()).willReturn(artifactId);
@@ -119,20 +111,18 @@ public class DependencyFilterMojoTests {
 		return a;
 	}
 
-	private static final class TestableDependencyFilterMojo
-			extends AbstractDependencyFilterMojo {
+	private static final class TestableDependencyFilterMojo extends AbstractDependencyFilterMojo {
 
 		private final ArtifactsFilter[] additionalFilters;
 
-		private TestableDependencyFilterMojo(List<Exclude> excludes,
-				String excludeGroupIds, ArtifactsFilter... additionalFilters) {
+		private TestableDependencyFilterMojo(List<Exclude> excludes, String excludeGroupIds,
+				ArtifactsFilter... additionalFilters) {
 			setExcludes(excludes);
 			setExcludeGroupIds(excludeGroupIds);
 			this.additionalFilters = additionalFilters;
 		}
 
-		public Set<Artifact> filterDependencies(Artifact... artifacts)
-				throws MojoExecutionException {
+		public Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
 			Set<Artifact> input = new LinkedHashSet<>(Arrays.asList(artifacts));
 			return filterDependencies(input, getFilters(this.additionalFilters));
 		}

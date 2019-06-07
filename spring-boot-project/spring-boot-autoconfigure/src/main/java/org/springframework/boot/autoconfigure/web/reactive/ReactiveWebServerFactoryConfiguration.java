@@ -53,8 +53,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(
-				ReactorResourceFactory resourceFactory) {
+		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(ReactorResourceFactory resourceFactory) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory();
 			serverFactory.setResourceFactory(resourceFactory);
 			return serverFactory;
@@ -86,8 +85,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		}
 
 		@Bean
-		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory(
-				JettyResourceFactory resourceFactory) {
+		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory) {
 			JettyReactiveWebServerFactory serverFactory = new JettyReactiveWebServerFactory();
 			serverFactory.setResourceFactory(resourceFactory);
 			return serverFactory;

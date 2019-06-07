@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,11 @@ import org.springframework.util.StringUtils;
  */
 class ResourceMatcher {
 
-	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**",
-			"static/**", "templates/**", "META-INF/**", "*" };
+	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**", "static/**", "templates/**",
+			"META-INF/**", "*" };
 
-	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
-			"target/**", "**/*.jar", "**/*.groovy" };
+	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**", "target/**", "**/*.jar",
+			"**/*.groovy" };
 
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -187,8 +187,8 @@ class ResourceMatcher {
 		}
 
 		private MatchedResource(File rootFolder, File file) {
-			this.name = StringUtils.cleanPath(file.getAbsolutePath()
-					.substring(rootFolder.getAbsolutePath().length() + 1));
+			this.name = StringUtils
+					.cleanPath(file.getAbsolutePath().substring(rootFolder.getAbsolutePath().length() + 1));
 			this.file = file;
 			this.root = false;
 		}

@@ -47,31 +47,24 @@ public class HttpTraceWebFilterTests {
 
 	private final InMemoryHttpTraceRepository repository = new InMemoryHttpTraceRepository();
 
-	private final HttpExchangeTracer tracer = new HttpExchangeTracer(
-			EnumSet.allOf(Include.class));
+	private final HttpExchangeTracer tracer = new HttpExchangeTracer(EnumSet.allOf(Include.class));
 
-	private final HttpTraceWebFilter filter = new HttpTraceWebFilter(this.repository,
-			this.tracer, EnumSet.allOf(Include.class));
+	private final HttpTraceWebFilter filter = new HttpTraceWebFilter(this.repository, this.tracer,
+			EnumSet.allOf(Include.class));
 
 	@Test
 	public void filterTracesExchange() {
-		executeFilter(
-				MockServerWebExchange
-						.from(MockServerHttpRequest.get("https://api.example.com")),
+		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> Mono.empty()).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
 	@Test
 	public void filterCapturesSessionIdWhenSessionIsUsed() {
-		executeFilter(
-				MockServerWebExchange
-						.from(MockServerHttpRequest.get("https://api.example.com")),
-				(exchange) -> {
-					exchange.getSession().block(Duration.ofSeconds(30)).getAttributes()
-							.put("a", "alpha");
-					return Mono.empty();
-				}).block(Duration.ofSeconds(30));
+		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")), (exchange) -> {
+			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes().put("a", "alpha");
+			return Mono.empty();
+		}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNotNull();
@@ -80,13 +73,10 @@ public class HttpTraceWebFilterTests {
 
 	@Test
 	public void filterDoesNotCaptureIdOfUnusedSession() {
-		executeFilter(
-				MockServerWebExchange
-						.from(MockServerHttpRequest.get("https://api.example.com")),
-				(exchange) -> {
-					exchange.getSession().block(Duration.ofSeconds(30));
-					return Mono.empty();
-				}).block(Duration.ofSeconds(30));
+		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")), (exchange) -> {
+			exchange.getSession().block(Duration.ofSeconds(30));
+			return Mono.empty();
+		}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNull();
@@ -96,8 +86,8 @@ public class HttpTraceWebFilterTests {
 	public void filterCapturesPrincipal() {
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
-		executeFilter(new ServerWebExchangeDecorator(MockServerWebExchange
-				.from(MockServerHttpRequest.get("https://api.example.com"))) {
+		executeFilter(new ServerWebExchangeDecorator(
+				MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com"))) {
 
 			@Override
 			public Mono<Principal> getPrincipal() {
@@ -105,20 +95,18 @@ public class HttpTraceWebFilterTests {
 			}
 
 		}, (exchange) -> {
-			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes().put("a",
-					"alpha");
+			exchange.getSession().block(Duration.ofSeconds(30)).getAttributes().put("a", "alpha");
 			return Mono.empty();
 		}).block(Duration.ofSeconds(30));
 		assertThat(this.repository.findAll()).hasSize(1);
-		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository
-				.findAll().get(0).getPrincipal();
+		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository.findAll()
+				.get(0).getPrincipal();
 		assertThat(tracedPrincipal).isNotNull();
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
 	}
 
 	private Mono<Void> executeFilter(ServerWebExchange exchange, WebFilterChain chain) {
-		return this.filter.filter(exchange, chain)
-				.then(Mono.defer(() -> exchange.getResponse().setComplete()));
+		return this.filter.filter(exchange, chain).then(Mono.defer(() -> exchange.getResponse().setComplete()));
 	}
 
 }

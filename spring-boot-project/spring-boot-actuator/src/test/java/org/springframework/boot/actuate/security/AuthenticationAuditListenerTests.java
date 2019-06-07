@@ -46,8 +46,7 @@ public class AuthenticationAuditListenerTests {
 
 	private final AuthenticationAuditListener listener = new AuthenticationAuditListener();
 
-	private final ApplicationEventPublisher publisher = mock(
-			ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
 	@Before
 	public void init() {
@@ -57,10 +56,8 @@ public class AuthenticationAuditListenerTests {
 	@Test
 	public void testAuthenticationSuccess() {
 		AuditApplicationEvent event = handleAuthenticationEvent(
-				new AuthenticationSuccessEvent(
-						new UsernamePasswordAuthenticationToken("user", "password")));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SUCCESS);
+				new AuthenticationSuccessEvent(new UsernamePasswordAuthenticationToken("user", "password")));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SUCCESS);
 	}
 
 	@Test
@@ -73,53 +70,40 @@ public class AuthenticationAuditListenerTests {
 
 	@Test
 	public void testAuthenticationFailed() {
-		AuditApplicationEvent event = handleAuthenticationEvent(
-				new AuthenticationFailureExpiredEvent(
-						new UsernamePasswordAuthenticationToken("user", "password"),
-						new BadCredentialsException("Bad user")));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
+		AuditApplicationEvent event = handleAuthenticationEvent(new AuthenticationFailureExpiredEvent(
+				new UsernamePasswordAuthenticationToken("user", "password"), new BadCredentialsException("Bad user")));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
 	}
 
 	@Test
 	public void testAuthenticationSwitch() {
 		AuditApplicationEvent event = handleAuthenticationEvent(
-				new AuthenticationSwitchUserEvent(
-						new UsernamePasswordAuthenticationToken("user", "password"),
-						new User("user", "password", AuthorityUtils
-								.commaSeparatedStringToAuthorityList("USER"))));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
+				new AuthenticationSwitchUserEvent(new UsernamePasswordAuthenticationToken("user", "password"),
+						new User("user", "password", AuthorityUtils.commaSeparatedStringToAuthorityList("USER"))));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
 	}
 
 	@Test
 	public void testAuthenticationSwitchBackToAnonymous() {
 		AuditApplicationEvent event = handleAuthenticationEvent(
-				new AuthenticationSwitchUserEvent(
-						new UsernamePasswordAuthenticationToken("user", "password"),
-						null));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
+				new AuthenticationSwitchUserEvent(new UsernamePasswordAuthenticationToken("user", "password"), null));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SWITCH);
 	}
 
 	@Test
 	public void testDetailsAreIncludedInAuditEvent() {
 		Object details = new Object();
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-				"user", "password");
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user",
+				"password");
 		authentication.setDetails(details);
 		AuditApplicationEvent event = handleAuthenticationEvent(
-				new AuthenticationFailureExpiredEvent(authentication,
-						new BadCredentialsException("Bad user")));
-		assertThat(event.getAuditEvent().getType())
-				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
+				new AuthenticationFailureExpiredEvent(authentication, new BadCredentialsException("Bad user")));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
 		assertThat(event.getAuditEvent().getData()).containsEntry("details", details);
 	}
 
-	private AuditApplicationEvent handleAuthenticationEvent(
-			AbstractAuthenticationEvent event) {
-		ArgumentCaptor<AuditApplicationEvent> eventCaptor = ArgumentCaptor
-				.forClass(AuditApplicationEvent.class);
+	private AuditApplicationEvent handleAuthenticationEvent(AbstractAuthenticationEvent event) {
+		ArgumentCaptor<AuditApplicationEvent> eventCaptor = ArgumentCaptor.forClass(AuditApplicationEvent.class);
 		this.listener.onApplicationEvent(event);
 		verify(this.publisher).publishEvent(eventCaptor.capture());
 		return eventCaptor.getValue();

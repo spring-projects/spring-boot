@@ -75,8 +75,7 @@ public class SocketTargetServerConnectionTests {
 		this.server.start();
 		ByteChannel channel = this.connection.open(10);
 		long startTime = System.currentTimeMillis();
-		assertThatExceptionOfType(SocketTimeoutException.class)
-				.isThrownBy(() -> channel.read(ByteBuffer.allocate(5)))
+		assertThatExceptionOfType(SocketTimeoutException.class).isThrownBy(() -> channel.read(ByteBuffer.allocate(5)))
 				.satisfies((ex) -> {
 					long runTime = System.currentTimeMillis() - startTime;
 					assertThat(runTime).isGreaterThanOrEqualTo(10L);
@@ -149,8 +148,7 @@ public class SocketTargetServerConnectionTests {
 						}
 					}
 					if (MockServer.this.expect != null) {
-						ByteBuffer buffer = ByteBuffer
-								.allocate(MockServer.this.expect.length);
+						ByteBuffer buffer = ByteBuffer.allocate(MockServer.this.expect.length);
 						while (buffer.hasRemaining()) {
 							channel.read(buffer);
 						}

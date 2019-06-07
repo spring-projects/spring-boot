@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public class ReactiveHealthIndicatorRegistryFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;
 
-	public ReactiveHealthIndicatorRegistryFactory(
-			Function<String, String> healthIndicatorNameFactory) {
+	public ReactiveHealthIndicatorRegistryFactory(Function<String, String> healthIndicatorNameFactory) {
 		this.healthIndicatorNameFactory = healthIndicatorNameFactory;
 	}
 
@@ -57,35 +56,29 @@ public class ReactiveHealthIndicatorRegistryFactory {
 	public ReactiveHealthIndicatorRegistry createReactiveHealthIndicatorRegistry(
 			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
-		Assert.notNull(reactiveHealthIndicators,
-				"ReactiveHealthIndicators must not be null");
-		return initialize(new DefaultReactiveHealthIndicatorRegistry(),
-				reactiveHealthIndicators, healthIndicators);
+		Assert.notNull(reactiveHealthIndicators, "ReactiveHealthIndicators must not be null");
+		return initialize(new DefaultReactiveHealthIndicatorRegistry(), reactiveHealthIndicators, healthIndicators);
 	}
 
 	protected <T extends ReactiveHealthIndicatorRegistry> T initialize(T registry,
 			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
-		merge(reactiveHealthIndicators, healthIndicators)
-				.forEach((beanName, indicator) -> {
-					String name = this.healthIndicatorNameFactory.apply(beanName);
-					registry.register(name, indicator);
-				});
+		merge(reactiveHealthIndicators, healthIndicators).forEach((beanName, indicator) -> {
+			String name = this.healthIndicatorNameFactory.apply(beanName);
+			registry.register(name, indicator);
+		});
 		return registry;
 	}
 
-	private Map<String, ReactiveHealthIndicator> merge(
-			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
+	private Map<String, ReactiveHealthIndicator> merge(Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
 		if (ObjectUtils.isEmpty(healthIndicators)) {
 			return reactiveHealthIndicators;
 		}
-		Map<String, ReactiveHealthIndicator> allIndicators = new LinkedHashMap<>(
-				reactiveHealthIndicators);
+		Map<String, ReactiveHealthIndicator> allIndicators = new LinkedHashMap<>(reactiveHealthIndicators);
 		healthIndicators.forEach((beanName, indicator) -> {
 			String name = this.healthIndicatorNameFactory.apply(beanName);
-			allIndicators.computeIfAbsent(name,
-					(n) -> new HealthIndicatorReactiveAdapter(indicator));
+			allIndicators.computeIfAbsent(name, (n) -> new HealthIndicatorReactiveAdapter(indicator));
 		});
 		return allIndicators;
 	}

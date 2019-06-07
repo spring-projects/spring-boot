@@ -65,8 +65,7 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private final WebFluxTest annotation;
 
 	WebFluxTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				WebFluxTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, WebFluxTest.class);
 	}
 
 	@Override

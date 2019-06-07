@@ -62,13 +62,11 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 @Configuration
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
-@ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class,
-		JpaRepositoryConfigExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
+@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @Import(JpaRepositoriesAutoConfigureRegistrar.class)
-@AutoConfigureAfter({ HibernateJpaAutoConfiguration.class,
-		TaskExecutionAutoConfiguration.class })
+@AutoConfigureAfter({ HibernateJpaAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
 
 	@Bean
@@ -76,21 +74,18 @@ public class JpaRepositoriesAutoConfiguration {
 	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
 		return (builder) -> {
-			AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(
-					taskExecutors);
+			AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
 			if (bootstrapExecutor != null) {
 				builder.setBootstrapExecutor(bootstrapExecutor);
 			}
 		};
 	}
 
-	private AsyncTaskExecutor determineBootstrapExecutor(
-			Map<String, AsyncTaskExecutor> taskExecutors) {
+	private AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
 		if (taskExecutors.size() == 1) {
 			return taskExecutors.values().iterator().next();
 		}
-		return taskExecutors
-				.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+		return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 	}
 
 	private static final class BootstrapExecutorCondition extends AnyNestedCondition {
@@ -99,14 +94,14 @@ public class JpaRepositoriesAutoConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories",
-				name = "bootstrap-mode", havingValue = "deferred", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode",
+				havingValue = "deferred", matchIfMissing = false)
 		static class DeferredBootstrapMode {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories",
-				name = "bootstrap-mode", havingValue = "lazy", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy",
+				matchIfMissing = false)
 		static class LazyBootstrapMode {
 
 		}

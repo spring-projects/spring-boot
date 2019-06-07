@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,10 +82,10 @@ public class MeterValueTests {
 	public void valueOfShouldWorkInBinder() {
 		MockEnvironment environment = new MockEnvironment();
 		TestPropertyValues.of("duration=10ms", "long=20").applyTo(environment);
-		assertThat(Binder.get(environment).bind("duration", Bindable.of(MeterValue.class))
-				.get().getValue(Type.TIMER)).isEqualTo(10000000);
-		assertThat(Binder.get(environment).bind("long", Bindable.of(MeterValue.class))
-				.get().getValue(Type.TIMER)).isEqualTo(20000000);
+		assertThat(Binder.get(environment).bind("duration", Bindable.of(MeterValue.class)).get().getValue(Type.TIMER))
+				.isEqualTo(10000000);
+		assertThat(Binder.get(environment).bind("long", Bindable.of(MeterValue.class)).get().getValue(Type.TIMER))
+				.isEqualTo(20000000);
 	}
 
 }

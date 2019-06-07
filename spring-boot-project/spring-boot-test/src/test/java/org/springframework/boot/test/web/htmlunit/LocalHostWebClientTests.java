@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class LocalHostWebClientTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebClient(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebClient(null))
 				.withMessageContaining("Environment must not be null");
 	}
 
@@ -68,13 +67,11 @@ public class LocalHostWebClientTests {
 		client.setWebConnection(connection);
 		client.getPage("/test");
 		verify(connection).getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl())
-				.isEqualTo(new URL("http://localhost:8080/test"));
+		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8080/test"));
 	}
 
 	@Test
-	public void getPageWhenUrlIsRelativeAndHasPortWillUseLocalhostPort()
-			throws Exception {
+	public void getPageWhenUrlIsRelativeAndHasPortWillUseLocalhostPort() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "8181");
 		WebClient client = new LocalHostWebClient(environment);
@@ -82,8 +79,7 @@ public class LocalHostWebClientTests {
 		client.setWebConnection(connection);
 		client.getPage("/test");
 		verify(connection).getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl())
-				.isEqualTo(new URL("http://localhost:8181/test"));
+		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8181/test"));
 	}
 
 	private WebConnection mockConnection() throws IOException {

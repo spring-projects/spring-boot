@@ -43,24 +43,21 @@ import org.springframework.context.annotation.Configuration;
 public class SystemMetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public UptimeMetrics uptimeMetrics() {
 		return new UptimeMetrics();
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public ProcessorMetrics processorMetrics() {
 		return new ProcessorMetrics();
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "management.metrics.binders.files.enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "management.metrics.binders.files.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public FileDescriptorMetrics fileDescriptorMetrics() {
 		return new FileDescriptorMetrics();

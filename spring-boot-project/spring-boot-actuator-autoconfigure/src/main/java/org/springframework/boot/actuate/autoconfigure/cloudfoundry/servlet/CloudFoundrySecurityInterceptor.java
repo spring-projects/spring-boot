@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ import org.springframework.web.cors.CorsUtils;
  */
 class CloudFoundrySecurityInterceptor {
 
-	private static final Log logger = LogFactory
-			.getLog(CloudFoundrySecurityInterceptor.class);
+	private static final Log logger = LogFactory.getLog(CloudFoundrySecurityInterceptor.class);
 
 	private final TokenValidator tokenValidator;
 
@@ -53,8 +52,7 @@ class CloudFoundrySecurityInterceptor {
 	private static final SecurityResponse SUCCESS = SecurityResponse.success();
 
 	CloudFoundrySecurityInterceptor(TokenValidator tokenValidator,
-			CloudFoundrySecurityService cloudFoundrySecurityService,
-			String applicationId) {
+			CloudFoundrySecurityService cloudFoundrySecurityService, String applicationId) {
 		this.tokenValidator = tokenValidator;
 		this.cloudFoundrySecurityService = cloudFoundrySecurityService;
 		this.applicationId = applicationId;
@@ -85,22 +83,17 @@ class CloudFoundrySecurityInterceptor {
 				return new SecurityResponse(cfException.getStatusCode(),
 						"{\"security_error\":\"" + cfException.getMessage() + "\"}");
 			}
-			return new SecurityResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-					ex.getMessage());
+			return new SecurityResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
 		return SecurityResponse.success();
 	}
 
-	private void check(HttpServletRequest request, EndpointId endpointId)
-			throws Exception {
+	private void check(HttpServletRequest request, EndpointId endpointId) throws Exception {
 		Token token = getToken(request);
 		this.tokenValidator.validate(token);
-		AccessLevel accessLevel = this.cloudFoundrySecurityService
-				.getAccessLevel(token.toString(), this.applicationId);
-		if (!accessLevel.isAccessAllowed(
-				(endpointId != null) ? endpointId.toLowerCaseString() : "")) {
-			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
-					"Access denied");
+		AccessLevel accessLevel = this.cloudFoundrySecurityService.getAccessLevel(token.toString(), this.applicationId);
+		if (!accessLevel.isAccessAllowed((endpointId != null) ? endpointId.toLowerCaseString() : "")) {
+			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED, "Access denied");
 		}
 		request.setAttribute(AccessLevel.REQUEST_ATTRIBUTE, accessLevel);
 	}
@@ -108,8 +101,7 @@ class CloudFoundrySecurityInterceptor {
 	private Token getToken(HttpServletRequest request) {
 		String authorization = request.getHeader("Authorization");
 		String bearerPrefix = "bearer ";
-		if (authorization == null
-				|| !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) {
+		if (authorization == null || !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) {
 			throw new CloudFoundryAuthorizationException(Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}

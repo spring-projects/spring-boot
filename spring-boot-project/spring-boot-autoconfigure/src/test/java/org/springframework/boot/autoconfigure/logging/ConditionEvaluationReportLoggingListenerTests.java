@@ -65,10 +65,8 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		this.initializer.initialize(context);
 		context.register(Config.class);
 		context.refresh();
-		withDebugLogging(() -> this.initializer
-				.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(this.outputCapture.toString())
-				.contains("CONDITIONS EVALUATION REPORT");
+		withDebugLogging(() -> this.initializer.onApplicationEvent(new ContextRefreshedEvent(context)));
+		assertThat(this.outputCapture.toString()).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
@@ -76,12 +74,10 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh).satisfies(
-				(ex) -> withDebugLogging(() -> this.initializer.onApplicationEvent(
-						new ApplicationFailedEvent(new SpringApplication(), new String[0],
-								context, ex))));
-		assertThat(this.outputCapture.toString())
-				.contains("CONDITIONS EVALUATION REPORT");
+		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
+				.satisfies((ex) -> withDebugLogging(() -> this.initializer.onApplicationEvent(
+						new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
+		assertThat(this.outputCapture.toString()).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
@@ -89,13 +85,11 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
-				.satisfies((ex) -> this.initializer.onApplicationEvent(
-						new ApplicationFailedEvent(new SpringApplication(), new String[0],
-								context, ex)));
-		assertThat(this.outputCapture.toString()).contains("Error starting"
-				+ " ApplicationContext. To display the conditions report re-run"
-				+ " your application with 'debug' enabled.");
+		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh).satisfies((ex) -> this.initializer
+				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex)));
+		assertThat(this.outputCapture.toString())
+				.contains("Error starting" + " ApplicationContext. To display the conditions report re-run"
+						+ " your application with 'debug' enabled.");
 	}
 
 	@Test
@@ -103,13 +97,10 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
-		ConditionEvaluationReport.get(context.getBeanFactory())
-				.recordExclusions(Arrays.asList("com.foo.Bar"));
+		ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(Arrays.asList("com.foo.Bar"));
 		context.refresh();
-		withDebugLogging(() -> this.initializer
-				.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(this.outputCapture.toString())
-				.contains("not a servlet web application (OnWebApplicationCondition)");
+		withDebugLogging(() -> this.initializer.onApplicationEvent(new ContextRefreshedEvent(context)));
+		assertThat(this.outputCapture.toString()).contains("not a servlet web application (OnWebApplicationCondition)");
 	}
 
 	@Test
@@ -140,29 +131,25 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		context.register(Config.class);
 		context.refresh();
 		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		assertThat(this.outputCapture.toString())
-				.contains("CONDITIONS EVALUATION REPORT");
+		assertThat(this.outputCapture.toString()).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
 	public void listenerSupportsOnlyInfoAndDebug() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new ConditionEvaluationReportLoggingListener(LogLevel.TRACE))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ConditionEvaluationReportLoggingListener(LogLevel.TRACE))
 				.withMessageContaining("LogLevel must be INFO or DEBUG");
 	}
 
 	@Test
 	public void noErrorIfNotInitialized() {
-		this.initializer
-				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
-						new String[0], null, new RuntimeException("Planned")));
-		assertThat(this.outputCapture.toString())
-				.contains("Unable to provide the conditions report");
+		this.initializer.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], null,
+				new RuntimeException("Planned")));
+		assertThat(this.outputCapture.toString()).contains("Unable to provide the conditions report");
 	}
 
 	private void withDebugLogging(Runnable runnable) {
-		LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton()
-				.getLoggerFactory();
+		LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
 		Logger logger = context.getLogger(ConditionEvaluationReportLoggingListener.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);

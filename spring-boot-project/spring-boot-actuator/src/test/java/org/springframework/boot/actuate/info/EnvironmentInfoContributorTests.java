@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	public void extractOnlyInfoProperty() {
-		TestPropertyValues.of("info.app=my app", "info.version=1.0.0", "foo=bar")
-				.applyTo(this.environment);
+		TestPropertyValues.of("info.app=my app", "info.version=1.0.0", "foo=bar").applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
@@ -56,15 +55,13 @@ public class EnvironmentInfoContributorTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void propertiesFromEnvironmentShouldBindCorrectly() {
-		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment,
-				Type.SYSTEM_ENVIRONMENT);
+		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("environment", Map.class)).containsEntry("foo", "green");
 	}
 
 	private static Info contributeFrom(ConfigurableEnvironment environment) {
-		EnvironmentInfoContributor contributor = new EnvironmentInfoContributor(
-				environment);
+		EnvironmentInfoContributor contributor = new EnvironmentInfoContributor(environment);
 		Info.Builder builder = new Info.Builder();
 		contributor.contribute(builder);
 		return builder.build();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,14 +47,12 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * H2 Database Connection.
 	 */
-	H2(EmbeddedDatabaseType.H2, "org.h2.Driver",
-			"jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
+	H2(EmbeddedDatabaseType.H2, "org.h2.Driver", "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
 
 	/**
 	 * Derby Database Connection.
 	 */
-	DERBY(EmbeddedDatabaseType.DERBY, "org.apache.derby.jdbc.EmbeddedDriver",
-			"jdbc:derby:memory:%s;create=true"),
+	DERBY(EmbeddedDatabaseType.DERBY, "org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:%s;create=true"),
 
 	/**
 	 * HSQL Database Connection.
@@ -67,8 +65,7 @@ public enum EmbeddedDatabaseConnection {
 
 	private final String url;
 
-	EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass,
-			String url) {
+	EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass, String url) {
 		this.type = type;
 		this.driverClass = driverClass;
 		this.url = url;
@@ -107,8 +104,7 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the driver class is one of the embedded types
 	 */
 	public static boolean isEmbedded(String driverClass) {
-		return driverClass != null && (driverClass.equals(HSQL.driverClass)
-				|| driverClass.equals(H2.driverClass)
+		return driverClass != null && (driverClass.equals(HSQL.driverClass) || driverClass.equals(H2.driverClass)
 				|| driverClass.equals(DERBY.driverClass));
 	}
 
@@ -136,8 +132,7 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	public static EmbeddedDatabaseConnection get(ClassLoader classLoader) {
 		for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
-			if (candidate != NONE && ClassUtils.isPresent(candidate.getDriverClassName(),
-					classLoader)) {
+			if (candidate != NONE && ClassUtils.isPresent(candidate.getDriverClassName(), classLoader)) {
 				return candidate;
 			}
 		}
@@ -150,8 +145,7 @@ public enum EmbeddedDatabaseConnection {
 	private static class IsEmbedded implements ConnectionCallback<Boolean> {
 
 		@Override
-		public Boolean doInConnection(Connection connection)
-				throws SQLException, DataAccessException {
+		public Boolean doInConnection(Connection connection) throws SQLException, DataAccessException {
 			String productName = connection.getMetaData().getDatabaseProductName();
 			if (productName == null) {
 				return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 			for (ExposableWebEndpoint endpoint : endpoints) {
 				if (endpoint.getEndpointId().equals(EndpointId.of("health"))) {
 					WebOperation operation = findMainReadOperation(endpoint);
-					assertThat(operation.invoke(new InvocationContext(
-							mock(SecurityContext.class), Collections.emptyMap())))
+					assertThat(operation
+							.invoke(new InvocationContext(mock(SecurityContext.class), Collections.emptyMap())))
 									.isEqualTo("cf");
 				}
 			}
@@ -74,31 +74,24 @@ public class CloudFoundryWebEndpointDiscovererTests {
 				return operation;
 			}
 		}
-		throw new IllegalStateException(
-				"No main read operation found from " + endpoint.getOperations());
+		throw new IllegalStateException("No main read operation found from " + endpoint.getOperations());
 	}
 
-	private void load(Class<?> configuration,
-			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
+	private void load(Class<?> configuration, Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
 		this.load((id) -> null, (id) -> id.toString(), configuration, consumer);
 	}
 
-	private void load(Function<EndpointId, Long> timeToLive,
-			PathMapper endpointPathMapper, Class<?> configuration,
+	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper, Class<?> configuration,
 			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration);
 		try {
 			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
-			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
-					Collections.singletonList("application/json"),
+			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
-			CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(
-					context, parameterMapper, mediaTypes,
-					Collections.singletonList(endpointPathMapper),
-					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
-					Collections.emptyList());
+			CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(context,
+					parameterMapper, mediaTypes, Collections.singletonList(endpointPathMapper),
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), Collections.emptyList());
 			consumer.accept(discoverer);
 		}
 		finally {

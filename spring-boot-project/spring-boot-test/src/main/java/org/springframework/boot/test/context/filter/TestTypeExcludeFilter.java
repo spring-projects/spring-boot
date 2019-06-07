@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 			"org.junit.platform.commons.annotation.Testable" };
 
 	@Override
-	public boolean match(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
 		if (isTestConfiguration(metadataReader)) {
 			return true;
 		}
@@ -50,8 +50,7 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 		String enclosing = metadataReader.getClassMetadata().getEnclosingClassName();
 		if (enclosing != null) {
 			try {
-				if (match(metadataReaderFactory.getMetadataReader(enclosing),
-						metadataReaderFactory)) {
+				if (match(metadataReaderFactory.getMetadataReader(enclosing), metadataReaderFactory)) {
 					return true;
 				}
 			}
@@ -63,8 +62,7 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 	}
 
 	private boolean isTestConfiguration(MetadataReader metadataReader) {
-		return (metadataReader.getAnnotationMetadata()
-				.isAnnotated(TestComponent.class.getName()));
+		return (metadataReader.getAnnotationMetadata().isAnnotated(TestComponent.class.getName()));
 	}
 
 	private boolean isTestClass(MetadataReader metadataReader) {

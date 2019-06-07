@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,21 +31,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConditionsReportEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(ConditionsReportEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ConditionsReportEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ConditionsReportEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ConditionsReportEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.conditions.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ConditionsReportEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.conditions.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(ConditionsReportEndpoint.class));
 	}
 
 }

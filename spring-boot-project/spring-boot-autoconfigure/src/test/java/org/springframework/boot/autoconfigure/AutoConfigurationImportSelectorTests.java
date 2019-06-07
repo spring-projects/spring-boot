@@ -71,15 +71,14 @@ public class AutoConfigurationImportSelectorTests {
 	@Test
 	public void importsAreSelectedWhenUsingEnableAutoConfiguration() {
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
-		assertThat(imports).hasSameSizeAs(SpringFactoriesLoader.loadFactoryNames(
-				EnableAutoConfiguration.class, getClass().getClassLoader()));
+		assertThat(imports).hasSameSizeAs(
+				SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, getClass().getClassLoader()));
 		assertThat(this.importSelector.getLastEvent().getExclusions()).isEmpty();
 	}
 
 	@Test
 	public void classExclusionsAreApplied() {
-		String[] imports = selectImports(
-				EnableAutoConfigurationWithClassExclusions.class);
+		String[] imports = selectImports(EnableAutoConfigurationWithClassExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
 				.contains(FreeMarkerAutoConfiguration.class.getName());
@@ -95,8 +94,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	@Test
 	public void classNamesExclusionsAreApplied() {
-		String[] imports = selectImports(
-				EnableAutoConfigurationWithClassNameExclusions.class);
+		String[] imports = selectImports(EnableAutoConfigurationWithClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
 				.contains(MustacheAutoConfiguration.class.getName());
@@ -104,8 +102,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	@Test
 	public void classNamesExclusionsAreAppliedWhenUsingSpringBootApplication() {
-		String[] imports = selectImports(
-				SpringBootApplicationWithClassNameExclusions.class);
+		String[] imports = selectImports(SpringBootApplicationWithClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
 				.contains(MustacheAutoConfiguration.class.getName());
@@ -113,8 +110,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	@Test
 	public void propertyExclusionsAreApplied() {
-		this.environment.setProperty("spring.autoconfigure.exclude",
-				FreeMarkerAutoConfiguration.class.getName());
+		this.environment.setProperty("spring.autoconfigure.exclude", FreeMarkerAutoConfiguration.class.getName());
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(this.importSelector.getLastEvent().getExclusions())
@@ -124,68 +120,58 @@ public class AutoConfigurationImportSelectorTests {
 	@Test
 	public void severalPropertyExclusionsAreApplied() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
-				FreeMarkerAutoConfiguration.class.getName() + ","
-						+ MustacheAutoConfiguration.class.getName());
+				FreeMarkerAutoConfiguration.class.getName() + "," + MustacheAutoConfiguration.class.getName());
 		testSeveralPropertyExclusionsAreApplied();
 	}
 
 	@Test
 	public void severalPropertyExclusionsAreAppliedWithExtraSpaces() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
-				FreeMarkerAutoConfiguration.class.getName() + " , "
-						+ MustacheAutoConfiguration.class.getName() + " ");
+				FreeMarkerAutoConfiguration.class.getName() + " , " + MustacheAutoConfiguration.class.getName() + " ");
 		testSeveralPropertyExclusionsAreApplied();
 	}
 
 	@Test
 	public void severalPropertyYamlExclusionsAreApplied() {
-		this.environment.setProperty("spring.autoconfigure.exclude[0]",
-				FreeMarkerAutoConfiguration.class.getName());
-		this.environment.setProperty("spring.autoconfigure.exclude[1]",
-				MustacheAutoConfiguration.class.getName());
+		this.environment.setProperty("spring.autoconfigure.exclude[0]", FreeMarkerAutoConfiguration.class.getName());
+		this.environment.setProperty("spring.autoconfigure.exclude[1]", MustacheAutoConfiguration.class.getName());
 		testSeveralPropertyExclusionsAreApplied();
 	}
 
 	private void testSeveralPropertyExclusionsAreApplied() {
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
-		assertThat(this.importSelector.getLastEvent().getExclusions()).contains(
-				FreeMarkerAutoConfiguration.class.getName(),
-				MustacheAutoConfiguration.class.getName());
+		assertThat(this.importSelector.getLastEvent().getExclusions())
+				.contains(FreeMarkerAutoConfiguration.class.getName(), MustacheAutoConfiguration.class.getName());
 	}
 
 	@Test
 	public void combinedExclusionsAreApplied() {
-		this.environment.setProperty("spring.autoconfigure.exclude",
-				ThymeleafAutoConfiguration.class.getName());
-		String[] imports = selectImports(
-				EnableAutoConfigurationWithClassAndClassNameExclusions.class);
+		this.environment.setProperty("spring.autoconfigure.exclude", ThymeleafAutoConfiguration.class.getName());
+		String[] imports = selectImports(EnableAutoConfigurationWithClassAndClassNameExclusions.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 3);
 		assertThat(this.importSelector.getLastEvent().getExclusions()).contains(
-				FreeMarkerAutoConfiguration.class.getName(),
-				MustacheAutoConfiguration.class.getName(),
+				FreeMarkerAutoConfiguration.class.getName(), MustacheAutoConfiguration.class.getName(),
 				ThymeleafAutoConfiguration.class.getName());
 	}
 
 	@Test
 	public void nonAutoConfigurationClassExclusionsShouldThrowException() {
-		assertThatIllegalStateException().isThrownBy(
-				() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
 	}
 
 	@Test
 	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
-		assertThatIllegalStateException().isThrownBy(() -> selectImports(
-				EnableAutoConfigurationWithFaultyClassNameExclude.class));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassNameExclude.class));
 	}
 
 	@Test
 	public void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
-				"org.springframework.boot.autoconfigure."
-						+ "AutoConfigurationImportSelectorTests.TestConfiguration");
-		assertThatIllegalStateException()
-				.isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
+				"org.springframework.boot.autoconfigure." + "AutoConfigurationImportSelectorTests.TestConfiguration");
+		assertThatIllegalStateException().isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
 	}
 
 	@Test
@@ -193,10 +179,9 @@ public class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure.DoesNotExist2");
 		selectImports(EnableAutoConfigurationWithAbsentClassNameExclude.class);
-		assertThat(this.importSelector.getLastEvent().getExclusions())
-				.containsExactlyInAnyOrder(
-						"org.springframework.boot.autoconfigure.DoesNotExist1",
-						"org.springframework.boot.autoconfigure.DoesNotExist2");
+		assertThat(this.importSelector.getLastEvent().getExclusions()).containsExactlyInAnyOrder(
+				"org.springframework.boot.autoconfigure.DoesNotExist1",
+				"org.springframework.boot.autoconfigure.DoesNotExist2");
 	}
 
 	@Test
@@ -206,14 +191,12 @@ public class AutoConfigurationImportSelectorTests {
 		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 3, 4));
 		String[] filtered = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(filtered).hasSize(defaultImports.length - 3);
-		assertThat(filtered).doesNotContain(defaultImports[1], defaultImports[3],
-				defaultImports[4]);
+		assertThat(filtered).doesNotContain(defaultImports[1], defaultImports[3], defaultImports[4]);
 	}
 
 	@Test
 	public void filterShouldSupportAware() {
-		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter(
-				new String[] {});
+		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter(new String[] {});
 		this.filters.add(filter);
 		selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(filter.getBeanFactory()).isEqualTo(this.beanFactory);
@@ -224,12 +207,10 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	private List<String> getAutoConfigurationClassNames() {
-		return SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
-				getClass().getClassLoader());
+		return SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, getClass().getClassLoader());
 	}
 
-	private class TestAutoConfigurationImportSelector
-			extends AutoConfigurationImportSelector {
+	private class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
 
 		private AutoConfigurationImportEvent lastEvent;
 
@@ -249,8 +230,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	}
 
-	private static class TestAutoConfigurationImportFilter
-			implements AutoConfigurationImportFilter, BeanFactoryAware {
+	private static class TestAutoConfigurationImportFilter implements AutoConfigurationImportFilter, BeanFactoryAware {
 
 		private final Set<String> nonMatching = new HashSet<>();
 
@@ -263,8 +243,7 @@ public class AutoConfigurationImportSelectorTests {
 		}
 
 		@Override
-		public boolean[] match(String[] autoConfigurationClasses,
-				AutoConfigurationMetadata autoConfigurationMetadata) {
+		public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
 			boolean[] result = new boolean[autoConfigurationClasses.length];
 			for (int i = 0; i < result.length; i++) {
 				result[i] = !this.nonMatching.contains(autoConfigurationClasses[i]);
@@ -303,8 +282,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	}
 
-	@EnableAutoConfiguration(
-			excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
+	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
 	private class EnableAutoConfigurationWithClassNameExclusions {
 
 	}
@@ -326,14 +304,12 @@ public class AutoConfigurationImportSelectorTests {
 
 	}
 
-	@EnableAutoConfiguration(
-			excludeName = "org.springframework.boot.autoconfigure.DoesNotExist1")
+	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.DoesNotExist1")
 	private class EnableAutoConfigurationWithAbsentClassNameExclude {
 
 	}
 
-	@SpringBootApplication(
-			excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
+	@SpringBootApplication(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
 	private class SpringBootApplicationWithClassNameExclusions {
 
 	}

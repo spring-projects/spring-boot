@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ class OAuth2WebSecurityConfiguration {
 	@ConditionalOnMissingBean
 	public OAuth2AuthorizedClientRepository authorizedClientRepository(
 			OAuth2AuthorizedClientService authorizedClientService) {
-		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(
-				authorizedClientService);
+		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
 	}
 
 	@Configuration
@@ -60,8 +59,7 @@ class OAuth2WebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login()
-					.and().oauth2Client();
+			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login().and().oauth2Client();
 		}
 
 	}

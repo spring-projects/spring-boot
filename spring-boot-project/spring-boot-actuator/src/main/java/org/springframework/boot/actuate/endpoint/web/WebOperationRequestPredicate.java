@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public final class WebOperationRequestPredicate {
 	 * @param produces the media types that the operation produces
 	 * @param consumes the media types that the operation consumes
 	 */
-	public WebOperationRequestPredicate(String path, WebEndpointHttpMethod httpMethod,
-			Collection<String> consumes, Collection<String> produces) {
+	public WebOperationRequestPredicate(String path, WebEndpointHttpMethod httpMethod, Collection<String> consumes,
+			Collection<String> produces) {
 		this.path = path;
 		this.canonicalPath = PATH_VAR_PATTERN.matcher(path).replaceAll("{*}");
 		this.httpMethod = httpMethod;
@@ -121,15 +121,12 @@ public final class WebOperationRequestPredicate {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder(
-				this.httpMethod + " to path '" + this.path + "'");
+		StringBuilder result = new StringBuilder(this.httpMethod + " to path '" + this.path + "'");
 		if (!CollectionUtils.isEmpty(this.consumes)) {
-			result.append(" consumes: "
-					+ StringUtils.collectionToCommaDelimitedString(this.consumes));
+			result.append(" consumes: " + StringUtils.collectionToCommaDelimitedString(this.consumes));
 		}
 		if (!CollectionUtils.isEmpty(this.produces)) {
-			result.append(" produces: "
-					+ StringUtils.collectionToCommaDelimitedString(this.produces));
+			result.append(" produces: " + StringUtils.collectionToCommaDelimitedString(this.produces));
 		}
 		return result.toString();
 	}

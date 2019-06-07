@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 	@Test
 	public void replacesDefinedDataSourceWithExplicit() throws Exception {
 		// Look that the datasource is replaced with an H2 DB.
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("H2");
 	}
 
@@ -61,14 +60,12 @@ public class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 		@Bean
 		@Primary
 		public DataSource dataSource() {
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseType.HSQL).build();
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 		@Bean
 		public DataSource secondaryDataSource() {
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseType.HSQL).build();
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 	}

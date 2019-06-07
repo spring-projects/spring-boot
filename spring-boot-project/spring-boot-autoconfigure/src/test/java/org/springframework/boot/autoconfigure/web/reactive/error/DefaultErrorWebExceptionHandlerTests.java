@@ -32,8 +32,8 @@ public class DefaultErrorWebExceptionHandlerTests {
 
 	@Test
 	public void disconnectedClientExceptionsMatchesFramework() {
-		Object errorHandlers = ReflectionTestUtils.getField(
-				AbstractErrorWebExceptionHandler.class, "DISCONNECTED_CLIENT_EXCEPTIONS");
+		Object errorHandlers = ReflectionTestUtils.getField(AbstractErrorWebExceptionHandler.class,
+				"DISCONNECTED_CLIENT_EXCEPTIONS");
 		Object webHandlers = ReflectionTestUtils.getField(HttpWebHandlerAdapter.class,
 				"DISCONNECTED_CLIENT_EXCEPTIONS");
 		assertThat(errorHandlers).isNotNull().isEqualTo(webHandlers);

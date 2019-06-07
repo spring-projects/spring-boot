@@ -38,9 +38,8 @@ public class SampleJooqApplicationTests {
 		SampleJooqApplication.main(NO_ARGS);
 		assertThat(this.out.toString()).contains("jOOQ Fetch 1 Greg Turnquest");
 		assertThat(this.out.toString()).contains("jOOQ Fetch 2 Craig Walls");
-		assertThat(this.out.toString())
-				.contains("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
-						+ "Spring Boot in Action : Craig Walls]");
+		assertThat(this.out.toString()).contains(
+				"jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, " + "Spring Boot in Action : Craig Walls]");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,22 +60,18 @@ public class StringSequenceTests {
 
 	@Test
 	public void subSequenceWithJustStartShouldReturnSubSequence() {
-		assertThat(new StringSequence("smiles").subSequence(1).toString())
-				.isEqualTo("miles");
+		assertThat(new StringSequence("smiles").subSequence(1).toString()).isEqualTo("miles");
 	}
 
 	@Test
 	public void subSequenceShouldReturnSubSequence() {
-		assertThat(new StringSequence("hamburger").subSequence(4, 8).toString())
-				.isEqualTo("urge");
-		assertThat(new StringSequence("smiles").subSequence(1, 5).toString())
-				.isEqualTo("mile");
+		assertThat(new StringSequence("hamburger").subSequence(4, 8).toString()).isEqualTo("urge");
+		assertThat(new StringSequence("smiles").subSequence(1, 5).toString()).isEqualTo("mile");
 	}
 
 	@Test
 	public void subSequenceWhenCalledMultipleTimesShouldReturnSubSequence() {
-		assertThat(new StringSequence("hamburger").subSequence(4, 8).subSequence(1, 3)
-				.toString()).isEqualTo("rg");
+		assertThat(new StringSequence("hamburger").subSequence(4, 8).subSequence(1, 3).toString()).isEqualTo("rg");
 	}
 
 	@Test
@@ -83,8 +79,7 @@ public class StringSequenceTests {
 		StringSequence sequence = new StringSequence("abcde").subSequence(1, 4);
 		assertThat(sequence.toString()).isEqualTo("bcd");
 		assertThat(sequence.subSequence(2, 3).toString()).isEqualTo("d");
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> sequence.subSequence(3, 4));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> sequence.subSequence(3, 4));
 	}
 
 	@Test
@@ -92,8 +87,7 @@ public class StringSequenceTests {
 		StringSequence sequence = new StringSequence("abcde").subSequence(1, 4);
 		assertThat(sequence.toString()).isEqualTo("bcd");
 		assertThat(sequence.subSequence(2, 3).toString()).isEqualTo("d");
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> sequence.subSequence(4, 3));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> sequence.subSequence(4, 3));
 	}
 
 	@Test
@@ -148,10 +142,8 @@ public class StringSequenceTests {
 
 	@Test
 	public void hashCodeShouldBeSameAsString() {
-		assertThat(new StringSequence("hamburger").hashCode())
-				.isEqualTo("hamburger".hashCode());
-		assertThat(new StringSequence("hamburger").subSequence(4, 8).hashCode())
-				.isEqualTo("urge".hashCode());
+		assertThat(new StringSequence("hamburger").hashCode()).isEqualTo("hamburger".hashCode());
+		assertThat(new StringSequence("hamburger").subSequence(4, 8).hashCode()).isEqualTo("urge".hashCode());
 	}
 
 	@Test

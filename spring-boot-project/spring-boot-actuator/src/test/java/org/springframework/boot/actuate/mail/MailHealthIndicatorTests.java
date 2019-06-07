@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ public class MailHealthIndicatorTests {
 	@Before
 	public void setup() {
 		Session session = Session.getDefaultInstance(new Properties());
-		session.addProvider(new Provider(Type.TRANSPORT, "success",
-				SuccessTransport.class.getName(), "Test", "1.0.0"));
+		session.addProvider(new Provider(Type.TRANSPORT, "success", SuccessTransport.class.getName(), "Test", "1.0.0"));
 		this.mailSender = mock(JavaMailSenderImpl.class);
 		given(this.mailSender.getHost()).willReturn("smtp.acme.org");
 		given(this.mailSender.getPort()).willReturn(25);
@@ -73,8 +72,7 @@ public class MailHealthIndicatorTests {
 
 	@Test
 	public void smtpIsDown() throws MessagingException {
-		willThrow(new MessagingException("A test exception")).given(this.mailSender)
-				.testConnection();
+		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:25");

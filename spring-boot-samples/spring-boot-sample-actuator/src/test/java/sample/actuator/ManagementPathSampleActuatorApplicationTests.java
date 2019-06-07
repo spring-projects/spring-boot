@@ -46,8 +46,7 @@ public class ManagementPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() {
-		ResponseEntity<String> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
 				.getForEntity("/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");

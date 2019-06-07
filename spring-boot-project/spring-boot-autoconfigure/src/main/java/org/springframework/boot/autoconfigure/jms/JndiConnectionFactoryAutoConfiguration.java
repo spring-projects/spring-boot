@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ import org.springframework.util.StringUtils;
 public class JndiConnectionFactoryAutoConfiguration {
 
 	// Keep these in sync with the condition below
-	private static final String[] JNDI_LOCATIONS = { "java:/JmsXA",
-			"java:/XAConnectionFactory" };
+	private static final String[] JNDI_LOCATIONS = { "java:/JmsXA", "java:/XAConnectionFactory" };
 
 	private final JmsProperties properties;
 
@@ -67,8 +66,7 @@ public class JndiConnectionFactoryAutoConfiguration {
 	@Bean
 	public ConnectionFactory connectionFactory() throws NamingException {
 		if (StringUtils.hasLength(this.properties.getJndiName())) {
-			return this.jndiLocatorDelegate.lookup(this.properties.getJndiName(),
-					ConnectionFactory.class);
+			return this.jndiLocatorDelegate.lookup(this.properties.getJndiName(), ConnectionFactory.class);
 		}
 		return findJndiConnectionFactory();
 	}
@@ -83,8 +81,7 @@ public class JndiConnectionFactoryAutoConfiguration {
 			}
 		}
 		throw new IllegalStateException(
-				"Unable to find ConnectionFactory in JNDI locations "
-						+ Arrays.asList(JNDI_LOCATIONS));
+				"Unable to find ConnectionFactory in JNDI locations " + Arrays.asList(JNDI_LOCATIONS));
 	}
 
 	/**

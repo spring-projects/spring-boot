@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,16 +49,14 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 
 	@Test
 	public void testWithProxyClass() {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(Config.class, SqlExecutor.class);
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class,
+				SqlExecutor.class);
 		contextRunner.run((context) -> {
 			ApplicationConfigurationProperties applicationProperties = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class)
-					.configurationProperties();
-			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans()
-					.values().stream()
-					.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
-					.filter("executor.sql"::equals).findFirst()).isNotEmpty();
+					.getBean(ConfigurationPropertiesReportEndpoint.class).configurationProperties();
+			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans().values().stream()
+					.map(ConfigurationPropertiesBeanDescriptor::getPrefix).filter("executor.sql"::equals).findFirst())
+							.isNotEmpty();
 		});
 	}
 
@@ -79,8 +77,7 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 
 		@Bean
 		public DataSource dataSource() {
-			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL)
-					.build();
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,61 +41,52 @@ public class TestTypeExcludeFilterTests {
 
 	@Test
 	public void matchesJUnit4TestClass() throws Exception {
-		assertThat(this.filter.match(getMetadataReader(TestTypeExcludeFilterTests.class),
-				this.metadataReaderFactory)).isTrue();
+		assertThat(this.filter.match(getMetadataReader(TestTypeExcludeFilterTests.class), this.metadataReaderFactory))
+				.isTrue();
 	}
 
 	@Test
 	public void matchesJUnitJupiterTestClass() throws Exception {
-		assertThat(this.filter.match(getMetadataReader(JupiterTestExample.class),
-				this.metadataReaderFactory)).isTrue();
+		assertThat(this.filter.match(getMetadataReader(JupiterTestExample.class), this.metadataReaderFactory)).isTrue();
 	}
 
 	@Test
 	public void matchesJUnitJupiterRepeatedTestClass() throws Exception {
-		assertThat(this.filter.match(getMetadataReader(JupiterRepeatedTestExample.class),
-				this.metadataReaderFactory)).isTrue();
+		assertThat(this.filter.match(getMetadataReader(JupiterRepeatedTestExample.class), this.metadataReaderFactory))
+				.isTrue();
 	}
 
 	@Test
 	public void matchesJUnitJupiterTestFactoryClass() throws Exception {
-		assertThat(this.filter.match(getMetadataReader(JupiterTestFactoryExample.class),
-				this.metadataReaderFactory)).isTrue();
+		assertThat(this.filter.match(getMetadataReader(JupiterTestFactoryExample.class), this.metadataReaderFactory))
+				.isTrue();
 	}
 
 	@Test
 	public void matchesNestedConfiguration() throws Exception {
-		assertThat(this.filter.match(getMetadataReader(NestedConfig.class),
+		assertThat(this.filter.match(getMetadataReader(NestedConfig.class), this.metadataReaderFactory)).isTrue();
+	}
+
+	@Test
+	public void matchesNestedConfigurationClassWithoutTestMethodsIfItHasRunWith() throws Exception {
+		assertThat(this.filter.match(getMetadataReader(AbstractTestWithConfigAndRunWith.Config.class),
 				this.metadataReaderFactory)).isTrue();
 	}
 
 	@Test
-	public void matchesNestedConfigurationClassWithoutTestMethodsIfItHasRunWith()
-			throws Exception {
-		assertThat(this.filter.match(
-				getMetadataReader(AbstractTestWithConfigAndRunWith.Config.class),
-				this.metadataReaderFactory)).isTrue();
-	}
-
-	@Test
-	public void matchesNestedConfigurationClassWithoutTestMethodsIfItHasExtendWith()
-			throws Exception {
-		assertThat(this.filter.match(
-				getMetadataReader(
-						AbstractJupiterTestWithConfigAndExtendWith.Config.class),
+	public void matchesNestedConfigurationClassWithoutTestMethodsIfItHasExtendWith() throws Exception {
+		assertThat(this.filter.match(getMetadataReader(AbstractJupiterTestWithConfigAndExtendWith.Config.class),
 				this.metadataReaderFactory)).isTrue();
 	}
 
 	@Test
 	public void matchesTestConfiguration() throws Exception {
-		assertThat(this.filter.match(getMetadataReader(SampleTestConfig.class),
-				this.metadataReaderFactory)).isTrue();
+		assertThat(this.filter.match(getMetadataReader(SampleTestConfig.class), this.metadataReaderFactory)).isTrue();
 	}
 
 	@Test
 	public void doesNotMatchRegularConfiguration() throws Exception {
-		assertThat(this.filter.match(getMetadataReader(SampleConfig.class),
-				this.metadataReaderFactory)).isFalse();
+		assertThat(this.filter.match(getMetadataReader(SampleConfig.class), this.metadataReaderFactory)).isFalse();
 	}
 
 	private MetadataReader getMetadataReader(Class<?> source) throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,18 +77,16 @@ public class ConditionalOnJavaTests {
 
 	@Test
 	public void equalOrNewerMessage() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER,
-				JavaVersion.NINE, JavaVersion.EIGHT);
-		assertThat(outcome.getMessage())
-				.isEqualTo("@ConditionalOnJava (1.8 or newer) found 1.9");
+		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER, JavaVersion.NINE,
+				JavaVersion.EIGHT);
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (1.8 or newer) found 1.9");
 	}
 
 	@Test
 	public void olderThanMessage() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN,
-				JavaVersion.NINE, JavaVersion.EIGHT);
-		assertThat(outcome.getMessage())
-				.isEqualTo("@ConditionalOnJava (older than 1.8) found 1.9");
+		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN, JavaVersion.NINE,
+				JavaVersion.EIGHT);
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 1.8) found 1.9");
 	}
 
 	@Test
@@ -100,24 +98,20 @@ public class ConditionalOnJavaTests {
 	@Test
 	public void java8IsTheFallback() throws Exception {
 		Assume.javaEight();
-		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
-				.isEqualTo("1.8");
+		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class)).isEqualTo("1.8");
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
 		FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClasses);
 		Class<?> javaVersionClass = classLoader.loadClass(JavaVersion.class.getName());
-		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
-				"getJavaVersion");
+		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass, "getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
 		classLoader.close();
 		return javaVersion.toString();
 	}
 
-	private void testBounds(Range range, JavaVersion runningVersion, JavaVersion version,
-			boolean expected) {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
-				version);
+	private void testBounds(Range range, JavaVersion runningVersion, JavaVersion version, boolean expected) {
+		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion, version);
 		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,24 +26,20 @@ import org.springframework.jdbc.CannotGetJdbcConnectionException;
  *
  * @author Stephane Nicoll
  */
-class HikariDriverConfigurationFailureAnalyzer
-		extends AbstractFailureAnalyzer<CannotGetJdbcConnectionException> {
+class HikariDriverConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<CannotGetJdbcConnectionException> {
 
 	private static final String EXPECTED_MESSAGE = "Failed to obtain JDBC Connection:"
 			+ " cannot use driverClassName and dataSourceClassName together.";
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			CannotGetJdbcConnectionException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, CannotGetJdbcConnectionException cause) {
 		if (!EXPECTED_MESSAGE.equals(cause.getMessage())) {
 			return null;
 		}
 		return new FailureAnalysis(
-				"Configuration of the Hikari connection pool failed: "
-						+ "'dataSourceClassName' is not supported.",
+				"Configuration of the Hikari connection pool failed: " + "'dataSourceClassName' is not supported.",
 				"Spring Boot auto-configures only a driver and can't specify a custom "
-						+ "DataSource. Consider configuring the Hikari DataSource in "
-						+ "your own configuration.",
+						+ "DataSource. Consider configuring the Hikari DataSource in " + "your own configuration.",
 				cause);
 	}
 

@@ -65,28 +65,22 @@ public class ErrorWebFluxAutoConfiguration {
 
 	private final ServerCodecConfigurer serverCodecConfigurer;
 
-	public ErrorWebFluxAutoConfiguration(ServerProperties serverProperties,
-			ResourceProperties resourceProperties,
-			ObjectProvider<ViewResolver> viewResolversProvider,
-			ServerCodecConfigurer serverCodecConfigurer,
+	public ErrorWebFluxAutoConfiguration(ServerProperties serverProperties, ResourceProperties resourceProperties,
+			ObjectProvider<ViewResolver> viewResolversProvider, ServerCodecConfigurer serverCodecConfigurer,
 			ApplicationContext applicationContext) {
 		this.serverProperties = serverProperties;
 		this.applicationContext = applicationContext;
 		this.resourceProperties = resourceProperties;
-		this.viewResolvers = viewResolversProvider.orderedStream()
-				.collect(Collectors.toList());
+		this.viewResolvers = viewResolversProvider.orderedStream().collect(Collectors.toList());
 		this.serverCodecConfigurer = serverCodecConfigurer;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class, search = SearchStrategy.CURRENT)
 	@Order(-1)
-	public ErrorWebExceptionHandler errorWebExceptionHandler(
-			ErrorAttributes errorAttributes) {
-		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(
-				errorAttributes, this.resourceProperties,
-				this.serverProperties.getError(), this.applicationContext);
+	public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes) {
+		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
+				this.resourceProperties, this.serverProperties.getError(), this.applicationContext);
 		exceptionHandler.setViewResolvers(this.viewResolvers);
 		exceptionHandler.setMessageWriters(this.serverCodecConfigurer.getWriters());
 		exceptionHandler.setMessageReaders(this.serverCodecConfigurer.getReaders());
@@ -94,11 +88,9 @@ public class ErrorWebFluxAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ErrorAttributes.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
 	public DefaultErrorAttributes errorAttributes() {
-		return new DefaultErrorAttributes(
-				this.serverProperties.getError().isIncludeException());
+		return new DefaultErrorAttributes(this.serverProperties.getError().isIncludeException());
 	}
 
 }

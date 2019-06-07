@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,25 +58,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final List<FieldDescriptor> componentFields = Arrays.asList(
-			fieldWithPath("status")
-					.description("Status of a specific part of the application"),
-			subsectionWithPath("details").description(
-					"Details of the health of a specific part of the" + " application."));
+			fieldWithPath("status").description("Status of a specific part of the application"),
+			subsectionWithPath("details")
+					.description("Details of the health of a specific part of the" + " application."));
 
 	@Test
 	public void health() throws Exception {
-		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk())
-				.andDo(document("health", responseFields(
-						fieldWithPath("status")
-								.description("Overall status of the application."),
-						fieldWithPath("details").description(
-								"Details of the health of the application. Presence is controlled by "
+		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk()).andDo(document("health",
+				responseFields(fieldWithPath("status").description("Overall status of the application."),
+						fieldWithPath("details")
+								.description("Details of the health of the application. Presence is controlled by "
 										+ "`management.endpoint.health.show-details`)."),
-						fieldWithPath("details.*.status").description(
-								"Status of a specific part of the application."),
-						subsectionWithPath("details.*.details").description(
-								"Details of the health of a specific part of the"
-										+ " application."))));
+						fieldWithPath("details.*.status").description("Status of a specific part of the application."),
+						subsectionWithPath("details.*.details")
+								.description("Details of the health of a specific part of the" + " application."))));
 	}
 
 	@Test
@@ -87,8 +82,7 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 	@Test
 	public void healthComponentInstance() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/broker/us1"))
-				.andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/health/broker/us1")).andExpect(status().isOk())
 				.andDo(document("health/instance", responseFields(componentFields)));
 	}
 
@@ -99,9 +93,8 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 		@Bean
 		public HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(new CompositeHealthIndicator(
-					new OrderedHealthAggregator(), new HealthIndicatorRegistryFactory()
-							.createHealthIndicatorRegistry(healthIndicators)));
+			return new HealthEndpoint(new CompositeHealthIndicator(new OrderedHealthAggregator(),
+					new HealthIndicatorRegistryFactory().createHealthIndicatorRegistry(healthIndicators)));
 		}
 
 		@Bean
@@ -117,12 +110,9 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		@Bean
 		public CompositeHealthIndicator brokerHealthIndicator() {
 			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
-			indicators.put("us1",
-					() -> Health.up().withDetail("version", "1.0.2").build());
-			indicators.put("us2",
-					() -> Health.up().withDetail("version", "1.0.4").build());
-			return new CompositeHealthIndicator(new OrderedHealthAggregator(),
-					indicators);
+			indicators.put("us1", () -> Health.up().withDetail("version", "1.0.2").build());
+			indicators.put("us2", () -> Health.up().withDetail("version", "1.0.4").build());
+			return new CompositeHealthIndicator(new OrderedHealthAggregator(), indicators);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,7 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EnableHypermediaSupportConfig.class, BaseConfig.class);
-		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(HypermediaConfiguration.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(EntityLinksConfiguration.class)).isEmpty();
@@ -101,12 +100,11 @@ public class HypermediaAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
-		RequestMappingHandlerAdapter handlerAdapter = this.context
-				.getBean(RequestMappingHandlerAdapter.class);
+		RequestMappingHandlerAdapter handlerAdapter = this.context.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes())
-						.contains(MediaType.APPLICATION_JSON, MediaTypes.HAL_JSON);
+				assertThat(converter.getSupportedMediaTypes()).contains(MediaType.APPLICATION_JSON,
+						MediaTypes.HAL_JSON);
 			}
 		}
 	}
@@ -116,22 +114,19 @@ public class HypermediaAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(BaseConfig.class);
-		TestPropertyValues.of("spring.hateoas.use-hal-as-default-json-media-type:false")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.hateoas.use-hal-as-default-json-media-type:false").applyTo(this.context);
 		this.context.refresh();
-		RequestMappingHandlerAdapter handlerAdapter = this.context
-				.getBean(RequestMappingHandlerAdapter.class);
+		RequestMappingHandlerAdapter handlerAdapter = this.context.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes())
-						.containsExactly(MediaTypes.HAL_JSON, MediaTypes.HAL_JSON_UTF8);
+				assertThat(converter.getSupportedMediaTypes()).containsExactly(MediaTypes.HAL_JSON,
+						MediaTypes.HAL_JSON_UTF8);
 			}
 		}
 	}
 
-	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HypermediaAutoConfiguration.class })
+	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, HypermediaAutoConfiguration.class })
 	static class BaseConfig {
 
 	}

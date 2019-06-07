@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  */
-public class ReactiveSessionAutoConfigurationRedisTests
-		extends AbstractSessionAutoConfigurationTests {
+public class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
@@ -47,42 +46,36 @@ public class ReactiveSessionAutoConfigurationRedisTests
 	@Test
 	public void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-						RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:",
-						RedisFlushMode.ON_SAVE));
+				.withConfiguration(
+						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
 	}
 
 	@Test
 	public void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(
-						ReactiveMongoOperationsSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-						RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:",
-						RedisFlushMode.ON_SAVE));
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveMongoOperationsSessionRepository.class))
+				.withConfiguration(
+						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
 	}
 
 	@Test
 	public void redisSessionStoreWithCustomizations() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-						RedisReactiveAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis",
-						"spring.session.redis.namespace=foo",
+				.withConfiguration(
+						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
 						"spring.session.redis.flush-mode=immediate")
 				.run(validateSpringSessionUsesRedis("foo:", RedisFlushMode.IMMEDIATE));
 	}
 
-	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(
-			String namespace, RedisFlushMode flushMode) {
+	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace,
+			RedisFlushMode flushMode) {
 		return (context) -> {
-			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(
-					context, ReactiveRedisOperationsSessionRepository.class);
+			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(context,
+					ReactiveRedisOperationsSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", namespace);
-			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode",
-					flushMode);
+			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode", flushMode);
 		};
 	}
 

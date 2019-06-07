@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ public class HealthTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Health.Builder(null, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new Health.Builder(null, null))
 				.withMessageContaining("Status must not be null");
 	}
 
@@ -51,18 +50,15 @@ public class HealthTests {
 
 	@Test
 	public void createWithDetails() {
-		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.build();
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsOnly(entry("a", "b"));
 	}
 
 	@Test
 	public void equalsAndHashCode() {
-		Health h1 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.build();
-		Health h2 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.build();
+		Health h1 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).build();
+		Health h2 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).build();
 		Health h3 = new Health.Builder(Status.UP).build();
 		assertThat(h1).isEqualTo(h1);
 		assertThat(h1).isEqualTo(h2);
@@ -75,16 +71,14 @@ public class HealthTests {
 	@Test
 	public void withException() {
 		RuntimeException ex = new RuntimeException("bang");
-		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.withException(ex).build();
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).withException(ex).build();
 		assertThat(health.getDetails()).containsOnly(entry("a", "b"),
 				entry("error", "java.lang.RuntimeException: bang"));
 	}
 
 	@Test
 	public void withDetails() {
-		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.withDetail("c", "d").build();
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).withDetail("c", "d").build();
 		assertThat(health.getDetails()).containsOnly(entry("a", "b"), entry("c", "d"));
 	}
 
@@ -115,8 +109,7 @@ public class HealthTests {
 		details1.put("a", "e");
 		details1.put("1", "2");
 		Health health = Health.up().withDetails(details1).withDetails(details2).build();
-		assertThat(health.getDetails()).containsOnly(entry("a", "e"), entry("c", "d"),
-				entry("1", "2"));
+		assertThat(health.getDetails()).containsOnly(entry("a", "e"), entry("c", "d"), entry("1", "2"));
 	}
 
 	@Test
@@ -152,8 +145,7 @@ public class HealthTests {
 		RuntimeException ex = new RuntimeException("bang");
 		Health health = Health.down(ex).build();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails())
-				.containsOnly(entry("error", "java.lang.RuntimeException: bang"));
+		assertThat(health.getDetails()).containsOnly(entry("error", "java.lang.RuntimeException: bang"));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,87 +37,67 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpringDataWebAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(SpringDataWebAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SpringDataWebAutoConfiguration.class));
 
 	@Test
 	public void webSupportIsAutoConfiguredInWebApplicationContexts() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(PageableHandlerMethodArgumentResolver.class));
+		this.contextRunner
+				.run((context) -> assertThat(context).hasSingleBean(PageableHandlerMethodArgumentResolver.class));
 	}
 
 	@Test
 	public void autoConfigurationBacksOffInNonWebApplicationContexts() {
-		new ApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(SpringDataWebAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(PageableHandlerMethodArgumentResolver.class));
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(SpringDataWebAutoConfiguration.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(PageableHandlerMethodArgumentResolver.class));
 	}
 
 	@Test
 	public void customizePageable() {
-		this.contextRunner
-				.withPropertyValues("spring.data.web.pageable.page-parameter=p",
-						"spring.data.web.pageable.size-parameter=s",
-						"spring.data.web.pageable.default-page-size=10",
-						"spring.data.web.pageable.prefix=abc",
-						"spring.data.web.pageable.qualifier-delimiter=__",
-						"spring.data.web.pageable.max-page-size=100",
-						"spring.data.web.pageable.one-indexed-parameters=true")
+		this.contextRunner.withPropertyValues("spring.data.web.pageable.page-parameter=p",
+				"spring.data.web.pageable.size-parameter=s", "spring.data.web.pageable.default-page-size=10",
+				"spring.data.web.pageable.prefix=abc", "spring.data.web.pageable.qualifier-delimiter=__",
+				"spring.data.web.pageable.max-page-size=100", "spring.data.web.pageable.one-indexed-parameters=true")
 				.run((context) -> {
 					PageableHandlerMethodArgumentResolver argumentResolver = context
 							.getBean(PageableHandlerMethodArgumentResolver.class);
-					assertThat(argumentResolver)
-							.hasFieldOrPropertyWithValue("pageParameterName", "p");
-					assertThat(argumentResolver)
-							.hasFieldOrPropertyWithValue("sizeParameterName", "s");
-					assertThat(argumentResolver)
-							.hasFieldOrPropertyWithValue("oneIndexedParameters", true);
-					assertThat(argumentResolver).hasFieldOrPropertyWithValue("prefix",
-							"abc");
-					assertThat(argumentResolver)
-							.hasFieldOrPropertyWithValue("qualifierDelimiter", "__");
-					assertThat(argumentResolver).hasFieldOrPropertyWithValue(
-							"fallbackPageable", PageRequest.of(0, 10));
-					assertThat(argumentResolver)
-							.hasFieldOrPropertyWithValue("maxPageSize", 100);
+					assertThat(argumentResolver).hasFieldOrPropertyWithValue("pageParameterName", "p");
+					assertThat(argumentResolver).hasFieldOrPropertyWithValue("sizeParameterName", "s");
+					assertThat(argumentResolver).hasFieldOrPropertyWithValue("oneIndexedParameters", true);
+					assertThat(argumentResolver).hasFieldOrPropertyWithValue("prefix", "abc");
+					assertThat(argumentResolver).hasFieldOrPropertyWithValue("qualifierDelimiter", "__");
+					assertThat(argumentResolver).hasFieldOrPropertyWithValue("fallbackPageable", PageRequest.of(0, 10));
+					assertThat(argumentResolver).hasFieldOrPropertyWithValue("maxPageSize", 100);
 				});
 	}
 
 	@Test
 	public void defaultPageable() {
 		this.contextRunner.run((context) -> {
-			SpringDataWebProperties.Pageable properties = new SpringDataWebProperties()
-					.getPageable();
+			SpringDataWebProperties.Pageable properties = new SpringDataWebProperties().getPageable();
 			PageableHandlerMethodArgumentResolver argumentResolver = context
 					.getBean(PageableHandlerMethodArgumentResolver.class);
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("pageParameterName",
 					properties.getPageParameter());
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("sizeParameterName",
 					properties.getSizeParameter());
-			assertThat(argumentResolver).hasFieldOrPropertyWithValue(
-					"oneIndexedParameters", properties.isOneIndexedParameters());
-			assertThat(argumentResolver).hasFieldOrPropertyWithValue("prefix",
-					properties.getPrefix());
+			assertThat(argumentResolver).hasFieldOrPropertyWithValue("oneIndexedParameters",
+					properties.isOneIndexedParameters());
+			assertThat(argumentResolver).hasFieldOrPropertyWithValue("prefix", properties.getPrefix());
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("qualifierDelimiter",
 					properties.getQualifierDelimiter());
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("fallbackPageable",
 					PageRequest.of(0, properties.getDefaultPageSize()));
-			assertThat(argumentResolver).hasFieldOrPropertyWithValue("maxPageSize",
-					properties.getMaxPageSize());
+			assertThat(argumentResolver).hasFieldOrPropertyWithValue("maxPageSize", properties.getMaxPageSize());
 		});
 	}
 
 	@Test
 	public void customizeSort() {
-		this.contextRunner.withPropertyValues("spring.data.web.sort.sort-parameter=s")
-				.run((context) -> {
-					SortHandlerMethodArgumentResolver argumentResolver = context
-							.getBean(SortHandlerMethodArgumentResolver.class);
-					assertThat(argumentResolver)
-							.hasFieldOrPropertyWithValue("sortParameter", "s");
-				});
+		this.contextRunner.withPropertyValues("spring.data.web.sort.sort-parameter=s").run((context) -> {
+			SortHandlerMethodArgumentResolver argumentResolver = context
+					.getBean(SortHandlerMethodArgumentResolver.class);
+			assertThat(argumentResolver).hasFieldOrPropertyWithValue("sortParameter", "s");
+		});
 	}
 
 }

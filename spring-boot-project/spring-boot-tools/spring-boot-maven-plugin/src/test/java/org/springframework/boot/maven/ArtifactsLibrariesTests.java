@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,8 +99,7 @@ public class ArtifactsLibrariesTests {
 		Dependency unpack = new Dependency();
 		unpack.setGroupId("gid");
 		unpack.setArtifactId("aid");
-		this.libs = new ArtifactsLibraries(this.artifacts, Collections.singleton(unpack),
-				mock(Log.class));
+		this.libs = new ArtifactsLibraries(this.artifacts, Collections.singleton(unpack), mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback).library(this.libraryCaptor.capture());
 		assertThat(this.libraryCaptor.getValue().isUnpackRequired()).isTrue();
@@ -128,10 +127,8 @@ public class ArtifactsLibrariesTests {
 		this.libs = new ArtifactsLibraries(this.artifacts, null, mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback, times(2)).library(this.libraryCaptor.capture());
-		assertThat(this.libraryCaptor.getAllValues().get(0).getName())
-				.isEqualTo("g1-artifact-1.0.jar");
-		assertThat(this.libraryCaptor.getAllValues().get(1).getName())
-				.isEqualTo("g2-artifact-1.0.jar");
+		assertThat(this.libraryCaptor.getAllValues().get(0).getName()).isEqualTo("g1-artifact-1.0.jar");
+		assertThat(this.libraryCaptor.getAllValues().get(1).getName()).isEqualTo("g2-artifact-1.0.jar");
 	}
 
 }

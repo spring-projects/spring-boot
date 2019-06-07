@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Tim Ysewyn
  */
-public class IntegrationGraphEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+public class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void graph() throws Exception {
@@ -46,8 +45,7 @@ public class IntegrationGraphEndpointDocumentationTests
 
 	@Test
 	public void rebuild() throws Exception {
-		this.mockMvc.perform(post("/actuator/integrationgraph"))
-				.andExpect(status().isNoContent())
+		this.mockMvc.perform(post("/actuator/integrationgraph")).andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
 	}
 

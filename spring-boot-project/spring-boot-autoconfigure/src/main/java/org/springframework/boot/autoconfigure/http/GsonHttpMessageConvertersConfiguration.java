@@ -56,15 +56,13 @@ class GsonHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class PreferGsonOrJacksonAndJsonbUnavailableCondition
-			extends AnyNestedCondition {
+	private static class PreferGsonOrJacksonAndJsonbUnavailableCondition extends AnyNestedCondition {
 
 		PreferGsonOrJacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(
-				name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "gson")
 		static class GsonPreferred {
 
@@ -77,8 +75,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class JacksonAndJsonbUnavailableCondition
-			extends NoneNestedConditions {
+	private static class JacksonAndJsonbUnavailableCondition extends NoneNestedConditions {
 
 		JacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
@@ -89,8 +86,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 		}
 
-		@ConditionalOnProperty(
-				name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "jsonb")
 		static class JsonbPreferred {
 

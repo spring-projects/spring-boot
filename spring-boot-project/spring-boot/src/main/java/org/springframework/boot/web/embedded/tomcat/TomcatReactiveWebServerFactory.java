@@ -95,16 +95,14 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private static List<LifecycleListener> getDefaultLifecycleListeners() {
 		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
-		return AprLifecycleListener.isAprAvailable()
-				? new ArrayList<>(Arrays.asList(aprLifecycleListener))
+		return AprLifecycleListener.isAprAvailable() ? new ArrayList<>(Arrays.asList(aprLifecycleListener))
 				: new ArrayList<>();
 	}
 
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (this.baseDirectory != null) ? this.baseDirectory
-				: createTempDir("tomcat");
+		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
@@ -155,8 +153,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	protected void configureContext(Context context) {
 		this.contextLifecycleListeners.forEach(context::addLifecycleListener);
 		new DisableReferenceClearingContextCustomizer().customize(context);
-		this.tomcatContextCustomizers
-				.forEach((customizer) -> customizer.customize(context));
+		this.tomcatContextCustomizers.forEach((customizer) -> customizer.customize(context));
 	}
 
 	protected void customizeConnector(Connector connector) {
@@ -176,8 +173,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		if (getSsl() != null && getSsl().isEnabled()) {
 			customizeSsl(connector);
 		}
-		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(
-				getCompression());
+		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
 		compression.customize(connector);
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
@@ -212,10 +208,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * {@link Context}. Calling this method will replace any existing customizers.
 	 * @param tomcatContextCustomizers the customizers to set
 	 */
-	public void setTomcatContextCustomizers(
-			Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers,
-				"TomcatContextCustomizers must not be null");
+	public void setTomcatContextCustomizers(Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
+		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers = new ArrayList<>(tomcatContextCustomizers);
 	}
 
@@ -234,10 +228,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param tomcatContextCustomizers the customizers to add
 	 */
 	@Override
-	public void addContextCustomizers(
-			TomcatContextCustomizer... tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers,
-				"TomcatContextCustomizers must not be null");
+	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
+		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
 	}
 
@@ -248,8 +240,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setTomcatConnectorCustomizers(
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers,
-				"TomcatConnectorCustomizers must not be null");
+		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
 		this.tomcatConnectorCustomizers = new ArrayList<>(tomcatConnectorCustomizers);
 	}
 
@@ -259,10 +250,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param tomcatConnectorCustomizers the customizers to add
 	 */
 	@Override
-	public void addConnectorCustomizers(
-			TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers,
-				"TomcatConnectorCustomizers must not be null");
+	public void addConnectorCustomizers(TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
+		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
 		this.tomcatConnectorCustomizers.addAll(Arrays.asList(tomcatConnectorCustomizers));
 	}
 
@@ -313,10 +302,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * {@link Context}. Calling this method will replace any existing listeners.
 	 * @param contextLifecycleListeners the listeners to set
 	 */
-	public void setContextLifecycleListeners(
-			Collection<? extends LifecycleListener> contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners,
-				"ContextLifecycleListeners must not be null");
+	public void setContextLifecycleListeners(Collection<? extends LifecycleListener> contextLifecycleListeners) {
+		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
 		this.contextLifecycleListeners = new ArrayList<>(contextLifecycleListeners);
 	}
 
@@ -333,10 +320,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * Add {@link LifecycleListener}s that should be added to the Tomcat {@link Context}.
 	 * @param contextLifecycleListeners the listeners to add
 	 */
-	public void addContextLifecycleListeners(
-			LifecycleListener... contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners,
-				"ContextLifecycleListeners must not be null");
+	public void addContextLifecycleListeners(LifecycleListener... contextLifecycleListeners) {
+		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
 	}
 

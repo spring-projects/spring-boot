@@ -51,10 +51,8 @@ public class TypeExcludeFilterTests {
 	@Test
 	public void loadsTypeExcludeFilters() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.getBeanFactory().registerSingleton("filter1",
-				new WithoutMatchOverrideFilter());
-		this.context.getBeanFactory().registerSingleton("filter2",
-				new SampleTypeExcludeFilter());
+		this.context.getBeanFactory().registerSingleton("filter1", new WithoutMatchOverrideFilter());
+		this.context.getBeanFactory().registerSingleton("filter2", new SampleTypeExcludeFilter());
 		this.context.register(Config.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(ExampleComponent.class)).isNotNull();
@@ -64,8 +62,7 @@ public class TypeExcludeFilterTests {
 
 	@Configuration
 	@ComponentScan(basePackageClasses = SampleTypeExcludeFilter.class,
-			excludeFilters = @Filter(type = FilterType.CUSTOM,
-					classes = SampleTypeExcludeFilter.class))
+			excludeFilters = @Filter(type = FilterType.CUSTOM, classes = SampleTypeExcludeFilter.class))
 	static class Config {
 
 	}

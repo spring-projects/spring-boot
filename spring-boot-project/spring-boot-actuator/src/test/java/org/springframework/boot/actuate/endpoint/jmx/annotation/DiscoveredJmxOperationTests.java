@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,22 +60,19 @@ public class DiscoveredJmxOperationTests {
 		assertThat(getOperation("getInstant").getOutputType()).isEqualTo(String.class);
 		assertThat(getOperation("getInteger").getOutputType()).isEqualTo(Integer.class);
 		assertThat(getOperation("getVoid").getOutputType()).isEqualTo(void.class);
-		assertThat(getOperation("getApplicationContext").getOutputType())
-				.isEqualTo(Object.class);
+		assertThat(getOperation("getApplicationContext").getOutputType()).isEqualTo(Object.class);
 	}
 
 	@Test
 	public void getDescriptionWhenHasManagedOperationDescriptionShouldUseValueFromAnnotation() {
-		DiscoveredJmxOperation operation = getOperation(
-				"withManagedOperationDescription");
+		DiscoveredJmxOperation operation = getOperation("withManagedOperationDescription");
 		assertThat(operation.getDescription()).isEqualTo("fromannotation");
 	}
 
 	@Test
 	public void getDescriptionWhenHasNoManagedOperationShouldGenerateDescription() {
 		DiscoveredJmxOperation operation = getOperation("getEnum");
-		assertThat(operation.getDescription())
-				.isEqualTo("Invoke getEnum for endpoint test");
+		assertThat(operation.getDescription()).isEqualTo("Invoke getEnum for endpoint test");
 	}
 
 	@Test
@@ -125,17 +122,16 @@ public class DiscoveredJmxOperationTests {
 		Method method = findMethod(methodName);
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		annotationAttributes.put("produces", "application/xml");
-		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method,
-				OperationType.READ, annotationAttributes);
-		DiscoveredJmxOperation operation = new DiscoveredJmxOperation(
-				EndpointId.of("test"), operationMethod, mock(OperationInvoker.class));
+		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method, OperationType.READ,
+				annotationAttributes);
+		DiscoveredJmxOperation operation = new DiscoveredJmxOperation(EndpointId.of("test"), operationMethod,
+				mock(OperationInvoker.class));
 		return operation;
 	}
 
 	private Method findMethod(String methodName) {
 		Map<String, Method> methods = new HashMap<>();
-		ReflectionUtils.doWithMethods(Example.class,
-				(method) -> methods.put(method.getName(), method));
+		ReflectionUtils.doWithMethods(Example.class, (method) -> methods.put(method.getName(), method));
 		return methods.get(methodName);
 	}
 
@@ -153,14 +149,13 @@ public class DiscoveredJmxOperationTests {
 
 		ApplicationContext getApplicationContext();
 
-		Object params(OperationType enumParam, Date dateParam, Instant instantParam,
-				Integer integerParam, ApplicationContext applicationContextParam);
+		Object params(OperationType enumParam, Date dateParam, Instant instantParam, Integer integerParam,
+				ApplicationContext applicationContextParam);
 
 		@ManagedOperation(description = "fromannotation")
 		Object withManagedOperationDescription();
 
-		@ManagedOperationParameters({
-				@ManagedOperationParameter(name = "a1", description = "d1"),
+		@ManagedOperationParameters({ @ManagedOperationParameter(name = "a1", description = "d1"),
 				@ManagedOperationParameter(name = "a2", description = "d2") })
 		Object withManagedOperationParameters(Object one, Object two);
 

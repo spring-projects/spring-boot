@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,18 +86,15 @@ public class BasicErrorControllerMockMvcTests {
 
 	@Test
 	public void testDirectAccessForMachineClient() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/error"))
-				.andExpect(status().is5xxServerError()).andReturn();
+		MvcResult response = this.mockMvc.perform(get("/error")).andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("999");
 	}
 
 	@Test
 	public void testErrorWithResponseStatus() throws Exception {
-		MvcResult result = this.mockMvc.perform(get("/bang"))
-				.andExpect(status().isNotFound()).andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
-				.andReturn();
+		MvcResult result = this.mockMvc.perform(get("/bang")).andExpect(status().isNotFound()).andReturn();
+		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("Expected!");
 	}
@@ -107,10 +104,8 @@ public class BasicErrorControllerMockMvcTests {
 		// In a real server the response is carried over into the error dispatcher, but
 		// in the mock a new one is created so we have to assert the status at this
 		// intermediate point
-		MvcResult result = this.mockMvc.perform(get("/bind"))
-				.andExpect(status().is4xxClientError()).andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
-				.andReturn();
+		MvcResult result = this.mockMvc.perform(get("/bind")).andExpect(status().is4xxClientError()).andReturn();
+		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
 		// And the rendered status code is always wrong (but would be 400 in a real
 		// system)
 		String content = response.getResponse().getContentAsString();
@@ -119,8 +114,7 @@ public class BasicErrorControllerMockMvcTests {
 
 	@Test
 	public void testDirectAccessForBrowserClient() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
+		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("ERROR_BEAN");
@@ -129,10 +123,9 @@ public class BasicErrorControllerMockMvcTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	private @interface MinimalWebConfiguration {
 
 	}
@@ -150,9 +143,8 @@ public class BasicErrorControllerMockMvcTests {
 		public View error() {
 			return new AbstractView() {
 				@Override
-				protected void renderMergedOutputModel(Map<String, Object> model,
-						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+				protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
+						HttpServletResponse response) throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,17 +46,14 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @Configuration
 @ConditionalOnClass(WebClient.class)
-@AutoConfigureAfter({ CodecsAutoConfiguration.class,
-		ClientHttpConnectorAutoConfiguration.class })
+@AutoConfigureAfter({ CodecsAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class })
 public class WebClientAutoConfiguration {
 
 	private final WebClient.Builder webClientBuilder;
 
-	public WebClientAutoConfiguration(
-			ObjectProvider<WebClientCustomizer> customizerProvider) {
+	public WebClientAutoConfiguration(ObjectProvider<WebClientCustomizer> customizerProvider) {
 		this.webClientBuilder = WebClient.builder();
-		customizerProvider.orderedStream()
-				.forEach((customizer) -> customizer.customize(this.webClientBuilder));
+		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(this.webClientBuilder));
 	}
 
 	@Bean
@@ -73,8 +70,7 @@ public class WebClientAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@Order(0)
-		public WebClientCodecCustomizer exchangeStrategiesCustomizer(
-				List<CodecCustomizer> codecCustomizers) {
+		public WebClientCodecCustomizer exchangeStrategiesCustomizer(List<CodecCustomizer> codecCustomizers) {
 			return new WebClientCodecCustomizer(codecCustomizers);
 		}
 

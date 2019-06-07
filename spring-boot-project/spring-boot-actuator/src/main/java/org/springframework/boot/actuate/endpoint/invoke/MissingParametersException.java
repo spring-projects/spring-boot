@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,10 @@ public final class MissingParametersException extends InvalidEndpointRequestExce
 	private final Set<OperationParameter> missingParameters;
 
 	public MissingParametersException(Set<OperationParameter> missingParameters) {
-		super("Failed to invoke operation because the following required "
-				+ "parameters were missing: "
+		super("Failed to invoke operation because the following required " + "parameters were missing: "
 				+ StringUtils.collectionToCommaDelimitedString(missingParameters),
 				"Missing parameters: "
-						+ missingParameters.stream().map(OperationParameter::getName)
-								.collect(Collectors.joining(",")));
+						+ missingParameters.stream().map(OperationParameter::getName).collect(Collectors.joining(",")));
 		this.missingParameters = missingParameters;
 	}
 

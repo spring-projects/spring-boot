@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,7 @@ public class ConditionEvaluationReportLoggingListener
 	}
 
 	private boolean isInfoOrDebug(LogLevel logLevelForReport) {
-		return LogLevel.INFO.equals(logLevelForReport)
-				|| LogLevel.DEBUG.equals(logLevelForReport);
+		return LogLevel.INFO.equals(logLevelForReport) || LogLevel.DEBUG.equals(logLevelForReport);
 	}
 
 	public LogLevel getLogLevelForReport() {
@@ -80,26 +79,22 @@ public class ConditionEvaluationReportLoggingListener
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		applicationContext
-				.addApplicationListener(new ConditionEvaluationReportListener());
+		applicationContext.addApplicationListener(new ConditionEvaluationReportListener());
 		if (applicationContext instanceof GenericApplicationContext) {
 			// Get the report early in case the context fails to load
-			this.report = ConditionEvaluationReport
-					.get(this.applicationContext.getBeanFactory());
+			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());
 		}
 	}
 
 	protected void onApplicationEvent(ApplicationEvent event) {
 		ConfigurableApplicationContext initializerApplicationContext = this.applicationContext;
 		if (event instanceof ContextRefreshedEvent) {
-			if (((ApplicationContextEvent) event)
-					.getApplicationContext() == initializerApplicationContext) {
+			if (((ApplicationContextEvent) event).getApplicationContext() == initializerApplicationContext) {
 				logAutoConfigurationReport();
 			}
 		}
 		else if (event instanceof ApplicationFailedEvent
-				&& ((ApplicationFailedEvent) event)
-						.getApplicationContext() == initializerApplicationContext) {
+				&& ((ApplicationFailedEvent) event).getApplicationContext() == initializerApplicationContext) {
 			logAutoConfigurationReport(true);
 		}
 	}
@@ -111,12 +106,10 @@ public class ConditionEvaluationReportLoggingListener
 	public void logAutoConfigurationReport(boolean isCrashReport) {
 		if (this.report == null) {
 			if (this.applicationContext == null) {
-				this.logger.info("Unable to provide the conditions report "
-						+ "due to missing ApplicationContext");
+				this.logger.info("Unable to provide the conditions report " + "due to missing ApplicationContext");
 				return;
 			}
-			this.report = ConditionEvaluationReport
-					.get(this.applicationContext.getBeanFactory());
+			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());
 		}
 		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
 			if (this.getLogLevelForReport().equals(LogLevel.INFO)) {
@@ -139,14 +132,11 @@ public class ConditionEvaluationReportLoggingListener
 	}
 
 	private void logMessage(String logLevel) {
-		this.logger.info(
-				String.format("%n%nError starting ApplicationContext. To display the "
-						+ "conditions report re-run your application with '" + logLevel
-						+ "' enabled."));
+		this.logger.info(String.format("%n%nError starting ApplicationContext. To display the "
+				+ "conditions report re-run your application with '" + logLevel + "' enabled."));
 	}
 
-	private class ConditionEvaluationReportListener
-			implements GenericApplicationListener {
+	private class ConditionEvaluationReportListener implements GenericApplicationListener {
 
 		@Override
 		public int getOrder() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,19 +35,18 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class HealthEndpointTests {
 
-	private static final HealthIndicator one = () -> new Health.Builder()
-			.status(Status.UP).withDetail("first", "1").build();
+	private static final HealthIndicator one = () -> new Health.Builder().status(Status.UP).withDetail("first", "1")
+			.build();
 
-	private static final HealthIndicator two = () -> new Health.Builder()
-			.status(Status.UP).withDetail("second", "2").build();
+	private static final HealthIndicator two = () -> new Health.Builder().status(Status.UP).withDetail("second", "2")
+			.build();
 
 	@Test
 	public void statusAndFullDetailsAreExposed() {
 		Map<String, HealthIndicator> healthIndicators = new HashMap<>();
 		healthIndicators.put("up", one);
 		healthIndicators.put("upAgain", two);
-		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(healthIndicators));
+		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(healthIndicators));
 		Health health = endpoint.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsOnlyKeys("up", "upAgain");
@@ -59,8 +58,7 @@ public class HealthEndpointTests {
 
 	@Test
 	public void statusForComponentIsExposed() {
-		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(Collections.singletonMap("test", one)));
+		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(Collections.singletonMap("test", one)));
 		Health health = endpoint.healthForComponent("test");
 		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -69,19 +67,17 @@ public class HealthEndpointTests {
 
 	@Test
 	public void statusForUnknownComponentReturnNull() {
-		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(Collections.emptyMap()));
+		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(Collections.emptyMap()));
 		Health health = endpoint.healthForComponent("does-not-exist");
 		assertThat(health).isNull();
 	}
 
 	@Test
 	public void statusForComponentInstanceIsExposed() {
-		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(
-				new OrderedHealthAggregator(),
+		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(new OrderedHealthAggregator(),
 				Collections.singletonMap("sub", () -> Health.down().build()));
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
-				Collections.singletonMap("test", compositeIndicator)));
+		HealthEndpoint endpoint = new HealthEndpoint(
+				createHealthIndicator(Collections.singletonMap("test", compositeIndicator)));
 		Health health = endpoint.healthForComponentInstance("test", "sub");
 		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -90,27 +86,24 @@ public class HealthEndpointTests {
 
 	@Test
 	public void statusForUnknownComponentInstanceReturnNull() {
-		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(
-				new OrderedHealthAggregator(),
+		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(new OrderedHealthAggregator(),
 				Collections.singletonMap("sub", () -> Health.down().build()));
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
-				Collections.singletonMap("test", compositeIndicator)));
+		HealthEndpoint endpoint = new HealthEndpoint(
+				createHealthIndicator(Collections.singletonMap("test", compositeIndicator)));
 		Health health = endpoint.healthForComponentInstance("test", "does-not-exist");
 		assertThat(health).isNull();
 	}
 
 	@Test
 	public void statusForComponentInstanceThatIsNotACompositeReturnNull() {
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
-				Collections.singletonMap("test", () -> Health.up().build())));
+		HealthEndpoint endpoint = new HealthEndpoint(
+				createHealthIndicator(Collections.singletonMap("test", () -> Health.up().build())));
 		Health health = endpoint.healthForComponentInstance("test", "does-not-exist");
 		assertThat(health).isNull();
 	}
 
-	private HealthIndicator createHealthIndicator(
-			Map<String, HealthIndicator> healthIndicators) {
-		return new CompositeHealthIndicator(new OrderedHealthAggregator(),
-				healthIndicators);
+	private HealthIndicator createHealthIndicator(Map<String, HealthIndicator> healthIndicators) {
+		return new CompositeHealthIndicator(new OrderedHealthAggregator(), healthIndicators);
 	}
 
 }

@@ -51,15 +51,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ManagementWebSecurityAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					HealthIndicatorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class,
-					InfoEndpointAutoConfiguration.class,
-					EnvironmentEndpointAutoConfiguration.class,
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+					InfoEndpointAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
 					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					SecurityAutoConfiguration.class,
-					ManagementWebSecurityAutoConfiguration.class));
+					SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class));
 
 	@Test
 	public void permitAllForHealth() {
@@ -89,42 +85,35 @@ public class ManagementWebSecurityAutoConfigurationTests {
 
 	@Test
 	public void usesMatchersBasedOffConfiguredActuatorBasePath() {
-		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/")
-				.run((context) -> {
-					HttpStatus status = getResponseStatus(context, "/health");
-					assertThat(status).isEqualTo(HttpStatus.OK);
-				});
+		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/").run((context) -> {
+			HttpStatus status = getResponseStatus(context, "/health");
+			assertThat(status).isEqualTo(HttpStatus.OK);
+		});
 	}
 
 	@Test
 	public void backOffIfCustomSecurityIsAdded() {
-		this.contextRunner.withUserConfiguration(CustomSecurityConfiguration.class)
-				.run((context) -> {
-					HttpStatus status = getResponseStatus(context, "/actuator/health");
-					assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
-					status = getResponseStatus(context, "/foo");
-					assertThat(status).isEqualTo(HttpStatus.OK);
-				});
+		this.contextRunner.withUserConfiguration(CustomSecurityConfiguration.class).run((context) -> {
+			HttpStatus status = getResponseStatus(context, "/actuator/health");
+			assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
+			status = getResponseStatus(context, "/foo");
+			assertThat(status).isEqualTo(HttpStatus.OK);
+		});
 	}
 
 	@Test
 	public void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations
-						.of(OAuth2ResourceServerAutoConfiguration.class))
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ManagementWebSecurityConfigurerAdapter.class));
+		this.contextRunner.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://authserver")
+				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityConfigurerAdapter.class));
 	}
 
-	private HttpStatus getResponseStatus(AssertableWebApplicationContext context,
-			String path) throws IOException, javax.servlet.ServletException {
+	private HttpStatus getResponseStatus(AssertableWebApplicationContext context, String path)
+			throws IOException, javax.servlet.ServletException {
 		FilterChainProxy filterChainProxy = context.getBean(FilterChainProxy.class);
 		MockServletContext servletContext = new MockServletContext();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		servletContext.setAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 		MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 		request.setServletPath(path);
 		request.setMethod("GET");
@@ -137,8 +126,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/foo").permitAll().anyRequest()
-					.authenticated().and().formLogin().and().httpBasic();
+			http.authorizeRequests().antMatchers("/foo").permitAll().anyRequest().authenticated().and().formLogin()
+					.and().httpBasic();
 		}
 
 	}

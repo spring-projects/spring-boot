@@ -49,38 +49,32 @@ public class WebFluxTestAutoConfigurationIntegrationTests {
 
 	@Test
 	public void messageSourceAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(MessageSourceAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(MessageSourceAutoConfiguration.class));
 	}
 
 	@Test
 	public void validationAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(ValidationAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ValidationAutoConfiguration.class));
 	}
 
 	@Test
 	public void mustacheAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(MustacheAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(MustacheAutoConfiguration.class));
 	}
 
 	@Test
 	public void freemarkerAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(FreeMarkerAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(FreeMarkerAutoConfiguration.class));
 	}
 
 	@Test
 	public void thymeleafAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
 	}
 
 	@Test
 	public void errorWebFluxAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(ErrorWebFluxAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ErrorWebFluxAutoConfiguration.class));
 	}
 
 }

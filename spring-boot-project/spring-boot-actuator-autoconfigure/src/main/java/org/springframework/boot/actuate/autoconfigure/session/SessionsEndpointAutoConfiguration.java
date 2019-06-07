@@ -44,8 +44,7 @@ public class SessionsEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(FindByIndexNameSessionRepository.class)
 	@ConditionalOnMissingBean
-	public SessionsEndpoint sessionEndpoint(
-			FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
+	public SessionsEndpoint sessionEndpoint(FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
 		return new SessionsEndpoint(sessionRepository);
 	}
 

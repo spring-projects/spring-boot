@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,30 +61,26 @@ public class SampleActuatorCustomSecurityApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat((String) body.get("message"))
-				.contains("Expected exception in controller");
+		assertThat((String) body.get("message")).contains("Expected exception in controller");
 	}
 
 	@Test
 	public void testInsecureStaticResources() {
-		ResponseEntity<String> entity = restTemplate()
-				.getForEntity("/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = restTemplate().getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}
 
 	@Test
 	public void actuatorInsecureEndpoint() {
-		ResponseEntity<String> entity = restTemplate().getForEntity("/actuator/health",
-				String.class);
+		ResponseEntity<String> entity = restTemplate().getForEntity("/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
 
 	@Test
 	public void actuatorLinksIsSecure() {
-		ResponseEntity<Object> entity = restTemplate().getForEntity("/actuator",
-				Object.class);
+		ResponseEntity<Object> entity = restTemplate().getForEntity("/actuator", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		entity = adminRestTemplate().getForEntity("/actuator", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -92,43 +88,40 @@ public class SampleActuatorCustomSecurityApplicationTests {
 
 	@Test
 	public void actuatorSecureEndpointWithAnonymous() {
-		ResponseEntity<Object> entity = restTemplate().getForEntity("/actuator/env",
-				Object.class);
+		ResponseEntity<Object> entity = restTemplate().getForEntity("/actuator/env", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void actuatorSecureEndpointWithUnauthorizedUser() {
-		ResponseEntity<Object> entity = userRestTemplate().getForEntity("/actuator/env",
-				Object.class);
+		ResponseEntity<Object> entity = userRestTemplate().getForEntity("/actuator/env", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	public void actuatorSecureEndpointWithAuthorizedUser() {
-		ResponseEntity<Object> entity = adminRestTemplate().getForEntity("/actuator/env",
-				Object.class);
+		ResponseEntity<Object> entity = adminRestTemplate().getForEntity("/actuator/env", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void actuatorCustomMvcSecureEndpointWithAnonymous() {
-		ResponseEntity<String> entity = restTemplate()
-				.getForEntity("/actuator/example/echo?text={t}", String.class, "test");
+		ResponseEntity<String> entity = restTemplate().getForEntity("/actuator/example/echo?text={t}", String.class,
+				"test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void actuatorCustomMvcSecureEndpointWithUnauthorizedUser() {
-		ResponseEntity<String> entity = userRestTemplate()
-				.getForEntity("/actuator/example/echo?text={t}", String.class, "test");
+		ResponseEntity<String> entity = userRestTemplate().getForEntity("/actuator/example/echo?text={t}", String.class,
+				"test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	public void actuatorCustomMvcSecureEndpointWithAuthorizedUser() {
-		ResponseEntity<String> entity = adminRestTemplate()
-				.getForEntity("/actuator/example/echo?text={t}", String.class, "test");
+		ResponseEntity<String> entity = adminRestTemplate().getForEntity("/actuator/example/echo?text={t}",
+				String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("test");
 		assertThat(entity.getHeaders().getFirst("echo")).isEqualTo("test");
@@ -136,15 +129,13 @@ public class SampleActuatorCustomSecurityApplicationTests {
 
 	@Test
 	public void actuatorExcludedFromEndpointRequestMatcher() {
-		ResponseEntity<Object> entity = userRestTemplate()
-				.getForEntity("/actuator/mappings", Object.class);
+		ResponseEntity<Object> entity = userRestTemplate().getForEntity("/actuator/mappings", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void mvcMatchersCanBeUsedToSecureActuators() {
-		ResponseEntity<Object> entity = beansRestTemplate()
-				.getForEntity("/actuator/beans", Object.class);
+		ResponseEntity<Object> entity = beansRestTemplate().getForEntity("/actuator/beans", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		entity = beansRestTemplate().getForEntity("/actuator/beans/", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -167,8 +158,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 	}
 
 	private TestRestTemplate configure(TestRestTemplate restTemplate) {
-		restTemplate
-				.setUriTemplateHandler(new LocalHostUriTemplateHandler(this.environment));
+		restTemplate.setUriTemplateHandler(new LocalHostUriTemplateHandler(this.environment));
 		return restTemplate;
 	}
 

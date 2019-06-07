@@ -78,13 +78,10 @@ public class IntegrationAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
-	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
-	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true",
-			matchIfMissing = true)
-	protected static class IntegrationJmxConfiguration
-			implements EnvironmentAware, BeanFactoryAware {
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+	protected static class IntegrationJmxConfiguration implements EnvironmentAware, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 
@@ -103,13 +100,11 @@ public class IntegrationAutoConfiguration {
 		@Bean
 		public IntegrationMBeanExporter integrationMbeanExporter() {
 			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
-			String defaultDomain = this.environment
-					.getProperty("spring.jmx.default-domain");
+			String defaultDomain = this.environment.getProperty("spring.jmx.default-domain");
 			if (StringUtils.hasLength(defaultDomain)) {
 				exporter.setDefaultDomain(defaultDomain);
 			}
-			String serverBean = this.environment.getProperty("spring.jmx.server",
-					"mbeanServer");
+			String serverBean = this.environment.getProperty("spring.jmx.server", "mbeanServer");
 			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
 			return exporter;
 		}
@@ -122,8 +117,7 @@ public class IntegrationAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationManagement.class)
 	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
-			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
-			search = SearchStrategy.CURRENT)
+			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration
@@ -154,11 +148,9 @@ public class IntegrationAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public IntegrationDataSourceInitializer integrationDataSourceInitializer(
-				DataSource dataSource, ResourceLoader resourceLoader,
-				IntegrationProperties properties) {
-			return new IntegrationDataSourceInitializer(dataSource, resourceLoader,
-					properties);
+		public IntegrationDataSourceInitializer integrationDataSourceInitializer(DataSource dataSource,
+				ResourceLoader resourceLoader, IntegrationProperties properties) {
+			return new IntegrationDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

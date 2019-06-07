@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,31 +34,28 @@ public class ConfigurationPropertyStateTests {
 
 	@Test
 	public void searchWhenIterableIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
+		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void searchWhenPredicateIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
 				.withMessageContaining("Predicate must not be null");
 	}
 
 	@Test
 	public void searchWhenContainsItemShouldReturnPresent() {
 		List<String> source = Arrays.asList("a", "b", "c");
-		ConfigurationPropertyState result = ConfigurationPropertyState.search(source,
-				"b"::equals);
+		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
 	@Test
 	public void searchWhenContainsNoItemShouldReturnAbsent() {
 		List<String> source = Arrays.asList("a", "x", "c");
-		ConfigurationPropertyState result = ConfigurationPropertyState.search(source,
-				"b"::equals);
+		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 

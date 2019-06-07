@@ -45,8 +45,8 @@ public class LoggingSystemTests {
 
 	@Test
 	public void getLoggerConfigurationIsUnsupported() {
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(
-				() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));
 	}
 
 	@Test

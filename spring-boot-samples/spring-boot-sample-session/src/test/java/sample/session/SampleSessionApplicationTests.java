@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public class SampleSessionApplicationTests {
 	}
 
 	private ConfigurableApplicationContext createContext() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder()
-				.sources(SampleSessionApplication.class)
+		ConfigurableApplicationContext context = new SpringApplicationBuilder().sources(SampleSessionApplication.class)
 				.properties("server.port:0", "server.servlet.session.timeout:1")
 				.initializers(new ServerPortInfoApplicationContextInitializer()).run();
 		return context;
@@ -66,14 +65,12 @@ public class SampleSessionApplicationTests {
 
 	private ResponseEntity<String> firstRequest(RestTemplate restTemplate, URI uri) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Basic "
-				+ Base64.getEncoder().encodeToString("user:password".getBytes()));
+		headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes()));
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
 		return restTemplate.exchange(request, String.class);
 	}
 
-	private ResponseEntity<String> nextRequest(RestTemplate restTemplate, URI uri,
-			String cookie) {
+	private ResponseEntity<String> nextRequest(RestTemplate restTemplate, URI uri, String cookie) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Cookie", cookie);
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);

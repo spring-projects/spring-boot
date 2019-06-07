@@ -47,8 +47,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Configuration
 @ConditionalOnClass(PlatformTransactionManager.class)
 @AutoConfigureAfter({ JtaAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-		DataSourceTransactionManagerAutoConfiguration.class,
-		Neo4jDataAutoConfiguration.class })
+		DataSourceTransactionManagerAutoConfiguration.class, Neo4jDataAutoConfiguration.class })
 @EnableConfigurationProperties(TransactionProperties.class)
 public class TransactionAutoConfiguration {
 
@@ -56,8 +55,7 @@ public class TransactionAutoConfiguration {
 	@ConditionalOnMissingBean
 	public TransactionManagerCustomizers platformTransactionManagerCustomizers(
 			ObjectProvider<PlatformTransactionManagerCustomizer<?>> customizers) {
-		return new TransactionManagerCustomizers(
-				customizers.orderedStream().collect(Collectors.toList()));
+		return new TransactionManagerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Configuration
@@ -66,8 +64,7 @@ public class TransactionAutoConfiguration {
 
 		private final PlatformTransactionManager transactionManager;
 
-		public TransactionTemplateConfiguration(
-				PlatformTransactionManager transactionManager) {
+		public TransactionTemplateConfiguration(PlatformTransactionManager transactionManager) {
 			this.transactionManager = transactionManager;
 		}
 
@@ -86,16 +83,16 @@ public class TransactionAutoConfiguration {
 
 		@Configuration
 		@EnableTransactionManagement(proxyTargetClass = false)
-		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class",
-				havingValue = "false", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false",
+				matchIfMissing = false)
 		public static class JdkDynamicAutoProxyConfiguration {
 
 		}
 
 		@Configuration
 		@EnableTransactionManagement(proxyTargetClass = true)
-		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class",
-				havingValue = "true", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true",
+				matchIfMissing = true)
 		public static class CglibAutoProxyConfiguration {
 
 		}

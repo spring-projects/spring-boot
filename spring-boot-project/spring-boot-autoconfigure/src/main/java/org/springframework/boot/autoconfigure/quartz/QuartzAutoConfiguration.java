@@ -53,11 +53,9 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass({ Scheduler.class, SchedulerFactoryBean.class,
-		PlatformTransactionManager.class })
+@ConditionalOnClass({ Scheduler.class, SchedulerFactoryBean.class, PlatformTransactionManager.class })
 @EnableConfigurationProperties(QuartzProperties.class)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 public class QuartzAutoConfiguration {
 
 	private final QuartzProperties properties;
@@ -73,9 +71,9 @@ public class QuartzAutoConfiguration {
 	private final ApplicationContext applicationContext;
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
-			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
-			ObjectProvider<JobDetail[]> jobDetails, Map<String, Calendar> calendars,
-			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
+			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers, ObjectProvider<JobDetail[]> jobDetails,
+			Map<String, Calendar> calendars, ObjectProvider<Trigger[]> triggers,
+			ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers;
 		this.jobDetails = jobDetails.getIfAvailable();
@@ -95,15 +93,11 @@ public class QuartzAutoConfiguration {
 			schedulerFactoryBean.setSchedulerName(this.properties.getSchedulerName());
 		}
 		schedulerFactoryBean.setAutoStartup(this.properties.isAutoStartup());
-		schedulerFactoryBean
-				.setStartupDelay((int) this.properties.getStartupDelay().getSeconds());
-		schedulerFactoryBean.setWaitForJobsToCompleteOnShutdown(
-				this.properties.isWaitForJobsToCompleteOnShutdown());
-		schedulerFactoryBean
-				.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
+		schedulerFactoryBean.setStartupDelay((int) this.properties.getStartupDelay().getSeconds());
+		schedulerFactoryBean.setWaitForJobsToCompleteOnShutdown(this.properties.isWaitForJobsToCompleteOnShutdown());
+		schedulerFactoryBean.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
 		if (!this.properties.getProperties().isEmpty()) {
-			schedulerFactoryBean
-					.setQuartzProperties(asProperties(this.properties.getProperties()));
+			schedulerFactoryBean.setQuartzProperties(asProperties(this.properties.getProperties()));
 		}
 		if (this.jobDetails != null && this.jobDetails.length > 0) {
 			schedulerFactoryBean.setJobDetails(this.jobDetails);
@@ -125,8 +119,7 @@ public class QuartzAutoConfiguration {
 	}
 
 	private void customize(SchedulerFactoryBean schedulerFactoryBean) {
-		this.customizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(schedulerFactoryBean));
+		this.customizers.orderedStream().forEach((customizer) -> customizer.customize(schedulerFactoryBean));
 	}
 
 	@Configuration
@@ -135,17 +128,14 @@ public class QuartzAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(
-				QuartzProperties properties, DataSource dataSource,
+		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(QuartzProperties properties, DataSource dataSource,
 				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
 				ObjectProvider<PlatformTransactionManager> transactionManager) {
 			return (schedulerFactoryBean) -> {
 				if (properties.getJobStoreType() == JobStoreType.JDBC) {
-					DataSource dataSourceToUse = getDataSource(dataSource,
-							quartzDataSource);
+					DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
 					schedulerFactoryBean.setDataSource(dataSourceToUse);
-					PlatformTransactionManager txManager = transactionManager
-							.getIfUnique();
+					PlatformTransactionManager txManager = transactionManager.getIfUnique();
 					if (txManager != null) {
 						schedulerFactoryBean.setTransactionManager(txManager);
 					}
@@ -153,21 +143,18 @@ public class QuartzAutoConfiguration {
 			};
 		}
 
-		private DataSource getDataSource(DataSource dataSource,
-				ObjectProvider<DataSource> quartzDataSource) {
+		private DataSource getDataSource(DataSource dataSource, ObjectProvider<DataSource> quartzDataSource) {
 			DataSource dataSourceIfAvailable = quartzDataSource.getIfAvailable();
 			return (dataSourceIfAvailable != null) ? dataSourceIfAvailable : dataSource;
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public QuartzDataSourceInitializer quartzDataSourceInitializer(
-				DataSource dataSource,
-				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
-				ResourceLoader resourceLoader, QuartzProperties properties) {
+		public QuartzDataSourceInitializer quartzDataSourceInitializer(DataSource dataSource,
+				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource, ResourceLoader resourceLoader,
+				QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
-			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader,
-					properties);
+			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader, properties);
 		}
 
 		@Bean
@@ -179,8 +166,7 @@ public class QuartzAutoConfiguration {
 				extends AbstractDependsOnBeanFactoryPostProcessor {
 
 			DataSourceInitializerSchedulerDependencyPostProcessor() {
-				super(Scheduler.class, SchedulerFactoryBean.class,
-						"quartzDataSourceInitializer");
+				super(Scheduler.class, SchedulerFactoryBean.class, "quartzDataSourceInitializer");
 			}
 
 		}

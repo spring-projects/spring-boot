@@ -41,8 +41,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
-		threadSafe = true)
+@Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public class BuildInfoMojo extends AbstractMojo {
 
 	@Component
@@ -57,8 +56,7 @@ public class BuildInfoMojo extends AbstractMojo {
 	/**
 	 * The location of the generated build-info.properties.
 	 */
-	@Parameter(
-			defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
+	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
 	private File outputFile;
 
 	/**
@@ -71,16 +69,13 @@ public class BuildInfoMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			new BuildPropertiesWriter(this.outputFile)
-					.writeBuildProperties(new ProjectDetails(this.project.getGroupId(),
-							this.project.getArtifactId(), this.project.getVersion(),
-							this.project.getName(), Instant.now(),
-							this.additionalProperties));
+			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(new ProjectDetails(
+					this.project.getGroupId(), this.project.getArtifactId(), this.project.getVersion(),
+					this.project.getName(), Instant.now(), this.additionalProperties));
 			this.buildContext.refresh(this.outputFile);
 		}
 		catch (NullAdditionalPropertyValueException ex) {
-			throw new MojoFailureException(
-					"Failed to generate build-info.properties. " + ex.getMessage(), ex);
+			throw new MojoFailureException("Failed to generate build-info.properties. " + ex.getMessage(), ex);
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);

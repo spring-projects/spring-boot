@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,29 +76,26 @@ public class HttpTunnelConnectionTests {
 
 	@Test
 	public void urlMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
 				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelConnection(this.url, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection(this.url, null))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 
@@ -148,8 +145,7 @@ public class HttpTunnelConnectionTests {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
-		this.outputCapture.expect(containsString(
-				"Failed to connect to remote application at http://localhost:12345"));
+		this.outputCapture.expect(containsString("Failed to connect to remote application at http://localhost:12345"));
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {
@@ -157,8 +153,8 @@ public class HttpTunnelConnectionTests {
 	}
 
 	private TunnelChannel openTunnel(boolean singleThreaded) throws Exception {
-		HttpTunnelConnection connection = new HttpTunnelConnection(this.url,
-				this.requestFactory, singleThreaded ? new CurrentThreadExecutor() : null);
+		HttpTunnelConnection connection = new HttpTunnelConnection(this.url, this.requestFactory,
+				singleThreaded ? new CurrentThreadExecutor() : null);
 		return connection.open(this.incomingChannel, this.closeable);
 	}
 

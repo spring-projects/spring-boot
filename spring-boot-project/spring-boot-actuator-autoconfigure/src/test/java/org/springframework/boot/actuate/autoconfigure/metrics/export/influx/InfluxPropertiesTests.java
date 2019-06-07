@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,9 @@ public class InfluxPropertiesTests extends StepRegistryPropertiesTests {
 		assertThat(properties.getUserName()).isEqualTo(config.userName());
 		assertThat(properties.getPassword()).isEqualTo(config.password());
 		assertThat(properties.getRetentionPolicy()).isEqualTo(config.retentionPolicy());
-		assertThat(properties.getRetentionDuration())
-				.isEqualTo(config.retentionDuration());
-		assertThat(properties.getRetentionReplicationFactor())
-				.isEqualTo(config.retentionReplicationFactor());
-		assertThat(properties.getRetentionShardDuration())
-				.isEqualTo(config.retentionShardDuration());
+		assertThat(properties.getRetentionDuration()).isEqualTo(config.retentionDuration());
+		assertThat(properties.getRetentionReplicationFactor()).isEqualTo(config.retentionReplicationFactor());
+		assertThat(properties.getRetentionShardDuration()).isEqualTo(config.retentionShardDuration());
 		assertThat(properties.getUri()).isEqualTo(config.uri());
 		assertThat(properties.isCompressed()).isEqualTo(config.compressed());
 		assertThat(properties.isAutoCreateDb()).isEqualTo(config.autoCreateDb());

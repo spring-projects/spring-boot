@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,9 @@ class WebDriverTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
-		WebDriverScope scope = WebDriverScope
-				.getFrom(testContext.getApplicationContext());
+		WebDriverScope scope = WebDriverScope.getFrom(testContext.getApplicationContext());
 		if (scope != null && scope.reset()) {
-			testContext.setAttribute(
-					DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE,
+			testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE,
 					Boolean.TRUE);
 		}
 	}

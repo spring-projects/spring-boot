@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,14 +43,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(HealthIndicatorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runWhenNoOtherIndicatorsShouldCreateDefaultApplicationHealthIndicator() {
-		this.contextRunner
-				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
-						.isInstanceOf(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).getBean(HealthIndicator.class)
+				.isInstanceOf(ApplicationHealthIndicator.class));
 	}
 
 	@Test
@@ -63,17 +61,15 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledShouldCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.withPropertyValues("management.health.defaults.enabled:false")
-				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
-						.isInstanceOf(ApplicationHealthIndicator.class));
+				.withPropertyValues("management.health.defaults.enabled:false").run((context) -> assertThat(context)
+						.getBean(HealthIndicator.class).isInstanceOf(ApplicationHealthIndicator.class));
 
 	}
 
 	@Test
 	public void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledShouldCreateEnabledIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.withPropertyValues("management.health.defaults.enabled:false",
-						"management.health.custom.enabled:true")
+				.withPropertyValues("management.health.defaults.enabled:false", "management.health.custom.enabled:true")
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 						.isInstanceOf(CustomHealthIndicator.class));
 
@@ -81,29 +77,25 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void runShouldCreateOrderedHealthAggregator() {
-		this.contextRunner
-				.run((context) -> assertThat(context).getBean(HealthAggregator.class)
-						.isInstanceOf(OrderedHealthAggregator.class));
+		this.contextRunner.run((context) -> assertThat(context).getBean(HealthAggregator.class)
+				.isInstanceOf(OrderedHealthAggregator.class));
 	}
 
 	@Test
 	public void runWhenHasCustomOrderPropertyShouldCreateOrderedHealthAggregator() {
-		this.contextRunner.withPropertyValues("management.health.status.order:UP,DOWN")
-				.run((context) -> {
-					OrderedHealthAggregator aggregator = context
-							.getBean(OrderedHealthAggregator.class);
-					Map<String, Health> healths = new LinkedHashMap<>();
-					healths.put("foo", Health.up().build());
-					healths.put("bar", Health.down().build());
-					Health aggregate = aggregator.aggregate(healths);
-					assertThat(aggregate.getStatus()).isEqualTo(Status.UP);
-				});
+		this.contextRunner.withPropertyValues("management.health.status.order:UP,DOWN").run((context) -> {
+			OrderedHealthAggregator aggregator = context.getBean(OrderedHealthAggregator.class);
+			Map<String, Health> healths = new LinkedHashMap<>();
+			healths.put("foo", Health.up().build());
+			healths.put("bar", Health.down().build());
+			Health aggregate = aggregator.aggregate(healths);
+			assertThat(aggregate.getStatus()).isEqualTo(Status.UP);
+		});
 	}
 
 	@Test
 	public void runWhenHasCustomHealthAggregatorShouldNotCreateOrderedHealthAggregator() {
-		this.contextRunner
-				.withUserConfiguration(CustomHealthAggregatorConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomHealthAggregatorConfiguration.class)
 				.run((context) -> assertThat(context).getBean(HealthAggregator.class)
 						.isNotInstanceOf(OrderedHealthAggregator.class));
 	}

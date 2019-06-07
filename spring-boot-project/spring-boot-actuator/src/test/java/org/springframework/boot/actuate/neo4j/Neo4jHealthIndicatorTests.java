@@ -60,8 +60,7 @@ public class Neo4jHealthIndicatorTests {
 	@Test
 	public void neo4jUp() {
 		Result result = mock(Result.class);
-		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap()))
-				.willReturn(result);
+		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap())).willReturn(result);
 		int nodeCount = 500;
 		Map<String, Object> expectedCypherDetails = new HashMap<>();
 		expectedCypherDetails.put("nodes", nodeCount);
@@ -77,11 +76,9 @@ public class Neo4jHealthIndicatorTests {
 
 	@Test
 	public void neo4jDown() {
-		CypherException cypherException = new CypherException(
-				"Neo.ClientError.Statement.SyntaxError",
+		CypherException cypherException = new CypherException("Neo.ClientError.Statement.SyntaxError",
 				"Unable to execute invalid Cypher");
-		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap()))
-				.willThrow(cypherException);
+		given(this.session.query(Neo4jHealthIndicator.CYPHER, Collections.emptyMap())).willThrow(cypherException);
 		Health health = this.neo4jHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}

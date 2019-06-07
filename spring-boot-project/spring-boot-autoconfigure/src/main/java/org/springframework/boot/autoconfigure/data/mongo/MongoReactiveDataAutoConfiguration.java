@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,16 +67,14 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
-	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(
-			MongoClient mongo) {
+	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongo) {
 		String database = this.properties.getMongoClientDatabase();
 		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveMongoTemplate reactiveMongoTemplate(
-			ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
+	public ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MongoConverter converter) {
 		return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
 	}
@@ -85,8 +83,7 @@ public class MongoReactiveDataAutoConfiguration {
 	@ConditionalOnMissingBean(MongoConverter.class)
 	public MappingMongoConverter mappingMongoConverter(MongoMappingContext context,
 			MongoCustomConversions conversions) {
-		MappingMongoConverter mappingConverter = new MappingMongoConverter(
-				NoOpDbRefResolver.INSTANCE, context);
+		MappingMongoConverter mappingConverter = new MappingMongoConverter(NoOpDbRefResolver.INSTANCE, context);
 		mappingConverter.setCustomConversions(conversions);
 		return mappingConverter;
 	}

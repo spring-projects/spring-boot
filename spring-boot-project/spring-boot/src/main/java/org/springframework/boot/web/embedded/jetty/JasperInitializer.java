@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import org.springframework.util.ClassUtils;
  */
 class JasperInitializer extends AbstractLifeCycle {
 
-	private static final String[] INITIALIZER_CLASSES = {
-			"org.eclipse.jetty.apache.jsp.JettyJasperInitializer",
+	private static final String[] INITIALIZER_CLASSES = { "org.eclipse.jetty.apache.jsp.JettyJasperInitializer",
 			"org.apache.jasper.servlet.JasperInitializer" };
 
 	private final WebAppContext context;
@@ -70,8 +69,7 @@ class JasperInitializer extends AbstractLifeCycle {
 		if (this.initializer == null) {
 			return;
 		}
-		if (ClassUtils.isPresent(
-				"org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
 				getClass().getClassLoader())) {
 			TomcatURLStreamHandlerFactory.register();
 		}
@@ -135,8 +133,7 @@ class JasperInitializer extends AbstractLifeCycle {
 			String path = "jar:" + spec.substring("war:".length());
 			int separator = path.indexOf("*/");
 			if (separator >= 0) {
-				path = path.substring(0, separator) + "!/"
-						+ path.substring(separator + 2);
+				path = path.substring(0, separator) + "!/" + path.substring(separator + 2);
 			}
 			setURL(u, u.getProtocol(), "", -1, null, null, path, null, null);
 		}

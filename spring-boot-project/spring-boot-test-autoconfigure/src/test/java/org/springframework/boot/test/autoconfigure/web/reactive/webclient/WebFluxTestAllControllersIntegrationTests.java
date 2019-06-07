@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,12 @@ public class WebFluxTestAllControllersIntegrationTests {
 
 	@Test
 	public void shouldFindController1() {
-		this.webClient.get().uri("/one").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("one");
+		this.webClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
 	}
 
 	@Test
 	public void shouldFindController2() {
-		this.webClient.get().uri("/two").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("two");
+		this.webClient.get().uri("/two").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("two");
 	}
 
 	@Test

@@ -52,8 +52,7 @@ class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private final JsonTest annotation;
 
 	JsonExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				JsonTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, JsonTest.class);
 	}
 
 	@Override

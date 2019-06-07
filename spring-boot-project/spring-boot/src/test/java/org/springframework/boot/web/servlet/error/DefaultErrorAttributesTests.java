@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,25 +53,21 @@ public class DefaultErrorAttributesTests {
 
 	@Test
 	public void includeTimeStamp() {
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("timestamp")).isInstanceOf(Date.class);
 	}
 
 	@Test
 	public void specificStatusCode() {
 		this.request.setAttribute("javax.servlet.error.status_code", 404);
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
-		assertThat(attributes.get("error"))
-				.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
+		assertThat(attributes.get("error")).isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
 		assertThat(attributes.get("status")).isEqualTo(404);
 	}
 
 	@Test
 	public void missingStatusCode() {
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("error")).isEqualTo("None");
 		assertThat(attributes.get("status")).isEqualTo(999);
 	}
@@ -79,12 +75,9 @@ public class DefaultErrorAttributesTests {
 	@Test
 	public void mvcError() {
 		RuntimeException ex = new RuntimeException("Test");
-		ModelAndView modelAndView = this.errorAttributes.resolveException(this.request,
-				null, null, ex);
-		this.request.setAttribute("javax.servlet.error.exception",
-				new RuntimeException("Ignored"));
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		ModelAndView modelAndView = this.errorAttributes.resolveException(this.request, null, null, ex);
+		this.request.setAttribute("javax.servlet.error.exception", new RuntimeException("Ignored"));
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(modelAndView).isNull();
 		assertThat(attributes.get("exception")).isNull();
@@ -95,8 +88,7 @@ public class DefaultErrorAttributesTests {
 	public void servletError() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
@@ -105,19 +97,16 @@ public class DefaultErrorAttributesTests {
 	@Test
 	public void servletMessage() {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
 	@Test
 	public void nullMessage() {
-		this.request.setAttribute("javax.servlet.error.exception",
-				new RuntimeException());
+		this.request.setAttribute("javax.servlet.error.exception", new RuntimeException());
 		this.request.setAttribute("javax.servlet.error.message", "Test");
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
@@ -127,8 +116,7 @@ public class DefaultErrorAttributesTests {
 		RuntimeException ex = new RuntimeException("Test");
 		ServletException wrapped = new ServletException(new ServletException(ex));
 		this.request.setAttribute("javax.servlet.error.exception", wrapped);
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(wrapped);
 		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
@@ -138,8 +126,7 @@ public class DefaultErrorAttributesTests {
 	public void getError() {
 		Error error = new OutOfMemoryError("Test error");
 		this.request.setAttribute("javax.servlet.error.exception", error);
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(error);
 		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test error");
@@ -147,8 +134,7 @@ public class DefaultErrorAttributesTests {
 
 	@Test
 	public void extractBindingResultErrors() {
-		BindingResult bindingResult = new MapBindingResult(
-				Collections.singletonMap("a", "b"), "objectName");
+		BindingResult bindingResult = new MapBindingResult(Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
 		Exception ex = new BindException(bindingResult);
 		testBindingResult(bindingResult, ex);
@@ -156,8 +142,7 @@ public class DefaultErrorAttributesTests {
 
 	@Test
 	public void extractMethodArgumentNotValidExceptionBindingResultErrors() {
-		BindingResult bindingResult = new MapBindingResult(
-				Collections.singletonMap("a", "b"), "objectName");
+		BindingResult bindingResult = new MapBindingResult(Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
 		Exception ex = new MethodArgumentNotValidException(null, bindingResult);
 		testBindingResult(bindingResult, ex);
@@ -165,10 +150,8 @@ public class DefaultErrorAttributesTests {
 
 	private void testBindingResult(BindingResult bindingResult, Exception ex) {
 		this.request.setAttribute("javax.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
-		assertThat(attributes.get("message"))
-				.isEqualTo("Validation failed for object='objectName'. Error count: 1");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
+		assertThat(attributes.get("message")).isEqualTo("Validation failed for object='objectName'. Error count: 1");
 		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 	}
 
@@ -177,10 +160,8 @@ public class DefaultErrorAttributesTests {
 		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(true);
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
-		Map<String, Object> attributes = errorAttributes
-				.getErrorAttributes(this.webRequest, false);
-		assertThat(attributes.get("exception"))
-				.isEqualTo(RuntimeException.class.getName());
+		Map<String, Object> attributes = errorAttributes.getErrorAttributes(this.webRequest, false);
+		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -188,8 +169,7 @@ public class DefaultErrorAttributesTests {
 	public void trace() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, true);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, true);
 		assertThat(attributes.get("trace").toString()).startsWith("java.lang");
 	}
 
@@ -197,16 +177,14 @@ public class DefaultErrorAttributesTests {
 	public void noTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("trace")).isNull();
 	}
 
 	@Test
 	public void path() {
 		this.request.setAttribute("javax.servlet.error.request_uri", "path");
-		Map<String, Object> attributes = this.errorAttributes
-				.getErrorAttributes(this.webRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("path")).isEqualTo("path");
 	}
 

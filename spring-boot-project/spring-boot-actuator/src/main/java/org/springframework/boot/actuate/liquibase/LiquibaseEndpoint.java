@@ -65,18 +65,17 @@ public class LiquibaseEndpoint {
 			DatabaseFactory factory = DatabaseFactory.getInstance();
 			StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 			this.context.getBeansOfType(SpringLiquibase.class)
-					.forEach((name, liquibase) -> liquibaseBeans.put(name,
-							createReport(liquibase, service, factory)));
+					.forEach((name, liquibase) -> liquibaseBeans.put(name, createReport(liquibase, service, factory)));
 			ApplicationContext parent = target.getParent();
-			contextBeans.put(target.getId(), new ContextLiquibaseBeans(liquibaseBeans,
-					(parent != null) ? parent.getId() : null));
+			contextBeans.put(target.getId(),
+					new ContextLiquibaseBeans(liquibaseBeans, (parent != null) ? parent.getId() : null));
 			target = parent;
 		}
 		return new ApplicationLiquibaseBeans(contextBeans);
 	}
 
-	private LiquibaseBean createReport(SpringLiquibase liquibase,
-			ChangeLogHistoryService service, DatabaseFactory factory) {
+	private LiquibaseBean createReport(SpringLiquibase liquibase, ChangeLogHistoryService service,
+			DatabaseFactory factory) {
 		try {
 			DataSource dataSource = liquibase.getDataSource();
 			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
@@ -87,13 +86,11 @@ public class LiquibaseEndpoint {
 				if (StringUtils.hasText(defaultSchema)) {
 					database.setDefaultSchemaName(defaultSchema);
 				}
-				database.setDatabaseChangeLogTableName(
-						liquibase.getDatabaseChangeLogTable());
-				database.setDatabaseChangeLogLockTableName(
-						liquibase.getDatabaseChangeLogLockTable());
+				database.setDatabaseChangeLogTableName(liquibase.getDatabaseChangeLogTable());
+				database.setDatabaseChangeLogLockTableName(liquibase.getDatabaseChangeLogLockTable());
 				service.setDatabase(database);
-				return new LiquibaseBean(service.getRanChangeSets().stream()
-						.map(ChangeSet::new).collect(Collectors.toList()));
+				return new LiquibaseBean(
+						service.getRanChangeSets().stream().map(ChangeSet::new).collect(Collectors.toList()));
 			}
 			finally {
 				if (database != null) {
@@ -137,8 +134,7 @@ public class LiquibaseEndpoint {
 
 		private final String parentId;
 
-		private ContextLiquibaseBeans(Map<String, LiquibaseBean> liquibaseBeans,
-				String parentId) {
+		private ContextLiquibaseBeans(Map<String, LiquibaseBean> liquibaseBeans, String parentId) {
 			this.liquibaseBeans = liquibaseBeans;
 			this.parentId = parentId;
 		}
@@ -207,15 +203,14 @@ public class LiquibaseEndpoint {
 			this.changeLog = ranChangeSet.getChangeLog();
 			this.comments = ranChangeSet.getComments();
 			this.contexts = ranChangeSet.getContextExpression().getContexts();
-			this.dateExecuted = Instant
-					.ofEpochMilli(ranChangeSet.getDateExecuted().getTime());
+			this.dateExecuted = Instant.ofEpochMilli(ranChangeSet.getDateExecuted().getTime());
 			this.deploymentId = ranChangeSet.getDeploymentId();
 			this.description = ranChangeSet.getDescription();
 			this.execType = ranChangeSet.getExecType();
 			this.id = ranChangeSet.getId();
 			this.labels = ranChangeSet.getLabels().getLabels();
-			this.checksum = ((ranChangeSet.getLastCheckSum() != null)
-					? ranChangeSet.getLastCheckSum().toString() : null);
+			this.checksum = ((ranChangeSet.getLastCheckSum() != null) ? ranChangeSet.getLastCheckSum().toString()
+					: null);
 			this.orderExecuted = ranChangeSet.getOrderExecuted();
 			this.tag = ranChangeSet.getTag();
 		}

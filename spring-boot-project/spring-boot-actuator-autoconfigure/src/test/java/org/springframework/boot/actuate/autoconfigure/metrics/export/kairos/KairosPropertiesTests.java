@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,8 @@ public class KairosPropertiesTests extends StepRegistryPropertiesTests {
 		KairosConfig config = KairosConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getUri()).isEqualToIgnoringWhitespace(config.uri());
-		assertThat(properties.getUserName())
-				.isEqualToIgnoringWhitespace(config.userName());
-		assertThat(properties.getPassword())
-				.isEqualToIgnoringWhitespace(config.password());
+		assertThat(properties.getUserName()).isEqualToIgnoringWhitespace(config.userName());
+		assertThat(properties.getPassword()).isEqualToIgnoringWhitespace(config.password());
 	}
 
 }

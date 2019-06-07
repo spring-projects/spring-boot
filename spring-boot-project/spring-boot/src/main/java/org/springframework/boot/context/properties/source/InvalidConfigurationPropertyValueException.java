@@ -42,8 +42,7 @@ public class InvalidConfigurationPropertyValueException extends RuntimeException
 	 * Starts with an upper-case and ends with a dot. Several sentences and carriage
 	 * returns are allowed.
 	 */
-	public InvalidConfigurationPropertyValueException(String name, Object value,
-			String reason) {
+	public InvalidConfigurationPropertyValueException(String name, Object value, String reason) {
 		super("Property " + name + " with value '" + value + "' is invalid: " + reason);
 		Assert.notNull(name, "Name must not be null");
 		this.name = name;

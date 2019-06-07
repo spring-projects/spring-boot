@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,27 +67,23 @@ public class JpaPropertiesTests {
 	@Test
 	public void determineDatabaseWithKnownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Database database = properties
-					.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 			assertThat(database).isEqualTo(Database.H2);
 		}));
 	}
 
 	@Test
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
-		this.contextRunner.withPropertyValues("spring.jpa.database=mysql")
-				.run(assertJpaProperties((properties) -> {
-					Database database = properties
-							.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
-					assertThat(database).isEqualTo(Database.MYSQL);
-				}));
+		this.contextRunner.withPropertyValues("spring.jpa.database=mysql").run(assertJpaProperties((properties) -> {
+			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+			assertThat(database).isEqualTo(Database.MYSQL);
+		}));
 	}
 
 	@Test
 	public void determineDatabaseWithUnknownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Database database = properties
-					.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
+			Database database = properties.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
 			assertThat(database).isEqualTo(Database.DEFAULT);
 		}));
 	}
@@ -118,8 +114,7 @@ public class JpaPropertiesTests {
 		return ds;
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertJpaProperties(
-			Consumer<JpaProperties> consumer) {
+	private ContextConsumer<AssertableApplicationContext> assertJpaProperties(Consumer<JpaProperties> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(JpaProperties.class);
 			consumer.accept(context.getBean(JpaProperties.class));

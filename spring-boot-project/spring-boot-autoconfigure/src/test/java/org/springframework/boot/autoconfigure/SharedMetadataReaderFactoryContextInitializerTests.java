@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ public class SharedMetadataReaderFactoryContextInitializerTests {
 		// and happened to be loaded first
 		initializers.add(0, new Initializer());
 		GenericApplicationContext context = (GenericApplicationContext) application.run();
-		BeanDefinition definition = context.getBeanDefinition(
-				SharedMetadataReaderFactoryContextInitializer.BEAN_NAME);
+		BeanDefinition definition = context.getBeanDefinition(SharedMetadataReaderFactoryContextInitializer.BEAN_NAME);
 		assertThat(definition.getAttribute("seen")).isEqualTo(true);
 	}
 
@@ -60,8 +59,7 @@ public class SharedMetadataReaderFactoryContextInitializerTests {
 
 	}
 
-	static class Initializer
-			implements ApplicationContextInitializer<GenericApplicationContext> {
+	static class Initializer implements ApplicationContextInitializer<GenericApplicationContext> {
 
 		@Override
 		public void initialize(GenericApplicationContext applicationContext) {
@@ -73,13 +71,11 @@ public class SharedMetadataReaderFactoryContextInitializerTests {
 	static class PostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			for (String name : registry.getBeanDefinitionNames()) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
 				definition.setAttribute("seen", true);

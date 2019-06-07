@@ -59,8 +59,7 @@ public class CassandraProperties {
 	/**
 	 * Cluster node addresses.
 	 */
-	private final List<String> contactPoints = new ArrayList<>(
-			Collections.singleton("localhost"));
+	private final List<String> contactPoints = new ArrayList<>(Collections.singleton("localhost"));
 
 	/**
 	 * Port of the Cassandra server.
@@ -195,16 +194,14 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	@DeprecatedConfigurationProperty(
-			reason = "Implement a ClusterBuilderCustomizer bean instead.")
+	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
 	@Deprecated
 	public Class<? extends LoadBalancingPolicy> getLoadBalancingPolicy() {
 		return this.loadBalancingPolicy;
 	}
 
 	@Deprecated
-	public void setLoadBalancingPolicy(
-			Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
+	public void setLoadBalancingPolicy(Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
 		this.loadBalancingPolicy = loadBalancingPolicy;
 	}
 
@@ -232,21 +229,18 @@ public class CassandraProperties {
 		this.fetchSize = fetchSize;
 	}
 
-	@DeprecatedConfigurationProperty(
-			reason = "Implement a ClusterBuilderCustomizer bean instead.")
+	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
 	@Deprecated
 	public Class<? extends ReconnectionPolicy> getReconnectionPolicy() {
 		return this.reconnectionPolicy;
 	}
 
 	@Deprecated
-	public void setReconnectionPolicy(
-			Class<? extends ReconnectionPolicy> reconnectionPolicy) {
+	public void setReconnectionPolicy(Class<? extends ReconnectionPolicy> reconnectionPolicy) {
 		this.reconnectionPolicy = reconnectionPolicy;
 	}
 
-	@DeprecatedConfigurationProperty(
-			reason = "Implement a ClusterBuilderCustomizer bean instead.")
+	@DeprecatedConfigurationProperty(reason = "Implement a ClusterBuilderCustomizer bean instead.")
 	@Deprecated
 	public Class<? extends RetryPolicy> getRetryPolicy() {
 		return this.retryPolicy;

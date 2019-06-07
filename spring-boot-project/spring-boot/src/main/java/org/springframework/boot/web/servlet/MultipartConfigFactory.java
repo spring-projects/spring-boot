@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,8 +141,8 @@ public class MultipartConfigFactory {
 		long maxFileSizeBytes = convertToBytes(this.maxFileSize, -1);
 		long maxRequestSizeBytes = convertToBytes(this.maxRequestSize, -1);
 		long fileSizeThresholdBytes = convertToBytes(this.fileSizeThreshold, 0);
-		return new MultipartConfigElement(this.location, maxFileSizeBytes,
-				maxRequestSizeBytes, (int) fileSizeThresholdBytes);
+		return new MultipartConfigElement(this.location, maxFileSizeBytes, maxRequestSizeBytes,
+				(int) fileSizeThresholdBytes);
 	}
 
 	/**

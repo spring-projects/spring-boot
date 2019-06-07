@@ -59,11 +59,9 @@ public class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getCron()).hasSize(1);
-			CronTaskDescription description = (CronTaskDescription) tasks.getCron()
-					.get(0);
+			CronTaskDescription description = (CronTaskDescription) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/3 1/1 * ?");
-			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(CronScheduledMethod.class.getName() + ".cron");
+			assertThat(description.getRunnable().getTarget()).isEqualTo(CronScheduledMethod.class.getName() + ".cron");
 		});
 	}
 
@@ -74,11 +72,9 @@ public class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getCron()).hasSize(1);
-			CronTaskDescription description = (CronTaskDescription) tasks.getCron()
-					.get(0);
+			CronTaskDescription description = (CronTaskDescription) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/6 1/1 * ?");
-			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(CronTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).isEqualTo(CronTriggerRunnable.class.getName());
 		});
 	}
 
@@ -89,8 +85,7 @@ public class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedDelay()).hasSize(1);
-			FixedDelayTaskDescription description = (FixedDelayTaskDescription) tasks
-					.getFixedDelay().get(0);
+			FixedDelayTaskDescription description = (FixedDelayTaskDescription) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2);
 			assertThat(description.getInterval()).isEqualTo(1);
 			assertThat(description.getRunnable().getTarget())
@@ -105,12 +100,10 @@ public class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedDelay()).hasSize(1);
-			FixedDelayTaskDescription description = (FixedDelayTaskDescription) tasks
-					.getFixedDelay().get(0);
+			FixedDelayTaskDescription description = (FixedDelayTaskDescription) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2000);
 			assertThat(description.getInterval()).isEqualTo(1000);
-			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(FixedDelayTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedDelayTriggerRunnable.class.getName());
 		});
 	}
 
@@ -121,8 +114,7 @@ public class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedRate()).hasSize(1);
-			FixedRateTaskDescription description = (FixedRateTaskDescription) tasks
-					.getFixedRate().get(0);
+			FixedRateTaskDescription description = (FixedRateTaskDescription) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(4);
 			assertThat(description.getInterval()).isEqualTo(3);
 			assertThat(description.getRunnable().getTarget())
@@ -137,12 +129,10 @@ public class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedRate()).hasSize(1);
-			FixedRateTaskDescription description = (FixedRateTaskDescription) tasks
-					.getFixedRate().get(0);
+			FixedRateTaskDescription description = (FixedRateTaskDescription) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(3000);
 			assertThat(description.getInterval()).isEqualTo(2000);
-			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(FixedRateTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
 		});
 	}
 
@@ -153,18 +143,15 @@ public class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).hasSize(1);
-			CustomTriggerTaskDescription description = (CustomTriggerTaskDescription) tasks
-					.getCustom().get(0);
-			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(CustomTriggerRunnable.class.getName());
-			assertThat(description.getTrigger())
-					.isEqualTo(CustomTriggerTask.trigger.toString());
+			CustomTriggerTaskDescription description = (CustomTriggerTaskDescription) tasks.getCustom().get(0);
+			assertThat(description.getRunnable().getTarget()).isEqualTo(CustomTriggerRunnable.class.getName());
+			assertThat(description.getTrigger()).isEqualTo(CustomTriggerTask.trigger.toString());
 		});
 	}
 
 	private void run(Class<?> configuration, Consumer<ScheduledTasksReport> consumer) {
-		this.contextRunner.withUserConfiguration(configuration).run((context) -> consumer
-				.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
+		this.contextRunner.withUserConfiguration(configuration)
+				.run((context) -> consumer.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
 	}
 
 	@Configuration
@@ -172,8 +159,7 @@ public class ScheduledTasksEndpointTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public ScheduledTasksEndpoint endpoint(
-				Collection<ScheduledTaskHolder> scheduledTaskHolders) {
+		public ScheduledTasksEndpoint endpoint(Collection<ScheduledTaskHolder> scheduledTaskHolders) {
 			return new ScheduledTasksEndpoint(scheduledTaskHolders);
 		}
 
@@ -233,8 +219,7 @@ public class ScheduledTasksEndpointTests {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-			taskRegistrar.addTriggerTask(new CronTriggerRunnable(),
-					new CronTrigger("0 0 0/6 1/1 * ?"));
+			taskRegistrar.addTriggerTask(new CronTriggerRunnable(), new CronTrigger("0 0 0/6 1/1 * ?"));
 		}
 
 	}

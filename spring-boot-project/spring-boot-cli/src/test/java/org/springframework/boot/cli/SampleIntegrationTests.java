@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,8 +129,7 @@ public class SampleIntegrationTests {
 		System.setProperty("spring.artemis.embedded.queues", "spring-boot");
 		try {
 			String output = this.cli.run("jms.groovy");
-			assertThat(output)
-					.contains("Received Greetings from Spring Boot via Artemis");
+			assertThat(output).contains("Received Greetings from Spring Boot via Artemis");
 		}
 		finally {
 			System.clearProperty("spring.artemis.embedded.queues");

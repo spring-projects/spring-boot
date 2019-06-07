@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class ControllerEndpointHandlerMappingTests {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ExposableControllerEndpoint second = secondEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("", first, second);
-		assertThat(getHandler(mapping, HttpMethod.GET, "/first"))
-				.isEqualTo(handlerOf(first.getController(), "get"));
+		assertThat(getHandler(mapping, HttpMethod.GET, "/first")).isEqualTo(handlerOf(first.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.POST, "/second"))
 				.isEqualTo(handlerOf(second.getController(), "save"));
 		assertThat(getHandler(mapping, HttpMethod.GET, "/third")).isNull();
@@ -66,8 +65,7 @@ public class ControllerEndpointHandlerMappingTests {
 	public void mappingWithPrefix() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ExposableControllerEndpoint second = secondEndpoint();
-		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first,
-				second);
+		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first, second);
 		assertThat(getHandler(mapping, HttpMethod.GET, "/actuator/first"))
 				.isEqualTo(handlerOf(first.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.POST, "/actuator/second"))
@@ -90,33 +88,28 @@ public class ControllerEndpointHandlerMappingTests {
 	public void mappingNarrowedToMethod() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
-		assertThatExceptionOfType(MethodNotAllowedException.class).isThrownBy(
-				() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
+		assertThatExceptionOfType(MethodNotAllowedException.class)
+				.isThrownBy(() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
 	}
 
-	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method,
-			String requestURI) {
-		return mapping.getHandler(exchange(method, requestURI))
-				.block(Duration.ofSeconds(30));
+	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method, String requestURI) {
+		return mapping.getHandler(exchange(method, requestURI)).block(Duration.ofSeconds(30));
 	}
 
-	private ControllerEndpointHandlerMapping createMapping(String prefix,
-			ExposableControllerEndpoint... endpoints) {
-		ControllerEndpointHandlerMapping mapping = new ControllerEndpointHandlerMapping(
-				new EndpointMapping(prefix), Arrays.asList(endpoints), null);
+	private ControllerEndpointHandlerMapping createMapping(String prefix, ExposableControllerEndpoint... endpoints) {
+		ControllerEndpointHandlerMapping mapping = new ControllerEndpointHandlerMapping(new EndpointMapping(prefix),
+				Arrays.asList(endpoints), null);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		return mapping;
 	}
 
 	private HandlerMethod handlerOf(Object source, String methodName) {
-		return new HandlerMethod(source,
-				ReflectionUtils.findMethod(source.getClass(), methodName));
+		return new HandlerMethod(source, ReflectionUtils.findMethod(source.getClass(), methodName));
 	}
 
 	private MockServerWebExchange exchange(HttpMethod method, String requestURI) {
-		return MockServerWebExchange
-				.from(MockServerHttpRequest.method(method, requestURI).build());
+		return MockServerWebExchange.from(MockServerHttpRequest.method(method, requestURI).build());
 	}
 
 	private ExposableControllerEndpoint firstEndpoint() {

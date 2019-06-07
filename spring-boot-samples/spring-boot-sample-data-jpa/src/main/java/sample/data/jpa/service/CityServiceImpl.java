@@ -57,9 +57,8 @@ class CityServiceImpl implements CityService {
 			name = name.substring(0, splitPos);
 		}
 
-		return this.cityRepository
-				.findByNameContainingAndCountryContainingAllIgnoringCase(name.trim(),
-						country.trim(), pageable);
+		return this.cityRepository.findByNameContainingAndCountryContainingAllIgnoringCase(name.trim(), country.trim(),
+				pageable);
 	}
 
 	@Override

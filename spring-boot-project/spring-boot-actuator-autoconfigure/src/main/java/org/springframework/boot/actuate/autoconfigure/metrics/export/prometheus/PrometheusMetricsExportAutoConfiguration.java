@@ -52,13 +52,12 @@ import org.springframework.core.env.Environment;
  * @author David J. M. Karlsen
  */
 @Configuration
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(PrometheusMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.prometheus", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.prometheus", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusMetricsExportAutoConfiguration {
 
@@ -70,9 +69,8 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusMeterRegistry prometheusMeterRegistry(
-			PrometheusConfig prometheusConfig, CollectorRegistry collectorRegistry,
-			Clock clock) {
+	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
+			CollectorRegistry collectorRegistry, Clock clock) {
 		return new PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock);
 	}
 
@@ -88,8 +86,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public PrometheusScrapeEndpoint prometheusEndpoint(
-				CollectorRegistry collectorRegistry) {
+		public PrometheusScrapeEndpoint prometheusEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
 
@@ -101,8 +98,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(PushGateway.class)
-	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway",
-			name = "enabled")
+	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway", name = "enabled")
 	public static class PrometheusPushGatewayConfiguration {
 
 		/**
@@ -114,25 +110,21 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public PrometheusPushGatewayManager prometheusPushGatewayManager(
-				CollectorRegistry collectorRegistry,
+		public PrometheusPushGatewayManager prometheusPushGatewayManager(CollectorRegistry collectorRegistry,
 				PrometheusProperties prometheusProperties, Environment environment) {
-			PrometheusProperties.Pushgateway properties = prometheusProperties
-					.getPushgateway();
+			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
 			PushGateway pushGateway = new PushGateway(properties.getBaseUrl());
 			Duration pushRate = properties.getPushRate();
 			String job = getJob(properties, environment);
 			Map<String, String> groupingKey = properties.getGroupingKey();
 			ShutdownOperation shutdownOperation = properties.getShutdownOperation();
-			return new PrometheusPushGatewayManager(pushGateway, collectorRegistry,
-					pushRate, job, groupingKey, shutdownOperation);
+			return new PrometheusPushGatewayManager(pushGateway, collectorRegistry, pushRate, job, groupingKey,
+					shutdownOperation);
 		}
 
-		private String getJob(PrometheusProperties.Pushgateway properties,
-				Environment environment) {
+		private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {
 			String job = properties.getJob();
-			job = (job != null) ? job
-					: environment.getProperty("spring.application.name");
+			job = (job != null) ? job : environment.getProperty("spring.application.name");
 			return (job != null) ? job : FALLBACK_JOB;
 		}
 

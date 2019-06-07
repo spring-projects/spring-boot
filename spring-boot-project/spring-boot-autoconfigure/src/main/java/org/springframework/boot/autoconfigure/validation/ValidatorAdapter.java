@@ -40,8 +40,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ValidatorAdapter implements SmartValidator, ApplicationContextAware,
-		InitializingBean, DisposableBean {
+public class ValidatorAdapter implements SmartValidator, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	private final SmartValidator target;
 
@@ -72,11 +71,9 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		if (!this.existingBean && this.target instanceof ApplicationContextAware) {
-			((ApplicationContextAware) this.target)
-					.setApplicationContext(applicationContext);
+			((ApplicationContextAware) this.target).setApplicationContext(applicationContext);
 		}
 	}
 
@@ -105,8 +102,7 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	 * @param validator an existing validator to use or {@code null}
 	 * @return the validator to use
 	 */
-	public static Validator get(ApplicationContext applicationContext,
-			Validator validator) {
+	public static Validator get(ApplicationContext applicationContext, Validator validator) {
 		if (validator != null) {
 			return wrap(validator, false);
 		}
@@ -123,8 +119,7 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 
 	private static Validator getExisting(ApplicationContext applicationContext) {
 		try {
-			javax.validation.Validator validator = applicationContext
-					.getBean(javax.validation.Validator.class);
+			javax.validation.Validator validator = applicationContext.getBean(javax.validation.Validator.class);
 			if (validator instanceof Validator) {
 				return (Validator) validator;
 			}
@@ -150,11 +145,9 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	private static Validator wrap(Validator validator, boolean existingBean) {
 		if (validator instanceof javax.validation.Validator) {
 			if (validator instanceof SpringValidatorAdapter) {
-				return new ValidatorAdapter((SpringValidatorAdapter) validator,
-						existingBean);
+				return new ValidatorAdapter((SpringValidatorAdapter) validator, existingBean);
 			}
-			return new ValidatorAdapter(
-					new SpringValidatorAdapter((javax.validation.Validator) validator),
+			return new ValidatorAdapter(new SpringValidatorAdapter((javax.validation.Validator) validator),
 					existingBean);
 		}
 		return validator;

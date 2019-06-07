@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,21 +30,18 @@ import org.springframework.boot.origin.OriginTrackedValue;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class MockConfigurationPropertySource
-		implements IterableConfigurationPropertySource {
+public class MockConfigurationPropertySource implements IterableConfigurationPropertySource {
 
 	private final Map<ConfigurationPropertyName, OriginTrackedValue> map = new LinkedHashMap<>();
 
 	public MockConfigurationPropertySource() {
 	}
 
-	public MockConfigurationPropertySource(String configurationPropertyName,
-			Object value) {
+	public MockConfigurationPropertySource(String configurationPropertyName, Object value) {
 		this(configurationPropertyName, value, null);
 	}
 
-	public MockConfigurationPropertySource(String configurationPropertyName, Object value,
-			String origin) {
+	public MockConfigurationPropertySource(String configurationPropertyName, Object value, String origin) {
 		put(ConfigurationPropertyName.of(configurationPropertyName),
 				OriginTrackedValue.of(value, MockOrigin.of(origin)));
 	}
@@ -81,8 +78,7 @@ public class MockConfigurationPropertySource
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(
-			ConfigurationPropertyName name) {
+	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		OriginTrackedValue result = this.map.get(name);
 		if (result == null) {
 			result = findValue(name);
@@ -102,8 +98,7 @@ public class MockConfigurationPropertySource
 		}
 
 		@Override
-		public ConfigurationProperty getConfigurationProperty(
-				ConfigurationPropertyName name) {
+		public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 			return MockConfigurationPropertySource.this.getConfigurationProperty(name);
 		}
 

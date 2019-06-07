@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,15 +84,14 @@ public class HibernateProperties {
 	 * @param settings the settings to apply when determining the configuration properties
 	 * @return the Hibernate properties to use
 	 */
-	public Map<String, Object> determineHibernateProperties(
-			Map<String, String> jpaProperties, HibernateSettings settings) {
+	public Map<String, Object> determineHibernateProperties(Map<String, String> jpaProperties,
+			HibernateSettings settings) {
 		Assert.notNull(jpaProperties, "JpaProperties must not be null");
 		Assert.notNull(settings, "Settings must not be null");
 		return getAdditionalProperties(jpaProperties, settings);
 	}
 
-	private Map<String, Object> getAdditionalProperties(Map<String, String> existing,
-			HibernateSettings settings) {
+	private Map<String, Object> getAdditionalProperties(Map<String, String> existing, HibernateSettings settings) {
 		Map<String, Object> result = new HashMap<>(existing);
 		applyNewIdGeneratorMappings(result);
 		getNaming().applyNamingStrategies(result);
@@ -103,8 +102,7 @@ public class HibernateProperties {
 		else {
 			result.remove(AvailableSettings.HBM2DDL_AUTO);
 		}
-		Collection<HibernatePropertiesCustomizer> customizers = settings
-				.getHibernatePropertiesCustomizers();
+		Collection<HibernatePropertiesCustomizer> customizers = settings.getHibernatePropertiesCustomizers();
 		if (!ObjectUtils.isEmpty(customizers)) {
 			customizers.forEach((customizer) -> customizer.customize(result));
 		}
@@ -113,16 +111,14 @@ public class HibernateProperties {
 
 	private void applyNewIdGeneratorMappings(Map<String, Object> result) {
 		if (this.useNewIdGeneratorMappings != null) {
-			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS,
-					this.useNewIdGeneratorMappings.toString());
+			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, this.useNewIdGeneratorMappings.toString());
 		}
 		else if (!result.containsKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS)) {
 			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 		}
 	}
 
-	private String determineDdlAuto(Map<String, String> existing,
-			Supplier<String> defaultDdlAuto) {
+	private String determineDdlAuto(Map<String, String> existing, Supplier<String> defaultDdlAuto) {
 		String ddlAuto = existing.get(AvailableSettings.HBM2DDL_AUTO);
 		if (ddlAuto != null) {
 			return ddlAuto;
@@ -159,14 +155,14 @@ public class HibernateProperties {
 		}
 
 		private void applyNamingStrategies(Map<String, Object> properties) {
-			applyNamingStrategy(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY,
-					this.implicitStrategy, SpringImplicitNamingStrategy.class.getName());
-			applyNamingStrategy(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY,
-					this.physicalStrategy, SpringPhysicalNamingStrategy.class.getName());
+			applyNamingStrategy(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, this.implicitStrategy,
+					SpringImplicitNamingStrategy.class.getName());
+			applyNamingStrategy(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, this.physicalStrategy,
+					SpringPhysicalNamingStrategy.class.getName());
 		}
 
-		private void applyNamingStrategy(Map<String, Object> properties, String key,
-				Object strategy, Object defaultStrategy) {
+		private void applyNamingStrategy(Map<String, Object> properties, String key, Object strategy,
+				Object defaultStrategy) {
 			if (strategy != null) {
 				properties.put(key, strategy);
 			}

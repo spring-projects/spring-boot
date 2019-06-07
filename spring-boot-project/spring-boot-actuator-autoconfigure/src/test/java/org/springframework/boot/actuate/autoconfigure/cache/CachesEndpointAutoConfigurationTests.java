@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,27 +37,24 @@ import static org.mockito.Mockito.mock;
 public class CachesEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(CachesEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(CachesEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withUserConfiguration(CacheConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
+		this.contextRunner.withUserConfiguration(CacheConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
 	public void runWithoutCacheManagerShouldHaveEndpointBean() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.caches.enabled:false")
 				.withUserConfiguration(CacheConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CachesEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
 	}
 
 	@Configuration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,56 +31,49 @@ public class ElasticPropertiesConfigAdapterTests {
 	public void whenPropertiesHostsIsSetAdapterHostsReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setHost("https://elastic.example.com");
-		assertThat(new ElasticPropertiesConfigAdapter(properties).host())
-				.isEqualTo("https://elastic.example.com");
+		assertThat(new ElasticPropertiesConfigAdapter(properties).host()).isEqualTo("https://elastic.example.com");
 	}
 
 	@Test
 	public void whenPropertiesIndexIsSetAdapterIndexReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setIndex("test-metrics");
-		assertThat(new ElasticPropertiesConfigAdapter(properties).index())
-				.isEqualTo("test-metrics");
+		assertThat(new ElasticPropertiesConfigAdapter(properties).index()).isEqualTo("test-metrics");
 	}
 
 	@Test
 	public void whenPropertiesIndexDateFormatIsSetAdapterIndexDateFormatReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setIndexDateFormat("yyyy");
-		assertThat(new ElasticPropertiesConfigAdapter(properties).indexDateFormat())
-				.isEqualTo("yyyy");
+		assertThat(new ElasticPropertiesConfigAdapter(properties).indexDateFormat()).isEqualTo("yyyy");
 	}
 
 	@Test
 	public void whenPropertiesTimestampFieldNameIsSetAdapterTimestampFieldNameReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setTimestampFieldName("@test");
-		assertThat(new ElasticPropertiesConfigAdapter(properties).timestampFieldName())
-				.isEqualTo("@test");
+		assertThat(new ElasticPropertiesConfigAdapter(properties).timestampFieldName()).isEqualTo("@test");
 	}
 
 	@Test
 	public void whenPropertiesAutoCreateIndexIsSetAdapterAutoCreateIndexReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setAutoCreateIndex(false);
-		assertThat(new ElasticPropertiesConfigAdapter(properties).autoCreateIndex())
-				.isFalse();
+		assertThat(new ElasticPropertiesConfigAdapter(properties).autoCreateIndex()).isFalse();
 	}
 
 	@Test
 	public void whenPropertiesUserNameIsSetAdapterUserNameReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setUserName("alice");
-		assertThat(new ElasticPropertiesConfigAdapter(properties).userName())
-				.isEqualTo("alice");
+		assertThat(new ElasticPropertiesConfigAdapter(properties).userName()).isEqualTo("alice");
 	}
 
 	@Test
 	public void whenPropertiesPasswordIsSetAdapterPasswordReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setPassword("secret");
-		assertThat(new ElasticPropertiesConfigAdapter(properties).password())
-				.isEqualTo("secret");
+		assertThat(new ElasticPropertiesConfigAdapter(properties).password()).isEqualTo("secret");
 	}
 
 }

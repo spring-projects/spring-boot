@@ -48,8 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class SampleActuatorLog4J2ApplicationTests {
 
-	private static final Logger logger = LogManager
-			.getLogger(SampleActuatorLog4J2ApplicationTests.class);
+	private static final Logger logger = LogManager.getLogger(SampleActuatorLog4J2ApplicationTests.class);
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
@@ -65,12 +64,9 @@ public class SampleActuatorLog4J2ApplicationTests {
 
 	@Test
 	public void validateLoggersEndpoint() throws Exception {
-		this.mvc.perform(
-				get("/actuator/loggers/org.apache.coyote.http11.Http11NioProtocol")
-						.header("Authorization", "Basic " + getBasicAuth()))
-				.andExpect(status().isOk())
-				.andExpect(content().string(equalTo("{\"configuredLevel\":\"WARN\","
-						+ "\"effectiveLevel\":\"WARN\"}")));
+		this.mvc.perform(get("/actuator/loggers/org.apache.coyote.http11.Http11NioProtocol").header("Authorization",
+				"Basic " + getBasicAuth())).andExpect(status().isOk()).andExpect(
+						content().string(equalTo("{\"configuredLevel\":\"WARN\"," + "\"effectiveLevel\":\"WARN\"}")));
 	}
 
 	private String getBasicAuth() {

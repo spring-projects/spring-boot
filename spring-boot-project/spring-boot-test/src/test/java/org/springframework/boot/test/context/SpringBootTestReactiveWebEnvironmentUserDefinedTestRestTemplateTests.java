@@ -45,8 +45,7 @@ public class SpringBootTestReactiveWebEnvironmentUserDefinedTestRestTemplateTest
 
 	@Test
 	public void restTemplateIsUserDefined() {
-		assertThat(getContext().getBean("testRestTemplate"))
-				.isInstanceOf(RestTemplate.class);
+		assertThat(getContext().getBean("testRestTemplate")).isInstanceOf(RestTemplate.class);
 	}
 
 	@Configuration

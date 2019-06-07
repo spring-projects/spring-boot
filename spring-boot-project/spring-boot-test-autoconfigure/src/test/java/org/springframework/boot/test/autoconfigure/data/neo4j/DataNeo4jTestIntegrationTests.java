@@ -76,14 +76,11 @@ public class DataNeo4jTestIntegrationTests {
 				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
-	static class Initializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
-		public void initialize(
-				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
+		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

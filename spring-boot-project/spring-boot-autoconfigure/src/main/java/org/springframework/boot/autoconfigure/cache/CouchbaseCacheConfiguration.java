@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ public class CouchbaseCacheConfiguration {
 
 	private final Bucket bucket;
 
-	public CouchbaseCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers, Bucket bucket) {
+	public CouchbaseCacheConfiguration(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
+			Bucket bucket) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
 		this.bucket = bucket;
@@ -65,8 +65,8 @@ public class CouchbaseCacheConfiguration {
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		CacheBuilder builder = CacheBuilder.newInstance(this.bucket);
 		Couchbase couchbase = this.cacheProperties.getCouchbase();
-		PropertyMapper.get().from(couchbase::getExpiration).whenNonNull()
-				.asInt(Duration::getSeconds).to(builder::withExpiration);
+		PropertyMapper.get().from(couchbase::getExpiration).whenNonNull().asInt(Duration::getSeconds)
+				.to(builder::withExpiration);
 		String[] names = StringUtils.toStringArray(cacheNames);
 		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(builder, names);
 		return this.customizers.customize(cacheManager);

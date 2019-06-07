@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ public class ProjectGenerationRequestTests {
 
 	@Test
 	public void defaultSettings() {
-		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?type=test-type"));
+		assertThat(this.request.generateUrl(createDefaultMetadata())).isEqualTo(createDefaultUrl("?type=test-type"));
 	}
 
 	@Test
@@ -57,8 +56,8 @@ public class ProjectGenerationRequestTests {
 		String customServerUrl = "http://foo:8080/initializr";
 		this.request.setServiceUrl(customServerUrl);
 		this.request.getDependencies().add("security");
-		assertThat(this.request.generateUrl(createDefaultMetadata())).isEqualTo(new URI(
-				customServerUrl + "/starter.zip?dependencies=security&type=test-type"));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(new URI(customServerUrl + "/starter.zip?dependencies=security&type=test-type"));
 	}
 
 	@Test
@@ -79,8 +78,8 @@ public class ProjectGenerationRequestTests {
 	public void multipleDependencies() {
 		this.request.getDependencies().add("web");
 		this.request.getDependencies().add("data-jpa");
-		assertThat(this.request.generateUrl(createDefaultMetadata())).isEqualTo(
-				createDefaultUrl("?dependencies=web%2Cdata-jpa&type=test-type"));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?dependencies=web%2Cdata-jpa&type=test-type"));
 	}
 
 	@Test
@@ -99,14 +98,12 @@ public class ProjectGenerationRequestTests {
 
 	@Test
 	public void customType() throws URISyntaxException {
-		ProjectType projectType = new ProjectType("custom", "Custom Type", "/foo", true,
-				EMPTY_TAGS);
+		ProjectType projectType = new ProjectType("custom", "Custom Type", "/foo", true, EMPTY_TAGS);
 		InitializrServiceMetadata metadata = new InitializrServiceMetadata(projectType);
 		this.request.setType("custom");
 		this.request.getDependencies().add("data-rest");
-		assertThat(this.request.generateUrl(metadata))
-				.isEqualTo(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
-						+ "/foo?dependencies=data-rest&type=custom"));
+		assertThat(this.request.generateUrl(metadata)).isEqualTo(
+				new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL + "/foo?dependencies=data-rest&type=custom"));
 	}
 
 	@Test
@@ -130,9 +127,8 @@ public class ProjectGenerationRequestTests {
 		this.request.setVersion("1.0.1-SNAPSHOT");
 		this.request.setDescription("Spring Boot Test");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl(
-						"?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
-								+ "&description=Spring+Boot+Test&type=test-type"));
+				.isEqualTo(createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
+						+ "&description=Spring+Boot+Test&type=test-type"));
 	}
 
 	@Test
@@ -152,8 +148,8 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void outputArchiveWithDotsCustomizeArtifactId() {
 		this.request.setOutput("my.nice.project.zip");
-		assertThat(this.request.generateUrl(createDefaultMetadata())).isEqualTo(
-				createDefaultUrl("?artifactId=my.nice.project&type=test-type"));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?artifactId=my.nice.project&type=test-type"));
 	}
 
 	@Test
@@ -168,8 +164,7 @@ public class ProjectGenerationRequestTests {
 	public void buildNoMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.request.generateUrl(metadata))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.request.generateUrl(metadata))
 				.withMessageContaining("does-not-exist");
 	}
 
@@ -177,18 +172,15 @@ public class ProjectGenerationRequestTests {
 	public void buildMultipleMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.request.generateUrl(metadata))
-				.withMessageContaining("gradle-project")
-				.withMessageContaining("gradle-project-2");
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.request.generateUrl(metadata))
+				.withMessageContaining("gradle-project").withMessageContaining("gradle-project-2");
 	}
 
 	@Test
 	public void buildOneMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", null);
-		assertThat(this.request.generateUrl(metadata))
-				.isEqualTo(createDefaultUrl("?type=gradle-project"));
+		assertThat(this.request.generateUrl(metadata)).isEqualTo(createDefaultUrl("?type=gradle-project"));
 	}
 
 	@Test
@@ -196,8 +188,7 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", "project");
 		this.request.setType("maven-build");
-		assertThat(this.request.generateUrl(metadata))
-				.isEqualTo(createUrl("/pom.xml?type=maven-build"));
+		assertThat(this.request.generateUrl(metadata)).isEqualTo(createUrl("/pom.xml?type=maven-build"));
 	}
 
 	@Test
@@ -210,8 +201,7 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void noTypeAndNoDefault() throws Exception {
 		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(
-						() -> this.request.generateUrl(readMetadata("types-conflict")))
+				.isThrownBy(() -> this.request.generateUrl(readMetadata("types-conflict")))
 				.withMessageContaining("no default is defined");
 	}
 
@@ -235,8 +225,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	private static InitializrServiceMetadata createDefaultMetadata() {
-		ProjectType projectType = new ProjectType("test-type", "The test type",
-				"/starter.zip", true, EMPTY_TAGS);
+		ProjectType projectType = new ProjectType("test-type", "The test type", "/starter.zip", true, EMPTY_TAGS);
 		return new InitializrServiceMetadata(projectType);
 	}
 
@@ -244,13 +233,10 @@ public class ProjectGenerationRequestTests {
 		return readMetadata("2.0.0");
 	}
 
-	private static InitializrServiceMetadata readMetadata(String version)
-			throws JSONException {
+	private static InitializrServiceMetadata readMetadata(String version) throws JSONException {
 		try {
-			Resource resource = new ClassPathResource(
-					"metadata/service-metadata-" + version + ".json");
-			String content = StreamUtils.copyToString(resource.getInputStream(),
-					StandardCharsets.UTF_8);
+			Resource resource = new ClassPathResource("metadata/service-metadata-" + version + ".json");
+			String content = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
 			JSONObject json = new JSONObject(content);
 			return new InitializrServiceMetadata(json);
 		}

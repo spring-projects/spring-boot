@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,16 +60,14 @@ public class ServletWebServerFactoryCustomizerTests {
 
 	@Test
 	public void testDefaultDisplayName() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("application");
 	}
 
 	@Test
 	public void testCustomizeDisplayName() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.getServlet().setApplicationDisplayName("TestName");
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("TestName");
@@ -77,8 +75,7 @@ public class ServletWebServerFactoryCustomizerTests {
 
 	@Test
 	public void testCustomizeSsl() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);
@@ -87,8 +84,7 @@ public class ServletWebServerFactoryCustomizerTests {
 
 	@Test
 	public void testCustomizeJsp() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setJsp(any(Jsp.class));
 	}
@@ -106,13 +102,11 @@ public class ServletWebServerFactoryCustomizerTests {
 		map.put("server.servlet.session.cookie.secure", "true");
 		map.put("server.servlet.session.cookie.max-age", "60");
 		bindProperties(map);
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getTimeout())
-				.isEqualTo(Duration.ofSeconds(123));
+		assertThat(sessionCaptor.getValue().getTimeout()).isEqualTo(Duration.ofSeconds(123));
 		Cookie cookie = sessionCaptor.getValue().getCookie();
 		assertThat(cookie.getName()).isEqualTo("testname");
 		assertThat(cookie.getDomain()).isEqualTo("testdomain");
@@ -125,8 +119,7 @@ public class ServletWebServerFactoryCustomizerTests {
 
 	@Test
 	public void testCustomizeTomcatPort() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.setPort(8080);
 		this.customizer.customize(factory);
 		verify(factory).setPort(8080);
@@ -137,8 +130,7 @@ public class ServletWebServerFactoryCustomizerTests {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.application-display-name", "MyBootApp");
 		bindProperties(map);
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("MyBootApp");
 	}
@@ -156,13 +148,11 @@ public class ServletWebServerFactoryCustomizerTests {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.store-dir", "myfolder");
 		bindProperties(map);
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getStoreDir())
-				.isEqualTo(new File("myfolder"));
+		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("myfolder"));
 	}
 
 	private void bindProperties(Map<String, String> map) {

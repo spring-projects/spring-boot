@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public class MongoReactiveHealthIndicatorTests {
 		Document buildInfo = mock(Document.class);
 		given(buildInfo.getString("version")).willReturn("2.6.4");
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }"))
-				.willReturn(Mono.just(buildInfo));
+		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(Mono.just(buildInfo));
 		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
 				reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
@@ -65,8 +64,7 @@ public class MongoReactiveHealthIndicatorTests {
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails().get("error"))
-					.isEqualTo(MongoException.class.getName() + ": Connection failed");
+			assertThat(h.getDetails().get("error")).isEqualTo(MongoException.class.getName() + ": Connection failed");
 		}).verifyComplete();
 	}
 

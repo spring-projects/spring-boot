@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class FileUtilsTests {
 		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "logback.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isFalse();
 	}
 
@@ -72,8 +71,7 @@ public class FileUtilsTests {
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/logback.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isFalse();
 	}
 
@@ -84,8 +82,7 @@ public class FileUtilsTests {
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/different.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isTrue();
 	}
 
@@ -94,8 +91,7 @@ public class FileUtilsTests {
 		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "different.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isTrue();
 	}
 
@@ -105,8 +101,7 @@ public class FileUtilsTests {
 		try (OutputStream outputStream = new FileOutputStream(file)) {
 			outputStream.write(new byte[] { 1, 2, 3 });
 		}
-		assertThat(FileUtils.sha1Hash(file))
-				.isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
+		assertThat(FileUtils.sha1Hash(file)).isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
 	}
 
 }

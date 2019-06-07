@@ -37,58 +37,47 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class InfluxMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(InfluxMetricsExportAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(InfluxMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(InfluxMeterRegistry.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfluxMeterRegistry.class));
 	}
 
 	@Test
 	public void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(InfluxMeterRegistry.class)
-						.hasSingleBean(InfluxConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(InfluxMeterRegistry.class).hasSingleBean(InfluxConfig.class));
 	}
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.influx.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(InfluxMeterRegistry.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(InfluxMeterRegistry.class)
 						.doesNotHaveBean(InfluxConfig.class));
 	}
 
 	@Test
 	public void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(InfluxMeterRegistry.class)
-						.hasSingleBean(InfluxConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(InfluxMeterRegistry.class).hasSingleBean(InfluxConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
 	public void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(InfluxMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(InfluxConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(InfluxMeterRegistry.class).hasBean("customRegistry").hasSingleBean(InfluxConfig.class));
 	}
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> {
-					InfluxMeterRegistry registry = context
-							.getBean(InfluxMeterRegistry.class);
-					assertThat(registry.isClosed()).isFalse();
-					context.close();
-					assertThat(registry.isClosed()).isTrue();
-				});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+			InfluxMeterRegistry registry = context.getBean(InfluxMeterRegistry.class);
+			assertThat(registry.isClosed()).isFalse();
+			context.close();
+			assertThat(registry.isClosed()).isTrue();
+		});
 	}
 
 	@Configuration

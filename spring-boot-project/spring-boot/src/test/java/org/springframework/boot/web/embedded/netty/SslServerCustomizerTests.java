@@ -40,8 +40,7 @@ public class SslServerCustomizerTests {
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
 				.withCauseInstanceOf(NoSuchProviderException.class)
 				.withMessageContaining("com.example.KeyStoreProvider");
 	}
@@ -53,21 +52,17 @@ public class SslServerCustomizerTests {
 		ssl.setTrustStore("src/test/resources/test.jks");
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> customizer.getTrustManagerFactory(ssl, null))
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getTrustManagerFactory(ssl, null))
 				.withCauseInstanceOf(NoSuchProviderException.class)
 				.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
 	@Test
-	public void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException()
-			throws Exception {
+	public void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() throws Exception {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
-				.withCauseInstanceOf(WebServerException.class)
-				.withMessageContaining("Could not load key store 'null'");
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
 	}
 
 }

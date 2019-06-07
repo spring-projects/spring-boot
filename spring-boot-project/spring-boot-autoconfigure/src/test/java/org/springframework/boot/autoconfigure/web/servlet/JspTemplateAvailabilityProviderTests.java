@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,22 +44,20 @@ public class JspTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateWithCustomPrefix() {
-		this.environment.setProperty("spring.mvc.view.prefix",
-				"classpath:/custom-templates/");
+		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
 		assertThat(isTemplateAvailable("custom.jsp")).isTrue();
 	}
 
 	@Test
 	public void availabilityOfTemplateWithCustomSuffix() {
-		this.environment.setProperty("spring.mvc.view.prefix",
-				"classpath:/custom-templates/");
+		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
 		this.environment.setProperty("spring.mvc.view.suffix", ".jsp");
 		assertThat(isTemplateAvailable("suffixed")).isTrue();
 	}
 
 	private boolean isTemplateAvailable(String view) {
-		return this.provider.isTemplateAvailable(view, this.environment,
-				getClass().getClassLoader(), this.resourceLoader);
+		return this.provider.isTemplateAvailable(view, this.environment, getClass().getClassLoader(),
+				this.resourceLoader);
 	}
 
 }

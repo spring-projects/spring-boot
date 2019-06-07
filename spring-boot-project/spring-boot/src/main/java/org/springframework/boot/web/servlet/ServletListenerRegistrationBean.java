@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class ServletListenerRegistrationBean<T extends EventListener>
-		extends RegistrationBean {
+public class ServletListenerRegistrationBean<T extends EventListener> extends RegistrationBean {
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 
@@ -117,9 +116,7 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 			servletContext.addListener(this.listener);
 		}
 		catch (RuntimeException ex) {
-			throw new IllegalStateException(
-					"Failed to add listener '" + this.listener + "' to servlet context",
-					ex);
+			throw new IllegalStateException("Failed to add listener '" + this.listener + "' to servlet context", ex);
 		}
 	}
 

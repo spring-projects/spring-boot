@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,15 +63,13 @@ public class HttpRestartServerTests {
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
 				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 
 	@Test
 	public void restartServerMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpRestartServer((RestartServer) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((RestartServer) null))
 				.withMessageContaining("RestartServer must not be null");
 	}
 
@@ -83,8 +81,7 @@ public class HttpRestartServerTests {
 		files.addFile("name", new ClassLoaderFile(Kind.ADDED, new byte[0]));
 		byte[] bytes = serialize(files);
 		request.setContent(bytes);
-		this.server.handle(new ServletServerHttpRequest(request),
-				new ServletServerHttpResponse(response));
+		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
 		verify(this.delegate).updateAndRestart(this.filesCaptor.capture());
 		assertThat(this.filesCaptor.getValue().getFile("name")).isNotNull();
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -94,8 +91,7 @@ public class HttpRestartServerTests {
 	public void sendNoContent() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		this.server.handle(new ServletServerHttpRequest(request),
-				new ServletServerHttpResponse(response));
+		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
 		verifyZeroInteractions(this.delegate);
 		assertThat(response.getStatus()).isEqualTo(500);
 
@@ -106,8 +102,7 @@ public class HttpRestartServerTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		request.setContent(new byte[] { 0, 0, 0 });
-		this.server.handle(new ServletServerHttpRequest(request),
-				new ServletServerHttpResponse(response));
+		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
 		verifyZeroInteractions(this.delegate);
 		assertThat(response.getStatus()).isEqualTo(500);
 	}

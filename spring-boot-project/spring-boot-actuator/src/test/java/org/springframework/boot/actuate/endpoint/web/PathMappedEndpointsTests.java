@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,16 +42,14 @@ public class PathMappedEndpointsTests {
 	@Test
 	public void createWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
+				.isThrownBy(() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
 				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void createWhenSuppliersIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PathMappedEndpoints(null,
-						(Collection<EndpointsSupplier<?>>) null))
+				.isThrownBy(() -> new PathMappedEndpoints(null, (Collection<EndpointsSupplier<?>>) null))
 				.withMessageContaining("Suppliers must not be null");
 	}
 
@@ -59,16 +57,14 @@ public class PathMappedEndpointsTests {
 	public void iteratorShouldReturnPathMappedEndpoints() {
 		PathMappedEndpoints mapped = createTestMapped(null);
 		assertThat(mapped).hasSize(2);
-		assertThat(mapped).extracting("endpointId").containsExactly(EndpointId.of("e2"),
-				EndpointId.of("e3"));
+		assertThat(mapped).extracting("endpointId").containsExactly(EndpointId.of("e2"), EndpointId.of("e3"));
 	}
 
 	@Test
 	public void streamShouldReturnPathMappedEndpoints() {
 		PathMappedEndpoints mapped = createTestMapped(null);
 		assertThat(mapped.stream()).hasSize(2);
-		assertThat(mapped.stream()).extracting("endpointId")
-				.containsExactly(EndpointId.of("e2"), EndpointId.of("e3"));
+		assertThat(mapped.stream()).extracting("endpointId").containsExactly(EndpointId.of("e2"), EndpointId.of("e3"));
 	}
 
 	@Test
@@ -86,8 +82,7 @@ public class PathMappedEndpointsTests {
 	@Test
 	public void getPathWhenContainsIdShouldReturnRootPath() {
 		assertThat(createTestMapped(null).getPath(EndpointId.of("e2"))).isEqualTo("/p2");
-		assertThat(createTestMapped("/x").getPath(EndpointId.of("e2")))
-				.isEqualTo("/x/p2");
+		assertThat(createTestMapped("/x").getPath(EndpointId.of("e2"))).isEqualTo("/x/p2");
 	}
 
 	@Test
@@ -105,8 +100,7 @@ public class PathMappedEndpointsTests {
 	@Test
 	public void getAllPathsShouldReturnAllPaths() {
 		assertThat(createTestMapped(null).getAllPaths()).containsExactly("/p2", "/p3");
-		assertThat(createTestMapped("/x").getAllPaths()).containsExactly("/x/p2",
-				"/x/p3");
+		assertThat(createTestMapped("/x").getAllPaths()).containsExactly("/x/p2", "/x/p3");
 	}
 
 	@Test
@@ -147,8 +141,7 @@ public class PathMappedEndpointsTests {
 
 	}
 
-	interface TestPathMappedEndpoint
-			extends ExposableEndpoint<Operation>, PathMappedEndpoint {
+	interface TestPathMappedEndpoint extends ExposableEndpoint<Operation>, PathMappedEndpoint {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ControllerEndpointDiscoverer
-		extends EndpointDiscoverer<ExposableControllerEndpoint, Operation>
+public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableControllerEndpoint, Operation>
 		implements ControllerEndpointsSupplier {
 
 	private final List<PathMapper> endpointPathMappers;
@@ -51,11 +50,9 @@ public class ControllerEndpointDiscoverer
 	 * @param endpointPathMappers the endpoint path mappers
 	 * @param filters filters to apply
 	 */
-	public ControllerEndpointDiscoverer(ApplicationContext applicationContext,
-			List<PathMapper> endpointPathMappers,
+	public ControllerEndpointDiscoverer(ApplicationContext applicationContext, List<PathMapper> endpointPathMappers,
 			Collection<EndpointFilter<ExposableControllerEndpoint>> filters) {
-		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(),
-				filters);
+		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters);
 		this.endpointPathMappers = endpointPathMappers;
 	}
 
@@ -67,24 +64,21 @@ public class ControllerEndpointDiscoverer
 	}
 
 	@Override
-	protected ExposableControllerEndpoint createEndpoint(Object endpointBean,
-			EndpointId id, boolean enabledByDefault, Collection<Operation> operations) {
+	protected ExposableControllerEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+			Collection<Operation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
-		return new DiscoveredControllerEndpoint(this, endpointBean, id, rootPath,
-				enabledByDefault);
+		return new DiscoveredControllerEndpoint(this, endpointBean, id, rootPath, enabledByDefault);
 	}
 
 	@Override
-	protected Operation createOperation(EndpointId endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
-		throw new IllegalStateException(
-				"ControllerEndpoints must not declare operations");
+	protected Operation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
+			OperationInvoker invoker) {
+		throw new IllegalStateException("ControllerEndpoints must not declare operations");
 	}
 
 	@Override
 	protected OperationKey createOperationKey(Operation operation) {
-		throw new IllegalStateException(
-				"ControllerEndpoints must not declare operations");
+		throw new IllegalStateException("ControllerEndpoints must not declare operations");
 	}
 
 }

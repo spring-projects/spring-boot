@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,15 @@ import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
  *
  * @author Andy Wilkinson
  */
-public class SettingsXmlRepositorySystemSessionAutoConfiguration
-		implements RepositorySystemSessionAutoConfiguration {
+public class SettingsXmlRepositorySystemSessionAutoConfiguration implements RepositorySystemSessionAutoConfiguration {
 
 	@Override
-	public void apply(DefaultRepositorySystemSession session,
-			RepositorySystem repositorySystem) {
+	public void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem) {
 		MavenSettings settings = getSettings(session);
 		String localRepository = settings.getLocalRepository();
 		if (localRepository != null) {
-			session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(
-					session, new LocalRepository(localRepository)));
+			session.setLocalRepositoryManager(
+					repositorySystem.newLocalRepositoryManager(session, new LocalRepository(localRepository)));
 		}
 	}
 

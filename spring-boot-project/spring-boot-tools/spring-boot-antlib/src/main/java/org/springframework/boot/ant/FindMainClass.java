@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,7 @@ public class FindMainClass extends Task {
 		if (!StringUtils.hasText(mainClass)) {
 			mainClass = findMainClass();
 			if (!StringUtils.hasText(mainClass)) {
-				throw new BuildException(
-						"Could not determine main class given @classesRoot "
-								+ this.classesRoot);
+				throw new BuildException("Could not determine main class given @classesRoot " + this.classesRoot);
 			}
 		}
 		handle(mainClass);
@@ -63,17 +61,14 @@ public class FindMainClass extends Task {
 
 	private String findMainClass() {
 		if (this.classesRoot == null) {
-			throw new BuildException(
-					"one of @mainClass or @classesRoot must be specified");
+			throw new BuildException("one of @mainClass or @classesRoot must be specified");
 		}
 		if (!this.classesRoot.exists()) {
-			throw new BuildException(
-					"@classesRoot " + this.classesRoot + " does not exist");
+			throw new BuildException("@classesRoot " + this.classesRoot + " does not exist");
 		}
 		try {
 			if (this.classesRoot.isDirectory()) {
-				return MainClassFinder.findSingleMainClass(this.classesRoot,
-						SPRING_BOOT_APPLICATION_CLASS_NAME);
+				return MainClassFinder.findSingleMainClass(this.classesRoot, SPRING_BOOT_APPLICATION_CLASS_NAME);
 			}
 			return MainClassFinder.findSingleMainClass(new JarFile(this.classesRoot), "/",
 					SPRING_BOOT_APPLICATION_CLASS_NAME);

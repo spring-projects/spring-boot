@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ public class LdapHealthIndicatorTests {
 	@SuppressWarnings("unchecked")
 	public void ldapIsUp() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
-		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any()))
-				.willReturn("3");
+		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any())).willReturn("3");
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -55,13 +54,11 @@ public class LdapHealthIndicatorTests {
 	public void ldapIsDown() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
 		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any()))
-				.willThrow(new CommunicationException(
-						new javax.naming.CommunicationException("Connection failed")));
+				.willThrow(new CommunicationException(new javax.naming.CommunicationException("Connection failed")));
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error"))
-				.contains("Connection failed");
+		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
 		verify(ldapTemplate).executeReadOnly((ContextExecutor<String>) any());
 	}
 

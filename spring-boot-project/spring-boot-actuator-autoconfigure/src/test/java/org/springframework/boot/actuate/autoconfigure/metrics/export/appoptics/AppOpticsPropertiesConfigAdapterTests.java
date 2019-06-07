@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AppOpticsPropertiesConfigAdapterTests extends
-		StepRegistryPropertiesConfigAdapterTests<AppOpticsProperties, AppOpticsPropertiesConfigAdapter> {
+public class AppOpticsPropertiesConfigAdapterTests
+		extends StepRegistryPropertiesConfigAdapterTests<AppOpticsProperties, AppOpticsPropertiesConfigAdapter> {
 
 	@Override
 	protected AppOpticsProperties createProperties() {
@@ -36,8 +36,7 @@ public class AppOpticsPropertiesConfigAdapterTests extends
 	}
 
 	@Override
-	protected AppOpticsPropertiesConfigAdapter createConfigAdapter(
-			AppOpticsProperties properties) {
+	protected AppOpticsPropertiesConfigAdapter createConfigAdapter(AppOpticsProperties properties) {
 		return new AppOpticsPropertiesConfigAdapter(properties);
 	}
 
@@ -45,8 +44,7 @@ public class AppOpticsPropertiesConfigAdapterTests extends
 	public void whenPropertiesUrisIsSetAdapterUriReturnsIt() {
 		AppOpticsProperties properties = createProperties();
 		properties.setUri("https://appoptics.example.com/v1/measurements");
-		assertThat(createConfigAdapter(properties).uri())
-				.isEqualTo("https://appoptics.example.com/v1/measurements");
+		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://appoptics.example.com/v1/measurements");
 	}
 
 	@Test

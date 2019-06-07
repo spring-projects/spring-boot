@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return {@code true} if the thread is a main invocation
 	 */
 	protected boolean isMain(Thread thread) {
-		return thread.getName().equals("main") && thread.getContextClassLoader()
-				.getClass().getName().contains("AppClassLoader");
+		return thread.getName().equals("main")
+				&& thread.getContextClassLoader().getClass().getName().contains("AppClassLoader");
 	}
 
 	/**

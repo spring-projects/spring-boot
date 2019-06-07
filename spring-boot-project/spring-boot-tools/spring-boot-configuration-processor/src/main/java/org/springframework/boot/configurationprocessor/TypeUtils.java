@@ -70,8 +70,7 @@ class TypeUtils {
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
-		PRIMITIVE_WRAPPERS.forEach(
-				(kind, wrapperClass) -> primitives.put(wrapperClass.getName(), kind));
+		PRIMITIVE_WRAPPERS.forEach((kind, wrapperClass) -> primitives.put(wrapperClass.getName(), kind));
 		WRAPPER_TO_PRIMITIVE = primitives;
 	}
 
@@ -95,12 +94,10 @@ class TypeUtils {
 		this.mapType = getDeclaredType(this.types, Map.class, 2);
 	}
 
-	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
-			int numberOfTypeArgs) {
+	private TypeMirror getDeclaredType(Types types, Class<?> typeClass, int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
 		Arrays.setAll(typeArgs, (i) -> types.getWildcardType(null, null));
-		TypeElement typeElement = this.env.getElementUtils()
-				.getTypeElement(typeClass.getName());
+		TypeElement typeElement = this.env.getElementUtils().getTypeElement(typeClass.getName());
 		try {
 			return types.getDeclaredType(typeElement, typeArgs);
 		}
@@ -140,8 +137,7 @@ class TypeUtils {
 	}
 
 	public String getJavaDoc(Element element) {
-		String javadoc = (element != null)
-				? this.env.getElementUtils().getDocComment(element) : null;
+		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
 		}
@@ -151,8 +147,7 @@ class TypeUtils {
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
 		Class<?> candidate = getWrapperFor(typeMirror);
 		if (candidate != null) {
-			return this.env.getElementUtils().getTypeElement(candidate.getName())
-					.asType();
+			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
 		}
 		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
 		if (primitiveKind != null) {
@@ -200,8 +195,7 @@ class TypeUtils {
 			}
 		}
 		catch (Exception ex) {
-			this.env.getMessager().printMessage(Kind.WARNING,
-					"Failed to generated type descriptor for " + type,
+			this.env.getMessager().printMessage(Kind.WARNING, "Failed to generated type descriptor for " + type,
 					this.types.asElement(type));
 		}
 	}
@@ -210,8 +204,7 @@ class TypeUtils {
 	 * A visitor that extracts the fully qualified name of a type, including generic
 	 * information.
 	 */
-	private static class TypeExtractor
-			extends SimpleTypeVisitor8<String, TypeDescriptor> {
+	private static class TypeExtractor extends SimpleTypeVisitor8<String, TypeDescriptor> {
 
 		private final Types types;
 
@@ -228,17 +221,15 @@ class TypeUtils {
 			}
 			StringBuilder name = new StringBuilder();
 			name.append(qualifiedName);
-			name.append("<").append(type.getTypeArguments().stream()
-					.map((t) -> visit(t, descriptor)).collect(Collectors.joining(",")))
+			name.append("<").append(
+					type.getTypeArguments().stream().map((t) -> visit(t, descriptor)).collect(Collectors.joining(",")))
 					.append(">");
 			return name.toString();
 		}
 
-		private String determineQualifiedName(DeclaredType type,
-				TypeElement enclosingElement) {
+		private String determineQualifiedName(DeclaredType type, TypeElement enclosingElement) {
 			if (enclosingElement != null) {
-				return getQualifiedName(enclosingElement) + "$"
-						+ type.asElement().getSimpleName();
+				return getQualifiedName(enclosingElement) + "$" + type.asElement().getSimpleName();
 			}
 			return getQualifiedName(type.asElement());
 		}
@@ -299,8 +290,7 @@ class TypeUtils {
 			if (element instanceof TypeElement) {
 				return ((TypeElement) element).getQualifiedName().toString();
 			}
-			throw new IllegalStateException(
-					"Could not extract qualified name from " + element);
+			throw new IllegalStateException("Could not extract qualified name from " + element);
 		}
 
 		private TypeElement getEnclosingTypeElement(TypeMirror type) {
@@ -332,8 +322,7 @@ class TypeUtils {
 		}
 
 		public TypeMirror resolveGeneric(String parameterName) {
-			return this.generics.entrySet().stream()
-					.filter((e) -> getParameterName(e.getKey()).equals(parameterName))
+			return this.generics.entrySet().stream().filter((e) -> getParameterName(e.getKey()).equals(parameterName))
 					.findFirst().map(Entry::getValue).orElse(null);
 		}
 
@@ -341,8 +330,7 @@ class TypeUtils {
 			if (variable instanceof TypeVariable) {
 				TypeVariable typeVariable = (TypeVariable) variable;
 				if (this.generics.keySet().stream()
-						.noneMatch((candidate) -> getParameterName(candidate)
-								.equals(getParameterName(typeVariable)))) {
+						.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
 					this.generics.put(typeVariable, resolution);
 				}
 			}

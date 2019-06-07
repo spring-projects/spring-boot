@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,15 +69,13 @@ public class ExplodedArchiveTests {
 		File file = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(file);
 
-		this.rootFolder = (StringUtils.hasText(folderName)
-				? this.temporaryFolder.newFolder(folderName)
+		this.rootFolder = (StringUtils.hasText(folderName) ? this.temporaryFolder.newFolder(folderName)
 				: this.temporaryFolder.newFolder());
 		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
-			File destination = new File(
-					this.rootFolder.getAbsolutePath() + File.separator + entry.getName());
+			File destination = new File(this.rootFolder.getAbsolutePath() + File.separator + entry.getName());
 			destination.getParentFile().mkdirs();
 			if (entry.isDirectory()) {
 				destination.mkdir();
@@ -101,8 +99,7 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getManifest() throws Exception {
-		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By"))
-				.isEqualTo("j1");
+		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By")).isEqualTo("j1");
 	}
 
 	@Test
@@ -126,8 +123,7 @@ public class ExplodedArchiveTests {
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString())
-				.isEqualTo("jar:" + this.rootFolder.toURI() + "nested.jar!/");
+		assertThat(nested.getUrl().toString()).isEqualTo("jar:" + this.rootFolder.toURI() + "nested.jar!/");
 	}
 
 	@Test
@@ -136,8 +132,7 @@ public class ExplodedArchiveTests {
 		Archive nested = this.archive.getNestedArchive(entry);
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
 		assertThat(nestedEntries.size()).isEqualTo(1);
-		assertThat(nested.getUrl().toString())
-				.isEqualTo("file:" + this.rootFolder.toURI().getPath() + "d/");
+		assertThat(nested.getUrl().toString()).isEqualTo("file:" + this.rootFolder.toURI().getPath() + "d/");
 	}
 
 	@Test
@@ -149,8 +144,7 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getNonRecursiveManifest() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(
-				new File("src/test/resources/root"));
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
 		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size()).isEqualTo(4);
@@ -158,8 +152,7 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getNonRecursiveManifestEvenIfNonRecursive() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"),
-				false);
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"), false);
 		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size()).isEqualTo(3);
@@ -167,23 +160,19 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getResourceAsStream() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(
-				new File("src/test/resources/root"));
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
 		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
-		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml"))
-				.isNotNull();
+		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
 		loader.close();
 	}
 
 	@Test
 	public void getResourceAsStreamNonRecursive() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"),
-				false);
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"), false);
 		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
-		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml"))
-				.isNotNull();
+		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
 		loader.close();
 	}
 

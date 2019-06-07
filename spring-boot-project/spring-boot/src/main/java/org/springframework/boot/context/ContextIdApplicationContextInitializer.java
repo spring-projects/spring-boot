@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ContextIdApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+public class ContextIdApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
@@ -52,8 +52,7 @@ public class ContextIdApplicationContextInitializer implements
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		ContextId contextId = getContextId(applicationContext);
 		applicationContext.setId(contextId.getId());
-		applicationContext.getBeanFactory().registerSingleton(ContextId.class.getName(),
-				contextId);
+		applicationContext.getBeanFactory().registerSingleton(ContextId.class.getName(), contextId);
 	}
 
 	private ContextId getContextId(ConfigurableApplicationContext applicationContext) {

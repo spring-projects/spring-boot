@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 	private final OAuth2ResourceServerProperties properties;
 
-	ReactiveOAuth2ResourceServerJwkConfiguration(
-			OAuth2ResourceServerProperties properties) {
+	ReactiveOAuth2ResourceServerJwkConfiguration(OAuth2ResourceServerProperties properties) {
 		this.properties = properties;
 	}
 
@@ -53,8 +52,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	@Conditional(IssuerUriCondition.class)
 	@ConditionalOnMissingBean
 	public ReactiveJwtDecoder jwtDecoderByIssuerUri() {
-		return ReactiveJwtDecoders
-				.fromOidcIssuerLocation(this.properties.getJwt().getIssuerUri());
+		return ReactiveJwtDecoders.fromOidcIssuerLocation(this.properties.getJwt().getIssuerUri());
 	}
 
 }

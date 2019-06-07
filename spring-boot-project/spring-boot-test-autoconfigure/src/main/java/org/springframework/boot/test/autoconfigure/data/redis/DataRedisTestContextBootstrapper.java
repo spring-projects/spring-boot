@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ class DataRedisTestContextBootstrapper extends SpringBootTestContextBootstrapper
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		DataRedisTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				DataRedisTest.class);
+		DataRedisTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, DataRedisTest.class);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 

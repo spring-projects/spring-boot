@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,17 +63,16 @@ public class CachingOperationInvokerAdvisorTests {
 	@Test
 	public void applyWhenOperationIsNotReadShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
-		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
-				OperationType.WRITE, parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.WRITE, parameters,
+				this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
 	}
 
 	@Test
 	public void applyWhenHasAtLeaseOneMandatoryParameterShouldNotAddAdvise() {
-		OperationParameters parameters = getParameters("getWithParameters", String.class,
-				String.class);
-		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
-				OperationType.READ, parameters, this.invoker);
+		OperationParameters parameters = getParameters("getWithParameters", String.class, String.class);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
+				this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
 	}
 
@@ -81,8 +80,8 @@ public class CachingOperationInvokerAdvisorTests {
 	public void applyWhenTimeToLiveReturnsNullShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(null);
-		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
-				OperationType.READ, parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
+				this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
 		verify(this.timeToLive).apply(EndpointId.of("foo"));
 	}
@@ -91,8 +90,8 @@ public class CachingOperationInvokerAdvisorTests {
 	public void applyWhenTimeToLiveIsZeroShouldNotAddAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(0L);
-		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
-				OperationType.READ, parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
+				this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
 		verify(this.timeToLive).apply(EndpointId.of("foo"));
 	}
@@ -106,37 +105,32 @@ public class CachingOperationInvokerAdvisorTests {
 
 	@Test
 	public void applyWithAllOptionalParametersShouldAddAdvise() {
-		OperationParameters parameters = getParameters("getWithAllOptionalParameters",
-				String.class, String.class);
+		OperationParameters parameters = getParameters("getWithAllOptionalParameters", String.class, String.class);
 		given(this.timeToLive.apply(any())).willReturn(100L);
 		assertAdviseIsApplied(parameters);
 	}
 
 	@Test
 	public void applyWithSecurityContextShouldAddAdvise() {
-		OperationParameters parameters = getParameters("getWithSecurityContext",
-				SecurityContext.class, String.class);
+		OperationParameters parameters = getParameters("getWithSecurityContext", SecurityContext.class, String.class);
 		given(this.timeToLive.apply(any())).willReturn(100L);
 		assertAdviseIsApplied(parameters);
 	}
 
 	private void assertAdviseIsApplied(OperationParameters parameters) {
-		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"),
-				OperationType.READ, parameters, this.invoker);
+		OperationInvoker advised = this.advisor.apply(EndpointId.of("foo"), OperationType.READ, parameters,
+				this.invoker);
 		assertThat(advised).isInstanceOf(CachingOperationInvoker.class);
 		assertThat(advised).hasFieldOrPropertyWithValue("invoker", this.invoker);
 		assertThat(advised).hasFieldOrPropertyWithValue("timeToLive", 100L);
 	}
 
-	private OperationParameters getParameters(String methodName,
-			Class<?>... parameterTypes) {
+	private OperationParameters getParameters(String methodName, Class<?>... parameterTypes) {
 		return getOperationMethod(methodName, parameterTypes).getParameters();
 	}
 
-	private OperationMethod getOperationMethod(String methodName,
-			Class<?>... parameterTypes) {
-		Method method = ReflectionUtils.findMethod(TestOperations.class, methodName,
-				parameterTypes);
+	private OperationMethod getOperationMethod(String methodName, Class<?>... parameterTypes) {
+		Method method = ReflectionUtils.findMethod(TestOperations.class, methodName, parameterTypes);
 		return new OperationMethod(method, OperationType.READ);
 	}
 
@@ -150,13 +144,11 @@ public class CachingOperationInvokerAdvisorTests {
 			return "";
 		}
 
-		public String getWithAllOptionalParameters(@Nullable String foo,
-				@Nullable String bar) {
+		public String getWithAllOptionalParameters(@Nullable String foo, @Nullable String bar) {
 			return "";
 		}
 
-		public String getWithSecurityContext(SecurityContext securityContext,
-				@Nullable String bar) {
+		public String getWithSecurityContext(SecurityContext securityContext, @Nullable String bar) {
 			return "";
 		}
 

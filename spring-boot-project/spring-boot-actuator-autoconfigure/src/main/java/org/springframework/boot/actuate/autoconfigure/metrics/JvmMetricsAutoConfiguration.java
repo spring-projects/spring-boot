@@ -41,8 +41,7 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
-@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
 public class JvmMetricsAutoConfiguration {
 
 	@Bean

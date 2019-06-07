@@ -47,8 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.mvc.servlet.path:/spring/")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.mvc.servlet.path:/spring/")
 @DirtiesContext
 public class RemappedErrorViewIntegrationTests {
 
@@ -59,24 +58,21 @@ public class RemappedErrorViewIntegrationTests {
 
 	@Test
 	public void directAccessToErrorPage() {
-		String content = this.template.getForObject(
-				"http://localhost:" + this.port + "/spring/error", String.class);
+		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/error", String.class);
 		assertThat(content).contains("error");
 		assertThat(content).contains("999");
 	}
 
 	@Test
 	public void forwardToErrorPage() {
-		String content = this.template
-				.getForObject("http://localhost:" + this.port + "/spring/", String.class);
+		String content = this.template.getForObject("http://localhost:" + this.port + "/spring/", String.class);
 		assertThat(content).contains("error");
 		assertThat(content).contains("500");
 	}
 
 	@Configuration
 	@Import({ PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ServletWebServerFactoryAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 	@Controller
 	public static class TestConfiguration implements ErrorPageRegistrar {
@@ -93,8 +89,8 @@ public class RemappedErrorViewIntegrationTests {
 
 		// For manual testing
 		public static void main(String[] args) {
-			new SpringApplicationBuilder(TestConfiguration.class)
-					.properties("spring.mvc.servlet.path:spring/*").run(args);
+			new SpringApplicationBuilder(TestConfiguration.class).properties("spring.mvc.servlet.path:spring/*")
+					.run(args);
 		}
 
 	}

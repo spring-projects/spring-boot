@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,58 +37,47 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class KairosMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(KairosMetricsExportAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(KairosMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(KairosMeterRegistry.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class));
 	}
 
 	@Test
 	public void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(KairosMeterRegistry.class)
-						.hasSingleBean(KairosConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(KairosMeterRegistry.class).hasSingleBean(KairosConfig.class));
 	}
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.kairos.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(KairosMeterRegistry.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
 						.doesNotHaveBean(KairosConfig.class));
 	}
 
 	@Test
 	public void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(KairosMeterRegistry.class)
-						.hasSingleBean(KairosConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(KairosMeterRegistry.class).hasSingleBean(KairosConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
 	public void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(KairosMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(KairosConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(KairosMeterRegistry.class).hasBean("customRegistry").hasSingleBean(KairosConfig.class));
 	}
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> {
-					KairosMeterRegistry registry = context
-							.getBean(KairosMeterRegistry.class);
-					assertThat(registry.isClosed()).isFalse();
-					context.close();
-					assertThat(registry.isClosed()).isTrue();
-				});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+			KairosMeterRegistry registry = context.getBean(KairosMeterRegistry.class);
+			assertThat(registry.isClosed()).isFalse();
+			context.close();
+			assertThat(registry.isClosed()).isTrue();
+		});
 	}
 
 	@Configuration

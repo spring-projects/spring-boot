@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ public interface ErrorAttributes {
 	 * @param includeStackTrace if stack trace elements should be included
 	 * @return a map of error attributes
 	 */
-	Map<String, Object> getErrorAttributes(WebRequest webRequest,
-			boolean includeStackTrace);
+	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace);
 
 	/**
 	 * Return the underlying cause of the error or {@code null} if the error cannot be

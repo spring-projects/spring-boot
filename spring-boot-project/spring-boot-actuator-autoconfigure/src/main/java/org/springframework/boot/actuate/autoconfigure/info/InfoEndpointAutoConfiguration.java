@@ -42,8 +42,7 @@ public class InfoEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint(ObjectProvider<InfoContributor> infoContributors) {
-		return new InfoEndpoint(
-				infoContributors.orderedStream().collect(Collectors.toList()));
+		return new InfoEndpoint(infoContributors.orderedStream().collect(Collectors.toList()));
 	}
 
 }

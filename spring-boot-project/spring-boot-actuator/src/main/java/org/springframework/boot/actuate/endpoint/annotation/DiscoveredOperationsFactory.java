@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 	private static final Map<OperationType, Class<? extends Annotation>> OPERATION_TYPES;
 
 	static {
-		Map<OperationType, Class<? extends Annotation>> operationTypes = new EnumMap<>(
-				OperationType.class);
+		Map<OperationType, Class<? extends Annotation>> operationTypes = new EnumMap<>(OperationType.class);
 		operationTypes.put(OperationType.READ, ReadOperation.class);
 		operationTypes.put(OperationType.WRITE, WriteOperation.class);
 		operationTypes.put(OperationType.DELETE, DeleteOperation.class);
@@ -70,45 +69,43 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 	}
 
 	public Collection<O> createOperations(EndpointId id, Object target) {
-		return MethodIntrospector.selectMethods(target.getClass(),
-				(MetadataLookup<O>) (method) -> createOperation(id, target, method))
+		return MethodIntrospector
+				.selectMethods(target.getClass(), (MetadataLookup<O>) (method) -> createOperation(id, target, method))
 				.values();
 	}
 
 	private O createOperation(EndpointId endpointId, Object target, Method method) {
 		return OPERATION_TYPES.entrySet().stream()
-				.map((entry) -> createOperation(endpointId, target, method,
-						entry.getKey(), entry.getValue()))
+				.map((entry) -> createOperation(endpointId, target, method, entry.getKey(), entry.getValue()))
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
-	private O createOperation(EndpointId endpointId, Object target, Method method,
-			OperationType operationType, Class<? extends Annotation> annotationType) {
-		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(method, annotationType);
+	private O createOperation(EndpointId endpointId, Object target, Method method, OperationType operationType,
+			Class<? extends Annotation> annotationType) {
+		AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(method,
+				annotationType);
 		if (annotationAttributes == null) {
 			return null;
 		}
-		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method,
-				operationType, annotationAttributes);
-		OperationInvoker invoker = new ReflectiveOperationInvoker(target, operationMethod,
-				this.parameterValueMapper);
+		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method, operationType,
+				annotationAttributes);
+		OperationInvoker invoker = new ReflectiveOperationInvoker(target, operationMethod, this.parameterValueMapper);
 		invoker = applyAdvisors(endpointId, operationMethod, invoker);
 		return createOperation(endpointId, operationMethod, invoker);
 	}
 
-	private OperationInvoker applyAdvisors(EndpointId endpointId,
-			OperationMethod operationMethod, OperationInvoker invoker) {
+	private OperationInvoker applyAdvisors(EndpointId endpointId, OperationMethod operationMethod,
+			OperationInvoker invoker) {
 		if (this.invokerAdvisors != null) {
 			for (OperationInvokerAdvisor advisor : this.invokerAdvisors) {
-				invoker = advisor.apply(endpointId, operationMethod.getOperationType(),
-						operationMethod.getParameters(), invoker);
+				invoker = advisor.apply(endpointId, operationMethod.getOperationType(), operationMethod.getParameters(),
+						invoker);
 			}
 		}
 		return invoker;
 	}
 
-	protected abstract O createOperation(EndpointId endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker);
+	protected abstract O createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
+			OperationInvoker invoker);
 
 }

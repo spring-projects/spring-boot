@@ -48,52 +48,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TaskSchedulingAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestConfiguration.class).withConfiguration(
-					AutoConfigurations.of(TaskSchedulingAutoConfiguration.class));
+			.withUserConfiguration(TestConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class));
 
 	@Test
 	public void noSchedulingDoesNotExposeTaskScheduler() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(TaskScheduler.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(TaskScheduler.class));
 	}
 
 	@Test
 	public void enableSchedulingWithNoTaskExecutorAutoConfiguresOne() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.task.scheduling.thread-name-prefix=scheduling-test-")
+		this.contextRunner.withPropertyValues("spring.task.scheduling.thread-name-prefix=scheduling-test-")
 				.withUserConfiguration(SchedulingConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
 					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
-					assertThat(bean.threadNames)
-							.allMatch((name) -> name.contains("scheduling-test-"));
+					assertThat(bean.threadNames).allMatch((name) -> name.contains("scheduling-test-"));
 				});
 	}
 
 	@Test
 	public void enableSchedulingWithNoTaskExecutorAppliesCustomizers() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.task.scheduling.thread-name-prefix=scheduling-test-")
-				.withUserConfiguration(SchedulingConfiguration.class,
-						TaskSchedulerCustomizerConfiguration.class)
+		this.contextRunner.withPropertyValues("spring.task.scheduling.thread-name-prefix=scheduling-test-")
+				.withUserConfiguration(SchedulingConfiguration.class, TaskSchedulerCustomizerConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
 					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
-					assertThat(bean.threadNames)
-							.allMatch((name) -> name.contains("customized-scheduler-"));
+					assertThat(bean.threadNames).allMatch((name) -> name.contains("customized-scheduler-"));
 				});
 	}
 
 	@Test
 	public void enableSchedulingWithExistingTaskSchedulerBacksOff() {
-		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
-				TaskSchedulerConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, TaskSchedulerConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskScheduler.class);
-					assertThat(context.getBean(TaskScheduler.class))
-							.isInstanceOf(TestTaskScheduler.class);
+					assertThat(context.getBean(TaskScheduler.class)).isInstanceOf(TestTaskScheduler.class);
 					TestBean bean = context.getBean(TestBean.class);
 					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
 					assertThat(bean.threadNames).containsExactly("test-1");
@@ -102,21 +93,21 @@ public class TaskSchedulingAutoConfigurationTests {
 
 	@Test
 	public void enableSchedulingWithExistingScheduledExecutorServiceBacksOff() {
-		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
-				ScheduledExecutorServiceConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(SchedulingConfiguration.class, ScheduledExecutorServiceConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(TaskScheduler.class);
 					assertThat(context).hasSingleBean(ScheduledExecutorService.class);
 					TestBean bean = context.getBean(TestBean.class);
 					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
-					assertThat(bean.threadNames)
-							.allMatch((name) -> name.contains("pool-"));
+					assertThat(bean.threadNames).allMatch((name) -> name.contains("pool-"));
 				});
 	}
 
 	@Test
 	public void enableSchedulingWithConfigurerBacksOff() {
-		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
-				SchedulingConfigurerConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, SchedulingConfigurerConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(TaskScheduler.class);
 					TestBean bean = context.getBean(TestBean.class);
 					assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
@@ -155,8 +146,7 @@ public class TaskSchedulingAutoConfigurationTests {
 
 		@Bean
 		public TaskSchedulerCustomizer testTaskSchedulerCustomizer() {
-			return ((taskScheduler) -> taskScheduler
-					.setThreadNamePrefix("customized-scheduler-"));
+			return ((taskScheduler) -> taskScheduler.setThreadNamePrefix("customized-scheduler-"));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,9 @@ class WebFilterHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	public void doHandle(Map<String, Object> attributes,
-			ScannedGenericBeanDefinition beanDefinition,
+	public void doHandle(Map<String, Object> attributes, ScannedGenericBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder
-				.rootBeanDefinition(FilterRegistrationBean.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(FilterRegistrationBean.class);
 		builder.addPropertyValue("asyncSupported", attributes.get("asyncSupported"));
 		builder.addPropertyValue("dispatcherTypes", extractDispatcherTypes(attributes));
 		builder.addPropertyValue("filter", beanDefinition);
@@ -57,24 +55,20 @@ class WebFilterHandler extends ServletComponentHandler {
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());
 	}
 
-	private EnumSet<DispatcherType> extractDispatcherTypes(
-			Map<String, Object> attributes) {
-		DispatcherType[] dispatcherTypes = (DispatcherType[]) attributes
-				.get("dispatcherTypes");
+	private EnumSet<DispatcherType> extractDispatcherTypes(Map<String, Object> attributes) {
+		DispatcherType[] dispatcherTypes = (DispatcherType[]) attributes.get("dispatcherTypes");
 		if (dispatcherTypes.length == 0) {
 			return EnumSet.noneOf(DispatcherType.class);
 		}
 		if (dispatcherTypes.length == 1) {
 			return EnumSet.of(dispatcherTypes[0]);
 		}
-		return EnumSet.of(dispatcherTypes[0],
-				Arrays.copyOfRange(dispatcherTypes, 1, dispatcherTypes.length));
+		return EnumSet.of(dispatcherTypes[0], Arrays.copyOfRange(dispatcherTypes, 1, dispatcherTypes.length));
 	}
 
-	private String determineName(Map<String, Object> attributes,
-			BeanDefinition beanDefinition) {
-		return (String) (StringUtils.hasText((String) attributes.get("filterName"))
-				? attributes.get("filterName") : beanDefinition.getBeanClassName());
+	private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
+		return (String) (StringUtils.hasText((String) attributes.get("filterName")) ? attributes.get("filterName")
+				: beanDefinition.getBeanClassName());
 	}
 
 }

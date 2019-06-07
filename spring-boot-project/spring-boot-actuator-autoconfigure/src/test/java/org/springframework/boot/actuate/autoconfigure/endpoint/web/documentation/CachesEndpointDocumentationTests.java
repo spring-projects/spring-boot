@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,34 +53,28 @@ public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	private static final List<FieldDescriptor> levelFields = Arrays.asList(
 			fieldWithPath("name").description("Cache name."),
 			fieldWithPath("cacheManager").description("Cache manager name."),
-			fieldWithPath("target")
-					.description("Fully qualified name of the native cache."));
+			fieldWithPath("target").description("Fully qualified name of the native cache."));
 
 	private static final List<ParameterDescriptor> requestParameters = Collections
-			.singletonList(parameterWithName("cacheManager")
-					.description("Name of the cacheManager to qualify the cache. May be "
-							+ "omitted if the cache name is unique.")
+			.singletonList(parameterWithName("cacheManager").description(
+					"Name of the cacheManager to qualify the cache. May be " + "omitted if the cache name is unique.")
 					.optional());
 
 	@Test
 	public void allCaches() throws Exception {
 		this.mockMvc.perform(get("/actuator/caches")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("caches/all", responseFields(
-						fieldWithPath("cacheManagers")
-								.description("Cache managers keyed by id."),
-						fieldWithPath("cacheManagers.*.caches").description(
-								"Caches in the application context keyed by " + "name."))
-										.andWithPrefix("cacheManagers.*.caches.*.",
-												fieldWithPath("target").description(
-														"Fully qualified name of the native cache."))));
+				.andDo(MockMvcRestDocumentation.document("caches/all",
+						responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
+								fieldWithPath("cacheManagers.*.caches")
+										.description("Caches in the application context keyed by " + "name."))
+												.andWithPrefix("cacheManagers.*.caches.*.", fieldWithPath("target")
+														.description("Fully qualified name of the native cache."))));
 	}
 
 	@Test
 	public void namedCache() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("caches/named",
-						requestParameters(requestParameters),
-						responseFields(levelFields)));
+		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk()).andDo(MockMvcRestDocumentation
+				.document("caches/named", requestParameters(requestParameters), responseFields(levelFields)));
 	}
 
 	@Test
@@ -91,12 +85,9 @@ public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 	@Test
 	public void evictNamedCache() throws Exception {
-		this.mockMvc
-				.perform(delete(
-						"/actuator/caches/countries?cacheManager=anotherCacheManager"))
+		this.mockMvc.perform(delete("/actuator/caches/countries?cacheManager=anotherCacheManager"))
 				.andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("caches/evict-named",
-						requestParameters(requestParameters)));
+				.andDo(MockMvcRestDocumentation.document("caches/evict-named", requestParameters(requestParameters)));
 	}
 
 	@Configuration
@@ -106,10 +97,8 @@ public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		@Bean
 		public CachesEndpoint endpoint() {
 			Map<String, CacheManager> cacheManagers = new HashMap<>();
-			cacheManagers.put("cacheManager",
-					new ConcurrentMapCacheManager("countries", "cities"));
-			cacheManagers.put("anotherCacheManager",
-					new ConcurrentMapCacheManager("countries"));
+			cacheManagers.put("cacheManager", new ConcurrentMapCacheManager("countries", "cities"));
+			cacheManagers.put("anotherCacheManager", new ConcurrentMapCacheManager("countries"));
 			return new CachesEndpoint(cacheManagers);
 		}
 

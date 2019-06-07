@@ -32,16 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
 	public BootJarTests() {
-		super(BootJar.class, "org.springframework.boot.loader.JarLauncher",
-				"BOOT-INF/lib/", "BOOT-INF/classes/");
+		super(BootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/");
 	}
 
 	@Test
 	public void contentCanBeAddedToBootInfUsingCopySpecFromGetter() throws IOException {
 		BootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Application");
-		bootJar.getBootInf().into("test")
-				.from(new File("build.gradle").getAbsolutePath());
+		bootJar.getBootInf().into("test").from(new File("build.gradle").getAbsolutePath());
 		bootJar.execute();
 		try (JarFile jarFile = new JarFile(bootJar.getArchivePath())) {
 			assertThat(jarFile.getJarEntry("BOOT-INF/test/build.gradle")).isNotNull();
@@ -52,8 +50,7 @@ public class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	public void contentCanBeAddedToBootInfUsingCopySpecAction() throws IOException {
 		BootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Application");
-		bootJar.bootInf((copySpec) -> copySpec.into("test")
-				.from(new File("build.gradle").getAbsolutePath()));
+		bootJar.bootInf((copySpec) -> copySpec.into("test").from(new File("build.gradle").getAbsolutePath()));
 		bootJar.execute();
 		try (JarFile jarFile = new JarFile(bootJar.getArchivePath())) {
 			assertThat(jarFile.getJarEntry("BOOT-INF/test/build.gradle")).isNotNull();

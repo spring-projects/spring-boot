@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,7 @@ public class SpringBootJoranConfiguratorTests {
 	@After
 	public void reset() {
 		this.context.stop();
-		new BasicConfigurator()
-				.configure((LoggerContext) LoggerFactory.getILoggerFactory());
+		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
 	}
 
 	@Test
@@ -154,16 +153,14 @@ public class SpringBootJoranConfiguratorTests {
 
 	@Test
 	public void springProperty() throws Exception {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"my.example-property=test");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=test");
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
 	@Test
 	public void relaxedSpringProperty() throws Exception {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"my.EXAMPLE_PROPERTY=test");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.EXAMPLE_PROPERTY=test");
 		ConfigurationPropertySources.attach(this.environment);
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
@@ -193,8 +190,7 @@ public class SpringBootJoranConfiguratorTests {
 		assertThat(this.context.getProperty("MINE")).isEqualTo("bar");
 	}
 
-	private void doTestNestedProfile(boolean expected, String... profiles)
-			throws JoranException {
+	private void doTestNestedProfile(boolean expected, String... profiles) throws JoranException {
 		this.environment.setActiveProfiles(profiles);
 		initialize("nested.xml");
 		this.logger.trace("Hello");

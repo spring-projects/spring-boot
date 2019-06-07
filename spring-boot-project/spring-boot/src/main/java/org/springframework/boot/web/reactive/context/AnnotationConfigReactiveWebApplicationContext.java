@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ import org.springframework.util.StringUtils;
  * @see #register(Class...)
  * @see #scan(String...)
  */
-public class AnnotationConfigReactiveWebApplicationContext
-		extends AbstractRefreshableConfigApplicationContext
+public class AnnotationConfigReactiveWebApplicationContext extends AbstractRefreshableConfigApplicationContext
 		implements ConfigurableReactiveWebApplicationContext, AnnotationConfigRegistry {
 
 	private BeanNameGenerator beanNameGenerator;
@@ -134,8 +133,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 */
 	@Override
 	public void register(Class<?>... annotatedClasses) {
-		Assert.notEmpty(annotatedClasses,
-				"At least one annotated class must be specified");
+		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
 		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 
@@ -182,25 +180,20 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
-		AnnotatedBeanDefinitionReader reader = getAnnotatedBeanDefinitionReader(
-				beanFactory);
-		ClassPathBeanDefinitionScanner scanner = getClassPathBeanDefinitionScanner(
-				beanFactory);
+		AnnotatedBeanDefinitionReader reader = getAnnotatedBeanDefinitionReader(beanFactory);
+		ClassPathBeanDefinitionScanner scanner = getClassPathBeanDefinitionScanner(beanFactory);
 		applyBeanNameGenerator(beanFactory, reader, scanner);
 		applyScopeMetadataResolver(reader, scanner);
 		loadBeanDefinitions(reader, scanner);
 	}
 
-	private void applyBeanNameGenerator(DefaultListableBeanFactory beanFactory,
-			AnnotatedBeanDefinitionReader reader,
+	private void applyBeanNameGenerator(DefaultListableBeanFactory beanFactory, AnnotatedBeanDefinitionReader reader,
 			ClassPathBeanDefinitionScanner scanner) {
 		BeanNameGenerator beanNameGenerator = getBeanNameGenerator();
 		if (beanNameGenerator != null) {
 			reader.setBeanNameGenerator(beanNameGenerator);
 			scanner.setBeanNameGenerator(beanNameGenerator);
-			beanFactory.registerSingleton(
-					AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-					beanNameGenerator);
+			beanFactory.registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, beanNameGenerator);
 		}
 	}
 
@@ -213,8 +206,8 @@ public class AnnotationConfigReactiveWebApplicationContext
 		}
 	}
 
-	private void loadBeanDefinitions(AnnotatedBeanDefinitionReader reader,
-			ClassPathBeanDefinitionScanner scanner) throws LinkageError {
+	private void loadBeanDefinitions(AnnotatedBeanDefinitionReader reader, ClassPathBeanDefinitionScanner scanner)
+			throws LinkageError {
 		if (!this.annotatedClasses.isEmpty()) {
 			registerAnnotatedClasses(reader);
 		}
@@ -230,8 +223,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 	private void registerAnnotatedClasses(AnnotatedBeanDefinitionReader reader) {
 		if (this.logger.isInfoEnabled()) {
 			this.logger.info("Registering annotated classes: ["
-					+ StringUtils.collectionToCommaDelimitedString(this.annotatedClasses)
-					+ "]");
+					+ StringUtils.collectionToCommaDelimitedString(this.annotatedClasses) + "]");
 		}
 		reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 	}
@@ -239,23 +231,21 @@ public class AnnotationConfigReactiveWebApplicationContext
 	private void scanBasePackages(ClassPathBeanDefinitionScanner scanner) {
 		if (this.logger.isInfoEnabled()) {
 			this.logger.info("Scanning base packages: ["
-					+ StringUtils.collectionToCommaDelimitedString(this.basePackages)
-					+ "]");
+					+ StringUtils.collectionToCommaDelimitedString(this.basePackages) + "]");
 		}
 		scanner.scan(StringUtils.toStringArray(this.basePackages));
 	}
 
-	private void registerConfigLocations(AnnotatedBeanDefinitionReader reader,
-			ClassPathBeanDefinitionScanner scanner, String[] configLocations)
-			throws LinkageError {
+	private void registerConfigLocations(AnnotatedBeanDefinitionReader reader, ClassPathBeanDefinitionScanner scanner,
+			String[] configLocations) throws LinkageError {
 		for (String configLocation : configLocations) {
 			try {
 				register(reader, configLocation);
 			}
 			catch (ClassNotFoundException ex) {
 				if (this.logger.isDebugEnabled()) {
-					this.logger.debug("Could not load class for config location ["
-							+ configLocation + "] - trying package scan. " + ex);
+					this.logger.debug("Could not load class for config location [" + configLocation
+							+ "] - trying package scan. " + ex);
 				}
 				int count = scanner.scan(configLocation);
 				if (this.logger.isInfoEnabled()) {
@@ -276,12 +266,10 @@ public class AnnotationConfigReactiveWebApplicationContext
 
 	private void logScanResult(String configLocation, int count) {
 		if (count == 0) {
-			this.logger.info("No annotated classes found for specified class/package ["
-					+ configLocation + "]");
+			this.logger.info("No annotated classes found for specified class/package [" + configLocation + "]");
 		}
 		else {
-			this.logger.info("Found " + count + " annotated classes in package ["
-					+ configLocation + "]");
+			this.logger.info("Found " + count + " annotated classes in package [" + configLocation + "]");
 		}
 	}
 
@@ -296,8 +284,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()
 	 */
-	protected AnnotatedBeanDefinitionReader getAnnotatedBeanDefinitionReader(
-			DefaultListableBeanFactory beanFactory) {
+	protected AnnotatedBeanDefinitionReader getAnnotatedBeanDefinitionReader(DefaultListableBeanFactory beanFactory) {
 		return new AnnotatedBeanDefinitionReader(beanFactory, getEnvironment());
 	}
 
@@ -312,8 +299,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()
 	 */
-	protected ClassPathBeanDefinitionScanner getClassPathBeanDefinitionScanner(
-			DefaultListableBeanFactory beanFactory) {
+	protected ClassPathBeanDefinitionScanner getClassPathBeanDefinitionScanner(DefaultListableBeanFactory beanFactory) {
 		return new ClassPathBeanDefinitionScanner(beanFactory, true, getEnvironment());
 	}
 

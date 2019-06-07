@@ -41,8 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest
-@AutoConfigureMockMvc(addFilters = false, webClientEnabled = false,
-		webDriverEnabled = false)
+@AutoConfigureMockMvc(addFilters = false, webClientEnabled = false, webDriverEnabled = false)
 public class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 
 	@Autowired

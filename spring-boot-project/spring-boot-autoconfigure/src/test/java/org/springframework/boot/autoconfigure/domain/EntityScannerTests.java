@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public class EntityScannerTests {
 
 	@Test
 	public void scanShouldScanFromSinglePackage() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ScanConfig.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
 		Set<Class<?>> scanned = scanner.scan(Entity.class);
 		assertThat(scanned).containsOnly(EntityA.class, EntityB.class, EntityC.class);
@@ -60,8 +59,8 @@ public class EntityScannerTests {
 
 	@Test
 	public void scanShouldScanFromMultiplePackages() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ScanAConfig.class, ScanBConfig.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanAConfig.class,
+				ScanBConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
 		Set<Class<?>> scanned = scanner.scan(Entity.class);
 		assertThat(scanned).containsOnly(EntityA.class, EntityB.class);
@@ -70,16 +69,13 @@ public class EntityScannerTests {
 
 	@Test
 	public void scanShouldFilterOnAnnotation() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ScanConfig.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		EntityScanner scanner = new EntityScanner(context);
-		assertThat(scanner.scan(Entity.class)).containsOnly(EntityA.class, EntityB.class,
-				EntityC.class);
-		assertThat(scanner.scan(Embeddable.class)).containsOnly(EmbeddableA.class,
-				EmbeddableB.class, EmbeddableC.class);
-		assertThat(scanner.scan(Entity.class, Embeddable.class)).containsOnly(
-				EntityA.class, EntityB.class, EntityC.class, EmbeddableA.class,
-				EmbeddableB.class, EmbeddableC.class);
+		assertThat(scanner.scan(Entity.class)).containsOnly(EntityA.class, EntityB.class, EntityC.class);
+		assertThat(scanner.scan(Embeddable.class)).containsOnly(EmbeddableA.class, EmbeddableB.class,
+				EmbeddableC.class);
+		assertThat(scanner.scan(Entity.class, Embeddable.class)).containsOnly(EntityA.class, EntityB.class,
+				EntityC.class, EmbeddableA.class, EmbeddableB.class, EmbeddableC.class);
 		context.close();
 	}
 

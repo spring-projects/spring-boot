@@ -48,8 +48,7 @@ public class ClientHttpConnectorConfigurationTests {
 		jettyResourceFactory.setScheduler(scheduler);
 		JettyClientHttpConnector connector = new ClientHttpConnectorConfiguration.JettyClient()
 				.jettyClientHttpConnector(jettyResourceFactory);
-		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector,
-				"httpClient");
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient.getExecutor()).isSameAs(executor);
 		assertThat(httpClient.getByteBufferPool()).isSameAs(byteBufferPool);
 		assertThat(httpClient.getScheduler()).isSameAs(scheduler);
@@ -61,8 +60,7 @@ public class ClientHttpConnectorConfigurationTests {
 		JettyResourceFactory jettyResourceFactory = new JettyResourceFactory();
 		JettyClientHttpConnector connector = new ClientHttpConnectorConfiguration.JettyClient()
 				.jettyClientHttpConnector(jettyResourceFactory);
-		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector,
-				"httpClient");
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient.getSslContextFactory()).isNotNull();
 	}
 

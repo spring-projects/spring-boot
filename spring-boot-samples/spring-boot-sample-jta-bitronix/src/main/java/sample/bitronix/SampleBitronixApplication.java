@@ -26,8 +26,7 @@ import org.springframework.context.ApplicationContext;
 public class SampleBitronixApplication {
 
 	public static void main(String[] args) throws Exception {
-		ApplicationContext context = SpringApplication
-				.run(SampleBitronixApplication.class, args);
+		ApplicationContext context = SpringApplication.run(SampleBitronixApplication.class, args);
 		AccountService service = context.getBean(AccountService.class);
 		AccountRepository repository = context.getBean(AccountRepository.class);
 		service.createAccountAndNotify("josh");

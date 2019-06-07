@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,8 @@ public class ServletWebServerServletContextListenerTests {
 	private void servletContextListenerBeanIsCalled(Class<?> configuration) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletContextListenerBeanConfiguration.class, configuration);
-		ServletContextListener servletContextListener = context
-				.getBean("servletContextListener", ServletContextListener.class);
+		ServletContextListener servletContextListener = context.getBean("servletContextListener",
+				ServletContextListener.class);
 		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
@@ -85,8 +85,7 @@ public class ServletWebServerServletContextListenerTests {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletListenerRegistrationBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = (ServletContextListener) context
-				.getBean("registration", ServletListenerRegistrationBean.class)
-				.getListener();
+				.getBean("registration", ServletListenerRegistrationBean.class).getListener();
 		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
@@ -136,8 +135,7 @@ public class ServletWebServerServletContextListenerTests {
 
 		@Bean
 		public ServletListenerRegistrationBean<ServletContextListener> registration() {
-			return new ServletListenerRegistrationBean<>(
-					mock(ServletContextListener.class));
+			return new ServletListenerRegistrationBean<>(mock(ServletContextListener.class));
 		}
 
 	}

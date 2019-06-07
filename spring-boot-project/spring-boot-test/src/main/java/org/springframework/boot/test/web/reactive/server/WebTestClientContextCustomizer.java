@@ -53,10 +53,9 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	@Override
-	public void customizeContext(ConfigurableApplicationContext context,
-			MergedContextConfiguration mergedConfig) {
-		SpringBootTest annotation = AnnotatedElementUtils
-				.getMergedAnnotation(mergedConfig.getTestClass(), SpringBootTest.class);
+	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
+		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(mergedConfig.getTestClass(),
+				SpringBootTest.class);
 		if (annotation.webEnvironment().isEmbedded()) {
 			registerWebTestClient(context);
 		}
@@ -70,11 +69,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	}
 
 	private void registerWebTestClient(BeanDefinitionRegistry registry) {
-		RootBeanDefinition definition = new RootBeanDefinition(
-				WebTestClientRegistrar.class);
+		RootBeanDefinition definition = new RootBeanDefinition(WebTestClientRegistrar.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(WebTestClientRegistrar.class.getName(),
-				definition);
+		registry.registerBeanDefinition(WebTestClientRegistrar.class.getName(), definition);
 	}
 
 	@Override
@@ -108,11 +105,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
-			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					(ListableBeanFactory) this.beanFactory, WebTestClient.class, false,
-					false).length == 0) {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) this.beanFactory,
+					WebTestClient.class, false, false).length == 0) {
 				registry.registerBeanDefinition(WebTestClient.class.getName(),
 						new RootBeanDefinition(WebTestClientFactory.class));
 			}
@@ -120,8 +115,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
 	}
@@ -129,16 +123,14 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	/**
 	 * {@link FactoryBean} used to create and configure a {@link WebTestClient}.
 	 */
-	public static class WebTestClientFactory
-			implements FactoryBean<WebTestClient>, ApplicationContextAware {
+	public static class WebTestClientFactory implements FactoryBean<WebTestClient>, ApplicationContextAware {
 
 		private ApplicationContext applicationContext;
 
 		private WebTestClient object;
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.applicationContext = applicationContext;
 		}
 
@@ -162,8 +154,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private WebTestClient createWebTestClient() {
 			boolean sslEnabled = isSslEnabled(this.applicationContext);
-			String port = this.applicationContext.getEnvironment()
-					.getProperty("local.server.port", "8080");
+			String port = this.applicationContext.getEnvironment().getProperty("local.server.port", "8080");
 			String baseUrl = (sslEnabled ? "https" : "http") + "://localhost:" + port;
 			WebTestClient.Builder builder = WebTestClient.bindToServer();
 			customizeWebTestClientCodecs(builder, this.applicationContext);
@@ -174,22 +165,18 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			try {
 				AbstractReactiveWebServerFactory webServerFactory = context
 						.getBean(AbstractReactiveWebServerFactory.class);
-				return webServerFactory.getSsl() != null
-						&& webServerFactory.getSsl().isEnabled();
+				return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return false;
 			}
 		}
 
-		private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder,
-				ApplicationContext context) {
-			Collection<CodecCustomizer> codecCustomizers = context
-					.getBeansOfType(CodecCustomizer.class).values();
+		private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder, ApplicationContext context) {
+			Collection<CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class).values();
 			if (!CollectionUtils.isEmpty(codecCustomizers)) {
-				clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
-						.codecs((codecs) -> codecCustomizers.forEach(
-								(codecCustomizer) -> codecCustomizer.customize(codecs)))
+				clientBuilder.exchangeStrategies(ExchangeStrategies.builder().codecs(
+						(codecs) -> codecCustomizers.forEach((codecCustomizer) -> codecCustomizer.customize(codecs)))
 						.build());
 			}
 		}

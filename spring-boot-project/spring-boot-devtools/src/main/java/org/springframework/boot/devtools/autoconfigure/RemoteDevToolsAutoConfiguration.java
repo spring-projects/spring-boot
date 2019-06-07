@@ -61,15 +61,13 @@ import org.springframework.http.server.ServerHttpRequest;
 @EnableConfigurationProperties({ ServerProperties.class, DevToolsProperties.class })
 public class RemoteDevToolsAutoConfiguration {
 
-	private static final Log logger = LogFactory
-			.getLog(RemoteDevToolsAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(RemoteDevToolsAutoConfiguration.class);
 
 	private final DevToolsProperties properties;
 
 	private final ServerProperties serverProperties;
 
-	public RemoteDevToolsAutoConfiguration(DevToolsProperties properties,
-			ServerProperties serverProperties) {
+	public RemoteDevToolsAutoConfiguration(DevToolsProperties properties, ServerProperties serverProperties) {
 		this.properties = properties;
 		this.serverProperties = serverProperties;
 	}
@@ -78,19 +76,15 @@ public class RemoteDevToolsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public AccessManager remoteDevToolsAccessManager() {
 		RemoteDevToolsProperties remoteProperties = this.properties.getRemote();
-		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(),
-				remoteProperties.getSecret());
+		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(), remoteProperties.getSecret());
 	}
 
 	@Bean
 	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper() {
 		Handler handler = new HttpStatusHandler();
 		Servlet servlet = this.serverProperties.getServlet();
-		String servletContextPath = (servlet.getContextPath() != null)
-				? servlet.getContextPath() : "";
-		return new UrlHandlerMapper(
-				servletContextPath + this.properties.getRemote().getContextPath(),
-				handler);
+		String servletContextPath = (servlet.getContextPath() != null) ? servlet.getContextPath() : "";
+		return new UrlHandlerMapper(servletContextPath + this.properties.getRemote().getContextPath(), handler);
 	}
 
 	@Bean
@@ -105,8 +99,7 @@ public class RemoteDevToolsAutoConfiguration {
 	 * Configuration for remote update and restarts.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartConfiguration {
 
 		@Autowired
@@ -123,8 +116,7 @@ public class RemoteDevToolsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public HttpRestartServer remoteRestartHttpRestartServer(
-				SourceFolderUrlFilter sourceFolderUrlFilter) {
+		public HttpRestartServer remoteRestartHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
 			return new HttpRestartServer(sourceFolderUrlFilter);
 		}
 
@@ -133,8 +125,7 @@ public class RemoteDevToolsAutoConfiguration {
 		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server) {
 			Servlet servlet = this.serverProperties.getServlet();
 			RemoteDevToolsProperties remote = this.properties.getRemote();
-			String servletContextPath = (servlet.getContextPath() != null)
-					? servlet.getContextPath() : "";
+			String servletContextPath = (servlet.getContextPath() != null) ? servlet.getContextPath() : "";
 			String url = servletContextPath + remote.getContextPath() + "/restart";
 			logger.warn("Listening for remote restart updates on " + url);
 			Handler handler = new HttpRestartServerHandler(server);

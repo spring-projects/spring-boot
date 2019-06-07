@@ -58,8 +58,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		if (context.getConfigurationProperty() != null) {
 			this.boundProperties.add(context.getConfigurationProperty());
 		}
@@ -67,22 +66,21 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
+			throws Exception {
 		validate(name, target, context, result);
 		super.onFinish(name, target, context, result);
 	}
 
 	@Override
-	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Exception error) throws Exception {
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
 		Object result = super.onFailure(name, target, context, error);
 		validate(name, target, context, null);
 		return result;
 	}
 
-	private void validate(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	private void validate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		Object validationTarget = getValidationTarget(target, context, result);
 		Class<?> validationType = target.getBoxedType().resolve();
 		if (validationTarget != null) {
@@ -93,8 +91,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 	}
 
-	private Object getValidationTarget(Bindable<?> target, BindContext context,
-			Object result) {
+	private Object getValidationTarget(Bindable<?> target, BindContext context, Object result) {
 		if (result != null) {
 			return result;
 		}
@@ -104,8 +101,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		return null;
 	}
 
-	private void validateAndPush(ConfigurationPropertyName name, Object target,
-			Class<?> type) {
+	private void validateAndPush(ConfigurationPropertyName name, Object target, Class<?> type) {
 		BindingResult errors = new BeanPropertyBindingResult(target, name.toString());
 		Arrays.stream(this.validators).filter((validator) -> validator.supports(type))
 				.forEach((validator) -> validator.validate(target, errors));
@@ -114,13 +110,11 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		}
 	}
 
-	private BindValidationException getBindValidationException(
-			ConfigurationPropertyName name, BindingResult errors) {
+	private BindValidationException getBindValidationException(ConfigurationPropertyName name, BindingResult errors) {
 		Set<ConfigurationProperty> boundProperties = this.boundProperties.stream()
 				.filter((property) -> name.isAncestorOf(property.getName()))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
-		ValidationErrors validationErrors = new ValidationErrors(name, boundProperties,
-				errors.getAllErrors());
+		ValidationErrors validationErrors = new ValidationErrors(name, boundProperties, errors.getAllErrors());
 		return new BindValidationException(validationErrors);
 	}
 

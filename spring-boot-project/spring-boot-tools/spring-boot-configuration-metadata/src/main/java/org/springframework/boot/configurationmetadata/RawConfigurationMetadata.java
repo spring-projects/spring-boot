@@ -34,8 +34,7 @@ class RawConfigurationMetadata {
 
 	private final List<ConfigurationMetadataHint> hints;
 
-	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources,
-			List<ConfigurationMetadataItem> items,
+	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources, List<ConfigurationMetadataItem> items,
 			List<ConfigurationMetadataHint> hints) {
 		this.sources = new ArrayList<>(sources);
 		this.items = new ArrayList<>(items);
@@ -56,9 +55,7 @@ class RawConfigurationMetadata {
 		return this.sources.stream()
 				.filter((candidate) -> item.getSourceType().equals(candidate.getType())
 						&& item.getId().startsWith(candidate.getGroupId()))
-				.max(Comparator
-						.comparingInt((candidate) -> candidate.getGroupId().length()))
-				.orElse(null);
+				.max(Comparator.comparingInt((candidate) -> candidate.getGroupId().length())).orElse(null);
 	}
 
 	public List<ConfigurationMetadataItem> getItems() {

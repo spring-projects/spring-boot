@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,7 @@ class ApplicationBuilder {
 		return doBuildApplication(containerFolder);
 	}
 
-	private File doBuildApplication(File containerFolder)
-			throws IOException, MavenInvocationException {
+	private File doBuildApplication(File containerFolder) throws IOException, MavenInvocationException {
 		File resourcesJar = createResourcesJar();
 		File appFolder = new File(containerFolder, "app");
 		appFolder.mkdirs();
@@ -85,12 +84,10 @@ class ApplicationBuilder {
 		if (resourcesJar.exists()) {
 			return resourcesJar;
 		}
-		try (JarOutputStream resourcesJarStream = new JarOutputStream(
-				new FileOutputStream(resourcesJar))) {
+		try (JarOutputStream resourcesJarStream = new JarOutputStream(new FileOutputStream(resourcesJar))) {
 			resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/"));
 			resourcesJarStream.closeEntry();
-			resourcesJarStream.putNextEntry(
-					new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
+			resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
 			resourcesJarStream.write("nested".getBytes());
 			resourcesJarStream.closeEntry();
 			return resourcesJar;
@@ -104,10 +101,8 @@ class ApplicationBuilder {
 		context.put("bootVersion", Versions.getBootVersion());
 		context.put("resourcesJarPath", resourcesJar.getAbsolutePath());
 		try (FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
-				FileReader templateReader = new FileReader(
-						"src/test/resources/pom-template.xml")) {
-			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
-					out);
+				FileReader templateReader = new FileReader("src/test/resources/pom-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context, out);
 		}
 	}
 
@@ -120,10 +115,8 @@ class ApplicationBuilder {
 		context.put("repository", repository);
 		File settingsXml = new File(appFolder, "settings.xml");
 		try (FileWriter out = new FileWriter(settingsXml);
-				FileReader templateReader = new FileReader(
-						"src/test/resources/settings-template.xml")) {
-			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
-					out);
+				FileReader templateReader = new FileReader("src/test/resources/settings-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context, out);
 		}
 		return settingsXml;
 	}
@@ -131,19 +124,16 @@ class ApplicationBuilder {
 	private void copyApplicationSource(File appFolder) throws IOException {
 		File examplePackage = new File(appFolder, "src/main/java/com/example");
 		examplePackage.mkdirs();
-		FileCopyUtils.copy(
-				new File("src/test/java/com/example/ResourceHandlingApplication.java"),
+		FileCopyUtils.copy(new File("src/test/java/com/example/ResourceHandlingApplication.java"),
 				new File(examplePackage, "ResourceHandlingApplication.java"));
 		if ("war".equals(this.packaging)) {
 			File srcMainWebapp = new File(appFolder, "src/main/webapp");
 			srcMainWebapp.mkdirs();
-			FileCopyUtils.copy("webapp resource",
-					new FileWriter(new File(srcMainWebapp, "webapp-resource.txt")));
+			FileCopyUtils.copy("webapp resource", new FileWriter(new File(srcMainWebapp, "webapp-resource.txt")));
 		}
 	}
 
-	private void packageApplication(File appFolder, File settingsXml)
-			throws MavenInvocationException {
+	private void packageApplication(File appFolder, File settingsXml) throws MavenInvocationException {
 		InvocationRequest invocation = new DefaultInvocationRequest();
 		invocation.setBaseDirectory(appFolder);
 		invocation.setGoals(Collections.singletonList("package"));

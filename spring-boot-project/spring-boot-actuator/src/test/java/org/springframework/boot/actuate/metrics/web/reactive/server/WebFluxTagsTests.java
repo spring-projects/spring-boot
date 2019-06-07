@@ -51,8 +51,7 @@ public class WebFluxTagsTests {
 
 	@Test
 	public void uriTagValueIsBestMatchingPatternWhenAvailable() {
-		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				this.parser.parse("/spring"));
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/spring"));
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = WebFluxTags.uri(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("/spring");

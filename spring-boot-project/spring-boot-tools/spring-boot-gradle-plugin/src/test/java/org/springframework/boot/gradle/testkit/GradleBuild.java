@@ -59,8 +59,7 @@ import org.springframework.util.FileCopyUtils;
  */
 public class GradleBuild implements TestRule {
 
-	private static final Pattern GRADLE_VERSION_PATTERN = Pattern
-			.compile("\\[Gradle .+\\]");
+	private static final Pattern GRADLE_VERSION_PATTERN = Pattern.compile("\\[Gradle .+\\]");
 
 	private final TemporaryFolder temp = new TemporaryFolder();
 
@@ -116,8 +115,7 @@ public class GradleBuild implements TestRule {
 
 	private URL getScriptForTestMethod(Description description) {
 		String name = description.getTestClass().getSimpleName() + "-"
-				+ removeGradleVersion(description.getMethodName())
-				+ this.dsl.getExtension();
+				+ removeGradleVersion(description.getMethodName()) + this.dsl.getExtension();
 		return description.getTestClass().getResource(name);
 	}
 
@@ -138,10 +136,8 @@ public class GradleBuild implements TestRule {
 	}
 
 	private List<File> pluginClasspath() {
-		return Arrays.asList(new File("bin"), new File("build/classes/java/main"),
-				new File("build/resources/main"),
-				new File(pathOfJarContaining(LaunchScript.class)),
-				new File(pathOfJarContaining(ClassVisitor.class)),
+		return Arrays.asList(new File("bin"), new File("build/classes/java/main"), new File("build/resources/main"),
+				new File(pathOfJarContaining(LaunchScript.class)), new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
 				new File(pathOfJarContaining(PropertiesKt.class)),
 				new File(pathOfJarContaining(KotlinCompilerRunner.class)),
@@ -155,8 +151,7 @@ public class GradleBuild implements TestRule {
 	}
 
 	public GradleBuild script(String script) {
-		this.script = script.endsWith(this.dsl.getExtension()) ? script
-				: script + this.dsl.getExtension();
+		this.script = script.endsWith(this.dsl.getExtension()) ? script : script + this.dsl.getExtension();
 		return this;
 	}
 
@@ -181,10 +176,8 @@ public class GradleBuild implements TestRule {
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
 				.replace("{version}", getBootVersion())
-				.replace("{dependency-management-plugin-version}",
-						getDependencyManagementPluginVersion());
-		FileCopyUtils.copy(scriptContent, new FileWriter(
-				new File(this.projectDir, "build" + this.dsl.getExtension())));
+				.replace("{dependency-management-plugin-version}", getDependencyManagementPluginVersion());
+		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.withPluginClasspath(pluginClasspath());
 		if (this.dsl != Dsl.KOTLIN) {
@@ -223,29 +216,24 @@ public class GradleBuild implements TestRule {
 
 	private static String getBootVersion() {
 		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
-						+ "/text()");
+				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']" + "/text()");
 	}
 
 	private static String getDependencyManagementPluginVersion() {
 		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
-			Document pom = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(new InputSource(pomReader));
+			Document pom = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(pomReader));
 			NodeList dependencyElements = pom.getElementsByTagName("dependency");
 			for (int i = 0; i < dependencyElements.getLength(); i++) {
 				Element dependency = (Element) dependencyElements.item(i);
 				if (dependency.getElementsByTagName("artifactId").item(0).getTextContent()
 						.equals("dependency-management-plugin")) {
-					return dependency.getElementsByTagName("version").item(0)
-							.getTextContent();
+					return dependency.getElementsByTagName("version").item(0).getTextContent();
 				}
 			}
-			throw new IllegalStateException(
-					"dependency management plugin version not found");
+			throw new IllegalStateException("dependency management plugin version not found");
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Failed to find dependency management plugin version", ex);
+			throw new IllegalStateException("Failed to find dependency management plugin version", ex);
 		}
 	}
 

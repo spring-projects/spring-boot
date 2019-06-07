@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ public class FlywayProperties {
 	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
 	 * use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<>(
-			Collections.singletonList("classpath:db/migration"));
+	private List<String> locations = new ArrayList<>(Collections.singletonList("classpath:db/migration"));
 
 	/**
 	 * Encoding of SQL migrations.
@@ -117,8 +116,7 @@ public class FlywayProperties {
 	/**
 	 * File name suffix for SQL migrations.
 	 */
-	private List<String> sqlMigrationSuffixes = new ArrayList<>(
-			Collections.singleton(".sql"));
+	private List<String> sqlMigrationSuffixes = new ArrayList<>(Collections.singleton(".sql"));
 
 	/**
 	 * File name separator for SQL migrations.

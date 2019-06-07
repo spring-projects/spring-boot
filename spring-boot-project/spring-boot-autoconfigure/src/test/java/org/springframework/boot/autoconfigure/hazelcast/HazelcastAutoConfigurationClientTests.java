@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,56 +64,44 @@ public class HazelcastAutoConfigurationClientTests {
 
 	@Test
 	public void systemProperty() {
-		this.contextRunner
-				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
-						+ "hazelcast-client-specific.xml")
+		this.contextRunner.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/" + "hazelcast-client-specific.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastInstance.class)
-						.has(nameStartingWith("hz.client_")));
+						.isInstanceOf(HazelcastInstance.class).has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
 	public void explicitConfigFile() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
-								+ "hazelcast/hazelcast-client-specific.xml")
+				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+						+ "hazelcast/hazelcast-client-specific.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class)
-						.has(nameStartingWith("hz.client_")));
+						.isInstanceOf(HazelcastClientProxy.class).has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
 	public void explicitConfigUrl() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.hazelcast.config=hazelcast-client-default.xml")
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=hazelcast-client-default.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class)
-						.has(nameStartingWith("hz.client_")));
+						.isInstanceOf(HazelcastClientProxy.class).has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
 	public void unknownConfigFile() {
-		this.contextRunner
-				.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
-				.run((context) -> assertThat(context).getFailure()
-						.isInstanceOf(BeanCreationException.class)
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
+				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
 						.hasMessageContaining("foo/bar/unknown.xml"));
 	}
 
 	@Test
 	public void clientConfigTakesPrecedence() {
 		this.contextRunner.withUserConfiguration(HazelcastServerAndClientConfig.class)
-				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
-				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class));
+				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml").run((context) -> assertThat(context)
+						.getBean(HazelcastInstance.class).isInstanceOf(HazelcastClientProxy.class));
 	}
 
 	private Condition<HazelcastInstance> nameStartingWith(String prefix) {
-		return new Condition<>((o) -> o.getName().startsWith(prefix),
-				"Name starts with " + prefix);
+		return new Condition<>((o) -> o.getName().startsWith(prefix), "Name starts with " + prefix);
 	}
 
 	@Configuration

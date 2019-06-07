@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,11 +57,9 @@ public class DefaultHealthIndicatorRegistry implements HealthIndicatorRegistry {
 		Assert.notNull(healthIndicator, "HealthIndicator must not be null");
 		Assert.notNull(name, "Name must not be null");
 		synchronized (this.monitor) {
-			HealthIndicator existing = this.healthIndicators.putIfAbsent(name,
-					healthIndicator);
+			HealthIndicator existing = this.healthIndicators.putIfAbsent(name, healthIndicator);
 			if (existing != null) {
-				throw new IllegalStateException(
-						"HealthIndicator with name '" + name + "' already registered");
+				throw new IllegalStateException("HealthIndicator with name '" + name + "' already registered");
 			}
 		}
 	}
@@ -85,8 +83,7 @@ public class DefaultHealthIndicatorRegistry implements HealthIndicatorRegistry {
 	@Override
 	public Map<String, HealthIndicator> getAll() {
 		synchronized (this.monitor) {
-			return Collections
-					.unmodifiableMap(new LinkedHashMap<>(this.healthIndicators));
+			return Collections.unmodifiableMap(new LinkedHashMap<>(this.healthIndicators));
 		}
 	}
 

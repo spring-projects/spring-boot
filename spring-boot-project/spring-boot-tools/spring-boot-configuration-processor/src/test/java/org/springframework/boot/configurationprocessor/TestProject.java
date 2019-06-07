@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,7 @@ public class TestProject {
 
 	private Set<File> sourceFiles = new LinkedHashSet<>();
 
-	public TestProject(TemporaryFolder tempFolder, Class<?>... classes)
-			throws IOException {
+	public TestProject(TemporaryFolder tempFolder, Class<?>... classes) throws IOException {
 		this.sourceFolder = tempFolder.newFolder();
 		this.compiler = new TestCompiler(tempFolder) {
 			@Override
@@ -133,15 +132,12 @@ public class TestProject {
 	 * @param snippetStream the snippet stream
 	 * @throws Exception if the source cannot be added
 	 */
-	public void addSourceCode(Class<?> target, InputStream snippetStream)
-			throws Exception {
+	public void addSourceCode(Class<?> target, InputStream snippetStream) throws Exception {
 		File targetFile = getSourceFile(target);
 		String contents = getContents(targetFile);
 		int insertAt = contents.lastIndexOf('}');
-		String additionalSource = FileCopyUtils
-				.copyToString(new InputStreamReader(snippetStream));
-		contents = contents.substring(0, insertAt) + additionalSource
-				+ contents.substring(insertAt);
+		String additionalSource = FileCopyUtils.copyToString(new InputStreamReader(snippetStream));
+		contents = contents.substring(0, insertAt) + additionalSource + contents.substring(insertAt);
 		putContents(targetFile, contents);
 	}
 

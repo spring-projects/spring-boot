@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,19 +65,15 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return Collections.unmodifiableMap(properties);
 	}
 
-	private void collectProperties(Class<?> root, Class<?> source,
-			Map<String, Object> properties, Set<Class<?>> seen) {
+	private void collectProperties(Class<?> root, Class<?> source, Map<String, Object> properties, Set<Class<?>> seen) {
 		if (source != null && seen.add(source)) {
 			for (Annotation annotation : getMergedAnnotations(root, source)) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					PropertyMapping typeMapping = annotation.annotationType()
-							.getAnnotation(PropertyMapping.class);
-					for (Method attribute : annotation.annotationType()
-							.getDeclaredMethods()) {
+					PropertyMapping typeMapping = annotation.annotationType().getAnnotation(PropertyMapping.class);
+					for (Method attribute : annotation.annotationType().getDeclaredMethods()) {
 						collectProperties(annotation, attribute, typeMapping, properties);
 					}
-					collectProperties(root, annotation.annotationType(), properties,
-							seen);
+					collectProperties(root, annotation.annotationType(), properties, seen);
 				}
 			}
 			collectProperties(root, source.getSuperclass(), properties, seen);
@@ -90,8 +86,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		if (annotations != null) {
 			for (Annotation annotation : annotations) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					Annotation mergedAnnotation = findMergedAnnotation(root,
-							annotation.annotationType());
+					Annotation mergedAnnotation = findMergedAnnotation(root, annotation.annotationType());
 					if (mergedAnnotation != null) {
 						mergedAnnotations.add(mergedAnnotation);
 					}
@@ -101,21 +96,18 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return mergedAnnotations;
 	}
 
-	private Annotation findMergedAnnotation(Class<?> source,
-			Class<? extends Annotation> annotationType) {
+	private Annotation findMergedAnnotation(Class<?> source, Class<? extends Annotation> annotationType) {
 		if (source == null) {
 			return null;
 		}
-		Annotation mergedAnnotation = AnnotatedElementUtils.getMergedAnnotation(source,
-				annotationType);
+		Annotation mergedAnnotation = AnnotatedElementUtils.getMergedAnnotation(source, annotationType);
 		return (mergedAnnotation != null) ? mergedAnnotation
 				: findMergedAnnotation(source.getSuperclass(), annotationType);
 	}
 
-	private void collectProperties(Annotation annotation, Method attribute,
-			PropertyMapping typeMapping, Map<String, Object> properties) {
-		PropertyMapping attributeMapping = AnnotationUtils.getAnnotation(attribute,
-				PropertyMapping.class);
+	private void collectProperties(Annotation annotation, Method attribute, PropertyMapping typeMapping,
+			Map<String, Object> properties) {
+		PropertyMapping attributeMapping = AnnotationUtils.getAnnotation(attribute, PropertyMapping.class);
 		SkipPropertyMapping skip = getMappingType(typeMapping, attributeMapping);
 		if (skip == SkipPropertyMapping.YES) {
 			return;
@@ -124,8 +116,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		ReflectionUtils.makeAccessible(attribute);
 		Object value = ReflectionUtils.invokeMethod(attribute, annotation);
 		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {
-			Object defaultValue = AnnotationUtils.getDefaultValue(annotation,
-					attribute.getName());
+			Object defaultValue = AnnotationUtils.getDefaultValue(annotation, attribute.getName());
 			if (ObjectUtils.nullSafeEquals(value, defaultValue)) {
 				return;
 			}
@@ -133,8 +124,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		putProperties(name, value, properties);
 	}
 
-	private SkipPropertyMapping getMappingType(PropertyMapping typeMapping,
-			PropertyMapping attributeMapping) {
+	private SkipPropertyMapping getMappingType(PropertyMapping typeMapping, PropertyMapping attributeMapping) {
 		if (attributeMapping != null) {
 			return attributeMapping.skip();
 		}
@@ -144,8 +134,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return SkipPropertyMapping.YES;
 	}
 
-	private String getName(PropertyMapping typeMapping, PropertyMapping attributeMapping,
-			Method attribute) {
+	private String getName(PropertyMapping typeMapping, PropertyMapping attributeMapping, Method attribute) {
 		String prefix = (typeMapping != null) ? typeMapping.value() : "";
 		String name = (attributeMapping != null) ? attributeMapping.value() : "";
 		if (!StringUtils.hasText(name)) {
@@ -158,8 +147,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
 		StringBuffer result = new StringBuffer();
 		while (matcher.find()) {
-			matcher.appendReplacement(result,
-					matcher.group(1) + '-' + StringUtils.uncapitalize(matcher.group(2)));
+			matcher.appendReplacement(result, matcher.group(1) + '-' + StringUtils.uncapitalize(matcher.group(2)));
 		}
 		matcher.appendTail(result);
 		return result.toString().toLowerCase(Locale.ENGLISH);
@@ -172,8 +160,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return postfix;
 	}
 
-	private void putProperties(String name, Object value,
-			Map<String, Object> properties) {
+	private void putProperties(String name, Object value, Map<String, Object> properties) {
 		if (ObjectUtils.isArray(value)) {
 			Object[] array = ObjectUtils.toObjectArray(value);
 			for (int i = 0; i < array.length; i++) {

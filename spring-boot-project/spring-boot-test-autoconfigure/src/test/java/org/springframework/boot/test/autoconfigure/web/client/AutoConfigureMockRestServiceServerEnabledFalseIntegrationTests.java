@@ -43,8 +43,7 @@ public class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
 	@Test
 	public void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext
-						.getBean(MockServerRestTemplateCustomizer.class));
+				.isThrownBy(() -> this.applicationContext.getBean(MockServerRestTemplateCustomizer.class));
 	}
 
 }

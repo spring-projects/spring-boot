@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,9 @@ public class SpringBootConfigurationFactoryTests {
 
 	@Test
 	public void producesConfigurationWithShutdownHookDisabled() throws IOException {
-		ConfigurationSource source = new ConfigurationSource(
-				new ByteArrayInputStream(new byte[0]));
-		assertThat(new SpringBootConfigurationFactory()
-				.getConfiguration(new LoggerContext(""), source).isShutdownHookEnabled())
-						.isFalse();
+		ConfigurationSource source = new ConfigurationSource(new ByteArrayInputStream(new byte[0]));
+		assertThat(new SpringBootConfigurationFactory().getConfiguration(new LoggerContext(""), source)
+				.isShutdownHookEnabled()).isFalse();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,19 +35,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathOverrides({ "org.apache.logging.log4j:log4j-to-slf4j:2.11.1",
-		"org.apache.logging.log4j:log4j-core:2.11.1" })
+@ClassPathOverrides({ "org.apache.logging.log4j:log4j-to-slf4j:2.11.1", "org.apache.logging.log4j:log4j-core:2.11.1" })
 @ClassPathExclusions("log4j-slf4j-impl-*.jar")
 public class Log4J2MetricsWithSlf4jLoggerContextAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(
-					AutoConfigurations.of(Log4J2MetricsAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(AutoConfigurations.of(Log4J2MetricsAutoConfiguration.class));
 
 	@Test
 	public void backsOffWhenLoggerContextIsBackedBySlf4j() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(Log4j2Metrics.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(Log4j2Metrics.class));
 	}
 
 }

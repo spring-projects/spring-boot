@@ -78,8 +78,7 @@ public class SampleProfileApplicationTests {
 
 	@Test
 	public void testGoodbyeProfileFromCommandline() throws Exception {
-		SampleProfileApplication
-				.main(new String[] { "--spring.profiles.active=goodbye" });
+		SampleProfileApplication.main(new String[] { "--spring.profiles.active=goodbye" });
 		String output = this.outputCapture.toString();
 		assertThat(output).contains("Goodbye Everyone");
 	}

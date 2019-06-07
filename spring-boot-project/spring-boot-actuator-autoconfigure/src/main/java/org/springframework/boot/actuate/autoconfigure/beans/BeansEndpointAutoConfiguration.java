@@ -36,8 +36,7 @@ public class BeansEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public BeansEndpoint beansEndpoint(
-			ConfigurableApplicationContext applicationContext) {
+	public BeansEndpoint beansEndpoint(ConfigurableApplicationContext applicationContext) {
 		return new BeansEndpoint(applicationContext);
 	}
 

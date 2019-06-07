@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,15 +41,12 @@ public class MissingRequiredConfigurationFailureAnalyzerTests {
 		FailureAnalysis analysis = new MissingRequiredConfigurationFailureAnalyzer()
 				.analyze(createFailure(MissingAccountIdConfiguration.class));
 		assertThat(analysis).isNotNull();
-		assertThat(analysis.getDescription())
-				.isEqualTo("accountId must be set to report metrics to New Relic.");
-		assertThat(analysis.getAction()).isEqualTo(
-				"Update your application to provide the missing configuration.");
+		assertThat(analysis.getDescription()).isEqualTo("accountId must be set to report metrics to New Relic.");
+		assertThat(analysis.getAction()).isEqualTo("Update your application to provide the missing configuration.");
 	}
 
 	private Exception createFailure(Class<?> configuration) {
-		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration)) {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			fail("Expected failure did not occur");
 			return null;
 		}

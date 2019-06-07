@@ -53,8 +53,7 @@ public class CachesEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(CachesEndpoint.class)
-	public CachesEndpointWebExtension cachesEndpointWebExtension(
-			CachesEndpoint cachesEndpoint) {
+	public CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint cachesEndpoint) {
 		return new CachesEndpointWebExtension(cachesEndpoint);
 	}
 

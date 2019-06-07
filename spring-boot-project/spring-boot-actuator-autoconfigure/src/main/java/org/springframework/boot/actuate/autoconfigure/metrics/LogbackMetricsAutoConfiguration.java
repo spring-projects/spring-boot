@@ -49,8 +49,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ConditionalOnClass({ MeterRegistry.class, LoggerContext.class, LoggerFactory.class })
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(LogbackLoggingCondition.class)
-@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
 public class LogbackMetricsAutoConfiguration {
 
 	@Bean
@@ -62,18 +61,14 @@ public class LogbackMetricsAutoConfiguration {
 	static class LogbackLoggingCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("LogbackLoggingCondition");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("LogbackLoggingCondition");
 			if (loggerFactory instanceof LoggerContext) {
-				return ConditionOutcome.match(
-						message.because("ILoggerFactory is a Logback LoggerContext"));
+				return ConditionOutcome.match(message.because("ILoggerFactory is a Logback LoggerContext"));
 			}
-			return ConditionOutcome
-					.noMatch(message.because("ILoggerFactory is an instance of "
-							+ loggerFactory.getClass().getCanonicalName()));
+			return ConditionOutcome.noMatch(
+					message.because("ILoggerFactory is an instance of " + loggerFactory.getClass().getCanonicalName()));
 		}
 
 	}

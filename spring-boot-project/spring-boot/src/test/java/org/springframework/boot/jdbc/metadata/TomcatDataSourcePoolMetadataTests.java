@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public class TomcatDataSourcePoolMetadataTests
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(
-				createDataSource(0, 2));
+		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(createDataSource(0, 2));
 	}
 
 	@Override
@@ -46,16 +45,14 @@ public class TomcatDataSourcePoolMetadataTests
 	public void getValidationQuery() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery())
-				.isEqualTo("SELECT FROM FOO");
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery()).isEqualTo("SELECT FROM FOO");
 	}
 
 	@Override
 	public void getDefaultAutoCommit() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setDefaultAutoCommit(false);
-		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
-				.isFalse();
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getDefaultAutoCommit()).isFalse();
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {

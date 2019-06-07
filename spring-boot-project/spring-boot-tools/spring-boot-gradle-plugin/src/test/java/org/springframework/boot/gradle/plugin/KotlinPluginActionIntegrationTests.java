@@ -38,29 +38,26 @@ public class KotlinPluginActionIntegrationTests {
 
 	@Test
 	public void noKotlinVersionPropertyWithoutKotlinPlugin() {
-		assertThat(this.gradleBuild.build("kotlinVersion").getOutput())
-				.contains("Kotlin version: none");
+		assertThat(this.gradleBuild.build("kotlinVersion").getOutput()).contains("Kotlin version: none");
 	}
 
 	@Test
 	public void kotlinVersionPropertyIsSet() {
-		String output = this.gradleBuild.build("kotlinVersion", "dependencies",
-				"--configuration", "compileClasspath").getOutput();
+		String output = this.gradleBuild.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
+				.getOutput();
 		assertThat(output).containsPattern("Kotlin version: [0-9]\\.[0-9]\\.[0-9]+");
 	}
 
 	@Test
 	public void kotlinCompileTasksUseJavaParametersFlagByDefault() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: true")
-				.contains("compileTestKotlin java parameters: true");
+				.contains("compileKotlin java parameters: true").contains("compileTestKotlin java parameters: true");
 	}
 
 	@Test
 	public void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: false")
-				.contains("compileTestKotlin java parameters: false");
+				.contains("compileKotlin java parameters: false").contains("compileTestKotlin java parameters: false");
 	}
 
 }

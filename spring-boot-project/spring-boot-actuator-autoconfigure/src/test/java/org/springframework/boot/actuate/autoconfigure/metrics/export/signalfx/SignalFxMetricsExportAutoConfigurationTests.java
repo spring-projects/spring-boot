@@ -37,13 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SignalFxMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(SignalFxMetricsExportAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SignalFxMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(SignalFxMeterRegistry.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(SignalFxMeterRegistry.class));
 	}
 
 	@Test
@@ -55,10 +53,8 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 	@Test
 	public void autoConfiguresWithAnAccessToken() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.signalfx.access-token=abcde")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(SignalFxMeterRegistry.class)
+				.withPropertyValues("management.metrics.export.signalfx.access-token=abcde")
+				.run((context) -> assertThat(context).hasSingleBean(SignalFxMeterRegistry.class)
 						.hasSingleBean(Clock.class).hasSingleBean(SignalFxConfig.class));
 	}
 
@@ -66,42 +62,32 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 	public void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.signalfx.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(SignalFxMeterRegistry.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(SignalFxMeterRegistry.class)
 						.doesNotHaveBean(SignalFxConfig.class));
 	}
 
 	@Test
 	public void allowsConfigToBeCustomized() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.metrics.export.signalfx.access-token=abcde")
+		this.contextRunner.withPropertyValues("management.metrics.export.signalfx.access-token=abcde")
 				.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasSingleBean(SignalFxMeterRegistry.class)
-						.hasSingleBean(SignalFxConfig.class).hasBean("customConfig"));
+						.hasSingleBean(SignalFxMeterRegistry.class).hasSingleBean(SignalFxConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	public void allowsRegistryToBeCustomized() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.metrics.export.signalfx.access-token=abcde")
+		this.contextRunner.withPropertyValues("management.metrics.export.signalfx.access-token=abcde")
 				.withUserConfiguration(CustomRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasSingleBean(SignalFxConfig.class)
-						.hasSingleBean(SignalFxMeterRegistry.class)
-						.hasBean("customRegistry"));
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasSingleBean(SignalFxConfig.class)
+						.hasSingleBean(SignalFxMeterRegistry.class).hasBean("customRegistry"));
 	}
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.metrics.export.signalfx.access-token=abcde")
+		this.contextRunner.withPropertyValues("management.metrics.export.signalfx.access-token=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					SignalFxMeterRegistry registry = context
-							.getBean(SignalFxMeterRegistry.class);
+					SignalFxMeterRegistry registry = context.getBean(SignalFxMeterRegistry.class);
 					assertThat(registry.isClosed()).isFalse();
 					context.close();
 					assertThat(registry.isClosed()).isTrue();

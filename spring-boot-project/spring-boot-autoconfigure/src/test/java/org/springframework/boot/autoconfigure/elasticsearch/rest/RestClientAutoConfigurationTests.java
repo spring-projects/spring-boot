@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,49 +49,40 @@ public class RestClientAutoConfigurationTests {
 
 	@Test
 	public void configureShouldCreateBothRestClientVariants() {
-		this.contextRunner
-				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
-						.hasSingleBean(RestHighLevelClient.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
+				.hasSingleBean(RestHighLevelClient.class));
 	}
 
 	@Test
 	public void configureWhenCustomClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
-						.hasBean("customRestClient"));
+				.run((context) -> assertThat(context).hasSingleBean(RestClient.class).hasBean("customRestClient"));
 	}
 
 	@Test
 	public void configureWhenBuilderCustomizerShouldApply() {
-		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RestClient.class);
-					RestClient restClient = context.getBean(RestClient.class);
-					Field field = ReflectionUtils.findField(RestClient.class,
-							"maxRetryTimeoutMillis");
-					ReflectionUtils.makeAccessible(field);
-					assertThat(ReflectionUtils.getField(field, restClient))
-							.isEqualTo(42L);
-				});
+		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			Field field = ReflectionUtils.findField(RestClient.class, "maxRetryTimeoutMillis");
+			ReflectionUtils.makeAccessible(field);
+			assertThat(ReflectionUtils.getField(field, restClient)).isEqualTo(42L);
+		});
 	}
 
 	@Test
 	public void restClientCanQueryElasticsearchNode() {
 		new ElasticsearchNodeTemplate().doWithNode((node) -> this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:"
-						+ node.getHttpPort())
+				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:" + node.getHttpPort())
 				.run((context) -> {
-					RestHighLevelClient client = context
-							.getBean(RestHighLevelClient.class);
+					RestHighLevelClient client = context.getBean(RestHighLevelClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
-					IndexRequest index = new IndexRequest("foo", "bar", "1")
-							.source(source);
+					IndexRequest index = new IndexRequest("foo", "bar", "1").source(source);
 					client.index(index, RequestOptions.DEFAULT);
 					GetRequest getRequest = new GetRequest("foo", "bar", "1");
-					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists())
-							.isTrue();
+					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists()).isTrue();
 				}));
 	}
 

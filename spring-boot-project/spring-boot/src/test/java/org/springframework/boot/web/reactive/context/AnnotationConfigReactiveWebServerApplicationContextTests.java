@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	@Test
 	public void createFromScan() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				ExampleReactiveWebServerApplicationConfiguration.class.getPackage()
-						.getName());
+				ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		verifyContext();
 	}
 
@@ -72,15 +71,13 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		this.context.register(HttpHandlerConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(WebServerConfiguration.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(HttpHandlerConfiguration.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(HttpHandlerConfiguration.class)).hasSize(1);
 	}
 
 	@Test
 	public void scanAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
-		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class
-				.getPackage().getName());
+		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}
@@ -88,14 +85,12 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	@Test
 	public void httpHandlerInitialization() {
 		// gh-14666
-		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				InitializationTestConfig.class);
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext(InitializationTestConfig.class);
 		verifyContext();
 	}
 
 	private void verifyContext() {
-		MockReactiveWebServerFactory factory = this.context
-				.getBean(MockReactiveWebServerFactory.class);
+		MockReactiveWebServerFactory factory = this.context.getBean(MockReactiveWebServerFactory.class);
 		HttpHandler expectedHandler = this.context.getBean(HttpHandler.class);
 		HttpHandler actualHandler = factory.getWebServer().getHttpHandler();
 		if (actualHandler instanceof ServerManager) {
@@ -163,8 +158,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 			};
 		}
 
-		private static class Listener
-				implements ApplicationListener<ContextRefreshedEvent> {
+		private static class Listener implements ApplicationListener<ContextRefreshedEvent> {
 
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {

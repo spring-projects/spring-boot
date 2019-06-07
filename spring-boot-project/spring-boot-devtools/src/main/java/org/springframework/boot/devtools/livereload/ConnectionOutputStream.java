@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ class ConnectionOutputStream extends FilterOutputStream {
 
 	public void writeHttp(InputStream content, String contentType) throws IOException {
 		byte[] bytes = FileCopyUtils.copyToByteArray(content);
-		writeHeaders("HTTP/1.1 200 OK", "Content-Type: " + contentType,
-				"Content-Length: " + bytes.length, "Connection: close");
+		writeHeaders("HTTP/1.1 200 OK", "Content-Type: " + contentType, "Content-Length: " + bytes.length,
+				"Connection: close");
 		write(bytes);
 		flush();
 	}

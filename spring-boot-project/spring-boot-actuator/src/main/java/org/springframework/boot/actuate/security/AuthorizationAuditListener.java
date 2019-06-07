@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,21 +40,18 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 	@Override
 	public void onApplicationEvent(AbstractAuthorizationEvent event) {
 		if (event instanceof AuthenticationCredentialsNotFoundEvent) {
-			onAuthenticationCredentialsNotFoundEvent(
-					(AuthenticationCredentialsNotFoundEvent) event);
+			onAuthenticationCredentialsNotFoundEvent((AuthenticationCredentialsNotFoundEvent) event);
 		}
 		else if (event instanceof AuthorizationFailureEvent) {
 			onAuthorizationFailureEvent((AuthorizationFailureEvent) event);
 		}
 	}
 
-	private void onAuthenticationCredentialsNotFoundEvent(
-			AuthenticationCredentialsNotFoundEvent event) {
+	private void onAuthenticationCredentialsNotFoundEvent(AuthenticationCredentialsNotFoundEvent event) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getCredentialsNotFoundException().getClass().getName());
 		data.put("message", event.getCredentialsNotFoundException().getMessage());
-		publish(new AuditEvent("<unknown>",
-				AuthenticationAuditListener.AUTHENTICATION_FAILURE, data));
+		publish(new AuditEvent("<unknown>", AuthenticationAuditListener.AUTHENTICATION_FAILURE, data));
 	}
 
 	private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
@@ -64,8 +61,7 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());
 		}
-		publish(new AuditEvent(event.getAuthentication().getName(), AUTHORIZATION_FAILURE,
-				data));
+		publish(new AuditEvent(event.getAuthentication().getName(), AUTHORIZATION_FAILURE, data));
 	}
 
 }

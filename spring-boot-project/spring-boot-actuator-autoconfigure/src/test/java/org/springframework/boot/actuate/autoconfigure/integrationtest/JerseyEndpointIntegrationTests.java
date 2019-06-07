@@ -47,8 +47,7 @@ public class JerseyEndpointIntegrationTests {
 
 	@Test
 	public void linksAreProvidedToAllEndpointTypes() {
-		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class,
-				ResourceConfigConfiguration.class });
+		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class });
 	}
 
 	@Test
@@ -57,33 +56,23 @@ public class JerseyEndpointIntegrationTests {
 	}
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
-		FilteredClassLoader classLoader = new FilteredClassLoader(
-				DispatcherServlet.class);
-		new WebApplicationContextRunner(
-				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(classLoader)
-						.withConfiguration(
-								AutoConfigurations.of(JacksonAutoConfiguration.class,
-										JerseyAutoConfiguration.class,
-										EndpointAutoConfiguration.class,
-										ServletWebServerFactoryAutoConfiguration.class,
-										WebEndpointAutoConfiguration.class,
-										ManagementContextAutoConfiguration.class,
-										BeansEndpointAutoConfiguration.class))
-						.withUserConfiguration(userConfigurations)
-						.withPropertyValues("management.endpoints.web.exposure.include:*",
-								"server.port:0")
-						.run((context) -> {
-							int port = context.getSourceApplicationContext(
-									AnnotationConfigServletWebServerApplicationContext.class)
-									.getWebServer().getPort();
-							WebTestClient client = WebTestClient.bindToServer()
-									.baseUrl("http://localhost:" + port).build();
-							client.get().uri("/actuator").exchange().expectStatus().isOk()
-									.expectBody().jsonPath("_links.beans").isNotEmpty()
-									.jsonPath("_links.restcontroller").doesNotExist()
-									.jsonPath("_links.controller").doesNotExist();
-						});
+		FilteredClassLoader classLoader = new FilteredClassLoader(DispatcherServlet.class);
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withClassLoader(classLoader)
+				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
+						EndpointAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
+						WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+						BeansEndpointAutoConfiguration.class))
+				.withUserConfiguration(userConfigurations)
+				.withPropertyValues("management.endpoints.web.exposure.include:*", "server.port:0").run((context) -> {
+					int port = context
+							.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+							.getWebServer().getPort();
+					WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
+					client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
+							.isNotEmpty().jsonPath("_links.restcontroller").doesNotExist().jsonPath("_links.controller")
+							.doesNotExist();
+				});
 	}
 
 	@ControllerEndpoint(id = "controller")

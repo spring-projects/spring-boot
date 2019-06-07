@@ -49,8 +49,8 @@ public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 		if (StringUtils.hasLength(this.applicationPath)) {
 			return this.applicationPath;
 		}
-		return findApplicationPath(AnnotationUtils.findAnnotation(
-				this.config.getApplication().getClass(), ApplicationPath.class));
+		return findApplicationPath(
+				AnnotationUtils.findAnnotation(this.config.getApplication().getClass(), ApplicationPath.class));
 	}
 
 	private static String findApplicationPath(ApplicationPath annotation) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class DefaultErrorAttributes implements ErrorAttributes {
 
-	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName()
-			+ ".ERROR";
+	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
 	private final boolean includeException;
 
@@ -76,8 +75,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	@Override
-	public Map<String, Object> getErrorAttributes(ServerRequest request,
-			boolean includeStackTrace) {
+	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
@@ -95,8 +93,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getStatus();
 		}
-		ResponseStatus responseStatus = AnnotatedElementUtils
-				.findMergedAnnotation(error.getClass(), ResponseStatus.class);
+		ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(),
+				ResponseStatus.class);
 		if (responseStatus != null) {
 			return responseStatus.code();
 		}
@@ -110,8 +108,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
-		ResponseStatus responseStatus = AnnotatedElementUtils
-				.findMergedAnnotation(error.getClass(), ResponseStatus.class);
+		ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(),
+				ResponseStatus.class);
 		if (responseStatus != null) {
 			return responseStatus.reason();
 		}
@@ -132,8 +130,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes, Throwable error,
-			boolean includeStackTrace) {
+	private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace) {
 		if (this.includeException) {
 			errorAttributes.put("exception", error.getClass().getName());
 		}
@@ -151,8 +148,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Throwable getError(ServerRequest request) {
 		return (Throwable) request.attribute(ERROR_ATTRIBUTE)
-				.orElseThrow(() -> new IllegalStateException(
-						"Missing exception attribute in ServerWebExchange"));
+				.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
 	}
 
 	@Override

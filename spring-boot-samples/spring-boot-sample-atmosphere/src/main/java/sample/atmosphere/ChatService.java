@@ -48,13 +48,11 @@ public class ChatService {
 	@org.atmosphere.config.service.Message(encoders = JacksonEncoderDecoder.class,
 			decoders = JacksonEncoderDecoder.class)
 	public Message onMessage(Message message) throws IOException {
-		this.logger.info("Author " + message.getAuthor() + " sent message "
-				+ message.getMessage());
+		this.logger.info("Author " + message.getAuthor() + " sent message " + message.getMessage());
 		return message;
 	}
 
-	public static class JacksonEncoderDecoder
-			implements Encoder<Message, String>, Decoder<String, Message> {
+	public static class JacksonEncoderDecoder implements Encoder<Message, String>, Decoder<String, Message> {
 
 		private final ObjectMapper mapper = new ObjectMapper();
 

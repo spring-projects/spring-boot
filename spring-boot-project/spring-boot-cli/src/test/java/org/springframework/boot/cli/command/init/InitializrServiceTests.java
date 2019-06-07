@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,19 +45,18 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	@Test
 	public void generateSimpleProject() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
-				"application/xml", "foo.zip");
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
+				"foo.zip");
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
-		assertProjectEntity(entity, mockHttpRequest.contentType,
-				mockHttpRequest.fileName);
+		assertProjectEntity(entity, mockHttpRequest.contentType, mockHttpRequest.fileName);
 	}
 
 	@Test
 	public void generateProjectCustomTargetFilename() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.setOutput("bar.zip");
-		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
-				"application/xml", null);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
+				null);
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
 		assertProjectEntity(entity, mockHttpRequest.contentType, null);
 	}
@@ -65,8 +64,8 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	@Test
 	public void generateProjectNoDefaultFileName() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
-				"application/xml", null);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
+				null);
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
 		assertProjectEntity(entity, mockHttpRequest.contentType, null);
 	}
@@ -77,8 +76,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockProjectGenerationError(400, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.getDependencies().add("foo:bar");
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining(jsonMessage);
 	}
 
@@ -86,8 +84,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	public void generateProjectBadRequestNoExtraMessage() throws Exception {
 		mockProjectGenerationError(400, null);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("unexpected 400 error");
 	}
 
@@ -98,8 +95,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 500);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("No content received from server");
 	}
 
@@ -108,8 +104,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		String jsonMessage = "whatever error on the server";
 		mockMetadataGetError(500, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining(jsonMessage);
 	}
 
@@ -120,8 +115,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 200);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("Invalid content received from server");
 	}
 
@@ -131,8 +125,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 500);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("No content received from server");
 	}
 
@@ -140,13 +133,11 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 			MockHttpProjectGenerationRequest mockRequest) throws Exception {
 		mockSuccessfulProjectGeneration(mockRequest);
 		ProjectGenerationResponse entity = this.invoker.generate(request);
-		assertThat(entity.getContent()).as("wrong body content")
-				.isEqualTo(mockRequest.content);
+		assertThat(entity.getContent()).as("wrong body content").isEqualTo(mockRequest.content);
 		return entity;
 	}
 
-	private static void assertProjectEntity(ProjectGenerationResponse entity,
-			String mimeType, String fileName) {
+	private static void assertProjectEntity(ProjectGenerationResponse entity, String mimeType, String fileName) {
 		if (mimeType == null) {
 			assertThat(entity.getContentType()).isNull();
 		}

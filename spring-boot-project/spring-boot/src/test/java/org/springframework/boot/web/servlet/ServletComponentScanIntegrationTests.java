@@ -56,8 +56,7 @@ public class ServletComponentScanIntegrationTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		String port = this.context.getEnvironment().getProperty("local.server.port");
-		String response = new RestTemplate()
-				.getForObject("http://localhost:" + port + "/test", String.class);
+		String response = new RestTemplate().getForObject("http://localhost:" + port + "/test", String.class);
 		assertThat(response).isEqualTo("alpha bravo");
 	}
 
@@ -68,13 +67,10 @@ public class ServletComponentScanIntegrationTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		@SuppressWarnings("rawtypes")
-		Map<String, ServletRegistrationBean> beans = this.context
-				.getBeansOfType(ServletRegistrationBean.class);
-		ServletRegistrationBean<?> servletRegistrationBean = beans
-				.get(TestMultipartServlet.class.getName());
+		Map<String, ServletRegistrationBean> beans = this.context.getBeansOfType(ServletRegistrationBean.class);
+		ServletRegistrationBean<?> servletRegistrationBean = beans.get(TestMultipartServlet.class.getName());
 		assertThat(servletRegistrationBean).isNotNull();
-		MultipartConfigElement multipartConfig = servletRegistrationBean
-				.getMultipartConfig();
+		MultipartConfigElement multipartConfig = servletRegistrationBean.getMultipartConfig();
 		assertThat(multipartConfig).isNotNull();
 		assertThat(multipartConfig.getLocation()).isEqualTo("test");
 		assertThat(multipartConfig.getMaxRequestSize()).isEqualTo(2048);
@@ -83,8 +79,7 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Configuration
-	@ServletComponentScan(
-			basePackages = "org.springframework.boot.web.servlet.testcomponents")
+	@ServletComponentScan(basePackages = "org.springframework.boot.web.servlet.testcomponents")
 	static class TestConfiguration {
 
 		@Bean

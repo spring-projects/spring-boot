@@ -39,32 +39,28 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	private final ReactiveRedisConnectionFactory connectionFactory;
 
-	public RedisReactiveHealthIndicator(
-			ReactiveRedisConnectionFactory connectionFactory) {
+	public RedisReactiveHealthIndicator(ReactiveRedisConnectionFactory connectionFactory) {
 		this.connectionFactory = connectionFactory;
 	}
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		return getConnection()
-				.flatMap((connection) -> doHealthCheck(builder, connection));
+		return getConnection().flatMap((connection) -> doHealthCheck(builder, connection));
 	}
 
-	private Mono<Health> doHealthCheck(Health.Builder builder,
-			ReactiveRedisConnection connection) {
+	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
 		return connection.serverCommands().info().map((info) -> up(builder, info))
 				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
 				.flatMap((health) -> connection.closeLater().thenReturn(health));
 	}
 
 	private Mono<ReactiveRedisConnection> getConnection() {
-		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection)
-				.subscribeOn(Schedulers.parallel());
+		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection).subscribeOn(Schedulers.parallel());
 	}
 
 	private Health up(Health.Builder builder, Properties info) {
-		return builder.up().withDetail(RedisHealthIndicator.VERSION,
-				info.getProperty(RedisHealthIndicator.REDIS_VERSION)).build();
+		return builder.up()
+				.withDetail(RedisHealthIndicator.VERSION, info.getProperty(RedisHealthIndicator.REDIS_VERSION)).build();
 	}
 
 	private Health down(Health.Builder builder, Throwable cause) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public class ServletEndpointManagementContextConfiguration {
 	public ExposeExcludePropertyEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
 			WebEndpointProperties properties) {
 		WebEndpointProperties.Exposure exposure = properties.getExposure();
-		return new ExposeExcludePropertyEndpointFilter<>(ExposableServletEndpoint.class,
-				exposure.getInclude(), exposure.getExclude());
+		return new ExposeExcludePropertyEndpointFilter<>(ExposableServletEndpoint.class, exposure.getInclude(),
+				exposure.getExclude());
 	}
 
 	@Configuration
@@ -60,19 +60,15 @@ public class ServletEndpointManagementContextConfiguration {
 
 		private final ApplicationContext context;
 
-		public WebMvcServletEndpointManagementContextConfiguration(
-				ApplicationContext context) {
+		public WebMvcServletEndpointManagementContextConfiguration(ApplicationContext context) {
 			this.context = context;
 		}
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(
-				WebEndpointProperties properties,
+		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier) {
-			DispatcherServletPath dispatcherServletPath = this.context
-					.getBean(DispatcherServletPath.class);
-			return new ServletEndpointRegistrar(
-					dispatcherServletPath.getRelativePath(properties.getBasePath()),
+			DispatcherServletPath dispatcherServletPath = this.context.getBean(DispatcherServletPath.class);
+			return new ServletEndpointRegistrar(dispatcherServletPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 
@@ -85,19 +81,15 @@ public class ServletEndpointManagementContextConfiguration {
 
 		private final ApplicationContext context;
 
-		public JerseyServletEndpointManagementContextConfiguration(
-				ApplicationContext context) {
+		public JerseyServletEndpointManagementContextConfiguration(ApplicationContext context) {
 			this.context = context;
 		}
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(
-				WebEndpointProperties properties,
+		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier) {
-			JerseyApplicationPath jerseyApplicationPath = this.context
-					.getBean(JerseyApplicationPath.class);
-			return new ServletEndpointRegistrar(
-					jerseyApplicationPath.getRelativePath(properties.getBasePath()),
+			JerseyApplicationPath jerseyApplicationPath = this.context.getBean(JerseyApplicationPath.class);
+			return new ServletEndpointRegistrar(jerseyApplicationPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 

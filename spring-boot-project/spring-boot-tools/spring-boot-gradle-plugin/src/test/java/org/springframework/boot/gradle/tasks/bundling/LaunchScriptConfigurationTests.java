@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,50 +44,50 @@ public class LaunchScriptConfigurationTests {
 	@Test
 	public void initInfoProvidesUsesArchiveBaseNameByDefault() {
 		given(this.task.getBaseName()).willReturn("base-name");
-		assertThat(new LaunchScriptConfiguration(this.task).getProperties())
-				.containsEntry("initInfoProvides", "base-name");
+		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoProvides",
+				"base-name");
 	}
 
 	@Test
 	public void initInfoShortDescriptionUsesDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
-		assertThat(new LaunchScriptConfiguration(this.task).getProperties())
-				.containsEntry("initInfoShortDescription", "Project description");
+		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
+				"Project description");
 	}
 
 	@Test
 	public void initInfoShortDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
 		given(this.task.getBaseName()).willReturn("base-name");
-		assertThat(new LaunchScriptConfiguration(this.task).getProperties())
-				.containsEntry("initInfoShortDescription", "base-name");
+		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
+				"base-name");
 	}
 
 	@Test
 	public void initInfoShortDescriptionUsesSingleLineVersionOfMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("Project\ndescription");
-		assertThat(new LaunchScriptConfiguration(this.task).getProperties())
-				.containsEntry("initInfoShortDescription", "Project description");
+		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
+				"Project description");
 	}
 
 	@Test
 	public void initInfoDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
 		given(this.task.getBaseName()).willReturn("base-name");
-		assertThat(new LaunchScriptConfiguration(this.task).getProperties())
-				.containsEntry("initInfoDescription", "base-name");
+		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
+				"base-name");
 	}
 
 	@Test
 	public void initInfoDescriptionUsesProjectDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
-		assertThat(new LaunchScriptConfiguration(this.task).getProperties())
-				.containsEntry("initInfoDescription", "Project description");
+		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
+				"Project description");
 	}
 
 	@Test
 	public void initInfoDescriptionUsesCorrectlyFormattedMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("The\nproject\ndescription");
-		assertThat(new LaunchScriptConfiguration(this.task).getProperties())
-				.containsEntry("initInfoDescription", "The\n#  project\n#  description");
+		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
+				"The\n#  project\n#  description");
 	}
 
 }

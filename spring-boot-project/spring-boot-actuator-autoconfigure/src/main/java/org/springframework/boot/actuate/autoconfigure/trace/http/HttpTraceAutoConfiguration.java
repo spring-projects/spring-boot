@@ -38,8 +38,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnWebApplication
-@ConditionalOnProperty(prefix = "management.trace.http", name = "enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.trace.http", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(HttpTraceProperties.class)
 public class HttpTraceAutoConfiguration {
 
@@ -61,8 +60,7 @@ public class HttpTraceAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public HttpTraceFilter httpTraceFilter(HttpTraceRepository repository,
-				HttpExchangeTracer tracer) {
+		public HttpTraceFilter httpTraceFilter(HttpTraceRepository repository, HttpExchangeTracer tracer) {
 			return new HttpTraceFilter(repository, tracer);
 		}
 
@@ -74,10 +72,9 @@ public class HttpTraceAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public HttpTraceWebFilter httpTraceWebFilter(HttpTraceRepository repository,
-				HttpExchangeTracer tracer, HttpTraceProperties traceProperties) {
-			return new HttpTraceWebFilter(repository, tracer,
-					traceProperties.getInclude());
+		public HttpTraceWebFilter httpTraceWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer,
+				HttpTraceProperties traceProperties) {
+			return new HttpTraceWebFilter(repository, tracer, traceProperties.getInclude());
 		}
 
 	}

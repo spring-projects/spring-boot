@@ -27,8 +27,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SampleCacheApplication {
 
 	public static void main(String[] args) {
-		new SpringApplicationBuilder().sources(SampleCacheApplication.class)
-				.profiles("app").run(args);
+		new SpringApplicationBuilder().sources(SampleCacheApplication.class).profiles("app").run(args);
 	}
 
 }

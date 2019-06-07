@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public class UserVehicleControllerHtmlUnitTests {
 
 	@Test
 	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
 		HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");
 		assertThat(page.getBody().getTextContent()).isEqualTo("Honda Civic");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,12 +105,11 @@ public class BannerTests {
 		this.context = application.run();
 		Banner printedBanner = (Banner) this.context.getBean("springBootBanner");
 		assertThat(printedBanner).hasFieldOrPropertyWithValue("banner", banner);
-		verify(banner).printBanner(any(Environment.class),
-				this.sourceClassCaptor.capture(), any(PrintStream.class));
+		verify(banner).printBanner(any(Environment.class), this.sourceClassCaptor.capture(), any(PrintStream.class));
 		reset(banner);
 		printedBanner.printBanner(this.context.getEnvironment(), null, System.out);
-		verify(banner).printBanner(any(Environment.class),
-				eq(this.sourceClassCaptor.getValue()), any(PrintStream.class));
+		verify(banner).printBanner(any(Environment.class), eq(this.sourceClassCaptor.getValue()),
+				any(PrintStream.class));
 	}
 
 	@Test
@@ -130,8 +129,7 @@ public class BannerTests {
 	static class DummyBanner implements Banner {
 
 		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass,
-				PrintStream out) {
+		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 			out.println("My Banner");
 		}
 

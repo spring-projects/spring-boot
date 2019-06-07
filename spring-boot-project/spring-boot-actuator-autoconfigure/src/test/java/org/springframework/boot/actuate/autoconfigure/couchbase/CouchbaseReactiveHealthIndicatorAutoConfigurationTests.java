@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,24 +38,19 @@ import static org.mockito.Mockito.mock;
 public class CouchbaseReactiveHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(CouchbaseMockConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(
-					CouchbaseReactiveHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+			.withUserConfiguration(CouchbaseMockConfiguration.class).withConfiguration(AutoConfigurations.of(
+					CouchbaseReactiveHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(CouchbaseReactiveHealthIndicator.class)
-				.doesNotHaveBean(CouchbaseHealthIndicator.class)
-				.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CouchbaseReactiveHealthIndicator.class)
+				.doesNotHaveBean(CouchbaseHealthIndicator.class).doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 

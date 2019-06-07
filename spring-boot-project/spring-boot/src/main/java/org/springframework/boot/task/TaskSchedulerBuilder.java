@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,7 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 */
 	public TaskSchedulerBuilder poolSize(int poolSize) {
-		return new TaskSchedulerBuilder(poolSize, this.threadNamePrefix,
-				this.customizers);
+		return new TaskSchedulerBuilder(poolSize, this.threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -75,8 +74,7 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 */
 	public TaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
-		return new TaskSchedulerBuilder(this.poolSize, threadNamePrefix,
-				this.customizers);
+		return new TaskSchedulerBuilder(this.poolSize, threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -102,11 +100,9 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #additionalCustomizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder customizers(
-			Iterable<TaskSchedulerCustomizer> customizers) {
+	public TaskSchedulerBuilder customizers(Iterable<TaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix,
-				append(null, customizers));
+		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix, append(null, customizers));
 	}
 
 	/**
@@ -117,8 +113,7 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(
-			TaskSchedulerCustomizer... customizers) {
+	public TaskSchedulerBuilder additionalCustomizers(TaskSchedulerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
@@ -131,11 +126,9 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(
-			Iterable<TaskSchedulerCustomizer> customizers) {
+	public TaskSchedulerBuilder additionalCustomizers(Iterable<TaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix,
-				append(this.customizers, customizers));
+		return new TaskSchedulerBuilder(this.poolSize, this.threadNamePrefix, append(this.customizers, customizers));
 	}
 
 	/**

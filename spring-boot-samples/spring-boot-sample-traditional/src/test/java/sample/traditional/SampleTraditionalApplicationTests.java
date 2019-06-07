@@ -51,8 +51,7 @@ public class SampleTraditionalApplicationTests {
 
 	@Test
 	public void testStaticPage() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/index.html",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/index.html", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String body = entity.getBody();
 		assertThat(body).contains("<html>").contains("<h1>Hello</h1>");

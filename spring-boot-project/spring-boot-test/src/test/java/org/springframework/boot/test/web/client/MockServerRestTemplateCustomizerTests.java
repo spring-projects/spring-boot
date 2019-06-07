@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void createWhenExpectationManagerClassIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
 				.withMessageContaining("ExpectationManager must not be null");
 	}
 
@@ -73,8 +72,7 @@ public class MockServerRestTemplateCustomizerTests {
 	public void detectRootUriShouldDefaultToTrue() {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
 				UnorderedRequestExpectationManager.class);
-		customizer.customize(
-				new RestTemplateBuilder().rootUri("https://example.com").build());
+		customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(RootUriRequestExpectationManager.class);
 	}
@@ -82,8 +80,7 @@ public class MockServerRestTemplateCustomizerTests {
 	@Test
 	public void setDetectRootUriShouldDisableRootUriDetection() {
 		this.customizer.setDetectRootUri(false);
-		this.customizer.customize(
-				new RestTemplateBuilder().rootUri("https://example.com").build());
+		this.customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
 				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
 
@@ -100,9 +97,8 @@ public class MockServerRestTemplateCustomizerTests {
 	@Test
 	public void getServerWhenNoServersAreBoundShouldThrowException() {
 		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
-				.withMessageContaining(
-						"Unable to return a single MockRestServiceServer since "
-								+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
+				.withMessageContaining("Unable to return a single MockRestServiceServer since "
+						+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 	}
 
 	@Test
@@ -110,17 +106,15 @@ public class MockServerRestTemplateCustomizerTests {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
 		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
-				.withMessageContaining(
-						"Unable to return a single MockRestServiceServer since "
-								+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
+				.withMessageContaining("Unable to return a single MockRestServiceServer since "
+						+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 	}
 
 	@Test
 	public void getServerWhenSingleServerIsBoundShouldReturnServer() {
 		RestTemplate template = new RestTemplate();
 		this.customizer.customize(template);
-		assertThat(this.customizer.getServer())
-				.isEqualTo(this.customizer.getServer(template));
+		assertThat(this.customizer.getServer()).isEqualTo(this.customizer.getServer(template));
 	}
 
 	@Test
@@ -130,8 +124,7 @@ public class MockServerRestTemplateCustomizerTests {
 		this.customizer.customize(template1);
 		this.customizer.customize(template2);
 		assertThat(this.customizer.getServer(template1)).isNotNull();
-		assertThat(this.customizer.getServer(template2)).isNotNull()
-				.isNotSameAs(this.customizer.getServer(template1));
+		assertThat(this.customizer.getServer(template2)).isNotNull().isNotSameAs(this.customizer.getServer(template1));
 	}
 
 	@Test
@@ -158,14 +151,10 @@ public class MockServerRestTemplateCustomizerTests {
 		RestTemplate template2 = new RestTemplate();
 		this.customizer.customize(template1);
 		this.customizer.customize(template2);
-		RequestExpectationManager manager1 = this.customizer.getExpectationManagers()
-				.get(template1);
-		RequestExpectationManager manager2 = this.customizer.getExpectationManagers()
-				.get(template2);
-		assertThat(this.customizer.getServer(template1)).extracting("expectationManager")
-				.containsOnly(manager1);
-		assertThat(this.customizer.getServer(template2)).extracting("expectationManager")
-				.containsOnly(manager2);
+		RequestExpectationManager manager1 = this.customizer.getExpectationManagers().get(template1);
+		RequestExpectationManager manager2 = this.customizer.getExpectationManagers().get(template2);
+		assertThat(this.customizer.getServer(template1)).extracting("expectationManager").containsOnly(manager1);
+		assertThat(this.customizer.getServer(template2)).extracting("expectationManager").containsOnly(manager2);
 	}
 
 }

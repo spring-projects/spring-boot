@@ -64,8 +64,7 @@ import static org.mockito.Mockito.mock;
 public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
 			.withUserConfiguration(TestConfig.class);
 
 	private MockWebServer server;
@@ -79,42 +78,35 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationShouldConfigureResourceServer() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
-					assertThat(context.getBean(ReactiveJwtDecoder.class))
-							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+					assertThat(context.getBean(ReactiveJwtDecoder.class)).isInstanceOf(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 				});
 	}
 
 	@Test
-	public void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri()
-			throws IOException {
+	public void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri() throws IOException {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
 		setupMockResponse(cleanIssuerPath);
-		this.contextRunner
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
-								+ this.server.getHostName() + ":" + this.server.getPort())
-				.run((context) -> {
-					assertThat(context.getBean(ReactiveJwtDecoder.class))
-							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
+				+ this.server.getHostName() + ":" + this.server.getPort()).run((context) -> {
+					assertThat(context.getBean(ReactiveJwtDecoder.class)).isInstanceOf(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 				});
 	}
 
 	@Test
 	public void autoConfigurationWhenBothSetUriAndIssuerUriPresentShouldUseSetUri() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
-				"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+						"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
 				.run((context) -> {
-					assertThat(context.getBean(ReactiveJwtDecoder.class))
-							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+					assertThat(context.getBean(ReactiveJwtDecoder.class)).isInstanceOf(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 					assertThat(context.containsBean("jwtDecoder")).isTrue();
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isFalse();
@@ -123,70 +115,63 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationWhenJwkSetUriNullShouldNotFail() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
 	}
 
 	@Test
 	public void jwtDecoderBeanIsConditionalOnMissingBean() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.run((this::assertFilterConfiguredWithJwtAuthenticationManager));
 	}
 
 	@Test
 	public void jwtDecoderByIssuerUriBeanIsConditionalOnMissingBean() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.run((this::assertFilterConfiguredWithJwtAuthenticationManager));
 	}
 
 	@Test
 	public void autoConfigurationShouldBeConditionalOnBearerTokenAuthenticationTokenClass() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
-				.withClassLoader(
-						new FilteredClassLoader(BearerTokenAuthenticationToken.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
+				.withClassLoader(new FilteredClassLoader(BearerTokenAuthenticationToken.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
 	}
 
 	@Test
 	public void autoConfigurationShouldBeConditionalOnReactiveJwtDecoderClass() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.withClassLoader(new FilteredClassLoader(ReactiveJwtDecoder.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
+				.run((context) -> assertThat(context).doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
 	}
 
 	@Test
 	public void autoConfigurationWhenSecurityWebFilterChainConfigPresentShouldNotAddOne() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
-				.withUserConfiguration(SecurityWebFilterChainConfig.class)
-				.run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+				.withUserConfiguration(SecurityWebFilterChainConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(SecurityWebFilterChain.class);
 					assertThat(context).hasBean("testSpringSecurityFilterChain");
 				});
 	}
 
-	private void assertFilterConfiguredWithJwtAuthenticationManager(
-			AssertableReactiveWebApplicationContext context) {
+	private void assertFilterConfiguredWithJwtAuthenticationManager(AssertableReactiveWebApplicationContext context) {
 		MatcherSecurityWebFilterChain filterChain = (MatcherSecurityWebFilterChain) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		Stream<WebFilter> filters = filterChain.getWebFilters().toStream();
 		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters
-				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst()
-				.orElse(null);
+				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
 		ReactiveAuthenticationManager authenticationManager = (ReactiveAuthenticationManager) ReflectionTestUtils
 				.getField(webFilter, "authenticationManager");
-		assertThat(authenticationManager)
-				.isInstanceOf(JwtReactiveAuthenticationManager.class);
+		assertThat(authenticationManager).isInstanceOf(JwtReactiveAuthenticationManager.class);
 
 	}
 
@@ -198,8 +183,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	private void setupMockResponse(String issuer) throws JsonProcessingException {
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(HttpStatus.OK.value())
+		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.server.enqueue(mockResponse);
@@ -217,11 +201,9 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		response.put("revocation_endpoint", "https://example.com/o/oauth2/revoke");
 		response.put("scopes_supported", Collections.singletonList("openid"));
 		response.put("subject_types_supported", Collections.singletonList("public"));
-		response.put("grant_types_supported",
-				Collections.singletonList("authorization_code"));
+		response.put("grant_types_supported", Collections.singletonList("authorization_code"));
 		response.put("token_endpoint", "https://example.com/oauth2/v4/token");
-		response.put("token_endpoint_auth_methods_supported",
-				Collections.singletonList("client_secret_basic"));
+		response.put("token_endpoint_auth_methods_supported", Collections.singletonList("client_secret_basic"));
 		response.put("userinfo_endpoint", "https://example.com/oauth2/v3/userinfo");
 		return response;
 	}
@@ -250,11 +232,9 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	static class SecurityWebFilterChainConfig {
 
 		@Bean
-		SecurityWebFilterChain testSpringSecurityFilterChain(ServerHttpSecurity http,
-				ReactiveJwtDecoder decoder) {
-			http.authorizeExchange().pathMatchers("/message/**").hasRole("ADMIN")
-					.anyExchange().authenticated().and().oauth2ResourceServer().jwt()
-					.jwtDecoder(decoder);
+		SecurityWebFilterChain testSpringSecurityFilterChain(ServerHttpSecurity http, ReactiveJwtDecoder decoder) {
+			http.authorizeExchange().pathMatchers("/message/**").hasRole("ADMIN").anyExchange().authenticated().and()
+					.oauth2ResourceServer().jwt().jwtDecoder(decoder);
 			return http.build();
 		}
 

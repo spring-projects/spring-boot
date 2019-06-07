@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public class XADataSourceAutoConfigurationTests {
 
 	@Test
 	public void createFromUrl() {
-		ApplicationContext context = createContext(FromProperties.class,
-				"spring.datasource.url:jdbc:hsqldb:mem:test",
+		ApplicationContext context = createContext(FromProperties.class, "spring.datasource.url:jdbc:hsqldb:mem:test",
 				"spring.datasource.username:un");
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);

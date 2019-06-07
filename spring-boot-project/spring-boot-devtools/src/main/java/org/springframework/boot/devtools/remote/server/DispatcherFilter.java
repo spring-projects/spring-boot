@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,9 @@ public class DispatcherFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		if (request instanceof HttpServletRequest
-				&& response instanceof HttpServletResponse) {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
 			doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
 		}
 		else {
@@ -65,8 +64,8 @@ public class DispatcherFilter implements Filter {
 		}
 	}
 
-	private void doFilter(HttpServletRequest request, HttpServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
+	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 		ServerHttpRequest serverRequest = new ServletServerHttpRequest(request);
 		ServerHttpResponse serverResponse = new ServletServerHttpResponse(response);
 		if (!this.dispatcher.handle(serverRequest, serverResponse)) {

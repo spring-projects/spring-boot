@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,36 +46,28 @@ public class MeterRegistryCustomizerTests {
 
 	@Test
 	public void commonTagsAreAppliedToAutoConfiguredBinders() {
-		this.contextRunner
-				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("jvm.memory.used").tags("region", "us-east-1").gauge();
-				});
+		this.contextRunner.withUserConfiguration(MeterRegistryCustomizerConfiguration.class).run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			registry.get("jvm.memory.used").tags("region", "us-east-1").gauge();
+		});
 	}
 
 	@Test
 	public void commonTagsAreAppliedBeforeRegistryIsInjectableElsewhere() {
-		this.contextRunner
-				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("my.thing").tags("region", "us-east-1").gauge();
-				});
+		this.contextRunner.withUserConfiguration(MeterRegistryCustomizerConfiguration.class).run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			registry.get("my.thing").tags("region", "us-east-1").gauge();
+		});
 	}
 
 	@Test
 	public void customizersCanBeAppliedToSpecificRegistryTypes() {
-		this.contextRunner
-				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
-				.run((context) -> {
-					MeterRegistry prometheus = context
-							.getBean(PrometheusMeterRegistry.class);
-					prometheus.get("jvm.memory.used").tags("job", "myjob").gauge();
-					MeterRegistry atlas = context.getBean(AtlasMeterRegistry.class);
-					assertThat(atlas.find("jvm.memory.used").tags("job", "myjob").gauge())
-							.isNull();
-				});
+		this.contextRunner.withUserConfiguration(MeterRegistryCustomizerConfiguration.class).run((context) -> {
+			MeterRegistry prometheus = context.getBean(PrometheusMeterRegistry.class);
+			prometheus.get("jvm.memory.used").tags("job", "myjob").gauge();
+			MeterRegistry atlas = context.getBean(AtlasMeterRegistry.class);
+			assertThat(atlas.find("jvm.memory.used").tags("job", "myjob").gauge()).isNull();
+		});
 	}
 
 	@Configuration

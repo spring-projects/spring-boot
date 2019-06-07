@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,19 +56,16 @@ class BaseConfiguration {
 
 	@Bean
 	public EndpointMediaTypes endpointMediaTypes() {
-		List<String> mediaTypes = Arrays.asList("application/vnd.test+json",
-				"application/json");
+		List<String> mediaTypes = Arrays.asList("application/vnd.test+json", "application/json");
 		return new EndpointMediaTypes(mediaTypes, mediaTypes);
 	}
 
 	@Bean
-	public WebEndpointDiscoverer webEndpointDiscoverer(
-			ApplicationContext applicationContext) {
+	public WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext) {
 		ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 				DefaultConversionService.getSharedInstance());
-		return new WebEndpointDiscoverer(applicationContext, parameterMapper,
-				endpointMediaTypes(), null, Collections.emptyList(),
-				Collections.emptyList());
+		return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes(), null,
+				Collections.emptyList(), Collections.emptyList());
 	}
 
 	@Bean

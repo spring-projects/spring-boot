@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 class InvalidConfigurationPropertyValueFailureAnalyzer
-		extends AbstractFailureAnalyzer<InvalidConfigurationPropertyValueException>
-		implements EnvironmentAware {
+		extends AbstractFailureAnalyzer<InvalidConfigurationPropertyValueException> implements EnvironmentAware {
 
 	private ConfigurableEnvironment environment;
 
@@ -51,8 +50,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			InvalidConfigurationPropertyValueException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, InvalidConfigurationPropertyValueException cause) {
 		List<Descriptor> descriptors = getDescriptors(cause.getName());
 		if (descriptors.isEmpty()) {
 			return null;
@@ -65,10 +63,8 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private List<Descriptor> getDescriptors(String propertyName) {
-		return getPropertySources()
-				.filter((source) -> source.containsProperty(propertyName))
-				.map((source) -> Descriptor.get(source, propertyName))
-				.collect(Collectors.toList());
+		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
+				.map((source) -> Descriptor.get(source, propertyName)).collect(Collectors.toList());
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
@@ -76,25 +72,21 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			return Stream.empty();
 		}
 		return this.environment.getPropertySources().stream()
-				.filter((source) -> !ConfigurationPropertySources
-						.isAttachedConfigurationPropertySource(source));
+				.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
 	}
 
-	private void appendDetails(StringBuilder message,
-			InvalidConfigurationPropertyValueException cause,
+	private void appendDetails(StringBuilder message, InvalidConfigurationPropertyValueException cause,
 			List<Descriptor> descriptors) {
 		Descriptor mainDescriptor = descriptors.get(0);
-		message.append("Invalid value '" + mainDescriptor.getValue()
-				+ "' for configuration property '" + cause.getName() + "'");
+		message.append("Invalid value '" + mainDescriptor.getValue() + "' for configuration property '"
+				+ cause.getName() + "'");
 		mainDescriptor.appendOrigin(message);
 		message.append(".");
 	}
 
-	private void appendReason(StringBuilder message,
-			InvalidConfigurationPropertyValueException cause) {
+	private void appendReason(StringBuilder message, InvalidConfigurationPropertyValueException cause) {
 		if (StringUtils.hasText(cause.getReason())) {
-			message.append(String
-					.format(" Validation failed for the following " + "reason:%n%n"));
+			message.append(String.format(" Validation failed for the following " + "reason:%n%n"));
 			message.append(cause.getReason());
 		}
 		else {
@@ -102,14 +94,12 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 		}
 	}
 
-	private void appendAdditionalProperties(StringBuilder message,
-			List<Descriptor> descriptors) {
+	private void appendAdditionalProperties(StringBuilder message, List<Descriptor> descriptors) {
 		List<Descriptor> others = descriptors.subList(1, descriptors.size());
 		if (!others.isEmpty()) {
-			message.append(String.format(
-					"%n%nAdditionally, this property is also set in the following "
-							+ "property %s:%n%n",
-					(others.size() > 1) ? "sources" : "source"));
+			message.append(
+					String.format("%n%nAdditionally, this property is also set in the following " + "property %s:%n%n",
+							(others.size() > 1) ? "sources" : "source"));
 			for (Descriptor other : others) {
 				message.append("\t- In '" + other.getPropertySource() + "'");
 				message.append(" with the value '" + other.getValue() + "'");

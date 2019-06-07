@@ -41,8 +41,7 @@ public class MyController {
 			sessionVar = new Date();
 			session.setAttribute("var", sessionVar);
 		}
-		ModelMap model = new ModelMap("message", Message.MESSAGE)
-				.addAttribute("sessionVar", sessionVar);
+		ModelMap model = new ModelMap("message", Message.MESSAGE).addAttribute("sessionVar", sessionVar);
 		return new ModelAndView("hello", model);
 	}
 

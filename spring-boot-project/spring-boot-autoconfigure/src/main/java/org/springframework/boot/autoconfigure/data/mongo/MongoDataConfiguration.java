@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,23 +42,19 @@ class MongoDataConfiguration {
 
 	private final MongoProperties properties;
 
-	MongoDataConfiguration(ApplicationContext applicationContext,
-			MongoProperties properties) {
+	MongoDataConfiguration(ApplicationContext applicationContext, MongoProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext(MongoCustomConversions conversions)
-			throws ClassNotFoundException {
+	public MongoMappingContext mongoMappingContext(MongoCustomConversions conversions) throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
-		context.setInitialEntitySet(new EntityScanner(this.applicationContext)
-				.scan(Document.class, Persistent.class));
+		context.setInitialEntitySet(new EntityScanner(this.applicationContext).scan(Document.class, Persistent.class));
 		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
-			context.setFieldNamingStrategy(
-					(FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
+			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
 		}
 		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;

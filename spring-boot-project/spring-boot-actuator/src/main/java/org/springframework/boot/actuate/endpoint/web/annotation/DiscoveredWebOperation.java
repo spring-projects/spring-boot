@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ import org.springframework.util.ClassUtils;
  */
 class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebOperation {
 
-	private static final boolean REACTIVE_STREAMS_PRESENT = ClassUtils.isPresent(
-			"org.reactivestreams.Publisher",
+	private static final boolean REACTIVE_STREAMS_PRESENT = ClassUtils.isPresent("org.reactivestreams.Publisher",
 			DiscoveredWebOperation.class.getClassLoader());
 
 	private final String id;
@@ -52,8 +51,7 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 
 	private final WebOperationRequestPredicate requestPredicate;
 
-	DiscoveredWebOperation(EndpointId endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker,
+	DiscoveredWebOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod, OperationInvoker invoker,
 			WebOperationRequestPredicate requestPredicate) {
 		super(operationMethod, invoker);
 		Method method = operationMethod.getMethod();
@@ -63,8 +61,8 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 	}
 
 	private String getId(EndpointId endpointId, Method method) {
-		return endpointId + Stream.of(method.getParameters()).filter(this::hasSelector)
-				.map(this::dashName).collect(Collectors.joining());
+		return endpointId + Stream.of(method.getParameters()).filter(this::hasSelector).map(this::dashName)
+				.collect(Collectors.joining());
 	}
 
 	private boolean hasSelector(Parameter parameter) {
@@ -76,8 +74,7 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 	}
 
 	private boolean getBlocking(Method method) {
-		return !REACTIVE_STREAMS_PRESENT
-				|| !Publisher.class.isAssignableFrom(method.getReturnType());
+		return !REACTIVE_STREAMS_PRESENT || !Publisher.class.isAssignableFrom(method.getReturnType());
 	}
 
 	@Override
@@ -97,8 +94,8 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 
 	@Override
 	protected void appendFields(ToStringCreator creator) {
-		creator.append("id", this.id).append("blocking", this.blocking)
-				.append("requestPredicate", this.requestPredicate);
+		creator.append("id", this.id).append("blocking", this.blocking).append("requestPredicate",
+				this.requestPredicate);
 	}
 
 }

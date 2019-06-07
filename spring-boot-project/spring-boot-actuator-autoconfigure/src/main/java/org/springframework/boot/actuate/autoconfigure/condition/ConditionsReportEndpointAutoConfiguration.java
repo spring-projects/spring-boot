@@ -37,8 +37,7 @@ public class ConditionsReportEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public ConditionsReportEndpoint conditionsReportEndpoint(
-			ConfigurableApplicationContext context) {
+	public ConditionsReportEndpoint conditionsReportEndpoint(ConfigurableApplicationContext context) {
 		return new ConditionsReportEndpoint(context);
 	}
 

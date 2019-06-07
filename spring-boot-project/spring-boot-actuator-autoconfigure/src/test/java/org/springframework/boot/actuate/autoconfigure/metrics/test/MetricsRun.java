@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,7 @@ public final class MetricsRun {
 		EXPORT_AUTO_CONFIGURATIONS = Collections.unmodifiableSet(implementations);
 	}
 
-	private static final AutoConfigurations AUTO_CONFIGURATIONS = AutoConfigurations.of(
-			MetricsAutoConfiguration.class,
+	private static final AutoConfigurations AUTO_CONFIGURATIONS = AutoConfigurations.of(MetricsAutoConfiguration.class,
 			CompositeMeterRegistryAutoConfiguration.class);
 
 	private MetricsRun() {
@@ -94,14 +93,13 @@ public final class MetricsRun {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends AbstractApplicationContextRunner<?, ?, ?>> T apply(
-			T contextRunner, Class<?>[] exportAutoConfigurations) {
+	private static <T extends AbstractApplicationContextRunner<?, ?, ?>> T apply(T contextRunner,
+			Class<?>[] exportAutoConfigurations) {
 		for (Class<?> configuration : exportAutoConfigurations) {
 			Assert.state(EXPORT_AUTO_CONFIGURATIONS.contains(configuration),
 					() -> "Unknown export auto-configuration " + configuration.getName());
 		}
-		return (T) contextRunner
-				.withPropertyValues("management.metrics.use-global-registry=false")
+		return (T) contextRunner.withPropertyValues("management.metrics.use-global-registry=false")
 				.withConfiguration(AUTO_CONFIGURATIONS)
 				.withConfiguration(AutoConfigurations.of(exportAutoConfigurations));
 	}

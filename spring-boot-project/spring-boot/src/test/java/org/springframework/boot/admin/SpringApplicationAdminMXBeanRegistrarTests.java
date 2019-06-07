@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 				assertThat(isApplicationReady(objectName)).isFalse();
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException(
-						"Could not contact spring application admin bean", ex);
+				throw new IllegalStateException("Could not contact spring application admin bean", ex);
 			}
 		});
 		this.context = application.run();
@@ -86,17 +85,13 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 
 	@Test
 	public void eventsFromOtherContextsAreIgnored() throws MalformedObjectNameException {
-		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(
-				OBJECT_NAME);
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		registrar.setApplicationContext(context);
 		registrar.onApplicationReadyEvent(
-				new ApplicationReadyEvent(new SpringApplication(), null,
-						mock(ConfigurableApplicationContext.class)));
+				new ApplicationReadyEvent(new SpringApplication(), null, mock(ConfigurableApplicationContext.class)));
 		assertThat(isApplicationReady(registrar)).isFalse();
-		registrar.onApplicationReadyEvent(
-				new ApplicationReadyEvent(new SpringApplication(), null, context));
+		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null, context));
 		assertThat(isApplicationReady(registrar)).isTrue();
 	}
 
@@ -140,8 +135,8 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private String getProperty(ObjectName objectName, String key) {
 		try {
-			return (String) this.mBeanServer.invoke(objectName, "getProperty",
-					new Object[] { key }, new String[] { String.class.getName() });
+			return (String) this.mBeanServer.invoke(objectName, "getProperty", new Object[] { key },
+					new String[] { String.class.getName() });
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex.getMessage(), ex);

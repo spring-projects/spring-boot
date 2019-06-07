@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,77 +37,62 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SystemMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(
-					AutoConfigurations.of(SystemMetricsAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(AutoConfigurations.of(SystemMetricsAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguresUptimeMetrics() {
-		this.contextRunner
-				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class));
 	}
 
 	@Test
 	@Deprecated
 	public void allowsUptimeMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.uptime.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(UptimeMetrics.class));
+		this.contextRunner.withPropertyValues("management.metrics.binders.uptime.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(UptimeMetrics.class));
 	}
 
 	@Test
 	public void allowsCustomUptimeMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class)
-						.hasBean("customUptimeMetrics"));
+		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class).run(
+				(context) -> assertThat(context).hasSingleBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
 	}
 
 	@Test
 	public void autoConfiguresProcessorMetrics() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
 	}
 
 	@Test
 	@Deprecated
 	public void allowsProcessorMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.processor.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ProcessorMetrics.class));
+		this.contextRunner.withPropertyValues("management.metrics.binders.processor.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(ProcessorMetrics.class));
 	}
 
 	@Test
 	public void allowsCustomProcessorMetricsToBeUsed() {
-		this.contextRunner
-				.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ProcessorMetrics.class)
+		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
 						.hasBean("customProcessorMetrics"));
 	}
 
 	@Test
 	public void autoConfiguresFileDescriptorMetrics() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(FileDescriptorMetrics.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
 	@Deprecated
 	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.binders.files.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(FileDescriptorMetrics.class));
+		this.contextRunner.withPropertyValues("management.metrics.binders.files.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
 	public void allowsCustomFileDescriptorMetricsToBeUsed() {
-		this.contextRunner
-				.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(FileDescriptorMetrics.class)
+		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class)
 						.hasBean("customFileDescriptorMetrics"));
 	}
 

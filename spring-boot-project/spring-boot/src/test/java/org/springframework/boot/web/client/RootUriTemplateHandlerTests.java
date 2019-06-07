@@ -57,21 +57,18 @@ public class RootUriTemplateHandlerTests {
 		this.uri = new URI("https://example.com/hello");
 		this.handler = new RootUriTemplateHandler("https://example.com", this.delegate);
 		given(this.delegate.expand(anyString(), any(Map.class))).willReturn(this.uri);
-		given(this.delegate.expand(anyString(), any(Object[].class)))
-				.willReturn(this.uri);
+		given(this.delegate.expand(anyString(), any(Object[].class))).willReturn(this.uri);
 	}
 
 	@Test
 	public void createWithNullRootUriShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RootUriTemplateHandler((String) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler((String) null))
 				.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	public void createWithNullHandlerShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RootUriTemplateHandler("https://example.com", null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler("https://example.com", null))
 				.withMessageContaining("Handler must not be null");
 	}
 

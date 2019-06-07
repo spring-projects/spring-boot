@@ -73,8 +73,8 @@ public class CassandraDataAutoConfiguration {
 
 	private final Environment environment;
 
-	public CassandraDataAutoConfiguration(BeanFactory beanFactory,
-			CassandraProperties properties, Cluster cluster, Environment environment) {
+	public CassandraDataAutoConfiguration(BeanFactory beanFactory, CassandraProperties properties, Cluster cluster,
+			Environment environment) {
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.cluster = cluster;
@@ -83,19 +83,18 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMapping(
-			CassandraCustomConversions conversions) throws ClassNotFoundException {
+	public CassandraMappingContext cassandraMapping(CassandraCustomConversions conversions)
+			throws ClassNotFoundException {
 		CassandraMappingContext context = new CassandraMappingContext();
-		List<String> packages = EntityScanPackages.get(this.beanFactory)
-				.getPackageNames();
+		List<String> packages = EntityScanPackages.get(this.beanFactory).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
 			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
 		if (!packages.isEmpty()) {
 			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
 		}
-		PropertyMapper.get().from(this.properties::getKeyspaceName).whenHasText()
-				.as(this::createSimpleUserTypeResolver).to(context::setUserTypeResolver);
+		PropertyMapper.get().from(this.properties::getKeyspaceName).whenHasText().as(this::createSimpleUserTypeResolver)
+				.to(context::setUserTypeResolver);
 		context.setCustomConversions(conversions);
 		return context;
 	}
@@ -115,22 +114,19 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Session.class)
-	public CassandraSessionFactoryBean cassandraSession(CassandraConverter converter)
-			throws Exception {
+	public CassandraSessionFactoryBean cassandraSession(CassandraConverter converter) throws Exception {
 		CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
 		Binder binder = Binder.get(this.environment);
-		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class)
-				.ifBound(session::setSchemaAction);
+		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
 		return session;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraTemplate cassandraTemplate(Session session,
-			CassandraConverter converter) throws Exception {
+	public CassandraTemplate cassandraTemplate(Session session, CassandraConverter converter) throws Exception {
 		return new CassandraTemplate(session, converter);
 	}
 

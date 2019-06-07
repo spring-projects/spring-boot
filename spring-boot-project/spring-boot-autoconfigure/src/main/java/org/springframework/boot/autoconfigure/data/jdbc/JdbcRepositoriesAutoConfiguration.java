@@ -50,8 +50,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 @Configuration
 @ConditionalOnBean(NamedParameterJdbcOperations.class)
 @ConditionalOnClass({ NamedParameterJdbcOperations.class, JdbcConfiguration.class })
-@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration.class)
 public class JdbcRepositoriesAutoConfiguration {
 
@@ -74,14 +74,12 @@ public class JdbcRepositoriesAutoConfiguration {
 		}
 
 		@Override
-		public RelationalMappingContext jdbcMappingContext(
-				Optional<NamingStrategy> namingStrategy) {
+		public RelationalMappingContext jdbcMappingContext(Optional<NamingStrategy> namingStrategy) {
 			return super.jdbcMappingContext(namingStrategy);
 		}
 
 		@Override
-		public RelationalConverter relationalConverter(
-				RelationalMappingContext mappingContext) {
+		public RelationalConverter relationalConverter(RelationalMappingContext mappingContext) {
 			return super.relationalConverter(mappingContext);
 		}
 

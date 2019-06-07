@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,18 +101,15 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void getChangedFilesSnapshotMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
 				.withMessageContaining("Snapshot must not be null");
 	}
 
 	@Test
 	public void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.initialSnapshot.getChangedFiles(
-						new FolderSnapshot(createTestFolderStructure()), null))
-				.withMessageContaining(
-						"Snapshot source folder must be '" + this.folder + "'");
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.initialSnapshot.getChangedFiles(new FolderSnapshot(createTestFolderStructure()), null))
+				.withMessageContaining("Snapshot source folder must be '" + this.folder + "'");
 	}
 
 	@Test
@@ -131,8 +128,7 @@ public class FolderSnapshotTests {
 		file2.delete();
 		newFile.createNewFile();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		ChangedFiles changedFiles = this.initialSnapshot.getChangedFiles(updatedSnapshot,
-				null);
+		ChangedFiles changedFiles = this.initialSnapshot.getChangedFiles(updatedSnapshot, null);
 		assertThat(changedFiles.getSourceFolder()).isEqualTo(this.folder);
 		assertThat(getChangedFile(changedFiles, file1).getType()).isEqualTo(Type.MODIFY);
 		assertThat(getChangedFile(changedFiles, file2).getType()).isEqualTo(Type.DELETE);

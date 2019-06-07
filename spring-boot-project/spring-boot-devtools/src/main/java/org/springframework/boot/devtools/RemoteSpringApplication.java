@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ public final class RemoteSpringApplication {
 
 	private void run(String[] args) {
 		Restarter.initialize(args, RestartInitializer.NONE);
-		SpringApplication application = new SpringApplication(
-				RemoteClientConfiguration.class);
+		SpringApplication application = new SpringApplication(RemoteClientConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setBanner(getBanner());
 		application.setInitializers(getInitializers());
@@ -80,8 +79,7 @@ public final class RemoteSpringApplication {
 	}
 
 	private Banner getBanner() {
-		ClassPathResource banner = new ClassPathResource("remote-banner.txt",
-				RemoteSpringApplication.class);
+		ClassPathResource banner = new ClassPathResource("remote-banner.txt", RemoteSpringApplication.class);
 		return new ResourceBanner(banner);
 	}
 

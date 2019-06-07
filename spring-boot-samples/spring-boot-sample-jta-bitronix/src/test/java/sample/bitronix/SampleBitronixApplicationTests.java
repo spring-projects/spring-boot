@@ -49,20 +49,17 @@ public class SampleBitronixApplicationTests {
 
 	@Test
 	public void testExposesXaAndNonXa() {
-		ApplicationContext context = SpringApplication
-				.run(SampleBitronixApplication.class);
+		ApplicationContext context = SpringApplication.run(SampleBitronixApplication.class);
 		Object jmsConnectionFactory = context.getBean("jmsConnectionFactory");
 		Object xaJmsConnectionFactory = context.getBean("xaJmsConnectionFactory");
 		Object nonXaJmsConnectionFactory = context.getBean("nonXaJmsConnectionFactory");
 		assertThat(jmsConnectionFactory).isSameAs(xaJmsConnectionFactory);
 		assertThat(jmsConnectionFactory).isInstanceOf(PoolingConnectionFactory.class);
-		assertThat(nonXaJmsConnectionFactory)
-				.isNotInstanceOf(PoolingConnectionFactory.class);
+		assertThat(nonXaJmsConnectionFactory).isNotInstanceOf(PoolingConnectionFactory.class);
 	}
 
 	private Condition<String> substring(int times, String substring) {
-		return new Condition<String>(
-				"containing '" + substring + "' " + times + " times") {
+		return new Condition<String>("containing '" + substring + "' " + times + " times") {
 
 			@Override
 			public boolean matches(String value) {

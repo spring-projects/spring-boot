@@ -45,8 +45,8 @@ class ArtemisConnectionFactoryConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(CachingConnectionFactory.class)
-	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled",
-			havingValue = "false", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "false",
+			matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
 		private final JmsProperties jmsProperties;
@@ -55,20 +55,19 @@ class ArtemisConnectionFactoryConfiguration {
 
 		private final ListableBeanFactory beanFactory;
 
-		SimpleConnectionFactoryConfiguration(JmsProperties jmsProperties,
-				ArtemisProperties properties, ListableBeanFactory beanFactory) {
+		SimpleConnectionFactoryConfiguration(JmsProperties jmsProperties, ArtemisProperties properties,
+				ListableBeanFactory beanFactory) {
 			this.jmsProperties = jmsProperties;
 			this.properties = properties;
 			this.beanFactory = beanFactory;
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled",
-				havingValue = "true", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
+				matchIfMissing = true)
 		public CachingConnectionFactory cachingJmsConnectionFactory() {
 			JmsProperties.Cache cacheProperties = this.jmsProperties.getCache();
-			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
-					createConnectionFactory());
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(createConnectionFactory());
 			connectionFactory.setCacheConsumers(cacheProperties.isConsumers());
 			connectionFactory.setCacheProducers(cacheProperties.isProducers());
 			connectionFactory.setSessionCacheSize(cacheProperties.getSessionCacheSize());
@@ -76,8 +75,7 @@ class ArtemisConnectionFactoryConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled",
-				havingValue = "false")
+		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
 		public ActiveMQConnectionFactory jmsConnectionFactory() {
 			return createConnectionFactory();
 		}
@@ -94,13 +92,12 @@ class ArtemisConnectionFactoryConfiguration {
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled",
-				havingValue = "true", matchIfMissing = false)
-		public JmsPoolConnectionFactory pooledJmsConnectionFactory(
-				ListableBeanFactory beanFactory, ArtemisProperties properties) {
-			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(
-					beanFactory, properties)
-							.createConnectionFactory(ActiveMQConnectionFactory.class);
+		@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "true",
+				matchIfMissing = false)
+		public JmsPoolConnectionFactory pooledJmsConnectionFactory(ListableBeanFactory beanFactory,
+				ArtemisProperties properties) {
+			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties)
+					.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
 					.createPooledConnectionFactory(connectionFactory);
 		}

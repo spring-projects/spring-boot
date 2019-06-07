@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,33 +59,26 @@ public class WebFluxEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier,
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
-			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
-			WebEndpointProperties webEndpointProperties) {
-		EndpointMapping endpointMapping = new EndpointMapping(
-				webEndpointProperties.getBasePath());
+	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
+			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
+			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties) {
+		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		Collection<ExposableWebEndpoint> endpoints = webEndpointsSupplier.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(endpoints);
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints,
-				endpointMediaTypes, corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints,
-						webEndpointProperties.getBasePath()));
+		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints, endpointMediaTypes,
+				corsProperties.toCorsConfiguration(),
+				new EndpointLinksResolver(allEndpoints, webEndpointProperties.getBasePath()));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
-			CorsEndpointProperties corsProperties,
+			ControllerEndpointsSupplier controllerEndpointsSupplier, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
-		EndpointMapping endpointMapping = new EndpointMapping(
-				webEndpointProperties.getBasePath());
-		return new ControllerEndpointHandlerMapping(endpointMapping,
-				controllerEndpointsSupplier.getEndpoints(),
+		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
+		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
 	}
 

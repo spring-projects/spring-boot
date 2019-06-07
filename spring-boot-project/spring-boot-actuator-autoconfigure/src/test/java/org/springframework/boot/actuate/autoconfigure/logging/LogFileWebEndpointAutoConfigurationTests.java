@@ -49,48 +49,40 @@ public class LogFileWebEndpointAutoConfigurationTests {
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingFileIsSet() {
-		this.contextRunner.withPropertyValues("logging.file:test.log").run(
-				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+		this.contextRunner.withPropertyValues("logging.file:test.log")
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenLoggingPathIsSet() {
-		this.contextRunner.withPropertyValues("logging.path:test/logs").run(
-				(context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+		this.contextRunner.withPropertyValues("logging.path:test/logs")
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.endpoint.logfile.external-file:external.log")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(LogFileWebEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.logfile.external-file:external.log")
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointCanBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("logging.file:test.log",
-						"management.endpoint.logfile.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LogFileWebEndpoint.class));
+		this.contextRunner.withPropertyValues("logging.file:test.log", "management.endpoint.logfile.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointUsesConfiguredExternalFile() throws IOException {
 		File file = this.temp.newFile("logfile");
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
-		this.contextRunner.withPropertyValues(
-				"management.endpoint.logfile.external-file:" + file.getAbsolutePath())
+		this.contextRunner.withPropertyValues("management.endpoint.logfile.external-file:" + file.getAbsolutePath())
 				.run((context) -> {
 					assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
-					LogFileWebEndpoint endpoint = context
-							.getBean(LogFileWebEndpoint.class);
+					LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
 					Resource resource = endpoint.logFile();
 					assertThat(resource).isNotNull();
-					assertThat(StreamUtils.copyToString(resource.getInputStream(),
-							StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+					assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8))
+							.isEqualTo("--TEST--");
 				});
 	}
 

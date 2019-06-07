@@ -44,8 +44,7 @@ public class AuditAutoConfiguration {
 
 	private final AuditEventRepository auditEventRepository;
 
-	public AuditAutoConfiguration(
-			ObjectProvider<AuditEventRepository> auditEventRepository) {
+	public AuditAutoConfiguration(ObjectProvider<AuditEventRepository> auditEventRepository) {
 		this.auditEventRepository = auditEventRepository.getIfAvailable();
 	}
 
@@ -56,16 +55,14 @@ public class AuditAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass(
-			name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
+	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
 	@ConditionalOnMissingBean(AbstractAuthenticationAuditListener.class)
 	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
 		return new AuthenticationAuditListener();
 	}
 
 	@Bean
-	@ConditionalOnClass(
-			name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
+	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
 	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();

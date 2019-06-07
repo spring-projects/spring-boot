@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,15 +54,13 @@ public class SolrRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() {
 		initContext(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(SolrClient.class))
-				.isInstanceOf(HttpSolrClient.class);
+		assertThat(this.context.getBean(SolrClient.class)).isInstanceOf(HttpSolrClient.class);
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		initContext(EmptyConfiguration.class);
-		assertThat(this.context.getBean(SolrClient.class))
-				.isInstanceOf(HttpSolrClient.class);
+		assertThat(this.context.getBean(SolrClient.class)).isInstanceOf(HttpSolrClient.class);
 	}
 
 	@Test
@@ -81,8 +79,7 @@ public class SolrRepositoriesAutoConfigurationTests {
 	private void initContext(Class<?> configClass) {
 
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(configClass, SolrAutoConfiguration.class,
-				SolrRepositoriesAutoConfiguration.class,
+		this.context.register(configClass, SolrAutoConfiguration.class, SolrRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}

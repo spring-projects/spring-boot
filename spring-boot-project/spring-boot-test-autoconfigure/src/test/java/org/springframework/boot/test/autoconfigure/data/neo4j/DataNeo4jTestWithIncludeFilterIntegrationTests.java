@@ -40,8 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Simons
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(
-		initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
+@ContextConfiguration(initializers = DataNeo4jTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
@@ -57,14 +56,11 @@ public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 		assertThat(this.service.hasNode(ExampleGraph.class)).isFalse();
 	}
 
-	static class Initializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
-		public void initialize(
-				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
+		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

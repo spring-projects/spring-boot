@@ -62,20 +62,15 @@ public class UndertowWebServerFactoryCustomizerTests {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new UndertowWebServerFactoryCustomizer(this.environment,
-				this.serverProperties);
+		this.customizer = new UndertowWebServerFactoryCustomizer(this.environment, this.serverProperties);
 	}
 
 	@Test
 	public void customizeUndertowAccessLog() {
-		bind("server.undertow.accesslog.enabled=true",
-				"server.undertow.accesslog.pattern=foo",
-				"server.undertow.accesslog.prefix=test_log",
-				"server.undertow.accesslog.suffix=txt",
-				"server.undertow.accesslog.dir=test-logs",
-				"server.undertow.accesslog.rotate=false");
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		bind("server.undertow.accesslog.enabled=true", "server.undertow.accesslog.pattern=foo",
+				"server.undertow.accesslog.prefix=test_log", "server.undertow.accesslog.suffix=txt",
+				"server.undertow.accesslog.dir=test-logs", "server.undertow.accesslog.rotate=false");
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setAccessLogEnabled(true);
 		verify(factory).setAccessLogPattern("foo");
@@ -88,16 +83,14 @@ public class UndertowWebServerFactoryCustomizerTests {
 	@Test
 	public void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
 
 	@Test
 	public void defaultUseForwardHeaders() {
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
@@ -105,8 +98,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 	@Test
 	public void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
@@ -117,8 +109,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 		Builder builder = Undertow.builder();
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "serverOptions")).getMap();
 		assertThat(map.get(UndertowOptions.MAX_HEADER_SIZE).intValue()).isEqualTo(2048);
 	}
 
@@ -128,8 +119,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 		Builder builder = Undertow.builder();
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "serverOptions")).getMap();
 		assertThat(map.contains(UndertowOptions.MAX_HEADER_SIZE)).isFalse();
 	}
 
@@ -139,8 +129,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 		Builder builder = Undertow.builder();
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "serverOptions")).getMap();
 		assertThat(map.contains(UndertowOptions.MAX_HEADER_SIZE)).isFalse();
 	}
 
@@ -150,30 +139,25 @@ public class UndertowWebServerFactoryCustomizerTests {
 		Builder builder = Undertow.builder();
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "serverOptions")).getMap();
 		assertThat(map.contains(UndertowOptions.NO_REQUEST_TIMEOUT)).isTrue();
 		assertThat(map.get(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(100);
 	}
 
 	private ConfigurableUndertowWebServerFactory mockFactory(Builder builder) {
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		willAnswer((invocation) -> {
 			Object argument = invocation.getArgument(0);
 			Arrays.stream((argument instanceof UndertowBuilderCustomizer)
-					? new UndertowBuilderCustomizer[] {
-							(UndertowBuilderCustomizer) argument }
-					: (UndertowBuilderCustomizer[]) argument)
-					.forEach((customizer) -> customizer.customize(builder));
+					? new UndertowBuilderCustomizer[] { (UndertowBuilderCustomizer) argument }
+					: (UndertowBuilderCustomizer[]) argument).forEach((customizer) -> customizer.customize(builder));
 			return null;
 		}).given(factory).addBuilderCustomizers(any());
 		return factory;
 	}
 
 	private void bind(String... inlinedProperties) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				inlinedProperties);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
 		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
 				Bindable.ofInstance(this.serverProperties));
 	}

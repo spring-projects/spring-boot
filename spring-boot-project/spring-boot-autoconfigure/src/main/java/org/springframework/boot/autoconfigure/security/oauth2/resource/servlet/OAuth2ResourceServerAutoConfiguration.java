@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
 @ConditionalOnClass({ JwtAuthenticationToken.class, JwtDecoder.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import({ OAuth2ResourceServerJwtConfiguration.class,
-		OAuth2ResourceServerWebSecurityConfiguration.class })
+@Import({ OAuth2ResourceServerJwtConfiguration.class, OAuth2ResourceServerWebSecurityConfiguration.class })
 public class OAuth2ResourceServerAutoConfiguration {
 
 }

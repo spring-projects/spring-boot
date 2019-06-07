@@ -34,8 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-		properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
+@SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @EmbeddedKafka
 public class SampleKafkaApplicationTests {
 
@@ -45,8 +44,7 @@ public class SampleKafkaApplicationTests {
 	@Test
 	public void testVanillaExchange() throws Exception {
 		long end = System.currentTimeMillis() + 10000;
-		while (!this.outputCapture.toString().contains("A simple test message")
-				&& System.currentTimeMillis() < end) {
+		while (!this.outputCapture.toString().contains("A simple test message") && System.currentTimeMillis() < end) {
 			Thread.sleep(250);
 		}
 		assertThat(this.outputCapture.toString()).contains("A simple test message");

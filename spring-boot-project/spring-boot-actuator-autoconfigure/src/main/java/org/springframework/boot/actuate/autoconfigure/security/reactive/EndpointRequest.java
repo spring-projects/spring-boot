@@ -55,8 +55,7 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public final class EndpointRequest {
 
-	private static final ServerWebExchangeMatcher EMPTY_MATCHER = (request) -> MatchResult
-			.notMatch();
+	private static final ServerWebExchangeMatcher EMPTY_MATCHER = (request) -> MatchResult.notMatch();
 
 	private EndpointRequest() {
 	}
@@ -134,20 +133,15 @@ public final class EndpointRequest {
 			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints,
-				boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
-					includeLinks);
+		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints, boolean includeLinks) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointServerWebExchangeMatcher(String[] endpoints,
-				boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
-					includeLinks);
+		private EndpointServerWebExchangeMatcher(String[] endpoints, boolean includeLinks) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointServerWebExchangeMatcher(List<Object> includes,
-				List<Object> excludes, boolean includeLinks) {
+		private EndpointServerWebExchangeMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
 			super(PathMappedEndpoints.class);
 			this.includes = includes;
 			this.excludes = excludes;
@@ -157,20 +151,17 @@ public final class EndpointRequest {
 		public EndpointServerWebExchangeMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes,
-					this.includeLinks);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks);
 		}
 
 		public EndpointServerWebExchangeMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes,
-					this.includeLinks);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks);
 		}
 
 		public EndpointServerWebExchangeMatcher excludingLinks() {
-			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes,
-					false);
+			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false);
 		}
 
 		@Override
@@ -178,8 +169,7 @@ public final class EndpointRequest {
 			this.delegate = createDelegate(pathMappedEndpoints);
 		}
 
-		private ServerWebExchangeMatcher createDelegate(
-				Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+		private ServerWebExchangeMatcher createDelegate(Supplier<PathMappedEndpoints> pathMappedEndpoints) {
 			try {
 				return createDelegate(pathMappedEndpoints.get());
 			}
@@ -188,8 +178,7 @@ public final class EndpointRequest {
 			}
 		}
 
-		private ServerWebExchangeMatcher createDelegate(
-				PathMappedEndpoints pathMappedEndpoints) {
+		private ServerWebExchangeMatcher createDelegate(PathMappedEndpoints pathMappedEndpoints) {
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
 				paths.addAll(pathMappedEndpoints.getAllPaths());
@@ -197,18 +186,14 @@ public final class EndpointRequest {
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths);
-			if (this.includeLinks
-					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(new PathPatternParserServerWebExchangeMatcher(
-						pathMappedEndpoints.getBasePath()));
+			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
+				delegateMatchers.add(new PathPatternParserServerWebExchangeMatcher(pathMappedEndpoints.getBasePath()));
 			}
 			return new OrServerWebExchangeMatcher(delegateMatchers);
 		}
 
-		private Stream<String> streamPaths(List<Object> source,
-				PathMappedEndpoints pathMappedEndpoints) {
-			return source.stream().filter(Objects::nonNull).map(this::getEndpointId)
-					.map(pathMappedEndpoints::getPath);
+		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints pathMappedEndpoints) {
+			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
 		}
 
 		private EndpointId getEndpointId(Object source) {
@@ -225,22 +210,18 @@ public final class EndpointRequest {
 		}
 
 		private EndpointId getEndpointId(Class<?> source) {
-			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source,
-					Endpoint.class);
-			Assert.state(annotation != null,
-					() -> "Class " + source + " is not annotated with @Endpoint");
+			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source, Endpoint.class);
+			Assert.state(annotation != null, () -> "Class " + source + " is not annotated with @Endpoint");
 			return EndpointId.of(annotation.id());
 		}
 
 		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
-			return paths.stream().map(
-					(path) -> new PathPatternParserServerWebExchangeMatcher(path + "/**"))
+			return paths.stream().map((path) -> new PathPatternParserServerWebExchangeMatcher(path + "/**"))
 					.collect(Collectors.toList());
 		}
 
 		@Override
-		protected Mono<MatchResult> matches(ServerWebExchange exchange,
-				Supplier<PathMappedEndpoints> context) {
+		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<PathMappedEndpoints> context) {
 			if (!isManagementContext(exchange)) {
 				return MatchResult.notMatch();
 			}
@@ -249,13 +230,11 @@ public final class EndpointRequest {
 
 		static boolean isManagementContext(ServerWebExchange exchange) {
 			ApplicationContext applicationContext = exchange.getApplicationContext();
-			if (ManagementPortType.get(applicationContext
-					.getEnvironment()) == ManagementPortType.DIFFERENT) {
+			if (ManagementPortType.get(applicationContext.getEnvironment()) == ManagementPortType.DIFFERENT) {
 				if (applicationContext.getParent() == null) {
 					return false;
 				}
-				String managementContextId = applicationContext.getParent().getId()
-						+ ":management";
+				String managementContextId = applicationContext.getParent().getId() + ":management";
 				if (!managementContextId.equals(applicationContext.getId())) {
 					return false;
 				}
@@ -282,18 +261,15 @@ public final class EndpointRequest {
 			this.delegate = createDelegate(properties.get());
 		}
 
-		private ServerWebExchangeMatcher createDelegate(
-				WebEndpointProperties properties) {
+		private ServerWebExchangeMatcher createDelegate(WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return new PathPatternParserServerWebExchangeMatcher(
-						properties.getBasePath());
+				return new PathPatternParserServerWebExchangeMatcher(properties.getBasePath());
 			}
 			return EMPTY_MATCHER;
 		}
 
 		@Override
-		protected Mono<MatchResult> matches(ServerWebExchange exchange,
-				Supplier<WebEndpointProperties> context) {
+		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<WebEndpointProperties> context) {
 			if (!EndpointServerWebExchangeMatcher.isManagementContext(exchange)) {
 				return MatchResult.notMatch();
 			}

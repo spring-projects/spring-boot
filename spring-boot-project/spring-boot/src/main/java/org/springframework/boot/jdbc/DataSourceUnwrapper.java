@@ -36,8 +36,7 @@ import org.springframework.util.ClassUtils;
 public final class DataSourceUnwrapper {
 
 	private static final boolean DELEGATING_DATA_SOURCE_PRESENT = ClassUtils.isPresent(
-			"org.springframework.jdbc.datasource.DelegatingDataSource",
-			DataSourceUnwrapper.class.getClassLoader());
+			"org.springframework.jdbc.datasource.DelegatingDataSource", DataSourceUnwrapper.class.getClassLoader());
 
 	private DataSourceUnwrapper() {
 	}
@@ -59,8 +58,7 @@ public final class DataSourceUnwrapper {
 			return unwrapped;
 		}
 		if (DELEGATING_DATA_SOURCE_PRESENT) {
-			DataSource targetDataSource = DelegatingDataSourceUnwrapper
-					.getTargetDataSource(dataSource);
+			DataSource targetDataSource = DelegatingDataSourceUnwrapper.getTargetDataSource(dataSource);
 			if (targetDataSource != null) {
 				return unwrap(targetDataSource, target);
 			}

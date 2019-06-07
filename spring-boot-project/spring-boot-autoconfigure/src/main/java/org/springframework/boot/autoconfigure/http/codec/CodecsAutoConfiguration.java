@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,10 +59,8 @@ public class CodecsAutoConfiguration {
 		public CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
 			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
-				defaults.jackson2JsonDecoder(
-						new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
-				defaults.jackson2JsonEncoder(
-						new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
+				defaults.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
+				defaults.jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
 			};
 		}
 

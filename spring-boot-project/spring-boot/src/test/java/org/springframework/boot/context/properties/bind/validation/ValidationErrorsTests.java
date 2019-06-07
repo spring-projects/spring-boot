@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,38 +42,31 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 public class ValidationErrorsTests {
 
-	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
-			.of("foo");
+	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(),
-						Collections.emptyList()))
+				.isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(), Collections.emptyList()))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenBoundPropertiesIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new ValidationErrors(NAME, null, Collections.emptyList()))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, null, Collections.emptyList()))
 				.withMessageContaining("BoundProperties must not be null");
 	}
 
 	@Test
 	public void createWhenErrorsIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new ValidationErrors(NAME, Collections.emptySet(), null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
 				.withMessageContaining("Errors must not be null");
 	}
 
 	@Test
 	public void getNameShouldReturnName() {
 		ConfigurationPropertyName name = NAME;
-		ValidationErrors errors = new ValidationErrors(name, Collections.emptySet(),
-				Collections.emptyList());
+		ValidationErrors errors = new ValidationErrors(name, Collections.emptySet(), Collections.emptyList());
 		assertThat((Object) errors.getName()).isEqualTo(name);
 	}
 
@@ -81,8 +74,7 @@ public class ValidationErrorsTests {
 	public void getBoundPropertiesShouldReturnBoundProperties() {
 		Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 		boundProperties.add(new ConfigurationProperty(NAME, "foo", null));
-		ValidationErrors errors = new ValidationErrors(NAME, boundProperties,
-				Collections.emptyList());
+		ValidationErrors errors = new ValidationErrors(NAME, boundProperties, Collections.emptyList());
 		assertThat(errors.getBoundProperties()).isEqualTo(boundProperties);
 	}
 
@@ -90,8 +82,7 @@ public class ValidationErrorsTests {
 	public void getErrorsShouldReturnErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
-		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(),
-				allErrors);
+		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(), allErrors);
 		assertThat(errors.getAllErrors()).isEqualTo(allErrors);
 	}
 
@@ -99,8 +90,7 @@ public class ValidationErrorsTests {
 	public void iteratorShouldIterateErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
-		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(),
-				allErrors);
+		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(), allErrors);
 		assertThat(errors.iterator()).containsExactlyElementsOf(allErrors);
 	}
 
@@ -115,8 +105,8 @@ public class ValidationErrorsTests {
 		boundProperties.add(new ConfigurationProperty(name2, "boot", origin2));
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new FieldError("objectname", "bar", "message"));
-		ValidationErrors errors = new ValidationErrors(
-				ConfigurationPropertyName.of("foo.baz"), boundProperties, allErrors);
+		ValidationErrors errors = new ValidationErrors(ConfigurationPropertyName.of("foo.baz"), boundProperties,
+				allErrors);
 		assertThat(Origin.from(errors.getAllErrors().get(0))).isEqualTo(origin2);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ import static org.mockito.Mockito.verify;
 public class ServletWebServerFactoryAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
-			AnnotationConfigServletWebServerApplicationContext::new).withConfiguration(
-					AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
+			AnnotationConfigServletWebServerApplicationContext::new)
+					.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
 							DispatcherServletAutoConfiguration.class))
 					.withUserConfiguration(WebServerConfiguration.class);
 
@@ -67,43 +67,36 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	@Test
 	public void contextAlreadyHasDispatcherServletWithDefaultName() {
-		this.contextRunner.withUserConfiguration(DispatcherServletConfiguration.class)
-				.run(verifyContext());
+		this.contextRunner.withUserConfiguration(DispatcherServletConfiguration.class).run(verifyContext());
 	}
 
 	@Test
 	public void contextAlreadyHasDispatcherServlet() {
-		this.contextRunner.withUserConfiguration(SpringServletConfiguration.class)
-				.run((context) -> {
-					verifyContext(context);
-					assertThat(context.getBeanNamesForType(DispatcherServlet.class))
-							.hasSize(2);
-				});
+		this.contextRunner.withUserConfiguration(SpringServletConfiguration.class).run((context) -> {
+			verifyContext(context);
+			assertThat(context.getBeanNamesForType(DispatcherServlet.class)).hasSize(2);
+		});
 	}
 
 	@Test
 	public void contextAlreadyHasNonDispatcherServlet() {
-		this.contextRunner.withUserConfiguration(NonSpringServletConfiguration.class)
-				.run((context) -> {
-					verifyContext(context); // the non default servlet is still registered
-					assertThat(context).doesNotHaveBean(DispatcherServlet.class);
-				});
+		this.contextRunner.withUserConfiguration(NonSpringServletConfiguration.class).run((context) -> {
+			verifyContext(context); // the non default servlet is still registered
+			assertThat(context).doesNotHaveBean(DispatcherServlet.class);
+		});
 	}
 
 	@Test
 	public void contextAlreadyHasNonServlet() {
-		this.contextRunner.withUserConfiguration(NonServletConfiguration.class)
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(DispatcherServlet.class);
-					assertThat(context).doesNotHaveBean(Servlet.class);
-				});
+		this.contextRunner.withUserConfiguration(NonServletConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(DispatcherServlet.class);
+			assertThat(context).doesNotHaveBean(Servlet.class);
+		});
 	}
 
 	@Test
 	public void contextAlreadyHasDispatcherServletAndRegistration() {
-		this.contextRunner
-				.withUserConfiguration(
-						DispatcherServletWithRegistrationConfiguration.class)
+		this.contextRunner.withUserConfiguration(DispatcherServletWithRegistrationConfiguration.class)
 				.run((context) -> {
 					verifyContext(context);
 					assertThat(context).hasSingleBean(DispatcherServlet.class);
@@ -112,20 +105,15 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	@Test
 	public void webServerHasNoServletContext() {
-		this.contextRunner.withUserConfiguration(EnsureWebServerHasNoServletContext.class)
-				.run(verifyContext());
+		this.contextRunner.withUserConfiguration(EnsureWebServerHasNoServletContext.class).run(verifyContext());
 	}
 
 	@Test
 	public void customizeWebServerFactoryThroughCallback() {
-		this.contextRunner
-				.withUserConfiguration(CallbackEmbeddedServerFactoryCustomizer.class)
-				.run((context) -> {
-					verifyContext(context);
-					assertThat(
-							context.getBean(MockServletWebServerFactory.class).getPort())
-									.isEqualTo(9000);
-				});
+		this.contextRunner.withUserConfiguration(CallbackEmbeddedServerFactoryCustomizer.class).run((context) -> {
+			verifyContext(context);
+			assertThat(context.getBean(MockServletWebServerFactory.class).getPort()).isEqualTo(9000);
+		});
 	}
 
 	@Test
@@ -143,10 +131,8 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	private void verifyContext(ApplicationContext context) {
-		MockServletWebServerFactory factory = context
-				.getBean(MockServletWebServerFactory.class);
-		Servlet servlet = context.getBean(
-				DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
+		MockServletWebServerFactory factory = context.getBean(MockServletWebServerFactory.class);
+		Servlet servlet = context.getBean(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
 				Servlet.class);
 		verify(factory.getServletContext()).addServlet("dispatcherServlet", servlet);
 	}
@@ -189,8 +175,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		public FrameworkServlet dispatcherServlet() {
 			return new FrameworkServlet() {
 				@Override
-				protected void doService(HttpServletRequest request,
-						HttpServletResponse response) {
+				protected void doService(HttpServletRequest request, HttpServletResponse response) {
 				}
 			};
 		}
@@ -226,8 +211,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public static class EnsureWebServerHasNoServletContext implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof ConfigurableServletWebServerFactory) {
 				MockServletWebServerFactory webServerFactory = (MockServletWebServerFactory) bean;
 				assertThat(webServerFactory.getServletContext()).isNull();

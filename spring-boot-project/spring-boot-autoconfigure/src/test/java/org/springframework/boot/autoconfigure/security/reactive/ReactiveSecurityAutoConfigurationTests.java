@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,22 +38,17 @@ public class ReactiveSecurityAutoConfigurationTests {
 
 	@Test
 	public void backsOffWhenWebFilterChainProxyBeanPresent() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 				.withUserConfiguration(WebFilterChainProxyConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(WebFilterChainProxy.class));
+				.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
 	}
 
 	@Test
 	public void enablesWebFluxSecurity() {
 		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-								ReactiveUserDetailsServiceAutoConfiguration.class))
-				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class)
-						.isNotNull());
+				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+						ReactiveUserDetailsServiceAutoConfiguration.class))
+				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
 	}
 
 	@Configuration

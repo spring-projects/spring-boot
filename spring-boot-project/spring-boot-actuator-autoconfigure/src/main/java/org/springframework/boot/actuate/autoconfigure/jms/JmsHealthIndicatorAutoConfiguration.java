@@ -48,13 +48,12 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnEnabledHealthIndicator("jms")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ ActiveMQAutoConfiguration.class, ArtemisAutoConfiguration.class })
-public class JmsHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<JmsHealthIndicator, ConnectionFactory> {
+public class JmsHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
 	private final Map<String, ConnectionFactory> connectionFactories;
 
-	public JmsHealthIndicatorAutoConfiguration(
-			Map<String, ConnectionFactory> connectionFactories) {
+	public JmsHealthIndicatorAutoConfiguration(Map<String, ConnectionFactory> connectionFactories) {
 		this.connectionFactories = connectionFactories;
 	}
 

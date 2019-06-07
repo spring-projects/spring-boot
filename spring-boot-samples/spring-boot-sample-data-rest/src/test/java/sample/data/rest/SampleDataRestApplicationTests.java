@@ -58,25 +58,21 @@ public class SampleDataRestApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		this.mvc.perform(get("/api")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("hotels")));
+		this.mvc.perform(get("/api")).andExpect(status().isOk()).andExpect(content().string(containsString("hotels")));
 	}
 
 	@Test
 	public void findByNameAndCountry() throws Exception {
-		this.mvc.perform(get(
-				"/api/cities/search/findByNameAndCountryAllIgnoringCase?name=Melbourne&country=Australia"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("state", equalTo("Victoria")))
+		this.mvc.perform(get("/api/cities/search/findByNameAndCountryAllIgnoringCase?name=Melbourne&country=Australia"))
+				.andExpect(status().isOk()).andExpect(jsonPath("state", equalTo("Victoria")))
 				.andExpect(jsonPath("name", equalTo("Melbourne")));
 	}
 
 	@Test
 	public void findByContaining() throws Exception {
-		this.mvc.perform(get(
-				"/api/cities/search/findByNameContainingAndCountryContainingAllIgnoringCase?name=&country=UK"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("_embedded.cities", hasSize(3)));
+		this.mvc.perform(
+				get("/api/cities/search/findByNameContainingAndCountryContainingAllIgnoringCase?name=&country=UK"))
+				.andExpect(status().isOk()).andExpect(jsonPath("_embedded.cities", hasSize(3)));
 	}
 
 }

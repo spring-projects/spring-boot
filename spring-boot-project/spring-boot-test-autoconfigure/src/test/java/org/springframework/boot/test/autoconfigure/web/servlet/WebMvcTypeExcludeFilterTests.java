@@ -46,8 +46,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Test
 	public void matchWhenHasNoControllers() throws Exception {
-		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
-				WithNoControllers.class);
+		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(WithNoControllers.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
@@ -60,8 +59,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Test
 	public void matchWhenHasController() throws Exception {
-		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
-				WithController.class);
+		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(WithController.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isTrue();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
@@ -74,8 +72,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Test
 	public void matchNotUsingDefaultFilters() throws Exception {
-		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
-				NotUsingDefaultFilters.class);
+		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(NotUsingDefaultFilters.class);
 		assertThat(excludes(filter, Controller1.class)).isTrue();
 		assertThat(excludes(filter, Controller2.class)).isTrue();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isTrue();
@@ -88,8 +85,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Test
 	public void matchWithIncludeFilter() throws Exception {
-		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
-				WithIncludeFilter.class);
+		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(WithIncludeFilter.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
@@ -101,8 +97,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Test
 	public void matchWithExcludeFilter() throws Exception {
-		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
-				WithExcludeFilter.class);
+		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(WithExcludeFilter.class);
 		assertThat(excludes(filter, Controller1.class)).isTrue();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
@@ -115,8 +110,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Test
 	public void matchWhenSecureFalse() throws Exception {
-		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(
-				WithSecureFalse.class);
+		WebMvcTypeExcludeFilter filter = new WebMvcTypeExcludeFilter(WithSecureFalse.class);
 		assertThat(excludes(filter, Controller1.class)).isFalse();
 		assertThat(excludes(filter, Controller2.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
@@ -127,10 +121,8 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isTrue();
 	}
 
-	private boolean excludes(WebMvcTypeExcludeFilter filter, Class<?> type)
-			throws IOException {
-		MetadataReader metadataReader = this.metadataReaderFactory
-				.getMetadataReader(type.getName());
+	private boolean excludes(WebMvcTypeExcludeFilter filter, Class<?> type) throws IOException {
+		MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(type.getName());
 		return filter.match(metadataReader, this.metadataReaderFactory);
 	}
 
@@ -154,8 +146,7 @@ public class WebMvcTypeExcludeFilterTests {
 
 	}
 
-	@WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
-			classes = Controller1.class))
+	@WebMvcTest(excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = Controller1.class))
 	static class WithExcludeFilter {
 
 	}

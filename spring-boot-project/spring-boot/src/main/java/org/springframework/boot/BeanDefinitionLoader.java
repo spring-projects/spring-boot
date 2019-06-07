@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,11 +147,9 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(Class<?> source) {
-		if (isGroovyPresent()
-				&& GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
+		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
-			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source,
-					GroovyBeanDefinitionSource.class);
+			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
 			load(loader);
 		}
 		if (isComponent(source)) {
@@ -171,8 +169,7 @@ class BeanDefinitionLoader {
 	private int load(Resource source) {
 		if (source.getFilename().endsWith(".groovy")) {
 			if (this.groovyReader == null) {
-				throw new BeanDefinitionStoreException(
-						"Cannot load Groovy beans without Groovy on classpath");
+				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
 			return this.groovyReader.loadBeanDefinitions(source);
 		}
@@ -184,8 +181,7 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-		String resolvedSource = this.xmlReader.getEnvironment()
-				.resolvePlaceholders(source.toString());
+		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
@@ -261,14 +257,11 @@ class BeanDefinitionLoader {
 		}
 		try {
 			// Attempt to find a class in this package
-			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
-					getClass().getClassLoader());
-			Resource[] resources = resolver.getResources(
-					ClassUtils.convertClassNameToResourcePath(source.toString())
-							+ "/*.class");
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
+			Resource[] resources = resolver
+					.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
-				String className = StringUtils
-						.stripFilenameExtension(resource.getFilename());
+				String className = StringUtils.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));
 				break;
 			}
@@ -287,8 +280,8 @@ class BeanDefinitionLoader {
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass()
-				|| type.getConstructors() == null || type.getConstructors().length == 0) {
+		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass() || type.getConstructors() == null
+				|| type.getConstructors().length == 0) {
 			return false;
 		}
 		return true;
@@ -298,8 +291,7 @@ class BeanDefinitionLoader {
 	 * Simple {@link TypeFilter} used to ensure that specified {@link Class} sources are
 	 * not accidentally re-added during scanning.
 	 */
-	private static class ClassExcludeFilter
-			extends AbstractTypeHierarchyTraversingFilter {
+	private static class ClassExcludeFilter extends AbstractTypeHierarchyTraversingFilter {
 
 		private final Set<String> classNames = new HashSet<>();
 

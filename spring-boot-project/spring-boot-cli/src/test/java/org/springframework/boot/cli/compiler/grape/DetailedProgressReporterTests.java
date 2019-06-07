@@ -39,8 +39,7 @@ public final class DetailedProgressReporterTests {
 
 	private static final String ARTIFACT = "org/alpha/bravo/charlie/1.2.3/charlie-1.2.3.jar";
 
-	private final TransferResource resource = new TransferResource(null, REPOSITORY,
-			ARTIFACT, null, null);
+	private final TransferResource resource = new TransferResource(null, REPOSITORY, ARTIFACT, null, null);
 
 	private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -55,8 +54,7 @@ public final class DetailedProgressReporterTests {
 
 	@Test
 	public void downloading() throws TransferCancelledException {
-		TransferEvent startedEvent = new TransferEvent.Builder(this.session,
-				this.resource).build();
+		TransferEvent startedEvent = new TransferEvent.Builder(this.session, this.resource).build();
 		this.session.getTransferListener().transferStarted(startedEvent);
 		assertThat(new String(this.baos.toByteArray()))
 				.isEqualTo(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT));
@@ -66,8 +64,8 @@ public final class DetailedProgressReporterTests {
 	public void downloaded() throws InterruptedException {
 		// Ensure some transfer time
 		Thread.sleep(100);
-		TransferEvent completedEvent = new TransferEvent.Builder(this.session,
-				this.resource).addTransferredBytes(4096).build();
+		TransferEvent completedEvent = new TransferEvent.Builder(this.session, this.resource).addTransferredBytes(4096)
+				.build();
 		this.session.getTransferListener().transferSucceeded(completedEvent);
 		String message = new String(this.baos.toByteArray()).replace("\\", "/");
 		assertThat(message).startsWith("Downloaded: " + REPOSITORY + ARTIFACT);

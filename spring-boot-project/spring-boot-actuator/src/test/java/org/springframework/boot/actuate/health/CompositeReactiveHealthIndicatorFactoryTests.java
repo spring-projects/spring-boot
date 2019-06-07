@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 	@Test
 	public void defaultHealthIndicatorNameFactory() {
 		ReactiveHealthIndicator healthIndicator = new CompositeReactiveHealthIndicatorFactory()
-				.createReactiveHealthIndicator(new OrderedHealthAggregator(), Collections
-						.singletonMap("myHealthIndicator", () -> Mono.just(UP)), null);
+				.createReactiveHealthIndicator(new OrderedHealthAggregator(),
+						Collections.singletonMap("myHealthIndicator", () -> Mono.just(UP)), null);
 		StepVerifier.create(healthIndicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("my");
@@ -66,8 +66,7 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 	@Test
 	public void healthIndicatorIsAdapted() {
 		ReactiveHealthIndicator healthIndicator = createHealthIndicator(
-				Collections.singletonMap("test", () -> Mono.just(UP)),
-				Collections.singletonMap("regular", () -> DOWN));
+				Collections.singletonMap("test", () -> Mono.just(UP)), Collections.singletonMap("regular", () -> DOWN));
 		StepVerifier.create(healthIndicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("test", "regular");
@@ -76,8 +75,7 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 
 	@Test
 	public void reactiveHealthIndicatorTakesPrecedence() {
-		ReactiveHealthIndicator reactiveHealthIndicator = mock(
-				ReactiveHealthIndicator.class);
+		ReactiveHealthIndicator reactiveHealthIndicator = mock(ReactiveHealthIndicator.class);
 		given(reactiveHealthIndicator.health()).willReturn(Mono.just(UP));
 		HealthIndicator regularHealthIndicator = mock(HealthIndicator.class);
 		given(regularHealthIndicator.health()).willReturn(UP);
@@ -92,12 +90,10 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 		verify(regularHealthIndicator, never()).health();
 	}
 
-	private ReactiveHealthIndicator createHealthIndicator(
-			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
+	private ReactiveHealthIndicator createHealthIndicator(Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
-		return new CompositeReactiveHealthIndicatorFactory((n) -> n)
-				.createReactiveHealthIndicator(new OrderedHealthAggregator(),
-						reactiveHealthIndicators, healthIndicators);
+		return new CompositeReactiveHealthIndicatorFactory((n) -> n).createReactiveHealthIndicator(
+				new OrderedHealthAggregator(), reactiveHealthIndicators, healthIndicators);
 	}
 
 }

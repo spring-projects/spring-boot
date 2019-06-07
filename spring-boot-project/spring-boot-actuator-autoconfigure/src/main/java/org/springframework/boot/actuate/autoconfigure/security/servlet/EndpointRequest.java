@@ -133,17 +133,14 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected final boolean matches(HttpServletRequest request,
-				Supplier<WebApplicationContext> context) {
+		protected final boolean matches(HttpServletRequest request, Supplier<WebApplicationContext> context) {
 			WebApplicationContext applicationContext = WebApplicationContextUtils
 					.getRequiredWebApplicationContext(request.getServletContext());
-			if (ManagementPortType.get(applicationContext
-					.getEnvironment()) == ManagementPortType.DIFFERENT) {
+			if (ManagementPortType.get(applicationContext.getEnvironment()) == ManagementPortType.DIFFERENT) {
 				if (applicationContext.getParent() == null) {
 					return false;
 				}
-				String managementContextId = applicationContext.getParent().getId()
-						+ ":management";
+				String managementContextId = applicationContext.getParent().getId() + ":management";
 				if (!managementContextId.equals(applicationContext.getId())) {
 					return false;
 				}
@@ -163,18 +160,15 @@ public final class EndpointRequest {
 		protected abstract RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory);
 
-		protected List<RequestMatcher> getLinksMatchers(
-				RequestMatcherFactory requestMatcherFactory,
+		protected List<RequestMatcher> getLinksMatchers(RequestMatcherFactory requestMatcherFactory,
 				RequestMatcherProvider matcherProvider, String basePath) {
 			List<RequestMatcher> linksMatchers = new ArrayList<>();
 			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, basePath));
-			linksMatchers
-					.add(requestMatcherFactory.antPath(matcherProvider, basePath, "/"));
+			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, basePath, "/"));
 			return linksMatchers;
 		}
 
-		protected RequestMatcherProvider getRequestMatcherProvider(
-				WebApplicationContext context) {
+		protected RequestMatcherProvider getRequestMatcherProvider(WebApplicationContext context) {
 			try {
 				return context.getBean(RequestMatcherProvider.class);
 			}
@@ -201,17 +195,14 @@ public final class EndpointRequest {
 		}
 
 		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
-					includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
-					includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes,
-				boolean includeLinks) {
+		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
 			this.includes = includes;
 			this.excludes = excludes;
 			this.includeLinks = includeLinks;
@@ -236,8 +227,7 @@ public final class EndpointRequest {
 		@Override
 		protected RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory) {
-			PathMappedEndpoints pathMappedEndpoints = context
-					.getBean(PathMappedEndpoints.class);
+			PathMappedEndpoints pathMappedEndpoints = context.getBean(PathMappedEndpoints.class);
 			RequestMatcherProvider matcherProvider = getRequestMatcherProvider(context);
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
@@ -245,20 +235,16 @@ public final class EndpointRequest {
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			List<RequestMatcher> delegateMatchers = getDelegateMatchers(
-					requestMatcherFactory, matcherProvider, paths);
+			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths);
 			String basePath = pathMappedEndpoints.getBasePath();
 			if (this.includeLinks && StringUtils.hasText(basePath)) {
-				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory,
-						matcherProvider, basePath));
+				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
 
-		private Stream<String> streamPaths(List<Object> source,
-				PathMappedEndpoints pathMappedEndpoints) {
-			return source.stream().filter(Objects::nonNull).map(this::getEndpointId)
-					.map(pathMappedEndpoints::getPath);
+		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints pathMappedEndpoints) {
+			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
 		}
 
 		private EndpointId getEndpointId(Object source) {
@@ -275,18 +261,14 @@ public final class EndpointRequest {
 		}
 
 		private EndpointId getEndpointId(Class<?> source) {
-			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source,
-					Endpoint.class);
-			Assert.state(annotation != null,
-					() -> "Class " + source + " is not annotated with @Endpoint");
+			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source, Endpoint.class);
+			Assert.state(annotation != null, () -> "Class " + source + " is not annotated with @Endpoint");
 			return EndpointId.of(annotation.id());
 		}
 
-		private List<RequestMatcher> getDelegateMatchers(
-				RequestMatcherFactory requestMatcherFactory,
+		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
 				RequestMatcherProvider matcherProvider, Set<String> paths) {
-			return paths.stream().map(
-					(path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
+			return paths.stream().map((path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
 					.collect(Collectors.toList());
 		}
 
@@ -300,12 +282,11 @@ public final class EndpointRequest {
 		@Override
 		protected RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory) {
-			WebEndpointProperties properties = context
-					.getBean(WebEndpointProperties.class);
+			WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
 			String basePath = properties.getBasePath();
 			if (StringUtils.hasText(basePath)) {
-				return new OrRequestMatcher(getLinksMatchers(requestMatcherFactory,
-						getRequestMatcherProvider(context), basePath));
+				return new OrRequestMatcher(
+						getLinksMatchers(requestMatcherFactory, getRequestMatcherProvider(context), basePath));
 			}
 			return EMPTY_MATCHER;
 		}
@@ -317,8 +298,7 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		public RequestMatcher antPath(RequestMatcherProvider matcherProvider,
-				String... parts) {
+		public RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
 			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
 				pattern.append(part);

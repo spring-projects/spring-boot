@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,20 +65,18 @@ public class RestClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public RestClientBuilder restClientBuilder() {
-		HttpHost[] hosts = this.properties.getUris().stream().map(HttpHost::create)
-				.toArray(HttpHost[]::new);
+		HttpHost[] hosts = this.properties.getUris().stream().map(HttpHost::create).toArray(HttpHost[]::new);
 		RestClientBuilder builder = RestClient.builder(hosts);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.properties::getUsername).whenHasText().to((username) -> {
 			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-			Credentials credentials = new UsernamePasswordCredentials(
-					this.properties.getUsername(), this.properties.getPassword());
+			Credentials credentials = new UsernamePasswordCredentials(this.properties.getUsername(),
+					this.properties.getPassword());
 			credentialsProvider.setCredentials(AuthScope.ANY, credentials);
-			builder.setHttpClientConfigCallback((httpClientBuilder) -> httpClientBuilder
-					.setDefaultCredentialsProvider(credentialsProvider));
+			builder.setHttpClientConfigCallback(
+					(httpClientBuilder) -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
 		});
-		this.builderCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(builder));
+		this.builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
@@ -88,8 +86,7 @@ public class RestClientAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RestHighLevelClient restHighLevelClient(
-				RestClientBuilder restClientBuilder) {
+		public RestHighLevelClient restHighLevelClient(RestClientBuilder restClientBuilder) {
 			return new RestHighLevelClient(restClientBuilder);
 		}
 

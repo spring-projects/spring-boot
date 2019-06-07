@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 
 	@Override
 	protected void findAllClasses(String packageName, ClassLoader loader) {
-		MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(
-				loader);
+		MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(loader);
 		try {
 			Resource[] resources = scan(loader, packageName);
 			for (Resource resource : resources) {
@@ -64,15 +63,13 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 	}
 
 	private Resource[] scan(ClassLoader loader, String packageName) throws IOException {
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
-				loader);
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(loader);
 		String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
 				+ ClassUtils.convertClassNameToResourcePath(packageName) + "/**/*.class";
 		return resolver.getResources(pattern);
 	}
 
-	private Class<?> loadClass(ClassLoader loader, MetadataReaderFactory readerFactory,
-			Resource resource) {
+	private Class<?> loadClass(ClassLoader loader, MetadataReaderFactory readerFactory, Resource resource) {
 		try {
 			MetadataReader reader = readerFactory.getMetadataReader(resource);
 			return ClassUtils.forName(reader.getClassMetadata().getClassName(), loader);
@@ -83,8 +80,7 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 		}
 		catch (Throwable ex) {
 			if (this.logger.isWarnEnabled()) {
-				this.logger.warn(
-						"Unexpected failure when loading class resource " + resource, ex);
+				this.logger.warn("Unexpected failure when loading class resource " + resource, ex);
 			}
 			return null;
 		}
@@ -92,8 +88,7 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 
 	private void handleFailure(Resource resource, Throwable ex) {
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug(
-					"Ignoring candidate class resource " + resource + " due to " + ex);
+			this.logger.debug("Ignoring candidate class resource " + resource + " due to " + ex);
 		}
 	}
 

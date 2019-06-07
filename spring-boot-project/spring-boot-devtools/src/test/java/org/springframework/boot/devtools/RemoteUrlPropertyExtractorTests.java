@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,13 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@After
 	public void preventRunFailuresFromPollutingLoggerContext() {
-		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class))
-				.getLoggerContext().getTurboFilterList().clear();
+		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class)).getLoggerContext()
+				.getTurboFilterList().clear();
 	}
 
 	@Test
 	public void missingUrl() {
-		assertThatIllegalStateException().isThrownBy(() -> doTest())
-				.withMessageContaining("No remote URL specified");
+		assertThatIllegalStateException().isThrownBy(() -> doTest()).withMessageContaining("No remote URL specified");
 	}
 
 	@Test
@@ -57,26 +56,21 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@Test
 	public void multipleUrls() {
-		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> doTest("http://localhost:8080", "http://localhost:9090"))
+		assertThatIllegalStateException().isThrownBy(() -> doTest("http://localhost:8080", "http://localhost:9090"))
 				.withMessageContaining("Multiple URLs specified");
 	}
 
 	@Test
 	public void validUrl() {
 		ApplicationContext context = doTest("http://localhost:8080");
-		assertThat(context.getEnvironment().getProperty("remoteUrl"))
-				.isEqualTo("http://localhost:8080");
-		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache"))
-				.isNull();
+		assertThat(context.getEnvironment().getProperty("remoteUrl")).isEqualTo("http://localhost:8080");
+		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache")).isNull();
 	}
 
 	@Test
 	public void cleanValidUrl() {
 		ApplicationContext context = doTest("http://localhost:8080/");
-		assertThat(context.getEnvironment().getProperty("remoteUrl"))
-				.isEqualTo("http://localhost:8080");
+		assertThat(context.getEnvironment().getProperty("remoteUrl")).isEqualTo("http://localhost:8080");
 	}
 
 	private ApplicationContext doTest(String... args) {

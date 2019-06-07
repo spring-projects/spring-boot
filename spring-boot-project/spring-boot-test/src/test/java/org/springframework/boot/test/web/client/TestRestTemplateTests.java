@@ -87,8 +87,7 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void doNotReplaceCustomRequestFactory() {
-		RestTemplateBuilder builder = new RestTemplateBuilder()
-				.requestFactory(OkHttp3ClientHttpRequestFactory.class);
+		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(OkHttp3ClientHttpRequestFactory.class);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
 		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
 				.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
@@ -97,28 +96,20 @@ public class TestRestTemplateTests {
 	@Test
 	public void useTheSameRequestFactoryClassWithBasicAuth() {
 		OkHttp3ClientHttpRequestFactory customFactory = new OkHttp3ClientHttpRequestFactory();
-		RestTemplateBuilder builder = new RestTemplateBuilder()
-				.requestFactory(() -> customFactory);
-		TestRestTemplate testRestTemplate = new TestRestTemplate(builder)
-				.withBasicAuth("test", "test");
+		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(() -> customFactory);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder).withBasicAuth("test", "test");
 		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
-		Object requestFactory = ReflectionTestUtils
-				.getField(restTemplate.getRequestFactory(), "requestFactory");
-		assertThat(requestFactory).isNotEqualTo(customFactory)
-				.hasSameClassAs(customFactory);
+		Object requestFactory = ReflectionTestUtils.getField(restTemplate.getRequestFactory(), "requestFactory");
+		assertThat(requestFactory).isNotEqualTo(customFactory).hasSameClassAs(customFactory);
 	}
 
 	@Test
 	public void withBasicAuthWhenRequestFactoryTypeCannotBeInstantiatedShouldFallback() {
-		TestClientHttpRequestFactory customFactory = new TestClientHttpRequestFactory(
-				"my-request-factory");
-		RestTemplateBuilder builder = new RestTemplateBuilder()
-				.requestFactory(() -> customFactory);
-		TestRestTemplate testRestTemplate = new TestRestTemplate(builder)
-				.withBasicAuth("test", "test");
+		TestClientHttpRequestFactory customFactory = new TestClientHttpRequestFactory("my-request-factory");
+		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(() -> customFactory);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder).withBasicAuth("test", "test");
 		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
-		Object requestFactory = ReflectionTestUtils
-				.getField(restTemplate.getRequestFactory(), "requestFactory");
+		Object requestFactory = ReflectionTestUtils.getField(restTemplate.getRequestFactory(), "requestFactory");
 		assertThat(requestFactory).isNotEqualTo(customFactory)
 				.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 	}
@@ -134,8 +125,7 @@ public class TestRestTemplateTests {
 	public void getRootUriRootUriSetViaLocalHostUriTemplateHandler() {
 		String rootUri = "https://example.com";
 		TestRestTemplate template = new TestRestTemplate();
-		LocalHostUriTemplateHandler templateHandler = mock(
-				LocalHostUriTemplateHandler.class);
+		LocalHostUriTemplateHandler templateHandler = mock(LocalHostUriTemplateHandler.class);
 		given(templateHandler.getRootUri()).willReturn(rootUri);
 		template.setUriTemplateHandler(templateHandler);
 		assertThat(template.getRootUri()).isEqualTo(rootUri);
@@ -148,15 +138,13 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void authenticated() {
-		assertThat(new TestRestTemplate("user", "password").getRestTemplate()
-				.getRequestFactory())
-						.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+		assertThat(new TestRestTemplate("user", "password").getRestTemplate().getRequestFactory())
+				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
 	}
 
 	@Test
 	public void options() {
-		TestRestTemplate template = new TestRestTemplate(
-				HttpClientOption.ENABLE_REDIRECTS);
+		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 				.getRestTemplate().getRequestFactory();
 		RequestConfig config = factory.getRequestConfig();
@@ -166,10 +154,8 @@ public class TestRestTemplateTests {
 	@Test
 	public void restOperationsAreAvailable() {
 		RestTemplate delegate = mock(RestTemplate.class);
-		given(delegate.getRequestFactory())
-				.willReturn(new SimpleClientHttpRequestFactory());
-		given(delegate.getUriTemplateHandler())
-				.willReturn(new DefaultUriBuilderFactory());
+		given(delegate.getRequestFactory()).willReturn(new SimpleClientHttpRequestFactory());
+		given(delegate.getUriTemplateHandler()).willReturn(new DefaultUriBuilderFactory());
 		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
 		given(builder.build()).willReturn(delegate);
 		TestRestTemplate restTemplate = new TestRestTemplate(builder);
@@ -177,14 +163,13 @@ public class TestRestTemplateTests {
 
 			@Override
 			public void doWith(Method method) throws IllegalArgumentException {
-				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
-						method.getName(), method.getParameterTypes());
+				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class, method.getName(),
+						method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();
 				assertThat(Modifier.isPublic(equivalent.getModifiers()))
 						.as("Method %s should have been public", equivalent).isTrue();
 				try {
-					equivalent.invoke(restTemplate,
-							mockArguments(method.getParameterTypes()));
+					equivalent.invoke(restTemplate, mockArguments(method.getParameterTypes()));
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);
@@ -229,37 +214,30 @@ public class TestRestTemplateTests {
 	@Test
 	public void withBasicAuthAddsBasicAuthInterceptorWhenNotAlreadyPresent() {
 		TestRestTemplate originalTemplate = new TestRestTemplate();
-		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user",
-				"password");
+		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user", "password");
 		assertThat(basicAuthTemplate.getRestTemplate().getMessageConverters())
-				.containsExactlyElementsOf(
-						originalTemplate.getRestTemplate().getMessageConverters());
+				.containsExactlyElementsOf(originalTemplate.getRestTemplate().getMessageConverters());
 		assertThat(basicAuthTemplate.getRestTemplate().getRequestFactory())
 				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
-		assertThat(ReflectionTestUtils.getField(
-				basicAuthTemplate.getRestTemplate().getRequestFactory(),
-				"requestFactory"))
+		assertThat(
+				ReflectionTestUtils.getField(basicAuthTemplate.getRestTemplate().getRequestFactory(), "requestFactory"))
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuthTemplate.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(originalTemplate.getRestTemplate().getUriTemplateHandler());
 		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors()).hasSize(1);
-		assertBasicAuthorizationInterceptorCredentials(basicAuthTemplate, "user",
-				"password");
+		assertBasicAuthorizationInterceptorCredentials(basicAuthTemplate, "user", "password");
 	}
 
 	@Test
 	public void withBasicAuthReplacesBasicAuthInterceptorWhenAlreadyPresent() {
-		TestRestTemplate original = new TestRestTemplate("foo", "bar")
-				.withBasicAuth("replace", "replace");
+		TestRestTemplate original = new TestRestTemplate("foo", "bar").withBasicAuth("replace", "replace");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(basicAuth.getRestTemplate().getMessageConverters())
-				.containsExactlyElementsOf(
-						original.getRestTemplate().getMessageConverters());
+				.containsExactlyElementsOf(original.getRestTemplate().getMessageConverters());
 		assertThat(basicAuth.getRestTemplate().getRequestFactory())
 				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
-		assertThat(ReflectionTestUtils.getField(
-				basicAuth.getRestTemplate().getRequestFactory(), "requestFactory"))
-						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
+		assertThat(ReflectionTestUtils.getField(basicAuth.getRestTemplate().getRequestFactory(), "requestFactory"))
+				.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuth.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(original.getRestTemplate().getUriTemplateHandler());
 		assertThat(basicAuth.getRestTemplate().getInterceptors()).hasSize(1);
@@ -271,10 +249,8 @@ public class TestRestTemplateTests {
 		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);
-		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user",
-				"password");
-		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler())
-				.isSameAs(errorHandler);
+		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user", "password");
+		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler()).isSameAs(errorHandler);
 	}
 
 	@Test
@@ -283,55 +259,47 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void exchangeWithRequestEntityAndClassHandlesRelativeUris()
-			throws IOException {
+	public void exchangeWithRequestEntityAndClassHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri),
-						String.class));
+				.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), String.class));
 	}
 
 	@Test
-	public void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris()
-			throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri),
-						new ParameterizedTypeReference<String>() {
-						}));
+	public void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.exchange(
+				new RequestEntity<String>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
+				}));
 	}
 
 	@Test
 	public void exchangeHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling(
-				(testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
-						HttpMethod.GET, new HttpEntity<>(new byte[0]), String.class));
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
+				HttpMethod.GET, new HttpEntity<>(new byte[0]), String.class));
 	}
 
 	@Test
-	public void exchangeWithParameterizedTypeReferenceHandlesRelativeUris()
-			throws IOException {
-		verifyRelativeUriHandling(
-				(testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
-						HttpMethod.GET, new HttpEntity<>(new byte[0]),
-						new ParameterizedTypeReference<String>() {
-						}));
+	public void exchangeWithParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.exchange(relativeUri,
+				HttpMethod.GET, new HttpEntity<>(new byte[0]), new ParameterizedTypeReference<String>() {
+				}));
 	}
 
 	@Test
 	public void executeHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.execute(relativeUri, HttpMethod.GET, null, null));
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.execute(relativeUri, HttpMethod.GET, null, null));
 	}
 
 	@Test
 	public void getForEntityHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.getForEntity(relativeUri, String.class));
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.getForEntity(relativeUri, String.class));
 	}
 
 	@Test
 	public void getForObjectHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.getForObject(relativeUri, String.class));
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.getForObject(relativeUri, String.class));
 	}
 
 	@Test
@@ -346,59 +314,52 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void patchForObjectHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.patchForObject(relativeUri, "hello", String.class));
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.patchForObject(relativeUri, "hello", String.class));
 	}
 
 	@Test
 	public void postForEntityHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.postForEntity(relativeUri, "hello", String.class));
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.postForEntity(relativeUri, "hello", String.class));
 	}
 
 	@Test
 	public void postForLocationHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.postForLocation(relativeUri, "hello"));
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.postForLocation(relativeUri, "hello"));
 	}
 
 	@Test
 	public void postForObjectHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.postForObject(relativeUri, "hello", String.class));
+		verifyRelativeUriHandling(
+				(testRestTemplate, relativeUri) -> testRestTemplate.postForObject(relativeUri, "hello", String.class));
 	}
 
 	@Test
 	public void putHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.put(relativeUri, "hello"));
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.put(relativeUri, "hello"));
 	}
 
-	private void verifyRelativeUriHandling(TestRestTemplateCallback callback)
-			throws IOException {
+	private void verifyRelativeUriHandling(TestRestTemplateCallback callback) throws IOException {
 		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
 		MockClientHttpRequest request = new MockClientHttpRequest();
 		request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
-		URI absoluteUri = URI
-				.create("http://localhost:8080/a/b/c.txt?param=%7Bsomething%7D");
-		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class)))
-				.willReturn(request);
+		URI absoluteUri = URI.create("http://localhost:8080/a/b/c.txt?param=%7Bsomething%7D");
+		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class))).willReturn(request);
 		TestRestTemplate template = new TestRestTemplate();
 		template.getRestTemplate().setRequestFactory(requestFactory);
-		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(
-				new MockEnvironment());
+		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(new MockEnvironment());
 		template.setUriTemplateHandler(uriTemplateHandler);
-		callback.doWithTestRestTemplate(template,
-				URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
+		callback.doWithTestRestTemplate(template, URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
 		verify(requestFactory).createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}
 
-	private void assertBasicAuthorizationInterceptorCredentials(
-			TestRestTemplate testRestTemplate, String username, String password) {
+	private void assertBasicAuthorizationInterceptorCredentials(TestRestTemplate testRestTemplate, String username,
+			String password) {
 		@SuppressWarnings("unchecked")
 		List<ClientHttpRequestInterceptor> requestFactoryInterceptors = (List<ClientHttpRequestInterceptor>) ReflectionTestUtils
-				.getField(testRestTemplate.getRestTemplate().getRequestFactory(),
-						"interceptors");
+				.getField(testRestTemplate.getRestTemplate().getRequestFactory(), "interceptors");
 		assertThat(requestFactoryInterceptors).hasSize(1);
 		ClientHttpRequestInterceptor interceptor = requestFactoryInterceptors.get(0);
 		assertThat(interceptor).isInstanceOf(BasicAuthenticationInterceptor.class);
@@ -419,8 +380,7 @@ public class TestRestTemplateTests {
 		}
 
 		@Override
-		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
-				throws IOException {
+		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
 			return null;
 		}
 

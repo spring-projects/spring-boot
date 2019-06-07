@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class RabbitMetricsAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(
-					RabbitAutoConfiguration.class, RabbitMetricsAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(
+					AutoConfigurations.of(RabbitAutoConfiguration.class, RabbitMetricsAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguredConnectionFactoryIsInstrumented() {
@@ -47,11 +47,10 @@ public class RabbitMetricsAutoConfigurationTests {
 
 	@Test
 	public void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.rabbitmq=false")
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("rabbitmq.connections").meter()).isNull();
-				});
+		this.contextRunner.withPropertyValues("management.metrics.enable.rabbitmq=false").run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			assertThat(registry.find("rabbitmq.connections").meter()).isNull();
+		});
 	}
 
 }

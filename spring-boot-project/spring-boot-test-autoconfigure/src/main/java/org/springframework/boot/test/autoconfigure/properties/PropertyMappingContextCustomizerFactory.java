@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ class PropertyMappingContextCustomizerFactory implements ContextCustomizerFactor
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		AnnotationsPropertySource propertySource = new AnnotationsPropertySource(
-				testClass);
+		AnnotationsPropertySource propertySource = new AnnotationsPropertySource(testClass);
 		return new PropertyMappingContextCustomizer(propertySource);
 	}
 

@@ -56,16 +56,12 @@ public class TypeUtilsTests {
 	public void resolveTypeDescriptorOnConcreteClass() throws IOException {
 		process(SimpleGenericProperties.class, (roundEnv, typeUtils) -> {
 			for (Element rootElement : roundEnv.getRootElements()) {
-				TypeDescriptor typeDescriptor = typeUtils
-						.resolveTypeDescriptor((TypeElement) rootElement);
-				assertThat(typeDescriptor.getGenerics().keySet().stream()
-						.map(Object::toString)).containsOnly("A", "B", "C");
-				assertThat(typeDescriptor.resolveGeneric("A"))
-						.hasToString(String.class.getName());
-				assertThat(typeDescriptor.resolveGeneric("B"))
-						.hasToString(Integer.class.getName());
-				assertThat(typeDescriptor.resolveGeneric("C"))
-						.hasToString(Duration.class.getName());
+				TypeDescriptor typeDescriptor = typeUtils.resolveTypeDescriptor((TypeElement) rootElement);
+				assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
+						"C");
+				assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
+				assertThat(typeDescriptor.resolveGeneric("B")).hasToString(Integer.class.getName());
+				assertThat(typeDescriptor.resolveGeneric("C")).hasToString(Duration.class.getName());
 			}
 		});
 	}
@@ -74,14 +70,11 @@ public class TypeUtilsTests {
 	public void resolveTypeDescriptorOnIntermediateClass() throws IOException {
 		process(AbstractIntermediateGenericProperties.class, (roundEnv, typeUtils) -> {
 			for (Element rootElement : roundEnv.getRootElements()) {
-				TypeDescriptor typeDescriptor = typeUtils
-						.resolveTypeDescriptor((TypeElement) rootElement);
-				assertThat(typeDescriptor.getGenerics().keySet().stream()
-						.map(Object::toString)).containsOnly("A", "B", "C");
-				assertThat(typeDescriptor.resolveGeneric("A"))
-						.hasToString(String.class.getName());
-				assertThat(typeDescriptor.resolveGeneric("B"))
-						.hasToString(Integer.class.getName());
+				TypeDescriptor typeDescriptor = typeUtils.resolveTypeDescriptor((TypeElement) rootElement);
+				assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
+						"C");
+				assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
+				assertThat(typeDescriptor.resolveGeneric("B")).hasToString(Integer.class.getName());
 				assertThat(typeDescriptor.resolveGeneric("C")).hasToString("C");
 			}
 		});
@@ -91,17 +84,15 @@ public class TypeUtilsTests {
 	public void resolveTypeDescriptorWithOnlyGenerics() throws IOException {
 		process(AbstractGenericProperties.class, (roundEnv, typeUtils) -> {
 			for (Element rootElement : roundEnv.getRootElements()) {
-				TypeDescriptor typeDescriptor = typeUtils
-						.resolveTypeDescriptor((TypeElement) rootElement);
-				assertThat(typeDescriptor.getGenerics().keySet().stream()
-						.map(Object::toString)).containsOnly("A", "B", "C");
+				TypeDescriptor typeDescriptor = typeUtils.resolveTypeDescriptor((TypeElement) rootElement);
+				assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
+						"C");
 
 			}
 		});
 	}
 
-	private void process(Class<?> target,
-			BiConsumer<RoundEnvironment, TypeUtils> consumer) throws IOException {
+	private void process(Class<?> target, BiConsumer<RoundEnvironment, TypeUtils> consumer) throws IOException {
 		TestProcessor processor = new TestProcessor(consumer);
 		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
 		compiler.getTask(target).call(processor);
@@ -125,8 +116,7 @@ public class TypeUtilsTests {
 		}
 
 		@Override
-		public boolean process(Set<? extends TypeElement> annotations,
-				RoundEnvironment roundEnv) {
+		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 			this.typeUtilsConsumer.accept(roundEnv, this.typeUtils);
 			return false;
 		}

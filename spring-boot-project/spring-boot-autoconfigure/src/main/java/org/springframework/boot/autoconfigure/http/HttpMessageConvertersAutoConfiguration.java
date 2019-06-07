@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,10 +49,8 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
-@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
-		JsonbAutoConfiguration.class })
-@Import({ JacksonHttpMessageConvertersConfiguration.class,
-		GsonHttpMessageConvertersConfiguration.class,
+@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class, JsonbAutoConfiguration.class })
+@Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
 
@@ -60,8 +58,7 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	private final List<HttpMessageConverter<?>> converters;
 
-	public HttpMessageConvertersAutoConfiguration(
-			ObjectProvider<HttpMessageConverter<?>> convertersProvider) {
+	public HttpMessageConvertersAutoConfiguration(ObjectProvider<HttpMessageConverter<?>> convertersProvider) {
 		this.converters = convertersProvider.orderedStream().collect(Collectors.toList());
 	}
 
@@ -85,8 +82,7 @@ public class HttpMessageConvertersAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public StringHttpMessageConverter stringHttpMessageConverter() {
-			StringHttpMessageConverter converter = new StringHttpMessageConverter(
-					this.properties.getCharset());
+			StringHttpMessageConverter converter = new StringHttpMessageConverter(this.properties.getCharset());
 			converter.setWriteAcceptCharset(false);
 			return converter;
 		}

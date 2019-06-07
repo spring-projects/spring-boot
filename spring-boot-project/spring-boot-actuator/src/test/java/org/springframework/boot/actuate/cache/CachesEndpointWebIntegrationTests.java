@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,28 +49,22 @@ public class CachesEndpointWebIntegrationTests {
 	@Test
 	public void allCaches() {
 		client.get().uri("/actuator/caches").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("cacheManagers.one.caches.a.target")
-				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.one.caches.b.target")
-				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.a.target")
-				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.c.target")
-				.isEqualTo(ConcurrentHashMap.class.getName());
+				.jsonPath("cacheManagers.one.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.one.caches.b.target").isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.two.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.two.caches.c.target").isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@Test
 	public void namedCache() {
-		client.get().uri("/actuator/caches/b").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("name").isEqualTo("b").jsonPath("cacheManager")
-				.isEqualTo("one").jsonPath("target")
+		client.get().uri("/actuator/caches/b").exchange().expectStatus().isOk().expectBody().jsonPath("name")
+				.isEqualTo("b").jsonPath("cacheManager").isEqualTo("one").jsonPath("target")
 				.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@Test
 	public void namedCacheWithUnknownName() {
-		client.get().uri("/actuator/caches/does-not-exist").exchange().expectStatus()
-				.isNotFound();
+		client.get().uri("/actuator/caches/does-not-exist").exchange().expectStatus().isNotFound();
 	}
 
 	@Test
@@ -88,8 +82,7 @@ public class CachesEndpointWebIntegrationTests {
 
 	@Test
 	public void cleanNamedCacheWithUnknownName() {
-		client.delete().uri("/actuator/caches/does-not-exist").exchange().expectStatus()
-				.isNotFound();
+		client.delete().uri("/actuator/caches/does-not-exist").exchange().expectStatus().isNotFound();
 	}
 
 	@Test
@@ -116,8 +109,7 @@ public class CachesEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public CachesEndpointWebExtension cachesEndpointWebExtension(
-				CachesEndpoint endpoint) {
+		public CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint endpoint) {
 			return new CachesEndpointWebExtension(endpoint);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,13 +68,11 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 
 	@Test
 	public void snippetGeneration() throws Exception {
-		this.mvc.perform(get("/")).andDo(this.documentationHandler.document(links(
-				linkWithRel("self").description("Canonical location of this resource"))));
-		File defaultSnippetsDir = new File(
-				"target/generated-snippets/snippet-generation");
+		this.mvc.perform(get("/")).andDo(this.documentationHandler
+				.document(links(linkWithRel("self").description("Canonical location of this resource"))));
+		File defaultSnippetsDir = new File("target/generated-snippets/snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
-				.has(contentContaining("'http://localhost:8080/'"));
+		assertThat(new File(defaultSnippetsDir, "curl-request.md")).has(contentContaining("'http://localhost:8080/'"));
 		assertThat(new File(defaultSnippetsDir, "links.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
@@ -93,14 +91,13 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 
 		@Bean
 		public RestDocsMockMvcConfigurationCustomizer templateFormatCustomizer() {
-			return (configurer) -> configurer.snippets()
-					.withTemplateFormat(TemplateFormats.markdown());
+			return (configurer) -> configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 		}
 
 		@Bean
 		public RestDocsMockMvcConfigurationCustomizer defaultSnippetsCustomizer() {
-			return (configurer) -> configurer.snippets().withAdditionalDefaults(
-					responseFields(fieldWithPath("_links.self").description("Main URL")));
+			return (configurer) -> configurer.snippets()
+					.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}

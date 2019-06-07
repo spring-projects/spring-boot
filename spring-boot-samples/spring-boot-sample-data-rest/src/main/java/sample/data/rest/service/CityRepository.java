@@ -27,11 +27,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(collectionResourceRel = "cities", path = "cities")
 interface CityRepository extends PagingAndSortingRepository<City, Long> {
 
-	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(
-			@Param("name") String name, @Param("country") String country,
-			Pageable pageable);
+	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(@Param("name") String name,
+			@Param("country") String country, Pageable pageable);
 
-	City findByNameAndCountryAllIgnoringCase(@Param("name") String name,
-			@Param("country") String country);
+	City findByNameAndCountryAllIgnoringCase(@Param("name") String name, @Param("country") String country);
 
 }

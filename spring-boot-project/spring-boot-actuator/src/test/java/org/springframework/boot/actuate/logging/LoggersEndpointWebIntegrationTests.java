@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,80 +67,66 @@ public class LoggersEndpointWebIntegrationTests {
 	public void resetMocks() {
 		this.loggingSystem = context.getBean(LoggingSystem.class);
 		Mockito.reset(this.loggingSystem);
-		given(this.loggingSystem.getSupportedLogLevels())
-				.willReturn(EnumSet.allOf(LogLevel.class));
+		given(this.loggingSystem.getSupportedLogLevels()).willReturn(EnumSet.allOf(LogLevel.class));
 	}
 
 	@Test
 	public void getLoggerShouldReturnAllLoggerConfigurations() {
-		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
-				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
-		client.get().uri("/actuator/loggers").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("$.length()").isEqualTo(2).jsonPath("levels")
-				.isEqualTo(jsonArrayOf("OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG",
-						"TRACE"))
-				.jsonPath("loggers.length()").isEqualTo(1)
-				.jsonPath("loggers.ROOT.length()").isEqualTo(2)
-				.jsonPath("loggers.ROOT.configuredLevel").isEqualTo(null)
-				.jsonPath("loggers.ROOT.effectiveLevel").isEqualTo("DEBUG");
+		given(this.loggingSystem.getLoggerConfigurations())
+				.willReturn(Collections.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
+		client.get().uri("/actuator/loggers").exchange().expectStatus().isOk().expectBody().jsonPath("$.length()")
+				.isEqualTo(2).jsonPath("levels")
+				.isEqualTo(jsonArrayOf("OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"))
+				.jsonPath("loggers.length()").isEqualTo(1).jsonPath("loggers.ROOT.length()").isEqualTo(2)
+				.jsonPath("loggers.ROOT.configuredLevel").isEqualTo(null).jsonPath("loggers.ROOT.effectiveLevel")
+				.isEqualTo("DEBUG");
 	}
 
 	@Test
 	public void getLoggerShouldReturnLogLevels() {
 		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
-		client.get().uri("/actuator/loggers/ROOT").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("$.length()").isEqualTo(2)
-				.jsonPath("configuredLevel").isEqualTo(null).jsonPath("effectiveLevel")
-				.isEqualTo("DEBUG");
+		client.get().uri("/actuator/loggers/ROOT").exchange().expectStatus().isOk().expectBody().jsonPath("$.length()")
+				.isEqualTo(2).jsonPath("configuredLevel").isEqualTo(null).jsonPath("effectiveLevel").isEqualTo("DEBUG");
 	}
 
 	@Test
 	public void getLoggersWhenLoggerNotFoundShouldReturnNotFound() {
-		client.get().uri("/actuator/loggers/com.does.not.exist").exchange().expectStatus()
-				.isNotFound();
+		client.get().uri("/actuator/loggers/com.does.not.exist").exchange().expectStatus().isNotFound();
 	}
 
 	@Test
 	public void setLoggerUsingApplicationJsonShouldSetLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
-				.contentType(MediaType.APPLICATION_JSON)
-				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange()
-				.expectStatus().isNoContent();
+		client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@Test
 	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
-				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange()
-				.expectStatus().isNoContent();
+		client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
+				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@Test
 	public void setLoggerWithWrongLogLevelResultInBadRequestResponse() {
-		client.post().uri("/actuator/loggers/ROOT")
-				.contentType(MediaType.APPLICATION_JSON)
-				.syncBody(Collections.singletonMap("configuredLevel", "other")).exchange()
-				.expectStatus().isBadRequest();
+		client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+				.syncBody(Collections.singletonMap("configuredLevel", "other")).exchange().expectStatus()
+				.isBadRequest();
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
 	@Test
 	public void setLoggerWithNullLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
-				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.syncBody(Collections.singletonMap("configuredLevel", null)).exchange()
-				.expectStatus().isNoContent();
+		client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
+				.syncBody(Collections.singletonMap("configuredLevel", null)).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
 	@Test
 	public void setLoggerWithNoLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
-				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
+		client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.emptyMap()).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
@@ -149,10 +135,9 @@ public class LoggersEndpointWebIntegrationTests {
 	public void logLevelForLoggerWithNameThatCouldBeMistakenForAPathExtension() {
 		given(this.loggingSystem.getLoggerConfiguration("com.png"))
 				.willReturn(new LoggerConfiguration("com.png", null, LogLevel.DEBUG));
-		client.get().uri("/actuator/loggers/com.png").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("$.length()").isEqualTo(2)
-				.jsonPath("configuredLevel").isEqualTo(null).jsonPath("effectiveLevel")
-				.isEqualTo("DEBUG");
+		client.get().uri("/actuator/loggers/com.png").exchange().expectStatus().isOk().expectBody()
+				.jsonPath("$.length()").isEqualTo(2).jsonPath("configuredLevel").isEqualTo(null)
+				.jsonPath("effectiveLevel").isEqualTo("DEBUG");
 	}
 
 	private JSONArray jsonArrayOf(Object... entries) {

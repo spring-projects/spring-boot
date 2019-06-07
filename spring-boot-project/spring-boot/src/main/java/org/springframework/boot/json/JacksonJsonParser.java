@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,12 @@ public class JacksonJsonParser extends AbstractJsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE),
-				Exception.class);
+		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE), Exception.class);
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		return tryParse(() -> getObjectMapper().readValue(json, LIST_TYPE),
-				Exception.class);
+		return tryParse(() -> getObjectMapper().readValue(json, LIST_TYPE), Exception.class);
 	}
 
 	private ObjectMapper getObjectMapper() {

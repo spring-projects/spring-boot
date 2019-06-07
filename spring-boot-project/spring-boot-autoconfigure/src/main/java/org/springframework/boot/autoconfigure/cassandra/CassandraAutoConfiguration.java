@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,43 +64,36 @@ public class CassandraAutoConfiguration {
 	public Cluster cassandraCluster() {
 		PropertyMapper map = PropertyMapper.get();
 		CassandraProperties properties = this.properties;
-		Cluster.Builder builder = Cluster.builder()
-				.withClusterName(properties.getClusterName())
+		Cluster.Builder builder = Cluster.builder().withClusterName(properties.getClusterName())
 				.withPort(properties.getPort());
-		map.from(properties::getUsername).whenNonNull().to((username) -> builder
-				.withCredentials(username, properties.getPassword()));
+		map.from(properties::getUsername).whenNonNull()
+				.to((username) -> builder.withCredentials(username, properties.getPassword()));
 		map.from(properties::getCompression).whenNonNull().to(builder::withCompression);
-		map.from(properties::getLoadBalancingPolicy).whenNonNull()
-				.as(BeanUtils::instantiateClass).to(builder::withLoadBalancingPolicy);
+		map.from(properties::getLoadBalancingPolicy).whenNonNull().as(BeanUtils::instantiateClass)
+				.to(builder::withLoadBalancingPolicy);
 		map.from(this::getQueryOptions).to(builder::withQueryOptions);
-		map.from(properties::getReconnectionPolicy).whenNonNull()
-				.as(BeanUtils::instantiateClass).to(builder::withReconnectionPolicy);
-		map.from(properties::getRetryPolicy).whenNonNull().as(BeanUtils::instantiateClass)
-				.to(builder::withRetryPolicy);
+		map.from(properties::getReconnectionPolicy).whenNonNull().as(BeanUtils::instantiateClass)
+				.to(builder::withReconnectionPolicy);
+		map.from(properties::getRetryPolicy).whenNonNull().as(BeanUtils::instantiateClass).to(builder::withRetryPolicy);
 		map.from(this::getSocketOptions).to(builder::withSocketOptions);
 		map.from(properties::isSsl).whenTrue().toCall(builder::withSSL);
 		map.from(this::getPoolingOptions).to(builder::withPoolingOptions);
-		map.from(properties::getContactPoints).as(StringUtils::toStringArray)
-				.to(builder::addContactPoints);
-		map.from(properties::isJmxEnabled).whenFalse()
-				.toCall(builder::withoutJMXReporting);
+		map.from(properties::getContactPoints).as(StringUtils::toStringArray).to(builder::addContactPoints);
+		map.from(properties::isJmxEnabled).whenFalse().toCall(builder::withoutJMXReporting);
 		customize(builder);
 		return builder.build();
 	}
 
 	private void customize(Cluster.Builder builder) {
-		this.builderCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(builder));
+		this.builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 	}
 
 	private QueryOptions getQueryOptions() {
 		PropertyMapper map = PropertyMapper.get();
 		QueryOptions options = new QueryOptions();
 		CassandraProperties properties = this.properties;
-		map.from(properties::getConsistencyLevel).whenNonNull()
-				.to(options::setConsistencyLevel);
-		map.from(properties::getSerialConsistencyLevel).whenNonNull()
-				.to(options::setSerialConsistencyLevel);
+		map.from(properties::getConsistencyLevel).whenNonNull().to(options::setConsistencyLevel);
+		map.from(properties::getSerialConsistencyLevel).whenNonNull().to(options::setSerialConsistencyLevel);
 		map.from(properties::getFetchSize).to(options::setFetchSize);
 		return options;
 	}
@@ -108,8 +101,8 @@ public class CassandraAutoConfiguration {
 	private SocketOptions getSocketOptions() {
 		PropertyMapper map = PropertyMapper.get();
 		SocketOptions options = new SocketOptions();
-		map.from(this.properties::getConnectTimeout).whenNonNull()
-				.asInt(Duration::toMillis).to(options::setConnectTimeoutMillis);
+		map.from(this.properties::getConnectTimeout).whenNonNull().asInt(Duration::toMillis)
+				.to(options::setConnectTimeoutMillis);
 		map.from(this.properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
 				.to(options::setReadTimeoutMillis);
 		return options;
@@ -121,10 +114,9 @@ public class CassandraAutoConfiguration {
 		PoolingOptions options = new PoolingOptions();
 		map.from(properties::getIdleTimeout).whenNonNull().asInt(Duration::getSeconds)
 				.to(options::setIdleTimeoutSeconds);
-		map.from(properties::getPoolTimeout).whenNonNull().asInt(Duration::toMillis)
-				.to(options::setPoolTimeoutMillis);
-		map.from(properties::getHeartbeatInterval).whenNonNull()
-				.asInt(Duration::getSeconds).to(options::setHeartbeatIntervalSeconds);
+		map.from(properties::getPoolTimeout).whenNonNull().asInt(Duration::toMillis).to(options::setPoolTimeoutMillis);
+		map.from(properties::getHeartbeatInterval).whenNonNull().asInt(Duration::getSeconds)
+				.to(options::setHeartbeatIntervalSeconds);
 		map.from(properties::getMaxQueueSize).to(options::setMaxQueueSize);
 		return options;
 	}

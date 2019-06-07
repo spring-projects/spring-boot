@@ -131,15 +131,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void simpleProperties() {
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("The name of this simple properties.")
+				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(SimpleProperties.class)
-				.withDescription("A simple flag.").withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(SimpleProperties.class).withDescription("A simple flag.").withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.counter"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.size"));
@@ -148,83 +145,59 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void simplePrefixValueProperties() {
 		ConfigurationMetadata metadata = compile(SimplePrefixValueProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("simple")
-				.fromSource(SimplePrefixValueProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("simple.name", String.class)
-				.fromSource(SimplePrefixValueProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimplePrefixValueProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("simple.name", String.class).fromSource(SimplePrefixValueProperties.class));
 	}
 
 	@Test
 	public void simpleTypeProperties() {
 		ConfigurationMetadata metadata = compile(SimpleTypeProperties.class);
-		assertThat(metadata).has(
-				Metadata.withGroup("simple.type").fromSource(SimpleTypeProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("simple.type").fromSource(SimpleTypeProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-string", String.class));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-byte", Byte.class));
 		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-string", String.class));
+				.has(Metadata.withProperty("simple.type.my-primitive-byte", Byte.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-char", Character.class));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-primitive-char", Character.class));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-boolean", Boolean.class));
 		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-byte", Byte.class));
+				.has(Metadata.withProperty("simple.type.my-primitive-boolean", Boolean.class).withDefaultValue(false));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-short", Short.class));
 		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-primitive-byte", Byte.class)
-						.withDefaultValue(0));
+				.has(Metadata.withProperty("simple.type.my-primitive-short", Short.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-integer", Integer.class));
 		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-char", Character.class));
-		assertThat(metadata).has(
-				Metadata.withProperty("simple.type.my-primitive-char", Character.class));
+				.has(Metadata.withProperty("simple.type.my-primitive-integer", Integer.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-long", Long.class));
 		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-boolean", Boolean.class));
-		assertThat(metadata).has(
-				Metadata.withProperty("simple.type.my-primitive-boolean", Boolean.class)
-						.withDefaultValue(false));
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-short", Short.class));
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-primitive-short", Short.class)
-						.withDefaultValue(0));
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-integer", Integer.class));
-		assertThat(metadata).has(
-				Metadata.withProperty("simple.type.my-primitive-integer", Integer.class)
-						.withDefaultValue(0));
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-long", Long.class));
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-primitive-long", Long.class)
-						.withDefaultValue(0));
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-double", Double.class));
-		assertThat(metadata).has(
-				Metadata.withProperty("simple.type.my-primitive-double", Double.class));
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.type.my-float", Float.class));
-		assertThat(metadata).has(
-				Metadata.withProperty("simple.type.my-primitive-float", Float.class));
+				.has(Metadata.withProperty("simple.type.my-primitive-long", Long.class).withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-double", Double.class));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-primitive-double", Double.class));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-float", Float.class));
+		assertThat(metadata).has(Metadata.withProperty("simple.type.my-primitive-float", Float.class));
 		assertThat(metadata.getItems().size()).isEqualTo(18);
 	}
 
 	@Test
 	public void hierarchicalProperties() {
 		ConfigurationMetadata metadata = compile(HierarchicalProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("hierarchical")
-				.fromSource(HierarchicalProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("hierarchical.first", String.class)
-				.fromSource(HierarchicalProperties.class));
-		assertThat(metadata)
-				.has(Metadata.withProperty("hierarchical.second", String.class)
-						.fromSource(HierarchicalProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("hierarchical.third", String.class)
-				.fromSource(HierarchicalProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("hierarchical").fromSource(HierarchicalProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("hierarchical.first", String.class).fromSource(HierarchicalProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("hierarchical.second", String.class).fromSource(HierarchicalProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("hierarchical.third", String.class).fromSource(HierarchicalProperties.class));
 	}
 
 	@Test
 	public void descriptionProperties() {
 		ConfigurationMetadata metadata = compile(DescriptionProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("description")
-				.fromSource(DescriptionProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("description").fromSource(DescriptionProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("description.simple", String.class)
-				.fromSource(DescriptionProperties.class)
-				.withDescription("A simple description."));
-		assertThat(metadata).has(Metadata
-				.withProperty("description.multi-line", String.class)
+				.fromSource(DescriptionProperties.class).withDescription("A simple description."));
+		assertThat(metadata).has(Metadata.withProperty("description.multi-line", String.class)
 				.fromSource(DescriptionProperties.class).withDescription(
 						"This is a lengthy description that spans across multiple lines to showcase that the line separators are cleaned automatically."));
 	}
@@ -235,11 +208,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		Class<?> type = org.springframework.boot.configurationsample.simple.DeprecatedProperties.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("deprecated").fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("deprecated.name", String.class)
-				.fromSource(type).withDeprecation(null, null));
-		assertThat(metadata)
-				.has(Metadata.withProperty("deprecated.description", String.class)
-						.fromSource(type).withDeprecation(null, null));
+		assertThat(metadata).has(
+				Metadata.withProperty("deprecated.name", String.class).fromSource(type).withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("deprecated.description", String.class).fromSource(type)
+				.withDeprecation(null, null));
 	}
 
 	@Test
@@ -247,11 +219,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		Class<?> type = DeprecatedSingleProperty.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("singledeprecated").fromSource(type));
-		assertThat(metadata)
-				.has(Metadata.withProperty("singledeprecated.new-name", String.class)
-						.fromSource(type));
-		assertThat(metadata).has(Metadata
-				.withProperty("singledeprecated.name", String.class).fromSource(type)
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.new-name", String.class).fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class).fromSource(type)
 				.withDeprecation("renamed", "singledeprecated.new-name"));
 	}
 
@@ -260,12 +229,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		Class<?> type = DeprecatedUnrelatedMethodPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
-		assertThat(metadata)
-				.has(Metadata.withProperty("not.deprecated.counter", Integer.class)
-						.withNoDeprecation().fromSource(type));
-		assertThat(metadata)
-				.has(Metadata.withProperty("not.deprecated.flag", Boolean.class)
-						.withDefaultValue(false).withNoDeprecation().fromSource(type));
+		assertThat(metadata).has(
+				Metadata.withProperty("not.deprecated.counter", Integer.class).withNoDeprecation().fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class).withDefaultValue(false)
+				.withNoDeprecation().fromSource(type));
 	}
 
 	@Test
@@ -273,10 +240,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("boxing").fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("boxing.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(type));
-		assertThat(metadata).has(
-				Metadata.withProperty("boxing.counter", Integer.class).fromSource(type));
+		assertThat(metadata)
+				.has(Metadata.withProperty("boxing.flag", Boolean.class).withDefaultValue(false).fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("boxing.counter", Integer.class).fromSource(type));
 	}
 
 	@Test
@@ -285,17 +251,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		// getter and setter
 		assertThat(metadata).has(Metadata.withProperty("collection.integers-to-names",
 				"java.util.Map<java.lang.Integer,java.lang.String>"));
-		assertThat(metadata).has(Metadata.withProperty("collection.longs",
-				"java.util.Collection<java.lang.Long>"));
-		assertThat(metadata).has(Metadata.withProperty("collection.floats",
-				"java.util.List<java.lang.Float>"));
+		assertThat(metadata).has(Metadata.withProperty("collection.longs", "java.util.Collection<java.lang.Long>"));
+		assertThat(metadata).has(Metadata.withProperty("collection.floats", "java.util.List<java.lang.Float>"));
 		// getter only
 		assertThat(metadata).has(Metadata.withProperty("collection.names-to-integers",
 				"java.util.Map<java.lang.String,java.lang.Integer>"));
-		assertThat(metadata).has(Metadata.withProperty("collection.bytes",
-				"java.util.Collection<java.lang.Byte>"));
-		assertThat(metadata).has(Metadata.withProperty("collection.doubles",
-				"java.util.List<java.lang.Double>"));
+		assertThat(metadata).has(Metadata.withProperty("collection.bytes", "java.util.Collection<java.lang.Byte>"));
+		assertThat(metadata).has(Metadata.withProperty("collection.doubles", "java.util.List<java.lang.Double>"));
 		assertThat(metadata).has(Metadata.withProperty("collection.names-to-holders",
 				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.simple.SimpleCollectionProperties$Holder<java.lang.String>>"));
 	}
@@ -303,47 +265,43 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void parseArrayConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(SimpleArrayProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("array").ofType(SimpleArrayProperties.class));
-		assertThat(metadata)
-				.has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));
-		assertThat(metadata)
-				.has(Metadata.withProperty("array.simple", "java.lang.String[]"));
+		assertThat(metadata).has(Metadata.withGroup("array").ofType(SimpleArrayProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));
+		assertThat(metadata).has(Metadata.withProperty("array.simple", "java.lang.String[]"));
 		assertThat(metadata).has(Metadata.withProperty("array.inner",
 				"org.springframework.boot.configurationsample.simple.SimpleArrayProperties$Holder[]"));
-		assertThat(metadata).has(Metadata.withProperty("array.name-to-integer",
-				"java.util.Map<java.lang.String,java.lang.Integer>[]"));
+		assertThat(metadata).has(
+				Metadata.withProperty("array.name-to-integer", "java.util.Map<java.lang.String,java.lang.Integer>[]"));
 		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
 	public void simpleMethodConfig() {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
 		assertThat(metadata)
-				.has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
+				.has(Metadata.withProperty("foo.name", String.class).fromSource(SimpleMethodConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
 				.fromSource(SimpleMethodConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(SimpleMethodConfig.Foo.class));
 	}
 
 	@Test
 	public void invalidMethodConfig() {
 		ConfigurationMetadata metadata = compile(InvalidMethodConfig.class);
-		assertThat(metadata).has(Metadata.withProperty("something.name", String.class)
-				.fromSource(InvalidMethodConfig.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("something.name", String.class).fromSource(InvalidMethodConfig.class));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("invalid.name"));
 	}
 
 	@Test
 	public void methodAndClassConfig() {
 		ConfigurationMetadata metadata = compile(MethodAndClassConfig.class);
-		assertThat(metadata).has(Metadata.withProperty("conflict.name", String.class)
+		assertThat(metadata)
+				.has(Metadata.withProperty("conflict.name", String.class).fromSource(MethodAndClassConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class).withDefaultValue(false)
 				.fromSource(MethodAndClassConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(MethodAndClassConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("conflict.value", String.class)
-				.fromSource(MethodAndClassConfig.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("conflict.value", String.class).fromSource(MethodAndClassConfig.class));
 	}
 
 	@Test
@@ -358,11 +316,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
-				.fromSource(DeprecatedMethodConfig.Foo.class)
-				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(DeprecatedMethodConfig.Foo.class)
-				.withDeprecation(null, null));
+				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
 	}
 
 	@Test
@@ -372,35 +328,29 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
-				.fromSource(
-						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false)
-				.fromSource(
-						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
 	}
 
 	@Test
 	public void annotatedGetter() {
 		ConfigurationMetadata metadata = compile(AnnotatedGetter.class);
+		assertThat(metadata).has(Metadata.withGroup("specific").fromSource(AnnotatedGetter.class));
 		assertThat(metadata)
-				.has(Metadata.withGroup("specific").fromSource(AnnotatedGetter.class));
-		assertThat(metadata).has(Metadata.withProperty("specific.name", String.class)
-				.fromSource(AnnotatedGetter.class));
+				.has(Metadata.withProperty("specific.name", String.class).fromSource(AnnotatedGetter.class));
 	}
 
 	@Test
 	public void staticAccessor() {
 		ConfigurationMetadata metadata = compile(StaticAccessor.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("specific").fromSource(StaticAccessor.class));
+		assertThat(metadata).has(Metadata.withGroup("specific").fromSource(StaticAccessor.class));
 		assertThat(metadata).has(Metadata.withProperty("specific.counter", Integer.class)
 				.fromSource(StaticAccessor.class).withDefaultValue(42));
 		assertThat(metadata)
-				.doesNotHave(Metadata.withProperty("specific.name", String.class)
-						.fromSource(StaticAccessor.class));
+				.doesNotHave(Metadata.withProperty("specific.name", String.class).fromSource(StaticAccessor.class));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
@@ -413,20 +363,17 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void innerClassProperties() {
 		ConfigurationMetadata metadata = compile(InnerClassProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("config").fromSource(InnerClassProperties.class));
-		assertThat(metadata).has(
-				Metadata.withGroup("config.first").ofType(InnerClassProperties.Foo.class)
-						.fromSource(InnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config").fromSource(InnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.first").ofType(InnerClassProperties.Foo.class)
+				.fromSource(InnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.first.bar.name"));
-		assertThat(metadata).has(
-				Metadata.withGroup("config.the-second", InnerClassProperties.Foo.class)
-						.fromSource(InnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.the-second", InnerClassProperties.Foo.class)
+				.fromSource(InnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.the-second.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.the-second.bar.name"));
-		assertThat(metadata).has(Metadata.withGroup("config.third")
-				.ofType(SimplePojo.class).fromSource(InnerClassProperties.class));
+		assertThat(metadata).has(
+				Metadata.withGroup("config.third").ofType(SimplePojo.class).fromSource(InnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.third.value"));
 		assertThat(metadata).has(Metadata.withProperty("config.fourth"));
 		assertThat(metadata).isNotEqualTo(Metadata.withGroup("config.fourth"));
@@ -435,12 +382,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void innerClassPropertiesHierarchical() {
 		ConfigurationMetadata metadata = compile(InnerClassHierarchicalProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("config.foo")
-				.ofType(InnerClassHierarchicalProperties.Foo.class));
-		assertThat(metadata).has(Metadata.withGroup("config.foo.bar")
-				.ofType(InnerClassHierarchicalProperties.Bar.class));
-		assertThat(metadata).has(Metadata.withGroup("config.foo.bar.baz")
-				.ofType(InnerClassHierarchicalProperties.Foo.Baz.class));
+		assertThat(metadata).has(Metadata.withGroup("config.foo").ofType(InnerClassHierarchicalProperties.Foo.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("config.foo.bar").ofType(InnerClassHierarchicalProperties.Bar.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("config.foo.bar.baz").ofType(InnerClassHierarchicalProperties.Foo.Baz.class));
 		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.baz.blah"));
 		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.bling"));
 	}
@@ -456,16 +402,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void nestedClassChildProperties() {
 		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("nestedChildProps")
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class));
-		assertThat(metadata).has(Metadata
-				.withProperty("nestedChildProps.child-class-property", Integer.class)
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class)
-				.withDefaultValue(20));
-		assertThat(metadata).has(Metadata
-				.withProperty("nestedChildProps.parent-class-property", Integer.class)
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class)
-				.withDefaultValue(10));
+		assertThat(metadata).has(
+				Metadata.withGroup("nestedChildProps").fromSource(ClassWithNestedProperties.NestedChildClass.class));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.child-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(20));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.parent-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(10));
 	}
 
 	@Test
@@ -504,97 +446,80 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void invalidDoubleRegistration() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> compile(InvalidDoubleRegistrationProperties.class))
+		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDoubleRegistrationProperties.class))
 				.withMessageContaining("Compilation failed");
 	}
 
 	@Test
 	public void simpleGenericProperties() {
-		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class,
-				SimpleGenericProperties.class);
-		assertThat(metadata).has(
-				Metadata.withGroup("generic").fromSource(SimpleGenericProperties.class));
+		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class, SimpleGenericProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(SimpleGenericProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.name", String.class)
-				.fromSource(SimpleGenericProperties.class)
-				.withDescription("Generic name.").withDefaultValue(null));
+				.fromSource(SimpleGenericProperties.class).withDescription("Generic name.").withDefaultValue(null));
 		assertThat(metadata).has(Metadata
-				.withProperty("generic.mappings",
-						"java.util.Map<java.lang.Integer,java.time.Duration>")
-				.fromSource(SimpleGenericProperties.class)
-				.withDescription("Generic mappings.").withDefaultValue(null));
+				.withProperty("generic.mappings", "java.util.Map<java.lang.Integer,java.time.Duration>")
+				.fromSource(SimpleGenericProperties.class).withDescription("Generic mappings.").withDefaultValue(null));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
 	public void complexGenericProperties() {
 		ConfigurationMetadata metadata = compile(ComplexGenericProperties.class);
-		assertThat(metadata).has(
-				Metadata.withGroup("generic").fromSource(ComplexGenericProperties.class));
-		assertThat(metadata).has(
-				Metadata.withGroup("generic.test").ofType(UpperBoundGenericPojo.class)
-						.fromSource(ComplexGenericProperties.class));
-		assertThat(metadata).has(Metadata
-				.withProperty("generic.test.mappings",
-						"java.util.Map<java.lang.Enum<T>,java.lang.String>")
-				.fromSource(UpperBoundGenericPojo.class));
+		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(ComplexGenericProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("generic.test").ofType(UpperBoundGenericPojo.class)
+				.fromSource(ComplexGenericProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("generic.test.mappings", "java.util.Map<java.lang.Enum<T>,java.lang.String>")
+						.fromSource(UpperBoundGenericPojo.class));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
 	public void unresolvedGenericProperties() {
-		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class,
-				UnresolvedGenericProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("generic")
-				.fromSource(UnresolvedGenericProperties.class));
+		ConfigurationMetadata metadata = compile(AbstractGenericProperties.class, UnresolvedGenericProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("generic").fromSource(UnresolvedGenericProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.name", String.class)
-				.fromSource(UnresolvedGenericProperties.class)
-				.withDescription("Generic name.").withDefaultValue(null));
-		assertThat(metadata).has(Metadata
-				.withProperty("generic.mappings",
-						"java.util.Map<java.lang.Number,java.lang.Object>")
-				.fromSource(UnresolvedGenericProperties.class)
-				.withDescription("Generic mappings.").withDefaultValue(null));
+				.fromSource(UnresolvedGenericProperties.class).withDescription("Generic name.").withDefaultValue(null));
+		assertThat(metadata)
+				.has(Metadata.withProperty("generic.mappings", "java.util.Map<java.lang.Number,java.lang.Object>")
+						.fromSource(UnresolvedGenericProperties.class).withDescription("Generic mappings.")
+						.withDefaultValue(null));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
 	public void genericTypes() {
 		ConfigurationMetadata metadata = compile(GenericConfig.class);
-		assertThat(metadata).has(Metadata.withGroup("generic").ofType(
-				"org.springframework.boot.configurationsample.specific.GenericConfig"));
-		assertThat(metadata).has(Metadata.withGroup("generic.foo").ofType(
-				"org.springframework.boot.configurationsample.specific.GenericConfig$Foo"));
-		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar").ofType(
-				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar"));
-		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar.biz").ofType(
-				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar$Biz"));
-		assertThat(metadata).has(Metadata.withProperty("generic.foo.name")
-				.ofType(String.class).fromSource(GenericConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-bar")
-				.ofType("java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig$Bar<java.lang.Integer>>")
+		assertThat(metadata).has(Metadata.withGroup("generic")
+				.ofType("org.springframework.boot.configurationsample.specific.GenericConfig"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo")
+				.ofType("org.springframework.boot.configurationsample.specific.GenericConfig$Foo"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar")
+				.ofType("org.springframework.boot.configurationsample.specific.GenericConfig$Bar"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar.biz")
+				.ofType("org.springframework.boot.configurationsample.specific.GenericConfig$Bar$Biz"));
+		assertThat(metadata).has(
+				Metadata.withProperty("generic.foo.name").ofType(String.class).fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-bar").ofType(
+				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig$Bar<java.lang.Integer>>")
 				.fromSource(GenericConfig.Foo.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-integer")
-				.ofType("java.util.Map<java.lang.String,java.lang.Integer>")
-				.fromSource(GenericConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.name")
-				.ofType("java.lang.String").fromSource(GenericConfig.Bar.class));
-		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.biz.name")
-				.ofType("java.lang.String").fromSource(GenericConfig.Bar.Biz.class));
+				.ofType("java.util.Map<java.lang.String,java.lang.Integer>").fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.name").ofType("java.lang.String")
+				.fromSource(GenericConfig.Bar.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.biz.name").ofType("java.lang.String")
+				.fromSource(GenericConfig.Bar.Biz.class));
 		assertThat(metadata.getItems()).hasSize(9);
 	}
 
 	@Test
 	public void wildcardTypes() throws IOException {
 		ConfigurationMetadata metadata = compile(WildcardConfig.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("wildcard").ofType(WildcardConfig.class));
+		assertThat(metadata).has(Metadata.withGroup("wildcard").ofType(WildcardConfig.class));
 		assertThat(metadata).has(Metadata.withProperty("wildcard.string-to-number")
-				.ofType("java.util.Map<java.lang.String,? extends java.lang.Number>")
-				.fromSource(WildcardConfig.class));
+				.ofType("java.util.Map<java.lang.String,? extends java.lang.Number>").fromSource(WildcardConfig.class));
 		assertThat(metadata).has(Metadata.withProperty("wildcard.integers")
-				.ofType("java.util.List<? super java.lang.Integer>")
-				.fromSource(WildcardConfig.class));
+				.ofType("java.util.List<? super java.lang.Integer>").fromSource(WildcardConfig.class));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -613,63 +538,51 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void lombokExplicitProperties() {
 		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
-		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class,
-				"explicit");
+		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class, "explicit");
 		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	@Test
 	public void lombokAccessLevelProperties() {
 		ConfigurationMetadata metadata = compile(LombokAccessLevelProperties.class);
-		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class,
-				"accesslevel", 2);
+		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class, "accesslevel", 2);
 	}
 
 	@Test
 	public void lombokAccessLevelOverwriteDataProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokAccessLevelOverwriteDataProperties.class);
-		assertAccessLevelOverwriteLombokProperties(metadata,
-				LombokAccessLevelOverwriteDataProperties.class,
+		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteDataProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteDataProperties.class,
 				"accesslevel.overwrite.data");
 	}
 
 	@Test
 	public void lombokAccessLevelOverwriteExplicitProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokAccessLevelOverwriteExplicitProperties.class);
-		assertAccessLevelOverwriteLombokProperties(metadata,
-				LombokAccessLevelOverwriteExplicitProperties.class,
+		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteExplicitProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteExplicitProperties.class,
 				"accesslevel.overwrite.explicit");
 	}
 
 	@Test
 	public void lombokAccessLevelOverwriteDefaultProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokAccessLevelOverwriteDefaultProperties.class);
-		assertAccessLevelOverwriteLombokProperties(metadata,
-				LombokAccessLevelOverwriteDefaultProperties.class,
+		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteDefaultProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteDefaultProperties.class,
 				"accesslevel.overwrite.default");
 	}
 
 	@Test
 	public void lombokInnerClassProperties() {
 		ConfigurationMetadata metadata = compile(LombokInnerClassProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("config")
-				.fromSource(LombokInnerClassProperties.class));
-		assertThat(metadata).has(Metadata.withGroup("config.first")
-				.ofType(LombokInnerClassProperties.Foo.class)
+		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.first").ofType(LombokInnerClassProperties.Foo.class)
 				.fromSource(LombokInnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.first.bar.name"));
-		assertThat(metadata).has(
-				Metadata.withGroup("config.second", LombokInnerClassProperties.Foo.class)
-						.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.second", LombokInnerClassProperties.Foo.class)
+				.fromSource(LombokInnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.second.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.second.bar.name"));
-		assertThat(metadata)
-				.has(Metadata.withGroup("config.third").ofType(SimpleLombokPojo.class)
-						.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.third").ofType(SimpleLombokPojo.class)
+				.fromSource(LombokInnerClassProperties.class));
 		// For some reason the annotation processor resolves a type for SimpleLombokPojo
 		// that is resolved (compiled) and the source annotations are gone. Because we
 		// don't see the @Data annotation anymore, no field is harvested. What is crazy is
@@ -682,14 +595,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void lombokInnerClassWithGetterProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokInnerClassWithGetterProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("config")
-				.fromSource(LombokInnerClassWithGetterProperties.class));
-		assertThat(metadata).has(Metadata.withGroup("config.first")
-				.ofType(LombokInnerClassWithGetterProperties.Foo.class)
-				.fromSourceMethod("getFirst()")
-				.fromSource(LombokInnerClassWithGetterProperties.class));
+		ConfigurationMetadata metadata = compile(LombokInnerClassWithGetterProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassWithGetterProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("config.first").ofType(LombokInnerClassWithGetterProperties.Foo.class)
+						.fromSourceMethod("getFirst()").fromSource(LombokInnerClassWithGetterProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -697,8 +607,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void simpleEndpoint() {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple")
-				.fromSource(SimpleEndpoint.class));
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(enabledFlag("simple", true));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -707,8 +616,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void disableEndpoint() {
 		ConfigurationMetadata metadata = compile(DisabledEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled")
-				.fromSource(DisabledEndpoint.class));
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled").fromSource(DisabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("disabled", false));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
@@ -716,8 +624,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void enabledEndpoint() {
 		ConfigurationMetadata metadata = compile(EnabledEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled")
-				.fromSource(EnabledEndpoint.class));
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled").fromSource(EnabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("enabled", true));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
@@ -725,11 +632,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void customPropertiesEndpoint() {
 		ConfigurationMetadata metadata = compile(CustomPropertiesEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.customprops")
-				.fromSource(CustomPropertiesEndpoint.class));
 		assertThat(metadata)
-				.has(Metadata.withProperty("management.endpoint.customprops.name")
-						.ofType(String.class).withDefaultValue("test"));
+				.has(Metadata.withGroup("management.endpoint.customprops").fromSource(CustomPropertiesEndpoint.class));
+		assertThat(metadata).has(Metadata.withProperty("management.endpoint.customprops.name").ofType(String.class)
+				.withDefaultValue("test"));
 		assertThat(metadata).has(enabledFlag("customprops", true));
 		assertThat(metadata).has(cacheTtl("customprops"));
 		assertThat(metadata.getItems()).hasSize(4);
@@ -738,8 +644,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void specificEndpoint() {
 		ConfigurationMetadata metadata = compile(SpecificEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
-				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -748,27 +653,26 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void camelCaseEndpoint() {
 		ConfigurationMetadata metadata = compile(CamelCaseEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.pascal-case")
-				.fromSource(CamelCaseEndpoint.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("management.endpoint.pascal-case").fromSource(CamelCaseEndpoint.class));
 		assertThat(metadata).has(enabledFlag("PascalCase", "pascal-case", true));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
 	public void incrementalEndpointBuildChangeGeneralEnabledFlag() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder,
-				IncrementalEndpoint.class);
+		TestProject project = new TestProject(this.temporaryFolder, IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
-				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
 				"id = \"incremental\", enableByDefault = false");
 		metadata = project.incrementalBuild(IncrementalEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
-				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -776,61 +680,50 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void incrementalEndpointBuildChangeCacheFlag() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder,
-				IncrementalEndpoint.class);
+		TestProject project = new TestProject(this.temporaryFolder, IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
-				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
-		project.replaceText(IncrementalEndpoint.class, "@Nullable String param",
-				"String param");
+		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
 		metadata = project.incrementalBuild(IncrementalEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
-				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
 	public void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder,
-				SpecificEndpoint.class);
+		TestProject project = new TestProject(this.temporaryFolder, SpecificEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
-				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
-		project.replaceText(SpecificEndpoint.class, "enableByDefault = true",
-				"enableByDefault = false");
+		project.replaceText(SpecificEndpoint.class, "enableByDefault = true", "enableByDefault = false");
 		metadata = project.incrementalBuild(SpecificEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
-				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", false));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
-	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
-			String endpointSuffix, Boolean defaultValue) {
-		return Metadata
-				.withEnabledFlag("management.endpoint." + endpointSuffix + ".enabled")
-				.withDefaultValue(defaultValue).withDescription(
-						String.format("Whether to enable the %s endpoint.", endpointId));
+	private Metadata.MetadataItemCondition enabledFlag(String endpointId, String endpointSuffix, Boolean defaultValue) {
+		return Metadata.withEnabledFlag("management.endpoint." + endpointSuffix + ".enabled")
+				.withDefaultValue(defaultValue)
+				.withDescription(String.format("Whether to enable the %s endpoint.", endpointId));
 	}
 
-	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
-			Boolean defaultValue) {
+	private Metadata.MetadataItemCondition enabledFlag(String endpointId, Boolean defaultValue) {
 		return enabledFlag(endpointId, endpointId, defaultValue);
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
-		return Metadata
-				.withProperty("management.endpoint." + endpointId + ".cache.time-to-live")
-				.ofType(Duration.class).withDefaultValue("0ms")
-				.withDescription("Maximum time that a response can be cached.");
+		return Metadata.withProperty("management.endpoint." + endpointId + ".cache.time-to-live").ofType(Duration.class)
+				.withDefaultValue("0ms").withDescription("Maximum time that a response can be cached.");
 	}
 
 	@Test
@@ -840,114 +733,96 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
-		assertThat(metadata).has(Metadata.withProperty("foo", String.class)
-				.fromSource(AdditionalMetadata.class));
+		assertThat(metadata).has(Metadata.withProperty("foo", String.class).fromSource(AdditionalMetadata.class));
 	}
 
 	@Test
 	public void mergingOfAdditionalPropertyMatchingGroup() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty(null, "simple",
-				"java.lang.String", null, null, null, null, null);
+		ItemMetadata property = ItemMetadata.newProperty(null, "simple", "java.lang.String", null, null, null, null,
+				null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("simple", String.class));
 	}
 
 	@Test
 	public void mergeExistingPropertyDefaultValue() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null,
-				null, null, true, null);
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null, null, null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
-				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
-				.withDeprecation(null, null).withDefaultValue(true));
+		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class).fromSource(SimpleProperties.class)
+				.withDescription("A simple flag.").withDeprecation(null, null).withDefaultValue(true));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
 	public void mergeExistingPropertyWithSeveralCandidates() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "flag",
-				Boolean.class.getName(), null, null, null, true, null);
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", Boolean.class.getName(), null, null, null,
+				true, null);
 		writeAdditionalMetadata(property);
-		ConfigurationMetadata metadata = compile(SimpleProperties.class,
-				SimpleConflictingProperties.class);
+		ConfigurationMetadata metadata = compile(SimpleProperties.class, SimpleConflictingProperties.class);
 		assertThat(metadata.getItems()).hasSize(6);
-		List<ItemMetadata> items = metadata.getItems().stream()
-				.filter((item) -> item.getName().equals("simple.flag"))
+		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.getName().equals("simple.flag"))
 				.collect(Collectors.toList());
 		assertThat(items).hasSize(2);
-		ItemMetadata matchingProperty = items.stream()
-				.filter((item) -> item.getType().equals(Boolean.class.getName()))
+		ItemMetadata matchingProperty = items.stream().filter((item) -> item.getType().equals(Boolean.class.getName()))
 				.findFirst().orElse(null);
 		assertThat(matchingProperty).isNotNull();
 		assertThat(matchingProperty.getDefaultValue()).isEqualTo(true);
-		assertThat(matchingProperty.getSourceType())
-				.isEqualTo(SimpleProperties.class.getName());
+		assertThat(matchingProperty.getSourceType()).isEqualTo(SimpleProperties.class.getName());
 		assertThat(matchingProperty.getDescription()).isEqualTo("A simple flag.");
 		ItemMetadata nonMatchingProperty = items.stream()
-				.filter((item) -> item.getType().equals(String.class.getName()))
-				.findFirst().orElse(null);
+				.filter((item) -> item.getType().equals(String.class.getName())).findFirst().orElse(null);
 		assertThat(nonMatchingProperty).isNotNull();
 		assertThat(nonMatchingProperty.getDefaultValue()).isEqualTo("hello");
-		assertThat(nonMatchingProperty.getSourceType())
-				.isEqualTo(SimpleConflictingProperties.class.getName());
+		assertThat(nonMatchingProperty.getSourceType()).isEqualTo(SimpleConflictingProperties.class.getName());
 		assertThat(nonMatchingProperty.getDescription()).isNull();
 	}
 
 	@Test
 	public void mergeExistingPropertyDescription() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
-				null, null, "A nice comparator.", null, null);
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, "A nice comparator.",
+				null, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
-						.fromSource(SimpleProperties.class)
-						.withDescription("A nice comparator."));
+		assertThat(metadata).has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
+				.fromSource(SimpleProperties.class).withDescription("A nice comparator."));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
 	public void mergeExistingPropertyDeprecation() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
-				null, null, null, null, new ItemDeprecation("Don't use this.",
-						"simple.complex-comparator", "error"));
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, null, null,
+				new ItemDeprecation("Don't use this.", "simple.complex-comparator", "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
-						.fromSource(SimpleProperties.class).withDeprecation(
-								"Don't use this.", "simple.complex-comparator", "error"));
+		assertThat(metadata).has(
+				Metadata.withProperty("simple.comparator", "java.util.Comparator<?>").fromSource(SimpleProperties.class)
+						.withDeprecation("Don't use this.", "simple.complex-comparator", "error"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
 	public void mergeExistingPropertyDeprecationOverride() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null,
-				null, null, null, null,
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
 				new ItemDeprecation("Don't use this.", "single.name"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
-		assertThat(metadata).has(
-				Metadata.withProperty("singledeprecated.name", String.class.getName())
-						.fromSource(DeprecatedSingleProperty.class)
-						.withDeprecation("Don't use this.", "single.name"));
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getName())
+				.fromSource(DeprecatedSingleProperty.class).withDeprecation("Don't use this.", "single.name"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
 	public void mergeExistingPropertyDeprecationOverrideLevel() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null,
-				null, null, null, null, new ItemDeprecation(null, null, "error"));
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
+				new ItemDeprecation(null, null, "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
-		assertThat(metadata).has(
-				Metadata.withProperty("singledeprecated.name", String.class.getName())
-						.fromSource(DeprecatedSingleProperty.class).withDeprecation(
-								"renamed", "singledeprecated.new-name", "error"));
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getName())
+				.fromSource(DeprecatedSingleProperty.class)
+				.withDeprecation("renamed", "singledeprecated.new-name", "error"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -955,70 +830,59 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void mergeOfInvalidAdditionalMetadata() throws IOException {
 		File additionalMetadataFile = createAdditionalMetadataFile();
 		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
-		assertThatIllegalStateException()
-				.isThrownBy(() -> compile(SimpleProperties.class))
+		assertThatIllegalStateException().isThrownBy(() -> compile(SimpleProperties.class))
 				.withMessage("Compilation failed");
 	}
 
 	@Test
 	public void mergingOfSimpleHint() throws Exception {
-		writeAdditionalHints(ItemHint.newHint("simple.the-name",
-				new ItemHint.ValueHint("boot", "Bla bla"),
+		writeAdditionalHints(ItemHint.newHint("simple.the-name", new ItemHint.ValueHint("boot", "Bla bla"),
 				new ItemHint.ValueHint("spring", null)));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("The name of this simple properties.")
+				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withHint("simple.the-name")
-				.withValue(0, "boot", "Bla bla").withValue(1, "spring", null));
+		assertThat(metadata)
+				.has(Metadata.withHint("simple.the-name").withValue(0, "boot", "Bla bla").withValue(1, "spring", null));
 	}
 
 	@Test
 	public void mergingOfHintWithNonCanonicalName() throws Exception {
-		writeAdditionalHints(ItemHint.newHint("simple.theName",
-				new ItemHint.ValueHint("boot", "Bla bla")));
+		writeAdditionalHints(ItemHint.newHint("simple.theName", new ItemHint.ValueHint("boot", "Bla bla")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("The name of this simple properties.")
+				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(
-				Metadata.withHint("simple.the-name").withValue(0, "boot", "Bla bla"));
+		assertThat(metadata).has(Metadata.withHint("simple.the-name").withValue(0, "boot", "Bla bla"));
 	}
 
 	@Test
 	public void mergingOfHintWithProvider() throws Exception {
 		writeAdditionalHints(new ItemHint("simple.theName", Collections.emptyList(),
-				Arrays.asList(
-						new ItemHint.ValueProvider("first",
-								Collections.singletonMap("target", "org.foo")),
+				Arrays.asList(new ItemHint.ValueProvider("first", Collections.singletonMap("target", "org.foo")),
 						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("The name of this simple properties.")
+				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withHint("simple.the-name")
-				.withProvider("first", "target", "org.foo").withProvider("second"));
+		assertThat(metadata).has(
+				Metadata.withHint("simple.the-name").withProvider("first", "target", "org.foo").withProvider("second"));
 	}
 
 	@Test
 	public void mergingOfAdditionalDeprecation() throws Exception {
-		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName",
-				"java.lang.String", null, null, null, null,
-				new ItemDeprecation("Lame name.", "simple.the-name")));
+		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName", "java.lang.String", null, null, null,
+				null, new ItemDeprecation("Lame name.", "simple.the-name")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("simple.wrong-name", String.class)
-				.withDeprecation("Lame name.", "simple.the-name"));
+		assertThat(metadata).has(Metadata.withProperty("simple.wrong-name", String.class).withDeprecation("Lame name.",
+				"simple.the-name"));
 	}
 
 	@Test
 	public void mergingOfAdditionalMetadata() throws Exception {
 		File metaInfFolder = new File(this.compiler.getOutputLocation(), "META-INF");
 		metaInfFolder.mkdirs();
-		File additionalMetadataFile = new File(metaInfFolder,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadataFile = new File(metaInfFolder, "additional-spring-configuration-metadata.json");
 		additionalMetadataFile.createNewFile();
 		JSONObject property = new JSONObject();
 		property.put("name", "foo");
@@ -1034,107 +898,91 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		writer.close();
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
-		assertThat(metadata).has(Metadata.withProperty("foo", String.class)
-				.fromSource(AdditionalMetadata.class));
+		assertThat(metadata).has(Metadata.withProperty("foo", String.class).fromSource(AdditionalMetadata.class));
 	}
 
 	@Test
 	public void incrementalBuild() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
-				BarProperties.class);
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class, BarProperties.class);
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isFalse();
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isTrue();
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.fromSource(FooProperties.class).withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter")
-				.fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		metadata = project.incrementalBuild(BarProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.fromSource(FooProperties.class).withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter")
-				.fromSource(BarProperties.class).withDefaultValue(0));
-		project.addSourceCode(BarProperties.class,
-				BarProperties.class.getResourceAsStream("BarProperties.snippet"));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		project.addSourceCode(BarProperties.class, BarProperties.class.getResourceAsStream("BarProperties.snippet"));
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("bar.extra"));
-		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
-		assertThat(metadata)
-				.has(Metadata.withProperty("bar.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
 		project.revert(BarProperties.class);
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.extra"));
-		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
-		assertThat(metadata)
-				.has(Metadata.withProperty("bar.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
 	}
 
 	@Test
 	public void incrementalBuildAnnotationRemoved() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
-				BarProperties.class);
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
-		assertThat(metadata)
-				.has(Metadata.withProperty("bar.counter").withDefaultValue(0));
-		project.replaceText(BarProperties.class, "@ConfigurationProperties",
-				"//@ConfigurationProperties");
+		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0));
+		project.replaceText(BarProperties.class, "@ConfigurationProperties", "//@ConfigurationProperties");
 		metadata = project.incrementalBuild(BarProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").withDefaultValue(0));
+		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("bar.counter"));
 	}
 
 	@Test
 	public void incrementalBuildTypeRenamed() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
-				BarProperties.class);
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.fromSource(FooProperties.class).withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter")
-				.fromSource(BarProperties.class).withDefaultValue(0));
-		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter")
-				.fromSource(RenamedBarProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter").fromSource(RenamedBarProperties.class));
 		project.delete(BarProperties.class);
 		project.add(RenamedBarProperties.class);
 		metadata = project.incrementalBuild(RenamedBarProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("foo.counter")
-				.fromSource(FooProperties.class).withDefaultValue(0));
-		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter")
-				.fromSource(BarProperties.class).withDefaultValue(0));
-		assertThat(metadata).has(Metadata.withProperty("bar.counter").withDefaultValue(0)
-				.fromSource(RenamedBarProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.doesNotHave(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+		assertThat(metadata)
+				.has(Metadata.withProperty("bar.counter").withDefaultValue(0).fromSource(RenamedBarProperties.class));
 	}
 
-	private void assertSimpleLombokProperties(ConfigurationMetadata metadata,
-			Class<?> source, String prefix) {
+	private void assertSimpleLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix) {
 		assertThat(metadata).has(Metadata.withGroup(prefix).fromSource(source));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".id"));
-		assertThat(metadata).has(Metadata.withProperty(prefix + ".name", String.class)
-				.fromSource(source).withDescription("Name description."));
+		assertThat(metadata).has(Metadata.withProperty(prefix + ".name", String.class).fromSource(source)
+				.withDescription("Name description."));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".description"));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".counter"));
-		assertThat(metadata).has(Metadata.withProperty(prefix + ".number")
-				.fromSource(source).withDefaultValue(0).withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty(prefix + ".number").fromSource(source).withDefaultValue(0)
+				.withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".items"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
 	}
 
-	private void assertAccessLevelOverwriteLombokProperties(
-			ConfigurationMetadata metadata, Class<?> source, String prefix) {
+	private void assertAccessLevelOverwriteLombokProperties(ConfigurationMetadata metadata, Class<?> source,
+			String prefix) {
 		assertAccessLevelLombokProperties(metadata, source, prefix, 7);
 	}
 
-	private void assertAccessLevelLombokProperties(ConfigurationMetadata metadata,
-			Class<?> source, String prefix, int countNameFields) {
+	private void assertAccessLevelLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix,
+			int countNameFields) {
 		assertThat(metadata).has(Metadata.withGroup(prefix).fromSource(source));
 		for (int i = 0; i < countNameFields; i++) {
-			assertThat(metadata)
-					.has(Metadata.withProperty(prefix + ".name" + i, String.class));
+			assertThat(metadata).has(Metadata.withProperty(prefix + ".name" + i, String.class));
 		}
 		assertThat(metadata.getItems()).hasSize(1 + countNameFields);
 	}
@@ -1197,8 +1045,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	private File createAdditionalMetadataFile() throws IOException {
 		File metaInfFolder = new File(this.compiler.getOutputLocation(), "META-INF");
 		metaInfFolder.mkdirs();
-		File additionalMetadataFile = new File(metaInfFolder,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadataFile = new File(metaInfFolder, "additional-spring-configuration-metadata.json");
 		additionalMetadataFile.createNewFile();
 		return additionalMetadataFile;
 	}

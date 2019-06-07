@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,30 +50,26 @@ public abstract class AbstractHttpClientMockTests {
 	protected final CloseableHttpClient http = mock(CloseableHttpClient.class);
 
 	protected void mockSuccessfulMetadataTextGet() throws IOException {
-		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.txt", "text/plain",
-				true);
+		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.txt", "text/plain", true);
 	}
 
-	protected void mockSuccessfulMetadataGet(boolean serviceCapabilities)
+	protected void mockSuccessfulMetadataGet(boolean serviceCapabilities) throws IOException {
+		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.json", "application/vnd.initializr.v2.1+json",
+				serviceCapabilities);
+	}
+
+	protected void mockSuccessfulMetadataGetV2(boolean serviceCapabilities) throws IOException {
+		mockSuccessfulMetadataGet("metadata/service-metadata-2.0.0.json", "application/vnd.initializr.v2+json",
+				serviceCapabilities);
+	}
+
+	protected void mockSuccessfulMetadataGet(String contentPath, String contentType, boolean serviceCapabilities)
 			throws IOException {
-		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.json",
-				"application/vnd.initializr.v2.1+json", serviceCapabilities);
-	}
-
-	protected void mockSuccessfulMetadataGetV2(boolean serviceCapabilities)
-			throws IOException {
-		mockSuccessfulMetadataGet("metadata/service-metadata-2.0.0.json",
-				"application/vnd.initializr.v2+json", serviceCapabilities);
-	}
-
-	protected void mockSuccessfulMetadataGet(String contentPath, String contentType,
-			boolean serviceCapabilities) throws IOException {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		byte[] content = readClasspathResource(contentPath);
 		mockHttpEntity(response, content, contentType);
 		mockStatus(response, 200);
-		given(this.http.execute(argThat(getForMetadata(serviceCapabilities))))
-				.willReturn(response);
+		given(this.http.execute(argThat(getForMetadata(serviceCapabilities)))).willReturn(response);
 	}
 
 	protected byte[] readClasspathResource(String contentPath) throws IOException {
@@ -81,46 +77,38 @@ public abstract class AbstractHttpClientMockTests {
 		return StreamUtils.copyToByteArray(resource.getInputStream());
 	}
 
-	protected void mockSuccessfulProjectGeneration(
-			MockHttpProjectGenerationRequest request) throws IOException {
+	protected void mockSuccessfulProjectGeneration(MockHttpProjectGenerationRequest request) throws IOException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet(false);
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, request.content, request.contentType);
 		mockStatus(response, 200);
-		String header = (request.fileName != null)
-				? contentDispositionValue(request.fileName) : null;
+		String header = (request.fileName != null) ? contentDispositionValue(request.fileName) : null;
 		mockHttpHeader(response, "Content-Disposition", header);
 		given(this.http.execute(argThat(getForNonMetadata()))).willReturn(response);
 	}
 
-	protected void mockProjectGenerationError(int status, String message)
-			throws IOException, JSONException {
+	protected void mockProjectGenerationError(int status, String message) throws IOException, JSONException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet(false);
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-		mockHttpEntity(response, createJsonError(status, message).getBytes(),
-				"application/json");
+		mockHttpEntity(response, createJsonError(status, message).getBytes(), "application/json");
 		mockStatus(response, status);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 	}
 
-	protected void mockMetadataGetError(int status, String message)
-			throws IOException, JSONException {
+	protected void mockMetadataGetError(int status, String message) throws IOException, JSONException {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-		mockHttpEntity(response, createJsonError(status, message).getBytes(),
-				"application/json");
+		mockHttpEntity(response, createJsonError(status, message).getBytes(), "application/json");
 		mockStatus(response, status);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 	}
 
-	protected HttpEntity mockHttpEntity(CloseableHttpResponse response, byte[] content,
-			String contentType) {
+	protected HttpEntity mockHttpEntity(CloseableHttpResponse response, byte[] content, String contentType) {
 		try {
 			HttpEntity entity = mock(HttpEntity.class);
 			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
-			Header contentTypeHeader = (contentType != null)
-					? new BasicHeader("Content-Type", contentType) : null;
+			Header contentTypeHeader = (contentType != null) ? new BasicHeader("Content-Type", contentType) : null;
 			given(entity.getContentType()).willReturn(contentTypeHeader);
 			given(response.getEntity()).willReturn(entity);
 			return entity;
@@ -136,8 +124,7 @@ public abstract class AbstractHttpClientMockTests {
 		given(response.getStatusLine()).willReturn(statusLine);
 	}
 
-	protected void mockHttpHeader(CloseableHttpResponse response, String headerName,
-			String value) {
+	protected void mockHttpHeader(CloseableHttpResponse response, String headerName, String value) {
 		Header header = (value != null) ? new BasicHeader(headerName, value) : null;
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
@@ -178,8 +165,7 @@ public abstract class AbstractHttpClientMockTests {
 			this(contentType, fileName, new byte[] { 0, 0, 0, 0 });
 		}
 
-		public MockHttpProjectGenerationRequest(String contentType, String fileName,
-				byte[] content) {
+		public MockHttpProjectGenerationRequest(String contentType, String fileName, byte[] content) {
 			this.contentType = contentType;
 			this.fileName = fileName;
 			this.content = content;

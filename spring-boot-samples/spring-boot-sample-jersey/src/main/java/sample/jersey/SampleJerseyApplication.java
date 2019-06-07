@@ -24,9 +24,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class SampleJerseyApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
-		new SampleJerseyApplication()
-				.configure(new SpringApplicationBuilder(SampleJerseyApplication.class))
-				.run(args);
+		new SampleJerseyApplication().configure(new SpringApplicationBuilder(SampleJerseyApplication.class)).run(args);
 	}
 
 }

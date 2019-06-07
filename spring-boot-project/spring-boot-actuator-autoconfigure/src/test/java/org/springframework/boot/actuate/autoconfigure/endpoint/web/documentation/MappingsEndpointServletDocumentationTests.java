@@ -63,8 +63,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MappingsEndpointServletDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+public class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocumentationTests {
 
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
@@ -76,115 +75,76 @@ public class MappingsEndpointServletDocumentationTests
 
 	@Before
 	public void webTestClient() {
-		this.client = WebTestClient.bindToServer()
-				.filter(documentationConfiguration(this.restDocumentation))
+		this.client = WebTestClient.bindToServer().filter(documentationConfiguration(this.restDocumentation))
 				.baseUrl("http://localhost:" + this.port).build();
 	}
 
 	@Test
 	public void mappings() throws Exception {
 		ResponseFieldsSnippet commonResponseFields = responseFields(
-				fieldWithPath("contexts")
-						.description("Application contexts keyed by id."),
-				fieldWithPath("contexts.*.mappings")
-						.description("Mappings in the context, keyed by mapping type."),
+				fieldWithPath("contexts").description("Application contexts keyed by id."),
+				fieldWithPath("contexts.*.mappings").description("Mappings in the context, keyed by mapping type."),
 				subsectionWithPath("contexts.*.mappings.dispatcherServlets")
 						.description("Dispatcher servlet mappings, if any."),
 				subsectionWithPath("contexts.*.mappings.servletFilters")
 						.description("Servlet filter mappings, if any."),
-				subsectionWithPath("contexts.*.mappings.servlets")
-						.description("Servlet mappings, if any."),
+				subsectionWithPath("contexts.*.mappings.servlets").description("Servlet mappings, if any."),
 				subsectionWithPath("contexts.*.mappings.dispatcherHandlers")
-						.description("Dispatcher handler mappings, if any.").optional()
-						.type(JsonFieldType.OBJECT),
+						.description("Dispatcher handler mappings, if any.").optional().type(JsonFieldType.OBJECT),
 				parentIdField());
 		List<FieldDescriptor> dispatcherServletFields = new ArrayList<>(Arrays.asList(
-				fieldWithPath("*")
-						.description("Dispatcher servlet mappings, if any, keyed by "
-								+ "dispatcher servlet bean name."),
+				fieldWithPath("*").description(
+						"Dispatcher servlet mappings, if any, keyed by " + "dispatcher servlet bean name."),
 				fieldWithPath("*.[].details").optional().type(JsonFieldType.OBJECT)
-						.description("Additional implementation-specific "
-								+ "details about the mapping. Optional."),
+						.description("Additional implementation-specific " + "details about the mapping. Optional."),
 				fieldWithPath("*.[].handler").description("Handler for the mapping."),
-				fieldWithPath("*.[].predicate")
-						.description("Predicate for the mapping.")));
+				fieldWithPath("*.[].predicate").description("Predicate for the mapping.")));
 		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
-				requestMappingConditionField("")
-						.description("Details of the request mapping conditions.")
-						.optional(),
-				requestMappingConditionField(".consumes")
-						.description("Details of the consumes condition"),
-				requestMappingConditionField(".consumes.[].mediaType")
-						.description("Consumed media type."),
-				requestMappingConditionField(".consumes.[].negated")
-						.description("Whether the media type is negated."),
-				requestMappingConditionField(".headers")
-						.description("Details of the headers condition."),
-				requestMappingConditionField(".headers.[].name")
-						.description("Name of the header."),
-				requestMappingConditionField(".headers.[].value")
-						.description("Required value of the header, if any."),
-				requestMappingConditionField(".headers.[].negated")
-						.description("Whether the value is negated."),
-				requestMappingConditionField(".methods")
-						.description("HTTP methods that are handled."),
-				requestMappingConditionField(".params")
-						.description("Details of the params condition."),
-				requestMappingConditionField(".params.[].name")
-						.description("Name of the parameter."),
+				requestMappingConditionField("").description("Details of the request mapping conditions.").optional(),
+				requestMappingConditionField(".consumes").description("Details of the consumes condition"),
+				requestMappingConditionField(".consumes.[].mediaType").description("Consumed media type."),
+				requestMappingConditionField(".consumes.[].negated").description("Whether the media type is negated."),
+				requestMappingConditionField(".headers").description("Details of the headers condition."),
+				requestMappingConditionField(".headers.[].name").description("Name of the header."),
+				requestMappingConditionField(".headers.[].value").description("Required value of the header, if any."),
+				requestMappingConditionField(".headers.[].negated").description("Whether the value is negated."),
+				requestMappingConditionField(".methods").description("HTTP methods that are handled."),
+				requestMappingConditionField(".params").description("Details of the params condition."),
+				requestMappingConditionField(".params.[].name").description("Name of the parameter."),
 				requestMappingConditionField(".params.[].value")
 						.description("Required value of the parameter, if any."),
-				requestMappingConditionField(".params.[].negated")
-						.description("Whether the value is negated."),
-				requestMappingConditionField(".patterns").description(
-						"Patterns identifying the paths handled by the mapping."),
-				requestMappingConditionField(".produces")
-						.description("Details of the produces condition."),
-				requestMappingConditionField(".produces.[].mediaType")
-						.description("Produced media type."),
-				requestMappingConditionField(".produces.[].negated")
-						.description("Whether the media type is negated."));
+				requestMappingConditionField(".params.[].negated").description("Whether the value is negated."),
+				requestMappingConditionField(".patterns")
+						.description("Patterns identifying the paths handled by the mapping."),
+				requestMappingConditionField(".produces").description("Details of the produces condition."),
+				requestMappingConditionField(".produces.[].mediaType").description("Produced media type."),
+				requestMappingConditionField(".produces.[].negated").description("Whether the media type is negated."));
 		List<FieldDescriptor> handlerMethod = Arrays.asList(
-				fieldWithPath("*.[].details.handlerMethod").optional()
-						.type(JsonFieldType.OBJECT)
-						.description("Details of the method, if any, "
-								+ "that will handle requests to this mapping."),
+				fieldWithPath("*.[].details.handlerMethod").optional().type(JsonFieldType.OBJECT)
+						.description("Details of the method, if any, " + "that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerMethod.className")
 						.description("Fully qualified name of the class of the method."),
-				fieldWithPath("*.[].details.handlerMethod.name")
-						.description("Name of the method."),
+				fieldWithPath("*.[].details.handlerMethod.name").description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor")
-						.description("Descriptor of the method as specified in the Java "
-								+ "Language Specification."));
+						.description("Descriptor of the method as specified in the Java " + "Language Specification."));
 		dispatcherServletFields.addAll(handlerMethod);
 		dispatcherServletFields.addAll(requestMappingConditions);
 		this.client.get().uri("/actuator/mappings").exchange().expectBody()
-				.consumeWith(document(
-						"mappings", commonResponseFields,
-						responseFields(beneathPath(
-								"contexts.*.mappings.dispatcherServlets")
-										.withSubsectionId("dispatcher-servlets"),
-								dispatcherServletFields),
+				.consumeWith(document("mappings", commonResponseFields,
+						responseFields(beneathPath("contexts.*.mappings.dispatcherServlets")
+								.withSubsectionId("dispatcher-servlets"), dispatcherServletFields),
 						responseFields(
-								beneathPath("contexts.*.mappings.servletFilters")
-										.withSubsectionId("servlet-filters"),
-								fieldWithPath("[].servletNameMappings").description(
-										"Names of the servlets to which the filter is mapped."),
-								fieldWithPath("[].urlPatternMappings").description(
-										"URL pattern to which the filter is mapped."),
-								fieldWithPath("[].name")
-										.description("Name of the filter."),
-								fieldWithPath("[].className")
-										.description("Class name of the filter")),
-						responseFields(
-								beneathPath("contexts.*.mappings.servlets")
-										.withSubsectionId("servlets"),
-								fieldWithPath("[].mappings")
-										.description("Mappings of the servlet."),
-								fieldWithPath("[].name")
-										.description("Name of the servlet."),
-								fieldWithPath("[].className")
-										.description("Class name of the servlet"))));
+								beneathPath("contexts.*.mappings.servletFilters").withSubsectionId("servlet-filters"),
+								fieldWithPath("[].servletNameMappings")
+										.description("Names of the servlets to which the filter is mapped."),
+								fieldWithPath("[].urlPatternMappings")
+										.description("URL pattern to which the filter is mapped."),
+								fieldWithPath("[].name").description("Name of the filter."),
+								fieldWithPath("[].className").description("Class name of the filter")),
+						responseFields(beneathPath("contexts.*.mappings.servlets").withSubsectionId("servlets"),
+								fieldWithPath("[].mappings").description("Mappings of the servlet."),
+								fieldWithPath("[].name").description("Name of the servlet."),
+								fieldWithPath("[].className").description("Class name of the servlet"))));
 	}
 
 	private FieldDescriptor requestMappingConditionField(String path) {
@@ -216,8 +176,7 @@ public class MappingsEndpointServletDocumentationTests
 		}
 
 		@Bean
-		public MappingsEndpoint mappingsEndpoint(
-				Collection<MappingDescriptionProvider> descriptionProviders,
+		public MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
 				ConfigurableApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
 		}
@@ -232,10 +191,8 @@ public class MappingsEndpointServletDocumentationTests
 	@RestController
 	private static class ExampleController {
 
-		@PostMapping(path = "/",
-				consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
-				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo",
-				params = "a!=alpha")
+		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
+				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
 		public String example() {
 			return "Hello World";
 		}

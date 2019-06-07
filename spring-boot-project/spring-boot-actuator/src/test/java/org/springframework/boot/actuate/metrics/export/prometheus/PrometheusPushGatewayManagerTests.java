@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,93 +79,78 @@ public class PrometheusPushGatewayManagerTests {
 
 	@Test
 	public void createWhenPushGatewayIsNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PrometheusPushGatewayManager(null, this.registry,
-						this.scheduler, this.pushRate, "job", this.groupingKey, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(null, this.registry,
+				this.scheduler, this.pushRate, "job", this.groupingKey, null))
 				.withMessage("PushGateway must not be null");
 	}
 
 	@Test
 	public void createWhenCollectorRegistryIsNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, null,
-						this.scheduler, this.pushRate, "job", this.groupingKey, null))
-				.withMessage("Registry must not be null");
+		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, null,
+				this.scheduler, this.pushRate, "job", this.groupingKey, null)).withMessage("Registry must not be null");
 	}
 
 	@Test
 	public void createWhenSchedulerIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry,
-						null, this.pushRate, "job", this.groupingKey, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway,
+				this.registry, null, this.pushRate, "job", this.groupingKey, null))
 				.withMessage("Scheduler must not be null");
 	}
 
 	@Test
 	public void createWhenPushRateIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry,
-						this.scheduler, null, "job", this.groupingKey, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway,
+				this.registry, this.scheduler, null, "job", this.groupingKey, null))
 				.withMessage("PushRate must not be null");
 	}
 
 	@Test
 	public void createWhenJobIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry,
-						this.scheduler, this.pushRate, "", this.groupingKey, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway,
+				this.registry, this.scheduler, this.pushRate, "", this.groupingKey, null))
 				.withMessage("Job must not be empty");
 	}
 
 	@Test
 	public void createShouldSchedulePushAsFixedRate() throws Exception {
-		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler,
-				this.pushRate, "job", this.groupingKey, null);
-		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(),
-				eq(this.pushRate));
+		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
+				this.groupingKey, null);
+		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
 		this.task.getValue().run();
 		verify(this.pushGateway).pushAdd(this.registry, "job", this.groupingKey);
 	}
 
 	@Test
 	public void shutdownWhenOwnsSchedulerDoesShutdownScheduler() {
-		PushGatewayTaskScheduler ownedScheduler = mockScheduler(
-				PushGatewayTaskScheduler.class);
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(
-				this.pushGateway, this.registry, ownedScheduler, this.pushRate, "job",
-				this.groupingKey, null);
+		PushGatewayTaskScheduler ownedScheduler = mockScheduler(PushGatewayTaskScheduler.class);
+		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
+				ownedScheduler, this.pushRate, "job", this.groupingKey, null);
 		manager.shutdown();
 		verify(ownedScheduler).shutdown();
 	}
 
 	@Test
 	public void shutdownWhenDoesNotOwnSchedulerDoesNotShutdownScheduler() {
-		ThreadPoolTaskScheduler otherScheduler = mockScheduler(
-				ThreadPoolTaskScheduler.class);
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(
-				this.pushGateway, this.registry, otherScheduler, this.pushRate, "job",
-				this.groupingKey, null);
+		ThreadPoolTaskScheduler otherScheduler = mockScheduler(ThreadPoolTaskScheduler.class);
+		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
+				otherScheduler, this.pushRate, "job", this.groupingKey, null);
 		manager.shutdown();
 		verify(otherScheduler, never()).shutdown();
 	}
 
 	@Test
-	public void shutdownWhenShutdownOperationIsPushPerformsPushOnShutdown()
-			throws Exception {
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(
-				this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
-				this.groupingKey, ShutdownOperation.PUSH);
+	public void shutdownWhenShutdownOperationIsPushPerformsPushOnShutdown() throws Exception {
+		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
+				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.PUSH);
 		manager.shutdown();
 		verify(this.future).cancel(false);
 		verify(this.pushGateway).pushAdd(this.registry, "job", this.groupingKey);
 	}
 
 	@Test
-	public void shutdownWhenShutdownOperationIsDeletePerformsDeleteOnShutdown()
-			throws Exception {
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(
-				this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
-				this.groupingKey, ShutdownOperation.DELETE);
+	public void shutdownWhenShutdownOperationIsDeletePerformsDeleteOnShutdown() throws Exception {
+		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
+				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.DELETE);
 		manager.shutdown();
 		verify(this.future).cancel(false);
 		verify(this.pushGateway).delete("job", this.groupingKey);
@@ -173,9 +158,8 @@ public class PrometheusPushGatewayManagerTests {
 
 	@Test
 	public void shutdownWhenShutdownOperationIsNoneDoesNothing() {
-		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(
-				this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
-				this.groupingKey, ShutdownOperation.NONE);
+		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
+				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.NONE);
 		manager.shutdown();
 		verify(this.future).cancel(false);
 		verifyZeroInteractions(this.pushGateway);
@@ -183,24 +167,21 @@ public class PrometheusPushGatewayManagerTests {
 
 	@Test
 	public void pushWhenUnknownHostExceptionIsThrownDoesShutdown() throws Exception {
-		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler,
-				this.pushRate, "job", this.groupingKey, null);
-		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(),
-				eq(this.pushRate));
-		willThrow(new UnknownHostException("foo")).given(this.pushGateway)
-				.pushAdd(this.registry, "job", this.groupingKey);
+		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
+				this.groupingKey, null);
+		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
+		willThrow(new UnknownHostException("foo")).given(this.pushGateway).pushAdd(this.registry, "job",
+				this.groupingKey);
 		this.task.getValue().run();
 		verify(this.future).cancel(false);
 	}
 
 	@Test
 	public void pushDoesNotThrowException() throws Exception {
-		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler,
-				this.pushRate, "job", this.groupingKey, null);
-		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(),
-				eq(this.pushRate));
-		willThrow(RuntimeException.class).given(this.pushGateway).pushAdd(this.registry,
-				"job", this.groupingKey);
+		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
+				this.groupingKey, null);
+		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
+		willThrow(RuntimeException.class).given(this.pushGateway).pushAdd(this.registry, "job", this.groupingKey);
 		this.task.getValue().run();
 	}
 

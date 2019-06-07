@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,7 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
 	public InMemoryReactiveClientRegistrationRepository clientRegistrationRepository() {
 		List<ClientRegistration> registrations = new ArrayList<>(
-				OAuth2ClientPropertiesRegistrationAdapter
-						.getClientRegistrations(this.properties).values());
+				OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(this.properties).values());
 		return new InMemoryReactiveClientRegistrationRepository(registrations);
 	}
 
@@ -79,8 +78,7 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ReactiveOAuth2AuthorizedClientService authorizedClientService(
 			ReactiveClientRegistrationRepository clientRegistrationRepository) {
-		return new InMemoryReactiveOAuth2AuthorizedClientService(
-				clientRegistrationRepository);
+		return new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
 	}
 
 	@Bean
@@ -88,8 +86,7 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ServerOAuth2AuthorizedClientRepository authorizedClientRepository(
 			ReactiveOAuth2AuthorizedClientService authorizedClientService) {
-		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(
-				authorizedClientService);
+		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
 	}
 
 	static class NonServletApplicationCondition extends NoneNestedConditions {

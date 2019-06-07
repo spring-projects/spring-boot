@@ -104,8 +104,7 @@ public class Snake {
 
 	private void handleCollisions(Collection<Snake> snakes) throws Exception {
 		for (Snake snake : snakes) {
-			boolean headCollision = this.id != snake.id
-					&& snake.getHead().equals(this.head);
+			boolean headCollision = this.id != snake.id && snake.getHead().equals(this.head);
 			boolean tailCollision = snake.getTail().contains(this.head);
 			if (headCollision || tailCollision) {
 				kill();
@@ -137,15 +136,12 @@ public class Snake {
 	public String getLocationsJson() {
 		synchronized (this.monitor) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x),
-					Integer.valueOf(this.head.y)));
+			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x), Integer.valueOf(this.head.y)));
 			for (Location location : this.tail) {
 				sb.append(',');
-				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x),
-						Integer.valueOf(location.y)));
+				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x), Integer.valueOf(location.y)));
 			}
-			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id),
-					sb.toString());
+			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id), sb.toString());
 		}
 	}
 

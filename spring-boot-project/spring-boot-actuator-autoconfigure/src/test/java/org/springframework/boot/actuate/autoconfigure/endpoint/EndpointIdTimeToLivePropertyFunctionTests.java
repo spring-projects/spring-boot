@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ public class EndpointIdTimeToLivePropertyFunctionTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private final Function<EndpointId, Long> timeToLive = new EndpointIdTimeToLivePropertyFunction(
-			this.environment);
+	private final Function<EndpointId, Long> timeToLive = new EndpointIdTimeToLivePropertyFunction(this.environment);
 
 	@Test
 	public void defaultConfiguration() {
@@ -46,16 +45,14 @@ public class EndpointIdTimeToLivePropertyFunctionTests {
 
 	@Test
 	public void userConfiguration() {
-		this.environment.setProperty("management.endpoint.test.cache.time-to-live",
-				"500");
+		this.environment.setProperty("management.endpoint.test.cache.time-to-live", "500");
 		Long result = this.timeToLive.apply(EndpointId.of("test"));
 		assertThat(result).isEqualTo(500L);
 	}
 
 	@Test
 	public void mixedCaseUserConfiguration() {
-		this.environment.setProperty(
-				"management.endpoint.another-test.cache.time-to-live", "500");
+		this.environment.setProperty("management.endpoint.another-test.cache.time-to-live", "500");
 		Long result = this.timeToLive.apply(EndpointId.of("anotherTest"));
 		assertThat(result).isEqualTo(500L);
 	}

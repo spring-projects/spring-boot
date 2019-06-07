@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,15 +51,14 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(ElasticsearchAutoConfiguration.class)
 @EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
-public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
+public class ElasticSearchClientHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
 
 	private final Map<String, Client> clients;
 
 	private final ElasticsearchHealthIndicatorProperties properties;
 
-	public ElasticSearchClientHealthIndicatorAutoConfiguration(
-			Map<String, Client> clients,
+	public ElasticSearchClientHealthIndicatorAutoConfiguration(Map<String, Client> clients,
 			ElasticsearchHealthIndicatorProperties properties) {
 		this.clients = clients;
 		this.properties = properties;
@@ -74,8 +73,7 @@ public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
 	@Override
 	protected ElasticsearchHealthIndicator createHealthIndicator(Client client) {
 		Duration responseTimeout = this.properties.getResponseTimeout();
-		return new ElasticsearchHealthIndicator(client,
-				(responseTimeout != null) ? responseTimeout.toMillis() : 100,
+		return new ElasticsearchHealthIndicator(client, (responseTimeout != null) ? responseTimeout.toMillis() : 100,
 				this.properties.getIndices());
 	}
 

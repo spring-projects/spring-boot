@@ -46,8 +46,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class TomcatReactiveWebServerFactoryTests
-		extends AbstractReactiveWebServerFactoryTests {
+public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected TomcatReactiveWebServerFactory getFactory() {
@@ -108,16 +107,15 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 

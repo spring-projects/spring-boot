@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,11 @@ import org.springframework.core.ResolvableType;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public final class ClasspathLoggingApplicationListener
-		implements GenericApplicationListener {
+public final class ClasspathLoggingApplicationListener implements GenericApplicationListener {
 
 	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
-	private static final Log logger = LogFactory
-			.getLog(ClasspathLoggingApplicationListener.class);
+	private static final Log logger = LogFactory.getLog(ClasspathLoggingApplicationListener.class);
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -53,8 +51,7 @@ public final class ClasspathLoggingApplicationListener
 				logger.debug("Application started with classpath: " + getClasspath());
 			}
 			else if (event instanceof ApplicationFailedEvent) {
-				logger.debug(
-						"Application failed to start with classpath: " + getClasspath());
+				logger.debug("Application failed to start with classpath: " + getClasspath());
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,7 @@ public abstract class AutoConfigurationPackages {
 			return beanFactory.getBean(BEAN, BasePackages.class).get();
 		}
 		catch (NoSuchBeanDefinitionException ex) {
-			throw new IllegalStateException(
-					"Unable to retrieve @EnableAutoConfiguration base packages");
+			throw new IllegalStateException("Unable to retrieve @EnableAutoConfiguration base packages");
 		}
 	}
 
@@ -92,25 +91,20 @@ public abstract class AutoConfigurationPackages {
 	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
 		if (registry.containsBeanDefinition(BEAN)) {
 			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
-			ConstructorArgumentValues constructorArguments = beanDefinition
-					.getConstructorArgumentValues();
-			constructorArguments.addIndexedArgumentValue(0,
-					addBasePackages(constructorArguments, packageNames));
+			ConstructorArgumentValues constructorArguments = beanDefinition.getConstructorArgumentValues();
+			constructorArguments.addIndexedArgumentValue(0, addBasePackages(constructorArguments, packageNames));
 		}
 		else {
 			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 			beanDefinition.setBeanClass(BasePackages.class);
-			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-					packageNames);
+			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, packageNames);
 			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN, beanDefinition);
 		}
 	}
 
-	private static String[] addBasePackages(
-			ConstructorArgumentValues constructorArguments, String[] packageNames) {
-		String[] existing = (String[]) constructorArguments
-				.getIndexedArgumentValue(0, String[].class).getValue();
+	private static String[] addBasePackages(ConstructorArgumentValues constructorArguments, String[] packageNames) {
+		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0, String[].class).getValue();
 		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));
@@ -124,8 +118,7 @@ public abstract class AutoConfigurationPackages {
 	static class Registrar implements ImportBeanDefinitionRegistrar, DeterminableImports {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata metadata,
-				BeanDefinitionRegistry registry) {
+		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 			register(registry, new PackageImport(metadata).getPackageName());
 		}
 
@@ -201,12 +194,9 @@ public abstract class AutoConfigurationPackages {
 				}
 				else {
 					if (logger.isDebugEnabled()) {
-						String packageNames = StringUtils
-								.collectionToCommaDelimitedString(this.packages);
-						logger.debug("@EnableAutoConfiguration was declared on a class "
-								+ "in the package '" + packageNames
-								+ "'. Automatic @Repository and @Entity scanning is "
-								+ "enabled.");
+						String packageNames = StringUtils.collectionToCommaDelimitedString(this.packages);
+						logger.debug("@EnableAutoConfiguration was declared on a class " + "in the package '"
+								+ packageNames + "'. Automatic @Repository and @Entity scanning is " + "enabled.");
 					}
 				}
 				this.loggedBasePackageInfo = true;

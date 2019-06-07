@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,44 +45,35 @@ public abstract class AetherGrapeEngineFactory {
 	public static AetherGrapeEngine create(GroovyClassLoader classLoader,
 			List<RepositoryConfiguration> repositoryConfigurations,
 			DependencyResolutionContext dependencyResolutionContext, boolean quiet) {
-		RepositorySystem repositorySystem = createServiceLocator()
-				.getService(RepositorySystem.class);
-		DefaultRepositorySystemSession repositorySystemSession = MavenRepositorySystemUtils
-				.newSession();
+		RepositorySystem repositorySystem = createServiceLocator().getService(RepositorySystem.class);
+		DefaultRepositorySystemSession repositorySystemSession = MavenRepositorySystemUtils.newSession();
 		ServiceLoader<RepositorySystemSessionAutoConfiguration> autoConfigurations = ServiceLoader
 				.load(RepositorySystemSessionAutoConfiguration.class);
 		for (RepositorySystemSessionAutoConfiguration autoConfiguration : autoConfigurations) {
 			autoConfiguration.apply(repositorySystemSession, repositorySystem);
 		}
-		new DefaultRepositorySystemSessionAutoConfiguration()
-				.apply(repositorySystemSession, repositorySystem);
-		return new AetherGrapeEngine(classLoader, repositorySystem,
-				repositorySystemSession, createRepositories(repositoryConfigurations),
-				dependencyResolutionContext, quiet);
+		new DefaultRepositorySystemSessionAutoConfiguration().apply(repositorySystemSession, repositorySystem);
+		return new AetherGrapeEngine(classLoader, repositorySystem, repositorySystemSession,
+				createRepositories(repositoryConfigurations), dependencyResolutionContext, quiet);
 	}
 
 	private static ServiceLocator createServiceLocator() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositorySystem.class, DefaultRepositorySystem.class);
-		locator.addService(RepositoryConnectorFactory.class,
-				BasicRepositoryConnectorFactory.class);
+		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
 		return locator;
 	}
 
-	private static List<RemoteRepository> createRepositories(
-			List<RepositoryConfiguration> repositoryConfigurations) {
-		List<RemoteRepository> repositories = new ArrayList<>(
-				repositoryConfigurations.size());
+	private static List<RemoteRepository> createRepositories(List<RepositoryConfiguration> repositoryConfigurations) {
+		List<RemoteRepository> repositories = new ArrayList<>(repositoryConfigurations.size());
 		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
-			RemoteRepository.Builder builder = new RemoteRepository.Builder(
-					repositoryConfiguration.getName(), "default",
-					repositoryConfiguration.getUri().toASCIIString());
+			RemoteRepository.Builder builder = new RemoteRepository.Builder(repositoryConfiguration.getName(),
+					"default", repositoryConfiguration.getUri().toASCIIString());
 			if (!repositoryConfiguration.getSnapshotsEnabled()) {
-				builder.setSnapshotPolicy(
-						new RepositoryPolicy(false, RepositoryPolicy.UPDATE_POLICY_NEVER,
-								RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
+				builder.setSnapshotPolicy(new RepositoryPolicy(false, RepositoryPolicy.UPDATE_POLICY_NEVER,
+						RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
 			}
 			repositories.add(builder.build());
 		}

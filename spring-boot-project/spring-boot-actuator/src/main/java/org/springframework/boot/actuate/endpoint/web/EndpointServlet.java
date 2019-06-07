@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,11 +61,9 @@ public final class EndpointServlet {
 
 	public EndpointServlet withInitParameters(Map<String, String> initParameters) {
 		Assert.notNull(initParameters, "InitParameters must not be null");
-		boolean hasEmptyName = initParameters.keySet().stream()
-				.anyMatch((name) -> !StringUtils.hasText(name));
+		boolean hasEmptyName = initParameters.keySet().stream().anyMatch((name) -> !StringUtils.hasText(name));
 		Assert.isTrue(!hasEmptyName, "InitParameters must not contain empty names");
-		Map<String, String> mergedInitParameters = new LinkedHashMap<>(
-				this.initParameters);
+		Map<String, String> mergedInitParameters = new LinkedHashMap<>(this.initParameters);
 		mergedInitParameters.putAll(initParameters);
 		return new EndpointServlet(this.servlet, mergedInitParameters);
 	}

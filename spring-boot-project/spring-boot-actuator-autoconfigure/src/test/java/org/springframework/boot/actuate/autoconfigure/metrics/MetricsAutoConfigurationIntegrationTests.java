@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,36 +42,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsAutoConfigurationIntegrationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple());
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple());
 
 	@Test
 	public void propertyBasedMeterFilteringIsAutoConfigured() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.my.org=false")
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.timer("my.org.timer");
-					assertThat(registry.find("my.org.timer").timer()).isNull();
-				});
+		this.contextRunner.withPropertyValues("management.metrics.enable.my.org=false").run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			registry.timer("my.org.timer");
+			assertThat(registry.find("my.org.timer").timer()).isNull();
+		});
 	}
 
 	@Test
 	public void propertyBasedCommonTagsIsAutoConfigured() {
-		this.contextRunner.withPropertyValues("management.metrics.tags.region=test",
-				"management.metrics.tags.origin=local").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.metrics.tags.region=test", "management.metrics.tags.origin=local")
+				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					registry.counter("my.counter", "env", "qa");
-					assertThat(registry.find("my.counter").tags("env", "qa")
-							.tags("region", "test").tags("origin", "local").counter())
-									.isNotNull();
+					assertThat(registry.find("my.counter").tags("env", "qa").tags("region", "test")
+							.tags("origin", "local").counter()).isNotNull();
 				});
 	}
 
 	@Test
 	public void simpleMeterRegistryIsUsedAsAFallback() {
-		this.contextRunner
-				.run((context) -> assertThat(context.getBean(MeterRegistry.class))
-						.isInstanceOf(SimpleMeterRegistry.class));
+		this.contextRunner.run(
+				(context) -> assertThat(context.getBean(MeterRegistry.class)).isInstanceOf(SimpleMeterRegistry.class));
 	}
 
 	@Test
@@ -85,8 +82,7 @@ public class MetricsAutoConfigurationIntegrationTests {
 
 	@Test
 	public void noCompositeIsCreatedWhenASingleMeterRegistryIsAutoConfigured() {
-		new ApplicationContextRunner()
-				.with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class))
+		new ApplicationContextRunner().with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class))
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class))
 						.isInstanceOf(GraphiteMeterRegistry.class));
 	}
@@ -103,10 +99,8 @@ public class MetricsAutoConfigurationIntegrationTests {
 
 	@Test
 	public void compositeCreatedWithMultipleRegistries() {
-		new ApplicationContextRunner()
-				.with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
-						JmxMetricsExportAutoConfiguration.class))
-				.run((context) -> {
+		new ApplicationContextRunner().with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
+				JmxMetricsExportAutoConfiguration.class)).run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry).isInstanceOf(CompositeMeterRegistry.class);
 					assertThat(((CompositeMeterRegistry) registry).getRegistries())

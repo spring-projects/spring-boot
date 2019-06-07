@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,23 +56,20 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
+		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null,
-						BrowserVersion.CHROME))
+				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME))
 				.withMessageContaining("Environment must not be null");
 	}
 
@@ -81,38 +78,33 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 		Capabilities capabilities = mock(Capabilities.class);
 		given(capabilities.getBrowserName()).willReturn("htmlunit");
 		given(capabilities.getVersion()).willReturn("chrome");
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void getWhenUrlIsRelativeAndNoPortWillUseLocalhost8080() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
-		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(
-				environment);
+		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(any(WebWindow.class),
-				requestToUrl(new URL("http://localhost:8080/test")));
+		verify(this.webClient).getPage(any(WebWindow.class), requestToUrl(new URL("http://localhost:8080/test")));
 	}
 
 	@Test
 	public void getWhenUrlIsRelativeAndHasPortWillUseLocalhostPort() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "8181");
-		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(
-				environment);
+		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(any(WebWindow.class),
-				requestToUrl(new URL("http://localhost:8181/test")));
+		verify(this.webClient).getPage(any(WebWindow.class), requestToUrl(new URL("http://localhost:8181/test")));
 	}
 
 	private WebRequest requestToUrl(URL url) {
 		return argThat(new WebRequestUrlArgumentMatcher(url));
 	}
 
-	public class TestLocalHostWebConnectionHtmlUnitDriver
-			extends LocalHostWebConnectionHtmlUnitDriver {
+	public class TestLocalHostWebConnectionHtmlUnitDriver extends LocalHostWebConnectionHtmlUnitDriver {
 
 		public TestLocalHostWebConnectionHtmlUnitDriver(Environment environment) {
 			super(environment);
@@ -125,8 +117,7 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 
 	}
 
-	private static final class WebRequestUrlArgumentMatcher
-			implements ArgumentMatcher<WebRequest> {
+	private static final class WebRequestUrlArgumentMatcher implements ArgumentMatcher<WebRequest> {
 
 		private final URL expectedUrl;
 

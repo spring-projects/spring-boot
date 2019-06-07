@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,12 +57,10 @@ class TokenValidator {
 	private void validateAlgorithm(Token token) {
 		String algorithm = token.getSignatureAlgorithm();
 		if (algorithm == null) {
-			throw new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
-					"Signing algorithm cannot be null");
+			throw new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE, "Signing algorithm cannot be null");
 		}
 		if (!algorithm.equals("RS256")) {
-			throw new CloudFoundryAuthorizationException(
-					Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM,
+			throw new CloudFoundryAuthorizationException(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM,
 					"Signing algorithm " + algorithm + " not supported");
 		}
 	}
@@ -100,8 +98,7 @@ class TokenValidator {
 		}
 	}
 
-	private PublicKey getPublicKey(String key)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
+	private PublicKey getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		key = key.replace("-----BEGIN PUBLIC KEY-----\n", "");
 		key = key.replace("-----END PUBLIC KEY-----", "");
 		key = key.trim().replace("\n", "");
@@ -113,8 +110,7 @@ class TokenValidator {
 	private void validateExpiry(Token token) {
 		long currentTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
 		if (currentTime > token.getExpiry()) {
-			throw new CloudFoundryAuthorizationException(Reason.TOKEN_EXPIRED,
-					"Token expired");
+			throw new CloudFoundryAuthorizationException(Reason.TOKEN_EXPIRED, "Token expired");
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,7 @@ public class InitCommand extends OptionParsingCommand {
 	}
 
 	public InitCommand(InitOptionHandler handler) {
-		super("init",
-				"Initialize a new project using Spring " + "Initializr (start.spring.io)",
-				handler);
+		super("init", "Initialize a new project using Spring " + "Initializr (start.spring.io)", handler);
 	}
 
 	@Override
@@ -60,11 +58,9 @@ public class InitCommand extends OptionParsingCommand {
 	@Override
 	public Collection<HelpExample> getExamples() {
 		List<HelpExample> examples = new ArrayList<>();
-		examples.add(new HelpExample("To list all the capabilities of the service",
-				"spring init --list"));
+		examples.add(new HelpExample("To list all the capabilities of the service", "spring init --list"));
 		examples.add(new HelpExample("To creates a default project", "spring init"));
-		examples.add(new HelpExample("To create a web my-app.zip",
-				"spring init -d=web my-app.zip"));
+		examples.add(new HelpExample("To create a web my-app.zip", "spring init -d=web my-app.zip"));
 		examples.add(new HelpExample("To create a web/data-jpa gradle project unpacked",
 				"spring init -d=web,jpa --build=gradle my-dir"));
 		return examples;
@@ -116,16 +112,14 @@ public class InitCommand extends OptionParsingCommand {
 		private OptionSpec<Void> force;
 
 		InitOptionHandler(InitializrService initializrService) {
-			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(
-					initializrService);
+			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(initializrService);
 			this.projectGenerator = new ProjectGenerator(initializrService);
 
 		}
 
 		@Override
 		protected void options() {
-			this.target = option(Arrays.asList("target"), "URL of the service to use")
-					.withRequiredArg()
+			this.target = option(Arrays.asList("target"), "URL of the service to use").withRequiredArg()
 					.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
 			this.listCapabilities = option(Arrays.asList("list"),
 					"List the capabilities of the service. Use it to discover the "
@@ -135,48 +129,40 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void projectGenerationOptions() {
-			this.groupId = option(Arrays.asList("groupId", "g"),
-					"Project coordinates (for example 'org.test')").withRequiredArg();
-			this.artifactId = option(Arrays.asList("artifactId", "a"),
-					"Project coordinates; infer archive name (for example 'test')")
-							.withRequiredArg();
-			this.version = option(Arrays.asList("version", "v"),
-					"Project version (for example '0.0.1-SNAPSHOT')").withRequiredArg();
-			this.name = option(Arrays.asList("name", "n"),
-					"Project name; infer application name").withRequiredArg();
-			this.description = option("description", "Project description")
+			this.groupId = option(Arrays.asList("groupId", "g"), "Project coordinates (for example 'org.test')")
 					.withRequiredArg();
+			this.artifactId = option(Arrays.asList("artifactId", "a"),
+					"Project coordinates; infer archive name (for example 'test')").withRequiredArg();
+			this.version = option(Arrays.asList("version", "v"), "Project version (for example '0.0.1-SNAPSHOT')")
+					.withRequiredArg();
+			this.name = option(Arrays.asList("name", "n"), "Project name; infer application name").withRequiredArg();
+			this.description = option("description", "Project description").withRequiredArg();
 			this.packageName = option("package-name", "Package name").withRequiredArg();
 			this.type = option(Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
-							+ "and/or --format. Check the capabilities of the service "
-							+ "(--list) for more details").withRequiredArg();
-			this.packaging = option(Arrays.asList("packaging", "p"),
-					"Project packaging (for example 'jar')").withRequiredArg();
-			this.build = option("build",
-					"Build system to use (for example 'maven' or 'gradle')")
-							.withRequiredArg().defaultsTo("maven");
-			this.format = option("format",
-					"Format of the generated content (for example 'build' for a build file, "
-							+ "'project' for a project archive)").withRequiredArg()
-									.defaultsTo("project");
-			this.javaVersion = option(Arrays.asList("java-version", "j"),
-					"Language level (for example '1.8')").withRequiredArg();
-			this.language = option(Arrays.asList("language", "l"),
-					"Programming language  (for example 'java')").withRequiredArg();
+							+ "and/or --format. Check the capabilities of the service " + "(--list) for more details")
+									.withRequiredArg();
+			this.packaging = option(Arrays.asList("packaging", "p"), "Project packaging (for example 'jar')")
+					.withRequiredArg();
+			this.build = option("build", "Build system to use (for example 'maven' or 'gradle')").withRequiredArg()
+					.defaultsTo("maven");
+			this.format = option("format", "Format of the generated content (for example 'build' for a build file, "
+					+ "'project' for a project archive)").withRequiredArg().defaultsTo("project");
+			this.javaVersion = option(Arrays.asList("java-version", "j"), "Language level (for example '1.8')")
+					.withRequiredArg();
+			this.language = option(Arrays.asList("language", "l"), "Programming language  (for example 'java')")
+					.withRequiredArg();
 			this.bootVersion = option(Arrays.asList("boot-version", "b"),
-					"Spring Boot version (for example '1.2.0.RELEASE')")
-							.withRequiredArg();
+					"Spring Boot version (for example '1.2.0.RELEASE')").withRequiredArg();
 			this.dependencies = option(Arrays.asList("dependencies", "d"),
-					"Comma-separated list of dependency identifiers to include in the "
-							+ "generated project").withRequiredArg();
+					"Comma-separated list of dependency identifiers to include in the " + "generated project")
+							.withRequiredArg();
 		}
 
 		private void otherOptions() {
 			this.extract = option(Arrays.asList("extract", "x"),
 					"Extract the project archive. Inferred if a location is specified without an extension");
-			this.force = option(Arrays.asList("force", "f"),
-					"Force overwrite of existing files");
+			this.force = option(Arrays.asList("force", "f"), "Force overwrite of existing files");
 		}
 
 		@Override
@@ -201,8 +187,7 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void generateReport(OptionSet options) throws IOException {
-			Log.info(this.serviceCapabilitiesReport
-					.generate(options.valueOf(this.target)));
+			Log.info(this.serviceCapabilitiesReport.generate(options.valueOf(this.target)));
 		}
 
 		protected void generateProject(OptionSet options) throws IOException {
@@ -210,13 +195,10 @@ public class InitCommand extends OptionParsingCommand {
 			this.projectGenerator.generateProject(request, options.has(this.force));
 		}
 
-		protected ProjectGenerationRequest createProjectGenerationRequest(
-				OptionSet options) {
+		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
 
-			List<?> nonOptionArguments = new ArrayList<Object>(
-					options.nonOptionArguments());
-			Assert.isTrue(nonOptionArguments.size() <= 1,
-					"Only the target location may be specified");
+			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
+			Assert.isTrue(nonOptionArguments.size() <= 1, "Only the target location may be specified");
 
 			ProjectGenerationRequest request = new ProjectGenerationRequest();
 			request.setServiceUrl(options.valueOf(this.target));

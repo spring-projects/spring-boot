@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,15 +71,13 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 	public void snippetGeneration() {
 		given(this.documentationSpec)
 				.filter(document("default-snippets",
-						preprocessRequest(modifyUris().scheme("https")
-								.host("api.example.com").removePort())))
+						preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
 				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.md"))
-				.has(contentContaining("api.example.com"));
+		assertThat(new File(defaultSnippetsDir, "http-request.md")).has(contentContaining("api.example.com"));
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
@@ -98,14 +96,13 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 
 		@Bean
 		public RestDocsRestAssuredConfigurationCustomizer templateFormatCustomizer() {
-			return (configurer) -> configurer.snippets()
-					.withTemplateFormat(TemplateFormats.markdown());
+			return (configurer) -> configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 		}
 
 		@Bean
 		public RestDocsRestAssuredConfigurationCustomizer defaultSnippetsCustomizer() {
-			return (configurer) -> configurer.snippets().withAdditionalDefaults(
-					responseFields(fieldWithPath("_links.self").description("Main URL")));
+			return (configurer) -> configurer.snippets()
+					.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}

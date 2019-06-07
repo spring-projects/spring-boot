@@ -47,8 +47,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
 	public void invalidMetadata() throws IOException {
-		assertThatIllegalStateException().isThrownBy(() -> readFor("invalid"))
-				.withCauseInstanceOf(JSONException.class);
+		assertThatIllegalStateException().isThrownBy(() -> readFor("invalid")).withCauseInstanceOf(JSONException.class);
 	}
 
 	@Test
@@ -83,8 +82,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertProperty(item, "spring.foo.name", "name", String.class, null);
 		assertItem(item, "org.acme.Foo");
 		ConfigurationMetadataItem item2 = items.get(1);
-		assertProperty(item2, "spring.foo.description", "description", String.class,
-				"FooBar");
+		assertProperty(item2, "spring.foo.description", "description", String.class, "FooBar");
 		assertThat(item2.getDescription()).isEqualTo("Foo description.");
 		assertThat(item2.getShortDescription()).isEqualTo("Foo description.");
 		assertThat(item2.getSourceMethod()).isNull();
@@ -95,16 +93,14 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertThat(hint.getValueHints()).hasSize(1);
 		ValueHint valueHint = hint.getValueHints().get(0);
 		assertThat(valueHint.getValue()).isEqualTo(42);
-		assertThat(valueHint.getDescription()).isEqualTo(
-				"Because that's the answer to any question, choose it. \nReally.");
-		assertThat(valueHint.getShortDescription())
-				.isEqualTo("Because that's the answer to any question, choose it.");
+		assertThat(valueHint.getDescription())
+				.isEqualTo("Because that's the answer to any question, choose it. \nReally.");
+		assertThat(valueHint.getShortDescription()).isEqualTo("Because that's the answer to any question, choose it.");
 		assertThat(hint.getValueProviders()).hasSize(1);
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
 		assertThat(valueProvider.getName()).isEqualTo("handle-as");
 		assertThat(valueProvider.getParameters()).hasSize(1);
-		assertThat(valueProvider.getParameters().get("target"))
-				.isEqualTo(Integer.class.getName());
+		assertThat(valueProvider.getParameters().get("target")).isEqualTo(Integer.class.getName());
 	}
 
 	@Test
@@ -127,8 +123,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
 		assertThat(valueProvider.getName()).isEqualTo("handle-as");
 		assertThat(valueProvider.getParameters()).hasSize(1);
-		assertThat(valueProvider.getParameters().get("target"))
-				.isEqualTo(String.class.getName());
+		assertThat(valueProvider.getParameters().get("target")).isEqualTo(String.class.getName());
 		ValueProvider valueProvider2 = hint.getValueProviders().get(1);
 		assertThat(valueProvider2.getName()).isEqualTo("any");
 		assertThat(valueProvider2.getParameters()).isEmpty();
@@ -154,17 +149,13 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ConfigurationMetadataItem item = items.get(0);
 		assertProperty(item, "server.port", "server.port", Integer.class, null);
 		assertThat(item.isDeprecated()).isTrue();
-		assertThat(item.getDeprecation().getReason())
-				.isEqualTo("Server namespace has moved to spring.server");
-		assertThat(item.getDeprecation().getShortReason())
-				.isEqualTo("Server namespace has moved to spring.server");
-		assertThat(item.getDeprecation().getReplacement())
-				.isEqualTo("server.spring.port");
+		assertThat(item.getDeprecation().getReason()).isEqualTo("Server namespace has moved to spring.server");
+		assertThat(item.getDeprecation().getShortReason()).isEqualTo("Server namespace has moved to spring.server");
+		assertThat(item.getDeprecation().getReplacement()).isEqualTo("server.spring.port");
 		assertThat(item.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.WARNING);
 
 		ConfigurationMetadataItem item2 = items.get(1);
-		assertProperty(item2, "server.cluster-name", "server.cluster-name", String.class,
-				null);
+		assertProperty(item2, "server.cluster-name", "server.cluster-name", String.class, null);
 		assertThat(item2.isDeprecated()).isTrue();
 		assertThat(item2.getDeprecation().getReason()).isNull();
 		assertThat(item2.getDeprecation().getShortReason()).isNull();
@@ -172,31 +163,25 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertThat(item.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.WARNING);
 
 		ConfigurationMetadataItem item3 = items.get(2);
-		assertProperty(item3, "spring.server.name", "spring.server.name", String.class,
-				null);
+		assertProperty(item3, "spring.server.name", "spring.server.name", String.class, null);
 		assertThat(item3.isDeprecated()).isFalse();
 		assertThat(item3.getDeprecation()).isNull();
 
 		ConfigurationMetadataItem item4 = items.get(3);
-		assertProperty(item4, "spring.server-name", "spring.server-name", String.class,
-				null);
+		assertProperty(item4, "spring.server-name", "spring.server-name", String.class, null);
 		assertThat(item4.isDeprecated()).isTrue();
 		assertThat(item4.getDeprecation().getReason()).isNull();
 		assertThat(item2.getDeprecation().getShortReason()).isNull();
-		assertThat(item4.getDeprecation().getReplacement())
-				.isEqualTo("spring.server.name");
+		assertThat(item4.getDeprecation().getReplacement()).isEqualTo("spring.server.name");
 		assertThat(item4.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.ERROR);
 
 		ConfigurationMetadataItem item5 = items.get(4);
-		assertProperty(item5, "spring.server-name2", "spring.server-name2", String.class,
-				null);
+		assertProperty(item5, "spring.server-name2", "spring.server-name2", String.class, null);
 		assertThat(item5.isDeprecated()).isTrue();
 		assertThat(item5.getDeprecation().getReason()).isNull();
 		assertThat(item2.getDeprecation().getShortReason()).isNull();
-		assertThat(item5.getDeprecation().getReplacement())
-				.isEqualTo("spring.server.name");
-		assertThat(item5.getDeprecation().getLevel())
-				.isEqualTo(Deprecation.Level.WARNING);
+		assertThat(item5.getDeprecation().getReplacement()).isEqualTo("spring.server.name");
+		assertThat(item5.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.WARNING);
 	}
 
 	@Test

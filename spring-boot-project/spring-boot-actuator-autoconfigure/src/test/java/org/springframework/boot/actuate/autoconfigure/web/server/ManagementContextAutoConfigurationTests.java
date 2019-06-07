@@ -47,15 +47,12 @@ public class ManagementContextAutoConfigurationTests {
 	public void childManagementContextShouldStartForEmbeddedServer() {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(
-								ManagementContextAutoConfiguration.class,
+						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
 								ServletWebServerFactoryAutoConfiguration.class,
-								ServletManagementContextAutoConfiguration.class,
-								WebEndpointAutoConfiguration.class,
+								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 								EndpointAutoConfiguration.class));
-		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run(
-				(context) -> assertThat(tomcatStartedOccurencesIn(this.output.toString()))
-						.isEqualTo(2));
+		contextRunner.withPropertyValues("server.port=0", "management.server.port=0")
+				.run((context) -> assertThat(tomcatStartedOccurencesIn(this.output.toString())).isEqualTo(2));
 
 	}
 

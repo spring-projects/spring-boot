@@ -41,8 +41,7 @@ public class EnvironmentEndpointAutoConfiguration {
 
 	private final EnvironmentEndpointProperties properties;
 
-	public EnvironmentEndpointAutoConfiguration(
-			EnvironmentEndpointProperties properties) {
+	public EnvironmentEndpointAutoConfiguration(EnvironmentEndpointProperties properties) {
 		this.properties = properties;
 	}
 
@@ -60,8 +59,7 @@ public class EnvironmentEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
-	public EnvironmentEndpointWebExtension environmentEndpointWebExtension(
-			EnvironmentEndpoint environmentEndpoint) {
+	public EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint environmentEndpoint) {
 		return new EnvironmentEndpointWebExtension(environmentEndpoint);
 	}
 

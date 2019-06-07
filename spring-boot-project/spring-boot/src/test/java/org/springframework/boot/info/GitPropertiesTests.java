@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class GitPropertiesTests {
 
 	@Test
 	public void coerceEpochSecond() {
-		GitProperties properties = new GitProperties(
-				createProperties("master", "abcdefg", null, "1457527123"));
+		GitProperties properties = new GitProperties(createProperties("master", "abcdefg", null, "1457527123"));
 		assertThat(properties.getCommitTime()).isNotNull();
 		assertThat(properties.get("commit.time")).isEqualTo("1457527123000");
 		assertThat(properties.getCommitTime().toEpochMilli()).isEqualTo(1457527123000L);
@@ -83,22 +82,20 @@ public class GitPropertiesTests {
 
 	@Test
 	public void shortenCommitIdShorterThan7() {
-		GitProperties properties = new GitProperties(
-				createProperties("master", "abc", null, "1457527123"));
+		GitProperties properties = new GitProperties(createProperties("master", "abc", null, "1457527123"));
 		assertThat(properties.getCommitId()).isEqualTo("abc");
 		assertThat(properties.getShortCommitId()).isEqualTo("abc");
 	}
 
 	@Test
 	public void shortenCommitIdLongerThan7() {
-		GitProperties properties = new GitProperties(
-				createProperties("master", "abcdefghijklmno", null, "1457527123"));
+		GitProperties properties = new GitProperties(createProperties("master", "abcdefghijklmno", null, "1457527123"));
 		assertThat(properties.getCommitId()).isEqualTo("abcdefghijklmno");
 		assertThat(properties.getShortCommitId()).isEqualTo("abcdefg");
 	}
 
-	private static Properties createProperties(String branch, String commitId,
-			String commitIdAbbrev, String commitTime) {
+	private static Properties createProperties(String branch, String commitId, String commitIdAbbrev,
+			String commitTime) {
 		Properties properties = new Properties();
 		properties.put("branch", branch);
 		properties.put("commit.id", commitId);

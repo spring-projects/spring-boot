@@ -56,8 +56,7 @@ public class AutoConfigurationExcludeFilterTests {
 		this.context = new AnnotationConfigApplicationContext(Config.class);
 		assertThat(this.context.getBeansOfType(String.class)).hasSize(1);
 		assertThat(this.context.getBean(String.class)).isEqualTo("test");
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(FILTERED));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(FILTERED));
 	}
 
 	@Configuration
@@ -68,8 +67,7 @@ public class AutoConfigurationExcludeFilterTests {
 
 	}
 
-	static class TestAutoConfigurationExcludeFilter
-			extends AutoConfigurationExcludeFilter {
+	static class TestAutoConfigurationExcludeFilter extends AutoConfigurationExcludeFilter {
 
 		@Override
 		protected List<String> getAutoConfigurations() {

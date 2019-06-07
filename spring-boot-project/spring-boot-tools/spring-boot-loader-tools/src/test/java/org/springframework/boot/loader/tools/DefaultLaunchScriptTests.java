@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,8 +170,7 @@ public class DefaultLaunchScriptTests {
 	public void expandVariables() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		FileCopyUtils.copy("h{{a}}ll{{b}}".getBytes(), file);
-		DefaultLaunchScript script = new DefaultLaunchScript(file,
-				createProperties("a:e", "b:o"));
+		DefaultLaunchScript script = new DefaultLaunchScript(file, createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
 		assertThat(content).isEqualTo("hello");
 	}
@@ -180,8 +179,7 @@ public class DefaultLaunchScriptTests {
 	public void expandVariablesMultiLine() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		FileCopyUtils.copy("h{{a}}l\nl{{b}}".getBytes(), file);
-		DefaultLaunchScript script = new DefaultLaunchScript(file,
-				createProperties("a:e", "b:o"));
+		DefaultLaunchScript script = new DefaultLaunchScript(file, createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
 		assertThat(content).isEqualTo("hel\nlo");
 	}
@@ -208,8 +206,7 @@ public class DefaultLaunchScriptTests {
 	public void expandVariablesWithDefaultsOverride() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		FileCopyUtils.copy("h{{a:e}}ll{{b:o}}".getBytes(), file);
-		DefaultLaunchScript script = new DefaultLaunchScript(file,
-				createProperties("a:a"));
+		DefaultLaunchScript script = new DefaultLaunchScript(file, createProperties("a:a"));
 		String content = new String(script.toByteArray());
 		assertThat(content).isEqualTo("hallo");
 	}
@@ -224,8 +221,7 @@ public class DefaultLaunchScriptTests {
 	}
 
 	private void assertThatPlaceholderCanBeReplaced(String placeholder) throws Exception {
-		DefaultLaunchScript script = new DefaultLaunchScript(null,
-				createProperties(placeholder + ":__test__"));
+		DefaultLaunchScript script = new DefaultLaunchScript(null, createProperties(placeholder + ":__test__"));
 		String content = new String(script.toByteArray());
 		assertThat(content).contains("__test__");
 	}

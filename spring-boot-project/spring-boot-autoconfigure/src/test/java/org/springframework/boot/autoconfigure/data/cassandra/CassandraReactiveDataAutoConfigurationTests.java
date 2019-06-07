@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,26 +58,23 @@ public class CassandraReactiveDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
-		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class))
-				.hasSize(1);
+		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class)).hasSize(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
 	}
 
 	@Test
 	public void userTypeResolverShouldBeSet() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
 				.isInstanceOf(SimpleUserTypeResolver.class);
 	}
@@ -92,8 +89,7 @@ public class CassandraReactiveDataAutoConfigurationTests {
 		if (config != null) {
 			ctx.register(config);
 		}
-		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class,
-				CassandraDataAutoConfiguration.class,
+		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
 				CassandraReactiveDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

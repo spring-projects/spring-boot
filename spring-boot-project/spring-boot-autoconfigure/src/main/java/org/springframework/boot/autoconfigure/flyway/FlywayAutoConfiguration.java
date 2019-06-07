@@ -86,8 +86,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		JdbcTemplateAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
 
 	@Bean
@@ -97,8 +97,7 @@ public class FlywayAutoConfiguration {
 	}
 
 	@Bean
-	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(
-			ObjectProvider<Flyway> flyways) {
+	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(ObjectProvider<Flyway> flyways) {
 		return new FlywaySchemaManagementProvider(flyways);
 	}
 
@@ -125,25 +124,21 @@ public class FlywayAutoConfiguration {
 
 		private final List<FlywayCallback> flywayCallbacks;
 
-		public FlywayConfiguration(FlywayProperties properties,
-				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
-				ObjectProvider<DataSource> dataSource,
+		public FlywayConfiguration(FlywayProperties properties, DataSourceProperties dataSourceProperties,
+				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
-				ObjectProvider<Callback> callbacks,
-				ObjectProvider<FlywayCallback> flywayCallbacks) {
+				ObjectProvider<Callback> callbacks, ObjectProvider<FlywayCallback> flywayCallbacks) {
 			this.properties = properties;
 			this.dataSourceProperties = dataSourceProperties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
-			this.configurationCustomizers = fluentConfigurationCustomizers.orderedStream()
-					.collect(Collectors.toList());
+			this.configurationCustomizers = fluentConfigurationCustomizers.orderedStream().collect(Collectors.toList());
 			this.callbacks = callbacks.orderedStream().collect(Collectors.toList());
-			this.flywayCallbacks = flywayCallbacks.orderedStream()
-					.collect(Collectors.toList());
+			this.flywayCallbacks = flywayCallbacks.orderedStream().collect(Collectors.toList());
 		}
 
 		@Bean
@@ -153,8 +148,7 @@ public class FlywayAutoConfiguration {
 			checkLocationExists(dataSource);
 			configureProperties(configuration);
 			configureCallbacks(configuration);
-			this.configurationCustomizers
-					.forEach((customizer) -> customizer.customize(configuration));
+			this.configurationCustomizers.forEach((customizer) -> customizer.customize(configuration));
 			Flyway flyway = configuration.load();
 			configureFlywayCallbacks(flyway);
 			return flyway;
@@ -162,16 +156,12 @@ public class FlywayAutoConfiguration {
 
 		private DataSource configureDataSource(FluentConfiguration configuration) {
 			if (this.properties.isCreateDataSource()) {
-				String url = getProperty(this.properties::getUrl,
-						this.dataSourceProperties::getUrl);
-				String user = getProperty(this.properties::getUser,
-						this.dataSourceProperties::getUsername);
-				String password = getProperty(this.properties::getPassword,
-						this.dataSourceProperties::getPassword);
+				String url = getProperty(this.properties::getUrl, this.dataSourceProperties::getUrl);
+				String user = getProperty(this.properties::getUser, this.dataSourceProperties::getUsername);
+				String password = getProperty(this.properties::getPassword, this.dataSourceProperties::getPassword);
 				configuration.dataSource(url, user, password);
 				if (!CollectionUtils.isEmpty(this.properties.getInitSqls())) {
-					String initSql = StringUtils.collectionToDelimitedString(
-							this.properties.getInitSqls(), "\n");
+					String initSql = StringUtils.collectionToDelimitedString(this.properties.getInitSqls(), "\n");
 					configuration.initSql(initSql);
 				}
 			}
@@ -186,13 +176,10 @@ public class FlywayAutoConfiguration {
 
 		private void checkLocationExists(DataSource dataSource) {
 			if (this.properties.isCheckLocation()) {
-				String[] locations = new LocationResolver(dataSource)
-						.resolveLocations(this.properties.getLocations());
-				Assert.state(locations.length != 0,
-						"Migration script locations not configured");
+				String[] locations = new LocationResolver(dataSource).resolveLocations(this.properties.getLocations());
+				Assert.state(locations.length != 0, "Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(locations);
-				Assert.state(exists, () -> "Cannot find migrations location in: "
-						+ Arrays.asList(locations)
+				Assert.state(exists, () -> "Cannot find migrations location in: " + Arrays.asList(locations)
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}
@@ -203,55 +190,35 @@ public class FlywayAutoConfiguration {
 					.resolveLocations(this.properties.getLocations());
 			map.from(locations).to(configuration::locations);
 			map.from(this.properties.getEncoding()).to(configuration::encoding);
-			map.from(this.properties.getConnectRetries())
-					.to(configuration::connectRetries);
-			map.from(this.properties.getSchemas()).as(StringUtils::toStringArray)
-					.to(configuration::schemas);
+			map.from(this.properties.getConnectRetries()).to(configuration::connectRetries);
+			map.from(this.properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
 			map.from(this.properties.getTable()).to(configuration::table);
-			map.from(this.properties.getBaselineDescription())
-					.to(configuration::baselineDescription);
-			map.from(this.properties.getBaselineVersion())
-					.to(configuration::baselineVersion);
+			map.from(this.properties.getBaselineDescription()).to(configuration::baselineDescription);
+			map.from(this.properties.getBaselineVersion()).to(configuration::baselineVersion);
 			map.from(this.properties.getInstalledBy()).to(configuration::installedBy);
 			map.from(this.properties.getPlaceholders()).to(configuration::placeholders);
-			map.from(this.properties.getPlaceholderPrefix())
-					.to(configuration::placeholderPrefix);
-			map.from(this.properties.getPlaceholderSuffix())
-					.to(configuration::placeholderSuffix);
-			map.from(this.properties.isPlaceholderReplacement())
-					.to(configuration::placeholderReplacement);
-			map.from(this.properties.getSqlMigrationPrefix())
-					.to(configuration::sqlMigrationPrefix);
-			map.from(this.properties.getSqlMigrationSuffixes())
-					.as(StringUtils::toStringArray)
+			map.from(this.properties.getPlaceholderPrefix()).to(configuration::placeholderPrefix);
+			map.from(this.properties.getPlaceholderSuffix()).to(configuration::placeholderSuffix);
+			map.from(this.properties.isPlaceholderReplacement()).to(configuration::placeholderReplacement);
+			map.from(this.properties.getSqlMigrationPrefix()).to(configuration::sqlMigrationPrefix);
+			map.from(this.properties.getSqlMigrationSuffixes()).as(StringUtils::toStringArray)
 					.to(configuration::sqlMigrationSuffixes);
-			map.from(this.properties.getSqlMigrationSeparator())
-					.to(configuration::sqlMigrationSeparator);
-			map.from(this.properties.getRepeatableSqlMigrationPrefix())
-					.to(configuration::repeatableSqlMigrationPrefix);
+			map.from(this.properties.getSqlMigrationSeparator()).to(configuration::sqlMigrationSeparator);
+			map.from(this.properties.getRepeatableSqlMigrationPrefix()).to(configuration::repeatableSqlMigrationPrefix);
 			map.from(this.properties.getTarget()).to(configuration::target);
-			map.from(this.properties.isBaselineOnMigrate())
-					.to(configuration::baselineOnMigrate);
+			map.from(this.properties.isBaselineOnMigrate()).to(configuration::baselineOnMigrate);
 			map.from(this.properties.isCleanDisabled()).to(configuration::cleanDisabled);
-			map.from(this.properties.isCleanOnValidationError())
-					.to(configuration::cleanOnValidationError);
+			map.from(this.properties.isCleanOnValidationError()).to(configuration::cleanOnValidationError);
 			map.from(this.properties.isGroup()).to(configuration::group);
-			map.from(this.properties.isIgnoreMissingMigrations())
-					.to(configuration::ignoreMissingMigrations);
-			map.from(this.properties.isIgnoreIgnoredMigrations())
-					.to(configuration::ignoreIgnoredMigrations);
-			map.from(this.properties.isIgnorePendingMigrations())
-					.to(configuration::ignorePendingMigrations);
-			map.from(this.properties.isIgnoreFutureMigrations())
-					.to(configuration::ignoreFutureMigrations);
+			map.from(this.properties.isIgnoreMissingMigrations()).to(configuration::ignoreMissingMigrations);
+			map.from(this.properties.isIgnoreIgnoredMigrations()).to(configuration::ignoreIgnoredMigrations);
+			map.from(this.properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
+			map.from(this.properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
 			map.from(this.properties.isMixed()).to(configuration::mixed);
 			map.from(this.properties.isOutOfOrder()).to(configuration::outOfOrder);
-			map.from(this.properties.isSkipDefaultCallbacks())
-					.to(configuration::skipDefaultCallbacks);
-			map.from(this.properties.isSkipDefaultResolvers())
-					.to(configuration::skipDefaultResolvers);
-			map.from(this.properties.isValidateOnMigrate())
-					.to(configuration::validateOnMigrate);
+			map.from(this.properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
+			map.from(this.properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
+			map.from(this.properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration) {
@@ -263,16 +230,14 @@ public class FlywayAutoConfiguration {
 		private void configureFlywayCallbacks(Flyway flyway) {
 			if (!this.flywayCallbacks.isEmpty()) {
 				if (!this.callbacks.isEmpty()) {
-					throw new IllegalStateException(
-							"Found a mixture of Callback and FlywayCallback beans."
-									+ " One type must be used exclusively.");
+					throw new IllegalStateException("Found a mixture of Callback and FlywayCallback beans."
+							+ " One type must be used exclusively.");
 				}
 				flyway.setCallbacks(this.flywayCallbacks.toArray(new FlywayCallback[0]));
 			}
 		}
 
-		private String getProperty(Supplier<String> property,
-				Supplier<String> defaultValue) {
+		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {
 			String value = property.get();
 			return (value != null) ? value : defaultValue.get();
 		}
@@ -353,8 +318,7 @@ public class FlywayAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class FlywayJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	protected static class FlywayJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public FlywayJpaDependencyConfiguration() {
 			super("flyway");
@@ -369,8 +333,7 @@ public class FlywayAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(JdbcOperations.class)
 	@ConditionalOnBean(JdbcOperations.class)
-	protected static class FlywayJdbcOperationsDependencyConfiguration
-			extends JdbcOperationsDependsOnPostProcessor {
+	protected static class FlywayJdbcOperationsDependencyConfiguration extends JdbcOperationsDependsOnPostProcessor {
 
 		public FlywayJdbcOperationsDependencyConfiguration() {
 			super("flyway");
@@ -416,14 +379,12 @@ public class FlywayAutoConfiguration {
 			return locations;
 		}
 
-		private String[] replaceVendorLocations(String[] locations,
-				DatabaseDriver databaseDriver) {
+		private String[] replaceVendorLocations(String[] locations, DatabaseDriver databaseDriver) {
 			if (databaseDriver == DatabaseDriver.UNKNOWN) {
 				return locations;
 			}
 			String vendor = databaseDriver.getId();
-			return Arrays.stream(locations)
-					.map((location) -> location.replace(VENDOR_PLACEHOLDER, vendor))
+			return Arrays.stream(locations).map((location) -> location.replace(VENDOR_PLACEHOLDER, vendor))
 					.toArray(String[]::new);
 		}
 
@@ -452,8 +413,7 @@ public class FlywayAutoConfiguration {
 	/**
 	 * Convert a String or Number to a {@link MigrationVersion}.
 	 */
-	private static class StringOrNumberToMigrationVersionConverter
-			implements GenericConverter {
+	private static class StringOrNumberToMigrationVersionConverter implements GenericConverter {
 
 		private static final Set<ConvertiblePair> CONVERTIBLE_TYPES;
 
@@ -470,8 +430,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType,
-				TypeDescriptor targetType) {
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			String value = ObjectUtils.nullSafeToString(source);
 			return MigrationVersion.fromVersion(value);
 		}

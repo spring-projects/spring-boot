@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,20 +61,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class WebMvcMetricsAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(
-					AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void backsOffWhenMeterRegistryIsMissing() {
-		new WebApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(WebMvcTagsProvider.class));
+		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(WebMvcTagsProvider.class));
 	}
 
 	@Test
@@ -89,18 +85,16 @@ public class WebMvcMetricsAutoConfigurationTests {
 
 	@Test
 	public void tagsProviderBacksOff() {
-		this.contextRunner.withUserConfiguration(TagsProviderConfiguration.class)
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(DefaultWebMvcTagsProvider.class);
-					assertThat(context).hasSingleBean(TestWebMvcTagsProvider.class);
-				});
+		this.contextRunner.withUserConfiguration(TagsProviderConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(DefaultWebMvcTagsProvider.class);
+			assertThat(context).hasSingleBean(TestWebMvcTagsProvider.class);
+		});
 	}
 
 	@Test
 	public void filterRegistrationHasExpectedDispatcherTypesAndOrder() {
 		this.contextRunner.run((context) -> {
-			FilterRegistrationBean<?> registration = context
-					.getBean(FilterRegistrationBean.class);
+			FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
 			assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
 					EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
 			assertThat(registration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
@@ -110,30 +104,24 @@ public class WebMvcMetricsAutoConfigurationTests {
 	@Test
 	public void afterMaxUrisReachedFurtherUrisAreDenied() {
 		this.contextRunner.withUserConfiguration(TestController.class)
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						WebMvcAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
-				.run((context) -> {
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
 					assertThat(this.output.toString())
-							.contains("Reached the maximum number of URI tags "
-									+ "for 'http.server.requests'");
+							.contains("Reached the maximum number of URI tags " + "for 'http.server.requests'");
 				});
 	}
 
 	@Test
 	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
 		this.contextRunner.withUserConfiguration(TestController.class)
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						WebMvcAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
-				.run((context) -> {
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
 					assertThat(this.output.toString())
-							.doesNotContain("Reached the maximum number of URI tags "
-									+ "for 'http.server.requests'");
+							.doesNotContain("Reached the maximum number of URI tags " + "for 'http.server.requests'");
 				});
 	}
 
@@ -141,25 +129,19 @@ public class WebMvcMetricsAutoConfigurationTests {
 	@SuppressWarnings("rawtypes")
 	public void longTaskTimingInterceptorIsRegistered() {
 		this.contextRunner.withUserConfiguration(TestController.class)
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						WebMvcAutoConfiguration.class))
-				.run((context) -> assertThat(
-						context.getBean(RequestMappingHandlerMapping.class))
-								.extracting("interceptors").element(0).asList()
-								.extracting((item) -> (Class) item.getClass())
-								.contains(LongTaskTimingHandlerInterceptor.class));
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.run((context) -> assertThat(context.getBean(RequestMappingHandlerMapping.class))
+						.extracting("interceptors").element(0).asList().extracting((item) -> (Class) item.getClass())
+						.contains(LongTaskTimingHandlerInterceptor.class));
 	}
 
-	private MeterRegistry getInitializedMeterRegistry(
-			AssertableWebApplicationContext context) throws Exception {
+	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) throws Exception {
 		assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 		Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 		assertThat(filter).isInstanceOf(WebMvcMetricsFilter.class);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(filter)
-				.build();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(filter).build();
 		for (int i = 0; i < 3; i++) {
-			mockMvc.perform(MockMvcRequestBuilders.get("/test" + i))
-					.andExpect(status().isOk());
+			mockMvc.perform(MockMvcRequestBuilders.get("/test" + i)).andExpect(status().isOk());
 		}
 		return context.getBean(MeterRegistry.class);
 	}
@@ -177,14 +159,13 @@ public class WebMvcMetricsAutoConfigurationTests {
 	private static final class TestWebMvcTagsProvider implements WebMvcTagsProvider {
 
 		@Override
-		public Iterable<Tag> getTags(HttpServletRequest request,
-				HttpServletResponse response, Object handler, Throwable exception) {
+		public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
+				Throwable exception) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public Iterable<Tag> getLongRequestTags(HttpServletRequest request,
-				Object handler) {
+		public Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler) {
 			return Collections.emptyList();
 		}
 

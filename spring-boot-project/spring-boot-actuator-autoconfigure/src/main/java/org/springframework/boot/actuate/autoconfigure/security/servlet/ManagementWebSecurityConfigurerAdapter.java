@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,11 +39,8 @@ class ManagementWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapte
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.requestMatchers(
-						EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class))
-				.permitAll().anyRequest().authenticated().and().formLogin().and()
-				.httpBasic();
+		http.authorizeRequests().requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class))
+				.permitAll().anyRequest().authenticated().and().formLogin().and().httpBasic();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,7 @@ public class DevToolPropertiesIntegrationTests {
 
 	@Test
 	public void classPropertyConditionIsAffectedByDevToolProperties() {
-		SpringApplication application = new SpringApplication(
-				ClassConditionConfiguration.class);
+		SpringApplication application = new SpringApplication(ClassConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		this.context.getBean(ClassConditionConfiguration.class);
@@ -71,8 +70,7 @@ public class DevToolPropertiesIntegrationTests {
 
 	@Test
 	public void beanMethodPropertyConditionIsAffectedByDevToolProperties() {
-		SpringApplication application = new SpringApplication(
-				BeanConditionConfiguration.class);
+		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		this.context.getBean(MyBean.class);
@@ -82,8 +80,7 @@ public class DevToolPropertiesIntegrationTests {
 	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource() {
 		Restarter.clearInstance();
 		Restarter.disable();
-		SpringApplication application = new SpringApplication(
-				BeanConditionConfiguration.class);
+		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
@@ -94,11 +91,9 @@ public class DevToolPropertiesIntegrationTests {
 	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource() {
 		Restarter.clearInstance();
 		Restarter.disable();
-		SpringApplication application = new SpringApplication(
-				BeanConditionConfiguration.class);
+		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setDefaultProperties(
-				Collections.singletonMap("spring.devtools.remote.secret", "donttell"));
+		application.setDefaultProperties(Collections.singletonMap("spring.devtools.remote.secret", "donttell"));
 		this.context = application.run();
 		this.context.getBean(MyBean.class);
 	}
@@ -110,8 +105,7 @@ public class DevToolPropertiesIntegrationTests {
 		this.context = application.run();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		String property = environment.getProperty("server.error.include-stacktrace");
-		assertThat(property)
-				.isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+		assertThat(property).isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
 	}
 
 	@Configuration

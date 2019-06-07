@@ -67,19 +67,16 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
-	protected void runWithForkedJvm(File workingDirectory, List<String> args,
-			Map<String, String> environmentVariables) throws MojoExecutionException {
+	protected void runWithForkedJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+			throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(workingDirectory,
-					new JavaExecutable().toString());
-			Runtime.getRuntime()
-					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
+			RunProcess runProcess = new RunProcess(workingDirectory, new JavaExecutable().toString());
+			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 			int exitCode = runProcess.run(true, args, environmentVariables);
 			if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
 				return;
 			}
-			throw new MojoExecutionException(
-					"Application finished with exit code: " + exitCode);
+			throw new MojoExecutionException("Application finished with exit code: " + exitCode);
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
@@ -87,11 +84,9 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
-	protected void runWithMavenJvm(String startClassName, String... arguments)
-			throws MojoExecutionException {
+	protected void runWithMavenJvm(String startClassName, String... arguments) throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup,
-				new LaunchRunner(startClassName, arguments), "main");
+		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName, arguments), "main");
 		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
 		launchThread.start();
 		join(threadGroup);

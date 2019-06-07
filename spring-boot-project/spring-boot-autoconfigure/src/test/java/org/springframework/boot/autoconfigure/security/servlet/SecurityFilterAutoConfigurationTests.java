@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,10 @@ public class SecurityFilterAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class,
-			ConverterBean.class })
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebSecurity.class,
-			SecurityFilterAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class, ConverterBean.class })
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class, WebSecurity.class,
+			SecurityFilterAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 
 	}

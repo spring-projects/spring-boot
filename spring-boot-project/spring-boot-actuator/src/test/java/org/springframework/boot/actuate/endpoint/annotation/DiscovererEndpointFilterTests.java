@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,23 +41,20 @@ public class DiscovererEndpointFilterTests {
 
 	@Test
 	public void createWhenDiscovererIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestDiscovererEndpointFilter(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new TestDiscovererEndpointFilter(null))
 				.withMessageContaining("Discoverer must not be null");
 	}
 
 	@Test
 	public void matchWhenDiscoveredByDiscovererShouldReturnTrue() {
-		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(
-				TestDiscovererA.class);
+		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(TestDiscovererA.class);
 		DiscoveredEndpoint<?> endpoint = mockDiscoveredEndpoint(TestDiscovererA.class);
 		assertThat(filter.match(endpoint)).isTrue();
 	}
 
 	@Test
 	public void matchWhenNotDiscoveredByDiscovererShouldReturnFalse() {
-		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(
-				TestDiscovererA.class);
+		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(TestDiscovererA.class);
 		DiscoveredEndpoint<?> endpoint = mockDiscoveredEndpoint(TestDiscovererB.class);
 		assertThat(filter.match(endpoint)).isFalse();
 	}
@@ -71,18 +68,15 @@ public class DiscovererEndpointFilterTests {
 
 	static class TestDiscovererEndpointFilter extends DiscovererEndpointFilter {
 
-		TestDiscovererEndpointFilter(
-				Class<? extends EndpointDiscoverer<?, ?>> discoverer) {
+		TestDiscovererEndpointFilter(Class<? extends EndpointDiscoverer<?, ?>> discoverer) {
 			super(discoverer);
 		}
 
 	}
 
-	abstract static class TestDiscovererA
-			extends EndpointDiscoverer<ExposableEndpoint<Operation>, Operation> {
+	abstract static class TestDiscovererA extends EndpointDiscoverer<ExposableEndpoint<Operation>, Operation> {
 
-		TestDiscovererA(ApplicationContext applicationContext,
-				ParameterValueMapper parameterValueMapper,
+		TestDiscovererA(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 				Collection<OperationInvokerAdvisor> invokerAdvisors,
 				Collection<EndpointFilter<ExposableEndpoint<Operation>>> filters) {
 			super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
@@ -90,11 +84,9 @@ public class DiscovererEndpointFilterTests {
 
 	}
 
-	abstract static class TestDiscovererB
-			extends EndpointDiscoverer<ExposableEndpoint<Operation>, Operation> {
+	abstract static class TestDiscovererB extends EndpointDiscoverer<ExposableEndpoint<Operation>, Operation> {
 
-		TestDiscovererB(ApplicationContext applicationContext,
-				ParameterValueMapper parameterValueMapper,
+		TestDiscovererB(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 				Collection<OperationInvokerAdvisor> invokerAdvisors,
 				Collection<EndpointFilter<ExposableEndpoint<Operation>>> filters) {
 			super(applicationContext, parameterValueMapper, invokerAdvisors, filters);

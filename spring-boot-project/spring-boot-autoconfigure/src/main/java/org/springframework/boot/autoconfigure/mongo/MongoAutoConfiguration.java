@@ -51,8 +51,8 @@ public class MongoAutoConfiguration {
 
 	private MongoClient mongo;
 
-	public MongoAutoConfiguration(MongoProperties properties,
-			ObjectProvider<MongoClientOptions> options, Environment environment) {
+	public MongoAutoConfiguration(MongoProperties properties, ObjectProvider<MongoClientOptions> options,
+			Environment environment) {
 		this.options = options.getIfAvailable();
 		this.factory = new MongoClientFactory(properties, environment);
 	}
@@ -65,8 +65,7 @@ public class MongoAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(
-			type = { "com.mongodb.MongoClient", "com.mongodb.client.MongoClient" })
+	@ConditionalOnMissingBean(type = { "com.mongodb.MongoClient", "com.mongodb.client.MongoClient" })
 	public MongoClient mongo() {
 		this.mongo = this.factory.createMongoClient(this.options);
 		return this.mongo;

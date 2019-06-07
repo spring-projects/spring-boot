@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 	public void loadsHomeProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(
-				new File(this.home, ".spring-boot-devtools.properties"));
+		OutputStream out = new FileOutputStream(new File(this.home, ".spring-boot-devtools.properties"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = new MockEnvironment();
@@ -72,8 +71,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		assertThat(environment.getProperty("abc")).isNull();
 	}
 
-	private class MockDevToolHomePropertiesPostProcessor
-			extends DevToolsHomePropertiesPostProcessor {
+	private class MockDevToolHomePropertiesPostProcessor extends DevToolsHomePropertiesPostProcessor {
 
 		@Override
 		protected File getHomeFolder() {

@@ -56,8 +56,7 @@ public class GrabCommandIntegrationTests {
 
 		// Use --autoconfigure=false to limit the amount of downloaded dependencies
 		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
-		assertThat(new File("target/repository/joda-time/joda-time").isDirectory())
-				.isTrue();
+		assertThat(new File("target/repository/joda-time/joda-time").isDirectory()).isTrue();
 		// Should be resolved from local repository cache
 		assertThat(output.contains("Downloading: file:")).isTrue();
 	}
@@ -65,20 +64,17 @@ public class GrabCommandIntegrationTests {
 	@Test
 	public void duplicateDependencyManagementBomAnnotationsProducesAnError() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(
-						() -> this.cli.grab("duplicateDependencyManagementBom.groovy"))
+				.isThrownBy(() -> this.cli.grab("duplicateDependencyManagementBom.groovy"))
 				.withMessageContaining("Duplicate @DependencyManagementBom annotation");
 	}
 
 	@Test
 	public void customMetadata() throws Exception {
 		System.setProperty("grape.root", "target");
-		FileSystemUtils.copyRecursively(
-				new File("src/test/resources/grab-samples/repository"),
+		FileSystemUtils.copyRecursively(new File("src/test/resources/grab-samples/repository"),
 				new File("target/repository"));
 		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
-		assertThat(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory())
-				.isTrue();
+		assertThat(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory()).isTrue();
 	}
 
 }

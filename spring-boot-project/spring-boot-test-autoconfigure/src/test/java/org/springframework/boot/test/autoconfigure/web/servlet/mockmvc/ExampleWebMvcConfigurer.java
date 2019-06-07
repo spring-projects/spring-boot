@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class ExampleWebMvcConfigurer implements WebMvcConfigurer {
 
 	@Override
-	public void addArgumentResolvers(
-			List<HandlerMethodArgumentResolver> argumentResolvers) {
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new HandlerMethodArgumentResolver() {
 
 			@Override
@@ -46,9 +45,8 @@ public class ExampleWebMvcConfigurer implements WebMvcConfigurer {
 			}
 
 			@Override
-			public Object resolveArgument(MethodParameter parameter,
-					ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
-					WebDataBinderFactory binderFactory) throws Exception {
+			public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 				return new ExampleArgument("hello");
 			}
 

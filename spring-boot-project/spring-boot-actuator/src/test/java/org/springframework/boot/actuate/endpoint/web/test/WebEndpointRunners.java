@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ public class WebEndpointRunners extends Suite {
 		super(testClass, createRunners(testClass));
 	}
 
-	private static List<Runner> createRunners(Class<?> testClass)
-			throws InitializationError {
+	private static List<Runner> createRunners(Class<?> testClass) throws InitializationError {
 		List<Runner> runners = new ArrayList<>();
 		runners.add(new WebFluxEndpointsRunner(testClass));
 		runners.add(new WebMvcEndpointRunner(testClass));

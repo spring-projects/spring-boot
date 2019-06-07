@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ public class SessionsEndpointTests {
 	private static final Session session = new MapSession();
 
 	@SuppressWarnings("unchecked")
-	private final FindByIndexNameSessionRepository<Session> repository = mock(
-			FindByIndexNameSessionRepository.class);
+	private final FindByIndexNameSessionRepository<Session> repository = mock(FindByIndexNameSessionRepository.class);
 
 	private final SessionsEndpoint endpoint = new SessionsEndpoint(this.repository);
 
@@ -50,17 +49,13 @@ public class SessionsEndpointTests {
 	public void sessionsForUsername() {
 		given(this.repository.findByPrincipalName("user"))
 				.willReturn(Collections.singletonMap(session.getId(), session));
-		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user")
-				.getSessions();
+		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getId()).isEqualTo(session.getId());
-		assertThat(result.get(0).getAttributeNames())
-				.isEqualTo(session.getAttributeNames());
+		assertThat(result.get(0).getAttributeNames()).isEqualTo(session.getAttributeNames());
 		assertThat(result.get(0).getCreationTime()).isEqualTo(session.getCreationTime());
-		assertThat(result.get(0).getLastAccessedTime())
-				.isEqualTo(session.getLastAccessedTime());
-		assertThat(result.get(0).getMaxInactiveInterval())
-				.isEqualTo(session.getMaxInactiveInterval().getSeconds());
+		assertThat(result.get(0).getLastAccessedTime()).isEqualTo(session.getLastAccessedTime());
+		assertThat(result.get(0).getMaxInactiveInterval()).isEqualTo(session.getMaxInactiveInterval().getSeconds());
 		assertThat(result.get(0).isExpired()).isEqualTo(session.isExpired());
 	}
 
@@ -72,8 +67,7 @@ public class SessionsEndpointTests {
 		assertThat(result.getAttributeNames()).isEqualTo(session.getAttributeNames());
 		assertThat(result.getCreationTime()).isEqualTo(session.getCreationTime());
 		assertThat(result.getLastAccessedTime()).isEqualTo(session.getLastAccessedTime());
-		assertThat(result.getMaxInactiveInterval())
-				.isEqualTo(session.getMaxInactiveInterval().getSeconds());
+		assertThat(result.getMaxInactiveInterval()).isEqualTo(session.getMaxInactiveInterval().getSeconds());
 		assertThat(result.isExpired()).isEqualTo(session.isExpired());
 	}
 

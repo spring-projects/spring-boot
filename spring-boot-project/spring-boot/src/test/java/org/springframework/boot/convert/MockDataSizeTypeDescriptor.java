@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,9 @@ public final class MockDataSizeTypeDescriptor {
 	public static TypeDescriptor get(DataUnit unit) {
 		TypeDescriptor descriptor = mock(TypeDescriptor.class);
 		if (unit != null) {
-			DataSizeUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", unit), DataSizeUnit.class, null);
-			given(descriptor.getAnnotation(DataSizeUnit.class))
-					.willReturn(unitAnnotation);
+			DataSizeUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(Collections.singletonMap("value", unit),
+					DataSizeUnit.class, null);
+			given(descriptor.getAnnotation(DataSizeUnit.class)).willReturn(unitAnnotation);
 		}
 		given(descriptor.getType()).willReturn((Class) DataSize.class);
 		given(descriptor.getObjectType()).willReturn((Class) DataSize.class);

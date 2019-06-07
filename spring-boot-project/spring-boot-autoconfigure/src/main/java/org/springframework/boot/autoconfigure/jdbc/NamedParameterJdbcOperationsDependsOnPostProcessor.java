@@ -30,8 +30,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * @since 2.1.4
  * @see BeanDefinition#setDependsOn(String[])
  */
-public class NamedParameterJdbcOperationsDependsOnPostProcessor
-		extends AbstractDependsOnBeanFactoryPostProcessor {
+public class NamedParameterJdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	public NamedParameterJdbcOperationsDependsOnPostProcessor(String... dependsOn) {
 		super(NamedParameterJdbcOperations.class, dependsOn);

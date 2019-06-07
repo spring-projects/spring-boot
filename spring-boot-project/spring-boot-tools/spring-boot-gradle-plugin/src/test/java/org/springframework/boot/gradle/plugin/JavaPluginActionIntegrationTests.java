@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,8 @@ public class JavaPluginActionIntegrationTests {
 
 	@Test
 	public void applyingJavaPluginCreatesBootJarTask() {
-		assertThat(this.gradleBuild
-				.build("taskExists", "-PtaskName=bootJar", "-PapplyJavaPlugin")
-				.getOutput()).contains("bootJar exists = true");
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootJar", "-PapplyJavaPlugin").getOutput())
+				.contains("bootJar exists = true");
 	}
 
 	@Test
@@ -64,16 +63,14 @@ public class JavaPluginActionIntegrationTests {
 
 	@Test
 	public void applyingJavaPluginCreatesBootRunTask() {
-		assertThat(this.gradleBuild
-				.build("taskExists", "-PtaskName=bootRun", "-PapplyJavaPlugin")
-				.getOutput()).contains("bootRun exists = true");
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootRun", "-PapplyJavaPlugin").getOutput())
+				.contains("bootRun exists = true");
 	}
 
 	@Test
 	public void javaCompileTasksUseUtf8Encoding() {
-		assertThat(this.gradleBuild.build("javaCompileEncoding", "-PapplyJavaPlugin")
-				.getOutput()).contains("compileJava = UTF-8")
-						.contains("compileTestJava = UTF-8");
+		assertThat(this.gradleBuild.build("javaCompileEncoding", "-PapplyJavaPlugin").getOutput())
+				.contains("compileJava = UTF-8").contains("compileTestJava = UTF-8");
 	}
 
 	@Test
@@ -108,8 +105,7 @@ public class JavaPluginActionIntegrationTests {
 	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyJavaPlugin");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains(
-				"Main class name has not been configured and it could not be resolved");
+		assertThat(result.getOutput()).contains("Main class name has not been configured and it could not be resolved");
 	}
 
 	@Test
@@ -120,42 +116,33 @@ public class JavaPluginActionIntegrationTests {
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
 				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"),
-				new File(buildLibs,
-						this.gradleBuild.getProjectDir().getName() + "-boot.jar"));
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-boot.jar"));
 	}
 
 	@Test
-	public void additionalMetadataLocationsConfiguredWhenProcessorIsPresent()
-			throws IOException {
+	public void additionalMetadataLocationsConfiguredWhenProcessorIsPresent() throws IOException {
 		createMinimalMainSource();
 		File libs = new File(this.gradleBuild.getProjectDir(), "libs");
 		libs.mkdirs();
-		new JarOutputStream(new FileOutputStream(
-				new File(libs, "spring-boot-configuration-processor-1.2.3.jar"))).close();
+		new JarOutputStream(new FileOutputStream(new File(libs, "spring-boot-configuration-processor-1.2.3.jar")))
+				.close();
 		BuildResult result = this.gradleBuild.build("compileJava");
-		assertThat(result.task(":compileJava").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains(
-				"compileJava compiler args: [-parameters, -Aorg.springframework.boot."
-						+ "configurationprocessor.additionalMetadataLocations="
-						+ new File(this.gradleBuild.getProjectDir(), "src/main/resources")
-								.getCanonicalPath());
+		assertThat(result.task(":compileJava").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("compileJava compiler args: [-parameters, -Aorg.springframework.boot."
+				+ "configurationprocessor.additionalMetadataLocations="
+				+ new File(this.gradleBuild.getProjectDir(), "src/main/resources").getCanonicalPath());
 	}
 
 	@Test
-	public void additionalMetadataLocationsNotConfiguredWhenProcessorIsAbsent()
-			throws IOException {
+	public void additionalMetadataLocationsNotConfiguredWhenProcessorIsAbsent() throws IOException {
 		createMinimalMainSource();
 		BuildResult result = this.gradleBuild.build("compileJava");
-		assertThat(result.task(":compileJava").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput())
-				.contains("compileJava compiler args: [-parameters]");
+		assertThat(result.task(":compileJava").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("compileJava compiler args: [-parameters]");
 	}
 
 	private void createMinimalMainSource() throws IOException {
-		File examplePackage = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
+		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();
 		new File(examplePackage, "Application.java").createNewFile();
 	}

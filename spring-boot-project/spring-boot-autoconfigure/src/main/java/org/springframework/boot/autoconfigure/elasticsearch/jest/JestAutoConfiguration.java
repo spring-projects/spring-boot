@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,11 +71,10 @@ public class JestAutoConfiguration {
 	}
 
 	protected HttpClientConfig createHttpClientConfig() {
-		HttpClientConfig.Builder builder = new HttpClientConfig.Builder(
-				this.properties.getUris());
+		HttpClientConfig.Builder builder = new HttpClientConfig.Builder(this.properties.getUris());
 		PropertyMapper map = PropertyMapper.get();
-		map.from(this.properties::getUsername).whenHasText().to((username) -> builder
-				.defaultCredentials(username, this.properties.getPassword()));
+		map.from(this.properties::getUsername).whenHasText()
+				.to((username) -> builder.defaultCredentials(username, this.properties.getPassword()));
 		Proxy proxy = this.properties.getProxy();
 		map.from(proxy::getHost).whenHasText().to((host) -> {
 			Assert.notNull(proxy.getPort(), "Proxy port must not be null");
@@ -83,17 +82,15 @@ public class JestAutoConfiguration {
 		});
 		map.from(this.gsonProvider::getIfUnique).whenNonNull().to(builder::gson);
 		map.from(this.properties::isMultiThreaded).to(builder::multiThreaded);
-		map.from(this.properties::getConnectionTimeout).whenNonNull()
-				.asInt(Duration::toMillis).to(builder::connTimeout);
-		map.from(this.properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
-				.to(builder::readTimeout);
+		map.from(this.properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
+				.to(builder::connTimeout);
+		map.from(this.properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis).to(builder::readTimeout);
 		customize(builder);
 		return builder.build();
 	}
 
 	private void customize(HttpClientConfig.Builder builder) {
-		this.builderCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(builder));
+		this.builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 	}
 
 }

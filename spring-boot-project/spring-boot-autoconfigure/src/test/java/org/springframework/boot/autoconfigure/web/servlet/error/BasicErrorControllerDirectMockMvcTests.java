@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,11 +80,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	@Test
 	public void errorPageAvailableWithParentContext() throws Exception {
-		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				ParentConfiguration.class).child(ChildConfiguration.class)
-						.run("--server.port=0"));
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
+		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(ParentConfiguration.class)
+				.child(ChildConfiguration.class).run("--server.port=0"));
+		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
@@ -92,10 +90,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	@Test
 	public void errorPageAvailableWithMvcIncluded() throws Exception {
-		setup((ConfigurableWebApplicationContext) new SpringApplication(
-				WebMvcIncludedConfiguration.class).run("--server.port=0"));
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
+		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
+				.run("--server.port=0"));
+		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
@@ -103,19 +100,17 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	@Test
 	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
-		setup((ConfigurableWebApplicationContext) new SpringApplication(
-				WebMvcIncludedConfiguration.class).run("--server.port=0",
-						"--server.error.whitelabel.enabled=false"));
-		assertThatExceptionOfType(ServletException.class).isThrownBy(
-				() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
+		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
+				.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
+		assertThatExceptionOfType(ServletException.class)
+				.isThrownBy(() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
 	}
 
 	@Test
 	public void errorControllerWithAop() throws Exception {
-		setup((ConfigurableWebApplicationContext) new SpringApplication(
-				WithAopConfiguration.class).run("--server.port=0"));
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
+		setup((ConfigurableWebApplicationContext) new SpringApplication(WithAopConfiguration.class)
+				.run("--server.port=0"));
+		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
@@ -124,10 +119,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}
@@ -167,8 +161,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 		// For manual testing
 		public static void main(String[] args) {
-			new SpringApplicationBuilder(ParentConfiguration.class)
-					.child(ChildConfiguration.class).run(args);
+			new SpringApplicationBuilder(ParentConfiguration.class).child(ChildConfiguration.class).run(args);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,8 +128,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void invokeRestartWithCustomServerContextPath() throws Exception {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.servlet.context-path:/test");
+		loadContext("spring.devtools.remote.secret:supersecret", "server.servlet.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/restart");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -139,8 +138,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void disableRestart() {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"spring.devtools.remote.restart.enabled:false");
+		loadContext("spring.devtools.remote.secret:supersecret", "spring.devtools.remote.restart.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean("remoteRestartHandlerMapper"));
 	}
@@ -158,8 +156,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
-		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.servlet.context-path:/test");
+		loadContext("spring.devtools.remote.secret:supersecret", "server.servlet.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH);
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -169,8 +166,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	private void assertRestartInvoked(boolean value) {
-		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked)
-				.isEqualTo(value);
+		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked).isEqualTo(value);
 	}
 
 	private void loadContext(String... properties) {
@@ -187,8 +183,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		@Bean
 		public HttpRestartServer remoteRestartHttpRestartServer() {
-			SourceFolderUrlFilter sourceFolderUrlFilter = mock(
-					SourceFolderUrlFilter.class);
+			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
 		}
 

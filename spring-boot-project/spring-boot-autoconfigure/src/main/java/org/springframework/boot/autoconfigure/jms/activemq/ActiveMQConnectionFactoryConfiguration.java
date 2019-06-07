@@ -51,8 +51,8 @@ class ActiveMQConnectionFactoryConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(CachingConnectionFactory.class)
-	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
-			havingValue = "false", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
+			matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
 		private final JmsProperties jmsProperties;
@@ -61,22 +61,20 @@ class ActiveMQConnectionFactoryConfiguration {
 
 		private final List<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers;
 
-		SimpleConnectionFactoryConfiguration(JmsProperties jmsProperties,
-				ActiveMQProperties properties,
+		SimpleConnectionFactoryConfiguration(JmsProperties jmsProperties, ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers) {
 			this.jmsProperties = jmsProperties;
 			this.properties = properties;
-			this.connectionFactoryCustomizers = connectionFactoryCustomizers
-					.orderedStream().collect(Collectors.toList());
+			this.connectionFactoryCustomizers = connectionFactoryCustomizers.orderedStream()
+					.collect(Collectors.toList());
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled",
-				havingValue = "true", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
+				matchIfMissing = true)
 		public CachingConnectionFactory cachingJmsConnectionFactory() {
 			JmsProperties.Cache cacheProperties = this.jmsProperties.getCache();
-			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
-					createConnectionFactory());
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(createConnectionFactory());
 			connectionFactory.setCacheConsumers(cacheProperties.isConsumers());
 			connectionFactory.setCacheProducers(cacheProperties.isProducers());
 			connectionFactory.setSessionCacheSize(cacheProperties.getSessionCacheSize());
@@ -84,16 +82,14 @@ class ActiveMQConnectionFactoryConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled",
-				havingValue = "false")
+		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
 		public ActiveMQConnectionFactory jmsConnectionFactory() {
 			return createConnectionFactory();
 		}
 
 		private ActiveMQConnectionFactory createConnectionFactory() {
-			return new ActiveMQConnectionFactoryFactory(this.properties,
-					this.connectionFactoryCustomizers)
-							.createConnectionFactory(ActiveMQConnectionFactory.class);
+			return new ActiveMQConnectionFactoryFactory(this.properties, this.connectionFactoryCustomizers)
+					.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
 	}
@@ -103,13 +99,11 @@ class ActiveMQConnectionFactoryConfiguration {
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
-				havingValue = "true", matchIfMissing = false)
-		public JmsPoolConnectionFactory pooledJmsConnectionFactory(
-				ActiveMQProperties properties,
+		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true",
+				matchIfMissing = false)
+		public JmsPoolConnectionFactory pooledJmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-					properties,
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
 					factoryCustomizers.orderedStream().collect(Collectors.toList()))
 							.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())

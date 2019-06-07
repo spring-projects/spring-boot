@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,10 +68,8 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			WebFluxAutoConfiguration.class })
-	static class WebFluxEndpointConfiguration
-			implements ApplicationListener<WebServerInitializedEvent> {
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, WebFluxAutoConfiguration.class })
+	static class WebFluxEndpointConfiguration implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
 
@@ -101,18 +99,13 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 
 		@Bean
 		public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
-					mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
-					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, null, Collections.emptyList(),
+			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
-			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"),
-					discoverer.getEndpoints(), endpointMediaTypes,
-					new CorsConfiguration(),
-					new EndpointLinksResolver(discoverer.getEndpoints()));
+			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
 		}
 
 	}

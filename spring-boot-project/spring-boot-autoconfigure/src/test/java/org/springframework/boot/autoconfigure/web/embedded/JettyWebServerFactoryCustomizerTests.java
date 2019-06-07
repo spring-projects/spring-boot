@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,23 +64,20 @@ public class JettyWebServerFactoryCustomizerTests {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new JettyWebServerFactoryCustomizer(this.environment,
-				this.serverProperties);
+		this.customizer = new JettyWebServerFactoryCustomizer(this.environment, this.serverProperties);
 	}
 
 	@Test
 	public void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
-		ConfigurableJettyWebServerFactory factory = mock(
-				ConfigurableJettyWebServerFactory.class);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
 
 	@Test
 	public void defaultUseForwardHeaders() {
-		ConfigurableJettyWebServerFactory factory = mock(
-				ConfigurableJettyWebServerFactory.class);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
@@ -90,18 +87,12 @@ public class JettyWebServerFactoryCustomizerTests {
 		File logFile = File.createTempFile("jetty_log", ".log");
 		String timezone = TimeZone.getDefault().getID();
 		bind("server.jetty.accesslog.enabled=true",
-				"server.jetty.accesslog.filename="
-						+ logFile.getAbsolutePath().replace("\\", "\\\\"),
-				"server.jetty.accesslog.file-date-format=yyyy-MM-dd",
-				"server.jetty.accesslog.retention-period=42",
-				"server.jetty.accesslog.append=true",
-				"server.jetty.accesslog.extended-format=true",
-				"server.jetty.accesslog.date-format=HH:mm:ss",
-				"server.jetty.accesslog.locale=en_BE",
-				"server.jetty.accesslog.time-zone=" + timezone,
-				"server.jetty.accesslog.log-cookies=true",
-				"server.jetty.accesslog.log-server=true",
-				"server.jetty.accesslog.log-latency=true");
+				"server.jetty.accesslog.filename=" + logFile.getAbsolutePath().replace("\\", "\\\\"),
+				"server.jetty.accesslog.file-date-format=yyyy-MM-dd", "server.jetty.accesslog.retention-period=42",
+				"server.jetty.accesslog.append=true", "server.jetty.accesslog.extended-format=true",
+				"server.jetty.accesslog.date-format=HH:mm:ss", "server.jetty.accesslog.locale=en_BE",
+				"server.jetty.accesslog.time-zone=" + timezone, "server.jetty.accesslog.log-cookies=true",
+				"server.jetty.accesslog.log-server=true", "server.jetty.accesslog.log-latency=true");
 		JettyWebServer server = customizeAndGetServer();
 		NCSARequestLog requestLog = getNCSARequestLog(server);
 		assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
@@ -139,8 +130,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	@Test
 	public void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
-		ConfigurableJettyWebServerFactory factory = mock(
-				ConfigurableJettyWebServerFactory.class);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
@@ -176,8 +166,7 @@ public class JettyWebServerFactoryCustomizerTests {
 		server.stop();
 		Connector[] connectors = server.getServer().getConnectors();
 		for (Connector connector : connectors) {
-			connector.getConnectionFactories().stream()
-					.filter((factory) -> factory instanceof ConnectionFactory)
+			connector.getConnectionFactories().stream().filter((factory) -> factory instanceof ConnectionFactory)
 					.forEach((cf) -> {
 						ConnectionFactory factory = (ConnectionFactory) cf;
 						HttpConfiguration configuration = factory.getHttpConfiguration();
@@ -188,8 +177,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	private void bind(String... inlinedProperties) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				inlinedProperties);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
 		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
 				Bindable.ofInstance(this.serverProperties));
 	}

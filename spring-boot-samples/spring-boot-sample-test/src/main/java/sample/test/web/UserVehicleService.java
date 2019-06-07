@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,15 +37,13 @@ public class UserVehicleService {
 
 	private final VehicleDetailsService vehicleDetailsService;
 
-	public UserVehicleService(UserRepository userRepository,
-			VehicleDetailsService vehicleDetailsService) {
+	public UserVehicleService(UserRepository userRepository, VehicleDetailsService vehicleDetailsService) {
 		this.userRepository = userRepository;
 		this.vehicleDetailsService = vehicleDetailsService;
 	}
 
 	public VehicleDetails getVehicleDetails(String username)
-			throws UserNameNotFoundException,
-			VehicleIdentificationNumberNotFoundException {
+			throws UserNameNotFoundException, VehicleIdentificationNumberNotFoundException {
 		Assert.notNull(username, "Username must not be null");
 		User user = this.userRepository.findByUsername(username);
 		if (user == null) {

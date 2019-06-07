@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,8 @@ import static org.mockito.Mockito.mock;
  */
 public class ApplicationPidFileWriterTests {
 
-	private static final ApplicationPreparedEvent EVENT = new ApplicationPreparedEvent(
-			new SpringApplication(), new String[] {},
-			mock(ConfigurableApplicationContext.class));
+	private static final ApplicationPreparedEvent EVENT = new ApplicationPreparedEvent(new SpringApplication(),
+			new String[] {}, mock(ConfigurableApplicationContext.class));
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -89,8 +88,7 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void overridePidFileWithSpring() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createPreparedEvent("spring.pid.file",
-				file.getAbsolutePath());
+		SpringApplicationEvent event = createPreparedEvent("spring.pid.file", file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isNotEmpty();
@@ -99,8 +97,7 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void tryEnvironmentPreparedEvent() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pid.file",
-				file.getAbsolutePath());
+		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pid.file", file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEmpty();
@@ -112,8 +109,7 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void tryReadyEvent() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createReadyEvent("spring.pid.file",
-				file.getAbsolutePath());
+		SpringApplicationEvent event = createReadyEvent("spring.pid.file", file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEmpty();
@@ -127,8 +123,7 @@ public class ApplicationPidFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.setTriggerEventType(ApplicationStartingEvent.class);
-		listener.onApplicationEvent(
-				new ApplicationStartingEvent(new SpringApplication(), new String[] {}));
+		listener.onApplicationEvent(new ApplicationStartingEvent(new SpringApplication(), new String[] {}));
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isNotEmpty();
 	}
 
@@ -147,8 +142,7 @@ public class ApplicationPidFileWriterTests {
 		file.setReadOnly();
 		System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> listener.onApplicationEvent(EVENT))
+		assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(EVENT))
 				.withMessageContaining("Cannot create pid file");
 	}
 
@@ -156,38 +150,29 @@ public class ApplicationPidFileWriterTests {
 	public void throwWhenPidFileIsReadOnlyWithSpring() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		file.setReadOnly();
-		SpringApplicationEvent event = createPreparedEvent(
-				"spring.pid.fail-on-write-error", "true");
+		SpringApplicationEvent event = createPreparedEvent("spring.pid.fail-on-write-error", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> listener.onApplicationEvent(event))
+		assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(event))
 				.withMessageContaining("Cannot create pid file");
 	}
 
-	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName,
-			String propValue) {
+	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		return new ApplicationEnvironmentPreparedEvent(new SpringApplication(),
-				new String[] {}, environment);
+		return new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[] {}, environment);
 	}
 
-	private SpringApplicationEvent createPreparedEvent(String propName,
-			String propValue) {
+	private SpringApplicationEvent createPreparedEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
-		return new ApplicationPreparedEvent(new SpringApplication(), new String[] {},
-				context);
+		return new ApplicationPreparedEvent(new SpringApplication(), new String[] {}, context);
 	}
 
 	private SpringApplicationEvent createReadyEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
-		return new ApplicationReadyEvent(new SpringApplication(), new String[] {},
-				context);
+		return new ApplicationReadyEvent(new SpringApplication(), new String[] {}, context);
 	}
 
 	private ConfigurableEnvironment createEnvironment(String propName, String propValue) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ import org.springframework.util.StringUtils;
 class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionRegistrar {
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
 				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
 		BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder
@@ -44,8 +43,7 @@ class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionR
 		if (StringUtils.hasText(outputDir)) {
 			definitionBuilder.addConstructorArgValue(outputDir);
 		}
-		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(),
-				definitionBuilder.getBeanDefinition());
+		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(), definitionBuilder.getBeanDefinition());
 	}
 
 }

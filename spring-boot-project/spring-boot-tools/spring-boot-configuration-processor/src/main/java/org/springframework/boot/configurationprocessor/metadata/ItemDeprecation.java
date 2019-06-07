@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +77,7 @@ public class ItemDeprecation {
 			return false;
 		}
 		ItemDeprecation other = (ItemDeprecation) o;
-		return nullSafeEquals(this.reason, other.reason)
-				&& nullSafeEquals(this.replacement, other.replacement)
+		return nullSafeEquals(this.reason, other.reason) && nullSafeEquals(this.replacement, other.replacement)
 				&& nullSafeEquals(this.level, other.level);
 	}
 
@@ -92,9 +91,8 @@ public class ItemDeprecation {
 
 	@Override
 	public String toString() {
-		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
-				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
-				+ this.level + '\'' + '}';
+		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", " + "replacement='" + this.replacement + '\''
+				+ ", " + "level='" + this.level + '\'' + '}';
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {

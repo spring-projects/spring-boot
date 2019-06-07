@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ public class TestEntityManagerTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.testEntityManager = new TestEntityManager(this.entityManagerFactory);
-		given(this.entityManagerFactory.getPersistenceUnitUtil())
-				.willReturn(this.persistenceUnitUtil);
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 	}
 
 	@Test
@@ -187,8 +186,7 @@ public class TestEntityManagerTests {
 	public void getIdForTypeWhenTypeIsWrongShouldThrowException() {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.testEntityManager.getId(entity, Long.class))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.testEntityManager.getId(entity, Long.class))
 				.withMessageContaining("ID mismatch: Object of class [java.lang.Integer] "
 						+ "must be an instance of class java.lang.Long");
 	}
@@ -204,14 +202,12 @@ public class TestEntityManagerTests {
 	@Test
 	public void getEntityManagerShouldGetEntityManager() {
 		bindEntityManager();
-		assertThat(this.testEntityManager.getEntityManager())
-				.isEqualTo(this.entityManager);
+		assertThat(this.testEntityManager.getEntityManager()).isEqualTo(this.entityManager);
 	}
 
 	@Test
 	public void getEntityManagerWhenNotSetShouldThrowException() {
-		assertThatIllegalStateException()
-				.isThrownBy(this.testEntityManager::getEntityManager)
+		assertThatIllegalStateException().isThrownBy(this.testEntityManager::getEntityManager)
 				.withMessageContaining("No transactional EntityManager found");
 	}
 

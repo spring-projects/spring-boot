@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,16 +33,14 @@ public class HumioPropertiesConfigAdapterTests {
 	public void whenApiTokenIsSetAdapterApiTokenReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setApiToken("ABC123");
-		assertThat(new HumioPropertiesConfigAdapter(properties).apiToken())
-				.isEqualTo("ABC123");
+		assertThat(new HumioPropertiesConfigAdapter(properties).apiToken()).isEqualTo("ABC123");
 	}
 
 	@Test
 	public void whenPropertiesRepositoryIsSetAdapterRepositoryReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setRepository("test");
-		assertThat(new HumioPropertiesConfigAdapter(properties).repository())
-				.isEqualTo("test");
+		assertThat(new HumioPropertiesConfigAdapter(properties).repository()).isEqualTo("test");
 	}
 
 	@Test
@@ -57,8 +55,7 @@ public class HumioPropertiesConfigAdapterTests {
 	public void whenPropertiesUriIsSetAdapterUriReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setUri("https://humio.example.com");
-		assertThat(new HumioPropertiesConfigAdapter(properties).uri())
-				.isEqualTo("https://humio.example.com");
+		assertThat(new HumioPropertiesConfigAdapter(properties).uri()).isEqualTo("https://humio.example.com");
 	}
 
 }

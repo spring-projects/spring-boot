@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ public class CaffeineCacheMeterBinderProviderTests {
 	@Test
 	public void caffeineCacheProvider() {
 		CaffeineCache cache = new CaffeineCache("test", Caffeine.newBuilder().build());
-		MeterBinder meterBinder = new CaffeineCacheMeterBinderProvider()
-				.getMeterBinder(cache, Collections.emptyList());
+		MeterBinder meterBinder = new CaffeineCacheMeterBinderProvider().getMeterBinder(cache, Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(CaffeineCacheMetrics.class);
 	}
 

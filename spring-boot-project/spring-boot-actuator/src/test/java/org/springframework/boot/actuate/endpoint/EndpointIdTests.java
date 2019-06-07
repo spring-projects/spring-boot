@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public class EndpointIdTests {
 
 	@Test
 	public void ofWhenEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(""))
-				.withMessage("Value must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("")).withMessage("Value must not be empty");
 	}
 
 	@Test
@@ -90,8 +89,8 @@ public class EndpointIdTests {
 	public void ofWhenContainsDeprecatedCharsLogsWarning() {
 		EndpointId.resetLoggedWarnings();
 		EndpointId.of("foo-bar");
-		assertThat(this.output.toString()).contains(
-				"Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
+		assertThat(this.output.toString())
+				.contains("Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
 	}
 
 	@Test
@@ -103,8 +102,8 @@ public class EndpointIdTests {
 		EndpointId five = EndpointId.of("barfoo1");
 		EndpointId six = EndpointId.of("foobar2");
 		assertThat(one.hashCode()).isEqualTo(two.hashCode());
-		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(three).isEqualTo(four)
-				.isNotEqualTo(five).isNotEqualTo(six);
+		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(three).isEqualTo(four).isNotEqualTo(five)
+				.isNotEqualTo(six);
 	}
 
 	@Test

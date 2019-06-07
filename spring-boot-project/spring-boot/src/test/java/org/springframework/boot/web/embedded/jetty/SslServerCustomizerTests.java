@@ -48,8 +48,7 @@ public class SslServerCustomizerTests {
 	public void whenHttp2IsNotEnabledServerConnectorHasSslAndHttpConnectionFactories() {
 		Server server = createCustomizedServer();
 		assertThat(server.getConnectors()).hasSize(1);
-		List<ConnectionFactory> factories = new ArrayList<>(
-				server.getConnectors()[0].getConnectionFactories());
+		List<ConnectionFactory> factories = new ArrayList<>(server.getConnectors()[0].getConnectionFactories());
 		assertThat(factories).extracting((factory) -> (Class) factory.getClass())
 				.containsExactly(SslConnectionFactory.class, HttpConnectionFactory.class);
 	}
@@ -61,12 +60,10 @@ public class SslServerCustomizerTests {
 		http2.setEnabled(true);
 		Server server = createCustomizedServer(http2);
 		assertThat(server.getConnectors()).hasSize(1);
-		List<ConnectionFactory> factories = new ArrayList<>(
-				server.getConnectors()[0].getConnectionFactories());
-		assertThat(factories).extracting((factory) -> (Class) factory.getClass())
-				.containsExactly(SslConnectionFactory.class,
-						ALPNServerConnectionFactory.class,
-						HTTP2ServerConnectionFactory.class, HttpConnectionFactory.class);
+		List<ConnectionFactory> factories = new ArrayList<>(server.getConnectors()[0].getConnectionFactories());
+		assertThat(factories).extracting((factory) -> (Class) factory.getClass()).containsExactly(
+				SslConnectionFactory.class, ALPNServerConnectionFactory.class, HTTP2ServerConnectionFactory.class,
+				HttpConnectionFactory.class);
 	}
 
 	@Test
@@ -75,10 +72,8 @@ public class SslServerCustomizerTests {
 		http2.setEnabled(true);
 		Server server = createCustomizedServer(http2);
 		assertThat(server.getConnectors()).hasSize(1);
-		List<ConnectionFactory> factories = new ArrayList<>(
-				server.getConnectors()[0].getConnectionFactories());
-		assertThat(((ALPNServerConnectionFactory) factories.get(1)).getDefaultProtocol())
-				.isNull();
+		List<ConnectionFactory> factories = new ArrayList<>(server.getConnectors()[0].getConnectionFactories());
+		assertThat(((ALPNServerConnectionFactory) factories.get(1)).getDefaultProtocol()).isNull();
 	}
 
 	@Test
@@ -86,12 +81,9 @@ public class SslServerCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(
-						() -> customizer.configureSsl(new SslContextFactory(), ssl, null))
-				.satisfies((ex) -> {
+				.isThrownBy(() -> customizer.configureSsl(new SslContextFactory(), ssl, null)).satisfies((ex) -> {
 					assertThat(ex).isInstanceOf(WebServerException.class);
-					assertThat(ex)
-							.hasMessageContaining("Could not load key store 'null'");
+					assertThat(ex).hasMessageContaining("Could not load key store 'null'");
 				});
 	}
 
@@ -107,8 +99,7 @@ public class SslServerCustomizerTests {
 
 	private Server createCustomizedServer(Ssl ssl, Http2 http2) {
 		Server server = new Server();
-		new SslServerCustomizer(new InetSocketAddress(0), ssl, null, http2)
-				.customize(server);
+		new SslServerCustomizer(new InetSocketAddress(0), ssl, null, http2).customize(server);
 		return server;
 	}
 

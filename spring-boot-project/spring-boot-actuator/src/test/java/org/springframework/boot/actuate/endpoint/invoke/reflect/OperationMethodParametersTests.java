@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,70 +44,65 @@ import static org.mockito.Mockito.mock;
  */
 public class OperationMethodParametersTests {
 
-	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example",
-			String.class);
+	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
-	private Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(),
-			"exampleNoParams");
+	private Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(), "exampleNoParams");
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OperationMethodParameters(null,
-						mock(ParameterNameDiscoverer.class)))
+				.isThrownBy(() -> new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class)))
 				.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
 				.withMessageContaining("ParameterNameDiscoverer must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererReturnsNullShouldThrowException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod,
-						mock(ParameterNameDiscoverer.class)))
+				.isThrownBy(
+						() -> new OperationMethodParameters(this.exampleMethod, mock(ParameterNameDiscoverer.class)))
 				.withMessageContaining("Failed to extract parameter names");
 	}
 
 	@Test
 	public void hasParametersWhenHasParametersShouldReturnTrue() {
-		OperationMethodParameters parameters = new OperationMethodParameters(
-				this.exampleMethod, new DefaultParameterNameDiscoverer());
+		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
+				new DefaultParameterNameDiscoverer());
 		assertThat(parameters.hasParameters()).isTrue();
 	}
 
 	@Test
 	public void hasParametersWhenHasNoParametersShouldReturnFalse() {
-		OperationMethodParameters parameters = new OperationMethodParameters(
-				this.exampleNoParamsMethod, new DefaultParameterNameDiscoverer());
+		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleNoParamsMethod,
+				new DefaultParameterNameDiscoverer());
 		assertThat(parameters.hasParameters()).isFalse();
 	}
 
 	@Test
 	public void getParameterCountShouldReturnParameterCount() {
-		OperationMethodParameters parameters = new OperationMethodParameters(
-				this.exampleMethod, new DefaultParameterNameDiscoverer());
+		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
+				new DefaultParameterNameDiscoverer());
 		assertThat(parameters.getParameterCount()).isEqualTo(1);
 	}
 
 	@Test
 	public void iteratorShouldIterateOperationParameters() {
-		OperationMethodParameters parameters = new OperationMethodParameters(
-				this.exampleMethod, new DefaultParameterNameDiscoverer());
+		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
+				new DefaultParameterNameDiscoverer());
 		Iterator<OperationParameter> iterator = parameters.iterator();
-		assertParameters(StreamSupport.stream(
-				Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED),
-				false));
+		assertParameters(
+				StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false));
 	}
 
 	@Test
 	public void streamShouldStreamOperationParameters() {
-		OperationMethodParameters parameters = new OperationMethodParameters(
-				this.exampleMethod, new DefaultParameterNameDiscoverer());
+		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
+				new DefaultParameterNameDiscoverer());
 		assertParameters(parameters.stream());
 	}
 

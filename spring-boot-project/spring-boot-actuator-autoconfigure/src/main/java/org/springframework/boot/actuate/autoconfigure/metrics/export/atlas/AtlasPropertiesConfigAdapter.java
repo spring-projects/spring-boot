@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperties>
-		implements AtlasConfig {
+class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperties> implements AtlasConfig {
 
 	AtlasPropertiesConfigAdapter(AtlasProperties properties) {
 		super(properties);
@@ -87,8 +86,7 @@ class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperti
 
 	@Override
 	public Duration configRefreshFrequency() {
-		return get(AtlasProperties::getConfigRefreshFrequency,
-				AtlasConfig.super::configRefreshFrequency);
+		return get(AtlasProperties::getConfigRefreshFrequency, AtlasConfig.super::configRefreshFrequency);
 	}
 
 	@Override

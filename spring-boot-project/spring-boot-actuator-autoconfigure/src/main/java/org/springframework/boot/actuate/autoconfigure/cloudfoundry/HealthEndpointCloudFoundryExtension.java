@@ -35,8 +35,7 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@EndpointExtension(filter = CloudFoundryEndpointFilter.class,
-		endpoint = HealthEndpoint.class)
+@EndpointExtension(filter = CloudFoundryEndpointFilter.class, endpoint = HealthEndpoint.class)
 public @interface HealthEndpointCloudFoundryExtension {
 
 }

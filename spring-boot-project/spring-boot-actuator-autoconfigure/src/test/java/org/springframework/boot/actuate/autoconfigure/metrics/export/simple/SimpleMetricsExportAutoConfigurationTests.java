@@ -40,38 +40,32 @@ import static org.mockito.Mockito.mock;
 public class SimpleMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(SimpleMetricsExportAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SimpleMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(SimpleMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(SimpleConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(SimpleMeterRegistry.class).hasSingleBean(Clock.class).hasSingleBean(SimpleConfig.class));
 	}
 
 	@Test
 	public void backsOffWhenSpecificallyDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.simple.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(SimpleMeterRegistry.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(SimpleMeterRegistry.class)
 						.doesNotHaveBean(SimpleConfig.class));
 	}
 
 	@Test
 	public void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(SimpleConfig.class)
-						.hasBean("customConfig"));
+				.run((context) -> assertThat(context).hasSingleBean(SimpleConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
 	public void backsOffEntirelyWithCustomMeterRegistry() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(MeterRegistry.class)
-						.hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(MeterRegistry.class).hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
 	}
 
 	@Configuration

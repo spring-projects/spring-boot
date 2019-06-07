@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ public class NonUniqueSessionRepositoryException extends RuntimeException {
 	public NonUniqueSessionRepositoryException(List<Class<?>> availableCandidates) {
 		super("Multiple session repository candidates are available, set the "
 				+ "'spring.session.store-type' property accordingly");
-		this.availableCandidates = (!ObjectUtils.isEmpty(availableCandidates)
-				? availableCandidates : Collections.emptyList());
+		this.availableCandidates = (!ObjectUtils.isEmpty(availableCandidates) ? availableCandidates
+				: Collections.emptyList());
 	}
 
 	public List<Class<?>> getAvailableCandidates() {

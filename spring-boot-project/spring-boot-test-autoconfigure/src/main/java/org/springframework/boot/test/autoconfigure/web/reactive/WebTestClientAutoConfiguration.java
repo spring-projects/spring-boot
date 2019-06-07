@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,10 +56,8 @@ public class WebTestClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WebHandler.class)
 	public WebTestClient webTestClient(ApplicationContext applicationContext,
-			List<WebTestClientBuilderCustomizer> customizers,
-			List<MockServerConfigurer> configurers) {
-		WebTestClient.MockServerSpec<?> mockServerSpec = WebTestClient
-				.bindToApplicationContext(applicationContext);
+			List<WebTestClientBuilderCustomizer> customizers, List<MockServerConfigurer> configurers) {
+		WebTestClient.MockServerSpec<?> mockServerSpec = WebTestClient.bindToApplicationContext(applicationContext);
 		for (MockServerConfigurer configurer : configurers) {
 			mockServerSpec.apply(configurer);
 		}

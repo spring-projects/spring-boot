@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,50 +67,37 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
-				.isNotNull();
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 	}
 
 	@Test
 	public void testWithCustomBasePath() {
 		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
-				.isNotNull();
-		RepositoryRestConfiguration bean = this.context
-				.getBean(RepositoryRestConfiguration.class);
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
 		URI expectedUri = URI.create("/foo");
-		assertThat(bean.getBaseUri()).as("Custom basePath not set")
-				.isEqualTo(expectedUri);
+		assertThat(bean.getBaseUri()).as("Custom basePath not set").isEqualTo(expectedUri);
 		BaseUri baseUri = this.context.getBean(BaseUri.class);
-		assertThat(expectedUri).as("Custom basePath has not been applied to BaseUri bean")
-				.isEqualTo(baseUri.getUri());
+		assertThat(expectedUri).as("Custom basePath has not been applied to BaseUri bean").isEqualTo(baseUri.getUri());
 	}
 
 	@Test
 	public void testWithCustomSettings() {
-		load(TestConfiguration.class, "spring.data.rest.default-page-size:42",
-				"spring.data.rest.max-page-size:78",
-				"spring.data.rest.page-param-name:_page",
-				"spring.data.rest.limit-param-name:_limit",
-				"spring.data.rest.sort-param-name:_sort",
-				"spring.data.rest.detection-strategy=visibility",
+		load(TestConfiguration.class, "spring.data.rest.default-page-size:42", "spring.data.rest.max-page-size:78",
+				"spring.data.rest.page-param-name:_page", "spring.data.rest.limit-param-name:_limit",
+				"spring.data.rest.sort-param-name:_sort", "spring.data.rest.detection-strategy=visibility",
 				"spring.data.rest.default-media-type:application/my-json",
-				"spring.data.rest.return-body-on-create:false",
-				"spring.data.rest.return-body-on-update:false",
+				"spring.data.rest.return-body-on-create:false", "spring.data.rest.return-body-on-update:false",
 				"spring.data.rest.enable-enum-translation:true");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
-				.isNotNull();
-		RepositoryRestConfiguration bean = this.context
-				.getBean(RepositoryRestConfiguration.class);
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
 		assertThat(bean.getDefaultPageSize()).isEqualTo(42);
 		assertThat(bean.getMaxPageSize()).isEqualTo(78);
 		assertThat(bean.getPageParamName()).isEqualTo("_page");
 		assertThat(bean.getLimitParamName()).isEqualTo("_limit");
 		assertThat(bean.getSortParamName()).isEqualTo("_sort");
-		assertThat(bean.getRepositoryDetectionStrategy())
-				.isEqualTo(RepositoryDetectionStrategies.VISIBILITY);
-		assertThat(bean.getDefaultMediaType())
-				.isEqualTo(MediaType.parseMediaType("application/my-json"));
+		assertThat(bean.getRepositoryDetectionStrategy()).isEqualTo(RepositoryDetectionStrategies.VISIBILITY);
+		assertThat(bean.getDefaultMediaType()).isEqualTo(MediaType.parseMediaType("application/my-json"));
 		assertThat(bean.returnBodyOnCreate(null)).isFalse();
 		assertThat(bean.returnBodyOnUpdate(null)).isFalse();
 		assertThat(bean.isEnableEnumTranslation()).isTrue();
@@ -118,27 +105,20 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Test
 	public void testWithCustomConfigurer() {
-		load(TestConfigurationWithConfigurer.class,
-				"spring.data.rest.detection-strategy=visibility",
+		load(TestConfigurationWithConfigurer.class, "spring.data.rest.detection-strategy=visibility",
 				"spring.data.rest.default-media-type:application/my-json");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
-				.isNotNull();
-		RepositoryRestConfiguration bean = this.context
-				.getBean(RepositoryRestConfiguration.class);
-		assertThat(bean.getRepositoryDetectionStrategy())
-				.isEqualTo(RepositoryDetectionStrategies.ALL);
-		assertThat(bean.getDefaultMediaType())
-				.isEqualTo(MediaType.parseMediaType("application/my-custom-json"));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
+		assertThat(bean.getRepositoryDetectionStrategy()).isEqualTo(RepositoryDetectionStrategies.ALL);
+		assertThat(bean.getDefaultMediaType()).isEqualTo(MediaType.parseMediaType("application/my-custom-json"));
 		assertThat(bean.getMaxPageSize()).isEqualTo(78);
 	}
 
 	@Test
 	public void backOffWithCustomConfiguration() {
 		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
-				.isNotNull();
-		RepositoryRestConfiguration bean = this.context
-				.getBean(RepositoryRestConfiguration.class);
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
 		assertThat(bean.getBaseUri()).isEqualTo(URI.create(""));
 	}
 
@@ -153,10 +133,9 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Configuration
 	@Import(EmbeddedDataSourceConfiguration.class)
-	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class,
-			JpaRepositoriesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class, JacksonAutoConfiguration.class })
+	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}
@@ -195,11 +174,9 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	static class TestRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 		@Override
-		public void configureRepositoryRestConfiguration(
-				RepositoryRestConfiguration config) {
+		public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
 			config.setRepositoryDetectionStrategy(RepositoryDetectionStrategies.ALL);
-			config.setDefaultMediaType(
-					MediaType.parseMediaType("application/my-custom-json"));
+			config.setDefaultMediaType(MediaType.parseMediaType("application/my-custom-json"));
 			config.setMaxPageSize(78);
 		}
 

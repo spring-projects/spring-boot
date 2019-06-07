@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,16 +125,11 @@ public class CorsEndpointProperties {
 		PropertyMapper map = PropertyMapper.get();
 		CorsConfiguration configuration = new CorsConfiguration();
 		map.from(this::getAllowedOrigins).to(configuration::setAllowedOrigins);
-		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty)
-				.to(configuration::setAllowedHeaders);
-		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty)
-				.to(configuration::setAllowedMethods);
-		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty)
-				.to(configuration::setExposedHeaders);
-		map.from(this::getMaxAge).whenNonNull().as(Duration::getSeconds)
-				.to(configuration::setMaxAge);
-		map.from(this::getAllowCredentials).whenNonNull()
-				.to(configuration::setAllowCredentials);
+		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedHeaders);
+		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedMethods);
+		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setExposedHeaders);
+		map.from(this::getMaxAge).whenNonNull().as(Duration::getSeconds).to(configuration::setMaxAge);
+		map.from(this::getAllowCredentials).whenNonNull().to(configuration::setAllowCredentials);
 		return configuration;
 	}
 

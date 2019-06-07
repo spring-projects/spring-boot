@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public class VehicleDetails {
 	private final String model;
 
 	@JsonCreator
-	public VehicleDetails(@JsonProperty("make") String make,
-			@JsonProperty("model") String model) {
+	public VehicleDetails(@JsonProperty("make") String make, @JsonProperty("model") String model) {
 		Assert.notNull(make, "Make must not be null");
 		Assert.notNull(model, "Model must not be null");
 		this.make = make;

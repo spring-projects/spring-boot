@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,31 +52,22 @@ public class AutoConfigureAnnotationProcessorTests {
 		Properties properties = compile(TestClassConfiguration.class);
 		assertThat(properties).hasSize(6);
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration.ConditionalOnClass",
+				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration.ConditionalOnClass",
 				"java.io.InputStream,org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration$Nested,org.springframework.foo");
 		assertThat(properties)
-				.containsKey("org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration");
-		assertThat(properties)
-				.containsKey("org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration.Configuration");
-		assertThat(properties)
-				.doesNotContainKey("org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration$Nested");
+				.containsKey("org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration");
+		assertThat(properties).containsKey(
+				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration.Configuration");
+		assertThat(properties).doesNotContainKey(
+				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration$Nested");
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration.ConditionalOnBean",
+				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration.ConditionalOnBean",
 				"java.io.OutputStream");
-		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration.ConditionalOnSingleCandidate",
-				"java.io.OutputStream");
-		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor."
-						+ "TestClassConfiguration.ConditionalOnWebApplication",
-				"SERVLET");
+		assertThat(properties).containsEntry("org.springframework.boot.autoconfigureprocessor."
+				+ "TestClassConfiguration.ConditionalOnSingleCandidate", "java.io.OutputStream");
+		assertThat(properties).containsEntry("org.springframework.boot.autoconfigureprocessor."
+				+ "TestClassConfiguration.ConditionalOnWebApplication", "SERVLET");
 	}
 
 	@Test
@@ -93,38 +84,29 @@ public class AutoConfigureAnnotationProcessorTests {
 		Properties properties = compile(TestMethodConfiguration.class);
 		List<String> matching = new ArrayList<>();
 		for (Object key : properties.keySet()) {
-			if (key.toString().startsWith(
-					"org.springframework.boot.autoconfigureprocessor.TestMethodConfiguration")) {
+			if (key.toString().startsWith("org.springframework.boot.autoconfigureprocessor.TestMethodConfiguration")) {
 				matching.add(key.toString());
 			}
 		}
 		assertThat(matching).hasSize(2)
-				.contains("org.springframework.boot.autoconfigureprocessor."
-						+ "TestMethodConfiguration")
-				.contains("org.springframework.boot.autoconfigureprocessor."
-						+ "TestMethodConfiguration.Configuration");
+				.contains("org.springframework.boot.autoconfigureprocessor." + "TestMethodConfiguration")
+				.contains("org.springframework.boot.autoconfigureprocessor." + "TestMethodConfiguration.Configuration");
 	}
 
 	@Test
 	public void annotatedClassWithOrder() throws Exception {
 		Properties properties = compile(TestOrderedClassConfiguration.class);
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor."
-						+ "TestOrderedClassConfiguration.ConditionalOnClass",
+				"org.springframework.boot.autoconfigureprocessor." + "TestOrderedClassConfiguration.ConditionalOnClass",
 				"java.io.InputStream,java.io.OutputStream");
+		assertThat(properties).containsEntry("org.springframework.boot.autoconfigureprocessor."
+				+ "TestOrderedClassConfiguration.AutoConfigureBefore", "test.before1,test.before2");
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor."
-						+ "TestOrderedClassConfiguration.AutoConfigureBefore",
-				"test.before1,test.before2");
-		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor."
-						+ "TestOrderedClassConfiguration.AutoConfigureAfter",
+				"org.springframework.boot.autoconfigureprocessor." + "TestOrderedClassConfiguration.AutoConfigureAfter",
 				"java.io.ObjectInputStream");
-		assertThat(properties)
-				.containsEntry(
-						"org.springframework.boot.autoconfigureprocessor."
-								+ "TestOrderedClassConfiguration.AutoConfigureOrder",
-						"123");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor." + "TestOrderedClassConfiguration.AutoConfigureOrder",
+				"123");
 	}
 
 	private Properties compile(Class<?>... types) throws IOException {

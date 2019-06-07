@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(
-		initializers = DataRedisTestPropertiesIntegrationTests.Initializer.class)
+@ContextConfiguration(initializers = DataRedisTestPropertiesIntegrationTests.Initializer.class)
 @DataRedisTest(properties = "spring.profiles.active=test")
 public class DataRedisTestPropertiesIntegrationTests {
 
@@ -54,12 +53,10 @@ public class DataRedisTestPropertiesIntegrationTests {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
 	}
 
-	static class Initializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
-		public void initialize(
-				ConfigurableApplicationContext configurableApplicationContext) {
+		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
 			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}

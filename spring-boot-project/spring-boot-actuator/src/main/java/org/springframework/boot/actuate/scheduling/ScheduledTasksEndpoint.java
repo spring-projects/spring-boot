@@ -59,10 +59,9 @@ public class ScheduledTasksEndpoint {
 
 	@ReadOperation
 	public ScheduledTasksReport scheduledTasks() {
-		Map<TaskType, List<TaskDescription>> descriptionsByType = this.scheduledTaskHolders
-				.stream().flatMap((holder) -> holder.getScheduledTasks().stream())
-				.map(ScheduledTask::getTask).map(TaskDescription::of)
-				.filter(Objects::nonNull)
+		Map<TaskType, List<TaskDescription>> descriptionsByType = this.scheduledTaskHolders.stream()
+				.flatMap((holder) -> holder.getScheduledTasks().stream()).map(ScheduledTask::getTask)
+				.map(TaskDescription::of).filter(Objects::nonNull)
 				.collect(Collectors.groupingBy(TaskDescription::getType));
 		return new ScheduledTasksReport(descriptionsByType);
 	}
@@ -81,16 +80,11 @@ public class ScheduledTasksEndpoint {
 
 		private final List<TaskDescription> custom;
 
-		private ScheduledTasksReport(
-				Map<TaskType, List<TaskDescription>> descriptionsByType) {
-			this.cron = descriptionsByType.getOrDefault(TaskType.CRON,
-					Collections.emptyList());
-			this.fixedDelay = descriptionsByType.getOrDefault(TaskType.FIXED_DELAY,
-					Collections.emptyList());
-			this.fixedRate = descriptionsByType.getOrDefault(TaskType.FIXED_RATE,
-					Collections.emptyList());
-			this.custom = descriptionsByType.getOrDefault(TaskType.CUSTOM_TRIGGER,
-					Collections.emptyList());
+		private ScheduledTasksReport(Map<TaskType, List<TaskDescription>> descriptionsByType) {
+			this.cron = descriptionsByType.getOrDefault(TaskType.CRON, Collections.emptyList());
+			this.fixedDelay = descriptionsByType.getOrDefault(TaskType.FIXED_DELAY, Collections.emptyList());
+			this.fixedRate = descriptionsByType.getOrDefault(TaskType.FIXED_RATE, Collections.emptyList());
+			this.custom = descriptionsByType.getOrDefault(TaskType.CUSTOM_TRIGGER, Collections.emptyList());
 		}
 
 		public List<TaskDescription> getCron() {
@@ -119,14 +113,10 @@ public class ScheduledTasksEndpoint {
 		private static final Map<Class<? extends Task>, Function<Task, TaskDescription>> DESCRIBERS = new LinkedHashMap<>();
 
 		static {
-			DESCRIBERS.put(FixedRateTask.class,
-					(task) -> new FixedRateTaskDescription((FixedRateTask) task));
-			DESCRIBERS.put(FixedDelayTask.class,
-					(task) -> new FixedDelayTaskDescription((FixedDelayTask) task));
-			DESCRIBERS.put(CronTask.class,
-					(task) -> new CronTaskDescription((CronTask) task));
-			DESCRIBERS.put(TriggerTask.class,
-					(task) -> describeTriggerTask((TriggerTask) task));
+			DESCRIBERS.put(FixedRateTask.class, (task) -> new FixedRateTaskDescription((FixedRateTask) task));
+			DESCRIBERS.put(FixedDelayTask.class, (task) -> new FixedDelayTaskDescription((FixedDelayTask) task));
+			DESCRIBERS.put(CronTask.class, (task) -> new CronTaskDescription((CronTask) task));
+			DESCRIBERS.put(TriggerTask.class, (task) -> describeTriggerTask((TriggerTask) task));
 		}
 
 		private final TaskType type;
@@ -134,10 +124,8 @@ public class ScheduledTasksEndpoint {
 		private final RunnableDescription runnable;
 
 		private static TaskDescription of(Task task) {
-			return DESCRIBERS.entrySet().stream()
-					.filter((entry) -> entry.getKey().isInstance(task))
-					.map((entry) -> entry.getValue().apply(task)).findFirst()
-					.orElse(null);
+			return DESCRIBERS.entrySet().stream().filter((entry) -> entry.getKey().isInstance(task))
+					.map((entry) -> entry.getValue().apply(task)).findFirst().orElse(null);
 		}
 
 		private static TaskDescription describeTriggerTask(TriggerTask triggerTask) {
@@ -185,8 +173,7 @@ public class ScheduledTasksEndpoint {
 			this.interval = task.getInterval();
 		}
 
-		protected IntervalTaskDescription(TaskType type, TriggerTask task,
-				PeriodicTrigger trigger) {
+		protected IntervalTaskDescription(TaskType type, TriggerTask task, PeriodicTrigger trigger) {
 			super(type, task.getRunnable());
 			this.initialDelay = trigger.getInitialDelay();
 			this.interval = trigger.getPeriod();
@@ -290,8 +277,7 @@ public class ScheduledTasksEndpoint {
 		private RunnableDescription(Runnable runnable) {
 			if (runnable instanceof ScheduledMethodRunnable) {
 				Method method = ((ScheduledMethodRunnable) runnable).getMethod();
-				this.target = method.getDeclaringClass().getName() + "."
-						+ method.getName();
+				this.target = method.getDeclaringClass().getName() + "." + method.getName();
 			}
 			else {
 				this.target = runnable.getClass().getName();

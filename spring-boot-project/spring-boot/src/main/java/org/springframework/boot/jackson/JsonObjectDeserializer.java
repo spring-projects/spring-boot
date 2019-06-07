@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,10 @@ import org.springframework.util.Assert;
  * @since 1.4.0
  * @see JsonObjectSerializer
  */
-public abstract class JsonObjectDeserializer<T>
-		extends com.fasterxml.jackson.databind.JsonDeserializer<T> {
+public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.databind.JsonDeserializer<T> {
 
 	@Override
-	public final T deserialize(JsonParser jp, DeserializationContext ctxt)
-			throws IOException {
+	public final T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 		try {
 			ObjectCodec codec = jp.getCodec();
 			JsonNode tree = codec.readTree(jp);
@@ -71,9 +69,8 @@ public abstract class JsonObjectDeserializer<T>
 	 * @throws IOException on error
 	 * @see #deserialize(JsonParser, DeserializationContext)
 	 */
-	protected abstract T deserializeObject(JsonParser jsonParser,
-			DeserializationContext context, ObjectCodec codec, JsonNode tree)
-			throws IOException;
+	protected abstract T deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
+			JsonNode tree) throws IOException;
 
 	/**
 	 * Helper method to extract a value from the given {@code jsonNode} or return
@@ -130,8 +127,7 @@ public abstract class JsonObjectDeserializer<T>
 	protected final JsonNode getRequiredNode(JsonNode tree, String fieldName) {
 		Assert.notNull(tree, "Tree must not be null");
 		JsonNode node = tree.get(fieldName);
-		Assert.state(node != null && !(node instanceof NullNode),
-				() -> "Missing JSON field '" + fieldName + "'");
+		Assert.state(node != null && !(node instanceof NullNode), () -> "Missing JSON field '" + fieldName + "'");
 		return node;
 	}
 

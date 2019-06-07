@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ import org.springframework.core.annotation.Order;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnBean(MeterRegistry.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class WebFluxMetricsAutoConfiguration {
@@ -63,8 +62,7 @@ public class WebFluxMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
-			WebFluxTagsProvider tagConfigurer) {
+	public MetricsWebFilter webfluxMetrics(MeterRegistry registry, WebFluxTagsProvider tagConfigurer) {
 		return new MetricsWebFilter(registry, tagConfigurer,
 				this.properties.getWeb().getServer().getRequestsMetricName(),
 				this.properties.getWeb().getServer().isAutoTimeRequests());
@@ -74,10 +72,10 @@ public class WebFluxMetricsAutoConfiguration {
 	@Order(0)
 	public MeterFilter metricsHttpServerUriTagFilter() {
 		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
-		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
-				.format("Reached the maximum number of URI tags for '%s'.", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				this.properties.getWeb().getServer().getMaxUriTags(), filter);
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
+				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri", this.properties.getWeb().getServer().getMaxUriTags(),
+				filter);
 	}
 
 }

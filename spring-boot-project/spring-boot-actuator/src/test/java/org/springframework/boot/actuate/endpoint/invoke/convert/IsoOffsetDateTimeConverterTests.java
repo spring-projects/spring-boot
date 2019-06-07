@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public class IsoOffsetDateTimeConverterTests {
 	public void registerConverterShouldRegister() {
 		DefaultConversionService service = new DefaultConversionService();
 		IsoOffsetDateTimeConverter.registerConverter(service);
-		OffsetDateTime time = service.convert("2011-12-03T10:15:30+01:00",
-				OffsetDateTime.class);
+		OffsetDateTime time = service.convert("2011-12-03T10:15:30+01:00", OffsetDateTime.class);
 		assertThat(time).isNotNull();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ public class AtomikosConnectionFactoryBeanTests {
 
 	@Test
 	public void beanMethods() throws Exception {
-		MockAtomikosConnectionFactoryBean bean = spy(
-				new MockAtomikosConnectionFactoryBean());
+		MockAtomikosConnectionFactoryBean bean = spy(new MockAtomikosConnectionFactoryBean());
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();
 		assertThat(bean.getUniqueResourceName()).isEqualTo("bean");
@@ -44,8 +43,7 @@ public class AtomikosConnectionFactoryBeanTests {
 	}
 
 	@SuppressWarnings("serial")
-	private static class MockAtomikosConnectionFactoryBean
-			extends AtomikosConnectionFactoryBean {
+	private static class MockAtomikosConnectionFactoryBean extends AtomikosConnectionFactoryBean {
 
 		@Override
 		public synchronized void init() {

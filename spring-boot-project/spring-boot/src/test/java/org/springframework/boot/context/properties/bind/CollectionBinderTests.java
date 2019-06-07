@@ -48,11 +48,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class CollectionBinderTests {
 
-	private static final Bindable<List<Integer>> INTEGER_LIST = Bindable
-			.listOf(Integer.class);
+	private static final Bindable<List<Integer>> INTEGER_LIST = Bindable.listOf(Integer.class);
 
-	private static final Bindable<List<String>> STRING_LIST = Bindable
-			.listOf(String.class);
+	private static final Bindable<List<String>> STRING_LIST = Bindable.listOf(String.class);
 
 	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 
@@ -95,8 +93,8 @@ public class CollectionBinderTests {
 		source.put("foo[1][0]", "3");
 		source.put("foo[1][1]", "4");
 		this.sources.add(source);
-		Bindable<List<List<Integer>>> target = Bindable.of(
-				ResolvableType.forClassWithGenerics(List.class, INTEGER_LIST.getType()));
+		Bindable<List<List<Integer>>> target = Bindable
+				.of(ResolvableType.forClassWithGenerics(List.class, INTEGER_LIST.getType()));
 		List<List<Integer>> result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(2);
 		assertThat(result.get(0)).containsExactly(1, 2);
@@ -121,11 +119,10 @@ public class CollectionBinderTests {
 		source.put("foo[1]", "1");
 		source.put("foo[3]", "3");
 		this.sources.add(source);
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("foo", INTEGER_LIST))
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", INTEGER_LIST))
 				.satisfies((ex) -> {
-					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
-							.getCause()).getUnboundProperties();
+					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+							.getUnboundProperties();
 					assertThat(unbound).hasSize(1);
 					ConfigurationProperty property = unbound.iterator().next();
 					assertThat(property.getName().toString()).isEqualTo("foo[3]");
@@ -141,10 +138,10 @@ public class CollectionBinderTests {
 		source.put("foo[4].value", "4");
 		this.sources.add(source);
 		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("foo", target)).satisfies((ex) -> {
-					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
-							.getCause()).getUnboundProperties();
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
+				.satisfies((ex) -> {
+					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+							.getUnboundProperties();
 					assertThat(unbound).hasSize(1);
 					ConfigurationProperty property = unbound.iterator().next();
 					assertThat(property.getName().toString()).isEqualTo("foo[4].value");
@@ -187,8 +184,7 @@ public class CollectionBinderTests {
 		List<Integer> existing = new LinkedList<>();
 		existing.add(1000);
 		existing.add(1001);
-		List<Integer> result = this.binder
-				.bind("foo", INTEGER_LIST.withExistingValue(existing)).get();
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST.withExistingValue(existing)).get();
 		assertThat(result).isExactlyInstanceOf(LinkedList.class);
 		assertThat(result).containsExactly(1);
 	}
@@ -198,20 +194,17 @@ public class CollectionBinderTests {
 		this.sources.add(new MockConfigurationPropertySource("faf[0]", "1"));
 		List<Integer> existing = new LinkedList<>();
 		existing.add(1000);
-		BindResult<List<Integer>> result = this.binder.bind("foo",
-				INTEGER_LIST.withExistingValue(existing));
+		BindResult<List<Integer>> result = this.binder.bind("foo", INTEGER_LIST.withExistingValue(existing));
 		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
 	public void bindToCollectionShouldRespectCollectionType() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1"));
-		ResolvableType type = ResolvableType.forClassWithGenerics(LinkedList.class,
-				Integer.class);
+		ResolvableType type = ResolvableType.forClassWithGenerics(LinkedList.class, Integer.class);
 		Object defaultList = this.binder.bind("foo", INTEGER_LIST).get();
 		Object customList = this.binder.bind("foo", Bindable.of(type)).get();
-		assertThat(customList).isExactlyInstanceOf(LinkedList.class)
-				.isNotInstanceOf(defaultList.getClass());
+		assertThat(customList).isExactlyInstanceOf(LinkedList.class).isNotInstanceOf(defaultList.getClass());
 	}
 
 	@Test
@@ -231,10 +224,8 @@ public class CollectionBinderTests {
 	@Test
 	public void bindToCollectionWhenCommaListWithPlaceholdersShouldReturnPopulatedCollection() {
 		StandardEnvironment environment = new StandardEnvironment();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
-				"bar=1,2,3");
-		this.binder = new Binder(this.sources,
-				new PropertySourcesPlaceholdersResolver(environment));
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "bar=1,2,3");
+		this.binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment));
 		this.sources.add(new MockConfigurationPropertySource("foo", "${bar}"));
 		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
@@ -294,8 +285,7 @@ public class CollectionBinderTests {
 		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
 		List<JavaBean> result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(3);
-		List<String> values = result.stream().map(JavaBean::getValue)
-				.collect(Collectors.toList());
+		List<String> values = result.stream().map(JavaBean::getValue).collect(Collectors.toList());
 		assertThat(values).containsExactly("a", "b", "c");
 	}
 
@@ -304,9 +294,7 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values", "a,b,c");
 		this.sources.add(source);
-		Set<String> result = this.binder
-				.bind("foo.values", STRING_SET.withExistingValue(Collections.emptySet()))
-				.get();
+		Set<String> result = this.binder.bind("foo.values", STRING_SET.withExistingValue(Collections.emptySet())).get();
 		assertThat(result).hasSize(3);
 	}
 
@@ -315,8 +303,7 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c");
 		this.sources.add(source);
-		ExampleCollectionBean result = this.binder
-				.bind("foo", ExampleCollectionBean.class).get();
+		ExampleCollectionBean result = this.binder.bind("foo", ExampleCollectionBean.class).get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "d");
 	}
@@ -349,8 +336,7 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
-		ExampleCollectionBean result = this.binder
-				.bind("foo", ExampleCollectionBean.class).get();
+		ExampleCollectionBean result = this.binder.bind("foo", ExampleCollectionBean.class).get();
 		assertThat(result.getItems()).hasSize(5);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "c", "d");
 	}
@@ -360,8 +346,7 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items-set", "a,b,c,c");
 		this.sources.add(source);
-		ExampleCollectionBean result = this.binder
-				.bind("foo", ExampleCollectionBean.class).get();
+		ExampleCollectionBean result = this.binder.bind("foo", ExampleCollectionBean.class).get();
 		assertThat(result.getItemsSet()).hasSize(3);
 		assertThat(result.getItemsSet()).containsExactly("a", "b", "c");
 	}
@@ -373,8 +358,7 @@ public class CollectionBinderTests {
 		source.put("foo.foos[0].value", "two");
 		source.put("foo.foos[1].value", "three");
 		this.sources.add(source);
-		Bindable<BeanWithNestedCollection> target = Bindable
-				.of(BeanWithNestedCollection.class);
+		Bindable<BeanWithNestedCollection> target = Bindable.of(BeanWithNestedCollection.class);
 		BeanWithNestedCollection foo = this.binder.bind("foo", target).get();
 		assertThat(foo.getValue()).isEqualTo("one");
 		assertThat(foo.getFoos().get(0).getValue()).isEqualTo("two");
@@ -387,8 +371,7 @@ public class CollectionBinderTests {
 		source.put("foo.value", "one");
 		source.put("foo.foos", "");
 		this.sources.add(source);
-		Bindable<BeanWithNestedCollection> target = Bindable
-				.of(BeanWithNestedCollection.class);
+		Bindable<BeanWithNestedCollection> target = Bindable.of(BeanWithNestedCollection.class);
 		BeanWithNestedCollection foo = this.binder.bind("foo", target).get();
 		assertThat(foo.getValue()).isEqualTo("one");
 		assertThat(foo.getFoos()).isEmpty();
@@ -401,8 +384,8 @@ public class CollectionBinderTests {
 		source.put("foo[0]", "java.lang.RuntimeException");
 		source.put("foo[1]", "java.lang.IllegalStateException");
 		this.sources.add(source);
-		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get())
-				.containsExactly(RuntimeException.class, IllegalStateException.class);
+		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get()).containsExactly(RuntimeException.class,
+				IllegalStateException.class);
 	}
 
 	@Test
@@ -411,8 +394,8 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "java.lang.RuntimeException,java.lang.IllegalStateException");
 		this.sources.add(source);
-		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get())
-				.containsExactly(RuntimeException.class, IllegalStateException.class);
+		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get()).containsExactly(RuntimeException.class,
+				IllegalStateException.class);
 	}
 
 	@Test
@@ -420,8 +403,7 @@ public class CollectionBinderTests {
 		// gh-10702
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source.nonIterable());
-		Bindable<BeanWithNestedCollection> target = Bindable
-				.of(BeanWithNestedCollection.class);
+		Bindable<BeanWithNestedCollection> target = Bindable.of(BeanWithNestedCollection.class);
 		this.binder.bind("foo", target);
 	}
 
@@ -440,8 +422,7 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values", "a,b,c");
 		this.sources.add(source);
-		BeanWithGetterException result = this.binder
-				.bind("foo", Bindable.of(BeanWithGetterException.class)).get();
+		BeanWithGetterException result = this.binder.bind("foo", Bindable.of(BeanWithGetterException.class)).get();
 		assertThat(result.getValues()).containsExactly("a", "b", "c");
 	}
 
@@ -450,10 +431,8 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values[0]", "foo-bar,bar-baz");
 		this.sources.add(source);
-		BeanWithEnumSetCollection result = this.binder
-				.bind("foo", Bindable.of(BeanWithEnumSetCollection.class)).get();
-		assertThat(result.getValues().get(0)).containsExactly(ExampleEnum.FOO_BAR,
-				ExampleEnum.BAR_BAZ);
+		BeanWithEnumSetCollection result = this.binder.bind("foo", Bindable.of(BeanWithEnumSetCollection.class)).get();
+		assertThat(result.getValues().get(0)).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
 	}
 
 	public static class ExampleCollectionBean {

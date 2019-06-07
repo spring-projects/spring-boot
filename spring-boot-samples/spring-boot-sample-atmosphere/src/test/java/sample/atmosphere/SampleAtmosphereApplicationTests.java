@@ -45,8 +45,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SampleAtmosphereApplication.class,
-		webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = SampleAtmosphereApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleAtmosphereApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleAtmosphereApplicationTests.class);
@@ -56,18 +55,15 @@ public class SampleAtmosphereApplicationTests {
 
 	@Test
 	public void chatEndpoint() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + this.port
-								+ "/chat/websocket")
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class)
+						.properties("websocket.uri:ws://localhost:" + this.port + "/chat/websocket")
 						.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
-		AtomicReference<String> messagePayloadReference = context
-				.getBean(ClientConfiguration.class).messagePayload;
+		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
 		assertThat(count).isEqualTo(0L);
-		assertThat(messagePayloadReference.get())
-				.contains("{\"message\":\"test\",\"author\":\"test\",\"time\":");
+		assertThat(messagePayloadReference.get()).contains("{\"message\":\"test\",\"author\":\"test\",\"time\":");
 	}
 
 	@Configuration
@@ -93,8 +89,7 @@ public class SampleAtmosphereApplicationTests {
 
 		@Bean
 		public WebSocketConnectionManager wsConnectionManager() {
-			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
-					handler(), this.webSocketUri);
+			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(), handler(), this.webSocketUri);
 			manager.setAutoStartup(true);
 			return manager;
 		}
@@ -109,17 +104,13 @@ public class SampleAtmosphereApplicationTests {
 			return new TextWebSocketHandler() {
 
 				@Override
-				public void afterConnectionEstablished(WebSocketSession session)
-						throws Exception {
-					session.sendMessage(new TextMessage(
-							"{\"author\":\"test\",\"message\":\"test\"}"));
+				public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+					session.sendMessage(new TextMessage("{\"author\":\"test\",\"message\":\"test\"}"));
 				}
 
 				@Override
-				protected void handleTextMessage(WebSocketSession session,
-						TextMessage message) throws Exception {
-					logger.info("Received: " + message + " ("
-							+ ClientConfiguration.this.latch.getCount() + ")");
+				protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+					logger.info("Received: " + message + " (" + ClientConfiguration.this.latch.getCount() + ")");
 					session.close();
 					ClientConfiguration.this.messagePayload.set(message.getPayload());
 					ClientConfiguration.this.latch.countDown();

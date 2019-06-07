@@ -66,21 +66,16 @@ public class LogFileWebEndpointWebIntegrationTests {
 
 	@Test
 	public void getRequestProducesResponseWithLogFile() {
-		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
-				.applyTo(context);
-		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()
-				.expectHeader().contentType("text/plain; charset=UTF-8")
-				.expectBody(String.class).isEqualTo("--TEST--");
+		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath()).applyTo(context);
+		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk().expectHeader()
+				.contentType("text/plain; charset=UTF-8").expectBody(String.class).isEqualTo("--TEST--");
 	}
 
 	@Test
 	public void getRequestThatAcceptsTextPlainProducesResponseWithLogFile() {
-		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
-				.applyTo(context);
-		client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange()
-				.expectStatus().isOk().expectHeader()
-				.contentType("text/plain; charset=UTF-8").expectBody(String.class)
-				.isEqualTo("--TEST--");
+		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath()).applyTo(context);
+		client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk()
+				.expectHeader().contentType("text/plain; charset=UTF-8").expectBody(String.class).isEqualTo("--TEST--");
 	}
 
 	@Configuration

@@ -86,8 +86,7 @@ public class OriginTrackedYamlLoaderTests {
 	@Test
 	public void processMultiline() {
 		OriginTrackedValue education = getValue("education");
-		assertThat(education.toString())
-				.isEqualTo("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
+		assertThat(education.toString()).isEqualTo("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
 		assertThat(getLocation(education)).isEqualTo("16:12");
 	}
 

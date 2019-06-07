@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,14 +54,13 @@ public class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
-		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful()
-				.expectBody().consumeWith(document("default-snippets"));
+		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful().expectBody()
+				.consumeWith(document("default-snippets"));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
 				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.adoc"))
-				.has(contentContaining("api.example.com"));
+		assertThat(new File(defaultSnippetsDir, "http-request.adoc")).has(contentContaining("api.example.com"));
 		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
 	}
 

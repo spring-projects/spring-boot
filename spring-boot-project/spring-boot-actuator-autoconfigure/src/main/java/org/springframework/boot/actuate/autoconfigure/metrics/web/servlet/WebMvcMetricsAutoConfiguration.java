@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean(MeterRegistry.class)
@@ -76,14 +75,12 @@ public class WebMvcMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public FilterRegistrationBean<WebMvcMetricsFilter> webMvcMetricsFilter(
-			MeterRegistry registry, WebMvcTagsProvider tagsProvider) {
+	public FilterRegistrationBean<WebMvcMetricsFilter> webMvcMetricsFilter(MeterRegistry registry,
+			WebMvcTagsProvider tagsProvider) {
 		Server serverProperties = this.properties.getWeb().getServer();
 		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(registry, tagsProvider,
-				serverProperties.getRequestsMetricName(),
-				serverProperties.isAutoTimeRequests());
-		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(
-				filter);
+				serverProperties.getRequestsMetricName(), serverProperties.isAutoTimeRequests());
+		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 		return registration;
@@ -93,10 +90,10 @@ public class WebMvcMetricsAutoConfiguration {
 	@Order(0)
 	public MeterFilter metricsHttpServerUriTagFilter() {
 		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
-		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
-				.format("Reached the maximum number of URI tags for '%s'.", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				this.properties.getWeb().getServer().getMaxUriTags(), filter);
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
+				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri", this.properties.getWeb().getServer().getMaxUriTags(),
+				filter);
 	}
 
 	@Bean
@@ -114,16 +111,14 @@ public class WebMvcMetricsAutoConfiguration {
 
 		private final WebMvcTagsProvider tagsProvider;
 
-		MetricsWebMvcConfigurer(MeterRegistry meterRegistry,
-				WebMvcTagsProvider tagsProvider) {
+		MetricsWebMvcConfigurer(MeterRegistry meterRegistry, WebMvcTagsProvider tagsProvider) {
 			this.meterRegistry = meterRegistry;
 			this.tagsProvider = tagsProvider;
 		}
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(new LongTaskTimingHandlerInterceptor(
-					this.meterRegistry, this.tagsProvider));
+			registry.addInterceptor(new LongTaskTimingHandlerInterceptor(this.meterRegistry, this.tagsProvider));
 		}
 
 	}

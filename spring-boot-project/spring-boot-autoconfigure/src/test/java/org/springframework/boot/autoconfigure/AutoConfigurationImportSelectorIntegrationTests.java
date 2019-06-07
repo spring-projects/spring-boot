@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,29 +46,25 @@ public class AutoConfigurationImportSelectorIntegrationTests {
 	@Test
 	public void singleSelector() {
 		this.contextRunner.withUserConfiguration(SingleConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context))
-						.containsExactly("ConfigC"));
+				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigC"));
 	}
 
 	@Test
 	public void multipleSelectorsShouldMergeAndSortCorrectly() {
 		this.contextRunner.withUserConfiguration(Config.class, AnotherConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context))
-						.containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD"));
+				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
+						"ConfigC", "ConfigD"));
 	}
 
 	@Test
 	public void multipleSelectorsWithRedundantImportsShouldMergeAndSortCorrectly() {
-		this.contextRunner
-				.withUserConfiguration(SingleConfig.class, Config.class,
-						AnotherConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context))
-						.containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD"));
+		this.contextRunner.withUserConfiguration(SingleConfig.class, Config.class, AnotherConfig.class)
+				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
+						"ConfigC", "ConfigD"));
 	}
 
 	private List<String> getImportedConfigBeans(AssertableApplicationContext context) {
-		String shortName = ClassUtils
-				.getShortName(AutoConfigurationImportSelectorIntegrationTests.class);
+		String shortName = ClassUtils.getShortName(AutoConfigurationImportSelectorIntegrationTests.class);
 		int beginIndex = shortName.length() + 1;
 		List<String> orderedConfigBeans = new ArrayList<>();
 		for (String bean : context.getBeanDefinitionNames()) {

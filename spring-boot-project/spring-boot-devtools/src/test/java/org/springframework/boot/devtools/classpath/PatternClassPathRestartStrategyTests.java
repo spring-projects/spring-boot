@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,7 @@ public class PatternClassPathRestartStrategyTests {
 
 	@Test
 	public void testChange() {
-		ClassPathRestartStrategy strategy = createStrategy(
-				"**/*Test.class,**/*Tests.class");
+		ClassPathRestartStrategy strategy = createStrategy("**/*Test.class,**/*Tests.class");
 		assertRestartRequired(strategy, "com/example/ExampleTests.class", false);
 		assertRestartRequired(strategy, "com/example/ExampleTest.class", false);
 		assertRestartRequired(strategy, "com/example/Example.class", true);
@@ -87,10 +86,8 @@ public class PatternClassPathRestartStrategyTests {
 		return new PatternClassPathRestartStrategy(pattern);
 	}
 
-	private void assertRestartRequired(ClassPathRestartStrategy strategy,
-			String relativeName, boolean expected) {
-		assertThat(strategy.isRestartRequired(mockFile(relativeName)))
-				.isEqualTo(expected);
+	private void assertRestartRequired(ClassPathRestartStrategy strategy, String relativeName, boolean expected) {
+		assertThat(strategy.isRestartRequired(mockFile(relativeName))).isEqualTo(expected);
 	}
 
 	private ChangedFile mockFile(String relativeName) {

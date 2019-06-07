@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,9 +68,8 @@ public class FilterOrderingIntegrationTests {
 	@Test
 	public void testFilterOrdering() {
 		load();
-		List<RegisteredFilter> registeredFilters = this.context
-				.getBean(MockServletWebServerFactory.class).getWebServer()
-				.getRegisteredFilters();
+		List<RegisteredFilter> registeredFilters = this.context.getBean(MockServletWebServerFactory.class)
+				.getWebServer().getRegisteredFilters();
 		List<Filter> filters = new ArrayList<>(registeredFilters.size());
 		for (RegisteredFilter registeredFilter : registeredFilters) {
 			filters.add(registeredFilter.getFilter());
@@ -86,13 +85,10 @@ public class FilterOrderingIntegrationTests {
 
 	private void load() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(MockWebServerConfiguration.class,
-				TestSessionConfiguration.class, TestRedisConfiguration.class,
-				WebMvcAutoConfiguration.class, SecurityAutoConfiguration.class,
-				SessionAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HttpEncodingAutoConfiguration.class);
+		this.context.register(MockWebServerConfiguration.class, TestSessionConfiguration.class,
+				TestRedisConfiguration.class, WebMvcAutoConfiguration.class, SecurityAutoConfiguration.class,
+				SessionAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, HttpEncodingAutoConfiguration.class);
 		this.context.refresh();
 	}
 

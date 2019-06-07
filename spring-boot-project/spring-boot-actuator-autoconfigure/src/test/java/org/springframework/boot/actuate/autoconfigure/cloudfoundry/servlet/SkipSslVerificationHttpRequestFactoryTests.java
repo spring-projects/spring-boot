@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 		SkipSslVerificationHttpRequestFactory requestFactory = new SkipSslVerificationHttpRequestFactory();
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
 		RestTemplate otherRestTemplate = new RestTemplate();
-		ResponseEntity<String> responseEntity = restTemplate.getForEntity(httpsUrl,
-				String.class);
+		ResponseEntity<String> responseEntity = restTemplate.getForEntity(httpsUrl, String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThatExceptionOfType(ResourceAccessException.class)
 				.isThrownBy(() -> otherRestTemplate.getForEntity(httpsUrl, String.class))
@@ -65,8 +64,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	private String getHttpsUrl() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
-		this.webServer = factory.getWebServer(
-				new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
+		this.webServer = factory.getWebServer(new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
 		this.webServer.start();
 		return "https://localhost:" + this.webServer.getPort() + "/hello";
 	}

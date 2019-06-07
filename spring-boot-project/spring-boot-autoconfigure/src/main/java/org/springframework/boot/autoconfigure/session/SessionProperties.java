@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,8 +111,8 @@ public class SessionProperties {
 		/**
 		 * Session repository filter dispatcher types.
 		 */
-		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(Arrays.asList(
-				DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
+		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(
+				Arrays.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 		public int getFilterOrder() {
 			return this.filterOrder;

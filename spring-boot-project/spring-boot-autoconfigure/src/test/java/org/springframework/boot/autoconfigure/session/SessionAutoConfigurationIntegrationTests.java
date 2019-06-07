@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,27 +37,23 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class SessionAutoConfigurationIntegrationTests
-		extends AbstractSessionAutoConfigurationTests {
+public class SessionAutoConfigurationIntegrationTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					DataSourceTransactionManagerAutoConfiguration.class,
-					SessionAutoConfiguration.class))
+					DataSourceTransactionManagerAutoConfiguration.class, SessionAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
 	public void severalCandidatesWithNoSessionStore() {
-		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context).getFailure().hasCauseInstanceOf(
-							NonUniqueSessionRepositoryException.class);
-					assertThat(context).getFailure().hasMessageContaining(
-							"Multiple session repository candidates are available");
-					assertThat(context).getFailure().hasMessageContaining(
-							"set the 'spring.session.store-type' property accordingly");
-				});
+		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
+			assertThat(context).getFailure()
+					.hasMessageContaining("Multiple session repository candidates are available");
+			assertThat(context).getFailure()
+					.hasMessageContaining("set the 'spring.session.store-type' property accordingly");
+		});
 	}
 
 	@Test
@@ -65,12 +61,10 @@ public class SessionAutoConfigurationIntegrationTests
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
 				.withPropertyValues("spring.session.store-type=redis").run((context) -> {
 					assertThat(context).hasFailed();
-					assertThat(context).getFailure().hasCauseInstanceOf(
-							SessionRepositoryUnavailableException.class);
-					assertThat(context).getFailure().hasMessageContaining(
-							"No session repository could be auto-configured");
+					assertThat(context).getFailure().hasCauseInstanceOf(SessionRepositoryUnavailableException.class);
 					assertThat(context).getFailure()
-							.hasMessageContaining("session store type is 'redis'");
+							.hasMessageContaining("No session repository could be auto-configured");
+					assertThat(context).getFailure().hasMessageContaining("session store type is 'redis'");
 				});
 	}
 
@@ -78,8 +72,7 @@ public class SessionAutoConfigurationIntegrationTests
 	public void severalCandidatesWithValidSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class)
 				.withPropertyValues("spring.session.store-type=jdbc")
-				.run((context) -> validateSessionRepository(context,
-						JdbcOperationsSessionRepository.class));
+				.run((context) -> validateSessionRepository(context, JdbcOperationsSessionRepository.class));
 	}
 
 	@Configuration

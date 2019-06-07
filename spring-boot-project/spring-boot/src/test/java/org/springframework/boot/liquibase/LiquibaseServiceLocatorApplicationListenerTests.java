@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,13 +64,11 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 	}
 
 	@Test
-	public void replaceServiceLocatorBacksOffIfNotPresent()
-			throws IllegalAccessException {
+	public void replaceServiceLocatorBacksOffIfNotPresent() throws IllegalAccessException {
 		SpringApplication application = new SpringApplication(Conf.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-		resourceLoader.setClassLoader(
-				new ClassHidingClassLoader(CustomResolverServiceLocator.class));
+		resourceLoader.setClassLoader(new ClassHidingClassLoader(CustomResolverServiceLocator.class));
 		application.setResourceLoader(resourceLoader);
 		this.context = application.run();
 		Object resolver = getClassResolver();
@@ -94,8 +92,7 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 		private final List<Class<?>> hiddenClasses;
 
 		private ClassHidingClassLoader(Class<?>... hiddenClasses) {
-			super(new URL[0], LiquibaseServiceLocatorApplicationListenerTests.class
-					.getClassLoader());
+			super(new URL[0], LiquibaseServiceLocatorApplicationListenerTests.class.getClassLoader());
 			this.hiddenClasses = Arrays.asList(hiddenClasses);
 		}
 

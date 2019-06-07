@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,25 +34,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MongoReactiveDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-							MongoReactiveAutoConfiguration.class,
-							MongoReactiveDataAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+					MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
 
 	@Test
 	public void templateExists() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveMongoTemplate.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveMongoTemplate.class));
 	}
 
 	@Test
 	public void backsOffIfMongoClientBeanIsNotPresent() {
-		ApplicationContextRunner runner = new ApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-								MongoReactiveDataAutoConfiguration.class));
-		runner.run((context) -> assertThat(context)
-				.doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
+		ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
+				.of(PropertyPlaceholderAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
+		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
 	}
 
 }

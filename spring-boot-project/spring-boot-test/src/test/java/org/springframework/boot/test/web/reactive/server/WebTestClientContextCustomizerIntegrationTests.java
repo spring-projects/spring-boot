@@ -42,8 +42,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.main.web-application-type=reactive")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
 @DirtiesContext
 public class WebTestClientContextCustomizerIntegrationTests {
 
@@ -52,8 +51,7 @@ public class WebTestClientContextCustomizerIntegrationTests {
 
 	@Test
 	public void test() {
-		this.webTestClient.get().uri("/").exchange().expectBody(String.class)
-				.isEqualTo("hello");
+		this.webTestClient.get().uri("/").exchange().expectBody(String.class).isEqualTo("hello");
 	}
 
 	@Configuration

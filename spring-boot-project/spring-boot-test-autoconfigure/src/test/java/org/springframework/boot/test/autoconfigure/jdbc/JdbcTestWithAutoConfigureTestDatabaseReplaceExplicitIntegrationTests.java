@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTest
 	@Test
 	public void replacesDefinedDataSourceWithExplicit() throws Exception {
 		// H2 is explicitly defined but HSQL is the override.
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("HSQL");
 	}
 
@@ -60,8 +59,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTest
 
 		@Bean
 		public DataSource dataSource() {
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseType.H2).build();
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.H2).build();
 		}
 
 	}

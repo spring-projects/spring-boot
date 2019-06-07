@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,32 +33,27 @@ import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 
 	@Override
-	public Identifier toPhysicalCatalogName(Identifier name,
-			JdbcEnvironment jdbcEnvironment) {
+	public Identifier toPhysicalCatalogName(Identifier name, JdbcEnvironment jdbcEnvironment) {
 		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
-	public Identifier toPhysicalSchemaName(Identifier name,
-			JdbcEnvironment jdbcEnvironment) {
+	public Identifier toPhysicalSchemaName(Identifier name, JdbcEnvironment jdbcEnvironment) {
 		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
-	public Identifier toPhysicalTableName(Identifier name,
-			JdbcEnvironment jdbcEnvironment) {
+	public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment jdbcEnvironment) {
 		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
-	public Identifier toPhysicalSequenceName(Identifier name,
-			JdbcEnvironment jdbcEnvironment) {
+	public Identifier toPhysicalSequenceName(Identifier name, JdbcEnvironment jdbcEnvironment) {
 		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
-	public Identifier toPhysicalColumnName(Identifier name,
-			JdbcEnvironment jdbcEnvironment) {
+	public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment jdbcEnvironment) {
 		return apply(name, jdbcEnvironment);
 	}
 
@@ -68,8 +63,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 		}
 		StringBuilder builder = new StringBuilder(name.getText().replace('.', '_'));
 		for (int i = 1; i < builder.length() - 1; i++) {
-			if (isUnderscoreRequired(builder.charAt(i - 1), builder.charAt(i),
-					builder.charAt(i + 1))) {
+			if (isUnderscoreRequired(builder.charAt(i - 1), builder.charAt(i), builder.charAt(i + 1))) {
 				builder.insert(i++, '_');
 			}
 		}
@@ -85,8 +79,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	 * @param jdbcEnvironment the JDBC environment
 	 * @return an identifier instance
 	 */
-	protected Identifier getIdentifier(String name, boolean quoted,
-			JdbcEnvironment jdbcEnvironment) {
+	protected Identifier getIdentifier(String name, boolean quoted, JdbcEnvironment jdbcEnvironment) {
 		if (isCaseInsensitive(jdbcEnvironment)) {
 			name = name.toLowerCase(Locale.ROOT);
 		}
@@ -103,8 +96,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	}
 
 	private boolean isUnderscoreRequired(char before, char current, char after) {
-		return Character.isLowerCase(before) && Character.isUpperCase(current)
-				&& Character.isLowerCase(after);
+		return Character.isLowerCase(before) && Character.isUpperCase(current) && Character.isLowerCase(after);
 	}
 
 }

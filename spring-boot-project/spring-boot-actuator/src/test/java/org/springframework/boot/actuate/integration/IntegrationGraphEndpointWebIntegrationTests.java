@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,16 @@ public class IntegrationGraphEndpointWebIntegrationTests {
 
 	@Test
 	public void graph() {
-		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isOk().expectBody()
-				.jsonPath("contentDescriptor.providerVersion").isNotEmpty()
+		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isOk().expectBody().jsonPath("contentDescriptor.providerVersion").isNotEmpty()
 				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.0f)
 				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
 	}
 
 	@Test
 	public void rebuild() {
-		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isNoContent();
+		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isNoContent();
 	}
 
 	@Configuration
@@ -58,8 +57,7 @@ public class IntegrationGraphEndpointWebIntegrationTests {
 	public static class TestConfiguration {
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint(
-				IntegrationGraphServer integrationGraphServer) {
+		public IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
 			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 

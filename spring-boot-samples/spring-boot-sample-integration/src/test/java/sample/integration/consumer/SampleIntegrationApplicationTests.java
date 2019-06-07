@@ -79,42 +79,37 @@ public class SampleIntegrationApplicationTests {
 
 	@Test
 	public void testMessageGateway() throws Exception {
-		this.context = SpringApplication.run(SampleIntegrationApplication.class,
-				"testviamg");
+		this.context = SpringApplication.run(SampleIntegrationApplication.class, "testviamg");
 		String output = getOutput();
 		assertThat(output).contains("testviamg");
 	}
 
 	private String getOutput() throws Exception {
-		Future<String> future = Executors.newSingleThreadExecutor()
-				.submit(new Callable<String>() {
-					@Override
-					public String call() throws Exception {
-						Resource[] resources = getResourcesWithContent();
-						while (resources.length == 0) {
-							Thread.sleep(200);
-							resources = getResourcesWithContent();
-						}
-						StringBuilder builder = new StringBuilder();
-						for (Resource resource : resources) {
-							try (InputStream inputStream = resource.getInputStream()) {
-								builder.append(new String(
-										StreamUtils.copyToByteArray(inputStream)));
-							}
-						}
-						return builder.toString();
+		Future<String> future = Executors.newSingleThreadExecutor().submit(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				Resource[] resources = getResourcesWithContent();
+				while (resources.length == 0) {
+					Thread.sleep(200);
+					resources = getResourcesWithContent();
+				}
+				StringBuilder builder = new StringBuilder();
+				for (Resource resource : resources) {
+					try (InputStream inputStream = resource.getInputStream()) {
+						builder.append(new String(StreamUtils.copyToByteArray(inputStream)));
 					}
-				});
+				}
+				return builder.toString();
+			}
+		});
 		return future.get(30, TimeUnit.SECONDS);
 	}
 
 	private Resource[] getResourcesWithContent() throws IOException {
-		Resource[] candidates = ResourcePatternUtils
-				.getResourcePatternResolver(new DefaultResourceLoader())
+		Resource[] candidates = ResourcePatternUtils.getResourcePatternResolver(new DefaultResourceLoader())
 				.getResources("file:target/output/**");
 		for (Resource candidate : candidates) {
-			if ((candidate.getFilename() != null
-					&& candidate.getFilename().endsWith(".writing"))
+			if ((candidate.getFilename() != null && candidate.getFilename().endsWith(".writing"))
 					|| candidate.contentLength() == 0) {
 				return new Resource[0];
 			}

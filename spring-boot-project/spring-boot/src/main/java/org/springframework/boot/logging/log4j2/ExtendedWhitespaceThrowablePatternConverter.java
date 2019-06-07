@@ -32,19 +32,15 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
  * @author Phillip Webb
  * @since 1.3.0
  */
-@Plugin(name = "ExtendedWhitespaceThrowablePatternConverter",
-		category = PatternConverter.CATEGORY)
+@Plugin(name = "ExtendedWhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "xwEx", "xwThrowable", "xwException" })
-public final class ExtendedWhitespaceThrowablePatternConverter
-		extends ThrowablePatternConverter {
+public final class ExtendedWhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
 	private final ExtendedThrowablePatternConverter delegate;
 
-	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration,
-			String[] options) {
+	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
 		super("WhitespaceExtendedThrowable", "throwable", options, configuration);
-		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration,
-				options);
+		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
 	}
 
 	@Override
@@ -63,8 +59,8 @@ public final class ExtendedWhitespaceThrowablePatternConverter
 	 * first line of the throwable will be formatted.
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
-	public static ExtendedWhitespaceThrowablePatternConverter newInstance(
-			Configuration configuration, String[] options) {
+	public static ExtendedWhitespaceThrowablePatternConverter newInstance(Configuration configuration,
+			String[] options) {
 		return new ExtendedWhitespaceThrowablePatternConverter(configuration, options);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public abstract class MainClassFinder {
 
 	private static final Type STRING_ARRAY_TYPE = Type.getType(String[].class);
 
-	private static final Type MAIN_METHOD_TYPE = Type.getMethodType(Type.VOID_TYPE,
-			STRING_ARRAY_TYPE);
+	private static final Type MAIN_METHOD_TYPE = Type.getMethodType(Type.VOID_TYPE, STRING_ARRAY_TYPE);
 
 	private static final String MAIN_METHOD_NAME = "main";
 
@@ -104,8 +103,7 @@ public abstract class MainClassFinder {
 	 * @return the main class or {@code null}
 	 * @throws IOException if the folder cannot be read
 	 */
-	public static String findSingleMainClass(File rootFolder, String annotationName)
-			throws IOException {
+	public static String findSingleMainClass(File rootFolder, String annotationName) throws IOException {
 		SingleMainClassCallback callback = new SingleMainClassCallback(annotationName);
 		MainClassFinder.doWithMainClasses(rootFolder, callback);
 		return callback.getMainClassName();
@@ -120,14 +118,12 @@ public abstract class MainClassFinder {
 	 * @return the first callback result or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	static <T> T doWithMainClasses(File rootFolder, MainClassCallback<T> callback)
-			throws IOException {
+	static <T> T doWithMainClasses(File rootFolder, MainClassCallback<T> callback) throws IOException {
 		if (!rootFolder.exists()) {
 			return null; // nothing to do
 		}
 		if (!rootFolder.isDirectory()) {
-			throw new IllegalArgumentException(
-					"Invalid root folder '" + rootFolder + "'");
+			throw new IllegalArgumentException("Invalid root folder '" + rootFolder + "'");
 		}
 		String prefix = rootFolder.getAbsolutePath() + "/";
 		Deque<File> stack = new ArrayDeque<>();
@@ -138,10 +134,8 @@ public abstract class MainClassFinder {
 				try (InputStream inputStream = new FileInputStream(file)) {
 					ClassDescriptor classDescriptor = createClassDescriptor(inputStream);
 					if (classDescriptor != null && classDescriptor.isMainMethodFound()) {
-						String className = convertToClassName(file.getAbsolutePath(),
-								prefix);
-						T result = callback.doWith(new MainClass(className,
-								classDescriptor.getAnnotationNames()));
+						String className = convertToClassName(file.getAbsolutePath(), prefix);
+						T result = callback.doWith(new MainClass(className, classDescriptor.getAnnotationNames()));
 						if (result != null) {
 							return result;
 						}
@@ -170,8 +164,7 @@ public abstract class MainClassFinder {
 	 * @return the main class or {@code null}
 	 * @throws IOException if the jar file cannot be read
 	 */
-	public static String findMainClass(JarFile jarFile, String classesLocation)
-			throws IOException {
+	public static String findMainClass(JarFile jarFile, String classesLocation) throws IOException {
 		return doWithMainClasses(jarFile, classesLocation, MainClass::getName);
 	}
 
@@ -182,8 +175,7 @@ public abstract class MainClassFinder {
 	 * @return the main class or {@code null}
 	 * @throws IOException if the jar file cannot be read
 	 */
-	public static String findSingleMainClass(JarFile jarFile, String classesLocation)
-			throws IOException {
+	public static String findSingleMainClass(JarFile jarFile, String classesLocation) throws IOException {
 		return findSingleMainClass(jarFile, classesLocation, null);
 	}
 
@@ -198,8 +190,8 @@ public abstract class MainClassFinder {
 	 * @return the main class or {@code null}
 	 * @throws IOException if the jar file cannot be read
 	 */
-	public static String findSingleMainClass(JarFile jarFile, String classesLocation,
-			String annotationName) throws IOException {
+	public static String findSingleMainClass(JarFile jarFile, String classesLocation, String annotationName)
+			throws IOException {
 		SingleMainClassCallback callback = new SingleMainClassCallback(annotationName);
 		MainClassFinder.doWithMainClasses(jarFile, classesLocation, callback);
 		return callback.getMainClassName();
@@ -214,19 +206,16 @@ public abstract class MainClassFinder {
 	 * @return the first callback result or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
-			MainClassCallback<T> callback) throws IOException {
+	static <T> T doWithMainClasses(JarFile jarFile, String classesLocation, MainClassCallback<T> callback)
+			throws IOException {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
 		classEntries.sort(new ClassEntryComparator());
 		for (JarEntry entry : classEntries) {
-			try (InputStream inputStream = new BufferedInputStream(
-					jarFile.getInputStream(entry))) {
+			try (InputStream inputStream = new BufferedInputStream(jarFile.getInputStream(entry))) {
 				ClassDescriptor classDescriptor = createClassDescriptor(inputStream);
 				if (classDescriptor != null && classDescriptor.isMainMethodFound()) {
-					String className = convertToClassName(entry.getName(),
-							classesLocation);
-					T result = callback.doWith(new MainClass(className,
-							classDescriptor.getAnnotationNames()));
+					String className = convertToClassName(entry.getName(), classesLocation);
+					T result = callback.doWith(new MainClass(className, classDescriptor.getAnnotationNames()));
 					if (result != null) {
 						return result;
 					}
@@ -246,15 +235,13 @@ public abstract class MainClassFinder {
 		return name;
 	}
 
-	private static List<JarEntry> getClassEntries(JarFile source,
-			String classesLocation) {
+	private static List<JarEntry> getClassEntries(JarFile source, String classesLocation) {
 		classesLocation = (classesLocation != null) ? classesLocation : "";
 		Enumeration<JarEntry> sourceEntries = source.entries();
 		List<JarEntry> classEntries = new ArrayList<>();
 		while (sourceEntries.hasMoreElements()) {
 			JarEntry entry = sourceEntries.nextElement();
-			if (entry.getName().startsWith(classesLocation)
-					&& entry.getName().endsWith(DOT_CLASS)) {
+			if (entry.getName().startsWith(classesLocation) && entry.getName().endsWith(DOT_CLASS)) {
 				classEntries.add(entry);
 			}
 		}
@@ -309,10 +296,8 @@ public abstract class MainClassFinder {
 		}
 
 		@Override
-		public MethodVisitor visitMethod(int access, String name, String desc,
-				String signature, String[] exceptions) {
-			if (isAccess(access, Opcodes.ACC_PUBLIC, Opcodes.ACC_STATIC)
-					&& MAIN_METHOD_NAME.equals(name)
+		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+			if (isAccess(access, Opcodes.ACC_PUBLIC, Opcodes.ACC_STATIC) && MAIN_METHOD_NAME.equals(name)
 					&& MAIN_METHOD_TYPE.getDescriptor().equals(desc)) {
 				this.mainMethodFound = true;
 			}
@@ -372,8 +357,7 @@ public abstract class MainClassFinder {
 		 */
 		MainClass(String name, Set<String> annotationNames) {
 			this.name = name;
-			this.annotationNames = Collections
-					.unmodifiableSet(new HashSet<>(annotationNames));
+			this.annotationNames = Collections.unmodifiableSet(new HashSet<>(annotationNames));
 		}
 
 		String getName() {
@@ -418,8 +402,7 @@ public abstract class MainClassFinder {
 	 * Find a single main class, throwing an {@link IllegalStateException} if multiple
 	 * candidates exist.
 	 */
-	private static final class SingleMainClassCallback
-			implements MainClassCallback<Object> {
+	private static final class SingleMainClassCallback implements MainClassCallback<Object> {
 
 		private final Set<MainClass> mainClasses = new LinkedHashSet<>();
 
@@ -449,11 +432,9 @@ public abstract class MainClassFinder {
 			}
 			if (matchingMainClasses.size() > 1) {
 				throw new IllegalStateException(
-						"Unable to find a single main class from the following candidates "
-								+ matchingMainClasses);
+						"Unable to find a single main class from the following candidates " + matchingMainClasses);
 			}
-			return (matchingMainClasses.isEmpty() ? null
-					: matchingMainClasses.iterator().next().getName());
+			return (matchingMainClasses.isEmpty() ? null : matchingMainClasses.iterator().next().getName());
 		}
 
 	}

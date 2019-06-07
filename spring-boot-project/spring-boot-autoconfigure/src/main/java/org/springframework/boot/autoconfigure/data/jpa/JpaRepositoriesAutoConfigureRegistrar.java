@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-class JpaRepositoriesAutoConfigureRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class JpaRepositoriesAutoConfigureRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	private BootstrapMode bootstrapMode = null;
 
@@ -57,8 +56,7 @@ class JpaRepositoriesAutoConfigureRegistrar
 
 	@Override
 	protected BootstrapMode getBootstrapMode() {
-		return (this.bootstrapMode == null) ? super.getBootstrapMode()
-				: this.bootstrapMode;
+		return (this.bootstrapMode == null) ? super.getBootstrapMode() : this.bootstrapMode;
 	}
 
 	@Override
@@ -68,11 +66,9 @@ class JpaRepositoriesAutoConfigureRegistrar
 	}
 
 	private void configureBootstrapMode(Environment environment) {
-		String property = environment
-				.getProperty("spring.data.jpa.repositories.bootstrap-mode");
+		String property = environment.getProperty("spring.data.jpa.repositories.bootstrap-mode");
 		if (StringUtils.hasText(property)) {
-			this.bootstrapMode = BootstrapMode
-					.valueOf(property.toUpperCase(Locale.ENGLISH));
+			this.bootstrapMode = BootstrapMode.valueOf(property.toUpperCase(Locale.ENGLISH));
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,8 @@ public class BindResultTests {
 	@Test
 	public void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
-		assertThatExceptionOfType(NoSuchElementException.class)
-				.isThrownBy(() -> result.get()).withMessageContaining("No value bound");
+		assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> result.get())
+				.withMessageContaining("No value bound");
 	}
 
 	@Test
@@ -188,8 +188,7 @@ public class BindResultTests {
 		BindResult<?> result3 = BindResult.of("bar");
 		BindResult<?> result4 = BindResult.of(null);
 		assertThat(result1.hashCode()).isEqualTo(result2.hashCode());
-		assertThat(result1).isEqualTo(result1).isEqualTo(result2).isNotEqualTo(result3)
-				.isNotEqualTo(result4);
+		assertThat(result1).isEqualTo(result1).isEqualTo(result2).isNotEqualTo(result3).isNotEqualTo(result4);
 	}
 
 	@Test

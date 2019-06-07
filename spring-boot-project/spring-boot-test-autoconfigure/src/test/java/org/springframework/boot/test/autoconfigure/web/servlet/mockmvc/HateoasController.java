@@ -35,8 +35,7 @@ class HateoasController {
 
 	@RequestMapping("/resource")
 	public Resource<Map<String, String>> resource() {
-		return new Resource<>(new HashMap<String, String>(),
-				new Link("self", "https://api.example.com"));
+		return new Resource<>(new HashMap<String, String>(), new Link("self", "https://api.example.com"));
 	}
 
 	@RequestMapping("/plain")

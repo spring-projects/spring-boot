@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @since 1.3.0
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class BackgroundPreinitializer
-		implements ApplicationListener<SpringApplicationEvent> {
+public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent> {
 
 	/**
 	 * System property that instructs Spring Boot how to run pre initialization. When the
@@ -62,20 +61,17 @@ public class BackgroundPreinitializer
 	 */
 	public static final String IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME = "spring.backgroundpreinitializer.ignore";
 
-	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(
-			false);
+	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(false);
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
 		if (!Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
-				&& event instanceof ApplicationStartingEvent
-				&& preinitializationStarted.compareAndSet(false, true)) {
+				&& event instanceof ApplicationStartingEvent && preinitializationStarted.compareAndSet(false, true)) {
 			performPreinitialization();
 		}
-		if ((event instanceof ApplicationReadyEvent
-				|| event instanceof ApplicationFailedEvent)
+		if ((event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent)
 				&& preinitializationStarted.get()) {
 			try {
 				preinitializationComplete.await();

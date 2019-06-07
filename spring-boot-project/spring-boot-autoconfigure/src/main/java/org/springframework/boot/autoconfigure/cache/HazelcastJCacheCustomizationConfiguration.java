@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,12 +53,10 @@ class HazelcastJCacheCustomizationConfiguration {
 
 		@Override
 		public void customize(CacheProperties cacheProperties, Properties properties) {
-			Resource configLocation = cacheProperties
-					.resolveConfigLocation(cacheProperties.getJcache().getConfig());
+			Resource configLocation = cacheProperties.resolveConfigLocation(cacheProperties.getJcache().getConfig());
 			if (configLocation != null) {
 				// Hazelcast does not use the URI as a mean to specify a custom config.
-				properties.setProperty("hazelcast.config.location",
-						toUri(configLocation).toString());
+				properties.setProperty("hazelcast.config.location", toUri(configLocation).toString());
 			}
 			else if (this.hazelcastInstance != null) {
 				properties.put("hazelcast.instance.itself", this.hazelcastInstance);
@@ -70,8 +68,7 @@ class HazelcastJCacheCustomizationConfiguration {
 				return config.getURI();
 			}
 			catch (IOException ex) {
-				throw new IllegalArgumentException("Could not get URI from " + config,
-						ex);
+				throw new IllegalArgumentException("Could not get URI from " + config, ex);
 			}
 		}
 

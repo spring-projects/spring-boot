@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,23 +41,21 @@ public class SampleWebFluxApplicationTests {
 
 	@Test
 	public void testWelcome() {
-		this.webClient.get().uri("/").accept(MediaType.TEXT_PLAIN).exchange()
-				.expectBody(String.class).isEqualTo("Hello World");
+		this.webClient.get().uri("/").accept(MediaType.TEXT_PLAIN).exchange().expectBody(String.class)
+				.isEqualTo("Hello World");
 	}
 
 	@Test
 	public void testEcho() {
-		this.webClient.post().uri("/echo").contentType(MediaType.TEXT_PLAIN)
-				.accept(MediaType.TEXT_PLAIN)
-				.body(Mono.just("Hello WebFlux!"), String.class).exchange()
-				.expectBody(String.class).isEqualTo("Hello WebFlux!");
+		this.webClient.post().uri("/echo").contentType(MediaType.TEXT_PLAIN).accept(MediaType.TEXT_PLAIN)
+				.body(Mono.just("Hello WebFlux!"), String.class).exchange().expectBody(String.class)
+				.isEqualTo("Hello WebFlux!");
 	}
 
 	@Test
 	public void testActuatorStatus() {
-		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isOk().expectBody()
-				.json("{\"status\":\"UP\"}");
+		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+				.expectBody().json("{\"status\":\"UP\"}");
 	}
 
 }

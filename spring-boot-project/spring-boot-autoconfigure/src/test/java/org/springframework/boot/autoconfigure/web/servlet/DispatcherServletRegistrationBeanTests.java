@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,39 +36,37 @@ public class DispatcherServletRegistrationBeanTests {
 	@Test
 	public void createWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DispatcherServletRegistrationBean(
-						new DispatcherServlet(), null))
+				.isThrownBy(() -> new DispatcherServletRegistrationBean(new DispatcherServlet(), null))
 				.withMessageContaining("Path must not be null");
 	}
 
 	@Test
 	public void getPathReturnsPath() {
-		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
-				new DispatcherServlet(), "/test");
+		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(new DispatcherServlet(),
+				"/test");
 		assertThat(bean.getPath()).isEqualTo("/test");
 	}
 
 	@Test
 	public void getUrlMappingsReturnsSinglePathMappedPattern() {
-		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
-				new DispatcherServlet(), "/test");
+		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(new DispatcherServlet(),
+				"/test");
 		assertThat(bean.getUrlMappings()).containsOnly("/test/*");
 	}
 
 	@Test
 	public void setUrlMappingsCannotBeCalled() {
-		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
-				new DispatcherServlet(), "/test");
+		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(new DispatcherServlet(),
+				"/test");
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 				.isThrownBy(() -> bean.setUrlMappings(Collections.emptyList()));
 	}
 
 	@Test
 	public void addUrlMappingsCannotBeCalled() {
-		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
-				new DispatcherServlet(), "/test");
-		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(() -> bean.addUrlMappings("/test"));
+		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(new DispatcherServlet(),
+				"/test");
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> bean.addUrlMappings("/test"));
 	}
 
 }

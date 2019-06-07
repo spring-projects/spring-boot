@@ -49,24 +49,21 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void resourceConfigCustomizerForEndpointsIsAutoConfigured() {
-		this.runner.run((context) -> assertThat(context)
-				.hasSingleBean(ResourceConfigCustomizer.class));
+		this.runner.run((context) -> assertThat(context).hasSingleBean(ResourceConfigCustomizer.class));
 	}
 
 	@Test
 	public void autoConfigurationIsConditionalOnServletWebApplication() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations
-						.of(JerseySameManagementContextConfiguration.class));
-		contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+				.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
+		contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
 	public void autoConfigurationIsConditionalOnClassResourceConfig() {
 		this.runner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Configuration

@@ -47,20 +47,18 @@ public class AetherGrapeEngineTests {
 
 	private final GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
-	private final RepositoryConfiguration springMilestones = new RepositoryConfiguration(
-			"spring-milestones", URI.create("https://repo.spring.io/milestone"), false);
+	private final RepositoryConfiguration springMilestones = new RepositoryConfiguration("spring-milestones",
+			URI.create("https://repo.spring.io/milestone"), false);
 
-	private AetherGrapeEngine createGrapeEngine(
-			RepositoryConfiguration... additionalRepositories) {
+	private AetherGrapeEngine createGrapeEngine(RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
-		repositoryConfigurations.add(new RepositoryConfiguration("central",
-				URI.create("https://repo1.maven.org/maven2"), false));
+		repositoryConfigurations
+				.add(new RepositoryConfiguration("central", URI.create("https://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
-		dependencyResolutionContext.addDependencyManagement(
-				new SpringBootDependenciesDependencyManagement());
-		return AetherGrapeEngineFactory.create(this.groovyClassLoader,
-				repositoryConfigurations, dependencyResolutionContext, false);
+		dependencyResolutionContext.addDependencyManagement(new SpringBootDependenciesDependencyManagement());
+		return AetherGrapeEngineFactory.create(this.groovyClassLoader, repositoryConfigurations,
+				dependencyResolutionContext, false);
 	}
 
 	@Test
@@ -78,8 +76,7 @@ public class AetherGrapeEngineTests {
 			DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
 					.getField(grapeEngine, "session");
 
-			assertThat(session.getProxySelector() instanceof CompositeProxySelector)
-					.isTrue();
+			assertThat(session.getProxySelector() instanceof CompositeProxySelector).isTrue();
 		});
 	}
 
@@ -105,8 +102,7 @@ public class AetherGrapeEngineTests {
 	@Test
 	public void dependencyResolutionWithExclusions() {
 		Map<String, Object> args = new HashMap<>();
-		args.put("excludes",
-				Arrays.asList(createExclusion("org.springframework", "spring-core")));
+		args.put("excludes", Arrays.asList(createExclusion("org.springframework", "spring-core")));
 
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"),
@@ -119,8 +115,7 @@ public class AetherGrapeEngineTests {
 	public void nonTransitiveDependencyResolution() {
 		Map<String, Object> args = new HashMap<>();
 
-		createGrapeEngine().grab(args, createDependency("org.springframework",
-				"spring-jdbc", "3.2.4.RELEASE", false));
+		createGrapeEngine().grab(args, createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE", false));
 
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
 	}
@@ -142,10 +137,9 @@ public class AetherGrapeEngineTests {
 	public void resolutionWithCustomResolver() {
 		Map<String, Object> args = new HashMap<>();
 		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
-		grapeEngine.addResolver(
-				createResolver("spring-releases", "https://repo.spring.io/release"));
-		Map<String, Object> dependency = createDependency("io.spring.docresources",
-				"spring-doc-resources", "0.1.1.RELEASE");
+		grapeEngine.addResolver(createResolver("spring-releases", "https://repo.spring.io/release"));
+		Map<String, Object> dependency = createDependency("io.spring.docresources", "spring-doc-resources",
+				"0.1.1.RELEASE");
 		dependency.put("ext", "zip");
 		grapeEngine.grab(args, dependency);
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
@@ -153,20 +147,18 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void differingTypeAndExt() {
-		Map<String, Object> dependency = createDependency("org.grails",
-				"grails-dependencies", "2.4.0");
+		Map<String, Object> dependency = createDependency("org.grails", "grails-dependencies", "2.4.0");
 		dependency.put("type", "foo");
 		dependency.put("ext", "bar");
 		AetherGrapeEngine grapeEngine = createGrapeEngine();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> grapeEngine.grab(Collections.emptyMap(), dependency));
+		assertThatIllegalArgumentException().isThrownBy(() -> grapeEngine.grab(Collections.emptyMap(), dependency));
 	}
 
 	@Test
 	public void pomDependencyResolutionViaType() {
 		Map<String, Object> args = new HashMap<>();
-		Map<String, Object> dependency = createDependency("org.springframework",
-				"spring-framework-bom", "4.0.5.RELEASE");
+		Map<String, Object> dependency = createDependency("org.springframework", "spring-framework-bom",
+				"4.0.5.RELEASE");
 		dependency.put("type", "pom");
 		createGrapeEngine().grab(args, dependency);
 		URL[] urls = this.groovyClassLoader.getURLs();
@@ -177,8 +169,8 @@ public class AetherGrapeEngineTests {
 	@Test
 	public void pomDependencyResolutionViaExt() {
 		Map<String, Object> args = new HashMap<>();
-		Map<String, Object> dependency = createDependency("org.springframework",
-				"spring-framework-bom", "4.0.5.RELEASE");
+		Map<String, Object> dependency = createDependency("org.springframework", "spring-framework-bom",
+				"4.0.5.RELEASE");
 		dependency.put("ext", "pom");
 		createGrapeEngine().grab(args, dependency);
 		URL[] urls = this.groovyClassLoader.getURLs();
@@ -190,8 +182,7 @@ public class AetherGrapeEngineTests {
 	public void resolutionWithClassifier() {
 		Map<String, Object> args = new HashMap<>();
 
-		Map<String, Object> dependency = createDependency("org.springframework",
-				"spring-jdbc", "3.2.4.RELEASE", false);
+		Map<String, Object> dependency = createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE", false);
 		dependency.put("classifier", "sources");
 		createGrapeEngine().grab(args, dependency);
 
@@ -203,12 +194,10 @@ public class AetherGrapeEngineTests {
 	@SuppressWarnings("unchecked")
 	private List<RemoteRepository> getRepositories() {
 		AetherGrapeEngine grapeEngine = createGrapeEngine();
-		return (List<RemoteRepository>) ReflectionTestUtils.getField(grapeEngine,
-				"repositories");
+		return (List<RemoteRepository>) ReflectionTestUtils.getField(grapeEngine, "repositories");
 	}
 
-	private Map<String, Object> createDependency(String group, String module,
-			String version) {
+	private Map<String, Object> createDependency(String group, String module, String version) {
 		Map<String, Object> dependency = new HashMap<>();
 		dependency.put("group", group);
 		dependency.put("module", module);
@@ -216,8 +205,7 @@ public class AetherGrapeEngineTests {
 		return dependency;
 	}
 
-	private Map<String, Object> createDependency(String group, String module,
-			String version, boolean transitive) {
+	private Map<String, Object> createDependency(String group, String module, String version, boolean transitive) {
 		Map<String, Object> dependency = createDependency(group, module, version);
 		dependency.put("transitive", transitive);
 		return dependency;
@@ -238,8 +226,7 @@ public class AetherGrapeEngineTests {
 	}
 
 	private void doWithCustomUserHome(Runnable action) {
-		doWithSystemProperty("user.home",
-				new File("src/test/resources").getAbsolutePath(), action);
+		doWithSystemProperty("user.home", new File("src/test/resources").getAbsolutePath(), action);
 	}
 
 	private void doWithSystemProperty(String key, String value, Runnable action) {

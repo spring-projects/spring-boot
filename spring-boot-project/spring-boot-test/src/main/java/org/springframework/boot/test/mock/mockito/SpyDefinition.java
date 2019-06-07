@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ class SpyDefinition extends Definition {
 
 	private final ResolvableType typeToSpy;
 
-	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset,
-			boolean proxyTargetAware, QualifierDefinition qualifier) {
+	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset, boolean proxyTargetAware,
+			QualifierDefinition qualifier) {
 		super(name, reset, proxyTargetAware, qualifier);
 		Assert.notNull(typeToSpy, "TypeToSpy must not be null");
 		this.typeToSpy = typeToSpy;
@@ -74,9 +74,8 @@ class SpyDefinition extends Definition {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", getName())
-				.append("typeToSpy", this.typeToSpy).append("reset", getReset())
-				.toString();
+		return new ToStringCreator(this).append("name", getName()).append("typeToSpy", this.typeToSpy)
+				.append("reset", getReset()).toString();
 	}
 
 	public <T> T createSpy(Object instance) {
@@ -97,8 +96,7 @@ class SpyDefinition extends Definition {
 		settings.spiedInstance(instance);
 		settings.defaultAnswer(Mockito.CALLS_REAL_METHODS);
 		if (this.isProxyTargetAware()) {
-			settings.verificationStartedListeners(
-					new SpringAopBypassingVerificationStartedListener());
+			settings.verificationStartedListeners(new SpringAopBypassingVerificationStartedListener());
 		}
 		return (T) Mockito.mock(instance.getClass(), settings);
 	}
@@ -107,8 +105,7 @@ class SpyDefinition extends Definition {
 	 * A {@link VerificationStartedListener} that bypasses any proxy created by Spring AOP
 	 * when the verification of a spy starts.
 	 */
-	private static final class SpringAopBypassingVerificationStartedListener
-			implements VerificationStartedListener {
+	private static final class SpringAopBypassingVerificationStartedListener implements VerificationStartedListener {
 
 		@Override
 		public void onVerificationStarted(VerificationStartedEvent event) {

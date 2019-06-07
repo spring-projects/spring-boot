@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ public class FrameTests {
 
 	@Test
 	public void typeMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Frame((Frame.Type) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new Frame((Frame.Type) null))
 				.withMessageContaining("Type must not be null");
 	}
 
@@ -88,16 +87,14 @@ public class FrameTests {
 	@Test
 	public void readFragmentedNotSupported() throws Exception {
 		byte[] bytes = new byte[] { 0x0F };
-		assertThatIllegalStateException()
-				.isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
+		assertThatIllegalStateException().isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Fragmented frames are not supported");
 	}
 
 	@Test
 	public void readLargeFramesNotSupported() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0xFF };
-		assertThatIllegalStateException()
-				.isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
+		assertThatIllegalStateException().isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Large frames are not supported");
 	}
 
@@ -111,8 +108,7 @@ public class FrameTests {
 
 	@Test
 	public void readMaskedTextFrame() throws Exception {
-		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x82, 0x0F, 0x0F, 0x0F, 0x0F,
-				0x4E, 0x4E };
+		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x82, 0x0F, 0x0F, 0x0F, 0x0F, 0x4E, 0x4E };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
 		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
 		assertThat(frame.getPayload()).isEqualTo(new byte[] { 0x41, 0x41 });

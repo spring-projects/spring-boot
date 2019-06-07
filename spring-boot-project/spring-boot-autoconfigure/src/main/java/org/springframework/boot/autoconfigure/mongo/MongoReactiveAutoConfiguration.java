@@ -70,11 +70,9 @@ public class MongoReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoClient reactiveStreamsMongoClient(MongoProperties properties,
-			Environment environment,
+	public MongoClient reactiveStreamsMongoClient(MongoProperties properties, Environment environment,
 			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
-		ReactiveMongoClientFactory factory = new ReactiveMongoClientFactory(properties,
-				environment,
+		ReactiveMongoClientFactory factory = new ReactiveMongoClientFactory(properties, environment,
 				builderCustomizers.orderedStream().collect(Collectors.toList()));
 		this.mongo = factory.createMongoClient(this.settings);
 		return this.mongo;
@@ -98,8 +96,7 @@ public class MongoReactiveAutoConfiguration {
 
 			private volatile EventLoopGroup eventLoopGroup;
 
-			private NettyDriverMongoClientSettingsBuilderCustomizer(
-					ObjectProvider<MongoClientSettings> settings) {
+			private NettyDriverMongoClientSettingsBuilderCustomizer(ObjectProvider<MongoClientSettings> settings) {
 				this.settings = settings;
 			}
 
@@ -108,8 +105,8 @@ public class MongoReactiveAutoConfiguration {
 				if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
 					NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 					this.eventLoopGroup = eventLoopGroup;
-					builder.streamFactoryFactory(NettyStreamFactoryFactory.builder()
-							.eventLoopGroup(eventLoopGroup).build());
+					builder.streamFactoryFactory(
+							NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build());
 				}
 			}
 

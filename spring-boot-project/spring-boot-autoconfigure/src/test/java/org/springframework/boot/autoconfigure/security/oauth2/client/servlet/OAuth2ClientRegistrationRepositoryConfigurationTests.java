@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,26 +37,18 @@ public class OAuth2ClientRegistrationRepositoryConfigurationTests {
 
 	@Test
 	public void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
-		this.contextRunner
-				.withUserConfiguration(
-						OAuth2ClientRegistrationRepositoryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ClientRegistrationRepository.class));
+		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(ClientRegistrationRepository.class));
 	}
 
 	@Test
 	public void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
-		this.contextRunner
-				.withUserConfiguration(
-						OAuth2ClientRegistrationRepositoryConfiguration.class)
+		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
 				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
-						REGISTRATION_PREFIX + ".foo.client-secret=secret",
-						REGISTRATION_PREFIX + ".foo.provider=github")
+						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
 				.run((context) -> {
-					ClientRegistrationRepository repository = context
-							.getBean(ClientRegistrationRepository.class);
-					ClientRegistration registration = repository
-							.findByRegistrationId("foo");
+					ClientRegistrationRepository repository = context.getBean(ClientRegistrationRepository.class);
+					ClientRegistration registration = repository.findByRegistrationId("foo");
 					assertThat(registration).isNotNull();
 					assertThat(registration.getClientSecret()).isEqualTo("secret");
 				});

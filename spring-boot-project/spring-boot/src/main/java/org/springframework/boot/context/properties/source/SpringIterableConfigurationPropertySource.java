@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private volatile Cache cache;
 
-	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource,
-			PropertyMapper mapper) {
+	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper mapper) {
 		super(propertySource, mapper, null);
 		assertEnumerablePropertySource();
 	}
@@ -59,17 +58,14 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				((MapPropertySource) getPropertySource()).getSource().size();
 			}
 			catch (UnsupportedOperationException ex) {
-				throw new IllegalArgumentException(
-						"PropertySource must be fully enumerable");
+				throw new IllegalArgumentException("PropertySource must be fully enumerable");
 			}
 		}
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(
-			ConfigurationPropertyName name) {
-		ConfigurationProperty configurationProperty = super.getConfigurationProperty(
-				name);
+	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+		ConfigurationProperty configurationProperty = super.getConfigurationProperty(name);
 		if (configurationProperty == null) {
 			configurationProperty = find(getPropertyMappings(getCache()), name);
 		}
@@ -87,8 +83,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	@Override
-	public ConfigurationPropertyState containsDescendantOf(
-			ConfigurationPropertyName name) {
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 

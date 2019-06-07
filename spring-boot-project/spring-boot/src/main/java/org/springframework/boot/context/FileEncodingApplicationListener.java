@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 public class FileEncodingApplicationListener
 		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
-	private static final Log logger = LogFactory
-			.getLog(FileEncodingApplicationListener.class);
+	private static final Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
 
 	@Override
 	public int getOrder() {
@@ -64,18 +63,14 @@ public class FileEncodingApplicationListener
 		String encoding = System.getProperty("file.encoding");
 		String desired = environment.getProperty("spring.mandatory-file-encoding");
 		if (encoding != null && !desired.equalsIgnoreCase(encoding)) {
-			logger.error("System property 'file.encoding' is currently '" + encoding
-					+ "'. It should be '" + desired
+			logger.error("System property 'file.encoding' is currently '" + encoding + "'. It should be '" + desired
 					+ "' (as defined in 'spring.mandatoryFileEncoding').");
 			logger.error("Environment variable LANG is '" + System.getenv("LANG")
-					+ "'. You could use a locale setting that matches encoding='"
-					+ desired + "'.");
+					+ "'. You could use a locale setting that matches encoding='" + desired + "'.");
 			logger.error("Environment variable LC_ALL is '" + System.getenv("LC_ALL")
-					+ "'. You could use a locale setting that matches encoding='"
-					+ desired + "'.");
-			throw new IllegalStateException(
-					"The Java Virtual Machine has not been configured to use the "
-							+ "desired default character encoding (" + desired + ").");
+					+ "'. You could use a locale setting that matches encoding='" + desired + "'.");
+			throw new IllegalStateException("The Java Virtual Machine has not been configured to use the "
+					+ "desired default character encoding (" + desired + ").");
 		}
 	}
 

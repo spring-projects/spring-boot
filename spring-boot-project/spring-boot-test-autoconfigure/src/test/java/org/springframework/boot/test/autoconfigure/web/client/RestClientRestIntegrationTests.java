@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,15 +46,13 @@ public class RestClientRestIntegrationTests {
 
 	@Test
 	public void mockServerCall1() {
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("1", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("1", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("1");
 	}
 
 	@Test
 	public void mockServerCall2() {
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("2", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("2", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("2");
 	}
 

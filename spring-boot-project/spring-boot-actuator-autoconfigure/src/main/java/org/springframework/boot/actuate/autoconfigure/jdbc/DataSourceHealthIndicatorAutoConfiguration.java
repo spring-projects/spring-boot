@@ -63,8 +63,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class DataSourceHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource>
-		implements InitializingBean {
+		CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource> implements InitializingBean {
 
 	private final Map<String, DataSource> dataSources;
 
@@ -75,12 +74,10 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 	public DataSourceHealthIndicatorAutoConfiguration(Map<String, DataSource> dataSources,
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 		this.dataSources = filterDataSources(dataSources);
-		this.metadataProviders = metadataProviders.orderedStream()
-				.collect(Collectors.toList());
+		this.metadataProviders = metadataProviders.orderedStream().collect(Collectors.toList());
 	}
 
-	private Map<String, DataSource> filterDataSources(
-			Map<String, DataSource> candidates) {
+	private Map<String, DataSource> filterDataSources(Map<String, DataSource> candidates) {
 		if (candidates == null) {
 			return null;
 		}
@@ -95,8 +92,7 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
-				this.metadataProviders);
+		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(this.metadataProviders);
 	}
 
 	@Bean
@@ -111,8 +107,7 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 	}
 
 	private String getValidationQuery(DataSource source) {
-		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
-				.getDataSourcePoolMetadata(source);
+		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 	}
 
