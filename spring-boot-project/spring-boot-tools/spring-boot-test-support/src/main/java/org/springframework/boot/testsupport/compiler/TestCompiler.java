@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class TestCompiler {
 		this(ToolProvider.getSystemJavaCompiler(), temporaryFolder);
 	}
 
-	public TestCompiler(JavaCompiler compiler, TemporaryFolder temporaryFolder)
-			throws IOException {
+	public TestCompiler(JavaCompiler compiler, TemporaryFolder temporaryFolder) throws IOException {
 		this.compiler = compiler;
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
 		this.outputLocation = temporaryFolder.newFolder();
@@ -66,8 +65,7 @@ public class TestCompiler {
 	}
 
 	public TestCompilationTask getTask(Collection<File> sourceFiles) {
-		Iterable<? extends JavaFileObject> javaFileObjects = this.fileManager
-				.getJavaFileObjectsFromFiles(sourceFiles);
+		Iterable<? extends JavaFileObject> javaFileObjects = this.fileManager.getJavaFileObjectsFromFiles(sourceFiles);
 		return getTask(javaFileObjects);
 	}
 
@@ -76,10 +74,9 @@ public class TestCompiler {
 		return getTask(javaFileObjects);
 	}
 
-	private TestCompilationTask getTask(
-			Iterable<? extends JavaFileObject> javaFileObjects) {
-		return new TestCompilationTask(this.compiler.getTask(null, this.fileManager, null,
-				null, null, javaFileObjects));
+	private TestCompilationTask getTask(Iterable<? extends JavaFileObject> javaFileObjects) {
+		return new TestCompilationTask(
+				this.compiler.getTask(null, this.fileManager, null, null, null, javaFileObjects));
 	}
 
 	public File getOutputLocation() {

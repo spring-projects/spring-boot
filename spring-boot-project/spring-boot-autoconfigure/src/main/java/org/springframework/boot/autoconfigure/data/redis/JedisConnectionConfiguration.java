@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<List<JedisClientConfigurationBuilderCustomizer>> builderCustomizers) {
 		super(properties, sentinelConfiguration, clusterConfiguration);
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers
-				.getIfAvailable(Collections::emptyList);
+		this.builderCustomizers = builderCustomizers.getIfAvailable(Collections::emptyList);
 	}
 
 	@Bean
@@ -75,15 +74,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
 		if (getClusterConfiguration() != null) {
-			return new JedisConnectionFactory(getClusterConfiguration(),
-					clientConfiguration);
+			return new JedisConnectionFactory(getClusterConfiguration(), clientConfiguration);
 		}
 		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
 	}
 
 	private JedisClientConfiguration getJedisClientConfiguration() {
-		JedisClientConfigurationBuilder builder = applyProperties(
-				JedisClientConfiguration.builder());
+		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
 		RedisProperties.Pool pool = this.properties.getJedis().getPool();
 		if (pool != null) {
 			applyPooling(pool, builder);
@@ -95,8 +92,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return builder.build();
 	}
 
-	private JedisClientConfigurationBuilder applyProperties(
-			JedisClientConfigurationBuilder builder) {
+	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		if (this.properties.isSsl()) {
 			builder.useSsl();
 		}
@@ -123,16 +119,14 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return config;
 	}
 
-	private void customizeConfigurationFromUrl(
-			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
+	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
 		ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
 		if (connectionInfo.isUseSsl()) {
 			builder.useSsl();
 		}
 	}
 
-	private void customize(
-			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
+	private void customize(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
 		for (JedisClientConfigurationBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}

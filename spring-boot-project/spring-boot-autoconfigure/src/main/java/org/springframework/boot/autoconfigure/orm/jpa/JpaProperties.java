@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,8 +168,7 @@ public class JpaProperties {
 
 	public static class Hibernate {
 
-		private static final String USE_NEW_ID_GENERATOR_MAPPINGS = "hibernate.id."
-				+ "new_generator_mappings";
+		private static final String USE_NEW_ID_GENERATOR_MAPPINGS = "hibernate.id." + "new_generator_mappings";
 
 		/**
 		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
@@ -208,8 +207,7 @@ public class JpaProperties {
 			return this.naming;
 		}
 
-		private Map<String, Object> getAdditionalProperties(Map<String, String> existing,
-				HibernateSettings settings) {
+		private Map<String, Object> getAdditionalProperties(Map<String, String> existing, HibernateSettings settings) {
 			Map<String, Object> result = new HashMap<>(existing);
 			applyNewIdGeneratorMappings(result);
 			getNaming().applyNamingStrategies(result);
@@ -220,8 +218,7 @@ public class JpaProperties {
 			else {
 				result.remove("hibernate.hbm2ddl.auto");
 			}
-			Collection<HibernatePropertiesCustomizer> customizers = settings
-					.getHibernatePropertiesCustomizers();
+			Collection<HibernatePropertiesCustomizer> customizers = settings.getHibernatePropertiesCustomizers();
 			if (!ObjectUtils.isEmpty(customizers)) {
 				customizers.forEach((customizer) -> customizer.customize(result));
 			}
@@ -230,16 +227,14 @@ public class JpaProperties {
 
 		private void applyNewIdGeneratorMappings(Map<String, Object> result) {
 			if (this.useNewIdGeneratorMappings != null) {
-				result.put(USE_NEW_ID_GENERATOR_MAPPINGS,
-						this.useNewIdGeneratorMappings.toString());
+				result.put(USE_NEW_ID_GENERATOR_MAPPINGS, this.useNewIdGeneratorMappings.toString());
 			}
 			else if (!result.containsKey(USE_NEW_ID_GENERATOR_MAPPINGS)) {
 				result.put(USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 			}
 		}
 
-		private String determineDdlAuto(Map<String, String> existing,
-				Supplier<String> defaultDdlAuto) {
+		private String determineDdlAuto(Map<String, String> existing, Supplier<String> defaultDdlAuto) {
 			String ddlAuto = existing.get("hibernate.hbm2ddl.auto");
 			if (ddlAuto != null) {
 				return ddlAuto;
@@ -282,14 +277,14 @@ public class JpaProperties {
 		}
 
 		private void applyNamingStrategies(Map<String, Object> properties) {
-			applyNamingStrategy(properties, "hibernate.implicit_naming_strategy",
-					this.implicitStrategy, DEFAULT_IMPLICIT_STRATEGY);
-			applyNamingStrategy(properties, "hibernate.physical_naming_strategy",
-					this.physicalStrategy, DEFAULT_PHYSICAL_STRATEGY);
+			applyNamingStrategy(properties, "hibernate.implicit_naming_strategy", this.implicitStrategy,
+					DEFAULT_IMPLICIT_STRATEGY);
+			applyNamingStrategy(properties, "hibernate.physical_naming_strategy", this.physicalStrategy,
+					DEFAULT_PHYSICAL_STRATEGY);
 		}
 
-		private void applyNamingStrategy(Map<String, Object> properties, String key,
-				Object strategy, Object defaultStrategy) {
+		private void applyNamingStrategy(Map<String, Object> properties, String key, Object strategy,
+				Object defaultStrategy) {
 			if (strategy != null) {
 				properties.put(key, strategy);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	private static final ConcurrentReferenceHashMap<Environment, Optional<Boolean>> enabledByDefaultCache = new ConcurrentReferenceHashMap<>();
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
 		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
 		EndpointId id = EndpointId.of(attributes.getString("id"));
@@ -61,46 +60,37 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		if (userDefinedEnabled != null) {
 			return new ConditionOutcome(userDefinedEnabled,
 					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
-							.because("found property " + key + " with value "
-									+ userDefinedEnabled));
+							.because("found property " + key + " with value " + userDefinedEnabled));
 		}
 		Boolean userDefinedDefault = isEnabledByDefault(environment);
 		if (userDefinedDefault != null) {
 			return new ConditionOutcome(userDefinedDefault,
-					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
-							.because("no property " + key
-									+ " found so using user defined default from "
-									+ ENABLED_BY_DEFAULT_KEY));
+					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class).because("no property " + key
+							+ " found so using user defined default from " + ENABLED_BY_DEFAULT_KEY));
 		}
 		boolean endpointDefault = attributes.getBoolean("enableByDefault");
-		return new ConditionOutcome(endpointDefault,
-				ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class).because(
-						"no property " + key + " found so using endpoint default"));
+		return new ConditionOutcome(endpointDefault, ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
+				.because("no property " + key + " found so using endpoint default"));
 	}
 
 	private Boolean isEnabledByDefault(Environment environment) {
 		Optional<Boolean> enabledByDefault = enabledByDefaultCache.get(environment);
 		if (enabledByDefault == null) {
-			enabledByDefault = Optional.ofNullable(
-					environment.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class));
+			enabledByDefault = Optional.ofNullable(environment.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class));
 			enabledByDefaultCache.put(environment, enabledByDefault);
 		}
 		return enabledByDefault.orElse(null);
 	}
 
-	private AnnotationAttributes getEndpointAttributes(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		Assert.state(
-				metadata instanceof MethodMetadata
-						&& metadata.isAnnotated(Bean.class.getName()),
+	private AnnotationAttributes getEndpointAttributes(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		Assert.state(metadata instanceof MethodMetadata && metadata.isAnnotated(Bean.class.getName()),
 				"OnEnabledEndpointCondition may only be used on @Bean methods");
 		Class<?> endpointType = getEndpointType(context, (MethodMetadata) metadata);
 		return getEndpointAttributes(endpointType);
 	}
 
 	private Class<?> getEndpointType(ConditionContext context, MethodMetadata metadata) {
-		Map<String, Object> attributes = metadata
-				.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName());
+		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName());
 		if (attributes != null && attributes.containsKey("endpoint")) {
 			Class<?> target = (Class<?>) attributes.get("endpoint");
 			if (target != Void.class) {
@@ -109,27 +99,23 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		}
 		// We should be safe to load at this point since we are in the REGISTER_BEAN phase
 		try {
-			return ClassUtils.forName(metadata.getReturnTypeName(),
-					context.getClassLoader());
+			return ClassUtils.forName(metadata.getReturnTypeName(), context.getClassLoader());
 		}
 		catch (Throwable ex) {
-			throw new IllegalStateException("Failed to extract endpoint id for "
-					+ metadata.getDeclaringClassName() + "." + metadata.getMethodName(),
-					ex);
+			throw new IllegalStateException("Failed to extract endpoint id for " + metadata.getDeclaringClassName()
+					+ "." + metadata.getMethodName(), ex);
 		}
 	}
 
 	protected AnnotationAttributes getEndpointAttributes(Class<?> type) {
-		AnnotationAttributes attributes = AnnotatedElementUtils
-				.findMergedAnnotationAttributes(type, Endpoint.class, true, true);
+		AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type, Endpoint.class,
+				true, true);
 		if (attributes != null) {
 			return attributes;
 		}
-		attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
-				EndpointExtension.class, false, true);
-		Assert.state(attributes != null,
-				"No endpoint is specified and the return type of the @Bean method is "
-						+ "neither an @Endpoint, nor an @EndpointExtension");
+		attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type, EndpointExtension.class, false, true);
+		Assert.state(attributes != null, "No endpoint is specified and the return type of the @Bean method is "
+				+ "neither an @Endpoint, nor an @EndpointExtension");
 		return getEndpointAttributes(attributes.getClass("endpoint"));
 	}
 

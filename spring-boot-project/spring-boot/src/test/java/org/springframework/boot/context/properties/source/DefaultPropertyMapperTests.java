@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 		assertThat(namesFromString("my.host-name")).containsExactly("my.host-name");
 		assertThat(namesFromString("my.hostName")).containsExactly("my.hostname");
 		assertThat(namesFromString("my.HOST_NAME")).containsExactly("my.hostname");
-		assertThat(namesFromString("s[!@#$%^&*()=+]e-rVeR"))
-				.containsExactly("s[!@#$%^&*()=+].e-rver");
+		assertThat(namesFromString("s[!@#$%^&*()=+]e-rVeR")).containsExactly("s[!@#$%^&*()=+].e-rver");
 		assertThat(namesFromString("host[FOO].name")).containsExactly("host[FOO].name");
 	}
 
@@ -55,14 +54,10 @@ public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 		assertThat(namesFromConfiguration("server.port")).containsExactly("server.port");
 		assertThat(namesFromConfiguration("host[0]")).containsExactly("host[0]");
 		assertThat(namesFromConfiguration("host[0][1]")).containsExactly("host[0][1]");
-		assertThat(namesFromConfiguration("host[0].name"))
-				.containsExactly("host[0].name");
-		assertThat(namesFromConfiguration("host.f00.name"))
-				.containsExactly("host.f00.name");
-		assertThat(namesFromConfiguration("my.host-name"))
-				.containsExactly("my.host-name");
-		assertThat(namesFromConfiguration("host[FOO].name"))
-				.containsExactly("host[FOO].name");
+		assertThat(namesFromConfiguration("host[0].name")).containsExactly("host[0].name");
+		assertThat(namesFromConfiguration("host.f00.name")).containsExactly("host.f00.name");
+		assertThat(namesFromConfiguration("my.host-name")).containsExactly("my.host-name");
+		assertThat(namesFromConfiguration("host[FOO].name")).containsExactly("host[FOO].name");
 	}
 
 }

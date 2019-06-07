@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public abstract class AbstractDiscoveredEndpoint<O extends Operation>
-		extends AbstractExposableEndpoint<O> implements DiscoveredEndpoint<O> {
+public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends AbstractExposableEndpoint<O>
+		implements DiscoveredEndpoint<O> {
 
 	private final EndpointDiscoverer<?, ?> discoverer;
 
@@ -51,9 +51,8 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation>
 	 * {@link #AbstractDiscoveredEndpoint(EndpointDiscoverer, Object, EndpointId, boolean, Collection)}
 	 */
 	@Deprecated
-	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer,
-			Object endpointBean, String id, boolean enabledByDefault,
-			Collection<? extends O> operations) {
+	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, String id,
+			boolean enabledByDefault, Collection<? extends O> operations) {
 		this(discoverer, endpointBean, EndpointId.of(id), enabledByDefault, operations);
 	}
 
@@ -66,9 +65,8 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation>
 	 * @param operations the endpoint operations
 	 * @since 2.0.6
 	 */
-	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer,
-			Object endpointBean, EndpointId id, boolean enabledByDefault,
-			Collection<? extends O> operations) {
+	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
+			boolean enabledByDefault, Collection<? extends O> operations) {
 		super(id, enabledByDefault, operations);
 		Assert.notNull(discoverer, "Discoverer must not be null");
 		Assert.notNull(endpointBean, "EndpointBean must not be null");
@@ -88,8 +86,7 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation>
 
 	@Override
 	public String toString() {
-		ToStringCreator creator = new ToStringCreator(this)
-				.append("discoverer", this.discoverer.getClass().getName())
+		ToStringCreator creator = new ToStringCreator(this).append("discoverer", this.discoverer.getClass().getName())
 				.append("endpointBean", this.endpointBean.getClass().getName());
 		appendFields(creator);
 		return creator.toString();

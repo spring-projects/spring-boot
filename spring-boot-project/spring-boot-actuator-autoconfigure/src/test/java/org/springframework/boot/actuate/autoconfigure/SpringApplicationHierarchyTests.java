@@ -55,40 +55,36 @@ public class SpringApplicationHierarchyTests {
 	public void testParent() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
 		builder.parent(Parent.class);
-		this.context = builder.run("--server.port=0",
-				"--management.metrics.use-global-registry=false");
+		this.context = builder.run("--server.port=0", "--management.metrics.use-global-registry=false");
 	}
 
 	@Test
 	public void testChild() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Parent.class);
 		builder.child(Child.class);
-		this.context = builder.run("--server.port=0",
-				"--management.metrics.use-global-registry=false");
+		this.context = builder.run("--server.port=0", "--management.metrics.use-global-registry=false");
 	}
 
-	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
-			Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
-			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
-			FlywayAutoConfiguration.class, JestAutoConfiguration.class,
-			MetricsAutoConfiguration.class },
+	@EnableAutoConfiguration(
+			exclude = { ElasticsearchDataAutoConfiguration.class, ElasticsearchRepositoriesAutoConfiguration.class,
+					CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
+					MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
+					Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
+					RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
+					FlywayAutoConfiguration.class, JestAutoConfiguration.class, MetricsAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 
 	}
 
-	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
-			Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
-			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
-			FlywayAutoConfiguration.class, JestAutoConfiguration.class,
-			MetricsAutoConfiguration.class },
+	@EnableAutoConfiguration(
+			exclude = { ElasticsearchDataAutoConfiguration.class, ElasticsearchRepositoriesAutoConfiguration.class,
+					CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
+					MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
+					Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
+					RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
+					FlywayAutoConfiguration.class, JestAutoConfiguration.class, MetricsAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {

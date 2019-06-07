@@ -43,14 +43,12 @@ public class WebFluxTestAutoConfigurationIntegrationTests {
 
 	@Test
 	public void messageSourceAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(MessageSourceAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(MessageSourceAutoConfiguration.class));
 	}
 
 	@Test
 	public void validationAutoConfigurationIsImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(ValidationAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(ValidationAutoConfiguration.class));
 	}
 
 }

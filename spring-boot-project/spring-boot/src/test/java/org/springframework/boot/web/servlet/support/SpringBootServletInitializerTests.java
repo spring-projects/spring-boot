@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,31 +68,27 @@ public class SpringBootServletInitializerTests {
 
 	@After
 	public void verifyLoggingOutput() {
-		assertThat(this.output.toString())
-				.doesNotContain(StandardServletEnvironment.class.getSimpleName());
+		assertThat(this.output.toString()).doesNotContain(StandardServletEnvironment.class.getSimpleName());
 	}
 
 	@Test
 	public void failsWithoutConfigure() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("No SpringApplication sources have been defined");
-		new MockSpringBootServletInitializer()
-				.createRootApplicationContext(this.servletContext);
+		new MockSpringBootServletInitializer().createRootApplicationContext(this.servletContext);
 	}
 
 	@Test
 	public void withConfigurationAnnotation() {
-		new WithConfigurationAnnotation()
-				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getAllSources()).containsOnly(
-				WithConfigurationAnnotation.class, ErrorPageFilterConfiguration.class);
+		new WithConfigurationAnnotation().createRootApplicationContext(this.servletContext);
+		assertThat(this.application.getAllSources()).containsOnly(WithConfigurationAnnotation.class,
+				ErrorPageFilterConfiguration.class);
 	}
 
 	@Test
 	public void withConfiguredSource() {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getAllSources()).containsOnly(Config.class,
-				ErrorPageFilterConfiguration.class);
+		assertThat(this.application.getAllSources()).containsOnly(Config.class, ErrorPageFilterConfiguration.class);
 	}
 
 	@Test
@@ -105,8 +101,7 @@ public class SpringBootServletInitializerTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void mainClassHasSensibleDefault() {
-		new WithConfigurationAnnotation()
-				.createRootApplicationContext(this.servletContext);
+		new WithConfigurationAnnotation().createRootApplicationContext(this.servletContext);
 		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
 				.getPropertyValue("mainApplicationClass");
 		assertThat(mainApplicationClass).isEqualTo(WithConfigurationAnnotation.class);
@@ -114,14 +109,12 @@ public class SpringBootServletInitializerTests {
 
 	@Test
 	public void errorPageFilterRegistrationCanBeDisabled() {
-		WebServer webServer = new UndertowServletWebServerFactory(0)
-				.getWebServer((servletContext) -> {
-					try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
-							.createRootApplicationContext(servletContext)) {
-						assertThat(context.getBeansOfType(ErrorPageFilter.class))
-								.hasSize(0);
-					}
-				});
+		WebServer webServer = new UndertowServletWebServerFactory(0).getWebServer((servletContext) -> {
+			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
+					.createRootApplicationContext(servletContext)) {
+				assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+			}
+		});
 		try {
 			webServer.start();
 		}
@@ -132,8 +125,7 @@ public class SpringBootServletInitializerTests {
 
 	@Test
 	public void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured() {
-		try (ConfigurableApplicationContext context = new SpringApplication(
-				ExecutableWar.class).run()) {
+		try (ConfigurableApplicationContext context = new SpringApplication(ExecutableWar.class).run()) {
 			assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
 		}
 	}
@@ -141,26 +133,21 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void servletContextPropertySourceIsAvailablePriorToRefresh() {
 		ServletContext servletContext = mock(ServletContext.class);
-		given(servletContext.getInitParameterNames()).willReturn(
-				Collections.enumeration(Arrays.asList("spring.profiles.active")));
-		given(servletContext.getInitParameter("spring.profiles.active"))
-				.willReturn("from-servlet-context");
-		given(servletContext.getAttributeNames())
-				.willReturn(Collections.enumeration(Collections.emptyList()));
+		given(servletContext.getInitParameterNames())
+				.willReturn(Collections.enumeration(Arrays.asList("spring.profiles.active")));
+		given(servletContext.getInitParameter("spring.profiles.active")).willReturn("from-servlet-context");
+		given(servletContext.getAttributeNames()).willReturn(Collections.enumeration(Collections.emptyList()));
 		try (ConfigurableApplicationContext context = (ConfigurableApplicationContext) new PropertySourceVerifyingSpringBootServletInitializer()
 				.createRootApplicationContext(servletContext)) {
-			assertThat(context.getEnvironment().getActiveProfiles())
-					.containsExactly("from-servlet-context");
+			assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("from-servlet-context");
 		}
 	}
 
-	private static class PropertySourceVerifyingSpringBootServletInitializer
-			extends SpringBootServletInitializer {
+	private static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
 
 		@Override
 		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-			return builder.sources(TestApp.class)
-					.listeners(new PropertySourceVerifyingApplicationListener());
+			return builder.sources(TestApp.class).listeners(new PropertySourceVerifyingApplicationListener());
 		}
 
 	}
@@ -180,8 +167,7 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	private class CustomSpringBootServletInitializer
-			extends MockSpringBootServletInitializer {
+	private class CustomSpringBootServletInitializer extends MockSpringBootServletInitializer {
 
 		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
 
@@ -191,8 +177,7 @@ public class SpringBootServletInitializerTests {
 		}
 
 		@Override
-		protected SpringApplicationBuilder configure(
-				SpringApplicationBuilder application) {
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
 
@@ -206,16 +191,14 @@ public class SpringBootServletInitializerTests {
 	public class WithConfiguredSource extends MockSpringBootServletInitializer {
 
 		@Override
-		protected SpringApplicationBuilder configure(
-				SpringApplicationBuilder application) {
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
 
 	}
 
 	@Configuration
-	public static class WithErrorPageFilterNotRegistered
-			extends SpringBootServletInitializer {
+	public static class WithErrorPageFilterNotRegistered extends SpringBootServletInitializer {
 
 		public WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);
@@ -257,8 +240,7 @@ public class SpringBootServletInitializerTests {
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			PropertySource<?> propertySource = event.getEnvironment().getPropertySources()
 					.get(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
-			assertThat(propertySource.getProperty("spring.profiles.active"))
-					.isEqualTo("from-servlet-context");
+			assertThat(propertySource.getProperty("spring.profiles.active")).isEqualTo("from-servlet-context");
 		}
 
 	}

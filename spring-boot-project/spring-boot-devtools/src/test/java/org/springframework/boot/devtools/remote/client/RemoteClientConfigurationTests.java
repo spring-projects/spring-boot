@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,8 +115,7 @@ public class RemoteClientConfigurationTests {
 		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.clientContext.publishEvent(event);
-		LiveReloadConfiguration configuration = this.clientContext
-				.getBean(LiveReloadConfiguration.class);
+		LiveReloadConfiguration configuration = this.clientContext.getBean(LiveReloadConfiguration.class);
 		configuration.getExecutor().shutdown();
 		configuration.getExecutor().awaitTermination(2, TimeUnit.SECONDS);
 		LiveReloadServer server = this.clientContext.getBean(LiveReloadServer.class);
@@ -145,8 +144,7 @@ public class RemoteClientConfigurationTests {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(Config.class);
 		if (setSecret) {
-			TestPropertyValues.of("spring.devtools.remote.secret:secret")
-					.applyTo(this.context);
+			TestPropertyValues.of("spring.devtools.remote.secret:secret").applyTo(this.context);
 		}
 		this.context.refresh();
 		this.clientContext = new AnnotationConfigApplicationContext();
@@ -154,11 +152,9 @@ public class RemoteClientConfigurationTests {
 		new RestartScopeInitializer().initialize(this.clientContext);
 		this.clientContext.register(ClientConfig.class, RemoteClientConfiguration.class);
 		if (setSecret) {
-			TestPropertyValues.of("spring.devtools.remote.secret:secret")
-					.applyTo(this.clientContext);
+			TestPropertyValues.of("spring.devtools.remote.secret:secret").applyTo(this.clientContext);
 		}
-		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":"
-				+ this.context.getWebServer().getPort();
+		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":" + this.context.getWebServer().getPort();
 		TestPropertyValues.of(remoteUrlProperty).applyTo(this.clientContext);
 		this.clientContext.refresh();
 	}

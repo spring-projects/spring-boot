@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,7 @@ import org.springframework.util.StringUtils;
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
 
-	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
-			.mapOf(String.class, String.class);
+	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable.mapOf(String.class, String.class);
 
 	/**
 	 * The default order for the LoggingApplicationListener.
@@ -127,11 +126,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private static final Class<?>[] EVENT_TYPES = { ApplicationStartingEvent.class,
-			ApplicationEnvironmentPreparedEvent.class, ApplicationPreparedEvent.class,
-			ContextClosedEvent.class, ApplicationFailedEvent.class };
+			ApplicationEnvironmentPreparedEvent.class, ApplicationPreparedEvent.class, ContextClosedEvent.class,
+			ApplicationFailedEvent.class };
 
-	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class,
-			ApplicationContext.class };
+	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class, ApplicationContext.class };
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -170,14 +168,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			onApplicationStartingEvent((ApplicationStartingEvent) event);
 		}
 		else if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent(
-					(ApplicationEnvironmentPreparedEvent) event);
+			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
 		}
 		else if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
-		else if (event instanceof ContextClosedEvent && ((ContextClosedEvent) event)
-				.getApplicationContext().getParent() == null) {
+		else if (event instanceof ContextClosedEvent
+				&& ((ContextClosedEvent) event).getApplicationContext().getParent() == null) {
 			onContextClosedEvent();
 		}
 		else if (event instanceof ApplicationFailedEvent) {
@@ -186,23 +183,19 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void onApplicationStartingEvent(ApplicationStartingEvent event) {
-		this.loggingSystem = LoggingSystem
-				.get(event.getSpringApplication().getClassLoader());
+		this.loggingSystem = LoggingSystem.get(event.getSpringApplication().getClassLoader());
 		this.loggingSystem.beforeInitialize();
 	}
 
-	private void onApplicationEnvironmentPreparedEvent(
-			ApplicationEnvironmentPreparedEvent event) {
+	private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
 		if (this.loggingSystem == null) {
-			this.loggingSystem = LoggingSystem
-					.get(event.getSpringApplication().getClassLoader());
+			this.loggingSystem = LoggingSystem.get(event.getSpringApplication().getClassLoader());
 		}
 		initialize(event.getEnvironment(), event.getSpringApplication().getClassLoader());
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext()
-				.getBeanFactory();
+		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext().getBeanFactory();
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
@@ -226,8 +219,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * @param environment the environment
 	 * @param classLoader the classloader
 	 */
-	protected void initialize(ConfigurableEnvironment environment,
-			ClassLoader classLoader) {
+	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		new LoggingSystemProperties(environment).apply();
 		LogFile logFile = LogFile.get(environment);
 		if (logFile != null) {
@@ -255,10 +247,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		return (value != null && !value.equals("false"));
 	}
 
-	private void initializeSystem(ConfigurableEnvironment environment,
-			LoggingSystem system, LogFile logFile) {
-		LoggingInitializationContext initializationContext = new LoggingInitializationContext(
-				environment);
+	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
+		LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
 		String logConfig = environment.getProperty(CONFIG_PROPERTY);
 		if (ignoreLogConfig(logConfig)) {
 			system.initialize(initializationContext, null, logFile);
@@ -270,8 +260,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			}
 			catch (Exception ex) {
 				// NOTE: We can't use the logger here to report the problem
-				System.err.println("Logging system failed to initialize "
-						+ "using configuration from '" + logConfig + "'");
+				System.err.println(
+						"Logging system failed to initialize " + "using configuration from '" + logConfig + "'");
 				ex.printStackTrace(System.err);
 				throw new IllegalStateException(ex);
 			}
@@ -282,8 +272,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		return !StringUtils.hasLength(logConfig) || logConfig.startsWith("-D");
 	}
 
-	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,
-			LoggingSystem system) {
+	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment, LoggingSystem system) {
 		if (this.springBootLogging != null) {
 			initializeLogLevel(system, this.springBootLogging);
 		}
@@ -325,14 +314,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		return LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH));
 	}
 
-	private void registerShutdownHookIfNecessary(Environment environment,
-			LoggingSystem loggingSystem) {
-		boolean registerShutdownHook = environment
-				.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, false);
+	private void registerShutdownHookIfNecessary(Environment environment, LoggingSystem loggingSystem) {
+		boolean registerShutdownHook = environment.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, false);
 		if (registerShutdownHook) {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
-			if (shutdownHandler != null
-					&& shutdownHookRegistered.compareAndSet(false, true)) {
+			if (shutdownHandler != null && shutdownHookRegistered.compareAndSet(false, true)) {
 				registerShutdownHook(new Thread(shutdownHandler));
 			}
 		}

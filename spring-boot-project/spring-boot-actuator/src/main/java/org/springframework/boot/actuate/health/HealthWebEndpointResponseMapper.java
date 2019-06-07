@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ public class HealthWebEndpointResponseMapper {
 
 	private final Set<String> authorizedRoles;
 
-	public HealthWebEndpointResponseMapper(HealthStatusHttpMapper statusHttpMapper,
-			ShowDetails showDetails, Set<String> authorizedRoles) {
+	public HealthWebEndpointResponseMapper(HealthStatusHttpMapper statusHttpMapper, ShowDetails showDetails,
+			Set<String> authorizedRoles) {
 		this.statusHttpMapper = statusHttpMapper;
 		this.showDetails = showDetails;
 		this.authorizedRoles = authorizedRoles;
@@ -50,8 +50,7 @@ public class HealthWebEndpointResponseMapper {
 	 * @param securityContext the security context
 	 * @return the mapped response
 	 */
-	public WebEndpointResponse<Health> map(Health health,
-			SecurityContext securityContext) {
+	public WebEndpointResponse<Health> map(Health health, SecurityContext securityContext) {
 		return map(health, securityContext, this.showDetails);
 	}
 
@@ -63,12 +62,9 @@ public class HealthWebEndpointResponseMapper {
 	 * @param showDetails when to show details in the response
 	 * @return the mapped response
 	 */
-	public WebEndpointResponse<Health> map(Health health, SecurityContext securityContext,
-			ShowDetails showDetails) {
-		if (showDetails == ShowDetails.NEVER
-				|| (showDetails == ShowDetails.WHEN_AUTHORIZED
-						&& (securityContext.getPrincipal() == null
-								|| !isUserInRole(securityContext)))) {
+	public WebEndpointResponse<Health> map(Health health, SecurityContext securityContext, ShowDetails showDetails) {
+		if (showDetails == ShowDetails.NEVER || (showDetails == ShowDetails.WHEN_AUTHORIZED
+				&& (securityContext.getPrincipal() == null || !isUserInRole(securityContext)))) {
 			health = Health.status(health.getStatus()).build();
 		}
 		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());

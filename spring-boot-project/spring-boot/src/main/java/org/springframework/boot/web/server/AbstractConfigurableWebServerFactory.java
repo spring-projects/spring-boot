@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public abstract class AbstractConfigurableWebServerFactory
-		implements ConfigurableWebServerFactory {
+public abstract class AbstractConfigurableWebServerFactory implements ConfigurableWebServerFactory {
 
 	private int port = 8080;
 
@@ -178,9 +177,7 @@ public abstract class AbstractConfigurableWebServerFactory
 		}
 		catch (IOException ex) {
 			throw new WebServerException(
-					"Unable to create tempDir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"),
-					ex);
+					"Unable to create tempDir. java.io.tmpdir is set to " + System.getProperty("java.io.tmpdir"), ex);
 		}
 	}
 

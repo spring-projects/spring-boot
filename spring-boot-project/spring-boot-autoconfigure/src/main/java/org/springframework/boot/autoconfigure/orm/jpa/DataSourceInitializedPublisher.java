@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,14 +51,12 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private JpaProperties properties;
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof DataSource) {
 			// Normally this will be the right DataSource
 			this.dataSource = (DataSource) bean;
@@ -75,24 +73,21 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private void publishEventIfRequired(EntityManagerFactory entityManagerFactory) {
 		DataSource dataSource = findDataSource(entityManagerFactory);
 		if (dataSource != null && isInitializingDatabase(dataSource)) {
-			this.applicationContext
-					.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
+			this.applicationContext.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
 		}
 	}
 
 	private DataSource findDataSource(EntityManagerFactory entityManagerFactory) {
-		Object dataSource = entityManagerFactory.getProperties()
-				.get("javax.persistence.nonJtaDataSource");
-		return (dataSource != null && dataSource instanceof DataSource)
-				? (DataSource) dataSource : this.dataSource;
+		Object dataSource = entityManagerFactory.getProperties().get("javax.persistence.nonJtaDataSource");
+		return (dataSource != null && dataSource instanceof DataSource) ? (DataSource) dataSource : this.dataSource;
 	}
 
 	private boolean isInitializingDatabase(DataSource dataSource) {
 		if (this.properties == null) {
 			return true; // better safe than sorry
 		}
-		Supplier<String> defaultDdlAuto = () -> (EmbeddedDatabaseConnection
-				.isEmbedded(dataSource) ? "create-drop" : "none");
+		Supplier<String> defaultDdlAuto = () -> (EmbeddedDatabaseConnection.isEmbedded(dataSource) ? "create-drop"
+				: "none");
 		Map<String, Object> hibernate = this.properties
 				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlAuto));
 		if (hibernate.containsKey("hibernate.hbm2ddl.auto")) {

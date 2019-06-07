@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,16 +67,13 @@ public class ServletRegistrationBeanTests {
 	@Before
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addServlet(anyString(), any(Servlet.class)))
-				.willReturn(this.registration);
-		given(this.servletContext.addFilter(anyString(), any(Filter.class)))
-				.willReturn(this.filterRegistration);
+		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(this.registration);
+		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.filterRegistration);
 	}
 
 	@Test
 	public void startupWithDefaults() throws Exception {
-		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
-				this.servlet);
+		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);
 		verify(this.registration).setAsyncSupported(true);
@@ -85,10 +82,8 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void startupWithDoubleRegistration() throws Exception {
-		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
-				this.servlet);
-		given(this.servletContext.addServlet(anyString(), any(Servlet.class)))
-				.willReturn(null);
+		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
+		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(null);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);
 		verify(this.registration, never()).setAsyncSupported(true);
@@ -159,8 +154,7 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void setMappingMustNotBeNull() {
-		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
-				this.servlet);
+		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UrlMappings must not be null");
 		bean.setUrlMappings(null);
@@ -175,8 +169,7 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void addMappingMustNotBeNull() {
-		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
-				this.servlet);
+		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UrlMappings must not be null");
 		bean.addUrlMappings((String[]) null);
@@ -184,8 +177,7 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void setMappingReplacesValue() throws Exception {
-		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
-				this.servlet, "/a", "/b");
+		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, "/a", "/b");
 		bean.setUrlMappings(new LinkedHashSet<>(Arrays.asList("/c", "/d")));
 		bean.onStartup(this.servletContext);
 		verify(this.registration).addMapping("/c", "/d");
@@ -193,8 +185,7 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void modifyInitParameters() throws Exception {
-		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
-				this.servlet, "/a", "/b");
+		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, "/a", "/b");
 		bean.addInitParameter("a", "b");
 		bean.getInitParameters().put("a", "c");
 		bean.onStartup(this.servletContext);
@@ -203,8 +194,7 @@ public class ServletRegistrationBeanTests {
 
 	@Test
 	public void withoutDefaultMappings() throws Exception {
-		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
-				this.servlet, false);
+		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, false);
 		bean.onStartup(this.servletContext);
 		verify(this.registration, never()).addMapping(any(String[].class));
 	}

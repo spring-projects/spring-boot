@@ -44,13 +44,12 @@ import org.springframework.context.annotation.Configuration;
  * @author Jon Schneider
  */
 @Configuration
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(PrometheusMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.prometheus", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.prometheus", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusMetricsExportAutoConfiguration {
 
@@ -62,9 +61,8 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusMeterRegistry prometheusMeterRegistry(
-			PrometheusConfig prometheusConfig, CollectorRegistry collectorRegistry,
-			Clock clock) {
+	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
+			CollectorRegistry collectorRegistry, Clock clock) {
 		return new PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock);
 	}
 
@@ -80,8 +78,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 		@Bean
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnMissingBean
-		public PrometheusScrapeEndpoint prometheusEndpoint(
-				CollectorRegistry collectorRegistry) {
+		public PrometheusScrapeEndpoint prometheusEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ public class TestEntityManagerTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.testEntityManager = new TestEntityManager(this.entityManagerFactory);
-		given(this.entityManagerFactory.getPersistenceUnitUtil())
-				.willReturn(this.persistenceUnitUtil);
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 	}
 
 	@Test
@@ -191,8 +190,8 @@ public class TestEntityManagerTests {
 	public void getIdForTypeWhenTypeIsWrongShouldThrowException() {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		this.thrown.expectMessage("ID mismatch: Object of class [java.lang.Integer] "
-				+ "must be an instance of class java.lang.Long");
+		this.thrown.expectMessage(
+				"ID mismatch: Object of class [java.lang.Integer] " + "must be an instance of class java.lang.Long");
 		this.testEntityManager.getId(entity, Long.class);
 	}
 
@@ -207,8 +206,7 @@ public class TestEntityManagerTests {
 	@Test
 	public void getEntityManagerShouldGetEntityManager() {
 		bindEntityManager();
-		assertThat(this.testEntityManager.getEntityManager())
-				.isEqualTo(this.entityManager);
+		assertThat(this.testEntityManager.getEntityManager()).isEqualTo(this.entityManager);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ class TestRestTemplateContextCustomizerFactory implements ContextCustomizerFacto
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		if (AnnotatedElementUtils.findMergedAnnotation(testClass,
-				SpringBootTest.class) != null) {
+		if (AnnotatedElementUtils.findMergedAnnotation(testClass, SpringBootTest.class) != null) {
 			return new TestRestTemplateContextCustomizer();
 		}
 		return null;

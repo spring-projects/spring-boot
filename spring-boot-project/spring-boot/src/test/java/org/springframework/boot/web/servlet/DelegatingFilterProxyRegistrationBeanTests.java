@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ import static org.mockito.ArgumentMatchers.isA;
  *
  * @author Phillip Webb
  */
-public class DelegatingFilterProxyRegistrationBeanTests
-		extends AbstractFilterRegistrationBeanTests {
+public class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 
 	private static ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<>();
 
@@ -66,8 +65,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 
 	@Test
 	public void nameDefaultsToTargetBeanName() {
-		assertThat(new DelegatingFilterProxyRegistrationBean("myFilter")
-				.getOrDeduceName(null)).isEqualTo("myFilter");
+		assertThat(new DelegatingFilterProxyRegistrationBean("myFilter").getOrDeduceName(null)).isEqualTo("myFilter");
 	}
 
 	@Test
@@ -75,22 +73,18 @@ public class DelegatingFilterProxyRegistrationBeanTests
 		DelegatingFilterProxyRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
 		assertThat(filter).isInstanceOf(DelegatingFilterProxy.class);
-		assertThat(ReflectionTestUtils.getField(filter, "webApplicationContext"))
-				.isEqualTo(this.applicationContext);
-		assertThat(ReflectionTestUtils.getField(filter, "targetBeanName"))
-				.isEqualTo("mockFilter");
+		assertThat(ReflectionTestUtils.getField(filter, "webApplicationContext")).isEqualTo(this.applicationContext);
+		assertThat(ReflectionTestUtils.getField(filter, "targetBeanName")).isEqualTo("mockFilter");
 	}
 
 	@Test
 	public void initShouldNotCauseEarlyInitialization() throws Exception {
-		this.applicationContext.registerBeanDefinition("mockFilter",
-				new RootBeanDefinition(MockFilter.class));
+		this.applicationContext.registerBeanDefinition("mockFilter", new RootBeanDefinition(MockFilter.class));
 		DelegatingFilterProxyRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
 		filter.init(new MockFilterConfig());
 		assertThat(mockFilterInitialized.get()).isNull();
-		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
-				new MockFilterChain());
+		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(mockFilterInitialized.get()).isTrue();
 	}
 
@@ -98,15 +92,14 @@ public class DelegatingFilterProxyRegistrationBeanTests
 	public void createServletRegistrationBeanMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletRegistrationBeans must not be null");
-		new DelegatingFilterProxyRegistrationBean("mockFilter",
-				(ServletRegistrationBean[]) null);
+		new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean[]) null);
 	}
 
 	@Override
 	protected DelegatingFilterProxyRegistrationBean createFilterRegistrationBean(
 			ServletRegistrationBean<?>... servletRegistrationBeans) {
-		DelegatingFilterProxyRegistrationBean bean = new DelegatingFilterProxyRegistrationBean(
-				"mockFilter", servletRegistrationBeans);
+		DelegatingFilterProxyRegistrationBean bean = new DelegatingFilterProxyRegistrationBean("mockFilter",
+				servletRegistrationBeans);
 		bean.setApplicationContext(this.applicationContext);
 		return bean;
 	}
@@ -123,8 +116,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 		}
 
 		@Override
-		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) {
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
 		}
 
 	}

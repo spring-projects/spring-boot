@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ import org.springframework.data.util.Streamable;
  * @author Oliver Gierke
  */
 public abstract class AbstractRepositoryConfigurationSourceSupport
-		implements BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware,
-		EnvironmentAware {
+		implements BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
 
 	private ResourceLoader resourceLoader;
 
@@ -54,23 +53,19 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	private Environment environment;
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
-		new RepositoryConfigurationDelegate(getConfigurationSource(registry),
-				this.resourceLoader, this.environment).registerRepositoriesIn(registry,
-						getRepositoryConfigurationExtension());
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+		new RepositoryConfigurationDelegate(getConfigurationSource(registry), this.resourceLoader, this.environment)
+				.registerRepositoriesIn(registry, getRepositoryConfigurationExtension());
 	}
 
 	private AnnotationRepositoryConfigurationSource getConfigurationSource(
 			BeanDefinitionRegistry beanDefinitionRegistry) {
-		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
-				getConfiguration(), true);
-		return new AnnotationRepositoryConfigurationSource(metadata, getAnnotation(),
-				this.resourceLoader, this.environment, beanDefinitionRegistry) {
+		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(getConfiguration(), true);
+		return new AnnotationRepositoryConfigurationSource(metadata, getAnnotation(), this.resourceLoader,
+				this.environment, beanDefinitionRegistry) {
 			@Override
 			public Streamable<String> getBasePackages() {
-				return AbstractRepositoryConfigurationSourceSupport.this
-						.getBasePackages();
+				return AbstractRepositoryConfigurationSourceSupport.this.getBasePackages();
 			}
 		};
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,24 +72,20 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * to configure
 	 * @param consumerFactory the {@link ConsumerFactory} to use
 	 */
-	public void configure(
-			ConcurrentKafkaListenerContainerFactory<Object, Object> listenerFactory,
+	public void configure(ConcurrentKafkaListenerContainerFactory<Object, Object> listenerFactory,
 			ConsumerFactory<Object, Object> consumerFactory) {
 		listenerFactory.setConsumerFactory(consumerFactory);
 		configureListenerFactory(listenerFactory);
 		configureContainer(listenerFactory.getContainerProperties());
 	}
 
-	private void configureListenerFactory(
-			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
+	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 		PropertyMapper map = PropertyMapper.get();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).whenNonNull().to(factory::setConcurrency);
-		map.from(() -> this.messageConverter).whenNonNull()
-				.to(factory::setMessageConverter);
+		map.from(() -> this.messageConverter).whenNonNull().to(factory::setMessageConverter);
 		map.from(() -> this.replyTemplate).whenNonNull().to(factory::setReplyTemplate);
-		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH)
-				.toCall(() -> factory.setBatchListener(true));
+		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH).toCall(() -> factory.setBatchListener(true));
 	}
 
 	private void configureContainer(ContainerProperties container) {
@@ -98,18 +94,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::getAckMode).whenNonNull().to(container::setAckMode);
 		map.from(properties::getClientId).whenNonNull().to(container::setClientId);
 		map.from(properties::getAckCount).whenNonNull().to(container::setAckCount);
-		map.from(properties::getAckTime).whenNonNull().as(Duration::toMillis)
-				.to(container::setAckTime);
-		map.from(properties::getPollTimeout).whenNonNull().as(Duration::toMillis)
-				.to(container::setPollTimeout);
-		map.from(properties::getNoPollThreshold).whenNonNull()
-				.to(container::setNoPollThreshold);
+		map.from(properties::getAckTime).whenNonNull().as(Duration::toMillis).to(container::setAckTime);
+		map.from(properties::getPollTimeout).whenNonNull().as(Duration::toMillis).to(container::setPollTimeout);
+		map.from(properties::getNoPollThreshold).whenNonNull().to(container::setNoPollThreshold);
 		map.from(properties::getIdleEventInterval).whenNonNull().as(Duration::toMillis)
 				.to(container::setIdleEventInterval);
-		map.from(properties::getMonitorInterval).whenNonNull().as(Duration::getSeconds)
-				.as(Number::intValue).to(container::setMonitorInterval);
-		map.from(properties::getLogContainerConfig).whenNonNull()
-				.to(container::setLogContainerConfig);
+		map.from(properties::getMonitorInterval).whenNonNull().as(Duration::getSeconds).as(Number::intValue)
+				.to(container::setMonitorInterval);
+		map.from(properties::getLogContainerConfig).whenNonNull().to(container::setLogContainerConfig);
 	}
 
 }

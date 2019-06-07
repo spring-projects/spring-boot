@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ public class TestPropertyValuesTests {
 	@Test
 	public void applyToEnvironmentShouldAttachConfigurationPropertySource() {
 		TestPropertyValues.of("foo.bar=baz").applyTo(this.environment);
-		PropertySource<?> source = this.environment.getPropertySources()
-				.get("configurationProperties");
+		PropertySource<?> source = this.environment.getPropertySources().get("configurationProperties");
 		assertThat(source).isNotNull();
 	}
 
@@ -53,12 +52,10 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void applyToSystemPropertySource() {
-		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment,
-				Type.SYSTEM_ENVIRONMENT);
+		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
-		assertThat(this.environment.getPropertySources().contains(
-				"test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME))
-						.isTrue();
+		assertThat(this.environment.getPropertySources()
+				.contains("test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME)).isTrue();
 	}
 
 	@Test
@@ -70,10 +67,8 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void applyToExistingNameAndDifferentTypeShouldOverrideExistingOne() {
-		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
-				Type.MAP, "other");
-		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment,
-				Type.SYSTEM_ENVIRONMENT, "other");
+		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment, Type.MAP, "other");
+		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT, "other");
 		assertThat(this.environment.getPropertySources().get("other"))
 				.isInstanceOf(SystemEnvironmentPropertySource.class);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
@@ -82,8 +77,7 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void applyToExistingNameAndSameTypeShouldMerge() {
-		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment,
-				Type.MAP);
+		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment, Type.MAP);
 		TestPropertyValues.of("foo.bar=new").applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("new");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
@@ -91,8 +85,8 @@ public class TestPropertyValuesTests {
 
 	@Test
 	public void andShouldChainAndAddSingleKeyValue() {
-		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing")
-				.applyTo(this.environment, Type.MAP);
+		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing").applyTo(this.environment,
+				Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");

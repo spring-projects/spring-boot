@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
-		builder.withDetail("location",
-				this.mailSender.getHost() + ":" + this.mailSender.getPort());
+		builder.withDetail("location", this.mailSender.getHost() + ":" + this.mailSender.getPort());
 		this.mailSender.testConnection();
 		builder.up();
 	}

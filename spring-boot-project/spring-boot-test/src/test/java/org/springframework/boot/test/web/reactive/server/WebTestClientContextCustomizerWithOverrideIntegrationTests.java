@@ -46,8 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.main.web-application-type=reactive")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
 @DirtiesContext
 public class WebTestClientContextCustomizerWithOverrideIntegrationTests {
 

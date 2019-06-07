@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,8 +93,7 @@ public class MapConfigurationPropertySourceTests {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.iterator()).containsExactly(
-				ConfigurationPropertyName.of("foo.bar"),
+		assertThat(source.iterator()).containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.baz"));
 	}
 
@@ -103,15 +102,13 @@ public class MapConfigurationPropertySourceTests {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.stream()).containsExactly(
-				ConfigurationPropertyName.of("foo.bar"),
+		assertThat(source.stream()).containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.baz"));
 
 	}
 
 	private Object getValue(ConfigurationPropertySource source, String name) {
-		ConfigurationProperty property = source
-				.getConfigurationProperty(ConfigurationPropertyName.of(name));
+		ConfigurationProperty property = source.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property != null) ? property.getValue() : null;
 	}
 

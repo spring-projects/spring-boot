@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,31 +55,24 @@ import static org.mockito.Mockito.verify;
 public class Neo4jDataAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withUserConfiguration(TestConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(Neo4jDataAutoConfiguration.class,
-					TransactionAutoConfiguration.class));
+			.withUserConfiguration(TestConfiguration.class).withConfiguration(
+					AutoConfigurations.of(Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class));
 
 	@Test
 	public void defaultConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.data.neo4j.uri=http://localhost:8989")
-				.run((context) -> {
-					assertThat(context)
-							.hasSingleBean(org.neo4j.ogm.config.Configuration.class);
-					assertThat(context).hasSingleBean(SessionFactory.class);
-					assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
-					assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
-				});
+		this.contextRunner.withPropertyValues("spring.data.neo4j.uri=http://localhost:8989").run((context) -> {
+			assertThat(context).hasSingleBean(org.neo4j.ogm.config.Configuration.class);
+			assertThat(context).hasSingleBean(SessionFactory.class);
+			assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
+			assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
+		});
 	}
 
 	@Test
 	public void customNeo4jTransactionManagerUsingProperties() {
-		this.contextRunner
-				.withPropertyValues("spring.transaction.default-timeout=30",
-						"spring.transaction.rollback-on-commit-failure:true")
-				.run((context) -> {
-					Neo4jTransactionManager transactionManager = context
-							.getBean(Neo4jTransactionManager.class);
+		this.contextRunner.withPropertyValues("spring.transaction.default-timeout=30",
+				"spring.transaction.rollback-on-commit-failure:true").run((context) -> {
+					Neo4jTransactionManager transactionManager = context.getBean(Neo4jTransactionManager.class);
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 				});
@@ -87,24 +80,20 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void customSessionFactory() {
-		this.contextRunner.withUserConfiguration(CustomSessionFactory.class)
-				.run((context) -> {
-					assertThat(context)
-							.doesNotHaveBean(org.neo4j.ogm.config.Configuration.class);
-					assertThat(context).hasSingleBean(SessionFactory.class);
-				});
+		this.contextRunner.withUserConfiguration(CustomSessionFactory.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(org.neo4j.ogm.config.Configuration.class);
+			assertThat(context).hasSingleBean(SessionFactory.class);
+		});
 	}
 
 	@Test
 	public void customConfiguration() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getBean(org.neo4j.ogm.config.Configuration.class))
-							.isSameAs(context.getBean("myConfiguration"));
-					assertThat(context).hasSingleBean(SessionFactory.class);
-					assertThat(context)
-							.hasSingleBean(org.neo4j.ogm.config.Configuration.class);
-				});
+		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
+			assertThat(context.getBean(org.neo4j.ogm.config.Configuration.class))
+					.isSameAs(context.getBean("myConfiguration"));
+			assertThat(context).hasSingleBean(SessionFactory.class);
+			assertThat(context).hasSingleBean(org.neo4j.ogm.config.Configuration.class);
+		});
 
 	}
 
@@ -113,12 +102,10 @@ public class Neo4jDataAutoConfigurationTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(context, cityPackage);
-		context.register(Neo4jDataAutoConfiguration.class,
-				Neo4jRepositoriesAutoConfiguration.class);
+		context.register(Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class);
 		try {
 			context.refresh();
-			assertDomainTypesDiscovered(context.getBean(Neo4jMappingContext.class),
-					City.class);
+			assertDomainTypesDiscovered(context.getBean(Neo4jMappingContext.class), City.class);
 		}
 		finally {
 			context.close();
@@ -128,26 +115,20 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void openSessionInViewInterceptorCanBeDisabled() {
 		this.contextRunner.withPropertyValues("spring.data.neo4j.open-in-view:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(OpenSessionInViewInterceptor.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(OpenSessionInViewInterceptor.class));
 	}
 
 	@Test
 	public void eventListenersAreAutoRegistered() {
-		this.contextRunner.withUserConfiguration(EventListenerConfiguration.class)
-				.run((context) -> {
-					Session session = context.getBean(SessionFactory.class).openSession();
-					session.notifyListeners(
-							new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
-					verify(context.getBean("eventListenerOne", EventListener.class))
-							.onPreSave(any(Event.class));
-					verify(context.getBean("eventListenerTwo", EventListener.class))
-							.onPreSave(any(Event.class));
-				});
+		this.contextRunner.withUserConfiguration(EventListenerConfiguration.class).run((context) -> {
+			Session session = context.getBean(SessionFactory.class).openSession();
+			session.notifyListeners(new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
+			verify(context.getBean("eventListenerOne", EventListener.class)).onPreSave(any(Event.class));
+			verify(context.getBean("eventListenerTwo", EventListener.class)).onPreSave(any(Event.class));
+		});
 	}
 
-	private static void assertDomainTypesDiscovered(Neo4jMappingContext mappingContext,
-			Class<?>... types) {
+	private static void assertDomainTypesDiscovered(Neo4jMappingContext mappingContext, Class<?>... types) {
 		for (Class<?> type : types) {
 			assertThat(mappingContext.getPersistentEntity(type)).isNotNull();
 		}
@@ -174,8 +155,7 @@ public class Neo4jDataAutoConfigurationTests {
 
 		@Bean
 		public org.neo4j.ogm.config.Configuration myConfiguration() {
-			return new org.neo4j.ogm.config.Configuration.Builder()
-					.uri("http://localhost:12345").build();
+			return new org.neo4j.ogm.config.Configuration.Builder().uri("http://localhost:12345").build();
 		}
 
 	}

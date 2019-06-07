@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,29 +53,22 @@ public class ElasticsearchAutoConfigurationTests {
 	@Test
 	public void useExistingClient() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
+		this.context.register(CustomConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
-		assertThat(this.context.getBean("myClient"))
-				.isSameAs(this.context.getBean(Client.class));
+		assertThat(this.context.getBean("myClient")).isSameAs(this.context.getBean(Client.class));
 	}
 
 	@Test
 	public void createTransportClient() {
 		this.context = new AnnotationConfigApplicationContext();
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
-			TestPropertyValues.of(
-					"spring.data.elasticsearch.cluster-nodes:localhost:"
-							+ node.getTcpPort(),
-					"spring.data.elasticsearch.properties.path.home:target/es/client")
-					.applyTo(this.context);
-			this.context.register(PropertyPlaceholderAutoConfiguration.class,
-					ElasticsearchAutoConfiguration.class);
+			TestPropertyValues.of("spring.data.elasticsearch.cluster-nodes:localhost:" + node.getTcpPort(),
+					"spring.data.elasticsearch.properties.path.home:target/es/client").applyTo(this.context);
+			this.context.register(PropertyPlaceholderAutoConfiguration.class, ElasticsearchAutoConfiguration.class);
 			this.context.refresh();
-			List<DiscoveryNode> connectedNodes = this.context
-					.getBean(TransportClient.class).connectedNodes();
+			List<DiscoveryNode> connectedNodes = this.context.getBean(TransportClient.class).connectedNodes();
 			assertThat(connectedNodes).hasSize(1);
 		});
 	}

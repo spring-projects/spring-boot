@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 
 	@Test
 	public void getPoolUsageWithNoCurrent() {
-		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(
-				createDataSource()) {
+		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(createDataSource()) {
 			@Override
 			public Integer getActive() {
 				return null;
@@ -56,8 +55,7 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 
 	@Test
 	public void getPoolUsageWithNoMax() {
-		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(
-				createDataSource()) {
+		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(createDataSource()) {
 			@Override
 			public Integer getMax() {
 				return null;
@@ -76,22 +74,18 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 	public void getValidationQuery() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertThat(
-				new CommonsDbcp2DataSourcePoolMetadata(dataSource).getValidationQuery())
-						.isEqualTo("SELECT FROM FOO");
+		assertThat(new CommonsDbcp2DataSourcePoolMetadata(dataSource).getValidationQuery())
+				.isEqualTo("SELECT FROM FOO");
 	}
 
 	@Override
 	public void getDefaultAutoCommit() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setDefaultAutoCommit(false);
-		assertThat(
-				new CommonsDbcp2DataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
-						.isFalse();
+		assertThat(new CommonsDbcp2DataSourcePoolMetadata(dataSource).getDefaultAutoCommit()).isFalse();
 	}
 
-	private CommonsDbcp2DataSourcePoolMetadata createDataSourceMetadata(int minSize,
-			int maxSize) {
+	private CommonsDbcp2DataSourcePoolMetadata createDataSourceMetadata(int minSize, int maxSize) {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxTotal(maxSize);

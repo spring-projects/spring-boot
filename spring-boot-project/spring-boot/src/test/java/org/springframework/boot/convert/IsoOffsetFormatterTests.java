@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ public class IsoOffsetFormatterTests {
 	@Test
 	public void convertShouldConvertStringToIsoDate() {
 		OffsetDateTime now = OffsetDateTime.now();
-		OffsetDateTime converted = this.conversionService.convert(
-				DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now), OffsetDateTime.class);
+		OffsetDateTime converted = this.conversionService.convert(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now),
+				OffsetDateTime.class);
 		assertThat(converted).isEqualTo(now);
 	}
 
@@ -54,8 +54,7 @@ public class IsoOffsetFormatterTests {
 	public void convertShouldConvertIsoDateToString() {
 		OffsetDateTime now = OffsetDateTime.now();
 		String converted = this.conversionService.convert(now, String.class);
-		assertThat(converted).isNotNull()
-				.startsWith(now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+		assertThat(converted).isNotNull().startsWith(now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 	}
 
 	@Parameters(name = "{0}")

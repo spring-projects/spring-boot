@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ public class BindableTests {
 
 	@Test
 	public void ofClassShouldSetType() {
-		assertThat(Bindable.of(String.class).getType())
-				.isEqualTo(ResolvableType.forClass(String.class));
+		assertThat(Bindable.of(String.class).getType()).isEqualTo(ResolvableType.forClass(String.class));
 	}
 
 	@Test
@@ -78,28 +77,25 @@ public class BindableTests {
 
 	@Test
 	public void ofClassWithExistingValueShouldSetTypeAndExistingValue() {
-		assertThat(Bindable.of(String.class).withExistingValue("foo").getValue().get())
-				.isEqualTo("foo");
+		assertThat(Bindable.of(String.class).withExistingValue("foo").getValue().get()).isEqualTo("foo");
 	}
 
 	@Test
 	public void ofTypeWithExistingValueShouldSetTypeAndExistingValue() {
-		assertThat(Bindable.of(ResolvableType.forClass(String.class))
-				.withExistingValue("foo").getValue().get()).isEqualTo("foo");
+		assertThat(Bindable.of(ResolvableType.forClass(String.class)).withExistingValue("foo").getValue().get())
+				.isEqualTo("foo");
 	}
 
 	@Test
 	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
-				"ExistingValue must be an instance of " + String.class.getName());
+		this.thrown.expectMessage("ExistingValue must be an instance of " + String.class.getName());
 		Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123);
 	}
 
 	@Test
 	public void ofTypeWhenPrimitiveWithExistingValueWrapperShouldNotThrowException() {
-		Bindable<Integer> bindable = Bindable
-				.<Integer>of(ResolvableType.forClass(int.class)).withExistingValue(123);
+		Bindable<Integer> bindable = Bindable.<Integer>of(ResolvableType.forClass(int.class)).withExistingValue(123);
 		assertThat(bindable.getType().resolve()).isEqualTo(int.class);
 		assertThat(bindable.getValue().get()).isEqualTo(123);
 	}
@@ -107,26 +103,22 @@ public class BindableTests {
 	@Test
 	public void getBoxedTypeWhenNotBoxedShouldReturnType() {
 		Bindable<String> bindable = Bindable.of(String.class);
-		assertThat(bindable.getBoxedType())
-				.isEqualTo(ResolvableType.forClass(String.class));
+		assertThat(bindable.getBoxedType()).isEqualTo(ResolvableType.forClass(String.class));
 	}
 
 	@Test
 	public void getBoxedTypeWhenPrimitiveShouldReturnBoxedType() {
 		Bindable<Integer> bindable = Bindable.of(int.class);
 		assertThat(bindable.getType()).isEqualTo(ResolvableType.forClass(int.class));
-		assertThat(bindable.getBoxedType())
-				.isEqualTo(ResolvableType.forClass(Integer.class));
+		assertThat(bindable.getBoxedType()).isEqualTo(ResolvableType.forClass(Integer.class));
 	}
 
 	@Test
 	public void getBoxedTypeWhenPrimitiveArrayShouldReturnBoxedType() {
 		Bindable<int[]> bindable = Bindable.of(int[].class);
-		assertThat(bindable.getType().getComponentType())
-				.isEqualTo(ResolvableType.forClass(int.class));
+		assertThat(bindable.getType().getComponentType()).isEqualTo(ResolvableType.forClass(int.class));
 		assertThat(bindable.getBoxedType().isArray()).isTrue();
-		assertThat(bindable.getBoxedType().getComponentType())
-				.isEqualTo(ResolvableType.forClass(Integer.class));
+		assertThat(bindable.getBoxedType().getComponentType()).isEqualTo(ResolvableType.forClass(Integer.class));
 	}
 
 	@Test
@@ -137,47 +129,38 @@ public class BindableTests {
 	@Test
 	public void withAnnotationsShouldSetAnnotations() {
 		Annotation annotation = mock(Annotation.class);
-		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotations())
-				.containsExactly(annotation);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotations()).containsExactly(annotation);
 	}
 
 	@Test
 	public void getAnnotationWhenMatchShouldReturnAnnotation() {
 		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
-		assertThat(Bindable.of(String.class).withAnnotations(annotation)
-				.getAnnotation(Test.class)).isSameAs(annotation);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotation(Test.class))
+				.isSameAs(annotation);
 	}
 
 	@Test
 	public void getAnnotationWhenNoMatchShouldReturnNull() {
 		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
-		assertThat(Bindable.of(String.class).withAnnotations(annotation)
-				.getAnnotation(Bean.class)).isNull();
+		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotation(Bean.class)).isNull();
 	}
 
 	@Test
 	public void toStringShouldShowDetails() {
-		Annotation annotation = AnnotationUtils
-				.synthesizeAnnotation(TestAnnotation.class);
-		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo")
-				.withAnnotations(annotation);
+		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
+		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		System.out.println(bindable.toString());
-		assertThat(bindable.toString()).contains("type = java.lang.String, "
-				+ "value = 'provided', annotations = array<Annotation>["
-				+ "@org.springframework.boot.context.properties.bind."
-				+ "BindableTests$TestAnnotation()]");
+		assertThat(bindable.toString())
+				.contains("type = java.lang.String, " + "value = 'provided', annotations = array<Annotation>["
+						+ "@org.springframework.boot.context.properties.bind." + "BindableTests$TestAnnotation()]");
 	}
 
 	@Test
 	public void equalsAndHashCode() {
-		Annotation annotation = AnnotationUtils
-				.synthesizeAnnotation(TestAnnotation.class);
-		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo")
-				.withAnnotations(annotation);
-		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo")
-				.withAnnotations(annotation);
-		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof")
-				.withAnnotations(annotation);
+		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
+		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
+		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
+		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof").withAnnotations(annotation);
 		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
 		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
 		assertThat(bindable1).isEqualTo(bindable3);

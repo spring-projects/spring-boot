@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,12 +48,9 @@ public class BootRunIntegrationTests {
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput())
-				.contains("1. " + canonicalPathOf("build/classes/java/main"));
-		assertThat(result.getOutput())
-				.contains("2. " + canonicalPathOf("build/resources/main"));
-		assertThat(result.getOutput())
-				.doesNotContain(canonicalPathOf("src/main/resources"));
+		assertThat(result.getOutput()).contains("1. " + canonicalPathOf("build/classes/java/main"));
+		assertThat(result.getOutput()).contains("2. " + canonicalPathOf("build/resources/main"));
+		assertThat(result.getOutput()).doesNotContain(canonicalPathOf("src/main/resources"));
 	}
 
 	@Test
@@ -61,54 +58,42 @@ public class BootRunIntegrationTests {
 		copyApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput())
-				.contains("1. " + canonicalPathOf("src/main/resources"));
-		assertThat(result.getOutput())
-				.contains("2. " + canonicalPathOf("build/classes/java/main"));
-		assertThat(result.getOutput())
-				.doesNotContain(canonicalPathOf("build/resources/main"));
+		assertThat(result.getOutput()).contains("1. " + canonicalPathOf("src/main/resources"));
+		assertThat(result.getOutput()).contains("2. " + canonicalPathOf("build/classes/java/main"));
+		assertThat(result.getOutput()).doesNotContain(canonicalPathOf("build/resources/main"));
 	}
 
 	@Test
 	public void springBootExtensionMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput())
-				.contains("Main class name = com.example.CustomMainClass");
+		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
 	}
 
 	@Test
 	public void applicationPluginMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput())
-				.contains("Main class name = com.example.CustomMainClass");
+		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
 	}
 
 	@Test
 	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
 		copyApplication();
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput())
-				.contains("Main class name = com.example.BootRunApplication");
+		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Main class name = com.example.BootRunApplication");
 	}
 
 	@Test
 	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoJvmArguments");
-		assertThat(result.task(":echoJvmArguments").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput())
-				.contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
+		assertThat(result.task(":echoJvmArguments").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput()).contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
 	}
 
 	private void copyApplication() throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
+		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		output.mkdirs();
 		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
 	}

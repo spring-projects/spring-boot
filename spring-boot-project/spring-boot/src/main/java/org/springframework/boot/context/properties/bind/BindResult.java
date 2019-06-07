@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,7 @@ public final class BindResult<T> {
 	 * @return the present value
 	 * @throws X if there is no value present
 	 */
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier)
-			throws X {
+	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
 		if (this.value == null) {
 			throw exceptionSupplier.get();
 		}

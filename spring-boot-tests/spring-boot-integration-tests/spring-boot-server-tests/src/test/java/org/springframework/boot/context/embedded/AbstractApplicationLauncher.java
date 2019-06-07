@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,16 +70,14 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 
 	private Process startApplication() throws Exception {
 		File workingDirectory = getWorkingDirectory();
-		File serverPortFile = (workingDirectory != null)
-				? new File(workingDirectory, "target/server.port")
+		File serverPortFile = (workingDirectory != null) ? new File(workingDirectory, "target/server.port")
 				: new File("target/server.port");
 		serverPortFile.delete();
 		File archive = this.applicationBuilder.buildApplication();
 		List<String> arguments = new ArrayList<>();
 		arguments.add(System.getProperty("java.home") + "/bin/java");
 		arguments.addAll(getArguments(archive));
-		ProcessBuilder processBuilder = new ProcessBuilder(
-				StringUtils.toStringArray(arguments));
+		ProcessBuilder processBuilder = new ProcessBuilder(StringUtils.toStringArray(arguments));
 		if (workingDirectory != null) {
 			processBuilder.directory(workingDirectory);
 		}
@@ -94,16 +92,14 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 		long end = System.currentTimeMillis() + 30000;
 		while (serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException(
-						"server.port file was not written within 30 seconds");
+				throw new IllegalStateException("server.port file was not written within 30 seconds");
 			}
 			if (!process.isAlive()) {
 				throw new IllegalStateException("Application failed to launch");
 			}
 			Thread.sleep(100);
 		}
-		return Integer
-				.parseInt(FileCopyUtils.copyToString(new FileReader(serverPortFile)));
+		return Integer.parseInt(FileCopyUtils.copyToString(new FileReader(serverPortFile)));
 	}
 
 	private static class ConsoleCopy extends Thread {

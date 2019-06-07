@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ class InitializrService {
 	 * Accept header to use to retrieve the service capabilities of the service. If the
 	 * service does not offer such feature, the json meta-data are retrieved instead.
 	 */
-	public static final String ACCEPT_SERVICE_CAPABILITIES = "text/plain,"
-			+ ACCEPT_META_DATA;
+	public static final String ACCEPT_SERVICE_CAPABILITIES = "text/plain," + ACCEPT_META_DATA;
 
 	/**
 	 * Late binding HTTP client.
@@ -86,8 +85,7 @@ class InitializrService {
 	 * @return an entity defining the project
 	 * @throws IOException if generation fails
 	 */
-	public ProjectGenerationResponse generate(ProjectGenerationRequest request)
-			throws IOException {
+	public ProjectGenerationResponse generate(ProjectGenerationRequest request) throws IOException {
 		Log.info("Using service at " + request.getServiceUrl());
 		InitializrServiceMetadata metadata = loadMetadata(request.getServiceUrl());
 		URI url = request.generateUrl(metadata);
@@ -104,8 +102,7 @@ class InitializrService {
 	 * @throws IOException if the service's metadata cannot be loaded
 	 */
 	public InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
-		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(
-				serviceUrl);
+		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(serviceUrl);
 		validateResponse(httpResponse, serviceUrl);
 		return parseJsonMetadata(httpResponse.getEntity());
 	}
@@ -121,10 +118,8 @@ class InitializrService {
 	 */
 	public Object loadServiceCapabilities(String serviceUrl) throws IOException {
 		HttpGet request = new HttpGet(serviceUrl);
-		request.setHeader(
-				new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
-		CloseableHttpResponse httpResponse = execute(request, serviceUrl,
-				"retrieve help");
+		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
+		CloseableHttpResponse httpResponse = execute(request, serviceUrl, "retrieve help");
 		validateResponse(httpResponse, serviceUrl);
 		HttpEntity httpEntity = httpResponse.getEntity();
 		ContentType contentType = ContentType.getOrDefault(httpEntity);
@@ -134,34 +129,29 @@ class InitializrService {
 		return parseJsonMetadata(httpEntity);
 	}
 
-	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity)
-			throws IOException {
+	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity) throws IOException {
 		try {
 			return new InitializrServiceMetadata(getContentAsJson(httpEntity));
 		}
 		catch (JSONException ex) {
-			throw new ReportableException(
-					"Invalid content received from server (" + ex.getMessage() + ")", ex);
+			throw new ReportableException("Invalid content received from server (" + ex.getMessage() + ")", ex);
 		}
 	}
 
 	private void validateResponse(CloseableHttpResponse httpResponse, String serviceUrl) {
 		if (httpResponse.getEntity() == null) {
-			throw new ReportableException(
-					"No content received from server '" + serviceUrl + "'");
+			throw new ReportableException("No content received from server '" + serviceUrl + "'");
 		}
 		if (httpResponse.getStatusLine().getStatusCode() != 200) {
 			throw createException(serviceUrl, httpResponse);
 		}
 	}
 
-	private ProjectGenerationResponse createResponse(CloseableHttpResponse httpResponse,
-			HttpEntity httpEntity) throws IOException {
-		ProjectGenerationResponse response = new ProjectGenerationResponse(
-				ContentType.getOrDefault(httpEntity));
+	private ProjectGenerationResponse createResponse(CloseableHttpResponse httpResponse, HttpEntity httpEntity)
+			throws IOException {
+		ProjectGenerationResponse response = new ProjectGenerationResponse(ContentType.getOrDefault(httpEntity));
 		response.setContent(FileCopyUtils.copyToByteArray(httpEntity.getContent()));
-		String fileName = extractFileName(
-				httpResponse.getFirstHeader("Content-Disposition"));
+		String fileName = extractFileName(httpResponse.getFirstHeader("Content-Disposition"));
 		if (fileName != null) {
 			response.setFileName(fileName);
 		}
@@ -188,23 +178,19 @@ class InitializrService {
 		return execute(request, url, "retrieve metadata");
 	}
 
-	private CloseableHttpResponse execute(HttpUriRequest request, Object url,
-			String description) {
+	private CloseableHttpResponse execute(HttpUriRequest request, Object url, String description) {
 		try {
-			request.addHeader("User-Agent", "SpringBootCli/"
-					+ getClass().getPackage().getImplementationVersion());
+			request.addHeader("User-Agent", "SpringBootCli/" + getClass().getPackage().getImplementationVersion());
 			return getHttp().execute(request);
 		}
 		catch (IOException ex) {
-			throw new ReportableException("Failed to " + description
-					+ " from service at '" + url + "' (" + ex.getMessage() + ")");
+			throw new ReportableException(
+					"Failed to " + description + " from service at '" + url + "' (" + ex.getMessage() + ")");
 		}
 	}
 
-	private ReportableException createException(String url,
-			CloseableHttpResponse httpResponse) {
-		String message = "Initializr service call failed using '" + url
-				+ "' - service returned "
+	private ReportableException createException(String url, CloseableHttpResponse httpResponse) {
+		String message = "Initializr service call failed using '" + url + "' - service returned "
 				+ httpResponse.getStatusLine().getReasonPhrase();
 		String error = extractMessage(httpResponse.getEntity());
 		if (StringUtils.hasText(error)) {
@@ -232,8 +218,7 @@ class InitializrService {
 		return null;
 	}
 
-	private JSONObject getContentAsJson(HttpEntity entity)
-			throws IOException, JSONException {
+	private JSONObject getContentAsJson(HttpEntity entity) throws IOException, JSONException {
 		return new JSONObject(getContent(entity));
 	}
 

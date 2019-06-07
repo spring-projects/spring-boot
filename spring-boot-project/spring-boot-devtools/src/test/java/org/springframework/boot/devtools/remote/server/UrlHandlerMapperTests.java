@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ public class UrlHandlerMapperTests {
 	@Test
 	public void ignoresDifferentUrl() {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
-		HttpServletRequest servletRequest = new MockHttpServletRequest("GET",
-				"/tunnel/other");
+		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel/other");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
 		assertThat(mapper.getHandler(request)).isNull();
 	}

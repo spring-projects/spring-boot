@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,8 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	@Test
 	public void shouldCreateInstancesForReactiveAndBlockingRepositories() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialization-mode:never")
-				.applyTo(this.context);
-		this.context.register(BlockingAndReactiveConfiguration.class,
-				BaseConfiguration.class);
+		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
+		this.context.register(BlockingAndReactiveConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
@@ -86,12 +84,9 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			List<String> names = new ArrayList<>();
-			for (Class<?> type : new Class<?>[] { MongoAutoConfiguration.class,
-					MongoReactiveAutoConfiguration.class,
-					MongoDataAutoConfiguration.class,
-					MongoRepositoriesAutoConfiguration.class,
-					MongoReactiveDataAutoConfiguration.class,
-					MongoReactiveRepositoriesAutoConfiguration.class }) {
+			for (Class<?> type : new Class<?>[] { MongoAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+					MongoDataAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class,
+					MongoReactiveDataAutoConfiguration.class, MongoReactiveRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}
 			return StringUtils.toStringArray(names);

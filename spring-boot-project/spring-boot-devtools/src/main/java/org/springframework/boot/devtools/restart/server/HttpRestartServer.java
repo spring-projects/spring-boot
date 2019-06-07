@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,12 +67,10 @@ public class HttpRestartServer {
 	 * @param response the response
 	 * @throws IOException in case of I/O errors
 	 */
-	public void handle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		try {
 			Assert.state(request.getHeaders().getContentLength() > 0, "No content");
-			ObjectInputStream objectInputStream = new ObjectInputStream(
-					request.getBody());
+			ObjectInputStream objectInputStream = new ObjectInputStream(request.getBody());
 			ClassLoaderFiles files = (ClassLoaderFiles) objectInputStream.readObject();
 			objectInputStream.close();
 			this.server.updateAndRestart(files);

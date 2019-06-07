@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,56 +56,46 @@ public class RestartApplicationListenerTests {
 
 	@Test
 	public void isHighestPriority() {
-		assertThat(new RestartApplicationListener().getOrder())
-				.isEqualTo(Ordered.HIGHEST_PRECEDENCE);
+		assertThat(new RestartApplicationListener().getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE);
 	}
 
 	@Test
 	public void initializeWithReady() {
 		testInitialize(false);
-		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
-				.isEqualTo(ARGS);
+		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args")).isEqualTo(ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
-		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(),
-				"rootContexts")).isNotEmpty();
+		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(), "rootContexts")).isNotEmpty();
 	}
 
 	@Test
 	public void initializeWithFail() {
 		testInitialize(true);
-		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
-				.isEqualTo(ARGS);
+		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args")).isEqualTo(ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
-		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(),
-				"rootContexts")).isEmpty();
+		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(), "rootContexts")).isEmpty();
 	}
 
 	@Test
 	public void disableWithSystemProperty() {
 		System.setProperty(ENABLED_PROPERTY, "false");
 		testInitialize(false);
-		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "enabled"))
-				.isEqualTo(false);
+		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "enabled")).isEqualTo(false);
 	}
 
 	private void testInitialize(boolean failed) {
 		Restarter.clearInstance();
 		RestartApplicationListener listener = new RestartApplicationListener();
 		SpringApplication application = new SpringApplication();
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		listener.onApplicationEvent(new ApplicationStartingEvent(application, ARGS));
 		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());
 		assertThat(Restarter.getInstance().isFinished()).isFalse();
-		listener.onApplicationEvent(
-				new ApplicationPreparedEvent(application, ARGS, context));
+		listener.onApplicationEvent(new ApplicationPreparedEvent(application, ARGS, context));
 		if (failed) {
-			listener.onApplicationEvent(new ApplicationFailedEvent(application, ARGS,
-					context, new RuntimeException()));
+			listener.onApplicationEvent(new ApplicationFailedEvent(application, ARGS, context, new RuntimeException()));
 		}
 		else {
-			listener.onApplicationEvent(
-					new ApplicationReadyEvent(application, ARGS, context));
+			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS, context));
 		}
 	}
 

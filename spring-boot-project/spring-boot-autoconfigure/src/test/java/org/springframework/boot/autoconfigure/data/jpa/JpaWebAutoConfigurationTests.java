@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,18 +54,13 @@ public class JpaWebAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				SpringDataWebAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
+				SpringDataWebAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(PageableHandlerMethodArgumentResolver.class))
-				.isNotNull();
-		assertThat(this.context.getBean(FormattingConversionService.class)
-				.canConvert(Long.class, City.class)).isTrue();
+		assertThat(this.context.getBean(PageableHandlerMethodArgumentResolver.class)).isNotNull();
+		assertThat(this.context.getBean(FormattingConversionService.class).canConvert(Long.class, City.class)).isTrue();
 	}
 
 	@Configuration

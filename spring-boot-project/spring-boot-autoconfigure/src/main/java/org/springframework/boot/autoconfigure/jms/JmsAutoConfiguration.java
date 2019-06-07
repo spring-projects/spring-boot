@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,26 +76,21 @@ public class JmsAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get();
 			JmsTemplate template = new JmsTemplate(connectionFactory);
 			template.setPubSubDomain(this.properties.isPubSubDomain());
-			map.from(this.destinationResolver::getIfUnique).whenNonNull()
-					.to(template::setDestinationResolver);
-			map.from(this.messageConverter::getIfUnique).whenNonNull()
-					.to(template::setMessageConverter);
+			map.from(this.destinationResolver::getIfUnique).whenNonNull().to(template::setDestinationResolver);
+			map.from(this.messageConverter::getIfUnique).whenNonNull().to(template::setMessageConverter);
 			mapTemplateProperties(this.properties.getTemplate(), template);
 			return template;
 		}
 
 		private void mapTemplateProperties(Template properties, JmsTemplate template) {
 			PropertyMapper map = PropertyMapper.get();
-			map.from(properties::getDefaultDestination).whenNonNull()
-					.to(template::setDefaultDestinationName);
-			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis)
-					.to(template::setDeliveryDelay);
+			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
+			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
 			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
 			map.from(properties::getDeliveryMode).whenNonNull().as(DeliveryMode::getValue)
 					.to(template::setDeliveryMode);
 			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
-			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis)
-					.to(template::setTimeToLive);
+			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
 			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
 					.to(template::setReceiveTimeout);
 		}

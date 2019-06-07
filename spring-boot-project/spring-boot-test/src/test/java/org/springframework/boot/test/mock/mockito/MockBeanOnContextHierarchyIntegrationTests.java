@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ public class MockBeanOnContextHierarchyIntegrationTests {
 		ApplicationContext context = this.childConfig.getContext();
 		ApplicationContext parentContext = context.getParent();
 		assertThat(parentContext.getBeanNamesForType(ExampleService.class)).hasSize(1);
-		assertThat(parentContext.getBeanNamesForType(ExampleServiceCaller.class))
-				.hasSize(0);
+		assertThat(parentContext.getBeanNamesForType(ExampleServiceCaller.class)).hasSize(0);
 		assertThat(context.getBeanNamesForType(ExampleService.class)).hasSize(0);
 		assertThat(context.getBeanNamesForType(ExampleServiceCaller.class)).hasSize(1);
 		assertThat(context.getBean(ExampleService.class)).isNotNull();
@@ -73,8 +72,7 @@ public class MockBeanOnContextHierarchyIntegrationTests {
 		private ApplicationContext context;
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.context = applicationContext;
 		}
 

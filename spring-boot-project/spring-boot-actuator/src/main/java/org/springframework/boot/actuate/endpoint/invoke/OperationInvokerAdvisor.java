@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,9 @@ public interface OperationInvokerAdvisor {
 	 * @return an potentially new operation invoker with support for additional features
 	 * @since 2.0.6
 	 */
-	default OperationInvoker apply(EndpointId endpointId, OperationType operationType,
-			OperationParameters parameters, OperationInvoker invoker) {
-		return apply((endpointId != null) ? endpointId.toString() : null, operationType,
-				parameters, invoker);
+	default OperationInvoker apply(EndpointId endpointId, OperationType operationType, OperationParameters parameters,
+			OperationInvoker invoker) {
+		return apply((endpointId != null) ? endpointId.toString() : null, operationType, parameters, invoker);
 	}
 
 	/**
@@ -54,7 +53,7 @@ public interface OperationInvokerAdvisor {
 	 * {@link #apply(EndpointId, OperationType, OperationParameters, OperationInvoker)}
 	 */
 	@Deprecated
-	OperationInvoker apply(String endpointId, OperationType operationType,
-			OperationParameters parameters, OperationInvoker invoker);
+	OperationInvoker apply(String endpointId, OperationType operationType, OperationParameters parameters,
+			OperationInvoker invoker);
 
 }

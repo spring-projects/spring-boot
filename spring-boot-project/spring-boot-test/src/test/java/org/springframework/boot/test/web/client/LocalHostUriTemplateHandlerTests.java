@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,24 +69,21 @@ public class LocalHostUriTemplateHandlerTests {
 	public void getRootUriShouldUseLocalServerPort() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "1234");
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-				environment);
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment);
 		assertThat(handler.getRootUri()).isEqualTo("http://localhost:1234");
 	}
 
 	@Test
 	public void getRootUriWhenLocalServerPortMissingShouldUsePort8080() {
 		MockEnvironment environment = new MockEnvironment();
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-				environment);
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment);
 		assertThat(handler.getRootUri()).isEqualTo("http://localhost:8080");
 	}
 
 	@Test
 	public void getRootUriUsesCustomScheme() {
 		MockEnvironment environment = new MockEnvironment();
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment,
-				"https");
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment, "https");
 		assertThat(handler.getRootUri()).isEqualTo("https://localhost:8080");
 	}
 
@@ -94,8 +91,7 @@ public class LocalHostUriTemplateHandlerTests {
 	public void getRootUriShouldUseContextPath() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("server.servlet.context-path", "/foo");
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-				environment);
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment);
 		assertThat(handler.getRootUri()).isEqualTo("http://localhost:8080/foo");
 	}
 
@@ -105,10 +101,8 @@ public class LocalHostUriTemplateHandlerTests {
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
 		Map<String, ?> uriVariables = new HashMap<>();
 		URI uri = URI.create("https://www.example.com");
-		given(uriTemplateHandler.expand("https://localhost:8080/", uriVariables))
-				.willReturn(uri);
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment,
-				"https", uriTemplateHandler);
+		given(uriTemplateHandler.expand("https://localhost:8080/", uriVariables)).willReturn(uri);
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment, "https", uriTemplateHandler);
 		assertThat(handler.expand("/", uriVariables)).isEqualTo(uri);
 		verify(uriTemplateHandler).expand("https://localhost:8080/", uriVariables);
 	}

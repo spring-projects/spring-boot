@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,16 +72,14 @@ public class ClassPathFileChangeListenerTests {
 	public void eventPublisherMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("EventPublisher must not be null");
-		new ClassPathFileChangeListener(null, this.restartStrategy,
-				this.fileSystemWatcher);
+		new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher);
 	}
 
 	@Test
 	public void restartStrategyMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestartStrategy must not be null");
-		new ClassPathFileChangeListener(this.eventPublisher, null,
-				this.fileSystemWatcher);
+		new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher);
 	}
 
 	@Test
@@ -97,8 +95,8 @@ public class ClassPathFileChangeListenerTests {
 	}
 
 	private void testSendsEvent(boolean restart) {
-		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(
-				this.eventPublisher, this.restartStrategy, this.fileSystemWatcher);
+		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(this.eventPublisher,
+				this.restartStrategy, this.fileSystemWatcher);
 		File folder = new File("s1");
 		File file = new File("f1");
 		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
@@ -113,8 +111,7 @@ public class ClassPathFileChangeListenerTests {
 		}
 		listener.onChange(changeSet);
 		verify(this.eventPublisher).publishEvent(this.eventCaptor.capture());
-		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor
-				.getValue();
+		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor.getValue();
 		assertThat(actualEvent.getChangeSet()).isEqualTo(changeSet);
 		assertThat(actualEvent.isRestartRequired()).isEqualTo(restart);
 	}

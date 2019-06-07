@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,13 +54,11 @@ public class InfluxDbHealthIndicatorTests {
 	@Test
 	public void influxDbIsDown() {
 		InfluxDB influxDB = mock(InfluxDB.class);
-		given(influxDB.ping())
-				.willThrow(new InfluxDBException(new IOException("Connection failed")));
+		given(influxDB.ping()).willThrow(new InfluxDBException(new IOException("Connection failed")));
 		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error"))
-				.contains("Connection failed");
+		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
 		verify(influxDB).ping();
 	}
 

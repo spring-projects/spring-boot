@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,76 +68,62 @@ public class JpaPropertiesTests {
 	@Test
 	public void noCustomNamingStrategy() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Map<String, Object> hibernateProperties = properties
-					.getHibernateProperties(new HibernateSettings());
-			assertThat(hibernateProperties)
-					.doesNotContainKeys("hibernate.ejb.naming_strategy");
-			assertThat(hibernateProperties).containsEntry(
-					"hibernate.physical_naming_strategy",
+			Map<String, Object> hibernateProperties = properties.getHibernateProperties(new HibernateSettings());
+			assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
+			assertThat(hibernateProperties).containsEntry("hibernate.physical_naming_strategy",
 					SpringPhysicalNamingStrategy.class.getName());
-			assertThat(hibernateProperties).containsEntry(
-					"hibernate.implicit_naming_strategy",
+			assertThat(hibernateProperties).containsEntry("hibernate.implicit_naming_strategy",
 					SpringImplicitNamingStrategy.class.getName());
 		}));
 	}
 
 	@Test
 	public void hibernate5CustomNamingStrategies() {
-		this.contextRunner.withPropertyValues(
-				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+		this.contextRunner
+				.withPropertyValues("spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
 				.run(assertJpaProperties((properties) -> {
 					Map<String, Object> hibernateProperties = properties
 							.getHibernateProperties(new HibernateSettings());
 					assertThat(hibernateProperties).contains(
-							entry("hibernate.implicit_naming_strategy",
-									"com.example.Implicit"),
-							entry("hibernate.physical_naming_strategy",
-									"com.example.Physical"));
-					assertThat(hibernateProperties)
-							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+							entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
+							entry("hibernate.physical_naming_strategy", "com.example.Physical"));
+					assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 				}));
 	}
 
 	@Test
 	public void hibernate5CustomNamingStrategiesViaJpaProperties() {
-		this.contextRunner.withPropertyValues(
-				"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
-				"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
+		this.contextRunner
+				.withPropertyValues("spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
+						"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
 				.run(assertJpaProperties((properties) -> {
 					Map<String, Object> hibernateProperties = properties
 							.getHibernateProperties(new HibernateSettings());
 					// You can override them as we don't provide any default
 					assertThat(hibernateProperties).contains(
-							entry("hibernate.implicit_naming_strategy",
-									"com.example.Implicit"),
-							entry("hibernate.physical_naming_strategy",
-									"com.example.Physical"));
-					assertThat(hibernateProperties)
-							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+							entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
+							entry("hibernate.physical_naming_strategy", "com.example.Physical"));
+					assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 				}));
 	}
 
 	@Test
 	public void useNewIdGeneratorMappingsDefault() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Map<String, Object> hibernateProperties = properties
-					.getHibernateProperties(new HibernateSettings());
-			assertThat(hibernateProperties).containsEntry(
-					AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+			Map<String, Object> hibernateProperties = properties.getHibernateProperties(new HibernateSettings());
+			assertThat(hibernateProperties).containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 		}));
 	}
 
 	@Test
 	public void useNewIdGeneratorMappingsFalse() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.hibernate.use-new-id-generator-mappings:false")
+		this.contextRunner.withPropertyValues("spring.jpa.hibernate.use-new-id-generator-mappings:false")
 				.run(assertJpaProperties((properties) -> {
 					Map<String, Object> hibernateProperties = properties
 							.getHibernateProperties(new HibernateSettings());
-					assertThat(hibernateProperties).containsEntry(
-							AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+					assertThat(hibernateProperties).containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS,
+							"false");
 				}));
 	}
 
@@ -160,20 +146,17 @@ public class JpaPropertiesTests {
 	@Test
 	public void determineDatabaseWithKnownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Database database = properties
-					.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 			assertThat(database).isEqualTo(Database.H2);
 		}));
 	}
 
 	@Test
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
-		this.contextRunner.withPropertyValues("spring.jpa.database=mysql")
-				.run(assertJpaProperties((properties) -> {
-					Database database = properties
-							.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
-					assertThat(database).isEqualTo(Database.MYSQL);
-				}));
+		this.contextRunner.withPropertyValues("spring.jpa.database=mysql").run(assertJpaProperties((properties) -> {
+			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+			assertThat(database).isEqualTo(Database.MYSQL);
+		}));
 	}
 
 	@Test
@@ -184,18 +167,15 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void defaultDdlAutoIsNotInvokedIfHibernateSpecificPropertyIsSet() {
-		this.contextRunner
-				.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
+		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
 				.run(assertDefaultDdlAutoNotInvoked("create"));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(
-			String expectedDdlAuto) {
+	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(String expectedDdlAuto) {
 		return assertJpaProperties((properties) -> {
-			Map<String, Object> hibernateProperties = properties.getHibernateProperties(
-					new HibernateSettings().ddlAuto(this.ddlAutoSupplier));
-			assertThat(hibernateProperties).containsEntry("hibernate.hbm2ddl.auto",
-					expectedDdlAuto);
+			Map<String, Object> hibernateProperties = properties
+					.getHibernateProperties(new HibernateSettings().ddlAuto(this.ddlAutoSupplier));
+			assertThat(hibernateProperties).containsEntry("hibernate.hbm2ddl.auto", expectedDdlAuto);
 			verify(this.ddlAutoSupplier, never()).get();
 		});
 	}
@@ -203,8 +183,7 @@ public class JpaPropertiesTests {
 	@Test
 	public void determineDatabaseWithUnknownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Database database = properties
-					.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
+			Database database = properties.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
 			assertThat(database).isEqualTo(Database.DEFAULT);
 		}));
 	}
@@ -235,8 +214,7 @@ public class JpaPropertiesTests {
 		return ds;
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertJpaProperties(
-			Consumer<JpaProperties> consumer) {
+	private ContextConsumer<AssertableApplicationContext> assertJpaProperties(Consumer<JpaProperties> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(JpaProperties.class);
 			consumer.accept(context.getBean(JpaProperties.class));

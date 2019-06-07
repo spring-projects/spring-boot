@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ public class LdapAutoConfigurationTests {
 	public void contextSourceWithDefaultUrl() {
 		this.contextRunner.run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-			String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
-					"urls");
+			String[] urls = (String[]) ReflectionTestUtils.getField(contextSource, "urls");
 			assertThat(urls).containsExactly("ldap://localhost:389");
 			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
 		});
@@ -50,49 +49,39 @@ public class LdapAutoConfigurationTests {
 
 	@Test
 	public void contextSourceWithSingleUrl() {
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123")
-				.run((context) -> {
-					ContextSource contextSource = context.getBean(ContextSource.class);
-					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
-							"urls");
-					assertThat(urls).containsExactly("ldap://localhost:123");
-				});
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123").run((context) -> {
+			ContextSource contextSource = context.getBean(ContextSource.class);
+			String[] urls = (String[]) ReflectionTestUtils.getField(contextSource, "urls");
+			assertThat(urls).containsExactly("ldap://localhost:123");
+		});
 	}
 
 	@Test
 	public void contextSourceWithSeveralUrls() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123")
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123")
 				.run((context) -> {
 					ContextSource contextSource = context.getBean(ContextSource.class);
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
-					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
-							"urls");
-					assertThat(urls).containsExactly("ldap://localhost:123",
-							"ldap://mycompany:123");
+					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource, "urls");
+					assertThat(urls).containsExactly("ldap://localhost:123", "ldap://mycompany:123");
 					assertThat(ldapProperties.getUrls()).hasSize(2);
 				});
 	}
 
 	@Test
 	public void contextSourceWithExtraCustomization() {
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123",
-				"spring.ldap.username:root", "spring.ldap.password:secret",
-				"spring.ldap.anonymous-read-only:true",
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123", "spring.ldap.username:root",
+				"spring.ldap.password:secret", "spring.ldap.anonymous-read-only:true",
 				"spring.ldap.base:cn=SpringDevelopers",
-				"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5")
-				.run((context) -> {
-					LdapContextSource contextSource = context
-							.getBean(LdapContextSource.class);
+				"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5").run((context) -> {
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 					assertThat(contextSource.getUserDn()).isEqualTo("root");
 					assertThat(contextSource.getPassword()).isEqualTo("secret");
 					assertThat(contextSource.isAnonymousReadOnly()).isTrue();
-					assertThat(contextSource.getBaseLdapPathAsString())
-							.isEqualTo("cn=SpringDevelopers");
+					assertThat(contextSource.getBaseLdapPathAsString()).isEqualTo("cn=SpringDevelopers");
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
-					assertThat(ldapProperties.getBaseEnvironment()).containsEntry(
-							"java.naming.security.authentication", "DIGEST-MD5");
+					assertThat(ldapProperties.getBaseEnvironment()).containsEntry("java.naming.security.authentication",
+							"DIGEST-MD5");
 				});
 	}
 

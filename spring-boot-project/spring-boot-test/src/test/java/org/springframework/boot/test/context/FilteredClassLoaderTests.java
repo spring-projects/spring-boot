@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public class FilteredClassLoaderTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void loadClassWhenFilteredOnPackageShouldThrowClassNotFound()
-			throws Exception {
+	public void loadClassWhenFilteredOnPackageShouldThrowClassNotFound() throws Exception {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class.getPackage().getName());
 		this.thrown.expect(ClassNotFoundException.class);
@@ -44,8 +43,7 @@ public class FilteredClassLoaderTests {
 
 	@Test
 	public void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
-		try (FilteredClassLoader classLoader = new FilteredClassLoader(
-				FilteredClassLoaderTests.class)) {
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(FilteredClassLoaderTests.class)) {
 			this.thrown.expect(ClassNotFoundException.class);
 			classLoader.loadClass(getClass().getName());
 		}

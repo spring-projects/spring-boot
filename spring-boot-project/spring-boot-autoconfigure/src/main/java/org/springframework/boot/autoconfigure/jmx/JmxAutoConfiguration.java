@@ -52,8 +52,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware {
 
 	private Environment environment;
@@ -72,14 +71,12 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean(value = MBeanExporter.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
 	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
 		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
 		exporter.setNamingStrategy(namingStrategy);
-		String serverBean = this.environment.getProperty("spring.jmx.server",
-				"mbeanServer");
+		String serverBean = this.environment.getProperty("spring.jmx.server", "mbeanServer");
 		if (StringUtils.hasLength(serverBean)) {
 			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
 		}
@@ -87,11 +84,9 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ObjectNamingStrategy.class,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(value = ObjectNamingStrategy.class, search = SearchStrategy.CURRENT)
 	public ParentAwareNamingStrategy objectNamingStrategy() {
-		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(
-				new AnnotationJmxAttributeSource());
+		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
 		String defaultDomain = this.environment.getProperty("spring.jmx.default-domain");
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);

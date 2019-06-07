@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,15 +43,12 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void warContainerDependencyEvaluatesSuccessfully() {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/war-container-dependency.gradle")
-				.build();
+		this.gradleBuild.script("src/main/gradle/packaging/war-container-dependency.gradle").build();
 	}
 
 	@Test
 	public void bootJarMainClass() throws IOException {
-		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-main-class.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-main-class.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -63,9 +60,7 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void bootJarManifestMainClass() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-jar-manifest-main-class.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-manifest-main-class.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -77,9 +72,7 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void applicationPluginMainClass() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/application-plugin-main-class.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/application-plugin-main-class.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -91,9 +84,7 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void springBootDslMainClass() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/spring-boot-dsl-main-class.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/spring-boot-dsl-main-class.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -105,25 +96,19 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void bootWarIncludeDevtools() throws IOException {
-		new File(this.gradleBuild.getProjectDir(),
-				"spring-boot-devtools-1.2.3.RELEASE.jar").createNewFile();
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-war-include-devtools.gradle")
-				.build("bootWar");
+		new File(this.gradleBuild.getProjectDir(), "spring-boot-devtools-1.2.3.RELEASE.jar").createNewFile();
+		this.gradleBuild.script("src/main/gradle/packaging/boot-war-include-devtools.gradle").build("bootWar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".war");
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
-			assertThat(jar.getEntry("WEB-INF/lib/spring-boot-devtools-1.2.3.RELEASE.jar"))
-					.isNotNull();
+			assertThat(jar.getEntry("WEB-INF/lib/spring-boot-devtools-1.2.3.RELEASE.jar")).isNotNull();
 		}
 	}
 
 	@Test
 	public void bootJarRequiresUnpack() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-jar-requires-unpack.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-requires-unpack.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -136,37 +121,28 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void bootJarIncludeLaunchScript() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-jar-include-launch-script.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-include-launch-script.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)))
-				.startsWith("#!/bin/bash");
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).startsWith("#!/bin/bash");
 	}
 
 	@Test
 	public void bootJarLaunchScriptProperties() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/boot-jar-launch-script-properties.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-launch-script-properties.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)))
-				.contains("example-app.log");
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).contains("example-app.log");
 	}
 
 	@Test
 	public void bootJarCustomLaunchScript() throws IOException {
-		File customScriptFile = new File(this.gradleBuild.getProjectDir(),
-				"src/custom.script");
+		File customScriptFile = new File(this.gradleBuild.getProjectDir(), "src/custom.script");
 		customScriptFile.getParentFile().mkdirs();
 		FileCopyUtils.copy("custom", new FileWriter(customScriptFile));
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-jar-custom-launch-script.gradle")
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-custom-launch-script.gradle").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -175,9 +151,7 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void bootWarPropertiesLauncher() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-war-properties-launcher.gradle")
-				.build("bootWar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-war-properties-launcher.gradle").build("bootWar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".war");
 		assertThat(file).isFile();
@@ -189,8 +163,7 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void bootJarAndJar() throws IOException {
-		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-and-jar.gradle")
-				.build("assemble");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-and-jar.gradle").build("assemble");
 		File jar = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(jar).isFile();

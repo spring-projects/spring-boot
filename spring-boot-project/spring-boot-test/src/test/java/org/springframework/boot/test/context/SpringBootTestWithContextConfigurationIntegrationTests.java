@@ -39,8 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest
-@ContextConfiguration(
-		classes = SpringBootTestWithContextConfigurationIntegrationTests.Config.class)
+@ContextConfiguration(classes = SpringBootTestWithContextConfigurationIntegrationTests.Config.class)
 public class SpringBootTestWithContextConfigurationIntegrationTests {
 
 	@Rule

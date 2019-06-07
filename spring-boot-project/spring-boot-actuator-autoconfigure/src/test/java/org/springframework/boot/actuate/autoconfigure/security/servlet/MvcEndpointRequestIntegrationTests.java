@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,58 +54,45 @@ import org.springframework.web.cors.CorsConfiguration;
  *
  * @author Madhura Bhave
  */
-public class MvcEndpointRequestIntegrationTests
-		extends AbstractEndpointRequestIntegrationTests {
+public class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrationTests {
 
 	@Test
 	public void toLinksWhenServletPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("server.servlet.path=/admin")
-				.run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/").exchange().expectStatus()
-							.isOk();
-					webTestClient.get().uri("/admin/actuator").exchange().expectStatus()
-							.isOk();
-				});
+		getContextRunner().withPropertyValues("server.servlet.path=/admin").run((context) -> {
+			WebTestClient webTestClient = getWebTestClient(context);
+			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isOk();
+			webTestClient.get().uri("/admin/actuator").exchange().expectStatus().isOk();
+		});
 	}
 
 	@Test
 	public void toEndpointWhenServletPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("server.servlet.path=/admin")
-				.run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/e1").exchange()
-							.expectStatus().isOk();
-				});
+		getContextRunner().withPropertyValues("server.servlet.path=/admin").run((context) -> {
+			WebTestClient webTestClient = getWebTestClient(context);
+			webTestClient.get().uri("/admin/actuator/e1").exchange().expectStatus().isOk();
+		});
 	}
 
 	@Test
 	public void toAnyEndpointWhenServletPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("server.servlet.path=/admin",
-				"spring.security.user.password=password").run((context) -> {
+		getContextRunner().withPropertyValues("server.servlet.path=/admin", "spring.security.user.password=password")
+				.run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/e2").exchange()
-							.expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/e2")
-							.header("Authorization", getBasicAuth()).exchange()
+					webTestClient.get().uri("/admin/actuator/e2").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/admin/actuator/e2").header("Authorization", getBasicAuth()).exchange()
 							.expectStatus().isOk();
 				});
 	}
 
 	@Override
 	protected WebApplicationContextRunner getContextRunner() {
-		return new WebApplicationContextRunner(
-				AnnotationConfigServletWebServerApplicationContext::new)
-						.withUserConfiguration(WebMvcEndpointConfiguration.class,
-								SecurityConfiguration.class, BaseConfiguration.class)
-						.withConfiguration(AutoConfigurations.of(
-								SecurityAutoConfiguration.class,
-								UserDetailsServiceAutoConfiguration.class,
-								WebMvcAutoConfiguration.class,
-								SecurityRequestMatcherProviderAutoConfiguration.class,
-								JacksonAutoConfiguration.class,
-								HttpMessageConvertersAutoConfiguration.class,
-								DispatcherServletAutoConfiguration.class));
+		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withUserConfiguration(WebMvcEndpointConfiguration.class, SecurityConfiguration.class,
+						BaseConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
+						UserDetailsServiceAutoConfiguration.class, WebMvcAutoConfiguration.class,
+						SecurityRequestMatcherProviderAutoConfiguration.class, JacksonAutoConfiguration.class,
+						HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
 	}
 
 	@Configuration
@@ -125,18 +112,13 @@ public class MvcEndpointRequestIntegrationTests
 
 		@Bean
 		public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
-					mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
-					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, PathMapper.useEndpointId(),
+			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, PathMapper.useEndpointId(),
 					Collections.emptyList(), Collections.emptyList());
-			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"),
-					discoverer.getEndpoints(), endpointMediaTypes,
-					new CorsConfiguration(),
-					new EndpointLinksResolver(discoverer.getEndpoints()));
+			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
 		}
 
 	}

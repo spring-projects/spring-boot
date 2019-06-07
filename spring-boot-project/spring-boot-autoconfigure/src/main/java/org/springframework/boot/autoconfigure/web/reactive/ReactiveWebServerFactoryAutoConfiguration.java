@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ import org.springframework.util.ObjectUtils;
 public class ReactiveWebServerFactoryAutoConfiguration {
 
 	@Bean
-	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(
-			ServerProperties serverProperties) {
+	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties);
 	}
 
@@ -66,8 +65,7 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
 	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
-	public static class BeanPostProcessorsRegistrar
-			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+	public static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 		private ConfigurableListableBeanFactory beanFactory;
 
@@ -84,15 +82,12 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 			if (this.beanFactory == null) {
 				return;
 			}
-			registerSyntheticBeanIfMissing(registry,
-					"webServerFactoryCustomizerBeanPostProcessor",
+			registerSyntheticBeanIfMissing(registry, "webServerFactoryCustomizerBeanPostProcessor",
 					WebServerFactoryCustomizerBeanPostProcessor.class);
 		}
 
-		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry,
-				String name, Class<?> beanClass) {
-			if (ObjectUtils.isEmpty(
-					this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
+		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name, Class<?> beanClass) {
+			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(name, beanDefinition);

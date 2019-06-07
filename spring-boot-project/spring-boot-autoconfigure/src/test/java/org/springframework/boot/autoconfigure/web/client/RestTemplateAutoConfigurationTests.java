@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,9 @@ public class RestTemplateAutoConfigurationTests {
 		load(HttpMessageConvertersAutoConfiguration.class, RestTemplateConfig.class);
 		assertThat(this.context.getBeansOfType(RestTemplate.class)).hasSize(1);
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		List<HttpMessageConverter<?>> converters = this.context
-				.getBean(HttpMessageConverters.class).getConverters();
-		assertThat(restTemplate.getMessageConverters())
-				.containsExactlyElementsOf(converters);
-		assertThat(restTemplate.getRequestFactory())
-				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+		List<HttpMessageConverter<?>> converters = this.context.getBean(HttpMessageConverters.class).getConverters();
+		assertThat(restTemplate.getMessageConverters()).containsExactlyElementsOf(converters);
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -78,8 +75,7 @@ public class RestTemplateAutoConfigurationTests {
 
 	@Test
 	public void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
-		load(CustomHttpMessageConverter.class,
-				HttpMessageConvertersAutoConfiguration.class, RestTemplateConfig.class);
+		load(CustomHttpMessageConverter.class, HttpMessageConvertersAutoConfiguration.class, RestTemplateConfig.class);
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
 		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : restTemplate.getMessageConverters()) {
@@ -94,16 +90,14 @@ public class RestTemplateAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(RestTemplate.class)).hasSize(1);
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
 		assertThat(restTemplate.getMessageConverters()).hasSize(1);
-		assertThat(restTemplate.getMessageConverters().get(0))
-				.isInstanceOf(CustomHttpMessageConverter.class);
+		assertThat(restTemplate.getMessageConverters().get(0)).isInstanceOf(CustomHttpMessageConverter.class);
 	}
 
 	@Test
 	public void restTemplateShouldApplyCustomizer() {
 		load(RestTemplateCustomizerConfig.class, RestTemplateConfig.class);
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		RestTemplateCustomizer customizer = this.context
-				.getBean(RestTemplateCustomizer.class);
+		RestTemplateCustomizer customizer = this.context.getBean(RestTemplateCustomizer.class);
 		verify(customizer).customize(restTemplate);
 	}
 
@@ -166,8 +160,7 @@ public class RestTemplateAutoConfigurationTests {
 
 		@Bean
 		public RestTemplateBuilder restTemplateBuilder() {
-			return new RestTemplateBuilder()
-					.messageConverters(new CustomHttpMessageConverter());
+			return new RestTemplateBuilder().messageConverters(new CustomHttpMessageConverter());
 		}
 
 	}

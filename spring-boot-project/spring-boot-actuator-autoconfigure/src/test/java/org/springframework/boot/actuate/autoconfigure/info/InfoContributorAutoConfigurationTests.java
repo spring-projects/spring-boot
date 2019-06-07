@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,36 +54,30 @@ public class InfoContributorAutoConfigurationTests {
 	@Test
 	public void disableEnvContributor() {
 		load("management.info.env.enabled:false");
-		Map<String, InfoContributor> beans = this.context
-				.getBeansOfType(InfoContributor.class);
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).hasSize(0);
 	}
 
 	@Test
 	public void defaultInfoContributorsDisabled() {
 		load("management.info.defaults.enabled:false");
-		Map<String, InfoContributor> beans = this.context
-				.getBeansOfType(InfoContributor.class);
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).hasSize(0);
 	}
 
 	@Test
 	public void defaultInfoContributorsDisabledWithCustomOne() {
-		load(CustomInfoContributorConfiguration.class,
-				"management.info.defaults.enabled:false");
-		Map<String, InfoContributor> beans = this.context
-				.getBeansOfType(InfoContributor.class);
+		load(CustomInfoContributorConfiguration.class, "management.info.defaults.enabled:false");
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).hasSize(1);
-		assertThat(this.context.getBean("customInfoContributor"))
-				.isSameAs(beans.values().iterator().next());
+		assertThat(this.context.getBean("customInfoContributor")).isSameAs(beans.values().iterator().next());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void gitPropertiesDefaultMode() {
 		load(GitPropertiesConfiguration.class);
-		Map<String, InfoContributor> beans = this.context
-				.getBeansOfType(InfoContributor.class);
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("gitInfoContributor");
 		Map<String, Object> content = invokeContributor(
 				this.context.getBean("gitInfoContributor", InfoContributor.class));
@@ -117,8 +111,7 @@ public class InfoContributorAutoConfigurationTests {
 	@Test
 	public void buildProperties() {
 		load(BuildPropertiesConfiguration.class);
-		Map<String, InfoContributor> beans = this.context
-				.getBeansOfType(InfoContributor.class);
+		Map<String, InfoContributor> beans = this.context.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("buildInfoContributor");
 		Map<String, Object> content = invokeContributor(
 				this.context.getBean("buildInfoContributor", InfoContributor.class));

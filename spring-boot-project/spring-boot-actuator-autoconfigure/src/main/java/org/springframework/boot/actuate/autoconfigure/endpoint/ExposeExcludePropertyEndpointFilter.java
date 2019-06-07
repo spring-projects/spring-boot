@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
-		implements EndpointFilter<E> {
+public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>> implements EndpointFilter<E> {
 
 	private final Class<E> endpointType;
 
@@ -53,8 +52,8 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 
 	private final Set<String> exposeDefaults;
 
-	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType,
-			Environment environment, String prefix, String... exposeDefaults) {
+	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
+			String... exposeDefaults) {
 		Assert.notNull(endpointType, "EndpointType must not be null");
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.hasText(prefix, "Prefix must not be empty");
@@ -65,9 +64,8 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
 	}
 
-	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType,
-			Collection<String> include, Collection<String> exclude,
-			String... exposeDefaults) {
+	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType, Collection<String> include,
+			Collection<String> exclude, String... exposeDefaults) {
 		Assert.notNull(endpointType, "EndpointType Type must not be null");
 		this.endpointType = endpointType;
 		this.include = asSet(include);
@@ -76,8 +74,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 	}
 
 	private Set<String> bind(Binder binder, String name) {
-		return asSet(binder.bind(name, Bindable.listOf(String.class)).map(this::cleanup)
-				.orElseGet(ArrayList::new));
+		return asSet(binder.bind(name, Bindable.listOf(String.class)).map(this::cleanup).orElseGet(ArrayList::new));
 	}
 
 	private List<String> cleanup(List<String> values) {
@@ -85,8 +82,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 	}
 
 	private String cleanup(String value) {
-		return "*".equals(value) ? "*"
-				: EndpointId.fromPropertyValue(value).toLowerCaseString();
+		return "*".equals(value) ? "*" : EndpointId.fromPropertyValue(value).toLowerCaseString();
 	}
 
 	private Set<String> asSet(Collection<String> items) {
@@ -107,8 +103,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 
 	private boolean isExposed(ExposableEndpoint<?> endpoint) {
 		if (this.include.isEmpty()) {
-			return this.exposeDefaults.contains("*")
-					|| contains(this.exposeDefaults, endpoint);
+			return this.exposeDefaults.contains("*") || contains(this.exposeDefaults, endpoint);
 		}
 		return this.include.contains("*") || contains(this.include, endpoint);
 	}

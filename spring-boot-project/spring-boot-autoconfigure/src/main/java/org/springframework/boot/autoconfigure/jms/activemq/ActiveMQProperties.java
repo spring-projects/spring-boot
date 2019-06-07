@@ -267,8 +267,7 @@ public class ActiveMQProperties {
 			return this.maximumActiveSessionPerConnection;
 		}
 
-		public void setMaximumActiveSessionPerConnection(
-				int maximumActiveSessionPerConnection) {
+		public void setMaximumActiveSessionPerConnection(int maximumActiveSessionPerConnection) {
 			this.maximumActiveSessionPerConnection = maximumActiveSessionPerConnection;
 		}
 

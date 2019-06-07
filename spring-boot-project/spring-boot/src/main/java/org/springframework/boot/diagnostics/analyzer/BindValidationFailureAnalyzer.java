@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,16 +45,14 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 	}
 
 	private ExceptionDetails getBindValidationExceptionDetails(Throwable rootFailure) {
-		BindValidationException validationException = findCause(rootFailure,
-				BindValidationException.class);
+		BindValidationException validationException = findCause(rootFailure, BindValidationException.class);
 		if (validationException != null) {
 			BindException target = findCause(rootFailure, BindException.class);
-			List<ObjectError> errors = validationException.getValidationErrors()
-					.getAllErrors();
+			List<ObjectError> errors = validationException.getValidationErrors().getAllErrors();
 			return new ExceptionDetails(errors, target, validationException);
 		}
-		org.springframework.validation.BindException bindException = findCause(
-				rootFailure, org.springframework.validation.BindException.class);
+		org.springframework.validation.BindException bindException = findCause(rootFailure,
+				org.springframework.validation.BindException.class);
 		if (bindException != null) {
 			List<ObjectError> errors = bindException.getAllErrors();
 			return new ExceptionDetails(errors, bindException.getTarget(), bindException);
@@ -69,16 +67,14 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 			if (error instanceof FieldError) {
 				appendFieldError(description, (FieldError) error);
 			}
-			description.append(
-					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
+			description.append(String.format("%n    Reason: %s%n", error.getDefaultMessage()));
 		}
 		return getFailureAnalysis(description, details.getCause());
 	}
 
 	private void appendFieldError(StringBuilder description, FieldError error) {
 		Origin origin = Origin.from(error);
-		description.append(String.format("%n    Property: %s",
-				error.getObjectName() + "." + error.getField()));
+		description.append(String.format("%n    Property: %s", error.getObjectName() + "." + error.getField()));
 		description.append(String.format("%n    Value: %s", error.getRejectedValue()));
 		if (origin != null) {
 			description.append(String.format("%n    Origin: %s", origin));
@@ -86,8 +82,7 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 	}
 
 	private FailureAnalysis getFailureAnalysis(Object description, Throwable cause) {
-		return new FailureAnalysis(description.toString(),
-				"Update your application's configuration", cause);
+		return new FailureAnalysis(description.toString(), "Update your application's configuration", cause);
 	}
 
 	private static class ExceptionDetails {

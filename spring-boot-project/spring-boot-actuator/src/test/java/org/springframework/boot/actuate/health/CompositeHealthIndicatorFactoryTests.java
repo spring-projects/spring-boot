@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ public class CompositeHealthIndicatorFactoryTests {
 	public void upAndUpIsAggregatedToUp() {
 		Map<String, HealthIndicator> healthIndicators = new HashMap<>();
 		healthIndicators.put("up", () -> new Health.Builder().status(Status.UP).build());
-		healthIndicators.put("upAgain",
-				() -> new Health.Builder().status(Status.UP).build());
+		healthIndicators.put("upAgain", () -> new Health.Builder().status(Status.UP).build());
 		HealthIndicator healthIndicator = createHealthIndicator(healthIndicators);
 		assertThat(healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
@@ -46,8 +45,7 @@ public class CompositeHealthIndicatorFactoryTests {
 	public void upAndDownIsAggregatedToDown() {
 		Map<String, HealthIndicator> healthIndicators = new HashMap<>();
 		healthIndicators.put("up", () -> new Health.Builder().status(Status.UP).build());
-		healthIndicators.put("down",
-				() -> new Health.Builder().status(Status.DOWN).build());
+		healthIndicators.put("down", () -> new Health.Builder().status(Status.DOWN).build());
 		HealthIndicator healthIndicator = createHealthIndicator(healthIndicators);
 		assertThat(healthIndicator.health().getStatus()).isEqualTo(Status.DOWN);
 	}
@@ -60,10 +58,9 @@ public class CompositeHealthIndicatorFactoryTests {
 		assertThat(healthIndicator.health().getStatus()).isEqualTo(Status.UNKNOWN);
 	}
 
-	private HealthIndicator createHealthIndicator(
-			Map<String, HealthIndicator> healthIndicators) {
-		return new CompositeHealthIndicatorFactory()
-				.createHealthIndicator(new OrderedHealthAggregator(), healthIndicators);
+	private HealthIndicator createHealthIndicator(Map<String, HealthIndicator> healthIndicators) {
+		return new CompositeHealthIndicatorFactory().createHealthIndicator(new OrderedHealthAggregator(),
+				healthIndicators);
 	}
 
 }

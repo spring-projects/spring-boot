@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,7 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder
-				.bind(ConfigurationPropertyName.of("example"), Bindable.of(Example.class))
-				.get();
+		Example bound = this.binder.bind(ConfigurationPropertyName.of("example"), Bindable.of(Example.class)).get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
@@ -63,8 +61,8 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.foo", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				new NoUnboundElementsBindHandler()).get();
+		Example bound = this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler())
+				.get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
@@ -76,13 +74,11 @@ public class NoUnboundElementsBindHandlerTests {
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
 		try {
-			this.binder.bind("example", Bindable.of(Example.class),
-					new NoUnboundElementsBindHandler());
+			this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler());
 			fail("did not throw");
 		}
 		catch (BindException ex) {
-			assertThat(ex.getCause().getMessage())
-					.contains("The elements [example.baz] were left unbound");
+			assertThat(ex.getCause().getMessage()).contains("The elements [example.baz] were left unbound");
 		}
 	}
 
@@ -93,8 +89,8 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("other.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				new NoUnboundElementsBindHandler()).get();
+		Example bound = this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler())
+				.get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
@@ -105,10 +101,9 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.other", "baz");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		NoUnboundElementsBindHandler handler = new NoUnboundElementsBindHandler(
-				BindHandler.DEFAULT, ((configurationPropertySource) -> false));
-		Example bound = this.binder.bind("example", Bindable.of(Example.class), handler)
-				.get();
+		NoUnboundElementsBindHandler handler = new NoUnboundElementsBindHandler(BindHandler.DEFAULT,
+				((configurationPropertySource) -> false));
+		Example bound = this.binder.bind("example", Bindable.of(Example.class), handler).get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 

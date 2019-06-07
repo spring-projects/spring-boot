@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void error() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"spring.application.json=foo:bar");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.application.json=foo:bar");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
@@ -58,8 +57,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void empty() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"spring.application.json={}");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.application.json={}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
@@ -116,8 +114,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[{\"bar\":\"spam\"}]}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}"))
-				.isEqualTo("spam");
+		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}")).isEqualTo("spam");
 	}
 
 	@Test
@@ -126,12 +123,9 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		PropertySource<?> propertySource = this.environment.getPropertySources()
-				.get("spring.application.json");
-		PropertySourceOrigin origin = (PropertySourceOrigin) PropertySourceOrigin
-				.get(propertySource, "foo");
-		assertThat(origin.getPropertySource().getName())
-				.isEqualTo("Inlined Test Properties");
+		PropertySource<?> propertySource = this.environment.getPropertySources().get("spring.application.json");
+		PropertySourceOrigin origin = (PropertySourceOrigin) PropertySourceOrigin.get(propertySource, "foo");
+		assertThat(origin.getPropertySource().getName()).isEqualTo("Inlined Test Properties");
 		assertThat(origin.getPropertyName()).isEqualTo("spring.application.json");
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,15 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class ShutdownEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+public class ShutdownEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void shutdown() throws Exception {
 		this.mockMvc.perform(post("/actuator/shutdown")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("shutdown",
-						responseFields(fieldWithPath("message").description(
-								"Message describing the result of the request."))));
+				.andDo(MockMvcRestDocumentation.document("shutdown", responseFields(
+						fieldWithPath("message").description("Message describing the result of the request."))));
 	}
 
 	@Configuration

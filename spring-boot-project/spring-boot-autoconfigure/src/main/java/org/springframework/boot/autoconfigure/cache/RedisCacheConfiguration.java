@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ class RedisCacheConfiguration {
 
 	private final org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration;
 
-	RedisCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizerInvoker,
+	RedisCacheConfiguration(CacheProperties cacheProperties, CacheManagerCustomizers customizerInvoker,
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration) {
 		this.cacheProperties = cacheProperties;
 		this.customizerInvoker = customizerInvoker;
@@ -70,8 +69,7 @@ class RedisCacheConfiguration {
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
 			ResourceLoader resourceLoader) {
-		RedisCacheManagerBuilder builder = RedisCacheManager
-				.builder(redisConnectionFactory)
+		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory)
 				.cacheDefaults(determineConfiguration(resourceLoader.getClassLoader()));
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
@@ -88,8 +86,8 @@ class RedisCacheConfiguration {
 		Redis redisProperties = this.cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig();
-		config = config.serializeValuesWith(SerializationPair
-				.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
+		config = config.serializeValuesWith(
+				SerializationPair.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
 		if (redisProperties.getTimeToLive() != null) {
 			config = config.entryTtl(redisProperties.getTimeToLive());
 		}

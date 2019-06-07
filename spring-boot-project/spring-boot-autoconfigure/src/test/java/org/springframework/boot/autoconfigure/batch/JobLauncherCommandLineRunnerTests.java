@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,15 +79,13 @@ public class JobLauncherCommandLineRunnerTests {
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);
 		JobLauncher jobLauncher = this.context.getBean(JobLauncher.class);
 		this.jobs = new JobBuilderFactory(jobRepository);
-		PlatformTransactionManager transactionManager = this.context
-				.getBean(PlatformTransactionManager.class);
+		PlatformTransactionManager transactionManager = this.context.getBean(PlatformTransactionManager.class);
 		this.steps = new StepBuilderFactory(jobRepository, transactionManager);
 		Tasklet tasklet = (contribution, chunkContext) -> null;
 		this.step = this.steps.get("step").tasklet(tasklet).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
-		this.runner = new JobLauncherCommandLineRunner(jobLauncher, this.jobExplorer,
-				jobRepository);
+		this.runner = new JobLauncherCommandLineRunner(jobLauncher, this.jobExplorer, jobRepository);
 		this.context.getBean(BatchConfiguration.class).clear();
 	}
 
@@ -100,15 +98,13 @@ public class JobLauncherCommandLineRunnerTests {
 	public void basicExecution() throws Exception {
 		this.runner.execute(this.job, new JobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
-		this.runner.execute(this.job,
-				new JobParametersBuilder().addLong("id", 1L).toJobParameters());
+		this.runner.execute(this.job, new JobParametersBuilder().addLong("id", 1L).toJobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(2);
 	}
 
 	@Test
 	public void incrementExistingExecution() throws Exception {
-		this.job = this.jobs.get("job").start(this.step)
-				.incrementer(new RunIdIncrementer()).build();
+		this.job = this.jobs.get("job").start(this.step).incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(2);
@@ -116,27 +112,22 @@ public class JobLauncherCommandLineRunnerTests {
 
 	@Test
 	public void retryFailedExecution() throws Exception {
-		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(throwingTasklet()).build())
+		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build())
 				.incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
-		this.runner.execute(this.job,
-				new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
+		this.runner.execute(this.job, new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
 	}
 
 	@Test
 	public void runDifferentInstances() throws Exception {
-		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(throwingTasklet()).build()).build();
+		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build()).build();
 		// start a job instance
-		JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo")
-				.toJobParameters();
+		JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
 		this.runner.execute(this.job, jobParameters);
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
 		// start a different job instance
-		JobParameters otherJobParameters = new JobParametersBuilder()
-				.addString("name", "bar").toJobParameters();
+		JobParameters otherJobParameters = new JobParametersBuilder().addString("name", "bar").toJobParameters();
 		this.runner.execute(this.job, otherJobParameters);
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(2);
 	}
@@ -144,8 +135,8 @@ public class JobLauncherCommandLineRunnerTests {
 	@Test
 	public void retryFailedExecutionOnNonRestartableJob() throws Exception {
 		this.job = this.jobs.get("job").preventRestart()
-				.start(this.steps.get("step").tasklet(throwingTasklet()).build())
-				.incrementer(new RunIdIncrementer()).build();
+				.start(this.steps.get("step").tasklet(throwingTasklet()).build()).incrementer(new RunIdIncrementer())
+				.build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
 		// A failed job that is not restartable does not re-use the job params of
@@ -153,40 +144,35 @@ public class JobLauncherCommandLineRunnerTests {
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(2);
 		assertThatExceptionOfType(JobRestartException.class).isThrownBy(() -> {
 			// try to re-run a failed execution
-			this.runner.execute(this.job,
-					new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
+			this.runner.execute(this.job, new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
 			fail("expected JobRestartException");
 		}).withMessageContaining("JobInstance already exists and is not restartable");
 	}
 
 	@Test
 	public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
-		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(throwingTasklet()).build())
+		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build())
 				.incrementer(new RunIdIncrementer()).build();
-		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
-				.addLong("foo", 2L, false).toJobParameters();
+		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
+				.toJobParameters();
 		this.runner.execute(this.job, jobParameters);
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
 		// try to re-run a failed execution with non identifying parameters
-		this.runner.execute(this.job, new JobParametersBuilder(jobParameters)
-				.addLong("run.id", 1L).toJobParameters());
+		this.runner.execute(this.job, new JobParametersBuilder(jobParameters).addLong("run.id", 1L).toJobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
 	}
 
 	@Test
-	public void retryFailedExecutionWithDifferentNonIdentifyingParametersFromPreviousExecution()
-			throws Exception {
-		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(throwingTasklet()).build())
+	public void retryFailedExecutionWithDifferentNonIdentifyingParametersFromPreviousExecution() throws Exception {
+		this.job = this.jobs.get("job").start(this.steps.get("step").tasklet(throwingTasklet()).build())
 				.incrementer(new RunIdIncrementer()).build();
-		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
-				.addLong("foo", 2L, false).toJobParameters();
+		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
+				.toJobParameters();
 		this.runner.execute(this.job, jobParameters);
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
 		// try to re-run a failed execution with non identifying parameters
-		this.runner.execute(this.job, new JobParametersBuilder().addLong("run.id", 1L)
-				.addLong("id", 2L, false).addLong("foo", 3L, false).toJobParameters());
+		this.runner.execute(this.job, new JobParametersBuilder().addLong("run.id", 1L).addLong("id", 2L, false)
+				.addLong("foo", 3L, false).toJobParameters());
 		assertThat(this.jobExplorer.getJobInstances("job", 0, 100)).hasSize(1);
 		JobInstance jobInstance = this.jobExplorer.getJobInstance(0L);
 		assertThat(this.jobExplorer.getJobExecutions(jobInstance)).hasSize(2);

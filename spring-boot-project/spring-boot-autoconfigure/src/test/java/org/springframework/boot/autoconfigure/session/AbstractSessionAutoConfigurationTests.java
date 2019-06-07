@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractSessionAutoConfigurationTests {
 
-	protected <T extends SessionRepository<?>> T validateSessionRepository(
-			AssertableWebApplicationContext context, Class<T> type) {
+	protected <T extends SessionRepository<?>> T validateSessionRepository(AssertableWebApplicationContext context,
+			Class<T> type) {
 		assertThat(context).hasSingleBean(SessionRepositoryFilter.class);
 		assertThat(context).hasSingleBean(SessionRepository.class);
 		SessionRepository<?> repository = context.getBean(SessionRepository.class);
@@ -43,23 +43,20 @@ public abstract class AbstractSessionAutoConfigurationTests {
 	}
 
 	protected Integer getSessionTimeout(SessionRepository<?> sessionRepository) {
-		return (Integer) new DirectFieldAccessor(sessionRepository)
-				.getPropertyValue("defaultMaxInactiveInterval");
+		return (Integer) new DirectFieldAccessor(sessionRepository).getPropertyValue("defaultMaxInactiveInterval");
 	}
 
 	protected <T extends ReactiveSessionRepository<?>> T validateSessionRepository(
 			AssertableReactiveWebApplicationContext context, Class<T> type) {
 		assertThat(context).hasSingleBean(WebSessionManager.class);
 		assertThat(context).hasSingleBean(ReactiveSessionRepository.class);
-		ReactiveSessionRepository<?> repository = context
-				.getBean(ReactiveSessionRepository.class);
+		ReactiveSessionRepository<?> repository = context.getBean(ReactiveSessionRepository.class);
 		assertThat(repository).as("Wrong session repository type").isInstanceOf(type);
 		return type.cast(repository);
 	}
 
 	protected Integer getSessionTimeout(ReactiveSessionRepository<?> sessionRepository) {
-		return (Integer) new DirectFieldAccessor(sessionRepository)
-				.getPropertyValue("defaultMaxInactiveInterval");
+		return (Integer) new DirectFieldAccessor(sessionRepository).getPropertyValue("defaultMaxInactiveInterval");
 	}
 
 }

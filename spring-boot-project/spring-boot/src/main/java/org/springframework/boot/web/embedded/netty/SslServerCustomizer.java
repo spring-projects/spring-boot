@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,14 +73,12 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 	}
 
-	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl,
-			SslStoreProvider sslStoreProvider) {
+	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		try {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = (ssl.getKeyPassword() != null)
-					? ssl.getKeyPassword().toCharArray() : null;
+			char[] keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword().toCharArray() : null;
 			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
@@ -92,17 +90,15 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 	}
 
-	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider)
-			throws Exception {
+	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getKeyStore();
 		}
-		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(),
-				ssl.getKeyStore(), ssl.getKeyStorePassword());
+		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(), ssl.getKeyStore(),
+				ssl.getKeyStorePassword());
 	}
 
-	protected TrustManagerFactory getTrustManagerFactory(Ssl ssl,
-			SslStoreProvider sslStoreProvider) {
+	protected TrustManagerFactory getTrustManagerFactory(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		try {
 			KeyStore store = getTrustStore(ssl, sslStoreProvider);
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
@@ -115,23 +111,20 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 	}
 
-	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider)
-			throws Exception {
+	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getTrustStore();
 		}
-		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
-				ssl.getTrustStore(), ssl.getTrustStorePassword());
+		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(), ssl.getTrustStore(),
+				ssl.getTrustStorePassword());
 	}
 
-	private KeyStore loadKeyStore(String type, String provider, String resource,
-			String password) throws Exception {
+	private KeyStore loadKeyStore(String type, String provider, String resource, String password) throws Exception {
 		type = (type != null) ? type : "JKS";
 		if (resource == null) {
 			return null;
 		}
-		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider)
-				: KeyStore.getInstance(type);
+		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider) : KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
 		store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
 		return store;

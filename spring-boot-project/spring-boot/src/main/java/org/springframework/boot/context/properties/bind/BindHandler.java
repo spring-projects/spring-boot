@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ public interface BindHandler {
 	 * @param context the bind context
 	 * @return {@code true} if binding should proceed
 	 */
-	default boolean onStart(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context) {
+	default boolean onStart(ConfigurationPropertyName name, Bindable<?> target, BindContext context) {
 		return true;
 	}
 
@@ -56,8 +55,7 @@ public interface BindHandler {
 	 * @param result the bound result (never {@code null})
 	 * @return the actual result that should be used (may be {@code null})
 	 */
-	default Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	default Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		return result;
 	}
 
@@ -72,8 +70,8 @@ public interface BindHandler {
 	 * @return the actual result that should be used (may be {@code null}).
 	 * @throws Exception if the binding isn't valid
 	 */
-	default Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Exception error) throws Exception {
+	default Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
 		throw error;
 	}
 
@@ -85,8 +83,8 @@ public interface BindHandler {
 	 * @param result the bound result (may be {@code null})
 	 * @throws Exception if the binding isn't valid
 	 */
-	default void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+	default void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
+			throws Exception {
 	}
 
 }

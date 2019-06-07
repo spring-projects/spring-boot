@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ class MappingWebEndpointPathMapper implements PathMapper {
 
 	MappingWebEndpointPathMapper(Map<String, String> pathMapping) {
 		this.pathMapping = new HashMap<>();
-		pathMapping.forEach((id, path) -> this.pathMapping
-				.put(EndpointId.fromPropertyValue(id), path));
+		pathMapping.forEach((id, path) -> this.pathMapping.put(EndpointId.fromPropertyValue(id), path));
 	}
 
 	@Override
@@ -48,8 +47,7 @@ class MappingWebEndpointPathMapper implements PathMapper {
 	@Override
 	public String getRootPath(EndpointId endpointId) {
 		String path = this.pathMapping.get(endpointId);
-		return StringUtils.hasText(path) ? path
-				: PathMapper.useEndpointId().getRootPath(endpointId);
+		return StringUtils.hasText(path) ? path : PathMapper.useEndpointId().getRootPath(endpointId);
 	}
 
 }

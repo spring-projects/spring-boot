@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
-		RequestMatcher matcher = this.resourceRequest.atCommonLocations()
-				.excluding(StaticResourceLocation.CSS);
+		RequestMatcher matcher = this.resourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
@@ -104,10 +103,8 @@ public class StaticResourceRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
-			ServerProperties serverProperties) {
-		DispatcherServletPath dispatcherServletPath = () -> serverProperties.getServlet()
-				.getPath();
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, ServerProperties serverProperties) {
+		DispatcherServletPath dispatcherServletPath = () -> serverProperties.getServlet().getPath();
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(ServerProperties.class, () -> serverProperties);
 		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
@@ -134,8 +131,7 @@ public class StaticResourceRequestTests {
 		}
 
 		private void matches(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Matches " + getRequestPath(request)).isTrue();
+			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
 		public void doesNotMatch(String path) {
@@ -147,8 +143,7 @@ public class StaticResourceRequestTests {
 		}
 
 		private void doesNotMatch(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Does not match " + getRequestPath(request)).isFalse();
+			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
 		private MockHttpServletRequest mockRequest(String path) {
@@ -157,9 +152,7 @@ public class StaticResourceRequestTests {
 
 		private MockHttpServletRequest mockRequest(String servletPath, String path) {
 			MockServletContext servletContext = new MockServletContext();
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-					this.context);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
 				request.setServletPath(servletPath);

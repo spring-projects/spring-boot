@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,10 @@ public class SslBuilderCustomizerTests {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
-		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
-				InetAddress.getLocalHost(), ssl, null);
-		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer,
-				"getKeyManagers", ssl, null);
-		Class<?> name = Class.forName("org.springframework.boot.web.embedded.undertow"
-				+ ".SslBuilderCustomizer$ConfigurableAliasKeyManager");
+		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
+		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
+		Class<?> name = Class.forName(
+				"org.springframework.boot.web.embedded.undertow" + ".SslBuilderCustomizer$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(name);
 	}
 
@@ -56,8 +54,7 @@ public class SslBuilderCustomizerTests {
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
-		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
-				InetAddress.getLocalHost(), ssl, null);
+		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		try {
 			ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
 			fail();
@@ -75,8 +72,7 @@ public class SslBuilderCustomizerTests {
 		ssl.setTrustStorePassword("password");
 		ssl.setTrustStore("src/test/resources/test.jks");
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
-		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080,
-				InetAddress.getLocalHost(), ssl, null);
+		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		try {
 			ReflectionTestUtils.invokeMethod(customizer, "getTrustManagers", ssl, null);
 			fail();

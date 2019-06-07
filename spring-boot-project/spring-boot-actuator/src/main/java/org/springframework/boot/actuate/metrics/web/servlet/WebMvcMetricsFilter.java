@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,9 +72,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, boolean)}
 	 */
 	@Deprecated
-	public WebMvcMetricsFilter(ApplicationContext context, MeterRegistry registry,
-			WebMvcTagsProvider tagsProvider, String metricName,
-			boolean autoTimeRequests) {
+	public WebMvcMetricsFilter(ApplicationContext context, MeterRegistry registry, WebMvcTagsProvider tagsProvider,
+			String metricName, boolean autoTimeRequests) {
 		this(registry, tagsProvider, metricName, autoTimeRequests);
 	}
 
@@ -86,8 +85,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * @param autoTimeRequests if requests should be automatically timed
 	 * @since 2.0.7
 	 */
-	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
-			String metricName, boolean autoTimeRequests) {
+	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider, String metricName,
+			boolean autoTimeRequests) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
@@ -100,15 +99,13 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		filterAndRecordMetrics(request, response, filterChain);
 	}
 
-	private void filterAndRecordMetrics(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
-			throws IOException, ServletException {
+	private void filterAndRecordMetrics(HttpServletRequest request, HttpServletResponse response,
+			FilterChain filterChain) throws IOException, ServletException {
 		TimingContext timingContext = TimingContext.get(request);
 		if (timingContext == null) {
 			timingContext = startAndAttachTimingContext(request);
@@ -120,8 +117,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 				// If async was started by something further down the chain we wait
 				// until the second filter invocation (but we'll be using the
 				// TimingContext that was attached to the first)
-				Throwable exception = (Throwable) request
-						.getAttribute(DispatcherServlet.EXCEPTION_ATTRIBUTE);
+				Throwable exception = (Throwable) request.getAttribute(DispatcherServlet.EXCEPTION_ATTRIBUTE);
 				record(timingContext, response, request, exception);
 			}
 		}
@@ -162,14 +158,12 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		return AnnotationUtils.getDeclaredRepeatableAnnotations(element, Timed.class);
 	}
 
-	private void record(TimingContext timingContext, HttpServletResponse response,
-			HttpServletRequest request, Throwable exception) {
-		Object handlerObject = request
-				.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
+	private void record(TimingContext timingContext, HttpServletResponse response, HttpServletRequest request,
+			Throwable exception) {
+		Object handlerObject = request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
 		Set<Timed> annotations = getTimedAnnotations(handlerObject);
 		Timer.Sample timerSample = timingContext.getTimerSample();
-		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request, response,
-				handlerObject, exception);
+		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request, response, handlerObject, exception);
 		if (annotations.isEmpty()) {
 			if (this.autoTimeRequests) {
 				stop(timerSample, tags, Timer.builder(this.metricName));
@@ -182,8 +176,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private void stop(Timer.Sample timerSample, Supplier<Iterable<Tag>> tags,
-			Builder builder) {
+	private void stop(Timer.Sample timerSample, Supplier<Iterable<Tag>> tags, Builder builder) {
 		timerSample.stop(builder.tags(tags.get()).register(this.registry));
 	}
 

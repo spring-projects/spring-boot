@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.util.Assert;
  */
 class FolderSnapshot {
 
-	private static final Set<String> DOT_FOLDERS = Collections
-			.unmodifiableSet(new HashSet<>(Arrays.asList(".", "..")));
+	private static final Set<String> DOT_FOLDERS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".", "..")));
 
 	private final File folder;
 
@@ -74,12 +73,10 @@ class FolderSnapshot {
 		}
 	}
 
-	public ChangedFiles getChangedFiles(FolderSnapshot snapshot,
-			FileFilter triggerFilter) {
+	public ChangedFiles getChangedFiles(FolderSnapshot snapshot, FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
 		File folder = this.folder;
-		Assert.isTrue(snapshot.folder.equals(folder),
-				() -> "Snapshot source folder must be '" + folder + "'");
+		Assert.isTrue(snapshot.folder.equals(folder), () -> "Snapshot source folder must be '" + folder + "'");
 		Set<ChangedFile> changes = new LinkedHashSet<>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
@@ -89,8 +86,7 @@ class FolderSnapshot {
 					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
 				}
 				else if (!previousFile.equals(currentFile)) {
-					changes.add(
-							new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
+					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,7 @@ public class CachingOperationInvokerTests {
 	private void assertCacheIsUsed(Map<String, Object> parameters) {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Object expected = new Object();
-		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
-				parameters);
+		InvocationContext context = new InvocationContext(mock(SecurityContext.class), parameters);
 		given(target.invoke(context)).willReturn(expected);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
 		Object response = invoker.invoke(context);
@@ -87,8 +86,7 @@ public class CachingOperationInvokerTests {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("test", "value");
 		parameters.put("something", null);
-		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
-				parameters);
+		InvocationContext context = new InvocationContext(mock(SecurityContext.class), parameters);
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
 		invoker.invoke(context);
@@ -116,8 +114,7 @@ public class CachingOperationInvokerTests {
 	public void targetInvokedWhenCacheExpires() throws InterruptedException {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
-		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
-				parameters);
+		InvocationContext context = new InvocationContext(mock(SecurityContext.class), parameters);
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 50L);
 		invoker.invoke(context);

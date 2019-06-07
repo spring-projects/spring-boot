@@ -47,8 +47,7 @@ import org.springframework.context.annotation.Configuration;
 public class WebSocketReactiveAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnClass(name = "org.apache.tomcat.websocket.server.WsSci",
-			value = Tomcat.class)
+	@ConditionalOnClass(name = "org.apache.tomcat.websocket.server.WsSci", value = Tomcat.class)
 	static class TomcatWebSocketConfiguration {
 
 		@Bean

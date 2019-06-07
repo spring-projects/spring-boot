@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,31 +58,25 @@ public final class WebApplicationContextRunner extends
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
-	public WebApplicationContextRunner(
-			Supplier<ConfigurableWebApplicationContext> contextFactory) {
+	public WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory) {
 		super(contextFactory);
 	}
 
-	private WebApplicationContextRunner(
-			Supplier<ConfigurableWebApplicationContext> contextFactory,
+	private WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<Configurations> configurations) {
-		super(contextFactory, initializers, environmentProperties, systemProperties,
-				classLoader, parent, configurations);
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
+			ApplicationContext parent, List<Configurations> configurations) {
+		super(contextFactory, initializers, environmentProperties, systemProperties, classLoader, parent,
+				configurations);
 	}
 
 	@Override
-	protected WebApplicationContextRunner newInstance(
-			Supplier<ConfigurableWebApplicationContext> contextFactory,
+	protected WebApplicationContextRunner newInstance(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<Configurations> configurations) {
-		return new WebApplicationContextRunner(contextFactory, initializers,
-				environmentProperties, systemProperties, classLoader, parent,
-				configurations);
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
+			ApplicationContext parent, List<Configurations> configurations) {
+		return new WebApplicationContextRunner(contextFactory, initializers, environmentProperties, systemProperties,
+				classLoader, parent, configurations);
 	}
 
 	/**

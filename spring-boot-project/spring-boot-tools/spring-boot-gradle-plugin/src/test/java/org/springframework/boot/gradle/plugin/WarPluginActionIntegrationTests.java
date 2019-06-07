@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,8 @@ public class WarPluginActionIntegrationTests {
 
 	@Test
 	public void applyingWarPluginCreatesBootWarTask() {
-		assertThat(this.gradleBuild
-				.build("taskExists", "-PtaskName=bootWar", "-PapplyWarPlugin")
-				.getOutput()).contains("bootWar exists = true");
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootWar", "-PapplyWarPlugin").getOutput())
+				.contains("bootWar exists = true");
 	}
 
 	@Test
@@ -68,16 +67,14 @@ public class WarPluginActionIntegrationTests {
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
 				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"),
-				new File(buildLibs,
-						this.gradleBuild.getProjectDir().getName() + "-boot.war"));
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-boot.war"));
 	}
 
 	@Test
 	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyWarPlugin");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains(
-				"Main class name has not been configured and it could not be resolved");
+		assertThat(result.getOutput()).contains("Main class name has not been configured and it could not be resolved");
 	}
 
 }

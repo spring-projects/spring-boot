@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,15 +64,13 @@ public class ConditionsReportEndpoint {
 		Map<String, ContextConditionEvaluation> contextConditionEvaluations = new HashMap<>();
 		ConfigurableApplicationContext target = this.context;
 		while (target != null) {
-			contextConditionEvaluations.put(target.getId(),
-					new ContextConditionEvaluation(target));
+			contextConditionEvaluations.put(target.getId(), new ContextConditionEvaluation(target));
 			target = getConfigurableParent(target);
 		}
 		return new ApplicationConditionEvaluation(contextConditionEvaluations);
 	}
 
-	private ConfigurableApplicationContext getConfigurableParent(
-			ConfigurableApplicationContext context) {
+	private ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
 		ApplicationContext parent = context.getParent();
 		if (parent instanceof ConfigurableApplicationContext) {
 			return (ConfigurableApplicationContext) parent;
@@ -88,8 +86,7 @@ public class ConditionsReportEndpoint {
 
 		private final Map<String, ContextConditionEvaluation> contexts;
 
-		private ApplicationConditionEvaluation(
-				Map<String, ContextConditionEvaluation> contexts) {
+		private ApplicationConditionEvaluation(Map<String, ContextConditionEvaluation> contexts) {
 			this.contexts = contexts;
 		}
 
@@ -117,27 +114,24 @@ public class ConditionsReportEndpoint {
 		private final String parentId;
 
 		public ContextConditionEvaluation(ConfigurableApplicationContext context) {
-			ConditionEvaluationReport report = ConditionEvaluationReport
-					.get(context.getBeanFactory());
+			ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 			this.positiveMatches = new LinkedMultiValueMap<>();
 			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
 			this.unconditionalClasses = report.getUnconditionalClasses();
-			report.getConditionAndOutcomesBySource().forEach(
-					(source, conditionAndOutcomes) -> add(source, conditionAndOutcomes));
-			this.parentId = (context.getParent() != null) ? context.getParent().getId()
-					: null;
+			report.getConditionAndOutcomesBySource()
+					.forEach((source, conditionAndOutcomes) -> add(source, conditionAndOutcomes));
+			this.parentId = (context.getParent() != null) ? context.getParent().getId() : null;
 		}
 
 		private void add(String source, ConditionAndOutcomes conditionAndOutcomes) {
 			String name = ClassUtils.getShortName(source);
 			if (conditionAndOutcomes.isFullMatch()) {
-				conditionAndOutcomes.forEach((conditionAndOutcome) -> this.positiveMatches
-						.add(name, new MessageAndCondition(conditionAndOutcome)));
+				conditionAndOutcomes.forEach((conditionAndOutcome) -> this.positiveMatches.add(name,
+						new MessageAndCondition(conditionAndOutcome)));
 			}
 			else {
-				this.negativeMatches.put(name,
-						new MessageAndConditions(conditionAndOutcomes));
+				this.negativeMatches.put(name, new MessageAndConditions(conditionAndOutcomes));
 			}
 		}
 
@@ -175,8 +169,8 @@ public class ConditionsReportEndpoint {
 
 		public MessageAndConditions(ConditionAndOutcomes conditionAndOutcomes) {
 			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				List<MessageAndCondition> target = (conditionAndOutcome.getOutcome()
-						.isMatch() ? this.matched : this.notMatched);
+				List<MessageAndCondition> target = (conditionAndOutcome.getOutcome().isMatch() ? this.matched
+						: this.notMatched);
 				target.add(new MessageAndCondition(conditionAndOutcome));
 			}
 		}

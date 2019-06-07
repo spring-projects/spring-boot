@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,16 +50,14 @@ import org.springframework.util.ObjectUtils;
  * @see #of(CharSequence)
  * @see ConfigurationPropertySource
  */
-public final class ConfigurationPropertyName
-		implements Comparable<ConfigurationPropertyName> {
+public final class ConfigurationPropertyName implements Comparable<ConfigurationPropertyName> {
 
 	private static final String EMPTY_STRING = "";
 
 	/**
 	 * An empty {@link ConfigurationPropertyName}.
 	 */
-	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(
-			new String[0]);
+	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(new String[0]);
 
 	private final CharSequence[] elements;
 
@@ -73,8 +71,7 @@ public final class ConfigurationPropertyName
 		this(elements, new CharSequence[elements.length]);
 	}
 
-	private ConfigurationPropertyName(CharSequence[] elements,
-			CharSequence[] uniformElements) {
+	private ConfigurationPropertyName(CharSequence[] elements, CharSequence[] uniformElements) {
 		this.elements = elements;
 		this.uniformElements = uniformElements;
 	}
@@ -111,8 +108,7 @@ public final class ConfigurationPropertyName
 	 * @return {@code true} if the element is indexed and numeric
 	 */
 	public boolean isNumericIndex(int elementIndex) {
-		return isIndexed(elementIndex)
-				&& isNumeric(getElement(elementIndex, Form.ORIGINAL));
+		return isIndexed(elementIndex) && isNumeric(getElement(elementIndex, Form.ORIGINAL));
 	}
 
 	private boolean isNumeric(CharSequence element) {
@@ -155,8 +151,7 @@ public final class ConfigurationPropertyName
 				result = result.subSequence(1, result.length() - 1);
 			}
 			else {
-				result = cleanupCharSequence(result, (c, i) -> c == '-' || c == '_',
-						CharProcessor.LOWERCASE);
+				result = cleanupCharSequence(result, (c, i) -> c == '-' || c == '_', CharProcessor.LOWERCASE);
 			}
 			this.uniformElements[elementIndex] = result;
 		}
@@ -182,8 +177,7 @@ public final class ConfigurationPropertyName
 		if (elementValue == null) {
 			return this;
 		}
-		process(elementValue, '.', (value, start, end, indexed) -> Assert.isTrue(
-				start == 0,
+		process(elementValue, '.', (value, start, end, indexed) -> Assert.isTrue(start == 0,
 				() -> "Element value '" + elementValue + "' must be a single item"));
 		if (!isIndexed(elementValue)) {
 			InvalidConfigurationPropertyNameException.throwIfHasInvalidChars(elementValue,
@@ -374,8 +368,7 @@ public final class ConfigurationPropertyName
 		boolean indexed = isIndexed(element);
 		int offset = indexed ? 1 : 0;
 		for (int i = 0 + offset; i < element.length() - offset; i++) {
-			char ch = (indexed ? element.charAt(i)
-					: Character.toLowerCase(element.charAt(i)));
+			char ch = (indexed ? element.charAt(i) : Character.toLowerCase(element.charAt(i)));
 			hash = (ch == '-' || ch == '_') ? hash : 31 * hash + Character.hashCode(ch);
 		}
 		return hash;
@@ -444,10 +437,8 @@ public final class ConfigurationPropertyName
 	 */
 	public static ConfigurationPropertyName of(CharSequence name) {
 		Assert.notNull(name, "Name must not be null");
-		if (name.length() >= 1
-				&& (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
-			throw new InvalidConfigurationPropertyNameException(name,
-					Collections.singletonList('.'));
+		if (name.length() >= 1 && (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
+			throw new InvalidConfigurationPropertyNameException(name, Collections.singletonList('.'));
 		}
 		if (name.length() == 0) {
 			return EMPTY;
@@ -501,8 +492,7 @@ public final class ConfigurationPropertyName
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {
 				elementValue = cleanupCharSequence(elementValue,
-						(ch, index) -> ch != '_' && !ElementValidator
-								.isValidChar(Character.toLowerCase(ch), index),
+						(ch, index) -> ch != '_' && !ElementValidator.isValidChar(Character.toLowerCase(ch), index),
 						CharProcessor.NONE);
 			}
 			if (elementValue.length() > 0) {
@@ -512,8 +502,7 @@ public final class ConfigurationPropertyName
 		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
 	}
 
-	private static void process(CharSequence name, char separator,
-			ElementProcessor processor) {
+	private static void process(CharSequence name, char separator, ElementProcessor processor) {
 		int start = 0;
 		boolean indexed = false;
 		int length = name.length();
@@ -544,15 +533,14 @@ public final class ConfigurationPropertyName
 		processElement(processor, name, start, length, false);
 	}
 
-	private static void processElement(ElementProcessor processor, CharSequence name,
-			int start, int end, boolean indexed) {
+	private static void processElement(ElementProcessor processor, CharSequence name, int start, int end,
+			boolean indexed) {
 		if ((end - start) >= 1) {
 			processor.process(name.subSequence(start, end), start, end, indexed);
 		}
 	}
 
-	private static CharSequence cleanupCharSequence(CharSequence name, CharFilter filter,
-			CharProcessor processor) {
+	private static CharSequence cleanupCharSequence(CharSequence name, CharFilter filter, CharProcessor processor) {
 		for (int i = 0; i < name.length(); i++) {
 			char ch = name.charAt(i);
 			char processed = processor.process(ch, i);
@@ -643,8 +631,7 @@ public final class ConfigurationPropertyName
 		private boolean valid = true;
 
 		@Override
-		public void process(CharSequence elementValue, int start, int end,
-				boolean indexed) {
+		public void process(CharSequence elementValue, int start, int end, boolean indexed) {
 			if (this.valid && !indexed) {
 				this.valid = isValidElement(elementValue);
 			}

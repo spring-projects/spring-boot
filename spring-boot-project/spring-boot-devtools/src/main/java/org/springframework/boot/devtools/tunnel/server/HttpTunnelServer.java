@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,8 +111,7 @@ public class HttpTunnelServer {
 
 	private static final long DEFAULT_DISCONNECT_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
 
-	private static final MediaType DISCONNECT_MEDIA_TYPE = new MediaType("application",
-			"x-disconnect");
+	private static final MediaType DISCONNECT_MEDIA_TYPE = new MediaType("application", "x-disconnect");
 
 	private static final Log logger = LogFactory.getLog(HttpTunnelServer.class);
 
@@ -139,8 +138,7 @@ public class HttpTunnelServer {
 	 * @param response the HTTP response
 	 * @throws IOException in case of I/O errors
 	 */
-	public void handle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		handle(new HttpConnection(request, response));
 	}
 
@@ -198,8 +196,7 @@ public class HttpTunnelServer {
 	 * @param disconnectTimeout the disconnect timeout in milliseconds
 	 */
 	public void setDisconnectTimeout(long disconnectTimeout) {
-		Assert.isTrue(disconnectTimeout > 0,
-				"DisconnectTimeout must be a positive value");
+		Assert.isTrue(disconnectTimeout > 0, "DisconnectTimeout must be a positive value");
 		this.disconnectTimeout = disconnectTimeout;
 	}
 
@@ -251,8 +248,7 @@ public class HttpTunnelServer {
 				ByteBuffer data = HttpTunnelPayload.getPayloadData(this.targetServer);
 				synchronized (this.httpConnections) {
 					if (data != null) {
-						HttpTunnelPayload payload = new HttpTunnelPayload(
-								this.responseSeq.incrementAndGet(), data);
+						HttpTunnelPayload payload = new HttpTunnelPayload(this.responseSeq.incrementAndGet(), data);
 						payload.logIncoming();
 						HttpConnection connection = getOrWaitForHttpConnection();
 						connection.respond(payload);
@@ -284,8 +280,7 @@ public class HttpTunnelServer {
 				Iterator<HttpConnection> iterator = this.httpConnections.iterator();
 				while (iterator.hasNext()) {
 					HttpConnection httpConnection = iterator.next();
-					if (httpConnection
-							.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
+					if (httpConnection.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
 						httpConnection.respond(HttpStatus.NO_CONTENT);
 						iterator.remove();
 					}
@@ -297,8 +292,7 @@ public class HttpTunnelServer {
 			if (this.lastHttpRequestTime > 0) {
 				long timeout = HttpTunnelServer.this.disconnectTimeout;
 				long duration = System.currentTimeMillis() - this.lastHttpRequestTime;
-				Assert.state(duration < timeout,
-						() -> "Disconnect timeout: " + timeout + " " + duration);
+				Assert.state(duration < timeout, () -> "Disconnect timeout: " + timeout + " " + duration);
 			}
 		}
 
@@ -335,8 +329,7 @@ public class HttpTunnelServer {
 			}
 			synchronized (this.httpConnections) {
 				while (this.httpConnections.size() > 1) {
-					this.httpConnections.removeFirst()
-							.respond(HttpStatus.TOO_MANY_REQUESTS);
+					this.httpConnections.removeFirst().respond(HttpStatus.TOO_MANY_REQUESTS);
 				}
 				this.lastHttpRequestTime = System.currentTimeMillis();
 				this.httpConnections.addLast(httpConnection);
@@ -345,8 +338,7 @@ public class HttpTunnelServer {
 			forwardToTargetServer(httpConnection);
 		}
 
-		private void forwardToTargetServer(HttpConnection httpConnection)
-				throws IOException {
+		private void forwardToTargetServer(HttpConnection httpConnection) throws IOException {
 			if (httpConnection.isDisconnectRequest()) {
 				this.targetServer.close();
 				interrupt();
@@ -390,8 +382,7 @@ public class HttpTunnelServer {
 		protected ServerHttpAsyncRequestControl startAsync() {
 			try {
 				// Try to use async to save blocking
-				ServerHttpAsyncRequestControl async = this.request
-						.getAsyncRequestControl(this.response);
+				ServerHttpAsyncRequestControl async = this.request.getAsyncRequestControl(this.response);
 				async.start();
 				return async;
 			}
@@ -450,8 +441,7 @@ public class HttpTunnelServer {
 		 * @return if the request is a signal to disconnect
 		 */
 		public boolean isDisconnectRequest() {
-			return DISCONNECT_MEDIA_TYPE
-					.equals(this.request.getHeaders().getContentType());
+			return DISCONNECT_MEDIA_TYPE.equals(this.request.getHeaders().getContentType());
 		}
 
 		/**

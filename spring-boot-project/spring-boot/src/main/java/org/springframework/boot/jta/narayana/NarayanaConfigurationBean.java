@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,12 +56,10 @@ public class NarayanaConfigurationBean implements InitializingBean {
 			setDefaultTimeout((int) this.properties.getDefaultTimeout().getSeconds());
 		}
 		if (this.properties.getPeriodicRecoveryPeriod() != null) {
-			setPeriodicRecoveryPeriod(
-					(int) this.properties.getPeriodicRecoveryPeriod().getSeconds());
+			setPeriodicRecoveryPeriod((int) this.properties.getPeriodicRecoveryPeriod().getSeconds());
 		}
 		if (this.properties.getRecoveryBackoffPeriod() != null) {
-			setRecoveryBackoffPeriod(
-					(int) this.properties.getRecoveryBackoffPeriod().getSeconds());
+			setRecoveryBackoffPeriod((int) this.properties.getRecoveryBackoffPeriod().getSeconds());
 		}
 		setXaResourceOrphanFilters(this.properties.getXaResourceOrphanFilters());
 		setRecoveryModules(this.properties.getRecoveryModules());
@@ -69,29 +67,23 @@ public class NarayanaConfigurationBean implements InitializingBean {
 	}
 
 	private boolean isPropertiesFileAvailable() {
-		return Thread.currentThread().getContextClassLoader()
-				.getResource(JBOSSTS_PROPERTIES_FILE_NAME) != null;
+		return Thread.currentThread().getContextClassLoader().getResource(JBOSSTS_PROPERTIES_FILE_NAME) != null;
 	}
 
-	private void setNodeIdentifier(String nodeIdentifier)
-			throws CoreEnvironmentBeanException {
+	private void setNodeIdentifier(String nodeIdentifier) throws CoreEnvironmentBeanException {
 		getPopulator(CoreEnvironmentBean.class).setNodeIdentifier(nodeIdentifier);
 	}
 
 	private void setObjectStoreDir(String objectStoreDir) {
 		if (objectStoreDir != null) {
-			getPopulator(ObjectStoreEnvironmentBean.class)
-					.setObjectStoreDir(objectStoreDir);
-			getPopulator(ObjectStoreEnvironmentBean.class, "communicationStore")
-					.setObjectStoreDir(objectStoreDir);
-			getPopulator(ObjectStoreEnvironmentBean.class, "stateStore")
-					.setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class).setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class, "communicationStore").setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class, "stateStore").setObjectStoreDir(objectStoreDir);
 		}
 	}
 
 	private void setCommitOnePhase(boolean isCommitOnePhase) {
-		getPopulator(CoordinatorEnvironmentBean.class)
-				.setCommitOnePhase(isCommitOnePhase);
+		getPopulator(CoordinatorEnvironmentBean.class).setCommitOnePhase(isCommitOnePhase);
 	}
 
 	private void setDefaultTimeout(int defaultTimeout) {
@@ -99,28 +91,23 @@ public class NarayanaConfigurationBean implements InitializingBean {
 	}
 
 	private void setPeriodicRecoveryPeriod(int periodicRecoveryPeriod) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setPeriodicRecoveryPeriod(periodicRecoveryPeriod);
+		getPopulator(RecoveryEnvironmentBean.class).setPeriodicRecoveryPeriod(periodicRecoveryPeriod);
 	}
 
 	private void setRecoveryBackoffPeriod(int recoveryBackoffPeriod) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setRecoveryBackoffPeriod(recoveryBackoffPeriod);
+		getPopulator(RecoveryEnvironmentBean.class).setRecoveryBackoffPeriod(recoveryBackoffPeriod);
 	}
 
 	private void setXaResourceOrphanFilters(List<String> xaResourceOrphanFilters) {
-		getPopulator(JTAEnvironmentBean.class)
-				.setXaResourceOrphanFilterClassNames(xaResourceOrphanFilters);
+		getPopulator(JTAEnvironmentBean.class).setXaResourceOrphanFilterClassNames(xaResourceOrphanFilters);
 	}
 
 	private void setRecoveryModules(List<String> recoveryModules) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setRecoveryModuleClassNames(recoveryModules);
+		getPopulator(RecoveryEnvironmentBean.class).setRecoveryModuleClassNames(recoveryModules);
 	}
 
 	private void setExpiryScanners(List<String> expiryScanners) {
-		getPopulator(RecoveryEnvironmentBean.class)
-				.setExpiryScannerClassNames(expiryScanners);
+		getPopulator(RecoveryEnvironmentBean.class).setExpiryScannerClassNames(expiryScanners);
 	}
 
 	private <T> T getPopulator(Class<T> beanClass) {

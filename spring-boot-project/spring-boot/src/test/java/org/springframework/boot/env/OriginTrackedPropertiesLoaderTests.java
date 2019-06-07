@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public class OriginTrackedPropertiesLoaderTests {
 	public void compareToJavaProperties() throws Exception {
 		Properties java = PropertiesLoaderUtils.loadProperties(this.resource);
 		Properties ours = new Properties();
-		new OriginTrackedPropertiesLoader(this.resource).load(false)
-				.forEach((k, v) -> ours.put(k, v.getValue()));
+		new OriginTrackedPropertiesLoader(this.resource).load(false).forEach((k, v) -> ours.put(k, v.getValue()));
 		assertThat(ours).isEqualTo(java);
 	}
 
@@ -95,8 +94,8 @@ public class OriginTrackedPropertiesLoaderTests {
 		// gh-12716
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Malformed \\uxxxx encoding");
-		new OriginTrackedPropertiesLoader(new ClassPathResource(
-				"test-properties-malformed-unicode.properties", getClass())).load();
+		new OriginTrackedPropertiesLoader(
+				new ClassPathResource("test-properties-malformed-unicode.properties", getClass())).load();
 	}
 
 	@Test

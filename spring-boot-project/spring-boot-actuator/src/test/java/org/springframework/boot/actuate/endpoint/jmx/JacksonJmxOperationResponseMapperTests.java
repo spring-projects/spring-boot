@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,15 +42,13 @@ import static org.mockito.Mockito.verify;
  */
 public class JacksonJmxOperationResponseMapperTests {
 
-	private JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(
-			null);
+	private JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(null);
 
 	private final BasicJsonTester json = new BasicJsonTester(getClass());
 
 	@Test
 	public void createWhenObjectMapperIsNullShouldUseDefaultObjectMapper() {
-		JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(
-				null);
+		JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(null);
 		Object mapped = mapper.mapResponse(Collections.singleton("test"));
 		assertThat(this.json.from(mapped.toString())).isEqualToJson("[test]");
 	}
@@ -58,8 +56,7 @@ public class JacksonJmxOperationResponseMapperTests {
 	@Test
 	public void createWhenObjectMapperIsSpecifiedShouldUseObjectMapper() {
 		ObjectMapper objectMapper = spy(ObjectMapper.class);
-		JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(
-				objectMapper);
+		JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(objectMapper);
 		Set<String> response = Collections.singleton("test");
 		mapper.mapResponse(response);
 		verify(objectMapper).convertValue(eq(response), any(JavaType.class));
@@ -68,8 +65,7 @@ public class JacksonJmxOperationResponseMapperTests {
 	@Test
 	public void mapResponseTypeWhenCharSequenceShouldReturnString() {
 		assertThat(this.mapper.mapResponseType(String.class)).isEqualTo(String.class);
-		assertThat(this.mapper.mapResponseType(StringBuilder.class))
-				.isEqualTo(String.class);
+		assertThat(this.mapper.mapResponseType(StringBuilder.class)).isEqualTo(String.class);
 	}
 
 	@Test

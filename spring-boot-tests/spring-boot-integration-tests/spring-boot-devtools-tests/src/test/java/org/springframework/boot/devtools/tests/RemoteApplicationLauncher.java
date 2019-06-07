@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,29 +37,22 @@ import org.springframework.util.StringUtils;
 abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 
 	@Override
-	public LaunchedApplication launchApplication(JvmLauncher javaLauncher)
-			throws Exception {
-		LaunchedJvm applicationJvm = javaLauncher.launch("app",
-				createApplicationClassPath(), "com.example.DevToolsTestApplication",
-				"--server.port=0", "--spring.devtools.remote.secret=secret");
+	public LaunchedApplication launchApplication(JvmLauncher javaLauncher) throws Exception {
+		LaunchedJvm applicationJvm = javaLauncher.launch("app", createApplicationClassPath(),
+				"com.example.DevToolsTestApplication", "--server.port=0", "--spring.devtools.remote.secret=secret");
 		int port = awaitServerPort(applicationJvm.getStandardOut());
-		BiFunction<Integer, File, Process> remoteRestarter = getRemoteRestarter(
-				javaLauncher);
-		return new LaunchedApplication(new File("target/remote"),
-				applicationJvm.getStandardOut(), applicationJvm.getStandardError(),
-				applicationJvm.getProcess(), remoteRestarter.apply(port, null),
+		BiFunction<Integer, File, Process> remoteRestarter = getRemoteRestarter(javaLauncher);
+		return new LaunchedApplication(new File("target/remote"), applicationJvm.getStandardOut(),
+				applicationJvm.getStandardError(), applicationJvm.getProcess(), remoteRestarter.apply(port, null),
 				remoteRestarter);
 	}
 
-	private BiFunction<Integer, File, Process> getRemoteRestarter(
-			JvmLauncher javaLauncher) {
+	private BiFunction<Integer, File, Process> getRemoteRestarter(JvmLauncher javaLauncher) {
 		return (port, classesDirectory) -> {
 			try {
-				LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
-						"remote-spring-application",
+				LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch("remote-spring-application",
 						createRemoteSpringApplicationClassPath(classesDirectory),
-						RemoteSpringApplication.class.getName(),
-						"--spring.devtools.remote.secret=secret",
+						RemoteSpringApplication.class.getName(), "--spring.devtools.remote.secret=secret",
 						"http://localhost:" + port);
 				awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
 				return remoteSpringApplicationJvm.getProcess();
@@ -72,14 +65,12 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 
 	protected abstract String createApplicationClassPath() throws Exception;
 
-	private String createRemoteSpringApplicationClassPath(File classesDirectory)
-			throws Exception {
+	private String createRemoteSpringApplicationClassPath(File classesDirectory) throws Exception {
 		if (classesDirectory == null) {
 			File remoteDirectory = new File("target/remote");
 			FileSystemUtils.deleteRecursively(remoteDirectory);
 			remoteDirectory.mkdirs();
-			FileSystemUtils.copyRecursively(new File("target/test-classes/com"),
-					new File("target/remote/com"));
+			FileSystemUtils.copyRecursively(new File("target/test-classes/com"), new File("target/remote/com"));
 		}
 		List<String> entries = new ArrayList<>();
 		entries.add("target/remote");
@@ -95,8 +86,7 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 		while (serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(
-						"server.port file was not written within 30 seconds. "
-								+ "Application output:%n%s",
+						"server.port file was not written within 30 seconds. " + "Application output:%n%s",
 						FileCopyUtils.copyToString(new FileReader(standardOut))));
 			}
 			Thread.sleep(100);
@@ -110,16 +100,13 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 		long end = System.currentTimeMillis() + 30000;
 		while (!standardOut.exists()) {
 			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException(
-						"Standard out file was not written " + "within 30 seconds");
+				throw new IllegalStateException("Standard out file was not written " + "within 30 seconds");
 			}
 			Thread.sleep(100);
 		}
-		while (!FileCopyUtils.copyToString(new FileReader(standardOut))
-				.contains("Started RemoteSpringApplication")) {
+		while (!FileCopyUtils.copyToString(new FileReader(standardOut)).contains("Started RemoteSpringApplication")) {
 			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException(
-						"RemoteSpringApplication did not start within 30 seconds");
+				throw new IllegalStateException("RemoteSpringApplication did not start within 30 seconds");
 			}
 			Thread.sleep(100);
 		}

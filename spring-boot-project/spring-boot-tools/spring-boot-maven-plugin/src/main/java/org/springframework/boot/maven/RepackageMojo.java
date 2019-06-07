@@ -58,8 +58,7 @@ import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningL
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true,
-		threadSafe = true,
+@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
@@ -214,10 +213,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
 		Repackager repackager = getRepackager(source);
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
-				getFilters(getAdditionalFilters()));
-		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
-				getLog());
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), getFilters(getAdditionalFilters()));
+		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack, getLog());
 		try {
 			LaunchScript launchScript = getLaunchScript();
 			repackager.repackage(target, libraries, launchScript);
@@ -236,14 +233,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-		return new File(this.outputDirectory, this.finalName + classifier + "."
-				+ this.project.getArtifact().getArtifactHandler().getExtension());
+		return new File(this.outputDirectory,
+				this.finalName + classifier + "." + this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
 	private Repackager getRepackager(File source) {
 		Repackager repackager = new Repackager(source, this.layoutFactory);
-		repackager.addMainClassTimeoutWarningListener(
-				new LoggingMainClassTimeoutWarningListener());
+		repackager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener());
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
@@ -269,8 +265,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private LaunchScript getLaunchScript() throws IOException {
 		if (this.executable || this.embeddedLaunchScript != null) {
-			return new DefaultLaunchScript(this.embeddedLaunchScript,
-					buildLaunchScriptProperties());
+			return new DefaultLaunchScript(this.embeddedLaunchScript, buildLaunchScriptProperties());
 		}
 		return null;
 	}
@@ -281,11 +276,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			properties.putAll(this.embeddedLaunchScriptProperties);
 		}
 		putIfMissing(properties, "initInfoProvides", this.project.getArtifactId());
-		putIfMissing(properties, "initInfoShortDescription", this.project.getName(),
-				this.project.getArtifactId());
-		putIfMissing(properties, "initInfoDescription",
-				removeLineBreaks(this.project.getDescription()), this.project.getName(),
-				this.project.getArtifactId());
+		putIfMissing(properties, "initInfoShortDescription", this.project.getName(), this.project.getArtifactId());
+		putIfMissing(properties, "initInfoDescription", removeLineBreaks(this.project.getDescription()),
+				this.project.getName(), this.project.getArtifactId());
 		return properties;
 	}
 
@@ -293,8 +286,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		return (description != null) ? description.replaceAll("\\s+", " ") : null;
 	}
 
-	private void putIfMissing(Properties properties, String key,
-			String... valueCandidates) {
+	private void putIfMissing(Properties properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
 				if (candidate != null && !candidate.isEmpty()) {
@@ -317,10 +309,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private void attachArtifact(File source, File repackaged) {
 		if (this.classifier != null) {
-			getLog().info("Attaching archive: " + repackaged + ", with classifier: "
-					+ this.classifier);
-			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
-					this.classifier, repackaged);
+			getLog().info("Attaching archive: " + repackaged + ", with classifier: " + this.classifier);
+			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(), this.classifier, repackaged);
 		}
 		else if (!source.equals(repackaged)) {
 			this.project.getArtifact().setFile(repackaged);
@@ -328,8 +318,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private class LoggingMainClassTimeoutWarningListener
-			implements MainClassTimeoutWarningListener {
+	private class LoggingMainClassTimeoutWarningListener implements MainClassTimeoutWarningListener {
 
 		@Override
 		public void handleTimeoutWarning(long duration, String mainMethod) {

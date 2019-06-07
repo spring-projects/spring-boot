@@ -147,8 +147,7 @@ public class CouchbaseProperties {
 		}
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.couchbase.env.endpoints.queryservice.max-endpoints")
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.queryservice.max-endpoints")
 		public Integer getQuery() {
 			return this.query;
 		}
@@ -163,8 +162,7 @@ public class CouchbaseProperties {
 		}
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(
-				replacement = "spring.couchbase.env.endpoints.viewservice.max-endpoints")
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.viewservice.max-endpoints")
 		public Integer getView() {
 			return this.view;
 		}
@@ -229,8 +227,7 @@ public class CouchbaseProperties {
 		private String keyStorePassword;
 
 		public Boolean getEnabled() {
-			return (this.enabled != null) ? this.enabled
-					: StringUtils.hasText(this.keyStore);
+			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.keyStore);
 		}
 
 		public void setEnabled(Boolean enabled) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,20 +37,19 @@ public class NarayanaXADataSourceWrapperTests {
 
 	private XADataSource dataSource = mock(XADataSource.class);
 
-	private NarayanaRecoveryManagerBean recoveryManager = mock(
-			NarayanaRecoveryManagerBean.class);
+	private NarayanaRecoveryManagerBean recoveryManager = mock(NarayanaRecoveryManagerBean.class);
 
 	private NarayanaProperties properties = mock(NarayanaProperties.class);
 
-	private NarayanaXADataSourceWrapper wrapper = new NarayanaXADataSourceWrapper(
-			this.recoveryManager, this.properties);
+	private NarayanaXADataSourceWrapper wrapper = new NarayanaXADataSourceWrapper(this.recoveryManager,
+			this.properties);
 
 	@Test
 	public void wrap() {
 		DataSource wrapped = this.wrapper.wrapDataSource(this.dataSource);
 		assertThat(wrapped).isInstanceOf(NarayanaDataSourceBean.class);
-		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(
-				any(DataSourceXAResourceRecoveryHelper.class));
+		verify(this.recoveryManager, times(1))
+				.registerXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));
 		verify(this.properties, times(1)).getRecoveryDbUser();
 		verify(this.properties, times(1)).getRecoveryDbPass();
 	}
@@ -61,8 +60,8 @@ public class NarayanaXADataSourceWrapperTests {
 		given(this.properties.getRecoveryDbPass()).willReturn("password");
 		DataSource wrapped = this.wrapper.wrapDataSource(this.dataSource);
 		assertThat(wrapped).isInstanceOf(NarayanaDataSourceBean.class);
-		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(
-				any(DataSourceXAResourceRecoveryHelper.class));
+		verify(this.recoveryManager, times(1))
+				.registerXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));
 		verify(this.properties, times(2)).getRecoveryDbUser();
 		verify(this.properties, times(1)).getRecoveryDbPass();
 	}

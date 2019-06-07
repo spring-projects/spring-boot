@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,14 +49,10 @@ public class OnBeanConditionTypeDeductionFailureTests {
 			fail("Context refresh was successful");
 		}
 		catch (Exception ex) {
-			Throwable beanTypeDeductionException = findNestedCause(ex,
-					BeanTypeDeductionException.class);
-			assertThat(beanTypeDeductionException)
-					.hasMessage("Failed to deduce bean type for "
-							+ OnMissingBeanConfiguration.class.getName()
-							+ ".objectMapper");
-			assertThat(findNestedCause(beanTypeDeductionException,
-					NoClassDefFoundError.class)).isNotNull();
+			Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
+			assertThat(beanTypeDeductionException).hasMessage(
+					"Failed to deduce bean type for " + OnMissingBeanConfiguration.class.getName() + ".objectMapper");
+			assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
 
 		}
 	}

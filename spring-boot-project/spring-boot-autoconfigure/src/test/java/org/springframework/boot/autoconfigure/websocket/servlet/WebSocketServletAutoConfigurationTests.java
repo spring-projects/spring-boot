@@ -65,8 +65,7 @@ public class WebSocketServletAutoConfigurationTests {
 				WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class);
 	}
 
-	private void serverContainerIsAvailableFromTheServletContext(
-			Class<?>... configuration) {
+	private void serverContainerIsAvailableFromTheServletContext(Class<?>... configuration) {
 		this.context.register(configuration);
 		this.context.refresh();
 		Object serverContainer = this.context.getServletContext()

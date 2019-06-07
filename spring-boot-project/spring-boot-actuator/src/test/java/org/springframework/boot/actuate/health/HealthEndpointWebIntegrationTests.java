@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,18 +45,16 @@ public class HealthEndpointWebIntegrationTests {
 
 	@Test
 	public void whenHealthIsUp200ResponseIsReturned() {
-		client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
-				.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP");
+		client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody().jsonPath("status")
+				.isEqualTo("UP").jsonPath("details.alpha.status").isEqualTo("UP").jsonPath("details.bravo.status")
+				.isEqualTo("UP");
 	}
 
 	@Test
 	public void whenHealthIsDown503ResponseIsReturned() {
-		context.getBean("alphaHealthIndicator", TestHealthIndicator.class)
-				.setHealth(Health.down().build());
-		client.get().uri("/actuator/health").exchange().expectStatus()
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
-				.isEqualTo("DOWN").jsonPath("details.alpha.status").isEqualTo("DOWN")
+		context.getBean("alphaHealthIndicator", TestHealthIndicator.class).setHealth(Health.down().build());
+		client.get().uri("/actuator/health").exchange().expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
+				.expectBody().jsonPath("status").isEqualTo("DOWN").jsonPath("details.alpha.status").isEqualTo("DOWN")
 				.jsonPath("details.bravo.status").isEqualTo("UP");
 	}
 
@@ -64,21 +62,17 @@ public class HealthEndpointWebIntegrationTests {
 	public static class TestConfiguration {
 
 		@Bean
-		public HealthEndpoint healthEndpoint(
-				Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(
-					new CompositeHealthIndicatorFactory().createHealthIndicator(
-							new OrderedHealthAggregator(), healthIndicators));
+		public HealthEndpoint healthEndpoint(Map<String, HealthIndicator> healthIndicators) {
+			return new HealthEndpoint(new CompositeHealthIndicatorFactory()
+					.createHealthIndicator(new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean
-		public HealthEndpointWebExtension healthWebEndpointExtension(
-				Map<String, HealthIndicator> healthIndicators) {
+		public HealthEndpointWebExtension healthWebEndpointExtension(Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpointWebExtension(
-					new CompositeHealthIndicatorFactory().createHealthIndicator(
-							new OrderedHealthAggregator(), healthIndicators),
-					new HealthWebEndpointResponseMapper(new HealthStatusHttpMapper(),
-							ShowDetails.ALWAYS,
+					new CompositeHealthIndicatorFactory().createHealthIndicator(new OrderedHealthAggregator(),
+							healthIndicators),
+					new HealthWebEndpointResponseMapper(new HealthStatusHttpMapper(), ShowDetails.ALWAYS,
 							new HashSet<>(Arrays.asList("ACTUATOR"))));
 		}
 

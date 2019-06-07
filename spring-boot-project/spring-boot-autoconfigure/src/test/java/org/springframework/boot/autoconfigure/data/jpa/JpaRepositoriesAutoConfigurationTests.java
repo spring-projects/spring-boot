@@ -66,9 +66,8 @@ public class JpaRepositoriesAutoConfigurationTests {
 	@Test
 	public void testOverrideRepositoryConfiguration() {
 		prepareApplicationContext(CustomConfiguration.class);
-		assertThat(this.context.getBean(
-				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class))
-						.isNotNull();
+		assertThat(this.context.getBean(org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class))
+				.isNotNull();
 		assertThat(this.context.getBean(PlatformTransactionManager.class)).isNotNull();
 		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
 	}
@@ -83,10 +82,8 @@ public class JpaRepositoriesAutoConfigurationTests {
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(configurationClasses);
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(EmbeddedDataSourceConfiguration.class, HibernateJpaAutoConfiguration.class,
+				JpaRepositoriesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}
 
@@ -99,11 +96,8 @@ public class JpaRepositoriesAutoConfigurationTests {
 	@Configuration
 	@EnableJpaRepositories(
 			basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class,
-			excludeFilters = {
-					@Filter(type = FilterType.ASSIGNABLE_TYPE,
-							value = CityMongoDbRepository.class),
-					@Filter(type = FilterType.ASSIGNABLE_TYPE,
-							value = CitySolrRepository.class) })
+			excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
+					@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
 	@TestAutoConfigurationPackage(City.class)
 	protected static class CustomConfiguration {
 

@@ -33,10 +33,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT,
-		properties = { "server.port=0", "value=123" })
-public class SpringBootTestWebEnvironmentDefinedPortTests
-		extends AbstractSpringBootTestWebServerWebEnvironmentTests {
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties = { "server.port=0", "value=123" })
+public class SpringBootTestWebEnvironmentDefinedPortTests extends AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Configuration
 	@EnableWebMvc

@@ -41,13 +41,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(DatadogMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.datadog", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.datadog", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogMetricsExportAutoConfiguration {
 
@@ -59,8 +58,7 @@ public class DatadogMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig,
-			Clock clock) {
+	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig, Clock clock) {
 		return new DatadogMeterRegistry(datadogConfig, clock);
 	}
 

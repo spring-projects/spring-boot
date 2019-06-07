@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class PropertiesMigrationListenerTests {
 	@Test
 	public void sampleReport() {
 		this.context = createSampleApplication().run("--banner.charset=UTF8");
-		assertThat(this.output.toString()).contains("commandLineArgs")
-				.contains("spring.banner.charset")
+		assertThat(this.output.toString()).contains("commandLineArgs").contains("spring.banner.charset")
 				.contains("Each configuration key has been temporarily mapped")
 				.doesNotContain("Please refer to the migration guide");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ class HazelcastClientConfiguration {
 	static class HazelcastClientConfigFileConfiguration {
 
 		@Bean
-		public HazelcastInstance hazelcastInstance(HazelcastProperties properties)
-				throws IOException {
+		public HazelcastInstance hazelcastInstance(HazelcastProperties properties) throws IOException {
 			Resource config = properties.resolveConfigLocation();
 			if (config != null) {
 				return new HazelcastClientFactory(config).getHazelcastInstance();
@@ -78,8 +77,7 @@ class HazelcastClientConfiguration {
 	static class ConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
 		ConfigAvailableCondition() {
-			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast-client.xml",
-					"classpath:/hazelcast-client.xml");
+			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast-client.xml", "classpath:/hazelcast-client.xml");
 		}
 
 	}

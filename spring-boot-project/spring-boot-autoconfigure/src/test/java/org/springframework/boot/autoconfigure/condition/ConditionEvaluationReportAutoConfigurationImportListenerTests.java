@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,32 +52,29 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	public void shouldBeInSpringFactories() {
 		List<AutoConfigurationImportListener> factories = SpringFactoriesLoader
 				.loadFactories(AutoConfigurationImportListener.class, null);
-		assertThat(factories).hasAtLeastOneElementOfType(
-				ConditionEvaluationReportAutoConfigurationImportListener.class);
+		assertThat(factories)
+				.hasAtLeastOneElementOfType(ConditionEvaluationReportAutoConfigurationImportListener.class);
 	}
 
 	@Test
 	public void onAutoConfigurationImportEventShouldRecordCandidates() {
 		List<String> candidateConfigurations = Collections.singletonList("Test");
 		Set<String> exclusions = Collections.emptySet();
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
-				candidateConfigurations, exclusions);
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, candidateConfigurations,
+				exclusions);
 		this.listener.onAutoConfigurationImportEvent(event);
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(this.beanFactory);
-		assertThat(report.getUnconditionalClasses())
-				.containsExactlyElementsOf(candidateConfigurations);
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
+		assertThat(report.getUnconditionalClasses()).containsExactlyElementsOf(candidateConfigurations);
 	}
 
 	@Test
 	public void onAutoConfigurationImportEventShouldRecordExclusions() {
 		List<String> candidateConfigurations = Collections.emptyList();
 		Set<String> exclusions = Collections.singleton("Test");
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
-				candidateConfigurations, exclusions);
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, candidateConfigurations,
+				exclusions);
 		this.listener.onAutoConfigurationImportEvent(event);
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(this.beanFactory);
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(report.getExclusions()).containsExactlyElementsOf(exclusions);
 	}
 

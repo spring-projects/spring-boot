@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,15 +41,13 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(
-			ConfigurationPropertyName name) {
+	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		boolean filtered = getFilter().test(name);
 		return filtered ? getSource().getConfigurationProperty(name) : null;
 	}
 
 	@Override
-	public ConfigurationPropertyState containsDescendantOf(
-			ConfigurationPropertyName name) {
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		ConfigurationPropertyState result = this.source.containsDescendantOf(name);
 		if (result == ConfigurationPropertyState.PRESENT) {
 			// We can't be sure a contained descendant won't be filtered

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,29 +61,24 @@ class ConfigurationPropertiesBinder {
 
 	private volatile Binder binder;
 
-	ConfigurationPropertiesBinder(ApplicationContext applicationContext,
-			String validatorBeanName) {
+	ConfigurationPropertiesBinder(ApplicationContext applicationContext, String validatorBeanName) {
 		this.applicationContext = applicationContext;
-		this.propertySources = new PropertySourcesDeducer(applicationContext)
-				.getPropertySources();
-		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(
-				applicationContext, validatorBeanName);
-		this.jsr303Present = ConfigurationPropertiesJsr303Validator
-				.isJsr303Present(applicationContext);
+		this.propertySources = new PropertySourcesDeducer(applicationContext).getPropertySources();
+		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext,
+				validatorBeanName);
+		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
 	public void bind(Bindable<?> target) {
-		ConfigurationProperties annotation = target
-				.getAnnotation(ConfigurationProperties.class);
-		Assert.state(annotation != null,
-				() -> "Missing @ConfigurationProperties on " + target);
+		ConfigurationProperties annotation = target.getAnnotation(ConfigurationProperties.class);
+		Assert.state(annotation != null, () -> "Missing @ConfigurationProperties on " + target);
 		List<Validator> validators = getValidators(target);
 		BindHandler bindHandler = getBindHandler(annotation, validators);
 		getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	private Validator getConfigurationPropertiesValidator(
-			ApplicationContext applicationContext, String validatorBeanName) {
+	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext,
+			String validatorBeanName) {
 		if (applicationContext.containsBean(validatorBeanName)) {
 			return applicationContext.getBean(validatorBeanName, Validator.class);
 		}
@@ -106,14 +101,12 @@ class ConfigurationPropertiesBinder {
 
 	private Validator getJsr303Validator() {
 		if (this.jsr303Validator == null) {
-			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(
-					this.applicationContext);
+			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
 		}
 		return this.jsr303Validator;
 	}
 
-	private BindHandler getBindHandler(ConfigurationProperties annotation,
-			List<Validator> validators) {
+	private BindHandler getBindHandler(ConfigurationProperties annotation, List<Validator> validators) {
 		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
@@ -123,17 +116,15 @@ class ConfigurationPropertiesBinder {
 			handler = new NoUnboundElementsBindHandler(handler, filter);
 		}
 		if (!validators.isEmpty()) {
-			handler = new ValidationBindHandler(handler,
-					validators.toArray(new Validator[0]));
+			handler = new ValidationBindHandler(handler, validators.toArray(new Validator[0]));
 		}
 		return handler;
 	}
 
 	private Binder getBinder() {
 		if (this.binder == null) {
-			this.binder = new Binder(getConfigurationPropertySources(),
-					getPropertySourcesPlaceholdersResolver(), getConversionService(),
-					getPropertyEditorInitializer());
+			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
+					getConversionService(), getPropertyEditorInitializer());
 		}
 		return this.binder;
 	}
@@ -147,14 +138,12 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private ConversionService getConversionService() {
-		return new ConversionServiceDeducer(this.applicationContext)
-				.getConversionService();
+		return new ConversionServiceDeducer(this.applicationContext).getConversionService();
 	}
 
 	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			return ((ConfigurableApplicationContext) this.applicationContext)
-					.getBeanFactory()::copyRegisteredEditorsTo;
+			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
 	}

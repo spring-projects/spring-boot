@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param errorAttributes the error attributes
 	 * @param errorProperties configuration properties
 	 */
-	public BasicErrorController(ErrorAttributes errorAttributes,
-			ErrorProperties errorProperties) {
+	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
 		this(errorAttributes, errorProperties, Collections.emptyList());
 	}
 
@@ -71,8 +70,8 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param errorProperties configuration properties
 	 * @param errorViewResolvers error view resolvers
 	 */
-	public BasicErrorController(ErrorAttributes errorAttributes,
-			ErrorProperties errorProperties, List<ErrorViewResolver> errorViewResolvers) {
+	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties,
+			List<ErrorViewResolver> errorViewResolvers) {
 		super(errorAttributes, errorViewResolvers);
 		Assert.notNull(errorProperties, "ErrorProperties must not be null");
 		this.errorProperties = errorProperties;
@@ -84,11 +83,10 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@RequestMapping(produces = "text/html")
-	public ModelAndView errorHtml(HttpServletRequest request,
-			HttpServletResponse response) {
+	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
-		Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(
-				request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
+		Map<String, Object> model = Collections
+				.unmodifiableMap(getErrorAttributes(request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
@@ -97,8 +95,7 @@ public class BasicErrorController extends AbstractErrorController {
 	@RequestMapping
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.ALL));
+		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<>(body, status);
 	}
@@ -109,8 +106,7 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	protected boolean isIncludeStackTrace(HttpServletRequest request,
-			MediaType produces) {
+	protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
 		IncludeStacktrace include = getErrorProperties().getIncludeStacktrace();
 		if (include == IncludeStacktrace.ALWAYS) {
 			return true;

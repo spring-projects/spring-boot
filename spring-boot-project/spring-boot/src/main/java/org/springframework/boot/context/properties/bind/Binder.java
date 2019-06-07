@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,8 +99,7 @@ public class Binder {
 	 * @param sources the sources used for binding
 	 * @param placeholdersResolver strategy to resolve any property placeholders
 	 */
-	public Binder(Iterable<ConfigurationPropertySource> sources,
-			PlaceholdersResolver placeholdersResolver) {
+	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver) {
 		this(sources, placeholdersResolver, null, null);
 	}
 
@@ -111,8 +110,7 @@ public class Binder {
 	 * @param conversionService the conversion service to convert values (or {@code null}
 	 * to use {@link ApplicationConversionService})
 	 */
-	public Binder(Iterable<ConfigurationPropertySource> sources,
-			PlaceholdersResolver placeholdersResolver,
+	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
 			ConversionService conversionService) {
 		this(sources, placeholdersResolver, conversionService, null);
 	}
@@ -127,14 +125,11 @@ public class Binder {
 	 * that can convert values (or {@code null} if no initialization is required). Often
 	 * used to call {@link ConfigurableListableBeanFactory#copyRegisteredEditorsTo}.
 	 */
-	public Binder(Iterable<ConfigurationPropertySource> sources,
-			PlaceholdersResolver placeholdersResolver,
-			ConversionService conversionService,
-			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
+			ConversionService conversionService, Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
-		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver
-				: PlaceholdersResolver.NONE;
+		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
 		this.conversionService = (conversionService != null) ? conversionService
 				: ApplicationConversionService.getSharedInstance();
 		this.propertyEditorInitializer = propertyEditorInitializer;
@@ -201,8 +196,7 @@ public class Binder {
 	 * @param <T> the bound type
 	 * @return the binding result (never {@code null})
 	 */
-	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler) {
+	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
 		handler = (handler != null) ? handler : BindHandler.DEFAULT;
@@ -211,15 +205,14 @@ public class Binder {
 		return BindResult.of(bound);
 	}
 
-	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, boolean allowRecursiveBinding) {
+	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
+			boolean allowRecursiveBinding) {
 		context.clearConfigurationProperty();
 		try {
 			if (!handler.onStart(name, target, context)) {
 				return null;
 			}
-			Object bound = bindObject(name, target, handler, context,
-					allowRecursiveBinding);
+			Object bound = bindObject(name, target, handler, context, allowRecursiveBinding);
 			return handleBindResult(name, target, handler, context, bound);
 		}
 		catch (Exception ex) {
@@ -227,8 +220,8 @@ public class Binder {
 		}
 	}
 
-	private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, Object result) throws Exception {
+	private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+			Context context, Object result) throws Exception {
 		if (result != null) {
 			result = handler.onSuccess(name, target, context, result);
 			result = context.getConverter().convert(result, target);
@@ -237,8 +230,8 @@ public class Binder {
 		return context.getConverter().convert(result, target);
 	}
 
-	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, Exception error) {
+	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+			Context context, Exception error) {
 		try {
 			Object result = handler.onFailure(name, target, context, error);
 			return context.getConverter().convert(result, target);
@@ -251,8 +244,8 @@ public class Binder {
 		}
 	}
 
-	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, boolean allowRecursiveBinding) {
+	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+			Context context, boolean allowRecursiveBinding) {
 		ConfigurationProperty property = findProperty(name, context);
 		if (property == null && containsNoDescendantOf(context.streamSources(), name)) {
 			return null;
@@ -267,8 +260,7 @@ public class Binder {
 			}
 			catch (ConverterNotFoundException ex) {
 				// We might still be able to bind it as a bean
-				Object bean = bindBean(name, target, handler, context,
-						allowRecursiveBinding);
+				Object bean = bindBean(name, target, handler, context, allowRecursiveBinding);
 				if (bean != null) {
 					return bean;
 				}
@@ -292,31 +284,25 @@ public class Binder {
 		return null;
 	}
 
-	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
+	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+			Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
-			boolean allowRecursiveBinding = aggregateBinder
-					.isAllowRecursiveBinding(source);
-			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context,
-					allowRecursiveBinding);
+			boolean allowRecursiveBinding = aggregateBinder.isAllowRecursiveBinding(source);
+			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context, allowRecursiveBinding);
 			return context.withSource(source, supplier);
 		};
-		return context.withIncreasedDepth(
-				() -> aggregateBinder.bind(name, target, elementBinder));
+		return context.withIncreasedDepth(() -> aggregateBinder.bind(name, target, elementBinder));
 	}
 
-	private ConfigurationProperty findProperty(ConfigurationPropertyName name,
-			Context context) {
+	private ConfigurationProperty findProperty(ConfigurationPropertyName name, Context context) {
 		if (name.isEmpty()) {
 			return null;
 		}
-		return context.streamSources()
-				.map((source) -> source.getConfigurationProperty(name))
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		return context.streamSources().map((source) -> source.getConfigurationProperty(name)).filter(Objects::nonNull)
+				.findFirst().orElse(null);
 	}
 
-	private <T> Object bindProperty(Bindable<T> target, Context context,
-			ConfigurationProperty property) {
+	private <T> Object bindProperty(Bindable<T> target, Context context, ConfigurationProperty property) {
 		context.setConfigurationProperty(property);
 		Object result = property.getValue();
 		result = this.placeholdersResolver.resolvePlaceholders(result);
@@ -324,29 +310,26 @@ public class Binder {
 		return result;
 	}
 
-	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
-			BindHandler handler, Context context, boolean allowRecursiveBinding) {
-		if (containsNoDescendantOf(context.streamSources(), name)
-				|| isUnbindableBean(name, target, context)) {
+	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler, Context context,
+			boolean allowRecursiveBinding) {
+		if (containsNoDescendantOf(context.streamSources(), name) || isUnbindableBean(name, target, context)) {
 			return null;
 		}
-		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
-				name.append(propertyName), propertyTarget, handler, context, false);
+		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
+				propertyTarget, handler, context, false);
 		Class<?> type = target.getType().resolve(Object.class);
 		if (!allowRecursiveBinding && context.hasBoundBean(type)) {
 			return null;
 		}
 		return context.withBean(type, () -> {
-			Stream<?> boundBeans = BEAN_BINDERS.stream()
-					.map((b) -> b.bind(name, target, context, propertyBinder));
+			Stream<?> boundBeans = BEAN_BINDERS.stream().map((b) -> b.bind(name, target, context, propertyBinder));
 			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
 		});
 	}
 
-	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target,
-			Context context) {
-		if (context.streamSources().anyMatch((s) -> s
-				.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT)) {
+	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {
+		if (context.streamSources()
+				.anyMatch((s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT)) {
 			// We know there are properties to bind so we can't bypass anything
 			return false;
 		}
@@ -360,8 +343,7 @@ public class Binder {
 
 	private boolean containsNoDescendantOf(Stream<ConfigurationPropertySource> sources,
 			ConfigurationPropertyName name) {
-		return sources.allMatch(
-				(s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.ABSENT);
+		return sources.allMatch((s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.ABSENT);
 	}
 
 	/**
@@ -384,8 +366,7 @@ public class Binder {
 
 		private int depth;
 
-		private final List<ConfigurationPropertySource> source = Arrays
-				.asList((ConfigurationPropertySource) null);
+		private final List<ConfigurationPropertySource> source = Arrays.asList((ConfigurationPropertySource) null);
 
 		private int sourcePushCount;
 
@@ -394,8 +375,7 @@ public class Binder {
 		private ConfigurationProperty configurationProperty;
 
 		Context() {
-			this.converter = new BindConverter(Binder.this.conversionService,
-					Binder.this.propertyEditorInitializer);
+			this.converter = new BindConverter(Binder.this.conversionService, Binder.this.propertyEditorInitializer);
 		}
 
 		private void increaseDepth() {
@@ -406,8 +386,7 @@ public class Binder {
 			this.depth--;
 		}
 
-		private <T> T withSource(ConfigurationPropertySource source,
-				Supplier<T> supplier) {
+		private <T> T withSource(ConfigurationPropertySource source, Supplier<T> supplier) {
 			if (source == null) {
 				return supplier.get();
 			}
@@ -445,8 +424,7 @@ public class Binder {
 			}
 		}
 
-		private void setConfigurationProperty(
-				ConfigurationProperty configurationProperty) {
+		private void setConfigurationProperty(ConfigurationProperty configurationProperty) {
 			this.configurationProperty = configurationProperty;
 		}
 

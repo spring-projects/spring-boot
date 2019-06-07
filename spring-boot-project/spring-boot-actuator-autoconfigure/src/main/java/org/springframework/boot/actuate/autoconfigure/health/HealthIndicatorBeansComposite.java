@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,15 +45,13 @@ final class HealthIndicatorBeansComposite {
 		Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 		indicators.putAll(applicationContext.getBeansOfType(HealthIndicator.class));
 		if (ClassUtils.isPresent("reactor.core.publisher.Flux", null)) {
-			new ReactiveHealthIndicators().get(applicationContext)
-					.forEach(indicators::putIfAbsent);
+			new ReactiveHealthIndicators().get(applicationContext).forEach(indicators::putIfAbsent);
 		}
 		CompositeHealthIndicatorFactory factory = new CompositeHealthIndicatorFactory();
 		return factory.createHealthIndicator(healthAggregator, indicators);
 	}
 
-	private static HealthAggregator getHealthAggregator(
-			ApplicationContext applicationContext) {
+	private static HealthAggregator getHealthAggregator(ApplicationContext applicationContext) {
 		try {
 			return applicationContext.getBean(HealthAggregator.class);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,21 +37,18 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 
 	private final ConversionService conversionService;
 
-	public StringToEnumIgnoringCaseConverterFactoryTests(String name,
-			ConversionService conversionService) {
+	public StringToEnumIgnoringCaseConverterFactoryTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	@Test
 	public void canConvertFromStringToEnumShouldReturnTrue() {
-		assertThat(this.conversionService.canConvert(String.class, TestEnum.class))
-				.isTrue();
+		assertThat(this.conversionService.canConvert(String.class, TestEnum.class)).isTrue();
 	}
 
 	@Test
 	public void canConvertFromStringToEnumSubclassShouldReturnTrue() {
-		assertThat(this.conversionService.canConvert(String.class,
-				TestSubclassEnum.ONE.getClass())).isTrue();
+		assertThat(this.conversionService.canConvert(String.class, TestSubclassEnum.ONE.getClass())).isTrue();
 	}
 
 	@Test
@@ -60,8 +57,7 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 		assertThat(service.convert("", TestEnum.class)).isNull();
 		assertThat(service.convert("ONE", TestEnum.class)).isEqualTo(TestEnum.ONE);
 		assertThat(service.convert("TWO", TestEnum.class)).isEqualTo(TestEnum.TWO);
-		assertThat(service.convert("THREE_AND_FOUR", TestEnum.class))
-				.isEqualTo(TestEnum.THREE_AND_FOUR);
+		assertThat(service.convert("THREE_AND_FOUR", TestEnum.class)).isEqualTo(TestEnum.THREE_AND_FOUR);
 	}
 
 	@Test
@@ -70,14 +66,10 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 		assertThat(service.convert("", TestEnum.class)).isNull();
 		assertThat(service.convert("one", TestEnum.class)).isEqualTo(TestEnum.ONE);
 		assertThat(service.convert("tWo", TestEnum.class)).isEqualTo(TestEnum.TWO);
-		assertThat(service.convert("three_and_four", TestEnum.class))
-				.isEqualTo(TestEnum.THREE_AND_FOUR);
-		assertThat(service.convert("threeandfour", TestEnum.class))
-				.isEqualTo(TestEnum.THREE_AND_FOUR);
-		assertThat(service.convert("three-and-four", TestEnum.class))
-				.isEqualTo(TestEnum.THREE_AND_FOUR);
-		assertThat(service.convert("threeAndFour", TestEnum.class))
-				.isEqualTo(TestEnum.THREE_AND_FOUR);
+		assertThat(service.convert("three_and_four", TestEnum.class)).isEqualTo(TestEnum.THREE_AND_FOUR);
+		assertThat(service.convert("threeandfour", TestEnum.class)).isEqualTo(TestEnum.THREE_AND_FOUR);
+		assertThat(service.convert("three-and-four", TestEnum.class)).isEqualTo(TestEnum.THREE_AND_FOUR);
+		assertThat(service.convert("threeAndFour", TestEnum.class)).isEqualTo(TestEnum.THREE_AND_FOUR);
 	}
 
 	@Test
@@ -85,10 +77,9 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 		Locale defaultLocale = Locale.getDefault();
 		try {
 			Locale.setDefault(new Locale("tr"));
-			LocaleSensitiveEnum result = this.conversionService.convert(
-					"accept-case-insensitive-properties", LocaleSensitiveEnum.class);
-			assertThat(result)
-					.isEqualTo(LocaleSensitiveEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+			LocaleSensitiveEnum result = this.conversionService.convert("accept-case-insensitive-properties",
+					LocaleSensitiveEnum.class);
+			assertThat(result).isEqualTo(LocaleSensitiveEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 		}
 		finally {
 			Locale.setDefault(defaultLocale);
@@ -97,8 +88,7 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 
 	@Parameters(name = "{0}")
 	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(
-				new StringToEnumIgnoringCaseConverterFactory());
+		return new ConversionServiceParameters(new StringToEnumIgnoringCaseConverterFactory());
 	}
 
 	enum TestEnum {

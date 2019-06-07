@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	private static final ExampleObject OBJECT = createExampleObject("Spring", 123);
 
-	private static final ResolvableType TYPE = ResolvableType
-			.forClass(ExampleObject.class);
+	private static final ResolvableType TYPE = ResolvableType.forClass(ExampleObject.class);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -188,8 +187,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 		return createTester(AbstractJsonMarshalTesterTests.class, type);
 	}
 
-	protected abstract AbstractJsonMarshalTester<Object> createTester(
-			Class<?> resourceLoadClass, ResolvableType type);
+	protected abstract AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type);
 
 	/**
 	 * Access to field backed by {@link ResolvableType}.

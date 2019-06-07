@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	private static final Set<Class<?>> CLIENT_ABORT_EXCEPTIONS;
 	static {
 		Set<Class<?>> clientAbortExceptions = new HashSet<>();
-		addClassIfPresent(clientAbortExceptions,
-				"org.apache.catalina.connector.ClientAbortException");
+		addClassIfPresent(clientAbortExceptions, "org.apache.catalina.connector.ClientAbortException");
 		CLIENT_ABORT_EXCEPTIONS = Collections.unmodifiableSet(clientAbortExceptions);
 	}
 
@@ -99,8 +98,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	private final OncePerRequestFilter delegate = new OncePerRequestFilter() {
 
 		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain)
+		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 				throws ServletException, IOException {
 			ErrorPageFilter.this.doFilter(request, response, chain);
 		}
@@ -118,19 +116,18 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 		this.delegate.doFilter(request, response, chain);
 	}
 
-	private void doFilter(HttpServletRequest request, HttpServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
+	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 		ErrorWrapperResponse wrapped = new ErrorWrapperResponse(response);
 		try {
 			chain.doFilter(request, wrapped);
 			if (wrapped.hasErrorToSend()) {
-				handleErrorStatus(request, response, wrapped.getStatus(),
-						wrapped.getMessage());
+				handleErrorStatus(request, response, wrapped.getStatus(), wrapped.getMessage());
 				response.flushBuffer();
 			}
 			else if (!request.isAsyncStarted() && !response.isCommitted()) {
@@ -147,8 +144,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		}
 	}
 
-	private void handleErrorStatus(HttpServletRequest request,
-			HttpServletResponse response, int status, String message)
+	private void handleErrorStatus(HttpServletRequest request, HttpServletResponse response, int status, String message)
 			throws ServletException, IOException {
 		if (response.isCommitted()) {
 			handleCommittedResponse(request, null);
@@ -164,9 +160,8 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		request.getRequestDispatcher(errorPath).forward(request, response);
 	}
 
-	private void handleException(HttpServletRequest request, HttpServletResponse response,
-			ErrorWrapperResponse wrapped, Throwable ex)
-			throws IOException, ServletException {
+	private void handleException(HttpServletRequest request, HttpServletResponse response, ErrorWrapperResponse wrapped,
+			Throwable ex) throws IOException, ServletException {
 		Class<?> type = ex.getClass();
 		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
@@ -180,13 +175,11 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		forwardToErrorPage(errorPath, request, wrapped, ex);
 	}
 
-	private void forwardToErrorPage(String path, HttpServletRequest request,
-			HttpServletResponse response, Throwable ex)
+	private void forwardToErrorPage(String path, HttpServletRequest request, HttpServletResponse response, Throwable ex)
 			throws ServletException, IOException {
 		if (logger.isErrorEnabled()) {
-			String message = "Forwarding to error page from request "
-					+ getDescription(request) + " due to exception [" + ex.getMessage()
-					+ "]";
+			String message = "Forwarding to error page from request " + getDescription(request) + " due to exception ["
+					+ ex.getMessage() + "]";
 			logger.error(message, ex);
 		}
 		setErrorAttributes(request, 500, ex.getMessage());
@@ -215,8 +208,8 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		if (isClientAbortException(ex)) {
 			return;
 		}
-		String message = "Cannot forward to error page for request "
-				+ getDescription(request) + " as the response has already been"
+		String message = "Cannot forward to error page for request " + getDescription(request)
+				+ " as the response has already been"
 				+ " committed. As a result, the response may have the wrong status"
 				+ " code. If your application is running on WebSphere Application"
 				+ " Server you may be able to resolve this problem by setting"
@@ -261,8 +254,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		return this.global;
 	}
 
-	private void setErrorAttributes(HttpServletRequest request, int status,
-			String message) {
+	private void setErrorAttributes(HttpServletRequest request, int status, String message) {
 		request.setAttribute(ERROR_STATUS_CODE, status);
 		request.setAttribute(ERROR_MESSAGE, message);
 		request.setAttribute(ERROR_REQUEST_URI, request.getRequestURI());
@@ -303,8 +295,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	public void destroy() {
 	}
 
-	private static void addClassIfPresent(Collection<Class<?>> collection,
-			String className) {
+	private static void addClassIfPresent(Collection<Class<?>> collection, String className) {
 		try {
 			collection.add(ClassUtils.forName(className, null));
 		}
@@ -355,8 +346,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 		private void sendErrorIfNecessary() throws IOException {
 			if (this.hasErrorToSend && !isCommitted()) {
-				((HttpServletResponse) getResponse()).sendError(this.status,
-						this.message);
+				((HttpServletResponse) getResponse()).sendError(this.status, this.message);
 			}
 		}
 

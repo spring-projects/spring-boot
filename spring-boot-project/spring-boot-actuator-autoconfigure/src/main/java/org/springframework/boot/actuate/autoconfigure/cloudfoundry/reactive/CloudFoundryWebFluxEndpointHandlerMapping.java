@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,17 +50,15 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class CloudFoundryWebFluxEndpointHandlerMapping
-		extends AbstractWebFluxEndpointHandlerMapping {
+class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping {
 
 	private final CloudFoundrySecurityInterceptor securityInterceptor;
 
 	private final EndpointLinksResolver linksResolver;
 
 	CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			CloudFoundrySecurityInterceptor securityInterceptor,
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
 			EndpointLinksResolver linksResolver) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
 		this.linksResolver = linksResolver;
@@ -68,40 +66,32 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 	}
 
 	@Override
-	protected ReactiveWebOperation wrapReactiveWebOperation(ExposableWebEndpoint endpoint,
-			WebOperation operation, ReactiveWebOperation reactiveWebOperation) {
-		return new SecureReactiveWebOperation(reactiveWebOperation,
-				this.securityInterceptor, endpoint.getEndpointId());
+	protected ReactiveWebOperation wrapReactiveWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
+			ReactiveWebOperation reactiveWebOperation) {
+		return new SecureReactiveWebOperation(reactiveWebOperation, this.securityInterceptor, endpoint.getEndpointId());
 	}
 
 	@Override
 	@ResponseBody
 	protected Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
 		ServerHttpRequest request = exchange.getRequest();
-		return this.securityInterceptor.preHandle(exchange, "")
-				.map((securityResponse) -> {
-					if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-						return new ResponseEntity<>(securityResponse.getStatus());
-					}
-					AccessLevel accessLevel = exchange
-							.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-					Map<String, Link> links = this.linksResolver
-							.resolveLinks(request.getURI().toString());
-					return new ResponseEntity<>(
-							Collections.singletonMap("_links",
-									getAccessibleLinks(accessLevel, links)),
-							HttpStatus.OK);
-				});
+		return this.securityInterceptor.preHandle(exchange, "").map((securityResponse) -> {
+			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
+				return new ResponseEntity<>(securityResponse.getStatus());
+			}
+			AccessLevel accessLevel = exchange.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
+			Map<String, Link> links = this.linksResolver.resolveLinks(request.getURI().toString());
+			return new ResponseEntity<>(Collections.singletonMap("_links", getAccessibleLinks(accessLevel, links)),
+					HttpStatus.OK);
+		});
 	}
 
-	private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel,
-			Map<String, Link> links) {
+	private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel, Map<String, Link> links) {
 		if (accessLevel == null) {
 			return new LinkedHashMap<>();
 		}
 		return links.entrySet().stream()
-				.filter((entry) -> entry.getKey().equals("self")
-						|| accessLevel.isAccessAllowed(entry.getKey()))
+				.filter((entry) -> entry.getKey().equals("self") || accessLevel.isAccessAllowed(entry.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
@@ -116,8 +106,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 
 		private final EndpointId endpointId;
 
-		SecureReactiveWebOperation(ReactiveWebOperation delegate,
-				CloudFoundrySecurityInterceptor securityInterceptor,
+		SecureReactiveWebOperation(ReactiveWebOperation delegate, CloudFoundrySecurityInterceptor securityInterceptor,
 				EndpointId endpointId) {
 			this.delegate = delegate;
 			this.securityInterceptor = securityInterceptor;
@@ -125,16 +114,13 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 		}
 
 		@Override
-		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
-				Map<String, String> body) {
-			return this.securityInterceptor
-					.preHandle(exchange, this.endpointId.toLowerCaseString())
-					.flatMap((securityResponse) -> flatMapResponse(exchange, body,
-							securityResponse));
+		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange, Map<String, String> body) {
+			return this.securityInterceptor.preHandle(exchange, this.endpointId.toLowerCaseString())
+					.flatMap((securityResponse) -> flatMapResponse(exchange, body, securityResponse));
 		}
 
-		private Mono<ResponseEntity<Object>> flatMapResponse(ServerWebExchange exchange,
-				Map<String, String> body, SecurityResponse securityResponse) {
+		private Mono<ResponseEntity<Object>> flatMapResponse(ServerWebExchange exchange, Map<String, String> body,
+				SecurityResponse securityResponse) {
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				return Mono.just(new ResponseEntity<>(securityResponse.getStatus()));
 			}

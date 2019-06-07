@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,12 +64,10 @@ public class RunArgumentsTests {
 
 	@Test
 	public void parseDebugFlags() {
-		String[] args = parseArgs(
-				"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
+		String[] args = parseArgs("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 		assertThat(args.length).isEqualTo(2);
 		assertThat(args[0]).isEqualTo("-Xdebug");
-		assertThat(args[1]).isEqualTo(
-				"-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
+		assertThat(args[1]).isEqualTo("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 	}
 
 	@Test

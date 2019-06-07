@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,16 +72,15 @@ public class CacheAutoConfiguration {
 	}
 
 	@Bean
-	public CacheManagerValidator cacheAutoConfigurationValidator(
-			CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
+	public CacheManagerValidator cacheAutoConfigurationValidator(CacheProperties cacheProperties,
+			ObjectProvider<CacheManager> cacheManager) {
 		return new CacheManagerValidator(cacheProperties, cacheManager);
 	}
 
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class CacheManagerJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	protected static class CacheManagerJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public CacheManagerJpaDependencyConfiguration() {
 			super("cacheManager");
@@ -99,8 +98,7 @@ public class CacheAutoConfiguration {
 
 		private final ObjectProvider<CacheManager> cacheManager;
 
-		CacheManagerValidator(CacheProperties cacheProperties,
-				ObjectProvider<CacheManager> cacheManager) {
+		CacheManagerValidator(CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
 			this.cacheProperties = cacheProperties;
 			this.cacheManager = cacheManager;
 		}
@@ -108,8 +106,7 @@ public class CacheAutoConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			Assert.notNull(this.cacheManager.getIfAvailable(),
-					() -> "No cache manager could "
-							+ "be auto-configured, check your configuration (caching "
+					() -> "No cache manager could " + "be auto-configured, check your configuration (caching "
 							+ "type is '" + this.cacheProperties.getType() + "')");
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,10 +91,8 @@ public class ClassLoaderFilesTests {
 		this.files.addFile("a", "myfile", file1);
 		this.files.addFile("b", "myfile", file2);
 		assertThat(this.files.getFile("myfile")).isEqualTo(file2);
-		assertThat(this.files.getOrCreateSourceFolder("a").getFiles().size())
-				.isEqualTo(0);
-		assertThat(this.files.getOrCreateSourceFolder("b").getFiles().size())
-				.isEqualTo(1);
+		assertThat(this.files.getOrCreateSourceFolder("a").getFiles().size()).isEqualTo(0);
+		assertThat(this.files.getOrCreateSourceFolder("b").getFiles().size()).isEqualTo(1);
 	}
 
 	@Test
@@ -125,8 +123,7 @@ public class ClassLoaderFilesTests {
 		ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(this.files);
 		oos.close();
-		ObjectInputStream ois = new ObjectInputStream(
-				new ByteArrayInputStream(bos.toByteArray()));
+		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
 		ClassLoaderFiles readObject = (ClassLoaderFiles) ois.readObject();
 		assertThat(readObject.getFile("myfile")).isNotNull();
 	}

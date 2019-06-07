@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public class MappingWebEndpointPathMapperTests {
 
 	@Test
 	public void defaultConfiguration() {
-		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
-				Collections.emptyMap());
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(Collections.emptyMap());
 		assertThat(mapper.getRootPath(EndpointId.of("test"))).isEqualTo("test");
 	}
 
@@ -47,10 +46,8 @@ public class MappingWebEndpointPathMapperTests {
 
 	@Test
 	public void mixedCaseDefaultConfiguration() {
-		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
-				Collections.emptyMap());
-		assertThat(mapper.getRootPath(EndpointId.of("testEndpoint")))
-				.isEqualTo("testEndpoint");
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(Collections.emptyMap());
+		assertThat(mapper.getRootPath(EndpointId.of("testEndpoint"))).isEqualTo("testEndpoint");
 	}
 
 	@Test

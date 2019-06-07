@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,16 +41,14 @@ import org.springframework.core.io.Resource;
 @Configuration
 @ConditionalOnClass({ Cache.class, EhCacheCacheManager.class })
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
-@Conditional({ CacheCondition.class,
-		EhCacheCacheConfiguration.ConfigAvailableCondition.class })
+@Conditional({ CacheCondition.class, EhCacheCacheConfiguration.ConfigAvailableCondition.class })
 class EhCacheCacheConfiguration {
 
 	private final CacheProperties cacheProperties;
 
 	private final CacheManagerCustomizers customizers;
 
-	EhCacheCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers) {
+	EhCacheCacheConfiguration(CacheProperties cacheProperties, CacheManagerCustomizers customizers) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
 	}
@@ -63,8 +61,7 @@ class EhCacheCacheConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManager ehCacheCacheManager() {
-		Resource location = this.cacheProperties
-				.resolveConfigLocation(this.cacheProperties.getEhcache().getConfig());
+		Resource location = this.cacheProperties.resolveConfigLocation(this.cacheProperties.getEhcache().getConfig());
 		if (location != null) {
 			return EhCacheManagerUtils.buildCacheManager(location);
 		}

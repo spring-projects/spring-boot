@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CompositeReactiveHealthIndicatorTests {
 
-	private static final Health UNKNOWN_HEALTH = Health.unknown()
-			.withDetail("detail", "value").build();
+	private static final Health UNKNOWN_HEALTH = Health.unknown().withDetail("detail", "value").build();
 
 	private static final Health HEALTHY = Health.up().build();
 
 	private OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
 
-	private CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
-			this.healthAggregator);
+	private CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(this.healthAggregator);
 
 	@Test
 	public void singleIndicator() {
@@ -54,11 +52,10 @@ public class CompositeReactiveHealthIndicatorTests {
 	@Test
 	public void longHealth() {
 		for (int i = 0; i < 50; i++) {
-			this.indicator.addHealthIndicator("test" + i,
-					new TimeoutHealth(10000, Status.UP));
+			this.indicator.addHealthIndicator("test" + i, new TimeoutHealth(10000, Status.UP));
 		}
-		StepVerifier.withVirtualTime(this.indicator::health).expectSubscription()
-				.thenAwait(Duration.ofMillis(10000)).consumeNextWith((h) -> {
+		StepVerifier.withVirtualTime(this.indicator::health).expectSubscription().thenAwait(Duration.ofMillis(10000))
+				.consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
 					assertThat(h.getDetails()).hasSize(50);
 				}).verifyComplete();
@@ -68,8 +65,7 @@ public class CompositeReactiveHealthIndicatorTests {
 	@Test
 	public void timeoutReachedUsesFallback() {
 		this.indicator.addHealthIndicator("slow", new TimeoutHealth(10000, Status.UP))
-				.addHealthIndicator("fast", new TimeoutHealth(10, Status.UP))
-				.timeoutStrategy(100, UNKNOWN_HEALTH);
+				.addHealthIndicator("fast", new TimeoutHealth(10, Status.UP)).timeoutStrategy(100, UNKNOWN_HEALTH);
 		StepVerifier.create(this.indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
@@ -81,10 +77,9 @@ public class CompositeReactiveHealthIndicatorTests {
 	@Test
 	public void timeoutNotReached() {
 		this.indicator.addHealthIndicator("slow", new TimeoutHealth(10000, Status.UP))
-				.addHealthIndicator("fast", new TimeoutHealth(10, Status.UP))
-				.timeoutStrategy(20000, null);
-		StepVerifier.withVirtualTime(this.indicator::health).expectSubscription()
-				.thenAwait(Duration.ofMillis(10000)).consumeNextWith((h) -> {
+				.addHealthIndicator("fast", new TimeoutHealth(10, Status.UP)).timeoutStrategy(20000, null);
+		StepVerifier.withVirtualTime(this.indicator::health).expectSubscription().thenAwait(Duration.ofMillis(10000))
+				.consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
 					assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
 					assertThat(h.getDetails().get("slow")).isEqualTo(HEALTHY);
@@ -105,8 +100,7 @@ public class CompositeReactiveHealthIndicatorTests {
 
 		@Override
 		public Mono<Health> health() {
-			return Mono.delay(Duration.ofMillis(this.timeout))
-					.map((l) -> Health.status(this.status).build());
+			return Mono.delay(Duration.ofMillis(this.timeout)).map((l) -> Health.status(this.status).build());
 		}
 
 	}

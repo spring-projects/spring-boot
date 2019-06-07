@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,7 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			JerseyAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, JerseyAutoConfiguration.class })
 	static class JerseyEndpointConfiguration {
 
 		private final ApplicationContext applicationContext;
@@ -96,18 +95,14 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 		}
 
 		private void customize(ResourceConfig config) {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
-					mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
-					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, PathMapper.useEndpointId(),
+			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON, ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, PathMapper.useEndpointId(),
 					Collections.emptyList(), Collections.emptyList());
-			Collection<Resource> resources = new JerseyEndpointResourceFactory()
-					.createEndpointResources(new EndpointMapping("/actuator"),
-							discoverer.getEndpoints(), endpointMediaTypes,
-							new EndpointLinksResolver(discoverer.getEndpoints()));
+			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
+					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
+					new EndpointLinksResolver(discoverer.getEndpoints()));
 			config.registerResources(new HashSet<>(resources));
 		}
 

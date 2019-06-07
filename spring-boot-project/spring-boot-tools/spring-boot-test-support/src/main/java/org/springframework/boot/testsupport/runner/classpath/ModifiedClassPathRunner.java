@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,7 @@ import org.springframework.util.StringUtils;
  */
 public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
-	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern
-			.compile(".*classpath(\\d+)?\\.jar");
+	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern.compile(".*classpath(\\d+)?\\.jar");
 
 	public ModifiedClassPathRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
@@ -88,15 +87,14 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	@Override
 	protected Object createTest() throws Exception {
 		ModifiedClassPathTestClass testClass = (ModifiedClassPathTestClass) getTestClass();
-		return testClass.doWithModifiedClassPathThreadContextClassLoader(
-				() -> ModifiedClassPathRunner.super.createTest());
+		return testClass
+				.doWithModifiedClassPathThreadContextClassLoader(() -> ModifiedClassPathRunner.super.createTest());
 	}
 
 	private URLClassLoader createTestClassLoader(Class<?> testClass) throws Exception {
 		ClassLoader classLoader = this.getClass().getClassLoader();
-		return new ModifiedClassPathClassLoader(
-				processUrls(extractUrls(classLoader), testClass), classLoader.getParent(),
-				classLoader);
+		return new ModifiedClassPathClassLoader(processUrls(extractUrls(classLoader), testClass),
+				classLoader.getParent(), classLoader);
 	}
 
 	private URL[] extractUrls(ClassLoader classLoader) throws Exception {
@@ -116,8 +114,8 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		if (classLoader instanceof URLClassLoader) {
 			return Stream.of(((URLClassLoader) classLoader).getURLs());
 		}
-		return Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath()
-				.split(File.pathSeparator)).map(this::toURL);
+		return Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
+				.map(this::toURL);
 	}
 
 	private URL toURL(String entry) {
@@ -167,8 +165,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private String[] getClassPath(URL booterJar) throws Exception {
 		Attributes attributes = getManifestMainAttributesFromUrl(booterJar);
-		return StringUtils.delimitedListToStringArray(
-				attributes.getValue(Attributes.Name.CLASS_PATH), " ");
+		return StringUtils.delimitedListToStringArray(attributes.getValue(Attributes.Name.CLASS_PATH), " ");
 	}
 
 	private Attributes getManifestMainAttributesFromUrl(URL url) throws Exception {
@@ -190,8 +187,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private List<URL> getAdditionalUrls(Class<?> testClass) throws Exception {
-		ClassPathOverrides overrides = AnnotationUtils.findAnnotation(testClass,
-				ClassPathOverrides.class);
+		ClassPathOverrides overrides = AnnotationUtils.findAnnotation(testClass, ClassPathOverrides.class);
 		if (overrides == null) {
 			return Collections.emptyList();
 		}
@@ -199,26 +195,19 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private List<URL> resolveCoordinates(String[] coordinates) throws Exception {
-		DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils
-				.newServiceLocator();
-		serviceLocator.addService(RepositoryConnectorFactory.class,
-				BasicRepositoryConnectorFactory.class);
+		DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
+		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-		RepositorySystem repositorySystem = serviceLocator
-				.getService(RepositorySystem.class);
+		RepositorySystem repositorySystem = serviceLocator.getService(RepositorySystem.class);
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-		LocalRepository localRepository = new LocalRepository(
-				System.getProperty("user.home") + "/.m2/repository");
-		session.setLocalRepositoryManager(
-				repositorySystem.newLocalRepositoryManager(session, localRepository));
-		CollectRequest collectRequest = new CollectRequest(null,
-				Arrays.asList(new RemoteRepository.Builder("central", "default",
-						"https://repo.maven.apache.org/maven2").build()));
+		LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
+		session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepository));
+		CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(
+				new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2").build()));
 
 		collectRequest.setDependencies(createDependencies(coordinates));
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
-		DependencyResult result = repositorySystem.resolveDependencies(session,
-				dependencyRequest);
+		DependencyResult result = repositorySystem.resolveDependencies(session, dependencyRequest);
 		List<URL> resolvedArtifacts = new ArrayList<>();
 		for (ArtifactResult artifact : result.getArtifactResults()) {
 			resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
@@ -246,8 +235,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		private ClassPathEntryFilter(Class<?> testClass) throws Exception {
 			this.exclusions = new ArrayList<>();
 			this.exclusions.add("log4j-*.jar");
-			ClassPathExclusions exclusions = AnnotationUtils.findAnnotation(testClass,
-					ClassPathExclusions.class);
+			ClassPathExclusions exclusions = AnnotationUtils.findAnnotation(testClass, ClassPathExclusions.class);
 			if (exclusions != null) {
 				this.exclusions.addAll(Arrays.asList(exclusions.value()));
 			}
@@ -275,15 +263,13 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 		private final ClassLoader classLoader;
 
-		ModifiedClassPathTestClass(ClassLoader classLoader, String testClassName)
-				throws ClassNotFoundException {
+		ModifiedClassPathTestClass(ClassLoader classLoader, String testClassName) throws ClassNotFoundException {
 			super(classLoader.loadClass(testClassName));
 			this.classLoader = classLoader;
 		}
 
 		@Override
-		public List<FrameworkMethod> getAnnotatedMethods(
-				Class<? extends Annotation> annotationClass) {
+		public List<FrameworkMethod> getAnnotatedMethods(Class<? extends Annotation> annotationClass) {
 			try {
 				return getAnnotatedMethods(annotationClass.getName());
 			}
@@ -293,28 +279,24 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		}
 
 		@SuppressWarnings("unchecked")
-		private List<FrameworkMethod> getAnnotatedMethods(String annotationClassName)
-				throws ClassNotFoundException {
+		private List<FrameworkMethod> getAnnotatedMethods(String annotationClassName) throws ClassNotFoundException {
 			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) this.classLoader
 					.loadClass(annotationClassName);
 			List<FrameworkMethod> methods = super.getAnnotatedMethods(annotationClass);
 			return wrapFrameworkMethods(methods);
 		}
 
-		private List<FrameworkMethod> wrapFrameworkMethods(
-				List<FrameworkMethod> methods) {
+		private List<FrameworkMethod> wrapFrameworkMethods(List<FrameworkMethod> methods) {
 			List<FrameworkMethod> wrapped = new ArrayList<>(methods.size());
 			for (FrameworkMethod frameworkMethod : methods) {
-				wrapped.add(new ModifiedClassPathFrameworkMethod(
-						frameworkMethod.getMethod()));
+				wrapped.add(new ModifiedClassPathFrameworkMethod(frameworkMethod.getMethod()));
 			}
 			return wrapped;
 		}
 
 		private <T, E extends Throwable> T doWithModifiedClassPathThreadContextClassLoader(
 				ModifiedClassPathTcclAction<T, E> action) throws E {
-			ClassLoader originalClassLoader = Thread.currentThread()
-					.getContextClassLoader();
+			ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 			Thread.currentThread().setContextClassLoader(this.classLoader);
 			try {
 				return action.perform();
@@ -345,11 +327,9 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 			}
 
 			@Override
-			public Object invokeExplosively(Object target, Object... params)
-					throws Throwable {
+			public Object invokeExplosively(Object target, Object... params) throws Throwable {
 				return doWithModifiedClassPathThreadContextClassLoader(
-						() -> ModifiedClassPathFrameworkMethod.super.invokeExplosively(
-								target, params));
+						() -> ModifiedClassPathFrameworkMethod.super.invokeExplosively(target, params));
 			}
 
 		}
@@ -363,8 +343,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 		private final ClassLoader junitLoader;
 
-		ModifiedClassPathClassLoader(URL[] urls, ClassLoader parent,
-				ClassLoader junitLoader) {
+		ModifiedClassPathClassLoader(URL[] urls, ClassLoader parent, ClassLoader junitLoader) {
 			super(urls, parent);
 			this.junitLoader = junitLoader;
 		}

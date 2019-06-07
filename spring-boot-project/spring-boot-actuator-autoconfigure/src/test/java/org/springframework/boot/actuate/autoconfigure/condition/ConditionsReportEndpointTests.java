@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,17 +47,14 @@ public class ConditionsReportEndpointTests {
 
 	@Test
 	public void invoke() {
-		new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.run((context) -> {
-					ContextConditionEvaluation report = context
-							.getBean(ConditionsReportEndpoint.class)
-							.applicationConditionEvaluation().getContexts()
-							.get(context.getId());
-					assertThat(report.getPositiveMatches()).isEmpty();
-					assertThat(report.getNegativeMatches()).containsKey("a");
-					assertThat(report.getUnconditionalClasses()).contains("b");
-					assertThat(report.getExclusions()).contains("com.foo.Bar");
-				});
+		new ApplicationContextRunner().withUserConfiguration(Config.class).run((context) -> {
+			ContextConditionEvaluation report = context.getBean(ConditionsReportEndpoint.class)
+					.applicationConditionEvaluation().getContexts().get(context.getId());
+			assertThat(report.getPositiveMatches()).isEmpty();
+			assertThat(report.getNegativeMatches()).containsKey("a");
+			assertThat(report.getUnconditionalClasses()).contains("b");
+			assertThat(report.getExclusions()).contains("com.foo.Bar");
+		});
 	}
 
 	@Configuration
@@ -72,11 +69,9 @@ public class ConditionsReportEndpointTests {
 
 		@PostConstruct
 		public void setupAutoConfigurationReport() {
-			ConditionEvaluationReport report = ConditionEvaluationReport
-					.get(this.context.getBeanFactory());
+			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context.getBeanFactory());
 			report.recordEvaluationCandidates(Arrays.asList("a", "b"));
-			report.recordConditionEvaluation("a", mock(Condition.class),
-					mock(ConditionOutcome.class));
+			report.recordConditionEvaluation("a", mock(Condition.class), mock(ConditionOutcome.class));
 			report.recordExclusions(Collections.singletonList("com.foo.Bar"));
 		}
 

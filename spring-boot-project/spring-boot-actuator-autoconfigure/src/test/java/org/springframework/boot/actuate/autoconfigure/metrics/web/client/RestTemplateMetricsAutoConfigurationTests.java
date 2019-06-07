@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class RestTemplateMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(
-					AutoConfigurations.of(RestTemplateAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class));
 
 	@Rule
 	public OutputCapture out = new OutputCapture();
@@ -55,8 +54,7 @@ public class RestTemplateMetricsAutoConfigurationTests {
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class)
-					.build();
+			RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
 			validateRestTemplate(restTemplate, registry);
 		});
 	}
@@ -66,8 +64,7 @@ public class RestTemplateMetricsAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
 			RestTemplate restTemplate = new RestTemplateBuilder()
-					.customizers(context.getBean(MetricsRestTemplateCustomizer.class))
-					.build();
+					.customizers(context.getBean(MetricsRestTemplateCustomizer.class)).build();
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			validateRestTemplate(restTemplate, registry);
 		});
@@ -75,34 +72,27 @@ public class RestTemplateMetricsAutoConfigurationTests {
 
 	@Test
 	public void afterMaxUrisReachedFurtherUrisAreDenied() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.out.toString()).contains(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString()).contains(
-							"Are you using 'uriVariables' on RestTemplate calls?");
-				});
+		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
+			MeterRegistry registry = getInitializedMeterRegistry(context);
+			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
+			assertThat(this.out.toString())
+					.contains("Reached the maximum number of URI tags for 'http.client.requests'.");
+			assertThat(this.out.toString()).contains("Are you using 'uriVariables' on RestTemplate calls?");
+		});
 	}
 
 	@Test
 	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.web.client.max-uri-tags=5")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.out.toString()).doesNotContain(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString()).doesNotContain(
-							"Are you using 'uriVariables' on RestTemplate calls?");
-				});
+		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
+			MeterRegistry registry = getInitializedMeterRegistry(context);
+			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
+			assertThat(this.out.toString())
+					.doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.");
+			assertThat(this.out.toString()).doesNotContain("Are you using 'uriVariables' on RestTemplate calls?");
+		});
 	}
 
-	private MeterRegistry getInitializedMeterRegistry(
-			AssertableApplicationContext context) {
+	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context) {
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
 		RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
@@ -119,8 +109,7 @@ public class RestTemplateMetricsAutoConfigurationTests {
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 		server.expect(requestTo("/test")).andRespond(withStatus(HttpStatus.OK));
 		assertThat(registry.find("http.client.requests").meter()).isNull();
-		assertThat(restTemplate.getForEntity("/test", Void.class).getStatusCode())
-				.isEqualTo(HttpStatus.OK);
+		assertThat(restTemplate.getForEntity("/test", Void.class).getStatusCode()).isEqualTo(HttpStatus.OK);
 		registry.get("http.client.requests").meter();
 	}
 

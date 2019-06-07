@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ public class EndpointMBeanTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
-			new TestJmxOperation());
+	private TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation());
 
 	private TestJmxOperationResponseMapper responseMapper = new TestJmxOperationResponseMapper();
 
@@ -85,20 +84,17 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeShouldInvokeJmxOperation()
-			throws MBeanException, ReflectionException {
+	public void invokeShouldInvokeJmxOperation() throws MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
 		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
 		assertThat(result).isEqualTo("result");
 	}
 
 	@Test
-	public void invokeWhenOperationFailedShouldTranslateException()
-			throws MBeanException, ReflectionException {
-		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
-				new TestJmxOperation((arguments) -> {
-					throw new FatalBeanException("test failure");
-				}));
+	public void invokeWhenOperationFailedShouldTranslateException() throws MBeanException, ReflectionException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation((arguments) -> {
+			throw new FatalBeanException("test failure");
+		}));
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
 		this.thrown.expect(MBeanException.class);
 		this.thrown.expectCause(instanceOf(IllegalStateException.class));
@@ -109,10 +105,9 @@ public class EndpointMBeanTests {
 	@Test
 	public void invokeWhenOperationFailedWithJdkExceptionShouldReuseException()
 			throws MBeanException, ReflectionException {
-		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
-				new TestJmxOperation((arguments) -> {
-					throw new UnsupportedOperationException("test failure");
-				}));
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation((arguments) -> {
+			throw new UnsupportedOperationException("test failure");
+		}));
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
 		this.thrown.expect(MBeanException.class);
 		this.thrown.expectCause(instanceOf(UnsupportedOperationException.class));
@@ -121,8 +116,7 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeWhenActionNameIsNotAnOperationShouldThrowException()
-			throws MBeanException, ReflectionException {
+	public void invokeWhenActionNameIsNotAnOperationShouldThrowException() throws MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
 		this.thrown.expect(ReflectionException.class);
 		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
@@ -131,24 +125,19 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeShouldInvokeJmxOperationWithBeanClassLoader()
-			throws ReflectionException, MBeanException {
+	public void invokeShouldInvokeJmxOperationWithBeanClassLoader() throws ReflectionException, MBeanException {
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
 				new TestJmxOperation((arguments) -> ClassUtils.getDefaultClassLoader()));
-		URLClassLoader beanClassLoader = new URLClassLoader(new URL[0],
-				getClass().getClassLoader());
-		EndpointMBean bean = new EndpointMBean(this.responseMapper, beanClassLoader,
-				endpoint);
+		URLClassLoader beanClassLoader = new URLClassLoader(new URL[0], getClass().getClassLoader());
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, beanClassLoader, endpoint);
 		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
 		assertThat(result).isEqualTo(beanClassLoader);
-		assertThat(Thread.currentThread().getContextClassLoader())
-				.isEqualTo(originalClassLoader);
+		assertThat(Thread.currentThread().getContextClassLoader()).isEqualTo(originalClassLoader);
 	}
 
 	@Test
-	public void invokeWhenOperationIsInvalidShouldThrowException()
-			throws MBeanException, ReflectionException {
+	public void invokeWhenOperationIsInvalidShouldThrowException() throws MBeanException, ReflectionException {
 		TestJmxOperation operation = new TestJmxOperation() {
 
 			@Override
@@ -166,8 +155,7 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeWhenMonoResultShouldBlockOnMono()
-			throws MBeanException, ReflectionException {
+	public void invokeWhenMonoResultShouldBlockOnMono() throws MBeanException, ReflectionException {
 		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
 				new TestJmxOperation((arguments) -> Mono.just("monoResult")));
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
@@ -176,8 +164,7 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void invokeShouldCallResponseMapper()
-			throws MBeanException, ReflectionException {
+	public void invokeShouldCallResponseMapper() throws MBeanException, ReflectionException {
 		TestJmxOperationResponseMapper responseMapper = spy(this.responseMapper);
 		EndpointMBean bean = new EndpointMBean(responseMapper, null, this.endpoint);
 		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
@@ -195,8 +182,8 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
-	public void setAttributeShouldThrowException() throws AttributeNotFoundException,
-			InvalidAttributeValueException, MBeanException, ReflectionException {
+	public void setAttributeShouldThrowException()
+			throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
 		this.thrown.expect(AttributeNotFoundException.class);
 		this.thrown.expectMessage("EndpointMBeans do not support attributes");

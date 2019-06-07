@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,16 +41,14 @@ public class SpringBootConditionTests {
 	@Test
 	public void sensibleClassException() {
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
-				"Error processing condition on " + ErrorOnClass.class.getName());
+		this.thrown.expectMessage("Error processing condition on " + ErrorOnClass.class.getName());
 		new AnnotationConfigApplicationContext(ErrorOnClass.class);
 	}
 
 	@Test
 	public void sensibleMethodException() {
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Error processing condition on "
-				+ ErrorOnMethod.class.getName() + ".myBean");
+		this.thrown.expectMessage("Error processing condition on " + ErrorOnMethod.class.getName() + ".myBean");
 		new AnnotationConfigApplicationContext(ErrorOnMethod.class);
 	}
 
@@ -74,8 +72,7 @@ public class SpringBootConditionTests {
 	public static class AlwaysThrowsCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			throw new RuntimeException("Oh no!");
 		}
 

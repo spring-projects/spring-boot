@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,35 +53,30 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 		this(parent, (configurationPropertySource) -> true);
 	}
 
-	public NoUnboundElementsBindHandler(BindHandler parent,
-			Function<ConfigurationPropertySource, Boolean> filter) {
+	public NoUnboundElementsBindHandler(BindHandler parent, Function<ConfigurationPropertySource, Boolean> filter) {
 		super(parent);
 		this.filter = filter;
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		this.boundNames.add(name);
 		return super.onSuccess(name, target, context, result);
 	}
 
 	@Override
-	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
+			throws Exception {
 		if (context.getDepth() == 0) {
 			checkNoUnboundElements(name, context);
 		}
 	}
 
-	private void checkNoUnboundElements(ConfigurationPropertyName name,
-			BindContext context) {
+	private void checkNoUnboundElements(ConfigurationPropertyName name, BindContext context) {
 		Set<ConfigurationProperty> unbound = new TreeSet<>();
 		for (ConfigurationPropertySource source : context.getSources()) {
-			if (source instanceof IterableConfigurationPropertySource
-					&& this.filter.apply(source)) {
-				collectUnbound(name, unbound,
-						(IterableConfigurationPropertySource) source);
+			if (source instanceof IterableConfigurationPropertySource && this.filter.apply(source)) {
+				collectUnbound(name, unbound, (IterableConfigurationPropertySource) source);
 			}
 		}
 		if (!unbound.isEmpty()) {
@@ -89,23 +84,20 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 		}
 	}
 
-	private void collectUnbound(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> unbound,
+	private void collectUnbound(ConfigurationPropertyName name, Set<ConfigurationProperty> unbound,
 			IterableConfigurationPropertySource source) {
-		IterableConfigurationPropertySource filtered = source
-				.filter((candidate) -> isUnbound(name, candidate));
+		IterableConfigurationPropertySource filtered = source.filter((candidate) -> isUnbound(name, candidate));
 		for (ConfigurationPropertyName unboundName : filtered) {
 			try {
-				unbound.add(source.filter((candidate) -> isUnbound(name, candidate))
-						.getConfigurationProperty(unboundName));
+				unbound.add(
+						source.filter((candidate) -> isUnbound(name, candidate)).getConfigurationProperty(unboundName));
 			}
 			catch (Exception ex) {
 			}
 		}
 	}
 
-	private boolean isUnbound(ConfigurationPropertyName name,
-			ConfigurationPropertyName candidate) {
+	private boolean isUnbound(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
 		return name.isAncestorOf(candidate) && !this.boundNames.contains(candidate);
 	}
 

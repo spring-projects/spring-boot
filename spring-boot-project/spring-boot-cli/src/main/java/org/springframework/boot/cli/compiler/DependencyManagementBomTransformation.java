@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,7 @@ import org.springframework.core.annotation.Order;
  * @since 1.3.0
  */
 @Order(DependencyManagementBomTransformation.ORDER)
-public class DependencyManagementBomTransformation
-		extends AnnotatedNodeASTTransformation {
+public class DependencyManagementBomTransformation extends AnnotatedNodeASTTransformation {
 
 	/**
 	 * The order of the transformation.
@@ -70,14 +69,12 @@ public class DependencyManagementBomTransformation
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 100;
 
 	private static final Set<String> DEPENDENCY_MANAGEMENT_BOM_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(
-					new HashSet<>(Arrays.asList(DependencyManagementBom.class.getName(),
-							DependencyManagementBom.class.getSimpleName())));
+			.unmodifiableSet(new HashSet<>(Arrays.asList(DependencyManagementBom.class.getName(),
+					DependencyManagementBom.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;
 
-	public DependencyManagementBomTransformation(
-			DependencyResolutionContext resolutionContext) {
+	public DependencyManagementBomTransformation(DependencyResolutionContext resolutionContext) {
 		super(DEPENDENCY_MANAGEMENT_BOM_ANNOTATION_NAMES, true);
 		this.resolutionContext = resolutionContext;
 	}
@@ -104,10 +101,8 @@ public class DependencyManagementBomTransformation
 
 	private List<Map<String, String>> createDependencyMaps(Expression valueExpression) {
 		Map<String, String> dependency = null;
-		List<ConstantExpression> constantExpressions = getConstantExpressions(
-				valueExpression);
-		List<Map<String, String>> dependencies = new ArrayList<>(
-				constantExpressions.size());
+		List<ConstantExpression> constantExpressions = getConstantExpressions(valueExpression);
+		List<Map<String, String>> dependencies = new ArrayList<>(constantExpressions.size());
 		for (ConstantExpression expression : constantExpressions) {
 			Object value = expression.getValue();
 			if (value instanceof String) {
@@ -136,13 +131,12 @@ public class DependencyManagementBomTransformation
 				&& ((ConstantExpression) valueExpression).getValue() instanceof String) {
 			return Arrays.asList((ConstantExpression) valueExpression);
 		}
-		reportError("@DependencyManagementBom requires an inline constant that is a "
-				+ "string or a string array", valueExpression);
+		reportError("@DependencyManagementBom requires an inline constant that is a " + "string or a string array",
+				valueExpression);
 		return Collections.emptyList();
 	}
 
-	private List<ConstantExpression> getConstantExpressions(
-			ListExpression valueExpression) {
+	private List<ConstantExpression> getConstantExpressions(ListExpression valueExpression) {
 		List<ConstantExpression> expressions = new ArrayList<>();
 		for (Expression expression : valueExpression.getExpressions()) {
 			if (expression instanceof ConstantExpression
@@ -150,9 +144,7 @@ public class DependencyManagementBomTransformation
 				expressions.add((ConstantExpression) expression);
 			}
 			else {
-				reportError(
-						"Each entry in the array must be an " + "inline string constant",
-						expression);
+				reportError("Each entry in the array must be an " + "inline string constant", expression);
 			}
 		}
 		return expressions;
@@ -160,16 +152,12 @@ public class DependencyManagementBomTransformation
 
 	private void handleMalformedDependency(Expression expression) {
 		Message message = createSyntaxErrorMessage(
-				String.format(
-						"The string must be of the form \"group:module:version\"%n"),
-				expression);
+				String.format("The string must be of the form \"group:module:version\"%n"), expression);
 		getSourceUnit().getErrorCollector().addErrorAndContinue(message);
 	}
 
-	private void updateDependencyResolutionContext(
-			List<Map<String, String>> bomDependencies) {
-		URI[] uris = Grape.getInstance().resolve(null,
-				bomDependencies.toArray(new Map[0]));
+	private void updateDependencyResolutionContext(List<Map<String, String>> bomDependencies) {
+		URI[] uris = Grape.getInstance().resolve(null, bomDependencies.toArray(new Map[0]));
 		DefaultModelBuilder modelBuilder = new DefaultModelBuilderFactory().newInstance();
 		for (URI uri : uris) {
 			try {
@@ -178,34 +166,28 @@ public class DependencyManagementBomTransformation
 				request.setModelSource(new UrlModelSource(uri.toURL()));
 				request.setSystemProperties(System.getProperties());
 				Model model = modelBuilder.build(request).getEffectiveModel();
-				this.resolutionContext.addDependencyManagement(
-						new MavenModelDependencyManagement(model));
+				this.resolutionContext.addDependencyManagement(new MavenModelDependencyManagement(model));
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Failed to build model for '" + uri
-						+ "'. Is it a valid Maven bom?", ex);
+				throw new IllegalStateException("Failed to build model for '" + uri + "'. Is it a valid Maven bom?",
+						ex);
 			}
 		}
 	}
 
-	private void handleDuplicateDependencyManagementBomAnnotation(
-			AnnotationNode annotationNode) {
+	private void handleDuplicateDependencyManagementBomAnnotation(AnnotationNode annotationNode) {
 		Message message = createSyntaxErrorMessage(
-				"Duplicate @DependencyManagementBom annotation. It must be declared at most once.",
-				annotationNode);
+				"Duplicate @DependencyManagementBom annotation. It must be declared at most once.", annotationNode);
 		getSourceUnit().getErrorCollector().addErrorAndContinue(message);
 	}
 
 	private void reportError(String message, ASTNode node) {
-		getSourceUnit().getErrorCollector()
-				.addErrorAndContinue(createSyntaxErrorMessage(message, node));
+		getSourceUnit().getErrorCollector().addErrorAndContinue(createSyntaxErrorMessage(message, node));
 	}
 
 	private Message createSyntaxErrorMessage(String message, ASTNode node) {
-		return new SyntaxErrorMessage(
-				new SyntaxException(message, node.getLineNumber(), node.getColumnNumber(),
-						node.getLastLineNumber(), node.getLastColumnNumber()),
-				getSourceUnit());
+		return new SyntaxErrorMessage(new SyntaxException(message, node.getLineNumber(), node.getColumnNumber(),
+				node.getLastLineNumber(), node.getLastColumnNumber()), getSourceUnit());
 	}
 
 	private static class GrapeModelResolver implements ModelResolver {
@@ -219,18 +201,15 @@ public class DependencyManagementBomTransformation
 			dependency.put("version", version);
 			dependency.put("type", "pom");
 			try {
-				return new UrlModelSource(
-						Grape.getInstance().resolve(null, dependency)[0].toURL());
+				return new UrlModelSource(Grape.getInstance().resolve(null, dependency)[0].toURL());
 			}
 			catch (MalformedURLException ex) {
-				throw new UnresolvableModelException(ex.getMessage(), groupId, artifactId,
-						version);
+				throw new UnresolvableModelException(ex.getMessage(), groupId, artifactId, version);
 			}
 		}
 
 		@Override
-		public void addRepository(Repository repository)
-				throws InvalidRepositoryException {
+		public void addRepository(Repository repository) throws InvalidRepositoryException {
 		}
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,11 @@ public class AuditEventsEndpointTests {
 
 	private final AuditEventsEndpoint endpoint = new AuditEventsEndpoint(this.repository);
 
-	private final AuditEvent event = new AuditEvent("principal", "type",
-			Collections.singletonMap("a", "alpha"));
+	private final AuditEvent event = new AuditEvent("principal", "type", Collections.singletonMap("a", "alpha"));
 
 	@Test
 	public void eventsWithType() {
-		given(this.repository.find(null, null, "type"))
-				.willReturn(Collections.singletonList(this.event));
+		given(this.repository.find(null, null, "type")).willReturn(Collections.singletonList(this.event));
 		List<AuditEvent> result = this.endpoint.events(null, null, "type").getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}
@@ -51,16 +49,14 @@ public class AuditEventsEndpointTests {
 	@Test
 	public void eventsCreatedAfter() {
 		OffsetDateTime now = OffsetDateTime.now();
-		given(this.repository.find(null, now.toInstant(), null))
-				.willReturn(Collections.singletonList(this.event));
+		given(this.repository.find(null, now.toInstant(), null)).willReturn(Collections.singletonList(this.event));
 		List<AuditEvent> result = this.endpoint.events(null, now, null).getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}
 
 	@Test
 	public void eventsWithPrincipal() {
-		given(this.repository.find("Joan", null, null))
-				.willReturn(Collections.singletonList(this.event));
+		given(this.repository.find("Joan", null, null)).willReturn(Collections.singletonList(this.event));
 		List<AuditEvent> result = this.endpoint.events("Joan", null, null).getEvents();
 		assertThat(result).isEqualTo(Collections.singletonList(this.event));
 	}

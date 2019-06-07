@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,11 @@ public class ReactiveManagementContextFactoryTests {
 		this.parent.register(ParentConfiguration.class);
 		this.parent.refresh();
 		AnnotationConfigReactiveWebServerApplicationContext childContext = (AnnotationConfigReactiveWebServerApplicationContext) this.factory
-				.createManagementContext(this.parent, TestConfiguration1.class,
-						TestConfiguration2.class);
+				.createManagementContext(this.parent, TestConfiguration1.class, TestConfiguration2.class);
 		childContext.refresh();
 		assertThat(childContext.getBean(TestConfiguration1.class)).isNotNull();
 		assertThat(childContext.getBean(TestConfiguration2.class)).isNotNull();
-		assertThat(childContext.getBean(ReactiveWebServerFactoryAutoConfiguration.class))
-				.isNotNull();
+		assertThat(childContext.getBean(ReactiveWebServerFactoryAutoConfiguration.class)).isNotNull();
 
 		childContext.close();
 		this.parent.close();

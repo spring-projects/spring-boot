@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +42,13 @@ import org.springframework.validation.annotation.Validated;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-		PriorityOrdered, ApplicationContextAware, InitializingBean {
+public class ConfigurationPropertiesBindingPostProcessor
+		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware, InitializingBean {
 
 	/**
 	 * The bean name that this post-processor is registered with.
 	 */
-	public static final String BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
-			.getName();
+	public static final String BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class.getName();
 
 	/**
 	 * The bean name of the configuration properties validator.
@@ -63,8 +62,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private ConfigurationPropertiesBinder configurationPropertiesBinder;
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -72,11 +70,10 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	public void afterPropertiesSet() throws Exception {
 		// We can't use constructor injection of the application context because
 		// it causes eager factory bean initialization
-		this.beanFactoryMetadata = this.applicationContext.getBean(
-				ConfigurationBeanFactoryMetadata.BEAN_NAME,
+		this.beanFactoryMetadata = this.applicationContext.getBean(ConfigurationBeanFactoryMetadata.BEAN_NAME,
 				ConfigurationBeanFactoryMetadata.class);
-		this.configurationPropertiesBinder = new ConfigurationPropertiesBinder(
-				this.applicationContext, VALIDATOR_BEAN_NAME);
+		this.configurationPropertiesBinder = new ConfigurationPropertiesBinder(this.applicationContext,
+				VALIDATOR_BEAN_NAME);
 	}
 
 	@Override
@@ -85,10 +82,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
-		ConfigurationProperties annotation = getAnnotation(bean, beanName,
-				ConfigurationProperties.class);
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		ConfigurationProperties annotation = getAnnotation(bean, beanName, ConfigurationProperties.class);
 		if (annotation != null) {
 			bind(bean, beanName, annotation);
 		}
@@ -98,17 +93,14 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
 		ResolvableType type = getBeanType(bean, beanName);
 		Validated validated = getAnnotation(bean, beanName, Validated.class);
-		Annotation[] annotations = (validated != null)
-				? new Annotation[] { annotation, validated }
+		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
 				: new Annotation[] { annotation };
-		Bindable<?> target = Bindable.of(type).withExistingValue(bean)
-				.withAnnotations(annotations);
+		Bindable<?> target = Bindable.of(type).withExistingValue(bean).withAnnotations(annotations);
 		try {
 			this.configurationPropertiesBinder.bind(target);
 		}
 		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindException(beanName, bean, annotation,
-					ex);
+			throw new ConfigurationPropertiesBindException(beanName, bean, annotation, ex);
 		}
 	}
 
@@ -120,8 +112,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		return ResolvableType.forClass(bean.getClass());
 	}
 
-	private <A extends Annotation> A getAnnotation(Object bean, String beanName,
-			Class<A> type) {
+	private <A extends Annotation> A getAnnotation(Object bean, String beanName, Class<A> type) {
 		A annotation = this.beanFactoryMetadata.findFactoryAnnotation(beanName, type);
 		if (annotation == null) {
 			annotation = AnnotationUtils.findAnnotation(bean.getClass(), type);

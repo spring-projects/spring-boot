@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,16 +67,14 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	public void createWhenPrefixIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
-		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class,
-				new MockEnvironment(), null);
+		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), null);
 	}
 
 	@Test
 	public void createWhenPrefixIsEmptyShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
-		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class,
-				new MockEnvironment(), "");
+		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), "");
 	}
 
 	@Test
@@ -126,8 +124,8 @@ public class ExposeExcludePropertyEndpointFilterTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("foo.include", "bar");
 		environment.setProperty("foo.exclude", "");
-		this.filter = new ExposeExcludePropertyEndpointFilter<>(
-				DifferentTestExposableWebEndpoint.class, environment, "foo");
+		this.filter = new ExposeExcludePropertyEndpointFilter<>(DifferentTestExposableWebEndpoint.class, environment,
+				"foo");
 		assertThat(match(EndpointId.of("baz"))).isTrue();
 	}
 
@@ -157,8 +155,8 @@ public class ExposeExcludePropertyEndpointFilterTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("foo.include", include);
 		environment.setProperty("foo.exclude", exclude);
-		this.filter = new ExposeExcludePropertyEndpointFilter<>(
-				TestExposableWebEndpoint.class, environment, "foo", "def");
+		this.filter = new ExposeExcludePropertyEndpointFilter<>(TestExposableWebEndpoint.class, environment, "foo",
+				"def");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -168,13 +166,11 @@ public class ExposeExcludePropertyEndpointFilterTests {
 		return ((EndpointFilter) this.filter).match(endpoint);
 	}
 
-	private abstract static class TestExposableWebEndpoint
-			implements ExposableWebEndpoint {
+	private abstract static class TestExposableWebEndpoint implements ExposableWebEndpoint {
 
 	}
 
-	private abstract static class DifferentTestExposableWebEndpoint
-			implements ExposableWebEndpoint {
+	private abstract static class DifferentTestExposableWebEndpoint implements ExposableWebEndpoint {
 
 	}
 

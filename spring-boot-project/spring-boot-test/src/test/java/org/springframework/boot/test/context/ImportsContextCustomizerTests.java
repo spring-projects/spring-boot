@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,38 +45,31 @@ public class ImportsContextCustomizerTests {
 	@Test
 	public void importSelectorsCouldUseAnyAnnotations() {
 		assertThat(new ImportsContextCustomizer(FirstImportSelectorAnnotatedClass.class))
-				.isNotEqualTo(new ImportsContextCustomizer(
-						SecondImportSelectorAnnotatedClass.class));
+				.isNotEqualTo(new ImportsContextCustomizer(SecondImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
 	public void determinableImportSelector() {
-		assertThat(new ImportsContextCustomizer(
-				FirstDeterminableImportSelectorAnnotatedClass.class))
-						.isEqualTo(new ImportsContextCustomizer(
-								SecondDeterminableImportSelectorAnnotatedClass.class));
+		assertThat(new ImportsContextCustomizer(FirstDeterminableImportSelectorAnnotatedClass.class))
+				.isEqualTo(new ImportsContextCustomizer(SecondDeterminableImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
 	public void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstKotlinAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(
-						SecondKotlinAnnotatedTestClass.class));
+				.isEqualTo(new ImportsContextCustomizer(SecondKotlinAnnotatedTestClass.class));
 	}
 
 	@Test
 	public void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
-		assertThat(
-				new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
-						.isEqualTo(new ImportsContextCustomizer(
-								SecondSpockFrameworkAnnotatedTestClass.class));
+		assertThat(new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
+				.isEqualTo(new ImportsContextCustomizer(SecondSpockFrameworkAnnotatedTestClass.class));
 	}
 
 	@Test
 	public void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(
-						SecondSpockLangAnnotatedTestClass.class));
+				.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)
@@ -152,8 +145,7 @@ public class ImportsContextCustomizerTests {
 
 	}
 
-	static class TestDeterminableImportSelector
-			implements ImportSelector, DeterminableImports {
+	static class TestDeterminableImportSelector implements ImportSelector, DeterminableImports {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata arg0) {

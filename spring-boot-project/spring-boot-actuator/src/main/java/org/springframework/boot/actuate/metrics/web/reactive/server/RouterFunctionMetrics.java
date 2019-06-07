@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,7 @@ public class RouterFunctionMetrics {
 	 * {@code ServerResponse} may be null
 	 * @return {@code this} for further configuration
 	 */
-	public RouterFunctionMetrics defaultTags(
-			BiFunction<ServerRequest, ServerResponse, Iterable<Tag>> defaultTags) {
+	public RouterFunctionMetrics defaultTags(BiFunction<ServerRequest, ServerResponse, Iterable<Tag>> defaultTags) {
 		return new RouterFunctionMetrics(this.registry, defaultTags);
 	}
 
@@ -82,13 +81,11 @@ public class RouterFunctionMetrics {
 		return timer(name, Tags.empty());
 	}
 
-	public HandlerFilterFunction<ServerResponse, ServerResponse> timer(String name,
-			String... tags) {
+	public HandlerFilterFunction<ServerResponse, ServerResponse> timer(String name, String... tags) {
 		return timer(name, Tags.of(tags));
 	}
 
-	public HandlerFilterFunction<ServerResponse, ServerResponse> timer(String name,
-			Iterable<Tag> tags) {
+	public HandlerFilterFunction<ServerResponse, ServerResponse> timer(String name, Iterable<Tag> tags) {
 		return new MetricsFilter(name, Tags.of(tags));
 	}
 
@@ -113,8 +110,7 @@ public class RouterFunctionMetrics {
 	/**
 	 * {@link HandlerFilterFunction} to handle calling micrometer.
 	 */
-	private class MetricsFilter
-			implements HandlerFilterFunction<ServerResponse, ServerResponse> {
+	private class MetricsFilter implements HandlerFilterFunction<ServerResponse, ServerResponse> {
 
 		private final String name;
 
@@ -126,23 +122,20 @@ public class RouterFunctionMetrics {
 		}
 
 		@Override
-		public Mono<ServerResponse> filter(ServerRequest request,
-				HandlerFunction<ServerResponse> next) {
+		public Mono<ServerResponse> filter(ServerRequest request, HandlerFunction<ServerResponse> next) {
 			long start = System.nanoTime();
-			return next.handle(request)
-					.doOnSuccess((response) -> timer(start, request, response))
+			return next.handle(request).doOnSuccess((response) -> timer(start, request, response))
 					.doOnError((error) -> timer(start, request, null));
 		}
 
-		private Iterable<Tag> getDefaultTags(ServerRequest request,
-				ServerResponse response) {
+		private Iterable<Tag> getDefaultTags(ServerRequest request, ServerResponse response) {
 			return RouterFunctionMetrics.this.defaultTags.apply(request, response);
 		}
 
 		private void timer(long start, ServerRequest request, ServerResponse response) {
 			Tags allTags = this.tags.and(getDefaultTags(request, response));
-			RouterFunctionMetrics.this.registry.timer(this.name, allTags)
-					.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+			RouterFunctionMetrics.this.registry.timer(this.name, allTags).record(System.nanoTime() - start,
+					TimeUnit.NANOSECONDS);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,7 @@ public class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key2");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(
-				propertySource, mapper, null);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper, null);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
 	}
 
@@ -79,8 +78,7 @@ public class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(
-				propertySource, mapper, null);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper, null);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("\"key\" from property source \"test\"");
 	}
@@ -89,15 +87,12 @@ public class SpringConfigurationPropertySourceTests {
 	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
-		PropertySource<?> propertySource = new OriginCapablePropertySource<>(
-				new MapPropertySource("test", source));
+		PropertySource<?> propertySource = new OriginCapablePropertySource<>(new MapPropertySource("test", source));
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(
-				propertySource, mapper, null);
-		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
-				.isEqualTo("TestOrigin key");
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper, null);
+		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString()).isEqualTo("TestOrigin key");
 	}
 
 	@Test
@@ -105,8 +100,8 @@ public class SpringConfigurationPropertySourceTests {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("foo.bar", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(
-				propertySource, DefaultPropertyMapper.INSTANCE, null);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource,
+				DefaultPropertyMapper.INSTANCE, null);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
 				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
@@ -120,8 +115,7 @@ public class SpringConfigurationPropertySourceTests {
 
 	@Test
 	public void fromWhenNonEnumerableShouldReturnNonIterable() {
-		PropertySource<?> propertySource = new PropertySource<Object>("test",
-				new Object()) {
+		PropertySource<?> propertySource = new PropertySource<Object>("test", new Object()) {
 
 			@Override
 			public Object getProperty(String name) {
@@ -162,8 +156,7 @@ public class SpringConfigurationPropertySourceTests {
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 */
-	private static class OriginCapablePropertySource<T> extends PropertySource<T>
-			implements OriginLookup<String> {
+	private static class OriginCapablePropertySource<T> extends PropertySource<T> implements OriginLookup<String> {
 
 		private final PropertySource<T> propertySource;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,11 @@ public class DevToolsSettingsTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	private static final String ROOT = DevToolsSettingsTests.class.getPackage().getName()
-			.replace('.', '/') + "/";
+	private static final String ROOT = DevToolsSettingsTests.class.getPackage().getName().replace('.', '/') + "/";
 
 	@Test
 	public void includePatterns() throws Exception {
-		DevToolsSettings settings = DevToolsSettings
-				.load(ROOT + "spring-devtools-include.properties");
+		DevToolsSettings settings = DevToolsSettings.load(ROOT + "spring-devtools-include.properties");
 		assertThat(settings.isRestartInclude(new URL("file://test/a"))).isTrue();
 		assertThat(settings.isRestartInclude(new URL("file://test/b"))).isTrue();
 		assertThat(settings.isRestartInclude(new URL("file://test/c"))).isFalse();
@@ -50,8 +48,7 @@ public class DevToolsSettingsTests {
 
 	@Test
 	public void excludePatterns() throws Exception {
-		DevToolsSettings settings = DevToolsSettings
-				.load(ROOT + "spring-devtools-exclude.properties");
+		DevToolsSettings settings = DevToolsSettings.load(ROOT + "spring-devtools-exclude.properties");
 		assertThat(settings.isRestartExclude(new URL("file://test/a"))).isTrue();
 		assertThat(settings.isRestartExclude(new URL("file://test/b"))).isTrue();
 		assertThat(settings.isRestartExclude(new URL("file://test/c"))).isFalse();
@@ -61,12 +58,10 @@ public class DevToolsSettingsTests {
 	public void defaultIncludePatterns() throws Exception {
 		DevToolsSettings settings = DevToolsSettings.get();
 		assertThat(settings.isRestartExclude(makeUrl("spring-boot"))).isTrue();
-		assertThat(settings.isRestartExclude(makeUrl("spring-boot-autoconfigure")))
-				.isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-autoconfigure"))).isTrue();
 		assertThat(settings.isRestartExclude(makeUrl("spring-boot-actuator"))).isTrue();
 		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter"))).isTrue();
-		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter-some-thing")))
-				.isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter-some-thing"))).isTrue();
 	}
 
 	private URL makeUrl(String name) throws IOException {

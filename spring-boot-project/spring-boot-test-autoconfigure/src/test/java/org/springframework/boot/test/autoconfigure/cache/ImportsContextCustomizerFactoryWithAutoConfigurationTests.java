@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 	static ApplicationContext contextFromTest;
 
 	@Test
-	public void testClassesThatHaveSameAnnotationsShareAContext()
-			throws InitializationError {
+	public void testClassesThatHaveSameAnnotationsShareAContext() throws InitializationError {
 		RunNotifier notifier = new RunNotifier();
 		new SpringJUnit4ClassRunner(DataJpaTest1.class).run(notifier);
 		ApplicationContext test1Context = contextFromTest;
@@ -59,8 +58,7 @@ public class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 	}
 
 	@Test
-	public void testClassesThatOnlyHaveDifferingUnrelatedAnnotationsShareAContext()
-			throws InitializationError {
+	public void testClassesThatOnlyHaveDifferingUnrelatedAnnotationsShareAContext() throws InitializationError {
 		RunNotifier notifier = new RunNotifier();
 		new SpringJUnit4ClassRunner(DataJpaTest1.class).run(notifier);
 		ApplicationContext test1Context = contextFromTest;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 
 	private static final Map<HttpStatus.Series, String> SERIES_VIEWS;
 
-	private static final Log logger = LogFactory
-			.getLog(DefaultErrorWebExceptionHandler.class);
+	private static final Log logger = LogFactory.getLog(DefaultErrorWebExceptionHandler.class);
 
 	static {
 		Map<HttpStatus.Series, String> views = new EnumMap<>(HttpStatus.Series.class);
@@ -98,18 +97,15 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param errorProperties the error configuration properties
 	 * @param applicationContext the current application context
 	 */
-	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-			ResourceProperties resourceProperties, ErrorProperties errorProperties,
-			ApplicationContext applicationContext) {
+	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
+			ErrorProperties errorProperties, ApplicationContext applicationContext) {
 		super(errorAttributes, resourceProperties, applicationContext);
 		this.errorProperties = errorProperties;
 	}
 
 	@Override
-	protected RouterFunction<ServerResponse> getRoutingFunction(
-			ErrorAttributes errorAttributes) {
-		return route(acceptsTextHtml(), this::renderErrorView).andRoute(all(),
-				this::renderErrorResponse);
+	protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+		return route(acceptsTextHtml(), this::renderErrorView).andRoute(all(), this::renderErrorResponse);
 	}
 
 	/**
@@ -121,15 +117,13 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		HttpStatus errorStatus = getHttpStatus(error);
-		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus)
-				.contentType(MediaType.TEXT_HTML);
+		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(MediaType.TEXT_HTML);
 		return Flux
-				.just("error/" + errorStatus.toString(),
-						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
+				.just("error/" + errorStatus.toString(), "error/" + SERIES_VIEWS.get(errorStatus.series()),
+						"error/error")
 				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
 				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
-						? renderDefaultErrorView(responseBody, error)
-						: Mono.error(getError(request)))
+						? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
 				.next().doOnNext((response) -> logError(request, errorStatus));
 	}
 
@@ -142,10 +136,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.ALL);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		HttpStatus errorStatus = getHttpStatus(error);
-		return ServerResponse.status(getHttpStatus(error))
-				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.body(BodyInserters.fromObject(error))
-				.doOnNext((resp) -> logError(request, errorStatus));
+		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON_UTF8)
+				.body(BodyInserters.fromObject(error)).doOnNext((resp) -> logError(request, errorStatus));
 	}
 
 	/**
@@ -155,8 +147,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
-		ErrorProperties.IncludeStacktrace include = this.errorProperties
-				.getIncludeStacktrace();
+		ErrorProperties.IncludeStacktrace include = this.errorProperties.getIncludeStacktrace();
 		if (include == ErrorProperties.IncludeStacktrace.ALWAYS) {
 			return true;
 		}
@@ -189,8 +180,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
 				acceptedMediaTypes.remove(MediaType.ALL);
 				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
-				return acceptedMediaTypes.stream()
-						.anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
+				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}
 			catch (InvalidMediaTypeException ex) {
 				return false;
@@ -209,8 +199,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		log(request, ex, (errorStatus.is5xxServerError() ? logger::error : logger::warn));
 	}
 
-	private void log(ServerRequest request, Throwable ex,
-			BiConsumer<Object, Throwable> logger) {
+	private void log(ServerRequest request, Throwable ex, BiConsumer<Object, Throwable> logger) {
 		if (ex instanceof ResponseStatusException) {
 			logger.accept(buildMessage(request, ex), null);
 		}

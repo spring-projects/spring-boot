@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,7 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public class ApplicationPidFileWriter
-		implements ApplicationListener<SpringApplicationEvent>, Ordered {
+public class ApplicationPidFileWriter implements ApplicationListener<SpringApplicationEvent>, Ordered {
 
 	private static final Log logger = LogFactory.getLog(ApplicationPidFileWriter.class);
 
@@ -128,16 +127,14 @@ public class ApplicationPidFileWriter
 	 * {@link Environment}.
 	 * @param triggerEventType the trigger event type
 	 */
-	public void setTriggerEventType(
-			Class<? extends SpringApplicationEvent> triggerEventType) {
+	public void setTriggerEventType(Class<? extends SpringApplicationEvent> triggerEventType) {
 		Assert.notNull(triggerEventType, "Trigger event type must not be null");
 		this.triggerEventType = triggerEventType;
 	}
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (this.triggerEventType.isInstance(event)
-				&& created.compareAndSet(false, true)) {
+		if (this.triggerEventType.isInstance(event) && created.compareAndSet(false, true)) {
 			try {
 				writePidFile(event);
 			}
@@ -229,12 +226,10 @@ public class ApplicationPidFileWriter
 				return ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
 			}
 			if (event instanceof ApplicationPreparedEvent) {
-				return ((ApplicationPreparedEvent) event).getApplicationContext()
-						.getEnvironment();
+				return ((ApplicationPreparedEvent) event).getApplicationContext().getEnvironment();
 			}
 			if (event instanceof ApplicationReadyEvent) {
-				return ((ApplicationReadyEvent) event).getApplicationContext()
-						.getEnvironment();
+				return ((ApplicationReadyEvent) event).getApplicationContext().getEnvironment();
 			}
 			return null;
 		}
@@ -249,8 +244,7 @@ public class ApplicationPidFileWriter
 		private final String[] properties;
 
 		SystemProperty(String name) {
-			this.properties = new String[] { name.toUpperCase(Locale.ENGLISH),
-					name.toLowerCase(Locale.ENGLISH) };
+			this.properties = new String[] { name.toUpperCase(Locale.ENGLISH), name.toLowerCase(Locale.ENGLISH) };
 		}
 
 		@Override

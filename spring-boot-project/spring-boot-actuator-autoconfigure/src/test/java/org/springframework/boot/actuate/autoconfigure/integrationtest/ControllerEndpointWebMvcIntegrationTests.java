@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,13 +79,12 @@ public class ControllerEndpointWebMvcIntegrationTests {
 
 	@Test
 	public void endpointsCanBeAccessed() throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class, ExampleController.class);
 		TestPropertyValues
-				.of("management.endpoints.web.base-path:/management",
-						"management.endpoints.web.exposure.include=*")
+				.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
 				.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/example")).andExpect(status().isOk());
@@ -105,13 +104,11 @@ public class ControllerEndpointWebMvcIntegrationTests {
 		return builder.build();
 	}
 
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			WebEndpointAutoConfiguration.class,
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 			ServletManagementContextAutoConfiguration.class, AuditAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementContextAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
+			ManagementContextAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			BeansEndpointAutoConfiguration.class })
 	static class DefaultConfiguration {
 

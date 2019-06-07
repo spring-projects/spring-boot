@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class DataSourceHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource>
-		implements InitializingBean {
+		CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource> implements InitializingBean {
 
 	private final Map<String, DataSource> dataSources;
 
@@ -71,15 +70,13 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	public DataSourceHealthIndicatorAutoConfiguration(
-			ObjectProvider<Map<String, DataSource>> dataSources,
+	public DataSourceHealthIndicatorAutoConfiguration(ObjectProvider<Map<String, DataSource>> dataSources,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders) {
 		this.dataSources = filterDataSources(dataSources.getIfAvailable());
 		this.metadataProviders = metadataProviders.getIfAvailable();
 	}
 
-	private Map<String, DataSource> filterDataSources(
-			Map<String, DataSource> candidates) {
+	private Map<String, DataSource> filterDataSources(Map<String, DataSource> candidates) {
 		if (candidates == null) {
 			return null;
 		}
@@ -94,8 +91,7 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
-				this.metadataProviders);
+		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(this.metadataProviders);
 	}
 
 	@Bean
@@ -110,8 +106,7 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 	}
 
 	private String getValidationQuery(DataSource source) {
-		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
-				.getDataSourcePoolMetadata(source);
+		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 	}
 

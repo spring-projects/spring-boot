@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public abstract class MockMvcEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+public abstract class MockMvcEndpointDocumentationTests extends AbstractEndpointDocumentationTests {
 
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
@@ -51,9 +50,7 @@ public abstract class MockMvcEndpointDocumentationTests
 	@Before
 	public void before() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
-				.apply(MockMvcRestDocumentation
-						.documentationConfiguration(this.restDocumentation).uris())
-				.build();
+				.apply(MockMvcRestDocumentation.documentationConfiguration(this.restDocumentation).uris()).build();
 	}
 
 	protected WebApplicationContext getApplicationContext() {

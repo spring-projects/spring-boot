@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ import org.springframework.web.util.HtmlUtils;
  * @since 2.0.0
  * @see ErrorAttributes
  */
-public abstract class AbstractErrorWebExceptionHandler
-		implements ErrorWebExceptionHandler, InitializingBean {
+public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler, InitializingBean {
 
 	private final ApplicationContext applicationContext;
 
@@ -66,8 +65,7 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	private List<ViewResolver> viewResolvers = Collections.emptyList();
 
-	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-			ResourceProperties resourceProperties,
+	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
 			ApplicationContext applicationContext) {
 		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
 		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
@@ -75,8 +73,7 @@ public abstract class AbstractErrorWebExceptionHandler
 		this.errorAttributes = errorAttributes;
 		this.resourceProperties = resourceProperties;
 		this.applicationContext = applicationContext;
-		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(
-				applicationContext);
+		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
 	}
 
 	/**
@@ -112,8 +109,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	 * @param includeStackTrace whether to include the error stacktrace information
 	 * @return the error attributes as a Map.
 	 */
-	protected Map<String, Object> getErrorAttributes(ServerRequest request,
-			boolean includeStackTrace) {
+	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		return this.errorAttributes.getErrorAttributes(request, includeStackTrace);
 	}
 
@@ -145,8 +141,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 * @param error the error data as a map
 	 * @return a Publisher of the {@link ServerResponse}
 	 */
-	protected Mono<ServerResponse> renderErrorView(String viewName,
-			ServerResponse.BodyBuilder responseBody, Map<String, Object> error) {
+	protected Mono<ServerResponse> renderErrorView(String viewName, ServerResponse.BodyBuilder responseBody,
+			Map<String, Object> error) {
 		if (isTemplateAvailable(viewName)) {
 			return responseBody.render(viewName, error);
 		}
@@ -158,8 +154,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	}
 
 	private boolean isTemplateAvailable(String viewName) {
-		return this.templateAvailabilityProviders.getProvider(viewName,
-				this.applicationContext) != null;
+		return this.templateAvailabilityProviders.getProvider(viewName, this.applicationContext) != null;
 	}
 
 	private Resource resolveResource(String viewName) {
@@ -186,17 +181,16 @@ public abstract class AbstractErrorWebExceptionHandler
 	 * @param error the error data as a map
 	 * @return a Publisher of the {@link ServerResponse}
 	 */
-	protected Mono<ServerResponse> renderDefaultErrorView(
-			ServerResponse.BodyBuilder responseBody, Map<String, Object> error) {
+	protected Mono<ServerResponse> renderDefaultErrorView(ServerResponse.BodyBuilder responseBody,
+			Map<String, Object> error) {
 		StringBuilder builder = new StringBuilder();
 		Object message = error.get("message");
 		Date timestamp = (Date) error.get("timestamp");
-		builder.append("<html><body><h1>Whitelabel Error Page</h1>").append(
-				"<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
+		builder.append("<html><body><h1>Whitelabel Error Page</h1>")
+				.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
 				.append("<div id='created'>").append(timestamp).append("</div>")
-				.append("<div>There was an unexpected error (type=")
-				.append(htmlEscape(error.get("error"))).append(", status=")
-				.append(htmlEscape(error.get("status"))).append(").</div>");
+				.append("<div>There was an unexpected error (type=").append(htmlEscape(error.get("error")))
+				.append(", status=").append(htmlEscape(error.get("status"))).append(").</div>");
 		if (message != null) {
 			builder.append("<div>").append(htmlEscape(message)).append("</div>");
 		}
@@ -226,8 +220,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	 * information
 	 * @return a {@link RouterFunction} that routes and handles errors
 	 */
-	protected abstract RouterFunction<ServerResponse> getRoutingFunction(
-			ErrorAttributes errorAttributes);
+	protected abstract RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes);
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable throwable) {
@@ -236,17 +229,13 @@ public abstract class AbstractErrorWebExceptionHandler
 		}
 		this.errorAttributes.storeErrorInformation(throwable, exchange);
 		ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
-		return getRoutingFunction(this.errorAttributes).route(request)
-				.switchIfEmpty(Mono.error(throwable))
-				.flatMap((handler) -> handler.handle(request))
-				.flatMap((response) -> write(exchange, response));
+		return getRoutingFunction(this.errorAttributes).route(request).switchIfEmpty(Mono.error(throwable))
+				.flatMap((handler) -> handler.handle(request)).flatMap((response) -> write(exchange, response));
 	}
 
-	private Mono<? extends Void> write(ServerWebExchange exchange,
-			ServerResponse response) {
+	private Mono<? extends Void> write(ServerWebExchange exchange, ServerResponse response) {
 		// force content-type since writeTo won't overwrite response header values
-		exchange.getResponse().getHeaders()
-				.setContentType(response.headers().getContentType());
+		exchange.getResponse().getHeaders().setContentType(response.headers().getContentType());
 		return response.writeTo(exchange, new ResponseContext());
 	}
 

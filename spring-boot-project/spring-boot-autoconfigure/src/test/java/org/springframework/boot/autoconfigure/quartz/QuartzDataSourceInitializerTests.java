@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,22 +42,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class QuartzDataSourceInitializerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					JdbcTemplateAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.url=" + String.format(
-					"jdbc:h2:mem:test-%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-					UUID.randomUUID().toString()));
+					"jdbc:h2:mem:test-%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", UUID.randomUUID().toString()));
 
 	@Test
 	public void commentPrefixCanBeCustomized() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.quartz.jdbc.comment-prefix=##",
-						"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_@@platform@@.sql")
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues(
+				"spring.quartz.jdbc.comment-prefix=##",
+				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_@@platform@@.sql")
 				.run((context) -> {
 					JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
-					assertThat(jdbcTemplate.queryForObject(
-							"SELECT COUNT(*) FROM QRTZ_TEST_TABLE", Integer.class))
-									.isEqualTo(0);
+					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_TEST_TABLE", Integer.class))
+							.isEqualTo(0);
 				});
 	}
 
@@ -66,10 +64,9 @@ public class QuartzDataSourceInitializerTests {
 	static class TestConfiguration {
 
 		@Bean
-		public QuartzDataSourceInitializer initializer(DataSource dataSource,
-				ResourceLoader resourceLoader, QuartzProperties properties) {
-			return new QuartzDataSourceInitializer(dataSource, resourceLoader,
-					properties);
+		public QuartzDataSourceInitializer initializer(DataSource dataSource, ResourceLoader resourceLoader,
+				QuartzProperties properties) {
+			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

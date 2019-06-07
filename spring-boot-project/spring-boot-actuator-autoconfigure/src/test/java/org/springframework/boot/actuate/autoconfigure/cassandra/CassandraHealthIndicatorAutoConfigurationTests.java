@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,21 +40,18 @@ public class CassandraHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraConfiguration.class,
-					CassandraHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+					CassandraHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(CassandraHealthIndicator.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CassandraHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.cassandra.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CassandraHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(CassandraHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 

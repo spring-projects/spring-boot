@@ -58,8 +58,7 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local LiveReload configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
 		private final DevToolsProperties properties;
@@ -77,14 +76,12 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		public OptionalLiveReloadServer optionalLiveReloadServer(
-				LiveReloadServer liveReloadServer) {
+		public OptionalLiveReloadServer optionalLiveReloadServer(LiveReloadServer liveReloadServer) {
 			return new OptionalLiveReloadServer(liveReloadServer);
 		}
 
 		@Bean
-		public LiveReloadServerEventListener liveReloadServerEventListener(
-				OptionalLiveReloadServer liveReloadServer) {
+		public LiveReloadServerEventListener liveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
 			return new LiveReloadServerEventListener(liveReloadServer);
 		}
 
@@ -94,8 +91,7 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local Restart Configuration.
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
 	static class RestartConfiguration {
 
 		private final DevToolsProperties properties;
@@ -107,8 +103,7 @@ public class LocalDevToolsAutoConfiguration {
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
-				Restarter.getInstance().restart(
-						new FileWatchingFailureHandler(fileSystemWatcherFactory()));
+				Restarter.getInstance().restart(new FileWatchingFailureHandler(fileSystemWatcherFactory()));
 			}
 		}
 
@@ -116,8 +111,8 @@ public class LocalDevToolsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
-			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(
-					fileSystemWatcherFactory(), classPathRestartStrategy(), urls);
+			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(fileSystemWatcherFactory(),
+					classPathRestartStrategy(), urls);
 			watcher.setStopWatcherOnRestart(true);
 			return watcher;
 		}
@@ -125,8 +120,7 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
-			return new PatternClassPathRestartStrategy(
-					this.properties.getRestart().getAllExclude());
+			return new PatternClassPathRestartStrategy(this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean
@@ -140,16 +134,15 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.devtools.restart",
-				name = "log-condition-evaluation-delta", matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta",
+				matchIfMissing = true)
 		public ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
 			return new ConditionEvaluationDeltaLoggingListener();
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
-			FileSystemWatcher watcher = new FileSystemWatcher(true,
-					restartProperties.getPollInterval(),
+			FileSystemWatcher watcher = new FileSystemWatcher(true, restartProperties.getPollInterval(),
 					restartProperties.getQuietPeriod());
 			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {

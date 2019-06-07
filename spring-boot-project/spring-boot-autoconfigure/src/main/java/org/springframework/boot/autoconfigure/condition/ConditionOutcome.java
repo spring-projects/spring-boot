@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,16 +132,14 @@ public class ConditionOutcome {
 		}
 		if (getClass() == obj.getClass()) {
 			ConditionOutcome other = (ConditionOutcome) obj;
-			return (this.match == other.match
-					&& ObjectUtils.nullSafeEquals(this.message, other.message));
+			return (this.match == other.match && ObjectUtils.nullSafeEquals(this.message, other.message));
 		}
 		return super.equals(obj);
 	}
 
 	@Override
 	public int hashCode() {
-		return Boolean.hashCode(this.match) * 31
-				+ ObjectUtils.nullSafeHashCode(this.message);
+		return Boolean.hashCode(this.match) * 31 + ObjectUtils.nullSafeHashCode(this.message);
 	}
 
 	@Override

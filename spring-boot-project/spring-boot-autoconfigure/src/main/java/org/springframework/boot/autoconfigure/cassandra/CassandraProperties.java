@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ public class CassandraProperties {
 	/**
 	 * Cluster node addresses.
 	 */
-	private final List<String> contactPoints = new ArrayList<>(
-			Collections.singleton("localhost"));
+	private final List<String> contactPoints = new ArrayList<>(Collections.singleton("localhost"));
 
 	/**
 	 * Port of the Cassandra server.
@@ -192,8 +191,7 @@ public class CassandraProperties {
 		return this.loadBalancingPolicy;
 	}
 
-	public void setLoadBalancingPolicy(
-			Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
+	public void setLoadBalancingPolicy(Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
 		this.loadBalancingPolicy = loadBalancingPolicy;
 	}
 
@@ -225,8 +223,7 @@ public class CassandraProperties {
 		return this.reconnectionPolicy;
 	}
 
-	public void setReconnectionPolicy(
-			Class<? extends ReconnectionPolicy> reconnectionPolicy) {
+	public void setReconnectionPolicy(Class<? extends ReconnectionPolicy> reconnectionPolicy) {
 		this.reconnectionPolicy = reconnectionPolicy;
 	}
 

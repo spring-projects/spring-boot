@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,8 +243,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void adaptShouldCreateName() {
 		ConfigurationPropertyName expected = ConfigurationPropertyName.of("foo.bar.baz");
-		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo.bar.baz",
-				'.');
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("foo.bar.baz", '.');
 		assertThat(name).isEqualTo(expected);
 	}
 
@@ -280,8 +279,8 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void adaptShouldUseElementValueProcessor() {
-		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("FOO_THE-BAR",
-				'_', (c) -> c.toString().replace("-", ""));
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("FOO_THE-BAR", '_',
+				(c) -> c.toString().replace("-", ""));
 		assertThat(name.toString()).isEqualTo("foo.thebar");
 	}
 
@@ -316,16 +315,13 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void isLastElementIndexedWhenIndexedShouldReturnTrue() {
-		assertThat(ConfigurationPropertyName.of("foo[0]").isLastElementIndexed())
-				.isTrue();
+		assertThat(ConfigurationPropertyName.of("foo[0]").isLastElementIndexed()).isTrue();
 	}
 
 	@Test
 	public void isLastElementIndexedWhenNotIndexedShouldReturnFalse() {
-		assertThat(ConfigurationPropertyName.of("foo.bar").isLastElementIndexed())
-				.isFalse();
-		assertThat(ConfigurationPropertyName.of("foo[0].bar").isLastElementIndexed())
-				.isFalse();
+		assertThat(ConfigurationPropertyName.of("foo.bar").isLastElementIndexed()).isFalse();
+		assertThat(ConfigurationPropertyName.of("foo[0].bar").isLastElementIndexed()).isFalse();
 	}
 
 	@Test
@@ -363,12 +359,9 @@ public class ConfigurationPropertyNameTests {
 		assertThat(getElements("foo.[0]", Form.ORIGINAL)).containsExactly("foo", "0");
 		assertThat(getElements("foo[baz]", Form.ORIGINAL)).containsExactly("foo", "baz");
 		assertThat(getElements("foo.baz", Form.ORIGINAL)).containsExactly("foo", "baz");
-		assertThat(getElements("foo[baz].bar", Form.ORIGINAL)).containsExactly("foo",
-				"baz", "bar");
-		assertThat(getElements("foo.baz.bar", Form.ORIGINAL)).containsExactly("foo",
-				"baz", "bar");
-		assertThat(getElements("foo.baz-bar", Form.ORIGINAL)).containsExactly("foo",
-				"baz-bar");
+		assertThat(getElements("foo[baz].bar", Form.ORIGINAL)).containsExactly("foo", "baz", "bar");
+		assertThat(getElements("foo.baz.bar", Form.ORIGINAL)).containsExactly("foo", "baz", "bar");
+		assertThat(getElements("foo.baz-bar", Form.ORIGINAL)).containsExactly("foo", "baz-bar");
 	}
 
 	@Test
@@ -378,12 +371,9 @@ public class ConfigurationPropertyNameTests {
 		assertThat(getElements("foo.[0]", Form.UNIFORM)).containsExactly("foo", "0");
 		assertThat(getElements("foo[baz]", Form.UNIFORM)).containsExactly("foo", "baz");
 		assertThat(getElements("foo.baz", Form.UNIFORM)).containsExactly("foo", "baz");
-		assertThat(getElements("foo[baz].bar", Form.UNIFORM)).containsExactly("foo",
-				"baz", "bar");
-		assertThat(getElements("foo.baz.bar", Form.UNIFORM)).containsExactly("foo", "baz",
-				"bar");
-		assertThat(getElements("foo.baz-bar", Form.UNIFORM)).containsExactly("foo",
-				"bazbar");
+		assertThat(getElements("foo[baz].bar", Form.UNIFORM)).containsExactly("foo", "baz", "bar");
+		assertThat(getElements("foo.baz.bar", Form.UNIFORM)).containsExactly("foo", "baz", "bar");
+		assertThat(getElements("foo.baz-bar", Form.UNIFORM)).containsExactly("foo", "bazbar");
 	}
 
 	private List<CharSequence> getElements(String name, Form form) {
@@ -399,10 +389,8 @@ public class ConfigurationPropertyNameTests {
 	public void getNumberOfElementsShouldReturnNumberOfElement() {
 		assertThat(ConfigurationPropertyName.of("").getNumberOfElements()).isEqualTo(0);
 		assertThat(ConfigurationPropertyName.of("x").getNumberOfElements()).isEqualTo(1);
-		assertThat(ConfigurationPropertyName.of("x.y").getNumberOfElements())
-				.isEqualTo(2);
-		assertThat(ConfigurationPropertyName.of("x[0].y").getNumberOfElements())
-				.isEqualTo(3);
+		assertThat(ConfigurationPropertyName.of("x.y").getNumberOfElements()).isEqualTo(2);
+		assertThat(ConfigurationPropertyName.of("x[0].y").getNumberOfElements()).isEqualTo(3);
 	}
 
 	@Test
@@ -413,8 +401,7 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void appendWhenIndexedShouldAppendWithBrackets() {
-		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo")
-				.append("[bar]");
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo").append("[bar]");
 		assertThat(name.isLastElementIndexed()).isTrue();
 		assertThat(name.toString()).isEqualTo("foo[bar]");
 	}
@@ -475,8 +462,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void isParentOfWhenGrandparentShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertyName grandchild = ConfigurationPropertyName
-				.of("foo.bar.baz");
+		ConfigurationPropertyName grandchild = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.isParentOf(grandchild)).isFalse();
 		assertThat(grandchild.isParentOf(name)).isFalse();
 	}
@@ -508,8 +494,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void isAncestorOfWhenGrandparentShouldReturnTrue() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertyName grandchild = ConfigurationPropertyName
-				.of("foo.bar.baz");
+		ConfigurationPropertyName grandchild = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.isAncestorOf(grandchild)).isTrue();
 		assertThat(grandchild.isAncestorOf(name)).isFalse();
 	}
@@ -517,8 +502,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void isAncestorOfWhenRootShouldReturnTrue() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("");
-		ConfigurationPropertyName grandchild = ConfigurationPropertyName
-				.of("foo.bar.baz");
+		ConfigurationPropertyName grandchild = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.isAncestorOf(grandchild)).isTrue();
 		assertThat(grandchild.isAncestorOf(name)).isFalse();
 	}
@@ -533,15 +517,13 @@ public class ConfigurationPropertyNameTests {
 		names.add(ConfigurationPropertyName.of("foo.baz"));
 		names.add(ConfigurationPropertyName.of("foo"));
 		Collections.sort(names);
-		assertThat(names.stream().map(ConfigurationPropertyName::toString)
-				.collect(Collectors.toList())).containsExactly("foo", "foo[2]", "foo[10]",
-						"foo.bar", "foo.bard", "foo.baz");
+		assertThat(names.stream().map(ConfigurationPropertyName::toString).collect(Collectors.toList()))
+				.containsExactly("foo", "foo[2]", "foo[10]", "foo.bar", "foo.bard", "foo.baz");
 	}
 
 	@Test
 	public void toStringShouldBeLowerCaseDashed() {
-		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("fOO.b_-a-r",
-				'.');
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("fOO.b_-a-r", '.');
 		assertThat(name.toString()).isEqualTo("foo.b-a-r");
 	}
 
@@ -586,8 +568,7 @@ public class ConfigurationPropertyNameTests {
 	public void equalsWhenStartsWith() {
 		// gh-14665
 		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("my.sources[0].xame");
-		ConfigurationPropertyName n2 = ConfigurationPropertyName
-				.of("my.sources[0].xamespace");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName.of("my.sources[0].xamespace");
 		assertThat(n1).isNotEqualTo(n2);
 	}
 

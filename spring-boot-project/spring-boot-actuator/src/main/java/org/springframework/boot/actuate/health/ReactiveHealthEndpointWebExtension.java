@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,14 +44,11 @@ public class ReactiveHealthEndpointWebExtension {
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext) {
-		return this.delegate.health()
-				.map((health) -> this.responseMapper.map(health, securityContext));
+		return this.delegate.health().map((health) -> this.responseMapper.map(health, securityContext));
 	}
 
-	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext,
-			ShowDetails showDetails) {
-		return this.delegate.health().map((health) -> this.responseMapper.map(health,
-				securityContext, showDetails));
+	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext, ShowDetails showDetails) {
+		return this.delegate.health().map((health) -> this.responseMapper.map(health, securityContext, showDetails));
 	}
 
 }

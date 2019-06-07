@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ public final class LoggerConfiguration {
 	 * @param configuredLevel the configured level of the logger
 	 * @param effectiveLevel the effective level of the logger
 	 */
-	public LoggerConfiguration(String name, LogLevel configuredLevel,
-			LogLevel effectiveLevel) {
+	public LoggerConfiguration(String name, LogLevel configuredLevel, LogLevel effectiveLevel) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(effectiveLevel, "EffectiveLevel must not be null");
 		this.name = name;
@@ -84,10 +83,8 @@ public final class LoggerConfiguration {
 			LoggerConfiguration other = (LoggerConfiguration) obj;
 			boolean rtn = true;
 			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
-			rtn = rtn && ObjectUtils.nullSafeEquals(this.configuredLevel,
-					other.configuredLevel);
-			rtn = rtn && ObjectUtils.nullSafeEquals(this.effectiveLevel,
-					other.effectiveLevel);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.configuredLevel, other.configuredLevel);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
 			return rtn;
 		}
 		return super.equals(obj);
@@ -105,8 +102,8 @@ public final class LoggerConfiguration {
 
 	@Override
 	public String toString() {
-		return "LoggerConfiguration [name=" + this.name + ", configuredLevel="
-				+ this.configuredLevel + ", effectiveLevel=" + this.effectiveLevel + "]";
+		return "LoggerConfiguration [name=" + this.name + ", configuredLevel=" + this.configuredLevel
+				+ ", effectiveLevel=" + this.effectiveLevel + "]";
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ public class SolrHealthIndicatorTests {
 	@Test
 	public void solrIsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willReturn(mockResponse(0));
+		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -64,8 +63,7 @@ public class SolrHealthIndicatorTests {
 	@Test
 	public void solrIsUpAndRequestFailed() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willReturn(mockResponse(400));
+		given(solrClient.request(any(CoreAdminRequest.class), isNull())).willReturn(mockResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -80,8 +78,7 @@ public class SolrHealthIndicatorTests {
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error"))
-				.contains("Connection failed");
+		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
 	}
 
 	private NamedList<Object> mockResponse(int status) {

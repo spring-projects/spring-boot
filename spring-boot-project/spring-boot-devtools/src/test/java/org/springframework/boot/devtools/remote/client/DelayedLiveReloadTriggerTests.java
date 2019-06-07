@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,11 +75,9 @@ public class DelayedLiveReloadTriggerTests {
 		MockitoAnnotations.initMocks(this);
 		given(this.errorRequest.execute()).willReturn(this.errorResponse);
 		given(this.okRequest.execute()).willReturn(this.okResponse);
-		given(this.errorResponse.getStatusCode())
-				.willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
+		given(this.errorResponse.getStatusCode()).willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
 		given(this.okResponse.getStatusCode()).willReturn(HttpStatus.OK);
-		this.trigger = new DelayedLiveReloadTrigger(this.liveReloadServer,
-				this.requestFactory, URL);
+		this.trigger = new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, URL);
 	}
 
 	@Test
@@ -112,8 +110,7 @@ public class DelayedLiveReloadTriggerTests {
 
 	@Test
 	public void triggerReloadOnStatus() throws Exception {
-		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET))
-				.willThrow(new IOException())
+		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException())
 				.willReturn(this.errorRequest, this.okRequest);
 		long startTime = System.currentTimeMillis();
 		this.trigger.setTimings(10, 200, 30000);
@@ -124,8 +121,7 @@ public class DelayedLiveReloadTriggerTests {
 
 	@Test
 	public void timeout() throws Exception {
-		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET))
-				.willThrow(new IOException());
+		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException());
 		this.trigger.setTimings(10, 0, 10);
 		this.trigger.run();
 		verify(this.liveReloadServer, never()).triggerReload();

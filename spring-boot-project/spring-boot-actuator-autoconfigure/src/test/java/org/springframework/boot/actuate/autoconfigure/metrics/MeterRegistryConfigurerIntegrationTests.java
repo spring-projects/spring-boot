@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,13 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
  */
 public class MeterRegistryConfigurerIntegrationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
-					PrometheusMetricsExportAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun
+			.limitedTo(AtlasMetricsExportAutoConfiguration.class, PrometheusMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void binderMetricsAreSearchableFromTheComposite() {
 		this.contextRunner.run((context) -> {
-			CompositeMeterRegistry composite = context
-					.getBean(CompositeMeterRegistry.class);
+			CompositeMeterRegistry composite = context.getBean(CompositeMeterRegistry.class);
 			composite.get("jvm.memory.used").gauge();
 			context.getBeansOfType(MeterRegistry.class)
 					.forEach((name, registry) -> registry.get("jvm.memory.used").gauge());

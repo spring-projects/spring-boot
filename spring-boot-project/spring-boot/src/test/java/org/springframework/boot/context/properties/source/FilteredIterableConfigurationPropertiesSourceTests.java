@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,20 +26,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class FilteredIterableConfigurationPropertiesSourceTests
-		extends FilteredConfigurationPropertiesSourceTests {
+public class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigurationPropertiesSourceTests {
 
 	@Test
 	public void iteratorShouldFilterNames() {
 		MockConfigurationPropertySource source = (MockConfigurationPropertySource) createTestSource();
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
-		assertThat(filtered.iterator()).extracting(ConfigurationPropertyName::toString)
-				.containsExactly("a", "b", "c");
+		assertThat(filtered.iterator()).extracting(ConfigurationPropertyName::toString).containsExactly("a", "b", "c");
 	}
 
 	@Override
-	protected ConfigurationPropertySource convertSource(
-			MockConfigurationPropertySource source) {
+	protected ConfigurationPropertySource convertSource(MockConfigurationPropertySource source) {
 		return source;
 	}
 

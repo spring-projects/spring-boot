@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,22 +77,19 @@ import org.springframework.util.StringUtils;
 @ConditionalOnWebApplication
 @EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		JdbcTemplateAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		MongoReactiveDataAutoConfiguration.class, RedisAutoConfiguration.class,
-		RedisReactiveAutoConfiguration.class })
+		JdbcTemplateAutoConfiguration.class, MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
+		RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class })
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@Import({ ServletSessionRepositoryValidator.class,
-			SessionRepositoryFilterConfiguration.class })
+	@Import({ ServletSessionRepositoryValidator.class, SessionRepositoryFilterConfiguration.class })
 	static class ServletSessionConfiguration {
 
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
-		public DefaultCookieSerializer cookieSerializer(
-				ServerProperties serverProperties) {
+		public DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -101,8 +98,7 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
-			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer
-					.setCookieMaxAge((int) maxAge.getSeconds()));
+			map.from(cookie::getMaxAge).to((maxAge) -> cookieSerializer.setCookieMaxAge((int) maxAge.getSeconds()));
 			return cookieSerializer;
 		}
 
@@ -165,8 +161,7 @@ public class SessionAutoConfiguration {
 			List<String> imports = new ArrayList<>();
 			StoreType[] types = StoreType.values();
 			for (int i = 0; i < types.length; i++) {
-				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType,
-						types[i]));
+				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType, types[i]));
 			}
 			return StringUtils.toStringArray(imports);
 		}
@@ -177,8 +172,7 @@ public class SessionAutoConfiguration {
 	 * {@link ImportSelector} to add {@link StoreType} configuration classes for reactive
 	 * web applications.
 	 */
-	static class ReactiveSessionConfigurationImportSelector
-			extends SessionConfigurationImportSelector {
+	static class ReactiveSessionConfigurationImportSelector extends SessionConfigurationImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
@@ -191,8 +185,7 @@ public class SessionAutoConfiguration {
 	 * {@link ImportSelector} to add {@link StoreType} configuration classes for Servlet
 	 * web applications.
 	 */
-	static class ServletSessionConfigurationImportSelector
-			extends SessionConfigurationImportSelector {
+	static class ServletSessionConfigurationImportSelector extends SessionConfigurationImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
@@ -213,8 +206,7 @@ public class SessionAutoConfiguration {
 
 		private final SessionProperties sessionProperties;
 
-		AbstractSessionRepositoryImplementationValidator(
-				ApplicationContext applicationContext,
+		AbstractSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties, List<String> candidates) {
 			this.classLoader = applicationContext.getClassLoader();
 			this.sessionProperties = sessionProperties;
@@ -254,14 +246,13 @@ public class SessionAutoConfiguration {
 	static class ServletSessionRepositoryImplementationValidator
 			extends AbstractSessionRepositoryImplementationValidator {
 
-		ServletSessionRepositoryImplementationValidator(
-				ApplicationContext applicationContext,
+		ServletSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
-			super(applicationContext, sessionProperties, Arrays.asList(
-					"org.springframework.session.hazelcast.HazelcastSessionRepository",
-					"org.springframework.session.jdbc.JdbcOperationsSessionRepository",
-					"org.springframework.session.data.mongo.MongoOperationsSessionRepository",
-					"org.springframework.session.data.redis.RedisOperationsSessionRepository"));
+			super(applicationContext, sessionProperties,
+					Arrays.asList("org.springframework.session.hazelcast.HazelcastSessionRepository",
+							"org.springframework.session.jdbc.JdbcOperationsSessionRepository",
+							"org.springframework.session.data.mongo.MongoOperationsSessionRepository",
+							"org.springframework.session.data.redis.RedisOperationsSessionRepository"));
 		}
 
 	}
@@ -273,12 +264,11 @@ public class SessionAutoConfiguration {
 	static class ReactiveSessionRepositoryImplementationValidator
 			extends AbstractSessionRepositoryImplementationValidator {
 
-		ReactiveSessionRepositoryImplementationValidator(
-				ApplicationContext applicationContext,
+		ReactiveSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
 				SessionProperties sessionProperties) {
-			super(applicationContext, sessionProperties, Arrays.asList(
-					"org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository",
-					"org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository"));
+			super(applicationContext, sessionProperties,
+					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository",
+							"org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository"));
 		}
 
 	}
@@ -301,8 +291,7 @@ public class SessionAutoConfiguration {
 		@PostConstruct
 		public void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
-			if (storeType != StoreType.NONE
-					&& this.sessionRepositoryProvider.getIfAvailable() == null
+			if (storeType != StoreType.NONE && this.sessionRepositoryProvider.getIfAvailable() == null
 					&& storeType != null) {
 				throw new SessionRepositoryUnavailableException(
 						"No session repository could be auto-configured, check your "
@@ -318,8 +307,7 @@ public class SessionAutoConfiguration {
 	 * Bean used to validate that a {@link SessionRepository} exists and provide a
 	 * meaningful message if that's not the case.
 	 */
-	static class ServletSessionRepositoryValidator
-			extends AbstractSessionRepositoryValidator {
+	static class ServletSessionRepositoryValidator extends AbstractSessionRepositoryValidator {
 
 		ServletSessionRepositoryValidator(SessionProperties sessionProperties,
 				ObjectProvider<SessionRepository<?>> sessionRepositoryProvider) {
@@ -332,8 +320,7 @@ public class SessionAutoConfiguration {
 	 * Bean used to validate that a {@link ReactiveSessionRepository} exists and provide a
 	 * meaningful message if that's not the case.
 	 */
-	static class ReactiveSessionRepositoryValidator
-			extends AbstractSessionRepositoryValidator {
+	static class ReactiveSessionRepositoryValidator extends AbstractSessionRepositoryValidator {
 
 		ReactiveSessionRepositoryValidator(SessionProperties sessionProperties,
 				ObjectProvider<ReactiveSessionRepository<?>> sessionRepositoryProvider) {

@@ -38,8 +38,8 @@ import org.gradle.api.tasks.bundling.War;
  */
 public class BootWar extends War implements BootArchive {
 
-	private final BootArchiveSupport support = new BootArchiveSupport(
-			"org.springframework.boot.loader.WarLauncher", this::resolveZipCompression);
+	private final BootArchiveSupport support = new BootArchiveSupport("org.springframework.boot.loader.WarLauncher",
+			this::resolveZipCompression);
 
 	private String mainClassName;
 
@@ -50,15 +50,13 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public BootWar() {
 		getWebInf().into("lib-provided",
-				(copySpec) -> copySpec.from(
-						(Callable<Iterable<File>>) () -> (this.providedClasspath != null)
-								? this.providedClasspath : Collections.emptyList()));
+				(copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> (this.providedClasspath != null)
+						? this.providedClasspath : Collections.emptyList()));
 	}
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName(), "WEB-INF/classes/",
-				"WEB-INF/lib/");
+		this.support.configureManifest(this, getMainClassName(), "WEB-INF/classes/", "WEB-INF/lib/");
 		super.copy();
 	}
 
@@ -70,8 +68,7 @@ public class BootWar extends War implements BootArchive {
 	@Override
 	public String getMainClassName() {
 		if (this.mainClassName == null) {
-			String manifestStartClass = (String) getManifest().getAttributes()
-					.get("Start-Class");
+			String manifestStartClass = (String) getManifest().getAttributes().get("Start-Class");
 			if (manifestStartClass != null) {
 				setMainClassName(manifestStartClass);
 			}
@@ -127,9 +124,8 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public void providedClasspath(Object... classpath) {
 		FileCollection existingClasspath = this.providedClasspath;
-		this.providedClasspath = getProject().files(
-				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
-				classpath);
+		this.providedClasspath = getProject()
+				.files((existingClasspath != null) ? existingClasspath : Collections.emptyList(), classpath);
 	}
 
 	/**
@@ -174,8 +170,7 @@ public class BootWar extends War implements BootArchive {
 	 */
 	protected ZipCompression resolveZipCompression(FileCopyDetails details) {
 		String relativePath = details.getRelativePath().getPathString();
-		if (relativePath.startsWith("WEB-INF/lib/")
-				|| relativePath.startsWith("WEB-INF/lib-provided/")) {
+		if (relativePath.startsWith("WEB-INF/lib/") || relativePath.startsWith("WEB-INF/lib-provided/")) {
 			return ZipCompression.STORED;
 		}
 		return ZipCompression.DEFLATED;

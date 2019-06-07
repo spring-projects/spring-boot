@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 
 	private final RuntimeException startupFailure;
 
-	AssertProviderApplicationContextInvocationHandler(Class<?> applicationContextType,
-			Supplier<?> contextSupplier) {
+	AssertProviderApplicationContextInvocationHandler(Class<?> applicationContextType, Supplier<?> contextSupplier) {
 		this.applicationContextType = applicationContextType;
 		Object contextOrStartupFailure = getContextOrStartupFailure(contextSupplier);
 		if (contextOrStartupFailure instanceof RuntimeException) {
@@ -93,22 +92,19 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	@Override
 	public String toString() {
 		if (this.startupFailure != null) {
-			return "Unstarted application context "
-					+ this.applicationContextType.getName() + "[startupFailure="
+			return "Unstarted application context " + this.applicationContextType.getName() + "[startupFailure="
 					+ this.startupFailure.getClass().getName() + "]";
 		}
 		ToStringCreator builder = new ToStringCreator(this.applicationContext)
 				.append("id", this.applicationContext.getId())
 				.append("applicationName", this.applicationContext.getApplicationName())
-				.append("beanDefinitionCount",
-						this.applicationContext.getBeanDefinitionCount());
+				.append("beanDefinitionCount", this.applicationContext.getBeanDefinitionCount());
 		return "Started application " + builder;
 	}
 
 	private boolean isGetSourceContext(Method method) {
-		return "getSourceApplicationContext".equals(method.getName())
-				&& ((method.getParameterCount() == 0) || Arrays.equals(
-						new Class<?>[] { Class.class }, method.getParameterTypes()));
+		return "getSourceApplicationContext".equals(method.getName()) && ((method.getParameterCount() == 0)
+				|| Arrays.equals(new Class<?>[] { Class.class }, method.getParameterTypes()));
 	}
 
 	private Object getSourceContext(Object[] args) {
@@ -120,8 +116,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	private boolean isGetStartupFailure(Method method) {
-		return ("getStartupFailure".equals(method.getName())
-				&& method.getParameterCount() == 0);
+		return ("getStartupFailure".equals(method.getName()) && method.getParameterCount() == 0);
 	}
 
 	private Object getStartupFailure() {
@@ -133,8 +128,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	private Object getAssertThat(Object proxy) {
-		return new ApplicationContextAssert<>((ApplicationContext) proxy,
-				this.startupFailure);
+		return new ApplicationContextAssert<>((ApplicationContext) proxy, this.startupFailure);
 	}
 
 	private boolean isCloseMethod(Method method) {
@@ -148,8 +142,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 		return null;
 	}
 
-	private Object invokeApplicationContextMethod(Method method, Object[] args)
-			throws Throwable {
+	private Object invokeApplicationContextMethod(Method method, Object[] args) throws Throwable {
 		try {
 			return method.invoke(getStartedApplicationContext(), args);
 		}
@@ -160,8 +153,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 
 	private ApplicationContext getStartedApplicationContext() {
 		if (this.startupFailure != null) {
-			throw new IllegalStateException(toString() + " failed to start",
-					this.startupFailure);
+			throw new IllegalStateException(toString() + " failed to start", this.startupFailure);
 		}
 		return this.applicationContext;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import org.springframework.util.ClassUtils;
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
+	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
+			ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
 			String resourceName = getResourceName(view, environment);
 			if (resourceLoader.getResource(resourceName).exists()) {
@@ -48,10 +48,8 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 	}
 
 	private String getResourceName(String view, Environment environment) {
-		String prefix = environment.getProperty("spring.mvc.view.prefix",
-				WebMvcAutoConfiguration.DEFAULT_PREFIX);
-		String suffix = environment.getProperty("spring.mvc.view.suffix",
-				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
+		String prefix = environment.getProperty("spring.mvc.view.prefix", WebMvcAutoConfiguration.DEFAULT_PREFIX);
+		String suffix = environment.getProperty("spring.mvc.view.suffix", WebMvcAutoConfiguration.DEFAULT_SUFFIX);
 		return prefix + view + suffix;
 	}
 

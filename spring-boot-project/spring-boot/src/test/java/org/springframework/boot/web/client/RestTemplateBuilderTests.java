@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,15 +96,13 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void buildShouldDetectRequestFactory() {
 		RestTemplate restTemplate = this.builder.build();
-		assertThat(restTemplate.getRequestFactory())
-				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
 	public void detectRequestFactoryWhenFalseShouldDisableDetection() {
 		RestTemplate restTemplate = this.builder.detectRequestFactory(false).build();
-		assertThat(restTemplate.getRequestFactory())
-				.isInstanceOf(SimpleClientHttpRequestFactory.class);
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(SimpleClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -119,8 +117,8 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void rootUriShouldApplyAfterUriTemplateHandler() {
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
-		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler)
-				.rootUri("https://example.com").build();
+		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler).rootUri("https://example.com")
+				.build();
 		UriTemplateHandler handler = template.getUriTemplateHandler();
 		handler.expand("/hello");
 		assertThat(handler).isInstanceOf(RootUriTemplateHandler.class);
@@ -143,15 +141,13 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void messageConvertersShouldApply() {
-		RestTemplate template = this.builder.messageConverters(this.messageConverter)
-				.build();
+		RestTemplate template = this.builder.messageConverters(this.messageConverter).build();
 		assertThat(template.getMessageConverters()).containsOnly(this.messageConverter);
 	}
 
 	@Test
 	public void messageConvertersShouldReplaceExisting() {
-		RestTemplate template = this.builder
-				.messageConverters(new ResourceHttpMessageConverter())
+		RestTemplate template = this.builder.messageConverters(new ResourceHttpMessageConverter())
 				.messageConverters(Collections.singleton(this.messageConverter)).build();
 		assertThat(template.getMessageConverters()).containsOnly(this.messageConverter);
 	}
@@ -175,27 +171,21 @@ public class RestTemplateBuilderTests {
 		HttpMessageConverter<?> resourceConverter = new ResourceHttpMessageConverter();
 		RestTemplate template = this.builder.messageConverters(resourceConverter)
 				.additionalMessageConverters(this.messageConverter).build();
-		assertThat(template.getMessageConverters()).containsOnly(resourceConverter,
-				this.messageConverter);
+		assertThat(template.getMessageConverters()).containsOnly(resourceConverter, this.messageConverter);
 	}
 
 	@Test
 	public void defaultMessageConvertersShouldSetDefaultList() {
-		RestTemplate template = new RestTemplate(
-				Collections.singletonList(new StringHttpMessageConverter()));
+		RestTemplate template = new RestTemplate(Collections.singletonList(new StringHttpMessageConverter()));
 		this.builder.defaultMessageConverters().configure(template);
-		assertThat(template.getMessageConverters())
-				.hasSameSizeAs(new RestTemplate().getMessageConverters());
+		assertThat(template.getMessageConverters()).hasSameSizeAs(new RestTemplate().getMessageConverters());
 	}
 
 	@Test
 	public void defaultMessageConvertersShouldClearExisting() {
-		RestTemplate template = new RestTemplate(
-				Collections.singletonList(new StringHttpMessageConverter()));
-		this.builder.additionalMessageConverters(this.messageConverter)
-				.defaultMessageConverters().configure(template);
-		assertThat(template.getMessageConverters())
-				.hasSameSizeAs(new RestTemplate().getMessageConverters());
+		RestTemplate template = new RestTemplate(Collections.singletonList(new StringHttpMessageConverter()));
+		this.builder.additionalMessageConverters(this.messageConverter).defaultMessageConverters().configure(template);
+		assertThat(template.getMessageConverters()).hasSameSizeAs(new RestTemplate().getMessageConverters());
 	}
 
 	@Test
@@ -220,8 +210,7 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void interceptorsShouldReplaceExisting() {
-		RestTemplate template = this.builder
-				.interceptors(mock(ClientHttpRequestInterceptor.class))
+		RestTemplate template = this.builder.interceptors(mock(ClientHttpRequestInterceptor.class))
 				.interceptors(Collections.singleton(this.interceptor)).build();
 		assertThat(template.getInterceptors()).containsOnly(this.interceptor);
 	}
@@ -242,12 +231,9 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void additionalInterceptorsShouldAddToExisting() {
-		ClientHttpRequestInterceptor interceptor = mock(
-				ClientHttpRequestInterceptor.class);
-		RestTemplate template = this.builder.interceptors(interceptor)
-				.additionalInterceptors(this.interceptor).build();
-		assertThat(template.getInterceptors()).containsOnly(interceptor,
-				this.interceptor);
+		ClientHttpRequestInterceptor interceptor = mock(ClientHttpRequestInterceptor.class);
+		RestTemplate template = this.builder.interceptors(interceptor).additionalInterceptors(this.interceptor).build();
+		assertThat(template.getInterceptors()).containsOnly(interceptor, this.interceptor);
 	}
 
 	@Test
@@ -259,18 +245,14 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	public void requestFactoryClassShouldApply() {
-		RestTemplate template = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class).build();
-		assertThat(template.getRequestFactory())
-				.isInstanceOf(SimpleClientHttpRequestFactory.class);
+		RestTemplate template = this.builder.requestFactory(SimpleClientHttpRequestFactory.class).build();
+		assertThat(template.getRequestFactory()).isInstanceOf(SimpleClientHttpRequestFactory.class);
 	}
 
 	@Test
 	public void requestFactoryPackagePrivateClassShouldApply() {
-		RestTemplate template = this.builder
-				.requestFactory(TestClientHttpRequestFactory.class).build();
-		assertThat(template.getRequestFactory())
-				.isInstanceOf(TestClientHttpRequestFactory.class);
+		RestTemplate template = this.builder.requestFactory(TestClientHttpRequestFactory.class).build();
+		assertThat(template.getRequestFactory()).isInstanceOf(TestClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -297,8 +279,7 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void uriTemplateHandlerShouldApply() {
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
-		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler)
-				.build();
+		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler).build();
 		assertThat(template.getUriTemplateHandler()).isSameAs(uriTemplateHandler);
 	}
 
@@ -349,8 +330,8 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void customizersShouldBeAppliedLast() {
 		RestTemplate template = spy(new RestTemplate());
-		this.builder.additionalCustomizers((restTemplate) -> verify(restTemplate)
-				.setRequestFactory(any(ClientHttpRequestFactory.class)));
+		this.builder.additionalCustomizers(
+				(restTemplate) -> verify(restTemplate).setRequestFactory(any(ClientHttpRequestFactory.class)));
 		this.builder.configure(template);
 	}
 
@@ -358,8 +339,8 @@ public class RestTemplateBuilderTests {
 	public void customizersShouldReplaceExisting() {
 		RestTemplateCustomizer customizer1 = mock(RestTemplateCustomizer.class);
 		RestTemplateCustomizer customizer2 = mock(RestTemplateCustomizer.class);
-		RestTemplate template = this.builder.customizers(customizer1)
-				.customizers(Collections.singleton(customizer2)).build();
+		RestTemplate template = this.builder.customizers(customizer1).customizers(Collections.singleton(customizer2))
+				.build();
 		verifyZeroInteractions(customizer1);
 		verify(customizer2).customize(template);
 	}
@@ -382,8 +363,7 @@ public class RestTemplateBuilderTests {
 	public void additionalCustomizersShouldAddToExisting() {
 		RestTemplateCustomizer customizer1 = mock(RestTemplateCustomizer.class);
 		RestTemplateCustomizer customizer2 = mock(RestTemplateCustomizer.class);
-		RestTemplate template = this.builder.customizers(customizer1)
-				.additionalCustomizers(customizer2).build();
+		RestTemplate template = this.builder.customizers(customizer1).additionalCustomizers(customizer2).build();
 		verify(customizer1).customize(template);
 		verify(customizer2).customize(template);
 	}
@@ -404,97 +384,80 @@ public class RestTemplateBuilderTests {
 	public void configureShouldApply() {
 		RestTemplate template = new RestTemplate();
 		this.builder.configure(template);
-		assertThat(template.getRequestFactory())
-				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+		assertThat(template.getRequestFactory()).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
 	public void connectTimeoutCanBeConfiguredOnHttpComponentsRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory,
-				"requestConfig")).getConnectTimeout()).isEqualTo(1234);
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class).setConnectTimeout(1234).build()
+				.getRequestFactory();
+		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory, "requestConfig")).getConnectTimeout())
+				.isEqualTo(1234);
 	}
 
 	@Test
 	public void readTimeoutCanBeConfiguredOnHttpComponentsRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.setReadTimeout(1234).build().getRequestFactory();
-		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory,
-				"requestConfig")).getSocketTimeout()).isEqualTo(1234);
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class).setReadTimeout(1234).build()
+				.getRequestFactory();
+		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory, "requestConfig")).getSocketTimeout())
+				.isEqualTo(1234);
 	}
 
 	@Test
 	public void connectTimeoutCanBeConfiguredOnSimpleRequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class)
+		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(SimpleClientHttpRequestFactory.class)
 				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(1234);
+		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout")).isEqualTo(1234);
 	}
 
 	@Test
 	public void readTimeoutCanBeConfiguredOnSimpleRequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
-				.build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
+		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setReadTimeout(1234).build().getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout")).isEqualTo(1234);
 	}
 
 	@Test
 	public void connectTimeoutCanBeConfiguredOnOkHttp3RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(OkHttp3ClientHttpRequestFactory.class)
+		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
 				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(
-				ReflectionTestUtils.getField(requestFactory, "client"), "connectTimeout"))
+		assertThat(
+				ReflectionTestUtils.getField(ReflectionTestUtils.getField(requestFactory, "client"), "connectTimeout"))
 						.isEqualTo(1234);
 	}
 
 	@Test
 	public void readTimeoutCanBeConfiguredOnOkHttp3RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(OkHttp3ClientHttpRequestFactory.class)
+		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
 				.setReadTimeout(1234).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(
-				ReflectionTestUtils.getField(requestFactory, "client"), "readTimeout"))
-						.isEqualTo(1234);
+		assertThat(ReflectionTestUtils.getField(ReflectionTestUtils.getField(requestFactory, "client"), "readTimeout"))
+				.isEqualTo(1234);
 	}
 
 	@Test
 	public void connectTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder
-				.requestFactory(
-						() -> new BufferingClientHttpRequestFactory(requestFactory))
-				.setConnectTimeout(1234).build();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(1234);
+		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory)).setConnectTimeout(1234)
+				.build();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout")).isEqualTo(1234);
 	}
 
 	@Test
 	public void readTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder
-				.requestFactory(
-						() -> new BufferingClientHttpRequestFactory(requestFactory))
-				.setReadTimeout(1234).build();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
+		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory)).setReadTimeout(1234)
+				.build();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout")).isEqualTo(1234);
 	}
 
 	@Test
 	public void unwrappingDoesNotAffectRequestFactoryThatIsSetOnTheBuiltTemplate() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		RestTemplate template = this.builder
-				.requestFactory(
-						() -> new BufferingClientHttpRequestFactory(requestFactory))
+		RestTemplate template = this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.build();
-		assertThat(template.getRequestFactory())
-				.isInstanceOf(BufferingClientHttpRequestFactory.class);
+		assertThat(template.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
 	public static class RestTemplateSubclass extends RestTemplate {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,8 @@ import static org.mockito.Mockito.mock;
  */
 public class CouchbaseAutoConfigurationIntegrationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-							CouchbaseAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class));
 
 	@Rule
 	public final CouchbaseTestServer couchbase = new CouchbaseTestServer();
@@ -51,21 +49,17 @@ public class CouchbaseAutoConfigurationIntegrationTests {
 	@Test
 	public void defaultConfiguration() {
 		this.contextRunner.withPropertyValues("spring.couchbase.bootstrapHosts=localhost")
-				.run((context) -> assertThat(context).hasSingleBean(Cluster.class)
-						.hasSingleBean(ClusterInfo.class)
-						.hasSingleBean(CouchbaseEnvironment.class)
-						.hasSingleBean(Bucket.class));
+				.run((context) -> assertThat(context).hasSingleBean(Cluster.class).hasSingleBean(ClusterInfo.class)
+						.hasSingleBean(CouchbaseEnvironment.class).hasSingleBean(Bucket.class));
 	}
 
 	@Test
 	public void customConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
-				.withPropertyValues("spring.couchbase.bootstrapHosts=localhost")
-				.run((context) -> {
+				.withPropertyValues("spring.couchbase.bootstrapHosts=localhost").run((context) -> {
 					assertThat(context.getBeansOfType(Cluster.class)).hasSize(2);
 					assertThat(context.getBeansOfType(ClusterInfo.class)).hasSize(1);
-					assertThat(context.getBeansOfType(CouchbaseEnvironment.class))
-							.hasSize(1);
+					assertThat(context.getBeansOfType(CouchbaseEnvironment.class)).hasSize(1);
 					assertThat(context.getBeansOfType(Bucket.class)).hasSize(2);
 				});
 	}

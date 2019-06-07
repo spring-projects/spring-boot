@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,16 +36,14 @@ public class ResourceUtilsTests {
 
 	@Test
 	public void explicitClasspathResource() {
-		List<String> urls = ResourceUtils.getUrls("classpath:init.groovy",
-				ClassUtils.getDefaultClassLoader());
+		List<String> urls = ResourceUtils.getUrls("classpath:init.groovy", ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
 	}
 
 	@Test
 	public void duplicateResource() throws Exception {
-		URLClassLoader loader = new URLClassLoader(new URL[] {
-				new URL("file:./src/test/resources/"),
+		URLClassLoader loader = new URLClassLoader(new URL[] { new URL("file:./src/test/resources/"),
 				new File("src/test/resources/").getAbsoluteFile().toURI().toURL() });
 		List<String> urls = ResourceUtils.getUrls("classpath:init.groovy", loader);
 		assertThat(urls).hasSize(1);
@@ -54,24 +52,21 @@ public class ResourceUtilsTests {
 
 	@Test
 	public void explicitClasspathResourceWithSlash() {
-		List<String> urls = ResourceUtils.getUrls("classpath:/init.groovy",
-				ClassUtils.getDefaultClassLoader());
+		List<String> urls = ResourceUtils.getUrls("classpath:/init.groovy", ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
 	}
 
 	@Test
 	public void implicitClasspathResource() {
-		List<String> urls = ResourceUtils.getUrls("init.groovy",
-				ClassUtils.getDefaultClassLoader());
+		List<String> urls = ResourceUtils.getUrls("init.groovy", ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
 	}
 
 	@Test
 	public void implicitClasspathResourceWithSlash() {
-		List<String> urls = ResourceUtils.getUrls("/init.groovy",
-				ClassUtils.getDefaultClassLoader());
+		List<String> urls = ResourceUtils.getUrls("/init.groovy", ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
 	}
@@ -92,8 +87,7 @@ public class ResourceUtilsTests {
 
 	@Test
 	public void implicitFile() {
-		List<String> urls = ResourceUtils.getUrls("src/test/resources/init.groovy",
-				ClassUtils.getDefaultClassLoader());
+		List<String> urls = ResourceUtils.getUrls("src/test/resources/init.groovy", ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
 	}
@@ -106,16 +100,14 @@ public class ResourceUtilsTests {
 
 	@Test
 	public void recursiveFiles() {
-		List<String> urls = ResourceUtils.getUrls("src/test/resources/dir-sample",
-				ClassUtils.getDefaultClassLoader());
+		List<String> urls = ResourceUtils.getUrls("src/test/resources/dir-sample", ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
 	}
 
 	@Test
 	public void recursiveFilesByPatternWithPrefix() {
-		List<String> urls = ResourceUtils.getUrls(
-				"file:src/test/resources/dir-sample/**/*.groovy",
+		List<String> urls = ResourceUtils.getUrls("file:src/test/resources/dir-sample/**/*.groovy",
 				ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
@@ -123,8 +115,7 @@ public class ResourceUtilsTests {
 
 	@Test
 	public void recursiveFilesByPattern() {
-		List<String> urls = ResourceUtils.getUrls(
-				"src/test/resources/dir-sample/**/*.groovy",
+		List<String> urls = ResourceUtils.getUrls("src/test/resources/dir-sample/**/*.groovy",
 				ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();
@@ -132,8 +123,7 @@ public class ResourceUtilsTests {
 
 	@Test
 	public void directoryOfFilesWithPrefix() {
-		List<String> urls = ResourceUtils.getUrls(
-				"file:src/test/resources/dir-sample/code/*",
+		List<String> urls = ResourceUtils.getUrls("file:src/test/resources/dir-sample/code/*",
 				ClassUtils.getDefaultClassLoader());
 		assertThat(urls).hasSize(1);
 		assertThat(urls.get(0).startsWith("file:")).isTrue();

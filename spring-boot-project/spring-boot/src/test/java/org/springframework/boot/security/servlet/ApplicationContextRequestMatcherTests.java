@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,15 +62,14 @@ public class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context).get())
-						.isEqualTo(context.getBean(ExistingBean.class));
+				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
 	public void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
-		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(
-				ExistingBean.class).callMatchesAndReturnProvidedContext(context);
+		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(ExistingBean.class)
+				.callMatchesAndReturnProvidedContext(context);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		supplier.get();
 	}
@@ -79,8 +78,7 @@ public class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		MockServletContext servletContext = new MockServletContext();
 		context.setServletContext(servletContext);
-		servletContext.setAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 		return context;
 	}
 
@@ -102,8 +100,7 @@ public class ApplicationContextRequestMatcherTests {
 
 	}
 
-	static class TestApplicationContextRequestMatcher<C>
-			extends ApplicationContextRequestMatcher<C> {
+	static class TestApplicationContextRequestMatcher<C> extends ApplicationContextRequestMatcher<C> {
 
 		private Supplier<C> providedContext;
 
@@ -111,14 +108,11 @@ public class ApplicationContextRequestMatcherTests {
 			super(context);
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(
-				WebApplicationContext context) {
-			return callMatchesAndReturnProvidedContext(
-					new MockHttpServletRequest(context.getServletContext()));
+		public Supplier<C> callMatchesAndReturnProvidedContext(WebApplicationContext context) {
+			return callMatchesAndReturnProvidedContext(new MockHttpServletRequest(context.getServletContext()));
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(
-				HttpServletRequest request) {
+		public Supplier<C> callMatchesAndReturnProvidedContext(HttpServletRequest request) {
 			matches(request);
 			return getProvidedContext();
 		}

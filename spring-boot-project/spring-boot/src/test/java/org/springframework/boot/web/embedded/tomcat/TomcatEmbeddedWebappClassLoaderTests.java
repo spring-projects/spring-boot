@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,8 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 	@Test
 	public void getResourceFindsResourceFromParentClassLoader() throws Exception {
 		File war = createWar();
-		withWebappClassLoader(war,
-				(classLoader) -> assertThat(classLoader.getResource("test.txt"))
-						.isEqualTo(new URL(webInfClassesUrlString(war) + "test.txt")));
+		withWebappClassLoader(war, (classLoader) -> assertThat(classLoader.getResource("test.txt"))
+				.isEqualTo(new URL(webInfClassesUrlString(war) + "test.txt")));
 	}
 
 	@Test
@@ -61,25 +60,19 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 		File warFile = createWar();
 		withWebappClassLoader(warFile, (classLoader) -> {
 			List<URL> urls = new ArrayList<>();
-			CollectionUtils.toIterator(classLoader.getResources("test.txt"))
-					.forEachRemaining(urls::add);
-			assertThat(urls).containsExactly(
-					new URL(webInfClassesUrlString(warFile) + "test.txt"));
+			CollectionUtils.toIterator(classLoader.getResources("test.txt")).forEachRemaining(urls::add);
+			assertThat(urls).containsExactly(new URL(webInfClassesUrlString(warFile) + "test.txt"));
 		});
 	}
 
-	private void withWebappClassLoader(File war, ClassLoaderConsumer consumer)
-			throws Exception {
-		URLClassLoader parent = new URLClassLoader(
-				new URL[] { new URL(webInfClassesUrlString(war)) }, null);
-		try (ParallelWebappClassLoader classLoader = new TomcatEmbeddedWebappClassLoader(
-				parent)) {
+	private void withWebappClassLoader(File war, ClassLoaderConsumer consumer) throws Exception {
+		URLClassLoader parent = new URLClassLoader(new URL[] { new URL(webInfClassesUrlString(war)) }, null);
+		try (ParallelWebappClassLoader classLoader = new TomcatEmbeddedWebappClassLoader(parent)) {
 			StandardContext context = new StandardContext();
 			context.setName("test");
 			StandardRoot resources = new StandardRoot();
 			resources.setContext(context);
-			resources.addJarResources(
-					new WarResourceSet(resources, "/", war.getAbsolutePath()));
+			resources.addJarResources(new WarResourceSet(resources, "/", war.getAbsolutePath()));
 			resources.start();
 			classLoader.setResources(resources);
 			classLoader.start();
@@ -93,10 +86,8 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 
 	private File createWar() throws IOException {
 		File warFile = this.temp.newFile("test.war");
-		try (JarOutputStream warOut = new JarOutputStream(
-				new FileOutputStream(warFile))) {
-			createEntries(warOut, "WEB-INF/", "WEB-INF/classes/",
-					"WEB-INF/classes/test.txt");
+		try (JarOutputStream warOut = new JarOutputStream(new FileOutputStream(warFile))) {
+			createEntries(warOut, "WEB-INF/", "WEB-INF/classes/", "WEB-INF/classes/test.txt");
 		}
 		return warFile;
 	}

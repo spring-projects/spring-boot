@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ class MissingRequiredConfigurationFailureAnalyzer
 		extends AbstractFailureAnalyzer<MissingRequiredConfigurationException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			MissingRequiredConfigurationException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, MissingRequiredConfigurationException cause) {
 		StringBuilder description = new StringBuilder();
 		description.append(cause.getMessage());
 		if (!cause.getMessage().endsWith(".")) {

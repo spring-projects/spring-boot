@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class JettyReactiveWebServerFactoryTests
-		extends AbstractReactiveWebServerFactoryTests {
+public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected JettyReactiveWebServerFactory getFactory() {
@@ -85,10 +84,8 @@ public class JettyReactiveWebServerFactoryTests
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		this.webServer.start();
-		Connector connector = ((JettyWebServer) this.webServer).getServer()
-				.getConnectors()[0];
-		assertThat(((ServerConnector) connector).getHost())
-				.isEqualTo(localhost.getHostAddress());
+		Connector connector = ((JettyWebServer) this.webServer).getServer().getConnectors()[0];
+		assertThat(((ServerConnector) connector).getHost()).isEqualTo(localhost.getHostAddress());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,16 +42,14 @@ public class ConfigurationBeanFactoryMetadata implements BeanFactoryPostProcesso
 	/**
 	 * The bean name that this class is registered with.
 	 */
-	public static final String BEAN_NAME = ConfigurationBeanFactoryMetadata.class
-			.getName();
+	public static final String BEAN_NAME = ConfigurationBeanFactoryMetadata.class.getName();
 
 	private ConfigurableListableBeanFactory beanFactory;
 
 	private final Map<String, FactoryMetadata> beansFactoryMetadata = new HashMap<>();
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-			throws BeansException {
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 		for (String name : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
@@ -63,8 +61,7 @@ public class ConfigurationBeanFactoryMetadata implements BeanFactoryPostProcesso
 		}
 	}
 
-	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(
-			Class<A> type) {
+	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(Class<A> type) {
 		Map<String, Object> result = new HashMap<>();
 		for (String name : this.beansFactoryMetadata.keySet()) {
 			if (findFactoryAnnotation(name, type) != null) {
@@ -74,8 +71,7 @@ public class ConfigurationBeanFactoryMetadata implements BeanFactoryPostProcesso
 		return result;
 	}
 
-	public <A extends Annotation> A findFactoryAnnotation(String beanName,
-			Class<A> type) {
+	public <A extends Annotation> A findFactoryAnnotation(String beanName, Class<A> type) {
 		Method method = findFactoryMethod(beanName);
 		return (method != null) ? AnnotationUtils.findAnnotation(method, type) : null;
 	}

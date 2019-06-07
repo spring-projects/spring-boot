@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,31 +38,27 @@ public class KotlinPluginActionIntegrationTests {
 
 	@Test
 	public void noKotlinVersionPropertyWithoutKotlinPlugin() {
-		assertThat(this.gradleBuild.build("kotlinVersion").getOutput())
-				.contains("Kotlin version: none");
+		assertThat(this.gradleBuild.build("kotlinVersion").getOutput()).contains("Kotlin version: none");
 	}
 
 	@Test
 	public void kotlinVersionMatchesKotlinPluginVersion() {
-		String output = this.gradleBuild.build("kotlinVersion", "dependencies",
-				"--configuration", "compileClasspath").getOutput();
+		String output = this.gradleBuild.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
+				.getOutput();
 		assertThat(output).contains("Kotlin version: 1.2.10");
-		assertThat(output)
-				.containsPattern("org.jetbrains.kotlin:kotlin-stdlib-jdk8:* -> 1.2.10");
+		assertThat(output).containsPattern("org.jetbrains.kotlin:kotlin-stdlib-jdk8:* -> 1.2.10");
 	}
 
 	@Test
 	public void kotlinCompileTasksUseJavaParametersFlagByDefault() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: true")
-				.contains("compileTestKotlin java parameters: true");
+				.contains("compileKotlin java parameters: true").contains("compileTestKotlin java parameters: true");
 	}
 
 	@Test
 	public void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: false")
-				.contains("compileTestKotlin java parameters: false");
+				.contains("compileKotlin java parameters: false").contains("compileTestKotlin java parameters: false");
 	}
 
 }

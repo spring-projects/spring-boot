@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ class SpringProfileAction extends Action implements InPlayListener {
 	}
 
 	@Override
-	public void begin(InterpretationContext ic, String name, Attributes attributes)
-			throws ActionException {
+	public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
 		this.depth++;
 		if (this.depth != 1) {
 			return;
@@ -70,8 +69,8 @@ class SpringProfileAction extends Action implements InPlayListener {
 		if (this.environment == null) {
 			return false;
 		}
-		String[] profileNames = StringUtils.trimArrayElements(StringUtils
-				.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE)));
+		String[] profileNames = StringUtils
+				.trimArrayElements(StringUtils.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE)));
 		if (profileNames.length == 0) {
 			return false;
 		}

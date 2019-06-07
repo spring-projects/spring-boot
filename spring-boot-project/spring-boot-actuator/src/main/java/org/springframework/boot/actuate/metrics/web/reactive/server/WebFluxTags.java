@@ -83,8 +83,7 @@ public final class WebFluxTags {
 	 * @return the uri tag derived from the exchange
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
-		PathPattern pathPattern = exchange
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (pathPattern != null) {
 			return Tag.of("uri", pathPattern.getPatternString());
 		}
@@ -119,8 +118,7 @@ public final class WebFluxTags {
 	public static Tag exception(Throwable exception) {
 		if (exception != null) {
 			String simpleName = exception.getClass().getSimpleName();
-			return Tag.of("exception", StringUtils.hasText(simpleName) ? simpleName
-					: exception.getClass().getName());
+			return Tag.of("exception", StringUtils.hasText(simpleName) ? simpleName : exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
 	}

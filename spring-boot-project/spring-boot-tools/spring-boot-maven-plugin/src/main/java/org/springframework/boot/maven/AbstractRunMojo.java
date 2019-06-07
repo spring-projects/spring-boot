@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,8 +183,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return {@code true} if the application process should be forked
 	 */
 	protected boolean isFork() {
-		return (Boolean.TRUE.equals(this.fork)
-				|| (this.fork == null && enableForkByDefault()));
+		return (Boolean.TRUE.equals(this.fork) || (this.fork == null && enableForkByDefault()));
 	}
 
 	/**
@@ -208,11 +207,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return this.workingDirectory != null;
 	}
 
-	private void run(String startClassName)
-			throws MojoExecutionException, MojoFailureException {
+	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
 		boolean fork = isFork();
-		this.project.getProperties().setProperty("_spring.boot.fork.enabled",
-				Boolean.toString(fork));
+		this.project.getProperties().setProperty("_spring.boot.fork.enabled", Boolean.toString(fork));
 		if (fork) {
 			doRunWithForkedJvm(startClassName);
 		}
@@ -232,16 +229,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			getLog().warn("Fork mode disabled, ignoring agent");
 		}
 		if (hasJvmArgs()) {
-			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
-					+ this.jvmArguments + "]");
+			getLog().warn("Fork mode disabled, ignoring JVM argument(s) [" + this.jvmArguments + "]");
 		}
 		if (hasWorkingDirectorySet()) {
 			getLog().warn("Fork mode disabled, ignoring working directory configuration");
 		}
 	}
 
-	private void doRunWithForkedJvm(String startClassName)
-			throws MojoExecutionException, MojoFailureException {
+	private void doRunWithForkedJvm(String startClassName) throws MojoExecutionException, MojoFailureException {
 		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
@@ -357,8 +352,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 		}
 		if (mainClass == null) {
-			throw new MojoExecutionException("Unable to find a suitable main class, "
-					+ "please add a 'mainClass' property");
+			throw new MojoExecutionException(
+					"Unable to find a suitable main class, " + "please add a 'mainClass' property");
 		}
 		return mainClass;
 	}
@@ -390,8 +385,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
 				urls.add(directory.toURI().toURL());
-				FileUtils.removeDuplicatesFromOutputDirectory(this.classesDirectory,
-						directory);
+				FileUtils.removeDuplicatesFromOutputDirectory(this.classesDirectory, directory);
 			}
 		}
 	}
@@ -400,12 +394,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		urls.add(this.classesDirectory.toURI().toURL());
 	}
 
-	private void addDependencies(List<URL> urls)
-			throws MalformedURLException, MojoExecutionException {
-		FilterArtifacts filters = (this.useTestClasspath ? getFilters()
-				: getFilters(new TestArtifactFilter()));
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
-				filters);
+	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
+		FilterArtifacts filters = (this.useTestClasspath ? getFilters() : getFilters(new TestArtifactFilter()));
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
 				urls.add(artifact.getFile().toURI().toURL());
@@ -461,9 +452,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			synchronized (this.monitor) {
 				if (this.exception != null) {
 					throw new MojoExecutionException(
-							"An exception occurred while running. "
-									+ this.exception.getMessage(),
-							this.exception);
+							"An exception occurred while running. " + this.exception.getMessage(), this.exception);
 				}
 			}
 		}
@@ -498,9 +487,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 			catch (NoSuchMethodException ex) {
 				Exception wrappedEx = new Exception(
-						"The specified mainClass doesn't contain a "
-								+ "main method with appropriate signature.",
-						ex);
+						"The specified mainClass doesn't contain a " + "main method with appropriate signature.", ex);
 				thread.getThreadGroup().uncaughtException(thread, wrappedEx);
 			}
 			catch (Exception ex) {

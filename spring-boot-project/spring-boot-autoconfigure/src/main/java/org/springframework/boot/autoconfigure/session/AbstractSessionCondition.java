@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,8 @@ abstract class AbstractSessionCondition extends SpringBootCondition {
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Session Condition");
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Session Condition");
 		Environment environment = context.getEnvironment();
 		StoreType required = SessionStoreMappings.getType(this.webApplicationType,
 				((AnnotationMetadata) metadata).getClassName());
@@ -60,12 +58,10 @@ abstract class AbstractSessionCondition extends SpringBootCondition {
 			return binder.bind("spring.session.store-type", StoreType.class)
 					.map((t) -> new ConditionOutcome(t == required,
 							message.found("spring.session.store-type property").items(t)))
-					.orElse(ConditionOutcome.noMatch(message
-							.didNotFind("spring.session.store-type property").atAll()));
+					.orElse(ConditionOutcome.noMatch(message.didNotFind("spring.session.store-type property").atAll()));
 		}
 		catch (BindException ex) {
-			return ConditionOutcome.noMatch(
-					message.found("invalid spring.session.store-type property").atAll());
+			return ConditionOutcome.noMatch(message.found("invalid spring.session.store-type property").atAll());
 		}
 	}
 

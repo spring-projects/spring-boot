@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
-		Class<?> collectionType = (target.getValue() != null) ? List.class
-				: target.getType().resolve(Object.class);
+		Class<?> collectionType = (target.getValue() != null) ? List.class : target.getType().resolve(Object.class);
 		ResolvableType aggregateType = ResolvableType.forClassWithGenerics(List.class,
 				target.getType().asCollection().getGenerics());
 		ResolvableType elementType = target.getType().asCollection().getGeneric();
@@ -55,8 +54,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	@Override
-	protected Collection<Object> merge(Supplier<?> existing,
-			Collection<Object> additional) {
+	protected Collection<Object> merge(Supplier<?> existing, Collection<Object> additional) {
 		Collection<Object> existingCollection = getExistingIfPossible(existing);
 		if (existingCollection == null) {
 			return additional;
@@ -91,8 +89,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	private Collection<Object> createNewCollection(Collection<Object> collection) {
-		Collection<Object> result = CollectionFactory
-				.createCollection(collection.getClass(), collection.size());
+		Collection<Object> result = CollectionFactory.createCollection(collection.getClass(), collection.size());
 		result.addAll(collection);
 		return result;
 	}

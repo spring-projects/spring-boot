@@ -36,29 +36,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ScheduledTasksEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ScheduledTasksEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ScheduledTasksEndpointAutoConfiguration.class));
 
 	@Test
 	public void endpointIsAutoConfigured() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ScheduledTasksEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class));
 	}
 
 	@Test
 	public void endpointCanBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.scheduledtasks.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ScheduledTasksEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.scheduledtasks.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(ScheduledTasksEndpoint.class));
 	}
 
 	@Test
 	public void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
-		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ScheduledTasksEndpoint.class)
-						.hasBean("customEndpoint"));
+		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class).run(
+				(context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class).hasBean("customEndpoint"));
 	}
 
 	@Configuration

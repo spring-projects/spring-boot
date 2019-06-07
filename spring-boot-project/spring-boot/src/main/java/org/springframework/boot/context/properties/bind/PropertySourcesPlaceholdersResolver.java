@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,20 +45,16 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 		this(sources, null);
 	}
 
-	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources,
-			PropertyPlaceholderHelper helper) {
+	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources, PropertyPlaceholderHelper helper) {
 		this.sources = sources;
-		this.helper = (helper != null) ? helper
-				: new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
-						SystemPropertyUtils.PLACEHOLDER_SUFFIX,
-						SystemPropertyUtils.VALUE_SEPARATOR, true);
+		this.helper = (helper != null) ? helper : new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
+				SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR, true);
 	}
 
 	@Override
 	public Object resolvePlaceholders(Object value) {
 		if (value != null && value instanceof String) {
-			return this.helper.replacePlaceholders((String) value,
-					this::resolvePlaceholder);
+			return this.helper.replacePlaceholders((String) value, this::resolvePlaceholder);
 		}
 		return value;
 	}

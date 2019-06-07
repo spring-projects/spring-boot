@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ public class BasicDataSourceExampleTests {
 	public void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource.getConnection().getMetaData().getURL())
-				.isEqualTo("jdbc:h2:mem:basic");
+		assertThat(dataSource.getConnection().getMetaData().getURL()).isEqualTo("jdbc:h2:mem:basic");
 	}
 
 }

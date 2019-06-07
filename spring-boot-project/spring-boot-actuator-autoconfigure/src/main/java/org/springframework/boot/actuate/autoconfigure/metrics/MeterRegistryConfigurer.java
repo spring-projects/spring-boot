@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,8 @@ class MeterRegistryConfigurer {
 
 	private final boolean addToGlobalRegistry;
 
-	MeterRegistryConfigurer(Collection<MeterBinder> binders,
-			Collection<MeterFilter> filters,
-			Collection<MeterRegistryCustomizer<?>> customizers,
-			boolean addToGlobalRegistry) {
+	MeterRegistryConfigurer(Collection<MeterBinder> binders, Collection<MeterFilter> filters,
+			Collection<MeterRegistryCustomizer<?>> customizers, boolean addToGlobalRegistry) {
 		this.binders = (binders != null) ? binders : Collections.emptyList();
 		this.filters = (filters != null) ? filters : Collections.emptyList();
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
@@ -68,8 +66,7 @@ class MeterRegistryConfigurer {
 	@SuppressWarnings("unchecked")
 	private void customize(MeterRegistry registry) {
 		LambdaSafe.callbacks(MeterRegistryCustomizer.class, this.customizers, registry)
-				.withLogger(MeterRegistryConfigurer.class)
-				.invoke((customizer) -> customizer.customize(registry));
+				.withLogger(MeterRegistryConfigurer.class).invoke((customizer) -> customizer.customize(registry));
 	}
 
 	private void addFilters(MeterRegistry registry) {

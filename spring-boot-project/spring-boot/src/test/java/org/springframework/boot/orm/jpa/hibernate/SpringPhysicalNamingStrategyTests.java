@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,18 +62,15 @@ public class SpringPhysicalNamingStrategyTests {
 
 	@Test
 	public void tableNameShouldBeLowercaseUnderscore() {
-		PersistentClass binding = this.metadata
-				.getEntityBinding(TelephoneNumber.class.getName());
+		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("telephone_number");
 	}
 
 	@Test
 	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() {
 		this.metadata = this.metadataSources.getMetadataBuilder(this.serviceRegistry)
-				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy())
-				.build();
-		PersistentClass binding = this.metadata
-				.getEntityBinding(TelephoneNumber.class.getName());
+				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy()).build();
+		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("Telephone_Number");
 	}
 

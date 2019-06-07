@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,11 +92,9 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment)
-				.and("spring.datasource.initialization-mode=never").applyTo(context);
+		TestPropertyValues.of(environment).and("spring.datasource.initialization-mode=never").applyTo(context);
 		context.register(config);
-		context.register(DataSourceAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
+		context.register(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class);
 		context.refresh();

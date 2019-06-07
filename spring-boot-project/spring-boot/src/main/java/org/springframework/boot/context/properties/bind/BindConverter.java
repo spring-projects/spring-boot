@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,16 +58,14 @@ class BindConverter {
 
 	private final ConversionService conversionService;
 
-	BindConverter(ConversionService conversionService,
-			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+	BindConverter(ConversionService conversionService, Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
-		List<ConversionService> conversionServices = getConversionServices(
-				conversionService, propertyEditorInitializer);
+		List<ConversionService> conversionServices = getConversionServices(conversionService,
+				propertyEditorInitializer);
 		this.conversionService = new CompositeConversionService(conversionServices);
 	}
 
-	private List<ConversionService> getConversionServices(
-			ConversionService conversionService,
+	private List<ConversionService> getConversionServices(ConversionService conversionService,
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		List<ConversionService> services = new ArrayList<>();
 		services.add(new TypeConverterConversionService(propertyEditorInitializer));
@@ -78,8 +76,7 @@ class BindConverter {
 		return services;
 	}
 
-	public boolean canConvert(Object value, ResolvableType type,
-			Annotation... annotations) {
+	public boolean canConvert(Object value, ResolvableType type, Annotation... annotations) {
 		return this.conversionService.canConvert(TypeDescriptor.forObject(value),
 				new ResolvableTypeDescriptor(type, annotations));
 	}
@@ -102,8 +99,7 @@ class BindConverter {
 	 */
 	private static class ResolvableTypeDescriptor extends TypeDescriptor {
 
-		ResolvableTypeDescriptor(ResolvableType resolvableType,
-				Annotation[] annotations) {
+		ResolvableTypeDescriptor(ResolvableType resolvableType, Annotation[] annotations) {
 			super(resolvableType, null, annotations);
 		}
 
@@ -123,8 +119,7 @@ class BindConverter {
 		@Override
 		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
 			Assert.notNull(targetType, "Target type to convert to cannot be null");
-			return canConvert(
-					(sourceType != null) ? TypeDescriptor.valueOf(sourceType) : null,
+			return canConvert((sourceType != null) ? TypeDescriptor.valueOf(sourceType) : null,
 					TypeDescriptor.valueOf(targetType));
 		}
 
@@ -142,13 +137,11 @@ class BindConverter {
 		@SuppressWarnings("unchecked")
 		public <T> T convert(Object source, Class<T> targetType) {
 			Assert.notNull(targetType, "Target type to convert to cannot be null");
-			return (T) convert(source, TypeDescriptor.forObject(source),
-					TypeDescriptor.valueOf(targetType));
+			return (T) convert(source, TypeDescriptor.forObject(source), TypeDescriptor.valueOf(targetType));
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType,
-				TypeDescriptor targetType) {
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			for (int i = 0; i < this.delegates.size() - 1; i++) {
 				try {
 					ConversionService delegate = this.delegates.get(i);
@@ -159,8 +152,7 @@ class BindConverter {
 				catch (ConversionException ex) {
 				}
 			}
-			return this.delegates.get(this.delegates.size() - 1).convert(source,
-					sourceType, targetType);
+			return this.delegates.get(this.delegates.size() - 1).convert(source, sourceType, targetType);
 		}
 
 	}
@@ -177,8 +169,7 @@ class BindConverter {
 			ApplicationConversionService.addDelimitedStringConverters(this);
 		}
 
-		private SimpleTypeConverter createTypeConverter(
-				Consumer<PropertyEditorRegistry> initializer) {
+		private SimpleTypeConverter createTypeConverter(Consumer<PropertyEditorRegistry> initializer) {
 			SimpleTypeConverter typeConverter = new SimpleTypeConverter();
 			if (initializer != null) {
 				initializer.accept(typeConverter);
@@ -189,8 +180,7 @@ class BindConverter {
 		@Override
 		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 			// Prefer conversion service to handle things like String to char[].
-			if (targetType.isArray()
-					&& targetType.getElementTypeDescriptor().isPrimitive()) {
+			if (targetType.isArray() && targetType.getElementTypeDescriptor().isPrimitive()) {
 				return false;
 			}
 			return super.canConvert(sourceType, targetType);
@@ -220,16 +210,14 @@ class BindConverter {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType,
-				TypeDescriptor targetType) {
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			SimpleTypeConverter typeConverter = this.typeConverter;
 			return typeConverter.convertIfNecessary(source, targetType.getType());
 		}
 
 		private PropertyEditor getPropertyEditor(Class<?> type) {
 			SimpleTypeConverter typeConverter = this.typeConverter;
-			if (type == null || type == Object.class
-					|| Collection.class.isAssignableFrom(type)
+			if (type == null || type == Object.class || Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type)) {
 				return null;
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ public class JerseyAutoConfigurationCustomApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test/hello",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -77,8 +76,8 @@ public class JerseyAutoConfigurationCustomApplicationTests {
 	}
 
 	@Configuration
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Configuration

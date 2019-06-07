@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ public class RequestMappingConditionsDescription {
 		this.methods = requestMapping.getMethodsCondition().getMethods();
 		this.params = requestMapping.getParamsCondition().getExpressions().stream()
 				.map(NameValueExpressionDescription::new).collect(Collectors.toList());
-		this.patterns = requestMapping.getPatternsCondition().getPatterns().stream()
-				.map(PathPattern::getPatternString).collect(Collectors.toSet());
+		this.patterns = requestMapping.getPatternsCondition().getPatterns().stream().map(PathPattern::getPatternString)
+				.collect(Collectors.toSet());
 		this.produces = requestMapping.getProducesCondition().getExpressions().stream()
 				.map(MediaTypeExpressionDescription::new).collect(Collectors.toList());
 	}

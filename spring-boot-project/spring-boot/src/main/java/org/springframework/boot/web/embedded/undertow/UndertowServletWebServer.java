@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,8 +86,8 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 */
-	public UndertowServletWebServer(Builder builder, DeploymentManager manager,
-			String contextPath, boolean autoStart, Compression compression) {
+	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath, boolean autoStart,
+			Compression compression) {
 		this(builder, manager, contextPath, false, autoStart, compression);
 	}
 
@@ -100,11 +100,9 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 */
-	public UndertowServletWebServer(Builder builder, DeploymentManager manager,
-			String contextPath, boolean useForwardHeaders, boolean autoStart,
-			Compression compression) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
-				null);
+	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
+			boolean useForwardHeaders, boolean autoStart, Compression compression) {
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, null);
 	}
 
 	/**
@@ -117,9 +115,8 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in HTTP header
 	 */
-	public UndertowServletWebServer(Builder builder, DeploymentManager manager,
-			String contextPath, boolean useForwardHeaders, boolean autoStart,
-			Compression compression, String serverHeader) {
+	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
+			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
@@ -144,9 +141,8 @@ public class UndertowServletWebServer implements WebServer {
 				}
 				this.undertow.start();
 				this.started = true;
-				UndertowServletWebServer.logger
-						.info("Undertow started on port(s) " + getPortsDescription()
-								+ " with context path '" + this.contextPath + "'");
+				UndertowServletWebServer.logger.info("Undertow started on port(s) " + getPortsDescription()
+						+ " with context path '" + this.contextPath + "'");
 			}
 			catch (Exception ex) {
 				try {
@@ -155,8 +151,7 @@ public class UndertowServletWebServer implements WebServer {
 						List<Port> actualPorts = getActualPorts();
 						failedPorts.removeAll(actualPorts);
 						if (failedPorts.size() == 1) {
-							throw new PortInUseException(
-									failedPorts.iterator().next().getNumber());
+							throw new PortInUseException(failedPorts.iterator().next().getNumber());
 						}
 					}
 					throw new WebServerException("Unable to start embedded Undertow", ex);
@@ -210,8 +205,7 @@ public class UndertowServletWebServer implements WebServer {
 	}
 
 	private HttpHandler getContextHandler(HttpHandler httpHandler) {
-		HttpHandler contextHandler = UndertowCompressionConfigurer
-				.configureCompression(this.compression, httpHandler);
+		HttpHandler contextHandler = UndertowCompressionConfigurer.configureCompression(this.compression, httpHandler);
 		if (StringUtils.isEmpty(this.contextPath)) {
 			return contextHandler;
 		}
@@ -248,15 +242,13 @@ public class UndertowServletWebServer implements WebServer {
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
 		ReflectionUtils.makeAccessible(channelsField);
-		return (List<BoundChannel>) ReflectionUtils.getField(channelsField,
-				this.undertow);
+		return (List<BoundChannel>) ReflectionUtils.getField(channelsField, this.undertow);
 	}
 
 	private Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress) {
-			String protocol = (ReflectionUtils.findField(channel.getClass(),
-					"ssl") != null) ? "https" : "http";
+			String protocol = (ReflectionUtils.findField(channel.getClass(), "ssl") != null) ? "https" : "http";
 			return new Port(((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;

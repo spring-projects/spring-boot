@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public class ElasticsearchDataAutoConfigurationTests {
 
 	@Test
 	public void templateBackOffWithNoClient() {
-		this.context = new AnnotationConfigApplicationContext(
-				ElasticsearchDataAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(ElasticsearchDataAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(ElasticsearchTemplate.class)).isEmpty();
 	}
 
@@ -59,11 +58,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 			TestPropertyValues
 					.of("spring.data.elasticsearch.properties.path.data:target/data",
 							"spring.data.elasticsearch.properties.path.logs:target/logs",
-							"spring.data.elasticsearch.cluster-nodes:localhost:"
-									+ node.getTcpPort())
+							"spring.data.elasticsearch.cluster-nodes:localhost:" + node.getTcpPort())
 					.applyTo(this.context);
-			this.context.register(PropertyPlaceholderAutoConfiguration.class,
-					ElasticsearchAutoConfiguration.class,
+			this.context.register(PropertyPlaceholderAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 					ElasticsearchDataAutoConfiguration.class);
 			this.context.refresh();
 			assertHasSingleBean(ElasticsearchTemplate.class);
@@ -77,11 +74,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 			TestPropertyValues
 					.of("spring.data.elasticsearch.properties.path.data:target/data",
 							"spring.data.elasticsearch.properties.path.logs:target/logs",
-							"spring.data.elasticsearch.cluster-nodes:localhost:"
-									+ node.getTcpPort())
+							"spring.data.elasticsearch.cluster-nodes:localhost:" + node.getTcpPort())
 					.applyTo(this.context);
-			this.context.register(PropertyPlaceholderAutoConfiguration.class,
-					ElasticsearchAutoConfiguration.class,
+			this.context.register(PropertyPlaceholderAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 					ElasticsearchDataAutoConfiguration.class);
 			this.context.refresh();
 			assertHasSingleBean(SimpleElasticsearchMappingContext.class);
@@ -95,11 +90,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 			TestPropertyValues
 					.of("spring.data.elasticsearch.properties.path.data:target/data",
 							"spring.data.elasticsearch.properties.path.logs:target/logs",
-							"spring.data.elasticsearch.cluster-nodes:localhost:"
-									+ node.getTcpPort())
+							"spring.data.elasticsearch.cluster-nodes:localhost:" + node.getTcpPort())
 					.applyTo(this.context);
-			this.context.register(PropertyPlaceholderAutoConfiguration.class,
-					ElasticsearchAutoConfiguration.class,
+			this.context.register(PropertyPlaceholderAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 					ElasticsearchDataAutoConfiguration.class);
 			this.context.refresh();
 			assertHasSingleBean(ElasticsearchConverter.class);

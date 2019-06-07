@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,12 @@ import org.springframework.util.ConcurrentReferenceHashMap.ReferenceType;
  *
  * @author Phillip Webb
  */
-class SpringConfigurationPropertySources
-		implements Iterable<ConfigurationPropertySource> {
+class SpringConfigurationPropertySources implements Iterable<ConfigurationPropertySource> {
 
 	private final Iterable<PropertySource<?>> sources;
 
-	private final Map<PropertySource<?>, ConfigurationPropertySource> cache = new ConcurrentReferenceHashMap<>(
-			16, ReferenceType.SOFT);
+	private final Map<PropertySource<?>, ConfigurationPropertySource> cache = new ConcurrentReferenceHashMap<>(16,
+			ReferenceType.SOFT);
 
 	SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
 		Assert.notNull(sources, "Sources must not be null");
@@ -67,8 +66,7 @@ class SpringConfigurationPropertySources
 		return result;
 	}
 
-	private static class SourcesIterator
-			implements Iterator<ConfigurationPropertySource> {
+	private static class SourcesIterator implements Iterator<ConfigurationPropertySource> {
 
 		private final Deque<Iterator<PropertySource<?>>> iterators;
 

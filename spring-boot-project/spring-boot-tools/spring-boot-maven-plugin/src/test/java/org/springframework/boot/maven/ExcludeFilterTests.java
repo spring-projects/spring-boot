@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,14 @@ public class ExcludeFilterTests {
 
 	@Test
 	public void excludeSimple() throws ArtifactFilterException {
-		ExcludeFilter filter = new ExcludeFilter(
-				Arrays.asList(createExclude("com.foo", "bar")));
-		Set result = filter
-				.filter(Collections.singleton(createArtifact("com.foo", "bar")));
+		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(createExclude("com.foo", "bar")));
+		Set result = filter.filter(Collections.singleton(createArtifact("com.foo", "bar")));
 		assertThat(result).isEmpty();
 	}
 
 	@Test
 	public void excludeGroupIdNoMatch() throws ArtifactFilterException {
-		ExcludeFilter filter = new ExcludeFilter(
-				Arrays.asList(createExclude("com.foo", "bar")));
+		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(createExclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.baz", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertThat(result).hasSize(1);
@@ -59,8 +56,7 @@ public class ExcludeFilterTests {
 
 	@Test
 	public void excludeArtifactIdNoMatch() throws ArtifactFilterException {
-		ExcludeFilter filter = new ExcludeFilter(
-				Arrays.asList(createExclude("com.foo", "bar")));
+		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(createExclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.foo", "biz");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertThat(result).hasSize(1);
@@ -69,17 +65,14 @@ public class ExcludeFilterTests {
 
 	@Test
 	public void excludeClassifier() throws ArtifactFilterException {
-		ExcludeFilter filter = new ExcludeFilter(
-				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
-		Set result = filter
-				.filter(Collections.singleton(createArtifact("com.foo", "bar", "jdk5")));
+		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
+		Set result = filter.filter(Collections.singleton(createArtifact("com.foo", "bar", "jdk5")));
 		assertThat(result).isEmpty();
 	}
 
 	@Test
 	public void excludeClassifierNoTargetClassifier() throws ArtifactFilterException {
-		ExcludeFilter filter = new ExcludeFilter(
-				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
+		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertThat(result).hasSize(1);
@@ -88,8 +81,7 @@ public class ExcludeFilterTests {
 
 	@Test
 	public void excludeClassifierNoMatch() throws ArtifactFilterException {
-		ExcludeFilter filter = new ExcludeFilter(
-				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
+		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar", "jdk6");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertThat(result).hasSize(1);
@@ -98,9 +90,8 @@ public class ExcludeFilterTests {
 
 	@Test
 	public void excludeMulti() throws ArtifactFilterException {
-		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(
-				createExclude("com.foo", "bar"), createExclude("com.foo", "bar2"),
-				createExclude("org.acme", "app")));
+		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(createExclude("com.foo", "bar"),
+				createExclude("com.foo", "bar2"), createExclude("org.acme", "app")));
 		Set<Artifact> artifacts = new HashSet<>();
 		artifacts.add(createArtifact("com.foo", "bar"));
 		artifacts.add(createArtifact("com.foo", "bar"));
@@ -125,8 +116,7 @@ public class ExcludeFilterTests {
 		return exclude;
 	}
 
-	private Artifact createArtifact(String groupId, String artifactId,
-			String classifier) {
+	private Artifact createArtifact(String groupId, String artifactId, String classifier) {
 		Artifact a = mock(Artifact.class);
 		given(a.getGroupId()).willReturn(groupId);
 		given(a.getArtifactId()).willReturn(artifactId);

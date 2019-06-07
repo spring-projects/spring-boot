@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class DependencyManagementArtifactCoordinatesResolver
-		implements ArtifactCoordinatesResolver {
+public class DependencyManagementArtifactCoordinatesResolver implements ArtifactCoordinatesResolver {
 
 	private final DependencyManagement dependencyManagement;
 
@@ -34,8 +33,7 @@ public class DependencyManagementArtifactCoordinatesResolver
 		this(new SpringBootDependenciesDependencyManagement());
 	}
 
-	public DependencyManagementArtifactCoordinatesResolver(
-			DependencyManagement dependencyManagement) {
+	public DependencyManagementArtifactCoordinatesResolver(DependencyManagement dependencyManagement) {
 		this.dependencyManagement = dependencyManagement;
 	}
 
@@ -58,8 +56,7 @@ public class DependencyManagementArtifactCoordinatesResolver
 		}
 		if (id != null) {
 			if (id.startsWith("spring-boot")) {
-				return new Dependency("org.springframework.boot", id,
-						this.dependencyManagement.getSpringBootVersion());
+				return new Dependency("org.springframework.boot", id, this.dependencyManagement.getSpringBootVersion());
 			}
 			return this.dependencyManagement.find(id);
 		}

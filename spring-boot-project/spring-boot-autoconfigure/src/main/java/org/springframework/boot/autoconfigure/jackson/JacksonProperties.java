@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,14 +62,12 @@ public class JacksonProperties {
 	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
-	private Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
-			SerializationFeature.class);
+	private Map<SerializationFeature, Boolean> serialization = new EnumMap<>(SerializationFeature.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are deserialized.
 	 */
-	private Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
-			DeserializationFeature.class);
+	private Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(DeserializationFeature.class);
 
 	/**
 	 * Jackson general purpose on/off features.
@@ -79,14 +77,12 @@ public class JacksonProperties {
 	/**
 	 * Jackson on/off features for parsers.
 	 */
-	private Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(
-			JsonParser.Feature.class);
+	private Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(JsonParser.Feature.class);
 
 	/**
 	 * Jackson on/off features for generators.
 	 */
-	private Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
-			JsonGenerator.Feature.class);
+	private Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(JsonGenerator.Feature.class);
 
 	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
@@ -153,8 +149,7 @@ public class JacksonProperties {
 		return this.defaultPropertyInclusion;
 	}
 
-	public void setDefaultPropertyInclusion(
-			JsonInclude.Include defaultPropertyInclusion) {
+	public void setDefaultPropertyInclusion(JsonInclude.Include defaultPropertyInclusion) {
 		this.defaultPropertyInclusion = defaultPropertyInclusion;
 	}
 

@@ -22,8 +22,7 @@ package org.springframework.boot.autoconfigureprocessor;
  * @author Madhura Bhave
  */
 @TestConfiguration
-@TestConditionalOnClass(name = "java.io.InputStream",
-		value = TestClassConfiguration.Nested.class)
+@TestConditionalOnClass(name = "java.io.InputStream", value = TestClassConfiguration.Nested.class)
 public class TestClassConfiguration {
 
 	@TestAutoConfigureOrder

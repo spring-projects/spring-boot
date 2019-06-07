@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,19 +49,18 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	@Test
 	public void generateSimpleProject() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
-				"application/xml", "foo.zip");
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
+				"foo.zip");
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
-		assertProjectEntity(entity, mockHttpRequest.contentType,
-				mockHttpRequest.fileName);
+		assertProjectEntity(entity, mockHttpRequest.contentType, mockHttpRequest.fileName);
 	}
 
 	@Test
 	public void generateProjectCustomTargetFilename() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.setOutput("bar.zip");
-		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
-				"application/xml", null);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
+				null);
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
 		assertProjectEntity(entity, mockHttpRequest.contentType, null);
 	}
@@ -69,8 +68,8 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	@Test
 	public void generateProjectNoDefaultFileName() throws Exception {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
-				"application/xml", null);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest("application/xml",
+				null);
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
 		assertProjectEntity(entity, mockHttpRequest.contentType, null);
 	}
@@ -144,13 +143,11 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 			MockHttpProjectGenerationRequest mockRequest) throws Exception {
 		mockSuccessfulProjectGeneration(mockRequest);
 		ProjectGenerationResponse entity = this.invoker.generate(request);
-		assertThat(entity.getContent()).as("wrong body content")
-				.isEqualTo(mockRequest.content);
+		assertThat(entity.getContent()).as("wrong body content").isEqualTo(mockRequest.content);
 		return entity;
 	}
 
-	private static void assertProjectEntity(ProjectGenerationResponse entity,
-			String mimeType, String fileName) {
+	private static void assertProjectEntity(ProjectGenerationResponse entity, String mimeType, String fileName) {
 		if (mimeType == null) {
 			assertThat(entity.getContentType()).isNull();
 		}

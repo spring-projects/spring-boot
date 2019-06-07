@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ public class CompositeHealthIndicatorFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;
 
-	public CompositeHealthIndicatorFactory(
-			Function<String, String> healthIndicatorNameFactory) {
+	public CompositeHealthIndicatorFactory(Function<String, String> healthIndicatorNameFactory) {
 		this.healthIndicatorNameFactory = healthIndicatorNameFactory;
 	}
 
@@ -47,13 +46,11 @@ public class CompositeHealthIndicatorFactory {
 	 * @return a {@link HealthIndicator} that delegates to the specified
 	 * {@code healthIndicators}.
 	 */
-	public CompositeHealthIndicator createHealthIndicator(
-			HealthAggregator healthAggregator,
+	public CompositeHealthIndicator createHealthIndicator(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> healthIndicators) {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
-		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
-				healthAggregator);
+		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(healthAggregator);
 		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
 			String name = this.healthIndicatorNameFactory.apply(entry.getKey());
 			healthIndicator.addHealthIndicator(name, entry.getValue());

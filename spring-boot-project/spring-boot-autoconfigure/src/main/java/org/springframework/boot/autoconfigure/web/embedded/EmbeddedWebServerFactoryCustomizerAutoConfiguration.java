@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	public static class TomcatWebServerFactoryCustomizerConfiguration {
 
 		@Bean
-		public TomcatWebServerFactoryCustomizer tomcatWebServerFactoryCustomizer(
-				Environment environment, ServerProperties serverProperties) {
+		public TomcatWebServerFactoryCustomizer tomcatWebServerFactoryCustomizer(Environment environment,
+				ServerProperties serverProperties) {
 			return new TomcatWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
@@ -68,8 +68,8 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	public static class JettyWebServerFactoryCustomizerConfiguration {
 
 		@Bean
-		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(
-				Environment environment, ServerProperties serverProperties) {
+		public JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(Environment environment,
+				ServerProperties serverProperties) {
 			return new JettyWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
@@ -83,8 +83,8 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 	public static class UndertowWebServerFactoryCustomizerConfiguration {
 
 		@Bean
-		public UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(
-				Environment environment, ServerProperties serverProperties) {
+		public UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(Environment environment,
+				ServerProperties serverProperties) {
 			return new UndertowWebServerFactoryCustomizer(environment, serverProperties);
 		}
 

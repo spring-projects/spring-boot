@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,7 @@ public class UndertowWebServer implements WebServer {
 	 * @param closeable called when the server is stopped
 	 * @since 2.0.4
 	 */
-	public UndertowWebServer(Undertow.Builder builder, boolean autoStart,
-			Closeable closeable) {
+	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
 		this.builder = builder;
 		this.autoStart = autoStart;
 		this.closeable = closeable;
@@ -101,8 +100,7 @@ public class UndertowWebServer implements WebServer {
 				}
 				this.undertow.start();
 				this.started = true;
-				UndertowWebServer.logger
-						.info("Undertow started on port(s) " + getPortsDescription());
+				UndertowWebServer.logger.info("Undertow started on port(s) " + getPortsDescription());
 			}
 			catch (Exception ex) {
 				try {
@@ -111,8 +109,7 @@ public class UndertowWebServer implements WebServer {
 						List<UndertowWebServer.Port> actualPorts = getActualPorts();
 						failedPorts.removeAll(actualPorts);
 						if (failedPorts.size() == 1) {
-							throw new PortInUseException(
-									failedPorts.iterator().next().getNumber());
+							throw new PortInUseException(failedPorts.iterator().next().getNumber());
 						}
 					}
 					throw new WebServerException("Unable to start embedded Undertow", ex);
@@ -177,8 +174,7 @@ public class UndertowWebServer implements WebServer {
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
 		ReflectionUtils.makeAccessible(channelsField);
-		return (List<BoundChannel>) ReflectionUtils.getField(channelsField,
-				this.undertow);
+		return (List<BoundChannel>) ReflectionUtils.getField(channelsField, this.undertow);
 	}
 
 	private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
@@ -186,8 +182,7 @@ public class UndertowWebServer implements WebServer {
 		if (socketAddress instanceof InetSocketAddress) {
 			Field sslField = ReflectionUtils.findField(channel.getClass(), "ssl");
 			String protocol = (sslField != null) ? "https" : "http";
-			return new UndertowWebServer.Port(
-					((InetSocketAddress) socketAddress).getPort(), protocol);
+			return new UndertowWebServer.Port(((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,11 +112,9 @@ public class GradleBuild implements TestRule {
 
 	private String pluginClasspath() {
 		return absolutePath("bin") + "," + absolutePath("build/classes/java/main") + ","
-				+ absolutePath("build/resources/main") + ","
-				+ pathOfJarContaining(LaunchScript.class) + ","
-				+ pathOfJarContaining(ClassVisitor.class) + ","
-				+ pathOfJarContaining(DependencyManagementPlugin.class) + ","
-				+ pathOfJarContaining(ArchiveEntry.class);
+				+ absolutePath("build/resources/main") + "," + pathOfJarContaining(LaunchScript.class) + ","
+				+ pathOfJarContaining(ClassVisitor.class) + "," + pathOfJarContaining(DependencyManagementPlugin.class)
+				+ "," + pathOfJarContaining(ArchiveEntry.class);
 	}
 
 	private String absolutePath(String path) {
@@ -151,12 +149,10 @@ public class GradleBuild implements TestRule {
 	}
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
-		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
-				.replace("{version}", getBootVersion());
-		FileCopyUtils.copy(scriptContent,
-				new FileWriter(new File(this.projectDir, "build.gradle")));
-		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withDebug(true);
+		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script)).replace("{version}",
+				getBootVersion());
+		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build.gradle")));
+		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir).withDebug(true);
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
@@ -187,8 +183,7 @@ public class GradleBuild implements TestRule {
 
 	private static String getBootVersion() {
 		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
-						+ "/text()");
+				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']" + "/text()");
 	}
 
 	private static String evaluateExpression(String expression) {
@@ -196,8 +191,7 @@ public class GradleBuild implements TestRule {
 			XPathFactory xPathFactory = XPathFactory.newInstance();
 			XPath xpath = xPathFactory.newXPath();
 			XPathExpression expr = xpath.compile(expression);
-			String version = expr
-					.evaluate(new InputSource(new FileReader(".flattened-pom.xml")));
+			String version = expr.evaluate(new InputSource(new FileReader(".flattened-pom.xml")));
 			return version;
 		}
 		catch (Exception ex) {

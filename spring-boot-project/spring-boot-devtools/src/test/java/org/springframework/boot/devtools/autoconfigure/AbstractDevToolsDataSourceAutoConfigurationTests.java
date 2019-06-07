@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void singleManuallyConfiguredDataSourceIsNotClosed() throws SQLException {
-		ConfigurableApplicationContext context = createContext(
-				SingleDataSourceConfiguration.class);
+		ConfigurableApplicationContext context = createContext(SingleDataSourceConfiguration.class);
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
 		verify(statement, never()).execute("SHUTDOWN");
@@ -59,10 +58,8 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void multipleDataSourcesAreIgnored() throws SQLException {
-		ConfigurableApplicationContext context = createContext(
-				MultipleDataSourcesConfiguration.class);
-		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class)
-				.values();
+		ConfigurableApplicationContext context = createContext(MultipleDataSourcesConfiguration.class);
+		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
 		for (DataSource dataSource : dataSources) {
 			Statement statement = configureDataSourceBehavior(dataSource);
 			verify(statement, never()).execute("SHUTDOWN");
@@ -73,16 +70,14 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	public void emptyFactoryMethodMetadataIgnored() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		DataSource dataSource = mock(DataSource.class);
-		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(
-				dataSource.getClass());
+		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(dataSource.getClass());
 		context.registerBeanDefinition("dataSource", beanDefinition);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		context.refresh();
 		context.close();
 	}
 
-	protected final Statement configureDataSourceBehavior(DataSource dataSource)
-			throws SQLException {
+	protected final Statement configureDataSourceBehavior(DataSource dataSource) throws SQLException {
 		Connection connection = mock(Connection.class);
 		Statement statement = mock(Statement.class);
 		doReturn(connection).when(dataSource).getConnection();
@@ -94,20 +89,17 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return this.createContext(null, classes);
 	}
 
-	protected final ConfigurableApplicationContext createContext(String driverClassName,
-			Class<?>... classes) {
+	protected final ConfigurableApplicationContext createContext(String driverClassName, Class<?>... classes) {
 		return this.createContext(driverClassName, null, classes);
 	}
 
-	protected final ConfigurableApplicationContext createContext(String driverClassName,
-			String url, Class<?>... classes) {
+	protected final ConfigurableApplicationContext createContext(String driverClassName, String url,
+			Class<?>... classes) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(classes);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		if (driverClassName != null) {
-			TestPropertyValues
-					.of("spring.datasource.driver-class-name:" + driverClassName)
-					.applyTo(context);
+			TestPropertyValues.of("spring.datasource.driver-class-name:" + driverClassName).applyTo(context);
 		}
 		if (url != null) {
 			TestPropertyValues.of("spring.datasource.url:" + url).applyTo(context);
@@ -154,8 +146,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	private static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof DataSource) {
 				bean = spy(bean);
 			}
@@ -163,8 +154,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
 

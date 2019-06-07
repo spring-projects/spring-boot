@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,17 +89,15 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParameterShouldReturnNewInstance() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		assertThat(endpointServlet.withInitParameter("spring", "boot"))
-				.isNotSameAs(endpointServlet);
+		assertThat(endpointServlet.withInitParameter("spring", "boot")).isNotSameAs(endpointServlet);
 	}
 
 	@Test
 	public void withInitParameterWhenHasExistingShouldMergeParameters() {
-		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class)
-				.withInitParameter("a", "b").withInitParameter("c", "d");
-		assertThat(endpointServlet.withInitParameter("a", "b1")
-				.withInitParameter("e", "f").getInitParameters()).containsExactly(
-						entry("a", "b1"), entry("c", "d"), entry("e", "f"));
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class).withInitParameter("a", "b")
+				.withInitParameter("c", "d");
+		assertThat(endpointServlet.withInitParameter("a", "b1").withInitParameter("e", "f").getInitParameters())
+				.containsExactly(entry("a", "b1"), entry("c", "d"), entry("e", "f"));
 	}
 
 	@Test
@@ -119,28 +117,26 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParametersShouldCreateNewInstance() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		assertThat(endpointServlet
-				.withInitParameters(Collections.singletonMap("spring", "boot")))
-						.isNotSameAs(endpointServlet);
+		assertThat(endpointServlet.withInitParameters(Collections.singletonMap("spring", "boot")))
+				.isNotSameAs(endpointServlet);
 	}
 
 	@Test
 	public void withInitParametersWhenHasExistingShouldMergeParameters() {
-		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class)
-				.withInitParameter("a", "b").withInitParameter("c", "d");
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class).withInitParameter("a", "b")
+				.withInitParameter("c", "d");
 		Map<String, String> extra = new LinkedHashMap<>();
 		extra.put("a", "b1");
 		extra.put("e", "f");
-		assertThat(endpointServlet.withInitParameters(extra).getInitParameters())
-				.containsExactly(entry("a", "b1"), entry("c", "d"), entry("e", "f"));
+		assertThat(endpointServlet.withInitParameters(extra).getInitParameters()).containsExactly(entry("a", "b1"),
+				entry("c", "d"), entry("e", "f"));
 
 	}
 
 	private static class TestServlet extends GenericServlet {
 
 		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
+		public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		}
 
 	}

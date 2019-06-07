@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,15 +66,13 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 	@Test
 	public void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
-		WebTestClient.bindToServer().baseUrl("http://localhost:" + this.port).build()
-				.get().uri("/").exchange().expectBody(String.class)
-				.isEqualTo("Hello World");
+		WebTestClient.bindToServer().baseUrl("http://localhost:" + this.port).build().get().uri("/").exchange()
+				.expectBody(String.class).isEqualTo("Hello World");
 	}
 
 	@Test
 	public void injectWebTestClient() {
-		this.webClient.get().uri("/").exchange().expectBody(String.class)
-				.isEqualTo("Hello World");
+		this.webClient.get().uri("/").exchange().expectBody(String.class).isEqualTo("Hello World");
 	}
 
 	@Test

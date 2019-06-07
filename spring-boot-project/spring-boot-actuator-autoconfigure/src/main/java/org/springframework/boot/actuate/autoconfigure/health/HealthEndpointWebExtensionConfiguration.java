@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthStatusHttpMapper createHealthStatusHttpMapper(
-			HealthIndicatorProperties healthIndicatorProperties) {
+	public HealthStatusHttpMapper createHealthStatusHttpMapper(HealthIndicatorProperties healthIndicatorProperties) {
 		HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
 		if (healthIndicatorProperties.getHttpMapping() != null) {
 			statusHttpMapper.addStatusMapping(healthIndicatorProperties.getHttpMapping());
@@ -62,11 +61,10 @@ class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthWebEndpointResponseMapper healthWebEndpointResponseMapper(
-			HealthStatusHttpMapper statusHttpMapper,
+	public HealthWebEndpointResponseMapper healthWebEndpointResponseMapper(HealthStatusHttpMapper statusHttpMapper,
 			HealthEndpointProperties properties) {
-		return new HealthWebEndpointResponseMapper(statusHttpMapper,
-				properties.getShowDetails(), properties.getRoles());
+		return new HealthWebEndpointResponseMapper(statusHttpMapper, properties.getShowDetails(),
+				properties.getRoles());
 	}
 
 	@Configuration
@@ -78,12 +76,10 @@ class HealthEndpointWebExtensionConfiguration {
 		ReactiveWebHealthConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
 				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
 				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
-			this.reactiveHealthIndicator = new CompositeReactiveHealthIndicatorFactory()
-					.createReactiveHealthIndicator(
-							healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
-							reactiveHealthIndicators
-									.getIfAvailable(Collections::emptyMap),
-							healthIndicators.getIfAvailable(Collections::emptyMap));
+			this.reactiveHealthIndicator = new CompositeReactiveHealthIndicatorFactory().createReactiveHealthIndicator(
+					healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
+					reactiveHealthIndicators.getIfAvailable(Collections::emptyMap),
+					healthIndicators.getIfAvailable(Collections::emptyMap));
 		}
 
 		@Bean
@@ -92,8 +88,7 @@ class HealthEndpointWebExtensionConfiguration {
 		@ConditionalOnBean(HealthEndpoint.class)
 		public ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
 				HealthWebEndpointResponseMapper responseMapper) {
-			return new ReactiveHealthEndpointWebExtension(this.reactiveHealthIndicator,
-					responseMapper);
+			return new ReactiveHealthEndpointWebExtension(this.reactiveHealthIndicator, responseMapper);
 		}
 
 	}
@@ -106,11 +101,9 @@ class HealthEndpointWebExtensionConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
-		public HealthEndpointWebExtension healthEndpointWebExtension(
-				ApplicationContext applicationContext,
+		public HealthEndpointWebExtension healthEndpointWebExtension(ApplicationContext applicationContext,
 				HealthWebEndpointResponseMapper responseMapper) {
-			return new HealthEndpointWebExtension(
-					HealthIndicatorBeansComposite.get(applicationContext),
+			return new HealthEndpointWebExtension(HealthIndicatorBeansComposite.get(applicationContext),
 					responseMapper);
 		}
 

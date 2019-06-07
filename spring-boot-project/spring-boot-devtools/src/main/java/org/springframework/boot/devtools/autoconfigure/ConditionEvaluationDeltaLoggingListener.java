@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.springframework.context.ApplicationListener;
  *
  * @author Andy Wilkinson
  */
-class ConditionEvaluationDeltaLoggingListener
-		implements ApplicationListener<ApplicationReadyEvent> {
+class ConditionEvaluationDeltaLoggingListener implements ApplicationListener<ApplicationReadyEvent> {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -39,17 +38,14 @@ class ConditionEvaluationDeltaLoggingListener
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
-		ConditionEvaluationReport report = event.getApplicationContext()
-				.getBean(ConditionEvaluationReport.class);
+		ConditionEvaluationReport report = event.getApplicationContext().getBean(ConditionEvaluationReport.class);
 		if (previousReport != null) {
 			ConditionEvaluationReport delta = report.getDelta(previousReport);
-			if (!delta.getConditionAndOutcomesBySource().isEmpty()
-					|| !delta.getExclusions().isEmpty()
+			if (!delta.getConditionAndOutcomesBySource().isEmpty() || !delta.getExclusions().isEmpty()
 					|| !delta.getUnconditionalClasses().isEmpty()) {
 				if (this.logger.isInfoEnabled()) {
 					this.logger.info("Condition evaluation delta:"
-							+ new ConditionEvaluationReportMessage(delta,
-									"CONDITION EVALUATION DELTA"));
+							+ new ConditionEvaluationReportMessage(delta, "CONDITION EVALUATION DELTA"));
 				}
 			}
 			else {

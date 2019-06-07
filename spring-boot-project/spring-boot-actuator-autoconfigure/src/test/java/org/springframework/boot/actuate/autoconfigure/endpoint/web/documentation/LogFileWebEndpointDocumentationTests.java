@@ -36,8 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @TestPropertySource(
 		properties = "logging.file=src/test/resources/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/sample.log")
-public class LogFileWebEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+public class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void logFile() throws Exception {
@@ -48,8 +47,7 @@ public class LogFileWebEndpointDocumentationTests
 	@Test
 	public void logFileRange() throws Exception {
 		this.mockMvc.perform(get("/actuator/logfile").header("Range", "bytes=0-1023"))
-				.andExpect(status().isPartialContent())
-				.andDo(MockMvcRestDocumentation.document("logfile/range"));
+				.andExpect(status().isPartialContent()).andDo(MockMvcRestDocumentation.document("logfile/range"));
 	}
 
 	@Configuration

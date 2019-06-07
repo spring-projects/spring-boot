@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 		FilteredClassLoader classLoader = new FilteredClassLoader(ResourceConfig.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
-			ServletEndpointRegistrar bean = context
-					.getBean(ServletEndpointRegistrar.class);
+			ServletEndpointRegistrar bean = context.getBean(ServletEndpointRegistrar.class);
 			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
 			assertThat(basePath).isEqualTo("/test/actuator");
 		});
@@ -62,12 +61,10 @@ public class ServletEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void contextWhenJerseyShouldContainServletEndpointRegistrar() {
-		FilteredClassLoader classLoader = new FilteredClassLoader(
-				DispatcherServlet.class);
+		FilteredClassLoader classLoader = new FilteredClassLoader(DispatcherServlet.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
-			ServletEndpointRegistrar bean = context
-					.getBean(ServletEndpointRegistrar.class);
+			ServletEndpointRegistrar bean = context.getBean(ServletEndpointRegistrar.class);
 			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
 			assertThat(basePath).isEqualTo("/jersey/actuator");
 		});
@@ -76,8 +73,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 	@Test
 	public void contextWhenNoServletBasedShouldNotContainServletEndpointRegistrar() {
 		new ApplicationContextRunner().withUserConfiguration(TestConfig.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ServletEndpointRegistrar.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ServletEndpointRegistrar.class));
 	}
 
 	@Configuration

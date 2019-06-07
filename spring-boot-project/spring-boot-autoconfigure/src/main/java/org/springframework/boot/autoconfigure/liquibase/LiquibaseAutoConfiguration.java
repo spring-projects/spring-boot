@@ -65,23 +65,19 @@ import org.springframework.util.Assert;
 @Configuration
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled",
-		matchIfMissing = true)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
+@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {
 
 	@Bean
 	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
 			ObjectProvider<List<SpringLiquibase>> liquibases) {
-		return new LiquibaseSchemaManagementProvider(
-				liquibases.getIfAvailable(Collections::emptyList));
+		return new LiquibaseSchemaManagementProvider(liquibases.getIfAvailable(Collections::emptyList));
 	}
 
 	@Configuration
 	@ConditionalOnMissingBean(SpringLiquibase.class)
-	@EnableConfigurationProperties({ DataSourceProperties.class,
-			LiquibaseProperties.class })
+	@EnableConfigurationProperties({ DataSourceProperties.class, LiquibaseProperties.class })
 	@Import(LiquibaseJpaDependencyConfiguration.class)
 	public static class LiquibaseConfiguration {
 
@@ -95,9 +91,8 @@ public class LiquibaseAutoConfiguration {
 
 		private final DataSource liquibaseDataSource;
 
-		public LiquibaseConfiguration(LiquibaseProperties properties,
-				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
-				ObjectProvider<DataSource> dataSource,
+		public LiquibaseConfiguration(LiquibaseProperties properties, DataSourceProperties dataSourceProperties,
+				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
 			this.properties = properties;
 			this.dataSourceProperties = dataSourceProperties;
@@ -109,12 +104,9 @@ public class LiquibaseAutoConfiguration {
 		@PostConstruct
 		public void checkChangelogExists() {
 			if (this.properties.isCheckChangeLogLocation()) {
-				Resource resource = this.resourceLoader
-						.getResource(this.properties.getChangeLog());
-				Assert.state(resource.exists(),
-						() -> "Cannot find changelog location: " + resource
-								+ " (please add changelog or check your Liquibase "
-								+ "configuration)");
+				Resource resource = this.resourceLoader.getResource(this.properties.getChangeLog());
+				Assert.state(resource.exists(), () -> "Cannot find changelog location: " + resource
+						+ " (please add changelog or check your Liquibase " + "configuration)");
 			}
 		}
 
@@ -155,18 +147,13 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private DataSource createNewDataSource() {
-			String url = getProperty(this.properties::getUrl,
-					this.dataSourceProperties::getUrl);
-			String user = getProperty(this.properties::getUser,
-					this.dataSourceProperties::getUsername);
-			String password = getProperty(this.properties::getPassword,
-					this.dataSourceProperties::getPassword);
-			return DataSourceBuilder.create().url(url).username(user).password(password)
-					.build();
+			String url = getProperty(this.properties::getUrl, this.dataSourceProperties::getUrl);
+			String user = getProperty(this.properties::getUser, this.dataSourceProperties::getUsername);
+			String password = getProperty(this.properties::getPassword, this.dataSourceProperties::getPassword);
+			return DataSourceBuilder.create().url(url).username(user).password(password).build();
 		}
 
-		private String getProperty(Supplier<String> property,
-				Supplier<String> defaultValue) {
+		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {
 			String value = property.get();
 			return (value != null) ? value : defaultValue.get();
 		}
@@ -180,8 +167,7 @@ public class LiquibaseAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class LiquibaseJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	protected static class LiquibaseJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public LiquibaseJpaDependencyConfiguration() {
 			super("liquibase");
@@ -196,8 +182,7 @@ public class LiquibaseAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(JdbcOperations.class)
 	@ConditionalOnBean(JdbcOperations.class)
-	protected static class LiquibaseJdbcOperationsDependencyConfiguration
-			extends JdbcOperationsDependsOnPostProcessor {
+	protected static class LiquibaseJdbcOperationsDependencyConfiguration extends JdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseJdbcOperationsDependencyConfiguration() {
 			super("liquibase");

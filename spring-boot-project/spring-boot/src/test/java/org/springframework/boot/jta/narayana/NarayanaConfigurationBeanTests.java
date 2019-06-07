@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,56 +44,49 @@ public class NarayanaConfigurationBeanTests {
 	@After
 	@SuppressWarnings("unchecked")
 	public void cleanup() {
-		((Map<String, Object>) ReflectionTestUtils.getField(BeanPopulator.class,
-				"beanInstances")).clear();
+		((Map<String, Object>) ReflectionTestUtils.getField(BeanPopulator.class, "beanInstances")).clear();
 	}
 
 	@Test
 	public void shouldSetDefaultProperties() throws Exception {
 		NarayanaProperties narayanaProperties = new NarayanaProperties();
-		NarayanaConfigurationBean narayanaConfigurationBean = new NarayanaConfigurationBean(
-				narayanaProperties);
+		NarayanaConfigurationBean narayanaConfigurationBean = new NarayanaConfigurationBean(narayanaProperties);
 		narayanaConfigurationBean.afterPropertiesSet();
 
-		assertThat(BeanPopulator.getDefaultInstance(CoreEnvironmentBean.class)
-				.getNodeIdentifier()).isEqualTo("1");
-		assertThat(BeanPopulator.getDefaultInstance(ObjectStoreEnvironmentBean.class)
+		assertThat(BeanPopulator.getDefaultInstance(CoreEnvironmentBean.class).getNodeIdentifier()).isEqualTo("1");
+		assertThat(BeanPopulator.getDefaultInstance(ObjectStoreEnvironmentBean.class).getObjectStoreDir())
+				.endsWith("ObjectStore");
+		assertThat(BeanPopulator.getNamedInstance(ObjectStoreEnvironmentBean.class, "communicationStore")
 				.getObjectStoreDir()).endsWith("ObjectStore");
-		assertThat(BeanPopulator
-				.getNamedInstance(ObjectStoreEnvironmentBean.class, "communicationStore")
-				.getObjectStoreDir()).endsWith("ObjectStore");
-		assertThat(BeanPopulator
-				.getNamedInstance(ObjectStoreEnvironmentBean.class, "stateStore")
-				.getObjectStoreDir()).endsWith("ObjectStore");
-		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class)
-				.isCommitOnePhase()).isTrue();
-		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class)
-				.getDefaultTimeout()).isEqualTo(60);
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getPeriodicRecoveryPeriod()).isEqualTo(120);
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getRecoveryBackoffPeriod()).isEqualTo(10);
+		assertThat(BeanPopulator.getNamedInstance(ObjectStoreEnvironmentBean.class, "stateStore").getObjectStoreDir())
+				.endsWith("ObjectStore");
+		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class).isCommitOnePhase()).isTrue();
+		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class).getDefaultTimeout())
+				.isEqualTo(60);
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getPeriodicRecoveryPeriod())
+				.isEqualTo(120);
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getRecoveryBackoffPeriod())
+				.isEqualTo(10);
 
 		List<String> xaResourceOrphanFilters = Arrays.asList(
 				"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter",
 				"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter");
-		assertThat(BeanPopulator.getDefaultInstance(JTAEnvironmentBean.class)
-				.getXaResourceOrphanFilterClassNames())
-						.isEqualTo(xaResourceOrphanFilters);
+		assertThat(BeanPopulator.getDefaultInstance(JTAEnvironmentBean.class).getXaResourceOrphanFilterClassNames())
+				.isEqualTo(xaResourceOrphanFilters);
 
 		List<String> recoveryModules = Arrays.asList(
 				"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
 				"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule");
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getRecoveryModuleClassNames()).isEqualTo(recoveryModules);
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getRecoveryModuleClassNames())
+				.isEqualTo(recoveryModules);
 
-		List<String> expiryScanners = Arrays.asList(
-				"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner");
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getExpiryScannerClassNames()).isEqualTo(expiryScanners);
+		List<String> expiryScanners = Arrays
+				.asList("com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner");
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getExpiryScannerClassNames())
+				.isEqualTo(expiryScanners);
 
-		assertThat(BeanPopulator.getDefaultInstance(JTAEnvironmentBean.class)
-				.getXaResourceRecoveryClassNames()).isEmpty();
+		assertThat(BeanPopulator.getDefaultInstance(JTAEnvironmentBean.class).getXaResourceRecoveryClassNames())
+				.isEmpty();
 	}
 
 	@Test
@@ -105,44 +98,33 @@ public class NarayanaConfigurationBeanTests {
 		narayanaProperties.setPeriodicRecoveryPeriod(Duration.ofSeconds(2));
 		narayanaProperties.setRecoveryBackoffPeriod(Duration.ofSeconds(3));
 		narayanaProperties.setOnePhaseCommit(false);
-		narayanaProperties.setXaResourceOrphanFilters(
-				Arrays.asList("test-filter-1", "test-filter-2"));
-		narayanaProperties
-				.setRecoveryModules(Arrays.asList("test-module-1", "test-module-2"));
-		narayanaProperties
-				.setExpiryScanners(Arrays.asList("test-scanner-1", "test-scanner-2"));
+		narayanaProperties.setXaResourceOrphanFilters(Arrays.asList("test-filter-1", "test-filter-2"));
+		narayanaProperties.setRecoveryModules(Arrays.asList("test-module-1", "test-module-2"));
+		narayanaProperties.setExpiryScanners(Arrays.asList("test-scanner-1", "test-scanner-2"));
 
-		NarayanaConfigurationBean narayanaConfigurationBean = new NarayanaConfigurationBean(
-				narayanaProperties);
+		NarayanaConfigurationBean narayanaConfigurationBean = new NarayanaConfigurationBean(narayanaProperties);
 		narayanaConfigurationBean.afterPropertiesSet();
 
-		assertThat(BeanPopulator.getDefaultInstance(CoreEnvironmentBean.class)
-				.getNodeIdentifier()).isEqualTo("test-id");
-		assertThat(BeanPopulator.getDefaultInstance(ObjectStoreEnvironmentBean.class)
+		assertThat(BeanPopulator.getDefaultInstance(CoreEnvironmentBean.class).getNodeIdentifier())
+				.isEqualTo("test-id");
+		assertThat(BeanPopulator.getDefaultInstance(ObjectStoreEnvironmentBean.class).getObjectStoreDir())
+				.isEqualTo("test-dir");
+		assertThat(BeanPopulator.getNamedInstance(ObjectStoreEnvironmentBean.class, "communicationStore")
 				.getObjectStoreDir()).isEqualTo("test-dir");
-		assertThat(BeanPopulator
-				.getNamedInstance(ObjectStoreEnvironmentBean.class, "communicationStore")
-				.getObjectStoreDir()).isEqualTo("test-dir");
-		assertThat(BeanPopulator
-				.getNamedInstance(ObjectStoreEnvironmentBean.class, "stateStore")
-				.getObjectStoreDir()).isEqualTo("test-dir");
-		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class)
-				.isCommitOnePhase()).isFalse();
-		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class)
-				.getDefaultTimeout()).isEqualTo(1);
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getPeriodicRecoveryPeriod()).isEqualTo(2);
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getRecoveryBackoffPeriod()).isEqualTo(3);
-		assertThat(BeanPopulator.getDefaultInstance(JTAEnvironmentBean.class)
-				.getXaResourceOrphanFilterClassNames())
-						.isEqualTo(Arrays.asList("test-filter-1", "test-filter-2"));
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getRecoveryModuleClassNames())
-						.isEqualTo(Arrays.asList("test-module-1", "test-module-2"));
-		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class)
-				.getExpiryScannerClassNames())
-						.isEqualTo(Arrays.asList("test-scanner-1", "test-scanner-2"));
+		assertThat(BeanPopulator.getNamedInstance(ObjectStoreEnvironmentBean.class, "stateStore").getObjectStoreDir())
+				.isEqualTo("test-dir");
+		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class).isCommitOnePhase()).isFalse();
+		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class).getDefaultTimeout()).isEqualTo(1);
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getPeriodicRecoveryPeriod())
+				.isEqualTo(2);
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getRecoveryBackoffPeriod())
+				.isEqualTo(3);
+		assertThat(BeanPopulator.getDefaultInstance(JTAEnvironmentBean.class).getXaResourceOrphanFilterClassNames())
+				.isEqualTo(Arrays.asList("test-filter-1", "test-filter-2"));
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getRecoveryModuleClassNames())
+				.isEqualTo(Arrays.asList("test-module-1", "test-module-2"));
+		assertThat(BeanPopulator.getDefaultInstance(RecoveryEnvironmentBean.class).getExpiryScannerClassNames())
+				.isEqualTo(Arrays.asList("test-scanner-1", "test-scanner-2"));
 	}
 
 }

@@ -79,8 +79,8 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
-		"javax.servlet.ServletRegistration" })
+@ConditionalOnClass(
+		name = { "org.glassfish.jersey.server.spring.SpringComponentProvider", "javax.servlet.ServletRegistration" })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
@@ -128,8 +128,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
 			return this.jersey.getApplicationPath();
 		}
-		return findApplicationPath(AnnotationUtils.findAnnotation(
-				this.config.getApplication().getClass(), ApplicationPath.class));
+		return findApplicationPath(
+				AnnotationUtils.findAnnotation(this.config.getApplication().getClass(), ApplicationPath.class));
 	}
 
 	@Bean
@@ -144,17 +144,13 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type",
-			havingValue = "filter")
-	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(
-			JerseyApplicationPath applicationPath) {
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
+	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(JerseyApplicationPath applicationPath) {
 		FilterRegistrationBean<ServletContainer> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new ServletContainer(this.config));
-		registration.setUrlPatterns(
-				Collections.singletonList(applicationPath.getUrlMapping()));
+		registration.setUrlPatterns(Collections.singletonList(applicationPath.getUrlMapping()));
 		registration.setOrder(this.jersey.getFilter().getOrder());
-		registration.addInitParameter(ServletProperties.FILTER_CONTEXT_PATH,
-				stripPattern(applicationPath.getPath()));
+		registration.addInitParameter(ServletProperties.FILTER_CONTEXT_PATH, stripPattern(applicationPath.getPath()));
 		addInitParameters(registration);
 		registration.setName("jerseyFilter");
 		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
@@ -170,10 +166,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type",
-			havingValue = "servlet", matchIfMissing = true)
-	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(
-			JerseyApplicationPath applicationPath) {
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
+	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(JerseyApplicationPath applicationPath) {
 		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<>(
 				new ServletContainer(this.config), applicationPath.getUrlMapping());
 		addInitParameters(registration);
@@ -201,20 +195,17 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Override
 	public void setServletContext(ServletContext servletContext) {
 		String servletRegistrationName = getServletRegistrationName();
-		ServletRegistration registration = servletContext
-				.getServletRegistration(servletRegistrationName);
+		ServletRegistration registration = servletContext.getServletRegistration(servletRegistrationName);
 		if (registration != null) {
 			if (logger.isInfoEnabled()) {
-				logger.info("Configuring existing registration for Jersey servlet '"
-						+ servletRegistrationName + "'");
+				logger.info("Configuring existing registration for Jersey servlet '" + servletRegistrationName + "'");
 			}
 			registration.setInitParameters(this.jersey.getInit());
 		}
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public static final class JerseyWebApplicationInitializer
-			implements WebApplicationInitializer {
+	public static final class JerseyWebApplicationInitializer implements WebApplicationInitializer {
 
 		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
@@ -233,19 +224,16 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		private static final String JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME = "com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector";
 
 		@Bean
-		public ResourceConfigCustomizer resourceConfigCustomizer(
-				final ObjectMapper objectMapper) {
+		public ResourceConfigCustomizer resourceConfigCustomizer(final ObjectMapper objectMapper) {
 			addJaxbAnnotationIntrospectorIfPresent(objectMapper);
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);
-				config.register(new ObjectMapperContextResolver(objectMapper),
-						ContextResolver.class);
+				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
 			};
 		}
 
 		private void addJaxbAnnotationIntrospectorIfPresent(ObjectMapper objectMapper) {
-			if (ClassUtils.isPresent(JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME,
-					getClass().getClassLoader())) {
+			if (ClassUtils.isPresent(JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME, getClass().getClassLoader())) {
 				new ObjectMapperCustomizer().addJaxbAnnotationIntrospector(objectMapper);
 			}
 		}
@@ -256,22 +244,18 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 				JaxbAnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(
 						objectMapper.getTypeFactory());
 				objectMapper.setAnnotationIntrospectors(
-						createPair(objectMapper.getSerializationConfig(),
-								jaxbAnnotationIntrospector),
-						createPair(objectMapper.getDeserializationConfig(),
-								jaxbAnnotationIntrospector));
+						createPair(objectMapper.getSerializationConfig(), jaxbAnnotationIntrospector),
+						createPair(objectMapper.getDeserializationConfig(), jaxbAnnotationIntrospector));
 			}
 
 			private AnnotationIntrospector createPair(MapperConfig<?> config,
 					JaxbAnnotationIntrospector jaxbAnnotationIntrospector) {
-				return AnnotationIntrospector.pair(config.getAnnotationIntrospector(),
-						jaxbAnnotationIntrospector);
+				return AnnotationIntrospector.pair(config.getAnnotationIntrospector(), jaxbAnnotationIntrospector);
 			}
 
 		}
 
-		private static final class ObjectMapperContextResolver
-				implements ContextResolver<ObjectMapper> {
+		private static final class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
 			private final ObjectMapper objectMapper;
 

@@ -32,15 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	public BootWarTests() {
-		super(BootWar.class, "org.springframework.boot.loader.WarLauncher",
-				"WEB-INF/lib/", "WEB-INF/classes/");
+		super(BootWar.class, "org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/", "WEB-INF/classes/");
 	}
 
 	@Test
 	public void providedClasspathJarsArePackagedInWebInfLibProvided() throws IOException {
 		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(this.temp.newFile("one.jar"),
-				this.temp.newFile("two.jar"));
+		getTask().providedClasspath(this.temp.newFile("one.jar"), this.temp.newFile("two.jar"));
 		getTask().execute();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNotNull();
@@ -52,8 +50,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	public void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("one.jar"));
-		getTask().setProvidedClasspath(
-				getTask().getProject().files(this.temp.newFile("two.jar")));
+		getTask().setProvidedClasspath(getTask().getProject().files(this.temp.newFile("two.jar")));
 		getTask().execute();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();
@@ -74,37 +71,30 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	}
 
 	@Test
-	public void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath()
-			throws IOException {
+	public void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath() throws IOException {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().execute();
 		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
-			assertThat(jarFile
-					.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar"))
-							.isNull();
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar")).isNull();
 		}
 	}
 
 	@Test
-	public void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath()
-			throws IOException {
+	public void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath() throws IOException {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().setExcludeDevtools(false);
 		getTask().execute();
 		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
-			assertThat(jarFile
-					.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar"))
-							.isNotNull();
+			assertThat(jarFile.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar")).isNotNull();
 		}
 	}
 
 	@Test
-	public void webappResourcesInDirectoriesThatOverlapWithLoaderCanBePackaged()
-			throws IOException {
+	public void webappResourcesInDirectoriesThatOverlapWithLoaderCanBePackaged() throws IOException {
 		File webappFolder = this.temp.newFolder("src", "main", "webapp");
 		File orgFolder = new File(webappFolder, "org");
 		orgFolder.mkdir();
@@ -125,8 +115,8 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		getTask().classpath(this.temp.newFile("library.jar"));
 		getTask().providedClasspath(this.temp.newFile("provided-library.jar"));
 		getTask().execute();
-		assertThat(getEntryNames(getTask().getArchivePath())).containsSubsequence(
-				"WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
+		assertThat(getEntryNames(getTask().getArchivePath())).containsSubsequence("WEB-INF/lib/library.jar",
+				"WEB-INF/lib-provided/provided-library.jar");
 	}
 
 }

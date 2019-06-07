@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,15 +84,13 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
 	static class DefaultTemplateResolverConfiguration {
 
-		private static final Log logger = LogFactory
-				.getLog(DefaultTemplateResolverConfiguration.class);
+		private static final Log logger = LogFactory.getLog(DefaultTemplateResolverConfiguration.class);
 
 		private final ThymeleafProperties properties;
 
 		private final ApplicationContext applicationContext;
 
-		DefaultTemplateResolverConfiguration(ThymeleafProperties properties,
-				ApplicationContext applicationContext) {
+		DefaultTemplateResolverConfiguration(ThymeleafProperties properties, ApplicationContext applicationContext) {
 			this.properties = properties;
 			this.applicationContext = applicationContext;
 		}
@@ -101,11 +99,9 @@ public class ThymeleafAutoConfiguration {
 		public void checkTemplateLocationExists() {
 			boolean checkTemplateLocation = this.properties.isCheckTemplateLocation();
 			if (checkTemplateLocation) {
-				TemplateLocation location = new TemplateLocation(
-						this.properties.getPrefix());
+				TemplateLocation location = new TemplateLocation(this.properties.getPrefix());
 				if (!location.exists(this.applicationContext)) {
-					logger.warn("Cannot find template location: " + location
-							+ " (please add some templates or check "
+					logger.warn("Cannot find template location: " + location + " (please add some templates or check "
 							+ "your Thymeleaf configuration)");
 				}
 			}
@@ -183,8 +179,7 @@ public class ThymeleafAutoConfiguration {
 
 			private final SpringTemplateEngine templateEngine;
 
-			ThymeleafViewResolverConfiguration(ThymeleafProperties properties,
-					SpringTemplateEngine templateEngine) {
+			ThymeleafViewResolverConfiguration(ThymeleafProperties properties, SpringTemplateEngine templateEngine) {
 				this.properties = properties;
 				this.templateEngine = templateEngine;
 			}
@@ -196,8 +191,7 @@ public class ThymeleafAutoConfiguration {
 				resolver.setTemplateEngine(this.templateEngine);
 				resolver.setCharacterEncoding(this.properties.getEncoding().name());
 				resolver.setContentType(
-						appendCharset(this.properties.getServlet().getContentType(),
-								resolver.getCharacterEncoding()));
+						appendCharset(this.properties.getServlet().getContentType(), resolver.getCharacterEncoding()));
 				resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
 				resolver.setViewNames(this.properties.getViewNames());
 				// This resolver acts as a fallback resolver (e.g. like a
@@ -232,8 +226,7 @@ public class ThymeleafAutoConfiguration {
 
 		private final Collection<IDialect> dialects;
 
-		ThymeleafReactiveConfiguration(ThymeleafProperties properties,
-				Collection<ITemplateResolver> templateResolvers,
+		ThymeleafReactiveConfiguration(ThymeleafProperties properties, Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
 			this.properties = properties;
 			this.templateResolvers = templateResolvers;
@@ -265,8 +258,7 @@ public class ThymeleafAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "thymeleafReactiveViewResolver")
-		public ThymeleafReactiveViewResolver thymeleafViewResolver(
-				ISpringWebFluxTemplateEngine templateEngine) {
+		public ThymeleafReactiveViewResolver thymeleafViewResolver(ISpringWebFluxTemplateEngine templateEngine) {
 			ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
 			resolver.setTemplateEngine(templateEngine);
 			mapProperties(this.properties, resolver);
@@ -277,24 +269,19 @@ public class ThymeleafAutoConfiguration {
 			return resolver;
 		}
 
-		private void mapProperties(ThymeleafProperties properties,
-				ThymeleafReactiveViewResolver resolver) {
+		private void mapProperties(ThymeleafProperties properties, ThymeleafReactiveViewResolver resolver) {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getEncoding).to(resolver::setDefaultCharset);
 			resolver.setExcludedViewNames(properties.getExcludedViewNames());
 			resolver.setViewNames(properties.getViewNames());
 		}
 
-		private void mapReactiveProperties(Reactive properties,
-				ThymeleafReactiveViewResolver resolver) {
+		private void mapReactiveProperties(Reactive properties, ThymeleafReactiveViewResolver resolver) {
 			PropertyMapper map = PropertyMapper.get();
-			map.from(properties::getMediaTypes).whenNonNull()
-					.to(resolver::setSupportedMediaTypes);
-			map.from(properties::getMaxChunkSize).when((size) -> size > 0)
-					.to(resolver::setResponseMaxChunkSizeBytes);
+			map.from(properties::getMediaTypes).whenNonNull().to(resolver::setSupportedMediaTypes);
+			map.from(properties::getMaxChunkSize).when((size) -> size > 0).to(resolver::setResponseMaxChunkSizeBytes);
 			map.from(properties::getFullModeViewNames).to(resolver::setFullModeViewNames);
-			map.from(properties::getChunkedModeViewNames)
-					.to(resolver::setChunkedModeViewNames);
+			map.from(properties::getChunkedModeViewNames).to(resolver::setChunkedModeViewNames);
 		}
 
 	}
@@ -327,8 +314,7 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnClass({ SpringSecurityDialect.class })
 	protected static class ThymeleafSecurityDialectConfiguration {
 
-		private final Log logger = LogFactory
-				.getLog(ThymeleafSecurityDialectConfiguration.class);
+		private final Log logger = LogFactory.getLog(ThymeleafSecurityDialectConfiguration.class);
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -343,8 +329,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({
-			org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect.class })
+	@ConditionalOnClass({ org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect.class })
 	protected static class ThymeleafSecurity5DialectConfiguration {
 
 		@Bean

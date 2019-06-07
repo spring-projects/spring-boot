@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,33 +39,28 @@ public class ConditionalOnClassTests {
 
 	@Test
 	public void testVanillaOnClassCondition() {
-		this.contextRunner
-				.withUserConfiguration(BasicConfiguration.class, FooConfiguration.class)
+		this.contextRunner.withUserConfiguration(BasicConfiguration.class, FooConfiguration.class)
 				.run(this::hasBarBean);
 	}
 
 	@Test
 	public void testMissingOnClassCondition() {
-		this.contextRunner
-				.withUserConfiguration(MissingConfiguration.class, FooConfiguration.class)
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean("bar");
-					assertThat(context).hasBean("foo");
-					assertThat(context.getBean("foo")).isEqualTo("foo");
-				});
+		this.contextRunner.withUserConfiguration(MissingConfiguration.class, FooConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean("bar");
+			assertThat(context).hasBean("foo");
+			assertThat(context.getBean("foo")).isEqualTo("foo");
+		});
 	}
 
 	@Test
 	public void testOnClassConditionWithXml() {
-		this.contextRunner
-				.withUserConfiguration(BasicConfiguration.class, XmlConfiguration.class)
+		this.contextRunner.withUserConfiguration(BasicConfiguration.class, XmlConfiguration.class)
 				.run(this::hasBarBean);
 	}
 
 	@Test
 	public void testOnClassConditionWithCombinedXml() {
-		this.contextRunner.withUserConfiguration(CombinedXmlConfiguration.class)
-				.run(this::hasBarBean);
+		this.contextRunner.withUserConfiguration(CombinedXmlConfiguration.class).run(this::hasBarBean);
 	}
 
 	private void hasBarBean(AssertableApplicationContext context) {

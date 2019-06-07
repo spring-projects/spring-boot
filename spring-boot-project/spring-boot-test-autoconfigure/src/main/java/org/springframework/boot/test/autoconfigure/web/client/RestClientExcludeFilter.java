@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,15 +41,13 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
-		if (ClassUtils.isPresent(DATABIND_MODULE_CLASS_NAME,
-				RestClientExcludeFilter.class.getClassLoader())) {
+		if (ClassUtils.isPresent(DATABIND_MODULE_CLASS_NAME, RestClientExcludeFilter.class.getClassLoader())) {
 			try {
 				includes.add(Class.forName(DATABIND_MODULE_CLASS_NAME, true,
 						RestClientExcludeFilter.class.getClassLoader()));
 			}
 			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(
-						"Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
+				throw new IllegalStateException("Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
 			}
 			includes.add(JsonComponent.class);
 		}
@@ -59,8 +57,7 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private final RestClientTest annotation;
 
 	RestClientExcludeFilter(Class<?> testClass) {
-		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				RestClientTest.class);
+		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass, RestClientTest.class);
 	}
 
 	@Override

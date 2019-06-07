@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,7 @@ public class MongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
-				"test");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "test");
 	}
 
 	@Test
@@ -82,8 +81,7 @@ public class MongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
 	}
 
 	@Test
@@ -93,15 +91,13 @@ public class MongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
 	}
 
 	@Test
 	public void uriCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
-				+ "mongo2.example.com:23456/test");
+		properties.setUri("mongodb://user:secret@mongo1.example.com:12345," + "mongo2.example.com:23456/test");
 		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(2);
@@ -127,26 +123,23 @@ public class MongoClientFactoryTests {
 		return createMongoClient(properties, null);
 	}
 
-	private MongoClient createMongoClient(MongoProperties properties,
-			Environment environment) {
+	private MongoClient createMongoClient(MongoProperties properties, Environment environment) {
 		return new MongoClientFactory(properties, environment).createMongoClient(null);
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
 		Cluster cluster = (Cluster) ReflectionTestUtils.getField(client, "cluster");
-		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils
-				.getField(cluster, "settings");
+		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils.getField(cluster, "settings");
 		return clusterSettings.getHosts();
 	}
 
-	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
-			int expectedPort) {
+	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
 		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
 		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
 	}
 
-	private void assertMongoCredential(MongoCredential credentials,
-			String expectedUsername, String expectedPassword, String expectedSource) {
+	private void assertMongoCredential(MongoCredential credentials, String expectedUsername, String expectedPassword,
+			String expectedSource) {
 		assertThat(credentials.getUserName()).isEqualTo(expectedUsername);
 		assertThat(credentials.getPassword()).isEqualTo(expectedPassword.toCharArray());
 		assertThat(credentials.getSource()).isEqualTo(expectedSource);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,19 +71,16 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(
-				RestDocsProperties properties,
+		public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				MockMvcRestDocumentationConfigurer configurer,
 				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
-			return new RestDocsMockMvcBuilderCustomizer(properties, configurer,
-					resultHandler.getIfAvailable());
+			return new RestDocsMockMvcBuilderCustomizer(properties, configurer, resultHandler.getIfAvailable());
 		}
 
 	}
 
 	@Configuration
-	@ConditionalOnClass({ RequestSpecification.class,
-			RestAssuredRestDocumentation.class })
+	@ConditionalOnClass({ RequestSpecification.class, RestAssuredRestDocumentation.class })
 	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsRestAssuredConfiguration {
 
@@ -103,8 +100,8 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(
-				RestDocsProperties properties, RequestSpecification configurer) {
+		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(RestDocsProperties properties,
+				RequestSpecification configurer) {
 			return new RestDocsRestAssuredBuilderCustomizer(properties, configurer);
 		}
 
@@ -132,8 +129,7 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		public RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(
-				RestDocsProperties properties,
+		public RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(RestDocsProperties properties,
 				WebTestClientRestDocumentationConfigurer configurer) {
 			return new RestDocsWebTestClientBuilderCustomizer(properties, configurer);
 		}

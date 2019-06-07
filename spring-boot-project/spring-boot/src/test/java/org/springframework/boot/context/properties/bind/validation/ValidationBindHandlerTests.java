@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,7 @@ public class ValidationBindHandlerTests {
 	@Test
 	public void bindShouldBindWithoutHandler() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
-		ExampleValidatedBean bean = this.binder
-				.bind("foo", Bindable.of(ExampleValidatedBean.class)).get();
+		ExampleValidatedBean bean = this.binder.bind("foo", Bindable.of(ExampleValidatedBean.class)).get();
 		assertThat(bean.getAge()).isEqualTo(4);
 	}
 
@@ -91,16 +90,14 @@ public class ValidationBindHandlerTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", 4));
 		this.thrown.expect(BindException.class);
 		this.thrown.expectCause(instanceOf(BindValidationException.class));
-		this.binder.bind("foo", Bindable.of(ExampleValidatedWithNestedBean.class),
-				this.handler);
+		this.binder.bind("foo", Bindable.of(ExampleValidatedWithNestedBean.class), this.handler);
 	}
 
 	@Test
 	public void bindShouldFailWithAccessToOrigin() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4, "file"));
-		BindValidationException cause = bindAndExpectValidationError(
-				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
-						Bindable.of(ExampleValidatedBean.class), this.handler));
+		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
+				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedBean.class), this.handler));
 		ObjectError objectError = cause.getValidationErrors().getAllErrors().get(0);
 		assertThat(Origin.from(objectError).toString()).isEqualTo("file");
 	}
@@ -112,21 +109,18 @@ public class ValidationBindHandlerTests {
 		source.put("foo.nested.age", "4");
 		source.put("faf.bar", "baz");
 		this.sources.add(source);
-		BindValidationException cause = bindAndExpectValidationError(
-				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
-						Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
-		Set<ConfigurationProperty> boundProperties = cause.getValidationErrors()
-				.getBoundProperties();
-		assertThat(boundProperties).extracting((p) -> p.getName().toString())
-				.contains("foo.nested.age", "foo.nested.name");
+		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
+				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
+		Set<ConfigurationProperty> boundProperties = cause.getValidationErrors().getBoundProperties();
+		assertThat(boundProperties).extracting((p) -> p.getName().toString()).contains("foo.nested.age",
+				"foo.nested.name");
 	}
 
 	@Test
 	public void bindShouldFailWithAccessToName() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
-		BindValidationException cause = bindAndExpectValidationError(
-				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
-						Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
+		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
+				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
 		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo");
 		assertThat(cause.getMessage()).contains("nested.age");
 	}
@@ -135,22 +129,17 @@ public class ValidationBindHandlerTests {
 	public void bindShouldFailIfExistingValueIsInvalid() {
 		ExampleValidatedBean existingValue = new ExampleValidatedBean();
 		BindValidationException cause = bindAndExpectValidationError(
-				() -> this.binder.bind(ConfigurationPropertyName.of("foo"), Bindable
-						.of(ExampleValidatedBean.class).withExistingValue(existingValue),
-						this.handler));
-		FieldError fieldError = (FieldError) cause.getValidationErrors().getAllErrors()
-				.get(0);
+				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
+						Bindable.of(ExampleValidatedBean.class).withExistingValue(existingValue), this.handler));
+		FieldError fieldError = (FieldError) cause.getValidationErrors().getAllErrors().get(0);
 		assertThat(fieldError.getField()).isEqualTo("age");
 	}
 
 	@Test
 	public void bindShouldValidateWithoutAnnotation() {
 		ExampleNonValidatedBean existingValue = new ExampleNonValidatedBean();
-		bindAndExpectValidationError(
-				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
-						Bindable.of(ExampleNonValidatedBean.class)
-								.withExistingValue(existingValue),
-						this.handler));
+		bindAndExpectValidationError(() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
+				Bindable.of(ExampleNonValidatedBean.class).withExistingValue(existingValue), this.handler));
 	}
 
 	@Test
@@ -161,8 +150,7 @@ public class ValidationBindHandlerTests {
 		this.sources.add(source);
 		ExampleValidatedBeanWithGetterException existingValue = new ExampleValidatedBeanWithGetterException();
 		this.binder.bind(ConfigurationPropertyName.of("foo"),
-				Bindable.of(ExampleValidatedBeanWithGetterException.class)
-						.withExistingValue(existingValue),
+				Bindable.of(ExampleValidatedBeanWithGetterException.class).withExistingValue(existingValue),
 				this.handler);
 	}
 

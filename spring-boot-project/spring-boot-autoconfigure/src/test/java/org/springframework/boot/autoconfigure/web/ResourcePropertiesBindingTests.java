@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,18 +41,15 @@ public class ResourcePropertiesBindingTests {
 	@Test
 	public void staticLocationsExpandArray() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.resources.static-locations[0]=classpath:/one/",
+				.withPropertyValues("spring.resources.static-locations[0]=classpath:/one/",
 						"spring.resources.static-locations[1]=classpath:/two",
 						"spring.resources.static-locations[2]=classpath:/three/",
 						"spring.resources.static-locations[3]=classpath:/four",
 						"spring.resources.static-locations[4]=classpath:/five/",
 						"spring.resources.static-locations[5]=classpath:/six")
-				.run(assertResourceProperties(
-						(properties) -> assertThat(properties.getStaticLocations())
-								.contains("classpath:/one/", "classpath:/two/",
-										"classpath:/three/", "classpath:/four/",
-										"classpath:/five/", "classpath:/six/")));
+				.run(assertResourceProperties((properties) -> assertThat(properties.getStaticLocations()).contains(
+						"classpath:/one/", "classpath:/two/", "classpath:/three/", "classpath:/four/",
+						"classpath:/five/", "classpath:/six/")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertResourceProperties(

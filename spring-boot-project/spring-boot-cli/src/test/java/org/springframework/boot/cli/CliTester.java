@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,11 +81,9 @@ public class CliTester implements TestRule {
 			updatedArgs.add(arg);
 		}
 		if (!classpathUpdated) {
-			updatedArgs.add(
-					"--classpath=.:" + new File("target/test-classes").getAbsolutePath());
+			updatedArgs.add("--classpath=.:" + new File("target/test-classes").getAbsolutePath());
 		}
-		Future<RunCommand> future = submitCommand(new RunCommand(),
-				StringUtils.toStringArray(updatedArgs));
+		Future<RunCommand> future = submitCommand(new RunCommand(), StringUtils.toStringArray(updatedArgs));
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}
@@ -102,8 +100,7 @@ public class CliTester implements TestRule {
 		return getOutput();
 	}
 
-	private <T extends OptionParsingCommand> Future<T> submitCommand(T command,
-			String... args) {
+	private <T extends OptionParsingCommand> Future<T> submitCommand(T command, String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
 		return Executors.newSingleThreadExecutor().submit(() -> {
@@ -111,8 +108,7 @@ public class CliTester implements TestRule {
 			System.setProperty("server.port", "0");
 			System.setProperty("spring.application.class.name",
 					"org.springframework.boot.cli.CliTesterSpringApplication");
-			System.setProperty("portfile",
-					new File("target/server.port").getAbsolutePath());
+			System.setProperty("portfile", new File("target/server.port").getAbsolutePath());
 			try {
 				command.run(sources);
 				return command;
@@ -168,16 +164,13 @@ public class CliTester implements TestRule {
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		final Statement statement = CliTester.this.outputCapture
-				.apply(new RunLauncherStatement(base), description);
+		final Statement statement = CliTester.this.outputCapture.apply(new RunLauncherStatement(base), description);
 		return new Statement() {
 
 			@Override
 			public void evaluate() throws Throwable {
-				Assume.assumeTrue(
-						"Not running sample integration tests because integration profile not active",
-						System.getProperty("spring.profiles.active", "integration")
-								.contains("integration"));
+				Assume.assumeTrue("Not running sample integration tests because integration profile not active",
+						System.getProperty("spring.profiles.active", "integration").contains("integration"));
 				statement.evaluate();
 			}
 		};
@@ -189,10 +182,8 @@ public class CliTester implements TestRule {
 
 	public String getHttpOutput(String uri) {
 		try {
-			int port = Integer.parseInt(
-					FileCopyUtils.copyToString(new FileReader("target/server.port")));
-			InputStream stream = URI.create("http://localhost:" + port + uri).toURL()
-					.openStream();
+			int port = Integer.parseInt(FileCopyUtils.copyToString(new FileReader("target/server.port")));
+			InputStream stream = URI.create("http://localhost:" + port + uri).toURL().openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			return reader.lines().collect(Collectors.joining());
 		}

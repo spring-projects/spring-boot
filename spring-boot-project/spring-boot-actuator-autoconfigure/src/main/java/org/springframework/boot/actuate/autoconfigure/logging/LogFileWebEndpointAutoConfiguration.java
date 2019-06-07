@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,25 +57,20 @@ public class LogFileWebEndpointAutoConfiguration {
 	private static class LogFileCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			String config = environment.resolvePlaceholders("${logging.file:}");
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome
-						.match(message.found("logging.file").items(config));
+				return ConditionOutcome.match(message.found("logging.file").items(config));
 			}
 			config = environment.resolvePlaceholders("${logging.path:}");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome
-						.match(message.found("logging.path").items(config));
+				return ConditionOutcome.match(message.found("logging.path").items(config));
 			}
 			config = environment.getProperty("management.endpoint.logfile.external-file");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome
-						.match(message.found("management.endpoint.logfile.external-file")
-								.items(config));
+				return ConditionOutcome.match(message.found("management.endpoint.logfile.external-file").items(config));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("logging file").atAll());
 		}

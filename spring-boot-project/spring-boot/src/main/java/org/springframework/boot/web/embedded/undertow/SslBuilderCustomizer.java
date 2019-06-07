@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
 	private final SslStoreProvider sslStoreProvider;
 
-	SslBuilderCustomizer(int port, InetAddress address, Ssl ssl,
-			SslStoreProvider sslStoreProvider) {
+	SslBuilderCustomizer(int port, InetAddress address, Ssl ssl, SslStoreProvider sslStoreProvider) {
 		this.port = port;
 		this.address = address;
 		this.ssl = ssl;
@@ -73,15 +72,12 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			sslContext.init(getKeyManagers(this.ssl, this.sslStoreProvider),
 					getTrustManagers(this.ssl, this.sslStoreProvider), null);
 			builder.addHttpsListener(this.port, getListenAddress(), sslContext);
-			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
-					getSslClientAuthMode(this.ssl));
+			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, getSslClientAuthMode(this.ssl));
 			if (this.ssl.getEnabledProtocols() != null) {
-				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS,
-						Sequence.of(this.ssl.getEnabledProtocols()));
+				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS, Sequence.of(this.ssl.getEnabledProtocols()));
 			}
 			if (this.ssl.getCiphers() != null) {
-				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES,
-						Sequence.of(this.ssl.getCiphers()));
+				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES, Sequence.of(this.ssl.getCiphers()));
 			}
 		}
 		catch (NoSuchAlgorithmException | KeyManagementException ex) {
@@ -111,15 +107,13 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = (ssl.getKeyPassword() != null)
-					? ssl.getKeyPassword().toCharArray() : null;
+			char[] keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword().toCharArray() : null;
 			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
 			keyManagerFactory.init(keyStore, keyPassword);
 			if (ssl.getKeyAlias() != null) {
-				return getConfigurableAliasKeyManagers(ssl,
-						keyManagerFactory.getKeyManagers());
+				return getConfigurableAliasKeyManagers(ssl, keyManagerFactory.getKeyManagers());
 			}
 			return keyManagerFactory.getKeyManagers();
 		}
@@ -128,24 +122,22 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		}
 	}
 
-	private KeyManager[] getConfigurableAliasKeyManagers(Ssl ssl,
-			KeyManager[] keyManagers) {
+	private KeyManager[] getConfigurableAliasKeyManagers(Ssl ssl, KeyManager[] keyManagers) {
 		for (int i = 0; i < keyManagers.length; i++) {
 			if (keyManagers[i] instanceof X509ExtendedKeyManager) {
-				keyManagers[i] = new ConfigurableAliasKeyManager(
-						(X509ExtendedKeyManager) keyManagers[i], ssl.getKeyAlias());
+				keyManagers[i] = new ConfigurableAliasKeyManager((X509ExtendedKeyManager) keyManagers[i],
+						ssl.getKeyAlias());
 			}
 		}
 		return keyManagers;
 	}
 
-	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider)
-			throws Exception {
+	private KeyStore getKeyStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getKeyStore();
 		}
-		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(),
-				ssl.getKeyStore(), ssl.getKeyStorePassword());
+		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(), ssl.getKeyStore(),
+				ssl.getKeyStorePassword());
 	}
 
 	private TrustManager[] getTrustManagers(Ssl ssl, SslStoreProvider sslStoreProvider) {
@@ -161,23 +153,20 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		}
 	}
 
-	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider)
-			throws Exception {
+	private KeyStore getTrustStore(Ssl ssl, SslStoreProvider sslStoreProvider) throws Exception {
 		if (sslStoreProvider != null) {
 			return sslStoreProvider.getTrustStore();
 		}
-		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(),
-				ssl.getTrustStore(), ssl.getTrustStorePassword());
+		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStoreProvider(), ssl.getTrustStore(),
+				ssl.getTrustStorePassword());
 	}
 
-	private KeyStore loadKeyStore(String type, String provider, String resource,
-			String password) throws Exception {
+	private KeyStore loadKeyStore(String type, String provider, String resource, String password) throws Exception {
 		type = (type != null) ? type : "JKS";
 		if (resource == null) {
 			return null;
 		}
-		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider)
-				: KeyStore.getInstance(type);
+		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider) : KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
 		store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
 		return store;
@@ -198,15 +187,12 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		}
 
 		@Override
-		public String chooseEngineClientAlias(String[] strings, Principal[] principals,
-				SSLEngine sslEngine) {
-			return this.keyManager.chooseEngineClientAlias(strings, principals,
-					sslEngine);
+		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
+			return this.keyManager.chooseEngineClientAlias(strings, principals, sslEngine);
 		}
 
 		@Override
-		public String chooseEngineServerAlias(String s, Principal[] principals,
-				SSLEngine sslEngine) {
+		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
 			if (this.alias == null) {
 				return this.keyManager.chooseEngineServerAlias(s, principals, sslEngine);
 			}
@@ -214,14 +200,12 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		}
 
 		@Override
-		public String chooseClientAlias(String[] keyType, Principal[] issuers,
-				Socket socket) {
+		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
 			return this.keyManager.chooseClientAlias(keyType, issuers, socket);
 		}
 
 		@Override
-		public String chooseServerAlias(String keyType, Principal[] issuers,
-				Socket socket) {
+		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
 			return this.keyManager.chooseServerAlias(keyType, issuers, socket);
 		}
 

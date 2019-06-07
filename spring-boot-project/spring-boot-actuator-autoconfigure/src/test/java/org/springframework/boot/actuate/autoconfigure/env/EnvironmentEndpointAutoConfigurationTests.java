@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EnvironmentEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
@@ -51,8 +50,7 @@ public class EnvironmentEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(EnvironmentEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentEndpoint.class));
 	}
 
 	@Test
@@ -62,24 +60,20 @@ public class EnvironmentEndpointAutoConfigurationTests {
 				.run(validateSystemProperties("******", "123456"));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(
-			String dbPassword, String apiKey) {
+	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String dbPassword, String apiKey) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 			EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
 			EnvironmentDescriptor env = endpoint.environment(null);
-			Map<String, PropertyValueDescriptor> systemProperties = getSource(
-					"systemProperties", env).getProperties();
-			assertThat(systemProperties.get("dbPassword").getValue())
-					.isEqualTo(dbPassword);
+			Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env).getProperties();
+			assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo(dbPassword);
 			assertThat(systemProperties.get("apiKey").getValue()).isEqualTo(apiKey);
 		};
 	}
 
-	private PropertySourceDescriptor getSource(String name,
-			EnvironmentDescriptor descriptor) {
-		return descriptor.getPropertySources().stream()
-				.filter((source) -> name.equals(source.getName())).findFirst().get();
+	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
+		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
+				.get();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,18 +51,14 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 	@Test
 	public void health() throws Exception {
-		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk())
-				.andDo(document("health", responseFields(
-						fieldWithPath("status")
-								.description("Overall status of the application."),
-						fieldWithPath("details").description(
-								"Details of the health of the application. Presence is controlled by "
+		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk()).andDo(document("health",
+				responseFields(fieldWithPath("status").description("Overall status of the application."),
+						fieldWithPath("details")
+								.description("Details of the health of the application. Presence is controlled by "
 										+ "`management.endpoint.health.show-details`)."),
-						fieldWithPath("details.*.status").description(
-								"Status of a specific part of the application."),
-						subsectionWithPath("details.*.details").description(
-								"Details of the health of a specific part of the"
-										+ " application."))));
+						fieldWithPath("details.*.status").description("Status of a specific part of the application."),
+						subsectionWithPath("details.*.details")
+								.description("Details of the health of a specific part of the" + " application."))));
 	}
 
 	@Configuration
@@ -72,8 +68,7 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 		@Bean
 		public HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(new CompositeHealthIndicator(
-					new OrderedHealthAggregator(), healthIndicators));
+			return new HealthEndpoint(new CompositeHealthIndicator(new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean
@@ -82,8 +77,7 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		}
 
 		@Bean
-		public DataSourceHealthIndicator dataSourceHealthIndicator(
-				DataSource dataSource) {
+		public DataSourceHealthIndicator dataSourceHealthIndicator(DataSource dataSource) {
 			return new DataSourceHealthIndicator(dataSource);
 		}
 

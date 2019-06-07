@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,7 @@ public class JarFileArchiveTests {
 
 	@Test
 	public void getManifest() throws Exception {
-		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By"))
-				.isEqualTo("j1");
+		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By")).isEqualTo("j1");
 	}
 
 	@Test
@@ -95,8 +94,7 @@ public class JarFileArchiveTests {
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString())
-				.isEqualTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
+		assertThat(nested.getUrl().toString()).isEqualTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
 	}
 
 	@Test
@@ -122,12 +120,10 @@ public class JarFileArchiveTests {
 	@Test
 	public void unpackedLocationsFromSameArchiveShareSameParent() throws Exception {
 		setup(true);
-		File nested = new File(this.archive
-				.getNestedArchive(getEntriesMap(this.archive).get("nested.jar")).getUrl()
-				.toURI());
-		File anotherNested = new File(this.archive
-				.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))
-				.getUrl().toURI());
+		File nested = new File(
+				this.archive.getNestedArchive(getEntriesMap(this.archive).get("nested.jar")).getUrl().toURI());
+		File anotherNested = new File(
+				this.archive.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar")).getUrl().toURI());
 		assertThat(nested.getParent()).isEqualTo(anotherNested.getParent());
 	}
 
@@ -156,10 +152,8 @@ public class JarFileArchiveTests {
 		output.closeEntry();
 		output.close();
 		JarFileArchive jarFileArchive = new JarFileArchive(file);
-		this.thrown.expectMessage(
-				equalTo("Failed to get nested archive for entry nested/zip64.jar"));
-		jarFileArchive
-				.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
+		this.thrown.expectMessage(equalTo("Failed to get nested archive for entry nested/zip64.jar"));
+		jarFileArchive.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
 	}
 
 	private byte[] writeZip64Jar() throws IOException {

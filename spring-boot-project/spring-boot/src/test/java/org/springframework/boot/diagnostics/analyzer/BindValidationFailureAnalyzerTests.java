@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,30 +63,22 @@ public class BindValidationFailureAnalyzerTests {
 
 	@Test
 	public void bindExceptionWithFieldErrorsDueToValidationFailure() {
-		FailureAnalysis analysis = performAnalysis(
-				FieldValidationFailureConfiguration.class);
-		assertThat(analysis.getDescription())
-				.contains(failure("test.foo.foo", "null", "must not be null"));
-		assertThat(analysis.getDescription())
-				.contains(failure("test.foo.value", "0", "at least five"));
-		assertThat(analysis.getDescription())
-				.contains(failure("test.foo.nested.bar", "null", "must not be null"));
+		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class);
+		assertThat(analysis.getDescription()).contains(failure("test.foo.foo", "null", "must not be null"));
+		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "0", "at least five"));
+		assertThat(analysis.getDescription()).contains(failure("test.foo.nested.bar", "null", "must not be null"));
 	}
 
 	@Test
 	public void bindExceptionWithOriginDueToValidationFailure() {
-		FailureAnalysis analysis = performAnalysis(
-				FieldValidationFailureConfiguration.class, "test.foo.value=4");
-		assertThat(analysis.getDescription())
-				.contains("Origin: \"test.foo.value\" from property source \"test\"");
+		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class, "test.foo.value=4");
+		assertThat(analysis.getDescription()).contains("Origin: \"test.foo.value\" from property source \"test\"");
 	}
 
 	@Test
 	public void bindExceptionWithObjectErrorsDueToValidationFailure() {
-		FailureAnalysis analysis = performAnalysis(
-				ObjectValidationFailureConfiguration.class);
-		assertThat(analysis.getDescription())
-				.contains("Reason: This object could not be bound.");
+		FailureAnalysis analysis = performAnalysis(ObjectValidationFailureConfiguration.class);
+		assertThat(analysis.getDescription()).contains("Reason: This object could not be bound.");
 	}
 
 	@Test
@@ -94,28 +86,22 @@ public class BindValidationFailureAnalyzerTests {
 		BindException cause = new BindException(new FieldValidationFailureProperties(),
 				"fieldValidationFailureProperties");
 		cause.addError(new FieldError("test", "value", "must not be null"));
-		BeanCreationException rootFailure = new BeanCreationException(
-				"bean creation failure", cause);
-		FailureAnalysis analysis = new BindValidationFailureAnalyzer()
-				.analyze(rootFailure, rootFailure);
-		assertThat(analysis.getDescription())
-				.contains(failure("test.value", "null", "must not be null"));
+		BeanCreationException rootFailure = new BeanCreationException("bean creation failure", cause);
+		FailureAnalysis analysis = new BindValidationFailureAnalyzer().analyze(rootFailure, rootFailure);
+		assertThat(analysis.getDescription()).contains(failure("test.value", "null", "must not be null"));
 	}
 
 	private static String failure(String property, String value, String reason) {
-		return String.format("Property: %s%n    Value: %s%n    Reason: %s", property,
-				value, reason);
+		return String.format("Property: %s%n    Value: %s%n    Reason: %s", property, value, reason);
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration,
-			String... environment) {
+	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
 		BeanCreationException failure = createFailure(configuration, environment);
 		assertThat(failure).isNotNull();
 		return new BindValidationFailureAnalyzer().analyze(failure);
 	}
 
-	private BeanCreationException createFailure(Class<?> configuration,
-			String... environment) {
+	private BeanCreationException createFailure(Class<?> configuration, String... environment) {
 		try {
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 			addEnvironment(context, environment);
@@ -129,8 +115,7 @@ public class BindValidationFailureAnalyzerTests {
 		}
 	}
 
-	private void addEnvironment(AnnotationConfigApplicationContext context,
-			String[] environment) {
+	private void addEnvironment(AnnotationConfigApplicationContext context, String[] environment) {
 		MutablePropertySources sources = context.getEnvironment().getPropertySources();
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {

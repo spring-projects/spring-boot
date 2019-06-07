@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ public abstract class AnsiOutput {
 
 	private static Boolean ansiCapable;
 
-	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name")
-			.toLowerCase(Locale.ENGLISH);
+	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
 	private static final String ENCODE_START = "\033[";
 

@@ -46,8 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jersey.servlet.load-on-startup=5")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.servlet.load-on-startup=5")
 @DirtiesContext
 public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
@@ -56,9 +55,8 @@ public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Test
 	public void contextLoads() {
-		assertThat(
-				new DirectFieldAccessor(this.context.getBean("jerseyServletRegistration"))
-						.getPropertyValue("loadOnStartup")).isEqualTo(5);
+		assertThat(new DirectFieldAccessor(this.context.getBean("jerseyServletRegistration"))
+				.getPropertyValue("loadOnStartup")).isEqualTo(5);
 	}
 
 	@MinimalWebConfiguration
@@ -74,8 +72,8 @@ public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		HttpServer httpServer = createHttpServer();
-		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
-				httpHandler);
+		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(httpHandler);
 		return new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
 	}
 
@@ -74,8 +73,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * builder. Calling this method will replace any existing customizers.
 	 * @param serverCustomizers the customizers to set
 	 */
-	public void setServerCustomizers(
-			Collection<? extends NettyServerCustomizer> serverCustomizers) {
+	public void setServerCustomizers(Collection<? extends NettyServerCustomizer> serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
 		this.serverCustomizers = new ArrayList<>(serverCustomizers);
 	}
@@ -102,13 +100,11 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return HttpServer.builder().options((options) -> {
 			options.listenAddress(getListenAddress());
 			if (getSsl() != null && getSsl().isEnabled()) {
-				SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(
-						getSsl(), getSslStoreProvider());
+				SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getSslStoreProvider());
 				sslServerCustomizer.customize(options);
 			}
 			if (getCompression() != null && getCompression().getEnabled()) {
-				CompressionCustomizer compressionCustomizer = new CompressionCustomizer(
-						getCompression());
+				CompressionCustomizer compressionCustomizer = new CompressionCustomizer(getCompression());
 				compressionCustomizer.customize(options);
 			}
 			applyCustomizers(options);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ import org.springframework.util.ClassUtils;
  */
 public class ResetMocksTestExecutionListener extends AbstractTestExecutionListener {
 
-	private static final boolean MOCKITO_IS_PRESENT = ClassUtils.isPresent(
-			"org.mockito.MockSettings",
+	private static final boolean MOCKITO_IS_PRESENT = ClassUtils.isPresent("org.mockito.MockSettings",
 			ResetMocksTestExecutionListener.class.getClassLoader());
 
 	@Override
@@ -71,12 +70,10 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		}
 	}
 
-	private void resetMocks(ConfigurableApplicationContext applicationContext,
-			MockReset reset) {
+	private void resetMocks(ConfigurableApplicationContext applicationContext, MockReset reset) {
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		String[] names = beanFactory.getBeanDefinitionNames();
-		Set<String> instantiatedSingletons = new HashSet<>(
-				Arrays.asList(beanFactory.getSingletonNames()));
+		Set<String> instantiatedSingletons = new HashSet<>(Arrays.asList(beanFactory.getSingletonNames()));
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
 			if (definition.isSingleton() && instantiatedSingletons.contains(name)) {

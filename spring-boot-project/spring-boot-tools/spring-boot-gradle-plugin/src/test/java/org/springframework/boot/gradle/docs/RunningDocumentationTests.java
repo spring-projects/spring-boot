@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,33 +38,26 @@ public class RunningDocumentationTests {
 
 	@Test
 	public void bootRunMain() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-main.gradle")
-				.build("configuredMainClass").getOutput())
-						.contains("com.example.ExampleApplication");
+		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-main.gradle").build("configuredMainClass")
+				.getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@Test
 	public void applicationPluginMainClassName() throws IOException {
-		assertThat(this.gradleBuild.script(
-				"src/main/gradle/running/application-plugin-main-class-name.gradle")
-				.build("configuredMainClass").getOutput())
-						.contains("com.example.ExampleApplication");
+		assertThat(this.gradleBuild.script("src/main/gradle/running/application-plugin-main-class-name.gradle")
+				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@Test
 	public void springBootDslMainClassName() throws IOException {
-		assertThat(this.gradleBuild
-				.script("src/main/gradle/running/spring-boot-dsl-main-class-name.gradle")
-				.build("configuredMainClass").getOutput())
-						.contains("com.example.ExampleApplication");
+		assertThat(this.gradleBuild.script("src/main/gradle/running/spring-boot-dsl-main-class-name.gradle")
+				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@Test
 	public void bootRunSourceResources() throws IOException {
-		assertThat(this.gradleBuild
-				.script("src/main/gradle/running/boot-run-source-resources.gradle")
-				.build("configuredClasspath").getOutput())
-						.contains(new File("src/main/resources").getPath());
+		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-source-resources.gradle")
+				.build("configuredClasspath").getOutput()).contains(new File("src/main/resources").getPath());
 	}
 
 }

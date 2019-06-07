@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,20 +40,17 @@ public class IntegratingWithActuatorDocumentationTests {
 
 	@Test
 	public void basicBuildInfo() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-basic.gradle")
+		this.gradleBuild.script("src/main/gradle/integrating-with-actuator/build-info-basic.gradle")
 				.build("bootBuildInfo");
-		assertThat(new File(this.gradleBuild.getProjectDir(),
-				"build/resources/main/META-INF/build-info.properties")).isFile();
+		assertThat(new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties"))
+				.isFile();
 	}
 
 	@Test
 	public void buildInfoCustomValues() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-custom-values.gradle")
+		this.gradleBuild.script("src/main/gradle/integrating-with-actuator/build-info-custom-values.gradle")
 				.build("bootBuildInfo");
-		File file = new File(this.gradleBuild.getProjectDir(),
-				"build/resources/main/META-INF/build-info.properties");
+		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();
 		Properties properties = buildInfoProperties(file);
 		assertThat(properties).containsEntry("build.artifact", "example-app");
@@ -64,11 +61,9 @@ public class IntegratingWithActuatorDocumentationTests {
 
 	@Test
 	public void buildInfoAdditional() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-additional.gradle")
+		this.gradleBuild.script("src/main/gradle/integrating-with-actuator/build-info-additional.gradle")
 				.build("bootBuildInfo");
-		File file = new File(this.gradleBuild.getProjectDir(),
-				"build/resources/main/META-INF/build-info.properties");
+		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();
 		Properties properties = buildInfoProperties(file);
 		assertThat(properties).containsEntry("build.a", "alpha");

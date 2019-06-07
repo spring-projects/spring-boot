@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,8 +109,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		return this.fileAccess.readByte(this.offset + position);
 	}
 
-	private int read(byte[] bytes, long position, int offset, int length)
-			throws IOException {
+	private int read(byte[] bytes, long position, int offset, int length) throws IOException {
 		if (position > this.length) {
 			return -1;
 		}
@@ -172,8 +171,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (cappedLen <= 0) {
 				return -1;
 			}
-			return (int) moveOn(
-					RandomAccessDataFile.this.read(b, this.position, off, cappedLen));
+			return (int) moveOn(RandomAccessDataFile.this.read(b, this.position, off, cappedLen));
 		}
 
 		@Override
@@ -216,8 +214,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			openIfNecessary();
 		}
 
-		private int read(byte[] bytes, long position, int offset, int length)
-				throws IOException {
+		private int read(byte[] bytes, long position, int offset, int length) throws IOException {
 			synchronized (this.monitor) {
 				openIfNecessary();
 				this.randomAccessFile.seek(position);
@@ -231,8 +228,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 					this.randomAccessFile = new RandomAccessFile(this.file, "r");
 				}
 				catch (FileNotFoundException ex) {
-					throw new IllegalArgumentException(String.format("File %s must exist",
-							this.file.getAbsolutePath()));
+					throw new IllegalArgumentException(
+							String.format("File %s must exist", this.file.getAbsolutePath()));
 				}
 			}
 		}

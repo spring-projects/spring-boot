@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,17 +44,14 @@ public class SessionsEndpoint {
 	 * Create a new {@link SessionsEndpoint} instance.
 	 * @param sessionRepository the session repository
 	 */
-	public SessionsEndpoint(
-			FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
+	public SessionsEndpoint(FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
 		this.sessionRepository = sessionRepository;
 	}
 
 	@ReadOperation
 	public SessionsReport sessionsForUsername(String username) {
 		Map<String, ? extends Session> sessions = this.sessionRepository
-				.findByIndexNameAndIndexValue(
-						FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME,
-						username);
+				.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, username);
 		return new SessionsReport(sessions);
 	}
 
@@ -81,8 +78,7 @@ public class SessionsEndpoint {
 		private final List<SessionDescriptor> sessions;
 
 		public SessionsReport(Map<String, ? extends Session> sessions) {
-			this.sessions = sessions.entrySet().stream()
-					.map((s) -> new SessionDescriptor(s.getValue()))
+			this.sessions = sessions.entrySet().stream().map((s) -> new SessionDescriptor(s.getValue()))
 					.collect(Collectors.toList());
 		}
 

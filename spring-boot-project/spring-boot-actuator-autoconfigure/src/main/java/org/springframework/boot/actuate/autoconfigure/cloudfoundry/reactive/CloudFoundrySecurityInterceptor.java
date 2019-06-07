@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import org.springframework.web.server.ServerWebExchange;
  */
 class CloudFoundrySecurityInterceptor {
 
-	private static final Log logger = LogFactory
-			.getLog(CloudFoundrySecurityInterceptor.class);
+	private static final Log logger = LogFactory.getLog(CloudFoundrySecurityInterceptor.class);
 
 	private final ReactiveTokenValidator tokenValidator;
 
@@ -48,12 +47,10 @@ class CloudFoundrySecurityInterceptor {
 
 	private final String applicationId;
 
-	private static final Mono<SecurityResponse> SUCCESS = Mono
-			.just(SecurityResponse.success());
+	private static final Mono<SecurityResponse> SUCCESS = Mono.just(SecurityResponse.success());
 
 	CloudFoundrySecurityInterceptor(ReactiveTokenValidator tokenValidator,
-			ReactiveCloudFoundrySecurityService cloudFoundrySecurityService,
-			String applicationId) {
+			ReactiveCloudFoundrySecurityService cloudFoundrySecurityService, String applicationId) {
 		this.tokenValidator = tokenValidator;
 		this.cloudFoundrySecurityService = cloudFoundrySecurityService;
 		this.applicationId = applicationId;
@@ -65,15 +62,14 @@ class CloudFoundrySecurityInterceptor {
 			return SUCCESS;
 		}
 		if (!StringUtils.hasText(this.applicationId)) {
-			return Mono.error(new CloudFoundryAuthorizationException(
-					Reason.SERVICE_UNAVAILABLE, "Application id is not available"));
+			return Mono.error(new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
+					"Application id is not available"));
 		}
 		if (this.cloudFoundrySecurityService == null) {
-			return Mono.error(new CloudFoundryAuthorizationException(
-					Reason.SERVICE_UNAVAILABLE, "Cloud controller URL is not available"));
+			return Mono.error(new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
+					"Cloud controller URL is not available"));
 		}
-		return check(exchange, id).then(SUCCESS).doOnError(this::logError)
-				.onErrorResume(this::getErrorResponse);
+		return check(exchange, id).then(SUCCESS).doOnError(this::logError).onErrorResume(this::getErrorResponse);
 	}
 
 	private void logError(Throwable ex) {
@@ -84,13 +80,11 @@ class CloudFoundrySecurityInterceptor {
 		try {
 			Token token = getToken(exchange.getRequest());
 			return this.tokenValidator.validate(token)
-					.then(this.cloudFoundrySecurityService
-							.getAccessLevel(token.toString(), this.applicationId))
+					.then(this.cloudFoundrySecurityService.getAccessLevel(token.toString(), this.applicationId))
 					.filter((accessLevel) -> accessLevel.isAccessAllowed(id))
-					.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
-							Reason.ACCESS_DENIED, "Access denied")))
-					.doOnSuccess((accessLevel) -> exchange.getAttributes()
-							.put("cloudFoundryAccessLevel", accessLevel))
+					.switchIfEmpty(
+							Mono.error(new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED, "Access denied")))
+					.doOnSuccess((accessLevel) -> exchange.getAttributes().put("cloudFoundryAccessLevel", accessLevel))
 					.then();
 		}
 		catch (CloudFoundryAuthorizationException ex) {
@@ -104,15 +98,13 @@ class CloudFoundrySecurityInterceptor {
 			return Mono.just(new SecurityResponse(cfException.getStatusCode(),
 					"{\"security_error\":\"" + cfException.getMessage() + "\"}"));
 		}
-		return Mono.just(new SecurityResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-				throwable.getMessage()));
+		return Mono.just(new SecurityResponse(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage()));
 	}
 
 	private Token getToken(ServerHttpRequest request) {
 		String authorization = request.getHeaders().getFirst("Authorization");
 		String bearerPrefix = "bearer ";
-		if (authorization == null
-				|| !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) {
+		if (authorization == null || !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) {
 			throw new CloudFoundryAuthorizationException(Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}

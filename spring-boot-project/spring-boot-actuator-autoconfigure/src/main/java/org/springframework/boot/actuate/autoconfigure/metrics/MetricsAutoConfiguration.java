@@ -71,13 +71,11 @@ public class MetricsAutoConfiguration {
 	}
 
 	@Bean
-	public static MeterRegistryPostProcessor meterRegistryPostProcessor(
-			ObjectProvider<List<MeterBinder>> meterBinders,
+	public static MeterRegistryPostProcessor meterRegistryPostProcessor(ObjectProvider<List<MeterBinder>> meterBinders,
 			ObjectProvider<List<MeterFilter>> meterFilters,
 			ObjectProvider<List<MeterRegistryCustomizer<?>>> meterRegistryCustomizers,
 			ObjectProvider<MetricsProperties> metricsProperties) {
-		return new MeterRegistryPostProcessor(meterBinders, meterFilters,
-				meterRegistryCustomizers, metricsProperties);
+		return new MeterRegistryPostProcessor(meterBinders, meterFilters, meterRegistryCustomizers, metricsProperties);
 	}
 
 	@Bean
@@ -87,8 +85,7 @@ public class MetricsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
 	static class JvmMeterBindersConfiguration {
 
 		@Bean
@@ -121,35 +118,30 @@ public class MetricsAutoConfiguration {
 	static class MeterBindersConfiguration {
 
 		@Bean
-		@ConditionalOnClass(name = { "ch.qos.logback.classic.LoggerContext",
-				"org.slf4j.LoggerFactory" })
+		@ConditionalOnClass(name = { "ch.qos.logback.classic.LoggerContext", "org.slf4j.LoggerFactory" })
 		@Conditional(LogbackLoggingCondition.class)
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled",
-				matchIfMissing = true)
+		@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
 		public LogbackMetrics logbackMetrics() {
 			return new LogbackMetrics();
 		}
 
 		@Bean
-		@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled",
-				matchIfMissing = true)
+		@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled", matchIfMissing = true)
 		@ConditionalOnMissingBean
 		public UptimeMetrics uptimeMetrics() {
 			return new UptimeMetrics();
 		}
 
 		@Bean
-		@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled",
-				matchIfMissing = true)
+		@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled", matchIfMissing = true)
 		@ConditionalOnMissingBean
 		public ProcessorMetrics processorMetrics() {
 			return new ProcessorMetrics();
 		}
 
 		@Bean
-		@ConditionalOnProperty(name = "management.metrics.binders.files.enabled",
-				matchIfMissing = true)
+		@ConditionalOnProperty(name = "management.metrics.binders.files.enabled", matchIfMissing = true)
 		@ConditionalOnMissingBean
 		public FileDescriptorMetrics fileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
@@ -160,18 +152,14 @@ public class MetricsAutoConfiguration {
 	static class LogbackLoggingCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("LogbackLoggingCondition");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("LogbackLoggingCondition");
 			if (loggerFactory instanceof LoggerContext) {
-				return ConditionOutcome.match(
-						message.because("ILoggerFactory is a Logback LoggerContext"));
+				return ConditionOutcome.match(message.because("ILoggerFactory is a Logback LoggerContext"));
 			}
-			return ConditionOutcome
-					.noMatch(message.because("ILoggerFactory is an instance of "
-							+ loggerFactory.getClass().getCanonicalName()));
+			return ConditionOutcome.noMatch(
+					message.because("ILoggerFactory is an instance of " + loggerFactory.getClass().getCanonicalName()));
 		}
 
 	}

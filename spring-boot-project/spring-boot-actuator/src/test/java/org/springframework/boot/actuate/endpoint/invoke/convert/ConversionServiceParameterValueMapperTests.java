@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,12 +48,9 @@ public class ConversionServiceParameterValueMapperTests {
 
 	@Test
 	public void mapParameterShouldDelegateToConversionService() {
-		DefaultFormattingConversionService conversionService = spy(
-				new DefaultFormattingConversionService());
-		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
-				conversionService);
-		Object mapped = mapper
-				.mapParameterValue(new TestOperationParameter(Integer.class), "123");
+		DefaultFormattingConversionService conversionService = spy(new DefaultFormattingConversionService());
+		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
+		Object mapped = mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123");
 		assertThat(mapped).isEqualTo(123);
 		verify(conversionService).convert("123", Integer.class);
 	}
@@ -63,8 +60,7 @@ public class ConversionServiceParameterValueMapperTests {
 		ConversionService conversionService = mock(ConversionService.class);
 		RuntimeException error = new RuntimeException();
 		given(conversionService.convert(any(), any())).willThrow(error);
-		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
-				conversionService);
+		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		try {
 			mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123");
 			fail("Did not throw");
@@ -79,8 +75,7 @@ public class ConversionServiceParameterValueMapperTests {
 	@Test
 	public void createShouldRegisterIsoOffsetDateTimeConverter() {
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper();
-		Object mapped = mapper.mapParameterValue(
-				new TestOperationParameter(OffsetDateTime.class),
+		Object mapped = mapper.mapParameterValue(new TestOperationParameter(OffsetDateTime.class),
 				"2011-12-03T10:15:30+01:00");
 		assertThat(mapped).isNotNull();
 	}
@@ -88,11 +83,9 @@ public class ConversionServiceParameterValueMapperTests {
 	@Test
 	public void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter() {
 		ConversionService conversionService = new DefaultConversionService();
-		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
-				conversionService);
+		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		this.thrown.expect(ParameterMappingException.class);
-		mapper.mapParameterValue(new TestOperationParameter(OffsetDateTime.class),
-				"2011-12-03T10:15:30+01:00");
+		mapper.mapParameterValue(new TestOperationParameter(OffsetDateTime.class), "2011-12-03T10:15:30+01:00");
 	}
 
 	private static class TestOperationParameter implements OperationParameter {

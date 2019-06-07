@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
  *
  * @author Andy Wilkinson
  */
-class ValidationExceptionFailureAnalyzer
-		extends AbstractFailureAnalyzer<ValidationException> {
+class ValidationExceptionFailureAnalyzer extends AbstractFailureAnalyzer<ValidationException> {
 
 	private static final String MISSING_IMPLEMENTATION_MESSAGE = "Unable to create a "
 			+ "Configuration, because no Bean Validation provider could be found";
@@ -38,11 +37,8 @@ class ValidationExceptionFailureAnalyzer
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
 		if (cause.getMessage().startsWith(MISSING_IMPLEMENTATION_MESSAGE)) {
 			return new FailureAnalysis(
-					"The Bean Validation API is on the classpath but no implementation"
-							+ " could be found",
-					"Add an implementation, such as Hibernate Validator, to the"
-							+ " classpath",
-					cause);
+					"The Bean Validation API is on the classpath but no implementation" + " could be found",
+					"Add an implementation, such as Hibernate Validator, to the" + " classpath", cause);
 		}
 		return null;
 	}

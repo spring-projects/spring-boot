@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheViewTests {
 
-	private final String templateUrl = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+	private final String templateUrl = "classpath:/" + getClass().getPackage().getName().replace(".", "/")
+			+ "/template.html";
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
@@ -51,9 +51,7 @@ public class MustacheViewTests {
 		this.context.refresh();
 		MockServletContext servletContext = new MockServletContext();
 		this.context.setServletContext(servletContext);
-		servletContext.setAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-				this.context);
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 	}
 
 	@Test
@@ -62,8 +60,7 @@ public class MustacheViewTests {
 		view.setCompiler(Mustache.compiler());
 		view.setUrl(this.templateUrl);
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("World", "Spring"), this.request,
-				this.response);
+		view.render(Collections.singletonMap("World", "Spring"), this.request, this.response);
 		assertThat(this.response.getContentAsString().trim()).isEqualTo("Hello Spring");
 	}
 

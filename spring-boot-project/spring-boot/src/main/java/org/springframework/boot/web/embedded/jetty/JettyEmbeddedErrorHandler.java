@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,11 +45,10 @@ class JettyEmbeddedErrorHandler extends ErrorHandler {
 	}
 
 	@Override
-	public void handle(String target, Request baseRequest, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 		String method = request.getMethod();
-		if (!HttpMethod.GET.is(method) && !HttpMethod.POST.is(method)
-				&& !HttpMethod.HEAD.is(method)) {
+		if (!HttpMethod.GET.is(method) && !HttpMethod.POST.is(method) && !HttpMethod.HEAD.is(method)) {
 			request = new ErrorHttpServletRequest(request);
 		}
 		this.delegate.handle(target, baseRequest, request, response);
@@ -65,8 +64,7 @@ class JettyEmbeddedErrorHandler extends ErrorHandler {
 
 		@Override
 		public String getMethod() {
-			return (this.simulateGetMethod ? HttpMethod.GET.toString()
-					: super.getMethod());
+			return (this.simulateGetMethod ? HttpMethod.GET.toString() : super.getMethod());
 		}
 
 		@Override

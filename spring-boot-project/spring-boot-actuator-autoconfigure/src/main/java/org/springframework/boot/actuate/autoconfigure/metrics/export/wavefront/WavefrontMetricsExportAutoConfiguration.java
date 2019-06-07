@@ -41,13 +41,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(WavefrontMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.wavefront", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.wavefront", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(WavefrontProperties.class)
 public class WavefrontMetricsExportAutoConfiguration {
 
@@ -59,8 +58,7 @@ public class WavefrontMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig,
-			Clock clock) {
+	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig, Clock clock) {
 		return new WavefrontMeterRegistry(wavefrontConfig, clock);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ public class StringToDurationConverterTests {
 
 	private final ConversionService conversionService;
 
-	public StringToDurationConverterTests(String name,
-			ConversionService conversionService) {
+	public StringToDurationConverterTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
@@ -127,12 +126,9 @@ public class StringToDurationConverterTests {
 
 	@Test
 	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration() {
-		assertThat(convert("10", ChronoUnit.SECONDS, null))
-				.isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert("+10", ChronoUnit.SECONDS, null))
-				.isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert("-10", ChronoUnit.SECONDS, null))
-				.isEqualTo(Duration.ofSeconds(-10));
+		assertThat(convert("10", ChronoUnit.SECONDS, null)).isEqualTo(Duration.ofSeconds(10));
+		assertThat(convert("+10", ChronoUnit.SECONDS, null)).isEqualTo(Duration.ofSeconds(10));
+		assertThat(convert("-10", ChronoUnit.SECONDS, null)).isEqualTo(Duration.ofSeconds(-10));
 	}
 
 	@Test
@@ -158,8 +154,7 @@ public class StringToDurationConverterTests {
 	}
 
 	private Duration convert(String source, ChronoUnit unit, DurationStyle style) {
-		return (Duration) this.conversionService.convert(source,
-				TypeDescriptor.forObject(source),
+		return (Duration) this.conversionService.convert(source, TypeDescriptor.forObject(source),
 				MockDurationTypeDescriptor.get(unit, style));
 	}
 

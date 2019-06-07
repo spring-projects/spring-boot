@@ -96,14 +96,11 @@ public class RabbitAutoConfiguration {
 
 		// Only available in rabbitmq-java-client 5.4.0 +
 		private static final boolean CAN_ENABLE_HOSTNAME_VERIFICATION = ReflectionUtils
-				.findMethod(com.rabbitmq.client.ConnectionFactory.class,
-						"enableHostnameVerification") != null;
+				.findMethod(com.rabbitmq.client.ConnectionFactory.class, "enableHostnameVerification") != null;
 
 		@Bean
-		public CachingConnectionFactory rabbitConnectionFactory(
-				RabbitProperties properties,
-				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy)
-				throws Exception {
+		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties properties,
+				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) throws Exception {
 			PropertyMapper map = PropertyMapper.get();
 			CachingConnectionFactory factory = new CachingConnectionFactory(
 					getRabbitConnectionFactoryBean(properties).getObject());
@@ -114,30 +111,24 @@ public class RabbitAutoConfiguration {
 			map.from(channel::getSize).whenNonNull().to(factory::setChannelCacheSize);
 			map.from(channel::getCheckoutTimeout).whenNonNull().as(Duration::toMillis)
 					.to(factory::setChannelCheckoutTimeout);
-			RabbitProperties.Cache.Connection connection = properties.getCache()
-					.getConnection();
+			RabbitProperties.Cache.Connection connection = properties.getCache().getConnection();
 			map.from(connection::getMode).whenNonNull().to(factory::setCacheMode);
-			map.from(connection::getSize).whenNonNull()
-					.to(factory::setConnectionCacheSize);
-			map.from(connectionNameStrategy::getIfUnique).whenNonNull()
-					.to(factory::setConnectionNameStrategy);
+			map.from(connection::getSize).whenNonNull().to(factory::setConnectionCacheSize);
+			map.from(connectionNameStrategy::getIfUnique).whenNonNull().to(factory::setConnectionNameStrategy);
 			return factory;
 		}
 
-		private RabbitConnectionFactoryBean getRabbitConnectionFactoryBean(
-				RabbitProperties properties) throws Exception {
+		private RabbitConnectionFactoryBean getRabbitConnectionFactoryBean(RabbitProperties properties)
+				throws Exception {
 			PropertyMapper map = PropertyMapper.get();
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
 			map.from(properties::determineHost).whenNonNull().to(factory::setHost);
 			map.from(properties::determinePort).to(factory::setPort);
-			map.from(properties::determineUsername).whenNonNull()
-					.to(factory::setUsername);
-			map.from(properties::determinePassword).whenNonNull()
-					.to(factory::setPassword);
-			map.from(properties::determineVirtualHost).whenNonNull()
-					.to(factory::setVirtualHost);
-			map.from(properties::getRequestedHeartbeat).whenNonNull()
-					.asInt(Duration::getSeconds).to(factory::setRequestedHeartbeat);
+			map.from(properties::determineUsername).whenNonNull().to(factory::setUsername);
+			map.from(properties::determinePassword).whenNonNull().to(factory::setPassword);
+			map.from(properties::determineVirtualHost).whenNonNull().to(factory::setVirtualHost);
+			map.from(properties::getRequestedHeartbeat).whenNonNull().asInt(Duration::getSeconds)
+					.to(factory::setRequestedHeartbeat);
 			RabbitProperties.Ssl ssl = properties.getSsl();
 			if (ssl.isEnabled()) {
 				factory.setUseSSL(true);
@@ -148,16 +139,15 @@ public class RabbitAutoConfiguration {
 				map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
-				map.from(ssl::isValidateServerCertificate).to((validate) -> factory
-						.setSkipServerCertificateValidation(!validate));
-				map.from(ssl::getVerifyHostname).when(Objects::nonNull)
-						.to(factory::setEnableHostnameVerification);
+				map.from(ssl::isValidateServerCertificate)
+						.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
+				map.from(ssl::getVerifyHostname).when(Objects::nonNull).to(factory::setEnableHostnameVerification);
 				if (ssl.getVerifyHostname() == null && CAN_ENABLE_HOSTNAME_VERIFICATION) {
 					factory.setEnableHostnameVerification(true);
 				}
 			}
-			map.from(properties::getConnectionTimeout).whenNonNull()
-					.asInt(Duration::toMillis).to(factory::setConnectionTimeout);
+			map.from(properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
+					.to(factory::setConnectionTimeout);
 			factory.afterPropertiesSet();
 			return factory;
 		}
@@ -172,8 +162,7 @@ public class RabbitAutoConfiguration {
 
 		private final RabbitProperties properties;
 
-		public RabbitTemplateConfiguration(
-				ObjectProvider<MessageConverter> messageConverter,
+		public RabbitTemplateConfiguration(ObjectProvider<MessageConverter> messageConverter,
 				RabbitProperties properties) {
 			this.messageConverter = messageConverter;
 			this.properties = properties;
@@ -196,8 +185,7 @@ public class RabbitAutoConfiguration {
 			}
 			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
 					.to(template::setReceiveTimeout);
-			map.from(properties::getReplyTimeout).whenNonNull().as(Duration::toMillis)
-					.to(template::setReplyTimeout);
+			map.from(properties::getReplyTimeout).whenNonNull().as(Duration::toMillis).to(template::setReplyTimeout);
 			map.from(properties::getExchange).to(template::setExchange);
 			map.from(properties::getRoutingKey).to(template::setRoutingKey);
 			return template;
@@ -218,16 +206,14 @@ public class RabbitAutoConfiguration {
 			map.from(properties::getInitialInterval).whenNonNull().as(Duration::toMillis)
 					.to(backOffPolicy::setInitialInterval);
 			map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
-			map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis)
-					.to(backOffPolicy::setMaxInterval);
+			map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis).to(backOffPolicy::setMaxInterval);
 			template.setBackOffPolicy(backOffPolicy);
 			return template;
 		}
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
-		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic",
-				matchIfMissing = true)
+		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
 		@ConditionalOnMissingBean
 		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 			return new RabbitAdmin(connectionFactory);
@@ -243,8 +229,7 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(RabbitTemplate.class)
-		public RabbitMessagingTemplate rabbitMessagingTemplate(
-				RabbitTemplate rabbitTemplate) {
+		public RabbitMessagingTemplate rabbitMessagingTemplate(RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);
 		}
 

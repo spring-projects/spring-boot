@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,25 +93,21 @@ public class ConditionEvaluationReportTests {
 	@Test
 	public void parent() {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
-		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
-				.getParentBeanFactory());
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 		assertThat(this.report).isNotEqualTo(nullValue());
 		assertThat(this.report.getParent()).isNotEqualTo(nullValue());
-		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
-				.getParentBeanFactory());
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 		assertThat(this.report.getParent()).isSameAs(ConditionEvaluationReport
-				.get((ConfigurableListableBeanFactory) this.beanFactory
-						.getParentBeanFactory()));
+				.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory()));
 	}
 
 	@Test
 	public void parentBottomUp() {
 		this.beanFactory = new DefaultListableBeanFactory(); // NB: overrides setup
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
-		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
-				.getParentBeanFactory());
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		this.report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(this.report).isNotNull();
 		assertThat(this.report).isNotSameAs(this.report.getParent());
@@ -127,8 +123,7 @@ public class ConditionEvaluationReportTests {
 		this.report.recordConditionEvaluation("a", this.condition1, this.outcome1);
 		this.report.recordConditionEvaluation("a", this.condition2, this.outcome2);
 		this.report.recordConditionEvaluation("b", this.condition3, this.outcome3);
-		Map<String, ConditionAndOutcomes> map = this.report
-				.getConditionAndOutcomesBySource();
+		Map<String, ConditionAndOutcomes> map = this.report.getConditionAndOutcomesBySource();
 		assertThat(map.size()).isEqualTo(2);
 		Iterator<ConditionAndOutcome> iterator = map.get("a").iterator();
 		ConditionAndOutcome conditionAndOutcome = iterator.next();
@@ -148,15 +143,13 @@ public class ConditionEvaluationReportTests {
 	@Test
 	public void fullMatch() {
 		prepareMatches(true, true, true);
-		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch())
-				.isTrue();
+		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch()).isTrue();
 	}
 
 	@Test
 	public void notFullMatch() {
 		prepareMatches(true, false, true);
-		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch())
-				.isFalse();
+		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch()).isFalse();
 	}
 
 	private void prepareMatches(boolean m1, boolean m2, boolean m3) {
@@ -171,8 +164,8 @@ public class ConditionEvaluationReportTests {
 	@Test
 	@SuppressWarnings("resource")
 	public void springBootConditionPopulatesReport() {
-		ConditionEvaluationReport report = ConditionEvaluationReport.get(
-				new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size()).isNotEqualTo(0);
 	}
 
@@ -196,24 +189,19 @@ public class ConditionEvaluationReportTests {
 
 	@Test
 	public void duplicateOutcomes() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				DuplicateConfig.class);
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(context.getBeanFactory());
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DuplicateConfig.class);
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 		String autoconfigKey = MultipartAutoConfiguration.class.getName();
-		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource()
-				.get(autoconfigKey);
+		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource().get(autoconfigKey);
 		assertThat(outcomes).isNotEqualTo(nullValue());
 		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
 		List<String> messages = new ArrayList<>();
 		for (ConditionAndOutcome outcome : outcomes) {
 			messages.add(outcome.getOutcome().getMessage());
 		}
-		assertThat(messages).areAtLeastOne(
-				Matched.by(containsString("@ConditionalOnClass found required classes "
-						+ "'javax.servlet.Servlet', 'org.springframework.web.multipart."
-						+ "support.StandardServletMultipartResolver', "
-						+ "'javax.servlet.MultipartConfigElement'")));
+		assertThat(messages).areAtLeastOne(Matched.by(containsString("@ConditionalOnClass found required classes "
+				+ "'javax.servlet.Servlet', 'org.springframework.web.multipart."
+				+ "support.StandardServletMultipartResolver', " + "'javax.servlet.MultipartConfigElement'")));
 		context.close();
 	}
 
@@ -223,10 +211,8 @@ public class ConditionEvaluationReportTests {
 		TestPropertyValues.of("test.present=true").applyTo(context);
 		context.register(NegativeOuterConfig.class);
 		context.refresh();
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(context.getBeanFactory());
-		Map<String, ConditionAndOutcomes> sourceOutcomes = report
-				.getConditionAndOutcomesBySource();
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
+		Map<String, ConditionAndOutcomes> sourceOutcomes = report.getConditionAndOutcomesBySource();
 		assertThat(context.containsBean("negativeOuterPositiveInnerBean")).isFalse();
 		String negativeConfig = NegativeOuterConfig.class.getName();
 		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch()).isFalse();
@@ -241,8 +227,7 @@ public class ConditionEvaluationReportTests {
 				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
 		context.refresh();
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(context.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource()).containsKeys(
 				"org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
@@ -257,14 +242,13 @@ public class ConditionEvaluationReportTests {
 				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
 		context.refresh();
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(context.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 		String reportMessage = new ConditionEvaluationReportMessage(report).toString();
 		assertThat(reportMessage).contains("WebMvcAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
-		assertThat(reportMessage).doesNotContain(
-				"org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
+		assertThat(reportMessage)
+				.doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
 		context.close();
 	}
 
@@ -308,8 +292,7 @@ public class ConditionEvaluationReportTests {
 
 	}
 
-	static class TestMatchCondition extends SpringBootCondition
-			implements ConfigurationCondition {
+	static class TestMatchCondition extends SpringBootCondition implements ConfigurationCondition {
 
 		private final ConfigurationPhase phase;
 
@@ -326,8 +309,7 @@ public class ConditionEvaluationReportTests {
 		}
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			return new ConditionOutcome(this.match, ClassUtils.getShortName(getClass()));
 		}
 

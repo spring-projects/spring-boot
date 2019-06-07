@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,41 +69,35 @@ public class ServletWebServerMvcIntegrationTests {
 
 	@Test
 	public void tomcat() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				TomcatConfig.class);
+		this.context = new AnnotationConfigServletWebServerApplicationContext(TomcatConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void jetty() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				JettyConfig.class);
+		this.context = new AnnotationConfigServletWebServerApplicationContext(JettyConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void undertow() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				UndertowConfig.class);
+		this.context = new AnnotationConfigServletWebServerApplicationContext(UndertowConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void advancedConfig() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				AdvancedConfig.class);
+		this.context = new AnnotationConfigServletWebServerApplicationContext(AdvancedConfig.class);
 		doTest(this.context, "/example/spring/hello");
 	}
 
-	private void doTest(AnnotationConfigServletWebServerApplicationContext context,
-			String resourcePath) throws Exception {
+	private void doTest(AnnotationConfigServletWebServerApplicationContext context, String resourcePath)
+			throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
-				"http://localhost:" + context.getWebServer().getPort() + resourcePath),
-				HttpMethod.GET);
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
+				new URI("http://localhost:" + context.getWebServer().getPort() + resourcePath), HttpMethod.GET);
 		try (ClientHttpResponse response = request.execute()) {
-			String actual = StreamUtils.copyToString(response.getBody(),
-					StandardCharsets.UTF_8);
+			String actual = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
 			assertThat(actual).isEqualTo("Hello World");
 		}
 	}
@@ -111,8 +105,7 @@ public class ServletWebServerMvcIntegrationTests {
 	// Simple main method for testing in a browser
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		new AnnotationConfigServletWebServerApplicationContext(
-				JettyServletWebServerFactory.class, Config.class);
+		new AnnotationConfigServletWebServerApplicationContext(JettyServletWebServerFactory.class, Config.class);
 	}
 
 	@Configuration

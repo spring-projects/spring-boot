@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ public class ClassLoaderFile implements Serializable {
 	public ClassLoaderFile(Kind kind, long lastModified, byte[] contents) {
 		Assert.notNull(kind, "Kind must not be null");
 		Assert.isTrue((kind != Kind.DELETED) ? contents != null : contents == null,
-				() -> "Contents must " + ((kind != Kind.DELETED) ? "not " : "")
-						+ "be null");
+				() -> "Contents must " + ((kind != Kind.DELETED) ? "not " : "") + "be null");
 		this.kind = kind;
 		this.lastModified = lastModified;
 		this.contents = contents;

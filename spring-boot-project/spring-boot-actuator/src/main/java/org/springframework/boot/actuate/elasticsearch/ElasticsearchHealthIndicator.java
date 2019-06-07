@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,10 +52,8 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 * @param responseTimeout the request timeout in milliseconds
 	 * @param indices the indices to check
 	 */
-	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
-			List<String> indices) {
-		this(client, responseTimeout,
-				(indices != null) ? StringUtils.toStringArray(indices) : null);
+	public ElasticsearchHealthIndicator(Client client, long responseTimeout, List<String> indices) {
+		this(client, responseTimeout, (indices != null) ? StringUtils.toStringArray(indices) : null);
 	}
 
 	/**
@@ -64,8 +62,7 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 * @param responseTimeout the request timeout in milliseconds
 	 * @param indices the indices to check
 	 */
-	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
-			String... indices) {
+	public ElasticsearchHealthIndicator(Client client, long responseTimeout, String... indices) {
 		super("Elasticsearch health check failed");
 		this.client = client;
 		this.responseTimeout = responseTimeout;
@@ -74,10 +71,9 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		ClusterHealthRequest request = Requests.clusterHealthRequest(
-				ObjectUtils.isEmpty(this.indices) ? ALL_INDICES : this.indices);
-		ClusterHealthResponse response = this.client.admin().cluster().health(request)
-				.actionGet(this.responseTimeout);
+		ClusterHealthRequest request = Requests
+				.clusterHealthRequest(ObjectUtils.isEmpty(this.indices) ? ALL_INDICES : this.indices);
+		ClusterHealthResponse response = this.client.admin().cluster().health(request).actionGet(this.responseTimeout);
 		switch (response.getStatus()) {
 		case GREEN:
 		case YELLOW:

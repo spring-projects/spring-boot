@@ -124,8 +124,7 @@ public class StatsdProperties {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(
-			reason = "No longer configurable and an unbounded queue will always be used")
+	@DeprecatedConfigurationProperty(reason = "No longer configurable and an unbounded queue will always be used")
 	public Integer getQueueSize() {
 		return this.queueSize;
 	}

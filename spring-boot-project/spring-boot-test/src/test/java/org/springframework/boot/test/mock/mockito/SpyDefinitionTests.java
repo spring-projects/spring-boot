@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import static org.mockito.Mockito.mock;
  */
 public class SpyDefinitionTests {
 
-	private static final ResolvableType REAL_SERVICE_TYPE = ResolvableType
-			.forClass(RealExampleService.class);
+	private static final ResolvableType REAL_SERVICE_TYPE = ResolvableType.forClass(RealExampleService.class);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -53,8 +52,7 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createWithDefaults() {
-		SpyDefinition definition = new SpyDefinition(null, REAL_SERVICE_TYPE, null, true,
-				null);
+		SpyDefinition definition = new SpyDefinition(null, REAL_SERVICE_TYPE, null, true, null);
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getTypeToSpy()).isEqualTo(REAL_SERVICE_TYPE);
 		assertThat(definition.getReset()).isEqualTo(MockReset.AFTER);
@@ -65,8 +63,7 @@ public class SpyDefinitionTests {
 	@Test
 	public void createExplicit() {
 		QualifierDefinition qualifier = mock(QualifierDefinition.class);
-		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
-				MockReset.BEFORE, false, qualifier);
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, false, qualifier);
 		assertThat(definition.getName()).isEqualTo("name");
 		assertThat(definition.getTypeToSpy()).isEqualTo(REAL_SERVICE_TYPE);
 		assertThat(definition.getReset()).isEqualTo(MockReset.BEFORE);
@@ -76,11 +73,9 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createSpy() {
-		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
-				MockReset.BEFORE, true, null);
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, true, null);
 		RealExampleService spy = definition.createSpy(new RealExampleService("hello"));
-		MockCreationSettings<?> settings = Mockito.mockingDetails(spy)
-				.getMockCreationSettings();
+		MockCreationSettings<?> settings = Mockito.mockingDetails(spy).getMockCreationSettings();
 		assertThat(spy).isInstanceOf(ExampleService.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
 		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.CALLS_REAL_METHODS);
@@ -89,8 +84,7 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createSpyWhenNullInstanceShouldThrowException() {
-		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
-				MockReset.BEFORE, true, null);
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, true, null);
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Instance must not be null");
 		definition.createSpy(null);
@@ -98,8 +92,7 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createSpyWhenWrongInstanceShouldThrowException() {
-		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
-				MockReset.BEFORE, true, null);
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, true, null);
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("must be an instance of");
 		definition.createSpy(new ExampleServiceCaller(null));
@@ -107,8 +100,7 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createSpyTwice() {
-		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
-				MockReset.BEFORE, true, null);
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, true, null);
 		Object instance = new RealExampleService("hello");
 		instance = definition.createSpy(instance);
 		definition.createSpy(instance);

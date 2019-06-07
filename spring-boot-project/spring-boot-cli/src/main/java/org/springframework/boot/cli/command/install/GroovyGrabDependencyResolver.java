@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	}
 
 	@Override
-	public List<File> resolve(List<String> artifactIdentifiers)
-			throws CompilationFailedException, IOException {
+	public List<File> resolve(List<String> artifactIdentifiers) throws CompilationFailedException, IOException {
 		GroovyCompiler groovyCompiler = new GroovyCompiler(this.configuration);
 		List<File> artifactFiles = new ArrayList<>();
 		if (!artifactIdentifiers.isEmpty()) {
@@ -70,8 +69,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	private String createSources(List<String> artifactIdentifiers) throws IOException {
 		File file = File.createTempFile("SpringCLIDependency", ".groovy");
 		file.deleteOnExit();
-		try (OutputStreamWriter stream = new OutputStreamWriter(
-				new FileOutputStream(file), StandardCharsets.UTF_8)) {
+		try (OutputStreamWriter stream = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
 			for (String artifactIdentifier : artifactIdentifiers) {
 				stream.write("@Grab('" + artifactIdentifier + "')");
 			}

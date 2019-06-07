@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,15 +84,13 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 
 	@Test
 	public void testHomePage() {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
-				String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port, String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void testPartialPage() {
-		String body = new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port + "/partial", String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
@@ -119,9 +117,8 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 
 		@Bean
 		public MustacheViewResolver viewResolver() {
-			Mustache.Compiler compiler = Mustache.compiler().withLoader(
-					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
-							".html"));
+			Mustache.Compiler compiler = Mustache.compiler()
+					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");
@@ -137,8 +134,7 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 

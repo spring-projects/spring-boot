@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,57 +38,48 @@ public class DataSourceUnwrapperTests {
 	@Test
 	public void unwrapWithTarget() {
 		DataSource dataSource = new HikariDataSource();
-		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithWrongTarget() {
 		DataSource dataSource = new HikariDataSource();
-		assertThat(
-				DataSourceUnwrapper.unwrap(dataSource, SingleConnectionDataSource.class))
-						.isNull();
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, SingleConnectionDataSource.class)).isNull();
 	}
 
 	@Test
 	public void unwrapWithDelegate() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInDelegate(wrapInDelegate(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithProxy() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithProxyAndDelegate() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInDelegate(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithSeveralLevelOfWrapping() {
 		DataSource dataSource = new HikariDataSource();
-		DataSource actual = wrapInProxy(wrapInDelegate(
-				wrapInDelegate((wrapInProxy(wrapInDelegate(dataSource))))));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		DataSource actual = wrapInProxy(wrapInDelegate(wrapInDelegate((wrapInProxy(wrapInDelegate(dataSource))))));
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapDataSourceProxy() {
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
 		DataSource actual = wrapInDelegate(wrapInProxy(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, DataSourceProxy.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, DataSourceProxy.class)).isSameAs(dataSource);
 	}
 
 	private DataSource wrapInProxy(DataSource dataSource) {

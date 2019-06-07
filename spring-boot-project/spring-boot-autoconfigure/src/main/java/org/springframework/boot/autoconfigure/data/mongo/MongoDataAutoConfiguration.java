@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,7 @@ public class MongoDataAutoConfiguration {
 
 	private final MongoProperties properties;
 
-	public MongoDataAutoConfiguration(ApplicationContext applicationContext,
-			MongoProperties properties) {
+	public MongoDataAutoConfiguration(ApplicationContext applicationContext, MongoProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 	}
@@ -94,33 +93,28 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory,
-			MongoConverter converter) {
+	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory, MongoConverter converter) {
 		return new MongoTemplate(mongoDbFactory, converter);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConverter.class)
-	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory,
-			MongoMappingContext context, MongoCustomConversions conversions) {
+	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context,
+			MongoCustomConversions conversions) {
 		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
-		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
-				context);
+		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver, context);
 		mappingConverter.setCustomConversions(conversions);
 		return mappingConverter;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext(MongoCustomConversions conversions)
-			throws ClassNotFoundException {
+	public MongoMappingContext mongoMappingContext(MongoCustomConversions conversions) throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
-		context.setInitialEntitySet(new EntityScanner(this.applicationContext)
-				.scan(Document.class, Persistent.class));
+		context.setInitialEntitySet(new EntityScanner(this.applicationContext).scan(Document.class, Persistent.class));
 		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
-			context.setFieldNamingStrategy(
-					(FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
+			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
 		}
 		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;
@@ -128,10 +122,8 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
-			MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(
-				new GridFsMongoDbFactory(mongoDbFactory, this.properties),
+	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory, MongoTemplate mongoTemplate) {
+		return new GridFsTemplate(new GridFsMongoDbFactory(mongoDbFactory, this.properties),
 				mongoTemplate.getConverter());
 	}
 

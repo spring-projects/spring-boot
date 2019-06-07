@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,13 +89,11 @@ public class SpringBootExtension {
 	 * @param configurer the task configurer
 	 */
 	public void buildInfo(Action<BuildInfo> configurer) {
-		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo",
-				BuildInfo.class);
+		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo", BuildInfo.class);
 		bootBuildInfo.setGroup(BasePlugin.BUILD_GROUP);
 		bootBuildInfo.setDescription("Generates a META-INF/build-info.properties file.");
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
-					.dependsOn(bootBuildInfo);
+			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME).dependsOn(bootBuildInfo);
 			this.project.afterEvaluate((evaluated) -> {
 				BuildInfoProperties properties = bootBuildInfo.getProperties();
 				if (properties.getArtifact() == null) {
@@ -103,8 +101,7 @@ public class SpringBootExtension {
 				}
 			});
 			bootBuildInfo.getConventionMapping().map("destinationDir",
-					() -> new File(determineMainSourceSetResourcesOutputDir(),
-							"META-INF"));
+					() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
 		});
 		if (configurer != null) {
 			configurer.execute(bootBuildInfo);
@@ -112,9 +109,8 @@ public class SpringBootExtension {
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {
-		return this.project.getConvention().getPlugin(JavaPluginConvention.class)
-				.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput()
-				.getResourcesDir();
+		return this.project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir();
 	}
 
 	private String determineArtifactBaseName() {

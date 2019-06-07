@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,12 @@ import org.springframework.web.filter.HttpPutFormContentFilter;
  * @author Joao Pedro Evangelista
  * @since 2.0.0
  */
-public class OrderedHttpPutFormContentFilter extends HttpPutFormContentFilter
-		implements Ordered {
+public class OrderedHttpPutFormContentFilter extends HttpPutFormContentFilter implements Ordered {
 
 	/**
 	 * Higher order to ensure the filter is applied before Spring Security.
 	 */
-	public static final int DEFAULT_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
-			- 9900;
+	public static final int DEFAULT_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 9900;
 
 	private int order = DEFAULT_ORDER;
 

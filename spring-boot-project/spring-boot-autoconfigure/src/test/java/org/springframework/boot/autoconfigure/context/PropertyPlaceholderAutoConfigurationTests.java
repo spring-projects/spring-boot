@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,22 +47,19 @@ public class PropertyPlaceholderAutoConfigurationTests {
 
 	@Test
 	public void propertyPlaceholders() {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				PlaceholderConfig.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, PlaceholderConfig.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);
 		this.context.refresh();
-		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
-				.isEqualTo("two");
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo()).isEqualTo("two");
 	}
 
 	@Test
 	public void propertyPlaceholdersOverride() {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				PlaceholderConfig.class, PlaceholdersOverride.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, PlaceholderConfig.class,
+				PlaceholdersOverride.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);
 		this.context.refresh();
-		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
-				.isEqualTo("spam");
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo()).isEqualTo("spam");
 	}
 
 	@Configuration
@@ -83,8 +80,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer morePlaceholders() {
 			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-			configurer.setProperties(StringUtils
-					.splitArrayElementsIntoProperties(new String[] { "foo=spam" }, "="));
+			configurer.setProperties(StringUtils.splitArrayElementsIntoProperties(new String[] { "foo=spam" }, "="));
 			configurer.setLocalOverride(true);
 			configurer.setOrder(0);
 			return configurer;

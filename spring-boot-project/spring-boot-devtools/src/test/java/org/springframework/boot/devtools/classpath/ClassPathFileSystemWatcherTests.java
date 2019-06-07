@@ -60,8 +60,8 @@ public class ClassPathFileSystemWatcherTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Urls must not be null");
 		URL[] urls = null;
-		new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
-				mock(ClassPathRestartStrategy.class), urls);
+		new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class), mock(ClassPathRestartStrategy.class),
+				urls);
 	}
 
 	@Test
@@ -89,8 +89,8 @@ public class ClassPathFileSystemWatcherTests {
 			Thread.sleep(500);
 		}
 		assertThat(events.size()).isEqualTo(1);
-		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator()
-				.next().getFile()).isEqualTo(classFile);
+		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator().next().getFile())
+				.isEqualTo(classFile);
 		context.close();
 	}
 
@@ -105,11 +105,9 @@ public class ClassPathFileSystemWatcherTests {
 
 		@Bean
 		public ClassPathFileSystemWatcher watcher() {
-			FileSystemWatcher watcher = new FileSystemWatcher(false,
-					Duration.ofMillis(100), Duration.ofMillis(10));
+			FileSystemWatcher watcher = new FileSystemWatcher(false, Duration.ofMillis(100), Duration.ofMillis(10));
 			URL[] urls = this.environment.getProperty("urls", URL[].class);
-			return new ClassPathFileSystemWatcher(
-					new MockFileSystemWatcherFactory(watcher), restartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(watcher), restartStrategy(), urls);
 		}
 
 		@Bean
@@ -139,8 +137,7 @@ public class ClassPathFileSystemWatcherTests {
 
 	}
 
-	private static class MockFileSystemWatcherFactory
-			implements FileSystemWatcherFactory {
+	private static class MockFileSystemWatcherFactory implements FileSystemWatcherFactory {
 
 		private final FileSystemWatcher watcher;
 

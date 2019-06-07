@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,9 +67,8 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
 	static class WebMvcEndpointConfiguration {
 
 		private final ApplicationContext applicationContext;
@@ -85,18 +84,13 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 
 		@Bean
 		public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
-					mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
-					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, PathMapper.useEndpointId(),
+			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, PathMapper.useEndpointId(),
 					Collections.emptyList(), Collections.emptyList());
-			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"),
-					discoverer.getEndpoints(), endpointMediaTypes,
-					new CorsConfiguration(),
-					new EndpointLinksResolver(discoverer.getEndpoints()));
+			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
 		}
 
 	}

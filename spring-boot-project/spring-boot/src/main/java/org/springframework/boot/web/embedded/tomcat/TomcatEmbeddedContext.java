@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ class TomcatEmbeddedContext extends StandardContext {
 	private final boolean overrideLoadOnStart;
 
 	TomcatEmbeddedContext() {
-		this.overrideLoadOnStart = ReflectionUtils
-				.findMethod(StandardContext.class, "loadOnStartup", Container[].class)
+		this.overrideLoadOnStart = ReflectionUtils.findMethod(StandardContext.class, "loadOnStartup", Container[].class)
 				.getReturnType() == boolean.class;
 	}
 
@@ -78,8 +77,7 @@ class TomcatEmbeddedContext extends StandardContext {
 				// version is used our overridden loadOnStart method won't have been
 				// called and the original will have already run.
 				boolean started = super.loadOnStartup(findChildren());
-				Assert.state(started,
-						"Unable to start embedded tomcat context " + getName());
+				Assert.state(started, "Unable to start embedded tomcat context " + getName());
 			}
 		}
 		finally {

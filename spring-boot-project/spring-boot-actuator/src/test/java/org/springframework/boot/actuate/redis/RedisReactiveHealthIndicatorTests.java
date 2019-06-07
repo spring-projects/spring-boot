@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ public class RedisReactiveHealthIndicatorTests {
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
 		given(commands.info()).willReturn(Mono.just(info));
-		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(
-				redisConnection, commands);
+		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -65,38 +64,30 @@ public class RedisReactiveHealthIndicatorTests {
 	@Test
 	public void redisCommandIsDown() {
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
-		given(commands.info()).willReturn(
-				Mono.error(new RedisConnectionFailureException("Connection failed")));
+		given(commands.info()).willReturn(Mono.error(new RedisConnectionFailureException("Connection failed")));
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
-		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(
-				redisConnection, commands);
+		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
 		verify(redisConnection).close();
 	}
 
 	@Test
 	public void redisConnectionIsDown() {
-		ReactiveRedisConnectionFactory redisConnectionFactory = mock(
-				ReactiveRedisConnectionFactory.class);
-		given(redisConnectionFactory.getReactiveConnection()).willThrow(
-				new RedisConnectionException("Unable to connect to localhost:6379"));
-		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(
-				redisConnectionFactory);
+		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
+		given(redisConnectionFactory.getReactiveConnection())
+				.willThrow(new RedisConnectionException("Unable to connect to localhost:6379"));
+		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
 	}
 
-	private RedisReactiveHealthIndicator createHealthIndicator(
-			ReactiveRedisConnection redisConnection,
+	private RedisReactiveHealthIndicator createHealthIndicator(ReactiveRedisConnection redisConnection,
 			ReactiveServerCommands serverCommands) {
 
-		ReactiveRedisConnectionFactory redisConnectionFactory = mock(
-				ReactiveRedisConnectionFactory.class);
+		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
 		given(redisConnectionFactory.getReactiveConnection()).willReturn(redisConnection);
 		given(redisConnection.serverCommands()).willReturn(serverCommands);
 		return new RedisReactiveHealthIndicator(redisConnectionFactory);

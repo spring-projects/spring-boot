@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ public class YamlPropertySourceLoaderTests {
 
 	@Test
 	public void load() throws Exception {
-		ByteArrayResource resource = new ByteArrayResource(
-				"foo:\n  bar: spam".getBytes());
+		ByteArrayResource resource = new ByteArrayResource("foo:\n  bar: spam".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource).get(0);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
@@ -59,11 +58,10 @@ public class YamlPropertySourceLoaderTests {
 			expected.add(String.valueOf(c));
 		}
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
-		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
-				.load("resource", resource).get(0);
+		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader.load("resource", resource)
+				.get(0);
 		assertThat(source).isNotNull();
-		assertThat(source.getPropertyNames())
-				.isEqualTo(StringUtils.toStringArray(expected));
+		assertThat(source.getPropertyNames()).isEqualTo(StringUtils.toStringArray(expected));
 	}
 
 	@Test

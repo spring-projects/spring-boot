@@ -45,13 +45,12 @@ import org.springframework.context.annotation.Configuration;
 class ActiveMQConnectionFactoryConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
-			havingValue = "false", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
+			matchIfMissing = true)
 	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
-		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.getIfAvailable())
-						.createConnectionFactory(ActiveMQConnectionFactory.class);
+		return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.getIfAvailable())
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 	@Configuration
@@ -59,42 +58,33 @@ class ActiveMQConnectionFactoryConfiguration {
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled",
-				havingValue = "true", matchIfMissing = false)
-		public PooledConnectionFactory pooledJmsConnectionFactory(
-				ActiveMQProperties properties,
+		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true",
+				matchIfMissing = false)
+		public PooledConnectionFactory pooledJmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
 			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(
-					new ActiveMQConnectionFactoryFactory(properties,
-							factoryCustomizers.getIfAvailable()).createConnectionFactory(
-									ActiveMQConnectionFactory.class));
+					new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.getIfAvailable())
+							.createConnectionFactory(ActiveMQConnectionFactory.class));
 			ActiveMQProperties.Pool pool = properties.getPool();
 			pooledConnectionFactory.setBlockIfSessionPoolIsFull(pool.isBlockIfFull());
 			if (pool.getBlockIfFullTimeout() != null) {
-				pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
-						pool.getBlockIfFullTimeout().toMillis());
+				pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(pool.getBlockIfFullTimeout().toMillis());
 			}
-			pooledConnectionFactory
-					.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
+			pooledConnectionFactory.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
 			if (pool.getExpiryTimeout() != null) {
-				pooledConnectionFactory
-						.setExpiryTimeout(pool.getExpiryTimeout().toMillis());
+				pooledConnectionFactory.setExpiryTimeout(pool.getExpiryTimeout().toMillis());
 			}
 			if (pool.getIdleTimeout() != null) {
-				pooledConnectionFactory
-						.setIdleTimeout((int) pool.getIdleTimeout().toMillis());
+				pooledConnectionFactory.setIdleTimeout((int) pool.getIdleTimeout().toMillis());
 			}
 			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
-			pooledConnectionFactory.setMaximumActiveSessionPerConnection(
-					pool.getMaximumActiveSessionPerConnection());
-			pooledConnectionFactory
-					.setReconnectOnException(pool.isReconnectOnException());
+			pooledConnectionFactory.setMaximumActiveSessionPerConnection(pool.getMaximumActiveSessionPerConnection());
+			pooledConnectionFactory.setReconnectOnException(pool.isReconnectOnException());
 			if (pool.getTimeBetweenExpirationCheck() != null) {
-				pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
-						pool.getTimeBetweenExpirationCheck().toMillis());
+				pooledConnectionFactory
+						.setTimeBetweenExpirationCheckMillis(pool.getTimeBetweenExpirationCheck().toMillis());
 			}
-			pooledConnectionFactory
-					.setUseAnonymousProducers(pool.isUseAnonymousProducers());
+			pooledConnectionFactory.setUseAnonymousProducers(pool.isUseAnonymousProducers());
 			return pooledConnectionFactory;
 		}
 

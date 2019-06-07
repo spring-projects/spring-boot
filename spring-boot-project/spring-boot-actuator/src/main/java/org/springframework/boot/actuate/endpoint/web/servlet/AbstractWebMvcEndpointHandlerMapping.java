@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Phillip Webb
  * @since 2.0.0
  */
-public abstract class AbstractWebMvcEndpointHandlerMapping
-		extends RequestMappingInfoHandlerMapping
+public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappingInfoHandlerMapping
 		implements InitializingBean, MatchableHandlerMapping {
 
 	private final EndpointMapping endpointMapping;
@@ -80,11 +79,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 	private final CorsConfiguration corsConfiguration;
 
-	private final Method linksMethod = ReflectionUtils.findMethod(getClass(), "links",
-			HttpServletRequest.class, HttpServletResponse.class);
+	private final Method linksMethod = ReflectionUtils.findMethod(getClass(), "links", HttpServletRequest.class,
+			HttpServletResponse.class);
 
-	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class,
-			"handle", HttpServletRequest.class, Map.class);
+	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class, "handle",
+			HttpServletRequest.class, Map.class);
 
 	private static final RequestMappingInfo.BuilderConfiguration builderConfig = getBuilderConfig();
 
@@ -96,8 +95,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes) {
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes) {
 		this(endpointMapping, endpoints, endpointMediaTypes, null);
 	}
 
@@ -110,8 +108,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			CorsConfiguration corsConfiguration) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
@@ -133,16 +131,14 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 	@Override
 	public RequestMatchResult match(HttpServletRequest request, String pattern) {
-		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(builderConfig)
-				.build();
+		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(builderConfig).build();
 		RequestMappingInfo matchingInfo = info.getMatchingCondition(request);
 		if (matchingInfo == null) {
 			return null;
 		}
 		Set<String> patterns = matchingInfo.getPatternsCondition().getPatterns();
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
-		return new RequestMatchResult(patterns.iterator().next(), lookupPath,
-				getPathMatcher());
+		return new RequestMatchResult(patterns.iterator().next(), lookupPath, getPathMatcher());
 	}
 
 	private static RequestMappingInfo.BuilderConfiguration getBuilderConfig() {
@@ -154,13 +150,12 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		return config;
 	}
 
-	private void registerMappingForOperation(ExposableWebEndpoint endpoint,
-			WebOperation operation) {
+	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
 		OperationInvoker invoker = operation::invoke;
-		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint,
-				operation, new ServletWebOperationAdapter(invoker));
-		registerMapping(createRequestMappingInfo(operation),
-				new OperationHandler(servletWebOperation), this.handleMethod);
+		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
+				new ServletWebOperationAdapter(invoker));
+		registerMapping(createRequestMappingInfo(operation), new OperationHandler(servletWebOperation),
+				this.handleMethod);
 	}
 
 	/**
@@ -172,47 +167,40 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * @return a wrapped servlet web operation
 	 */
 
-	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint,
-			WebOperation operation, ServletWebOperation servletWebOperation) {
+	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
+			ServletWebOperation servletWebOperation) {
 		return servletWebOperation;
 	}
 
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
-		PatternsRequestCondition patterns = patternsRequestConditionForPattern(
-				predicate.getPath());
+		PatternsRequestCondition patterns = patternsRequestConditionForPattern(predicate.getPath());
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.valueOf(predicate.getHttpMethod().name()));
 		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
 				StringUtils.toStringArray(predicate.getConsumes()));
 		ProducesRequestCondition produces = new ProducesRequestCondition(
 				StringUtils.toStringArray(predicate.getProduces()));
-		return new RequestMappingInfo(null, patterns, methods, null, null, consumes,
-				produces, null);
+		return new RequestMappingInfo(null, patterns, methods, null, null, consumes, produces, null);
 	}
 
 	private void registerLinksMapping() {
 		PatternsRequestCondition patterns = patternsRequestConditionForPattern("");
-		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
-				RequestMethod.GET);
-		ProducesRequestCondition produces = new ProducesRequestCondition(
-				this.endpointMediaTypes.getProduced().toArray(StringUtils
-						.toStringArray(this.endpointMediaTypes.getProduced())));
-		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null,
-				null, produces, null);
+		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(RequestMethod.GET);
+		ProducesRequestCondition produces = new ProducesRequestCondition(this.endpointMediaTypes.getProduced()
+				.toArray(StringUtils.toStringArray(this.endpointMediaTypes.getProduced())));
+		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null, null, produces, null);
 		registerMapping(mapping, this, this.linksMethod);
 	}
 
 	private PatternsRequestCondition patternsRequestConditionForPattern(String path) {
 		String[] patterns = new String[] { this.endpointMapping.createSubPath(path) };
-		return new PatternsRequestCondition(patterns, builderConfig.getUrlPathHelper(),
-				builderConfig.getPathMatcher(), builderConfig.useSuffixPatternMatch(),
-				builderConfig.useTrailingSlashMatch());
+		return new PatternsRequestCondition(patterns, builderConfig.getUrlPathHelper(), builderConfig.getPathMatcher(),
+				builderConfig.useSuffixPatternMatch(), builderConfig.useTrailingSlashMatch());
 	}
 
 	@Override
-	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
-			RequestMappingInfo mapping) {
+	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 
@@ -222,8 +210,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	}
 
 	@Override
-	protected RequestMappingInfo getMappingForMethod(Method method,
-			Class<?> handlerType) {
+	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
 		return null;
 	}
 
@@ -232,8 +219,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		interceptors.add(new SkipPathExtensionContentNegotiation());
 	}
 
-	protected abstract Object links(HttpServletRequest request,
-			HttpServletResponse response);
+	protected abstract Object links(HttpServletRequest request, HttpServletResponse response);
 
 	/**
 	 * Return the web endpoints being mapped.
@@ -266,13 +252,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		}
 
 		@Override
-		public Object handle(HttpServletRequest request,
-				@RequestBody(required = false) Map<String, String> body) {
+		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
 				return handleResult(
-						this.invoker.invoke(new InvocationContext(
-								new ServletSecurityContext(request), arguments)),
+						this.invoker.invoke(new InvocationContext(new ServletSecurityContext(request), arguments)),
 						HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -280,35 +264,32 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 			}
 		}
 
-		private Map<String, Object> getArguments(HttpServletRequest request,
-				Map<String, String> body) {
+		private Map<String, Object> getArguments(HttpServletRequest request, Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>();
 			arguments.putAll(getTemplateVariables(request));
 			if (body != null && HttpMethod.POST.name().equals(request.getMethod())) {
 				arguments.putAll(body);
 			}
-			request.getParameterMap().forEach((name, values) -> arguments.put(name,
-					(values.length != 1) ? Arrays.asList(values) : values[0]));
+			request.getParameterMap().forEach(
+					(name, values) -> arguments.put(name, (values.length != 1) ? Arrays.asList(values) : values[0]));
 			return arguments;
 		}
 
 		@SuppressWarnings("unchecked")
 		private Map<String, String> getTemplateVariables(HttpServletRequest request) {
-			return (Map<String, String>) request
-					.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+			return (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		}
 
 		private Object handleResult(Object result, HttpMethod httpMethod) {
 			if (result == null) {
-				return new ResponseEntity<>((httpMethod != HttpMethod.GET)
-						? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(
+						(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
 			}
 			if (!(result instanceof WebEndpointResponse)) {
 				return result;
 			}
 			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
-			return new ResponseEntity<Object>(response.getBody(),
-					HttpStatus.valueOf(response.getStatus()));
+			return new ResponseEntity<Object>(response.getBody(), HttpStatus.valueOf(response.getStatus()));
 		}
 
 	}
@@ -325,8 +306,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		}
 
 		@ResponseBody
-		public Object handle(HttpServletRequest request,
-				@RequestBody(required = false) Map<String, String> body) {
+		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
 		}
 

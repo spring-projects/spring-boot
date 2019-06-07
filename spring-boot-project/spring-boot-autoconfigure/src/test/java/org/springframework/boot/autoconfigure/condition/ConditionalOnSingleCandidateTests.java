@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,7 @@ public class ConditionalOnSingleCandidateTests {
 	public void singleCandidateInAncestorsOneCandidateInCurrent() {
 		load();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(FooConfiguration.class,
-				OnBeanSingleCandidateInAncestorsConfiguration.class);
+		child.register(FooConfiguration.class, OnBeanSingleCandidateInAncestorsConfiguration.class);
 		child.setParent(this.context);
 		child.refresh();
 		assertThat(child.containsBean("baz")).isFalse();
@@ -104,23 +103,20 @@ public class ConditionalOnSingleCandidateTests {
 
 	@Test
 	public void singleCandidateMultipleCandidates() {
-		load(FooConfiguration.class, BarConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class);
+		load(FooConfiguration.class, BarConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
 	@Test
 	public void singleCandidateMultipleCandidatesOnePrimary() {
-		load(FooPrimaryConfiguration.class, BarConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class);
+		load(FooPrimaryConfiguration.class, BarConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isTrue();
 		assertThat(this.context.getBean("baz")).isEqualTo("foo");
 	}
 
 	@Test
 	public void singleCandidateMultipleCandidatesMultiplePrimary() {
-		load(FooPrimaryConfiguration.class, BarPrimaryConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class);
+		load(FooPrimaryConfiguration.class, BarPrimaryConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
@@ -128,8 +124,7 @@ public class ConditionalOnSingleCandidateTests {
 	public void invalidAnnotationTwoTypes() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(
-				OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
+		this.thrown.expectMessage(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 		load(OnBeanSingleCandidateTwoTypesConfiguration.class);
 	}
 
@@ -137,8 +132,7 @@ public class ConditionalOnSingleCandidateTests {
 	public void invalidAnnotationNoType() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown
-				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
+		this.thrown.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 		load(OnBeanSingleCandidateNoTypeConfiguration.class);
 	}
 

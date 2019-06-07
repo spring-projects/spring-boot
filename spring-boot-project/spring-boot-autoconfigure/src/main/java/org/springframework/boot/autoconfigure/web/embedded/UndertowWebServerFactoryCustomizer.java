@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,14 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class UndertowWebServerFactoryCustomizer implements
-		WebServerFactoryCustomizer<ConfigurableUndertowWebServerFactory>, Ordered {
+public class UndertowWebServerFactoryCustomizer
+		implements WebServerFactoryCustomizer<ConfigurableUndertowWebServerFactory>, Ordered {
 
 	private final Environment environment;
 
 	private final ServerProperties serverProperties;
 
-	public UndertowWebServerFactoryCustomizer(Environment environment,
-			ServerProperties serverProperties) {
+	public UndertowWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
 	}
@@ -60,62 +59,46 @@ public class UndertowWebServerFactoryCustomizer implements
 	public void customize(ConfigurableUndertowWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Undertow undertowProperties = properties.getUndertow();
-		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
-				.getAccesslog();
+		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties.getAccesslog();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		propertyMapper.from(undertowProperties::getBufferSize).to(factory::setBufferSize);
 		propertyMapper.from(undertowProperties::getIoThreads).to(factory::setIoThreads);
-		propertyMapper.from(undertowProperties::getWorkerThreads)
-				.to(factory::setWorkerThreads);
-		propertyMapper.from(undertowProperties::getDirectBuffers)
-				.to(factory::setUseDirectBuffers);
-		propertyMapper.from(accesslogProperties::isEnabled)
-				.to(factory::setAccessLogEnabled);
-		propertyMapper.from(accesslogProperties::getDir)
-				.to(factory::setAccessLogDirectory);
-		propertyMapper.from(accesslogProperties::getPattern)
-				.to(factory::setAccessLogPattern);
-		propertyMapper.from(accesslogProperties::getPrefix)
-				.to(factory::setAccessLogPrefix);
-		propertyMapper.from(accesslogProperties::getSuffix)
-				.to(factory::setAccessLogSuffix);
-		propertyMapper.from(accesslogProperties::isRotate)
-				.to(factory::setAccessLogRotate);
-		propertyMapper.from(() -> getOrDeduceUseForwardHeaders())
-				.to(factory::setUseForwardHeaders);
+		propertyMapper.from(undertowProperties::getWorkerThreads).to(factory::setWorkerThreads);
+		propertyMapper.from(undertowProperties::getDirectBuffers).to(factory::setUseDirectBuffers);
+		propertyMapper.from(accesslogProperties::isEnabled).to(factory::setAccessLogEnabled);
+		propertyMapper.from(accesslogProperties::getDir).to(factory::setAccessLogDirectory);
+		propertyMapper.from(accesslogProperties::getPattern).to(factory::setAccessLogPattern);
+		propertyMapper.from(accesslogProperties::getPrefix).to(factory::setAccessLogPrefix);
+		propertyMapper.from(accesslogProperties::getSuffix).to(factory::setAccessLogSuffix);
+		propertyMapper.from(accesslogProperties::isRotate).to(factory::setAccessLogRotate);
+		propertyMapper.from(() -> getOrDeduceUseForwardHeaders()).to(factory::setUseForwardHeaders);
 		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
-				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
-						maxHttpHeaderSize));
+				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
 		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when(this::isPositive)
-				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
-						maxHttpPostSize));
+				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
 		propertyMapper.from(properties::getConnectionTimeout)
-				.to((connectionTimeout) -> customizeConnectionTimeout(factory,
-						connectionTimeout));
-		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
-				.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
+				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
+		factory.addDeploymentInfoCustomizers(
+				(deploymentInfo) -> deploymentInfo.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
 	}
 
 	private boolean isPositive(Number value) {
 		return value.longValue() > 0;
 	}
 
-	private void customizeConnectionTimeout(ConfigurableUndertowWebServerFactory factory,
-			Duration connectionTimeout) {
-		factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
-				UndertowOptions.NO_REQUEST_TIMEOUT, (int) connectionTimeout.toMillis()));
+	private void customizeConnectionTimeout(ConfigurableUndertowWebServerFactory factory, Duration connectionTimeout) {
+		factory.addBuilderCustomizers((builder) -> builder.setSocketOption(UndertowOptions.NO_REQUEST_TIMEOUT,
+				(int) connectionTimeout.toMillis()));
 	}
 
-	private void customizeMaxHttpHeaderSize(ConfigurableUndertowWebServerFactory factory,
-			int maxHttpHeaderSize) {
-		factory.addBuilderCustomizers((builder) -> builder
-				.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
+	private void customizeMaxHttpHeaderSize(ConfigurableUndertowWebServerFactory factory, int maxHttpHeaderSize) {
+		factory.addBuilderCustomizers(
+				(builder) -> builder.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
 	}
 
-	private void customizeMaxHttpPostSize(ConfigurableUndertowWebServerFactory factory,
-			long maxHttpPostSize) {
-		factory.addBuilderCustomizers((builder) -> builder
-				.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
+	private void customizeMaxHttpPostSize(ConfigurableUndertowWebServerFactory factory, long maxHttpPostSize) {
+		factory.addBuilderCustomizers(
+				(builder) -> builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {

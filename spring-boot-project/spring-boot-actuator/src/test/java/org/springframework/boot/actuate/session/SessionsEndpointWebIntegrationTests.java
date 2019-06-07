@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,38 +52,30 @@ public class SessionsEndpointWebIntegrationTests {
 
 	@Test
 	public void sessionsForUsernameWithoutUsernameParam() {
-		client.get().uri((builder) -> builder.path("/actuator/sessions").build())
-				.exchange().expectStatus().isBadRequest();
+		client.get().uri((builder) -> builder.path("/actuator/sessions").build()).exchange().expectStatus()
+				.isBadRequest();
 	}
 
 	@Test
 	public void sessionsForUsernameNoResults() {
-		given(repository.findByIndexNameAndIndexValue(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
-						.willReturn(Collections.emptyMap());
-		client.get()
-				.uri((builder) -> builder.path("/actuator/sessions")
-						.queryParam("username", "user").build())
-				.exchange().expectStatus().isOk().expectBody().jsonPath("sessions")
-				.isEmpty();
+		given(repository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME,
+				"user")).willReturn(Collections.emptyMap());
+		client.get().uri((builder) -> builder.path("/actuator/sessions").queryParam("username", "user").build())
+				.exchange().expectStatus().isOk().expectBody().jsonPath("sessions").isEmpty();
 	}
 
 	@Test
 	public void sessionsForUsernameFound() {
-		given(repository.findByIndexNameAndIndexValue(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
-						.willReturn(Collections.singletonMap(session.getId(), session));
-		client.get()
-				.uri((builder) -> builder.path("/actuator/sessions")
-						.queryParam("username", "user").build())
+		given(repository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME,
+				"user")).willReturn(Collections.singletonMap(session.getId(), session));
+		client.get().uri((builder) -> builder.path("/actuator/sessions").queryParam("username", "user").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("sessions.[*].id")
 				.isEqualTo(new JSONArray().appendElement(session.getId()));
 	}
 
 	@Test
 	public void sessionForIdNotFound() {
-		client.get().uri((builder) -> builder
-				.path("/actuator/sessions/session-id-not-found").build()).exchange()
+		client.get().uri((builder) -> builder.path("/actuator/sessions/session-id-not-found").build()).exchange()
 				.expectStatus().isNotFound();
 	}
 

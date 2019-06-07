@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,33 +55,30 @@ public class ConditionalOnWebApplicationTests {
 	@Test
 	public void testWebApplicationWithServletContext() {
 		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-		ctx.register(AnyWebApplicationConfiguration.class,
-				ServletWebApplicationConfiguration.class,
+		ctx.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.setServletContext(new MockServletContext());
 		ctx.refresh();
 		this.context = ctx;
-		assertThat(this.context.getBeansOfType(String.class))
-				.containsExactly(entry("any", "any"), entry("servlet", "servlet"));
+		assertThat(this.context.getBeansOfType(String.class)).containsExactly(entry("any", "any"),
+				entry("servlet", "servlet"));
 	}
 
 	@Test
 	public void testWebApplicationWithReactiveContext() {
 		AnnotationConfigReactiveWebApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
-		context.register(AnyWebApplicationConfiguration.class,
-				ServletWebApplicationConfiguration.class,
+		context.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		context.refresh();
 		this.context = context;
-		assertThat(this.context.getBeansOfType(String.class))
-				.containsExactly(entry("any", "any"), entry("reactive", "reactive"));
+		assertThat(this.context.getBeansOfType(String.class)).containsExactly(entry("any", "any"),
+				entry("reactive", "reactive"));
 	}
 
 	@Test
 	public void testNonWebApplication() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(AnyWebApplicationConfiguration.class,
-				ServletWebApplicationConfiguration.class,
+		ctx.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

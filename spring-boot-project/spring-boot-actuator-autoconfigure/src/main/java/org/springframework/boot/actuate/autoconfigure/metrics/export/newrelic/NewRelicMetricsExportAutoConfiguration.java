@@ -42,13 +42,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(NewRelicMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.newrelic", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(NewRelicProperties.class)
 public class NewRelicMetricsExportAutoConfiguration {
 
@@ -60,8 +59,7 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig,
-			Clock clock) {
+	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock) {
 		return new NewRelicMeterRegistry(newRelicConfig, clock);
 	}
 

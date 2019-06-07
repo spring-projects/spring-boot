@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import org.springframework.util.StringUtils;
  */
 final class CompressionCustomizer implements NettyServerCustomizer {
 
-	private static final CompressionPredicate ALWAYS_COMPRESS = (request,
-			response) -> true;
+	private static final CompressionPredicate ALWAYS_COMPRESS = (request, response) -> true;
 
 	private final Compression compression;
 
@@ -53,8 +52,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 		if (this.compression.getMinResponseSize() >= 0) {
 			builder.compression(this.compression.getMinResponseSize());
 		}
-		CompressionPredicate mimeTypes = getMimeTypesPredicate(
-				this.compression.getMimeTypes());
+		CompressionPredicate mimeTypes = getMimeTypesPredicate(this.compression.getMimeTypes());
 		CompressionPredicate excludedUserAgents = getExcludedUserAgentsPredicate(
 				this.compression.getExcludedUserAgents());
 		builder.compression(mimeTypes.and(excludedUserAgents));
@@ -65,8 +63,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 			return ALWAYS_COMPRESS;
 		}
 		return (request, response) -> {
-			String contentType = response.responseHeaders()
-					.get(HttpHeaderNames.CONTENT_TYPE);
+			String contentType = response.responseHeaders().get(HttpHeaderNames.CONTENT_TYPE);
 			if (StringUtils.isEmpty(contentType)) {
 				return false;
 			}
@@ -76,20 +73,18 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 		};
 	}
 
-	private CompressionPredicate getExcludedUserAgentsPredicate(
-			String[] excludedUserAgents) {
+	private CompressionPredicate getExcludedUserAgentsPredicate(String[] excludedUserAgents) {
 		if (ObjectUtils.isEmpty(excludedUserAgents)) {
 			return ALWAYS_COMPRESS;
 		}
 		return (request, response) -> {
 			HttpHeaders headers = request.requestHeaders();
-			return Arrays.stream(excludedUserAgents).noneMatch((candidate) -> headers
-					.contains(HttpHeaderNames.USER_AGENT, candidate, true));
+			return Arrays.stream(excludedUserAgents)
+					.noneMatch((candidate) -> headers.contains(HttpHeaderNames.USER_AGENT, candidate, true));
 		};
 	}
 
-	private interface CompressionPredicate
-			extends BiPredicate<HttpServerRequest, HttpServerResponse> {
+	private interface CompressionPredicate extends BiPredicate<HttpServerRequest, HttpServerResponse> {
 
 	}
 

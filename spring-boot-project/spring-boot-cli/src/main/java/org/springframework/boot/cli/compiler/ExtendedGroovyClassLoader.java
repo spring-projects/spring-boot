@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			return super.findClass(name);
 		}
 		catch (ClassNotFoundException ex) {
-			if (this.scope == GroovyCompilerScope.DEFAULT
-					&& name.startsWith(SHARED_PACKAGE)) {
+			if (this.scope == GroovyCompilerScope.DEFAULT && name.startsWith(SHARED_PACKAGE)) {
 				Class<?> sharedClass = findSharedClass(name);
 				if (sharedClass != null) {
 					return sharedClass;
@@ -148,16 +147,14 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 	 */
 	protected class ExtendedClassCollector extends ClassCollector {
 
-		protected ExtendedClassCollector(InnerLoader loader, CompilationUnit unit,
-				SourceUnit su) {
+		protected ExtendedClassCollector(InnerLoader loader, CompilationUnit unit, SourceUnit su) {
 			super(loader, unit, su);
 		}
 
 		@Override
 		protected Class<?> createClass(byte[] code, ClassNode classNode) {
 			Class<?> createdClass = super.createClass(code, classNode);
-			ExtendedGroovyClassLoader.this.classResources
-					.put(classNode.getName().replace('.', '/') + ".class", code);
+			ExtendedGroovyClassLoader.this.classResources.put(classNode.getName().replace('.', '/') + ".class", code);
 			return createdClass;
 		}
 
@@ -231,8 +228,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		}
 
 		@Override
-		protected Class<?> loadClass(String name, boolean resolve)
-				throws ClassNotFoundException {
+		protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 			if (!name.startsWith("java.")) {
 				this.groovyOnlyClassLoader.loadClass(name);
 			}

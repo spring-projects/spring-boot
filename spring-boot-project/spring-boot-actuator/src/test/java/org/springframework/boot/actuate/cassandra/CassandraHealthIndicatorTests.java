@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ public class CassandraHealthIndicatorTests {
 
 	@Test
 	public void createWhenCassandraOperationsIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new CassandraHealthIndicator(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraHealthIndicator(null));
 	}
 
 	@Test
@@ -50,8 +49,7 @@ public class CassandraHealthIndicatorTests {
 		CassandraOperations cassandraOperations = mock(CassandraOperations.class);
 		CqlOperations cqlOperations = mock(CqlOperations.class);
 		ResultSet resultSet = mock(ResultSet.class);
-		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(
-				cassandraOperations);
+		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(cassandraOperations);
 		given(cassandraOperations.getCqlOperations()).willReturn(cqlOperations);
 		given(cqlOperations.queryForResultSet(any(Select.class))).willReturn(resultSet);
 		given(resultSet.isExhausted()).willReturn(true);
@@ -65,8 +63,7 @@ public class CassandraHealthIndicatorTests {
 		CqlOperations cqlOperations = mock(CqlOperations.class);
 		ResultSet resultSet = mock(ResultSet.class);
 		Row row = mock(Row.class);
-		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(
-				cassandraOperations);
+		CassandraHealthIndicator healthIndicator = new CassandraHealthIndicator(cassandraOperations);
 		given(cassandraOperations.getCqlOperations()).willReturn(cqlOperations);
 		given(cqlOperations.queryForResultSet(any(Select.class))).willReturn(resultSet);
 		given(resultSet.isExhausted()).willReturn(false);

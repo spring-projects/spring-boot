@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,12 @@ public class ItemMetadataTests {
 
 	@Test
 	public void newItemMetadataPrefixWithCamelCaseSuffix() {
-		assertThat(newItemMetadataPrefix("prefix.", "myValue"))
-				.isEqualTo("prefix.my-value");
+		assertThat(newItemMetadataPrefix("prefix.", "myValue")).isEqualTo("prefix.my-value");
 	}
 
 	@Test
 	public void newItemMetadataPrefixWithUpperCamelCaseSuffix() {
-		assertThat(newItemMetadataPrefix("prefix.", "MyValue"))
-				.isEqualTo("prefix.my-value");
+		assertThat(newItemMetadataPrefix("prefix.", "MyValue")).isEqualTo("prefix.my-value");
 	}
 
 	private String newItemMetadataPrefix(String prefix, String suffix) {

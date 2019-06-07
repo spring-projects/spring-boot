@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,20 +41,17 @@ public class WebOperationRequestPredicateTests {
 
 	@Test
 	public void predicatesWithIdenticalPathsWithVariablesAreEqual() {
-		assertThat(predicateWithPath("/path/{foo}"))
-				.isEqualTo(predicateWithPath("/path/{foo}"));
+		assertThat(predicateWithPath("/path/{foo}")).isEqualTo(predicateWithPath("/path/{foo}"));
 	}
 
 	@Test
 	public void predicatesWhereOneHasAPathAndTheOtherHasAVariableAreNotEqual() {
-		assertThat(predicateWithPath("/path/{foo}"))
-				.isNotEqualTo(predicateWithPath("/path/foo"));
+		assertThat(predicateWithPath("/path/{foo}")).isNotEqualTo(predicateWithPath("/path/foo"));
 	}
 
 	@Test
 	public void predicatesWithSinglePathVariablesInTheSamplePlaceAreEqual() {
-		assertThat(predicateWithPath("/path/{foo1}"))
-				.isEqualTo(predicateWithPath("/path/{foo2}"));
+		assertThat(predicateWithPath("/path/{foo1}")).isEqualTo(predicateWithPath("/path/{foo2}"));
 	}
 
 	@Test
@@ -64,8 +61,8 @@ public class WebOperationRequestPredicateTests {
 	}
 
 	private WebOperationRequestPredicate predicateWithPath(String path) {
-		return new WebOperationRequestPredicate(path, WebEndpointHttpMethod.GET,
-				Collections.emptyList(), Collections.emptyList());
+		return new WebOperationRequestPredicate(path, WebEndpointHttpMethod.GET, Collections.emptyList(),
+				Collections.emptyList());
 	}
 
 }

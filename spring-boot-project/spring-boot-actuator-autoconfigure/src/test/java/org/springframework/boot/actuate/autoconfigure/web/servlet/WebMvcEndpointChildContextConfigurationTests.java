@@ -39,16 +39,14 @@ public class WebMvcEndpointChildContextConfigurationTests {
 
 	@Test
 	public void contextShouldConfigureRequestContextFilter() {
-		this.contextRunner
-				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(OrderedRequestContextFilter.class));
+		this.contextRunner.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(OrderedRequestContextFilter.class));
 	}
 
 	@Test
 	public void contextShouldNotConfigureRequestContextFilterWhenPresent() {
-		this.contextRunner.withUserConfiguration(ExistingConfig.class,
-				WebMvcEndpointChildContextConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(ExistingConfig.class, WebMvcEndpointChildContextConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RequestContextFilter.class);
 					assertThat(context).hasBean("testRequestContextFilter");
 				});
@@ -59,18 +57,14 @@ public class WebMvcEndpointChildContextConfigurationTests {
 		this.contextRunner.withUserConfiguration(RequestContextListenerConfig.class,
 				WebMvcEndpointChildContextConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(RequestContextListener.class);
-					assertThat(context)
-							.doesNotHaveBean(OrderedRequestContextFilter.class);
+					assertThat(context).doesNotHaveBean(OrderedRequestContextFilter.class);
 				});
 	}
 
 	@Test
 	public void contextShouldConfigureDispatcherServletPathWithRootPath() {
-		this.contextRunner
-				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(DispatcherServletPath.class).getPath())
-								.isEqualTo("/"));
+		this.contextRunner.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
+				.run((context) -> assertThat(context.getBean(DispatcherServletPath.class).getPath()).isEqualTo("/"));
 	}
 
 	@Configuration

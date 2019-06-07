@@ -73,8 +73,7 @@ public class JdbcTestIntegrationTests {
 
 	@Test
 	public void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
 	}
 
@@ -86,14 +85,12 @@ public class JdbcTestIntegrationTests {
 
 	@Test
 	public void flywayAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(FlywayAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(FlywayAutoConfiguration.class));
 	}
 
 	@Test
 	public void liquibaseAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,8 +100,7 @@ abstract class RedisConnectionConfiguration {
 			return null;
 		}
 		RedisProperties.Cluster clusterProperties = this.properties.getCluster();
-		RedisClusterConfiguration config = new RedisClusterConfiguration(
-				clusterProperties.getNodes());
+		RedisClusterConfiguration config = new RedisClusterConfiguration(clusterProperties.getNodes());
 		if (clusterProperties.getMaxRedirects() != null) {
 			config.setMaxRedirects(clusterProperties.getMaxRedirects());
 		}
@@ -120,8 +119,7 @@ abstract class RedisConnectionConfiguration {
 				nodes.add(new RedisNode(parts[0], Integer.valueOf(parts[1])));
 			}
 			catch (RuntimeException ex) {
-				throw new IllegalStateException(
-						"Invalid redis sentinel " + "property '" + node + "'", ex);
+				throw new IllegalStateException("Invalid redis sentinel " + "property '" + node + "'", ex);
 			}
 		}
 		return nodes;

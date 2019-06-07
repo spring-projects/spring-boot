@@ -76,8 +76,7 @@ public class CouchbaseAutoConfiguration {
 		@Bean
 		@Primary
 		public Cluster couchbaseCluster() throws Exception {
-			return CouchbaseCluster.create(couchbaseEnvironment(),
-					this.properties.getBootstrapHosts());
+			return CouchbaseCluster.create(couchbaseEnvironment(), this.properties.getBootstrapHosts());
 		}
 
 		@Bean
@@ -85,8 +84,7 @@ public class CouchbaseAutoConfiguration {
 		@DependsOn("couchbaseClient")
 		public ClusterInfo couchbaseClusterInfo() throws Exception {
 			return couchbaseCluster()
-					.clusterManager(this.properties.getBucket().getName(),
-							this.properties.getBucket().getPassword())
+					.clusterManager(this.properties.getBucket().getName(), this.properties.getBucket().getPassword())
 					.info();
 		}
 
@@ -102,17 +100,14 @@ public class CouchbaseAutoConfiguration {
 		 * @param properties the couchbase properties to use
 		 * @return the {@link DefaultCouchbaseEnvironment} builder.
 		 */
-		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
-				CouchbaseProperties properties) {
+		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
 			CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
 			CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
-			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment
-					.builder();
+			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment.builder();
 			if (timeouts.getConnect() != null) {
 				builder = builder.connectTimeout(timeouts.getConnect().toMillis());
 			}
-			builder = builder.keyValueServiceConfig(
-					KeyValueServiceConfig.create(endpoints.getKeyValue()));
+			builder = builder.keyValueServiceConfig(KeyValueServiceConfig.create(endpoints.getKeyValue()));
 			if (timeouts.getKeyValue() != null) {
 				builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
 			}
@@ -122,8 +117,7 @@ public class CouchbaseAutoConfiguration {
 				builder = builder.viewServiceConfig(getViewServiceConfig(endpoints));
 			}
 			if (timeouts.getSocketConnect() != null) {
-				builder = builder.socketConnectTimeout(
-						(int) timeouts.getSocketConnect().toMillis());
+				builder = builder.socketConnectTimeout((int) timeouts.getSocketConnect().toMillis());
 			}
 			if (timeouts.getView() != null) {
 				builder = builder.viewTimeout(timeouts.getView().toMillis());
@@ -143,21 +137,18 @@ public class CouchbaseAutoConfiguration {
 
 		@SuppressWarnings("deprecation")
 		private QueryServiceConfig getQueryServiceConfig(Endpoints endpoints) {
-			return getServiceConfig(endpoints.getQueryservice(), endpoints.getQuery(),
-					QueryServiceConfig::create);
+			return getServiceConfig(endpoints.getQueryservice(), endpoints.getQuery(), QueryServiceConfig::create);
 		}
 
 		@SuppressWarnings("deprecation")
 		private ViewServiceConfig getViewServiceConfig(Endpoints endpoints) {
-			return getServiceConfig(endpoints.getViewservice(), endpoints.getView(),
-					ViewServiceConfig::create);
+			return getServiceConfig(endpoints.getViewservice(), endpoints.getView(), ViewServiceConfig::create);
 		}
 
 		private <T> T getServiceConfig(CouchbaseService service, Integer fallback,
 				BiFunction<Integer, Integer, T> factory) {
 			if (service.getMinEndpoints() != 1 || service.getMaxEndpoints() != 1) {
-				return factory.apply(service.getMinEndpoints(),
-						service.getMaxEndpoints());
+				return factory.apply(service.getMinEndpoints(), service.getMaxEndpoints());
 			}
 			int endpoints = (fallback != null) ? fallback : 1;
 			return factory.apply(endpoints, endpoints);
@@ -184,8 +175,7 @@ public class CouchbaseAutoConfiguration {
 
 		}
 
-		@ConditionalOnBean(
-				type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
+		@ConditionalOnBean(type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 		static class CouchbaseConfigurerAvailable {
 
 		}

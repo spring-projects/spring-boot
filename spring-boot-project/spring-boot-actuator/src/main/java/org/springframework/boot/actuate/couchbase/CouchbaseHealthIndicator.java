@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,13 +57,11 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	 * @deprecated since 2.0.6 in favour of {@link #CouchbaseHealthIndicator(Cluster)}
 	 */
 	@Deprecated
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations,
-			Duration timeout) {
+	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations, Duration timeout) {
 		super("Couchbase health check failed");
 		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
 		Assert.notNull(timeout, "Timeout must not be null");
-		this.healthCheck = new OperationsHealthCheck(couchbaseOperations,
-				timeout.toMillis());
+		this.healthCheck = new OperationsHealthCheck(couchbaseOperations, timeout.toMillis());
 	}
 
 	/**
@@ -114,17 +112,14 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 		public void checkHealth(Builder builder) throws Exception {
 			ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();
 			BucketInfo bucket = getBucketInfo();
-			String versions = StringUtils
-					.collectionToCommaDelimitedString(cluster.getAllVersions());
-			String nodes = StringUtils
-					.collectionToCommaDelimitedString(bucket.nodeList());
+			String versions = StringUtils.collectionToCommaDelimitedString(cluster.getAllVersions());
+			String nodes = StringUtils.collectionToCommaDelimitedString(bucket.nodeList());
 			builder.up().withDetail("versions", versions).withDetail("nodes", nodes);
 		}
 
 		private BucketInfo getBucketInfo() throws Exception {
 			try {
-				return this.operations.getCouchbaseBucket().bucketManager()
-						.info(this.timeout, TimeUnit.MILLISECONDS);
+				return this.operations.getCouchbaseBucket().bucketManager().info(this.timeout, TimeUnit.MILLISECONDS);
 			}
 			catch (RuntimeException ex) {
 				if (ex.getCause() instanceof TimeoutException) {
@@ -149,8 +144,8 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 			DiagnosticsReport diagnostics = this.cluster.diagnostics();
 			builder = isCouchbaseUp(diagnostics) ? builder.up() : builder.down();
 			builder.withDetail("sdk", diagnostics.sdk());
-			builder.withDetail("endpoints", diagnostics.endpoints().stream()
-					.map(this::describe).collect(Collectors.toList()));
+			builder.withDetail("endpoints",
+					diagnostics.endpoints().stream().map(this::describe).collect(Collectors.toList()));
 		}
 
 		private boolean isCouchbaseUp(DiagnosticsReport diagnostics) {

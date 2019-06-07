@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,15 +54,13 @@ public class WebClientAutoConfiguration {
 
 	private final WebClient.Builder webClientBuilder;
 
-	public WebClientAutoConfiguration(
-			ObjectProvider<List<WebClientCustomizer>> customizerProvider) {
+	public WebClientAutoConfiguration(ObjectProvider<List<WebClientCustomizer>> customizerProvider) {
 		this.webClientBuilder = WebClient.builder();
 		List<WebClientCustomizer> customizers = customizerProvider.getIfAvailable();
 		if (!CollectionUtils.isEmpty(customizers)) {
 			customizers = new ArrayList<>(customizers);
 			AnnotationAwareOrderComparator.sort(customizers);
-			customizers
-					.forEach((customizer) -> customizer.customize(this.webClientBuilder));
+			customizers.forEach((customizer) -> customizer.customize(this.webClientBuilder));
 		}
 	}
 
@@ -80,8 +78,7 @@ public class WebClientAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@Order(0)
-		public WebClientCodecCustomizer exchangeStrategiesCustomizer(
-				List<CodecCustomizer> codecCustomizers) {
+		public WebClientCodecCustomizer exchangeStrategiesCustomizer(List<CodecCustomizer> codecCustomizers) {
 			return new WebClientCodecCustomizer(codecCustomizers);
 		}
 

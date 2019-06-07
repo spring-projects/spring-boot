@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,18 +50,15 @@ public class HealthTests {
 
 	@Test
 	public void createWithDetails() {
-		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.build();
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("a")).isEqualTo("b");
 	}
 
 	@Test
 	public void equalsAndHashCode() {
-		Health h1 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.build();
-		Health h2 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.build();
+		Health h1 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).build();
+		Health h2 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).build();
 		Health h3 = new Health.Builder(Status.UP).build();
 		assertThat(h1).isEqualTo(h1);
 		assertThat(h1).isEqualTo(h2);
@@ -74,17 +71,14 @@ public class HealthTests {
 	@Test
 	public void withException() {
 		RuntimeException ex = new RuntimeException("bang");
-		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.withException(ex).build();
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).withException(ex).build();
 		assertThat(health.getDetails().get("a")).isEqualTo("b");
-		assertThat(health.getDetails().get("error"))
-				.isEqualTo("java.lang.RuntimeException: bang");
+		assertThat(health.getDetails().get("error")).isEqualTo("java.lang.RuntimeException: bang");
 	}
 
 	@Test
 	public void withDetails() {
-		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
-				.withDetail("c", "d").build();
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b")).withDetail("c", "d").build();
 		assertThat(health.getDetails().get("a")).isEqualTo("b");
 		assertThat(health.getDetails().get("c")).isEqualTo("d");
 	}
@@ -122,8 +116,7 @@ public class HealthTests {
 		RuntimeException ex = new RuntimeException("bang");
 		Health health = Health.down(ex).build();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("error"))
-				.isEqualTo("java.lang.RuntimeException: bang");
+		assertThat(health.getDetails().get("error")).isEqualTo("java.lang.RuntimeException: bang");
 	}
 
 	@Test

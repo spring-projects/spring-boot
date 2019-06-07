@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,8 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
-@AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class,
-		CodecsAutoConfiguration.class, ValidationAutoConfiguration.class })
+@AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
+		ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
@@ -121,9 +121,8 @@ public class WebFluxAutoConfiguration {
 
 		private final List<ViewResolver> viewResolvers;
 
-		public WebFluxConfig(ResourceProperties resourceProperties,
-				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<List<HandlerMethodArgumentResolver>> resolvers,
+		public WebFluxConfig(ResourceProperties resourceProperties, WebFluxProperties webFluxProperties,
+				ListableBeanFactory beanFactory, ObjectProvider<List<HandlerMethodArgumentResolver>> resolvers,
 				ObjectProvider<List<CodecCustomizer>> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
 				ObjectProvider<List<ViewResolver>> viewResolvers) {
@@ -132,8 +131,7 @@ public class WebFluxAutoConfiguration {
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers.getIfAvailable();
 			this.codecCustomizers = codecCustomizers.getIfAvailable();
-			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
-					.getIfAvailable();
+			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer.getIfAvailable();
 			this.viewResolvers = viewResolvers.getIfAvailable();
 		}
 
@@ -147,8 +145,7 @@ public class WebFluxAutoConfiguration {
 		@Override
 		public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
 			if (this.codecCustomizers != null) {
-				this.codecCustomizers
-						.forEach((customizer) -> customizer.customize(configurer));
+				this.codecCustomizers.forEach((customizer) -> customizer.customize(configurer));
 			}
 		}
 
@@ -160,23 +157,19 @@ public class WebFluxAutoConfiguration {
 			}
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				ResourceHandlerRegistration registration = registry
-						.addResourceHandler("/webjars/**")
+				ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl
-							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
+					registration.setCacheControl(CacheControl.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
 				}
 				customizeResourceHandlerRegistration(registration);
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
-				ResourceHandlerRegistration registration = registry
-						.addResourceHandler(staticPathPattern).addResourceLocations(
-								this.resourceProperties.getStaticLocations());
+				ResourceHandlerRegistration registration = registry.addResourceHandler(staticPathPattern)
+						.addResourceLocations(this.resourceProperties.getStaticLocations());
 				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl
-							.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
+					registration.setCacheControl(CacheControl.maxAge(cachePeriod.toMillis(), TimeUnit.MILLISECONDS));
 				}
 				customizeResourceHandlerRegistration(registration);
 			}
@@ -207,8 +200,7 @@ public class WebFluxAutoConfiguration {
 			return this.beanFactory.getBeansOfType(type).values();
 		}
 
-		private void customizeResourceHandlerRegistration(
-				ResourceHandlerRegistration registration) {
+		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
@@ -221,8 +213,7 @@ public class WebFluxAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
 	@Configuration
-	public static class EnableWebFluxConfiguration
-			extends DelegatingWebFluxConfiguration {
+	public static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
 
@@ -233,8 +224,7 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		@Override
 		public FormattingConversionService webFluxConversionService() {
-			WebConversionService conversionService = new WebConversionService(
-					this.webFluxProperties.getDateFormat());
+			WebConversionService conversionService = new WebConversionService(this.webFluxProperties.getDateFormat());
 			addFormatters(conversionService);
 			return conversionService;
 		}
@@ -242,8 +232,7 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		@Override
 		public Validator webFluxValidator() {
-			if (!ClassUtils.isPresent("javax.validation.Validator",
-					getClass().getClassLoader())) {
+			if (!ClassUtils.isPresent("javax.validation.Validator", getClass().getClassLoader())) {
 				return super.webFluxValidator();
 			}
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());
@@ -277,12 +266,10 @@ public class WebFluxAutoConfiguration {
 		@Override
 		public void customize(ResourceHandlerRegistration registration) {
 			ResourceProperties.Chain properties = this.resourceProperties.getChain();
-			configureResourceChain(properties,
-					registration.resourceChain(properties.isCache()));
+			configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 		}
 
-		private void configureResourceChain(ResourceProperties.Chain properties,
-				ResourceChainRegistration chain) {
+		private void configureResourceChain(ResourceProperties.Chain properties, ResourceChainRegistration chain) {
 			ResourceProperties.Strategy strategy = properties.getStrategy();
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
@@ -295,8 +282,7 @@ public class WebFluxAutoConfiguration {
 			}
 		}
 
-		private ResourceResolver getVersionResourceResolver(
-				ResourceProperties.Strategy properties) {
+		private ResourceResolver getVersionResourceResolver(ResourceProperties.Strategy properties) {
 			VersionResourceResolver resolver = new VersionResourceResolver();
 			if (properties.getFixed().isEnabled()) {
 				String version = properties.getFixed().getVersion();

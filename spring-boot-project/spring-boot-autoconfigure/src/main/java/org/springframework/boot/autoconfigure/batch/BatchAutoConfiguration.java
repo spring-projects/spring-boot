@@ -79,21 +79,16 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(DataSource.class)
-	public BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
-		return new BatchDataSourceInitializer(dataSource, resourceLoader,
-				this.properties);
+	public BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
+		return new BatchDataSourceInitializer(dataSource, resourceLoader, this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled",
-			havingValue = "true", matchIfMissing = true)
-	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
-			JobLauncher jobLauncher, JobExplorer jobExplorer,
+	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
 			JobRepository jobRepository) {
-		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
-				jobLauncher, jobExplorer, jobRepository);
+		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(jobLauncher, jobExplorer, jobRepository);
 		String jobNames = this.properties.getJob().getNames();
 		if (StringUtils.hasText(jobNames)) {
 			runner.setJobNames(jobNames);
@@ -110,8 +105,7 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
 	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository)
-			throws Exception {
+			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);

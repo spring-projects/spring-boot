@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@ public class KafkaProperties {
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
 	 * connections to the Kafka cluster. Applies to all components unless overridden.
 	 */
-	private List<String> bootstrapServers = new ArrayList<>(
-			Collections.singletonList("localhost:9092"));
+	private List<String> bootstrapServers = new ArrayList<>(Collections.singletonList("localhost:9092"));
 
 	/**
 	 * ID to pass to the server when making requests. Used for server-side logging.
@@ -138,8 +137,7 @@ public class KafkaProperties {
 	private Map<String, Object> buildCommonProperties() {
 		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
-			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
-					this.bootstrapServers);
+			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
 		}
 		if (this.clientId != null) {
 			properties.put(CommonClientConfigs.CLIENT_ID_CONFIG, this.clientId);
@@ -377,27 +375,19 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAutoCommitInterval).asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
-			map.from(this::getAutoOffsetReset)
-					.to(properties.in(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG));
-			map.from(this::getBootstrapServers)
-					.to(properties.in(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
-			map.from(this::getClientId)
-					.to(properties.in(ConsumerConfig.CLIENT_ID_CONFIG));
-			map.from(this::getEnableAutoCommit)
-					.to(properties.in(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG));
+			map.from(this::getAutoOffsetReset).to(properties.in(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG));
+			map.from(this::getBootstrapServers).to(properties.in(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+			map.from(this::getClientId).to(properties.in(ConsumerConfig.CLIENT_ID_CONFIG));
+			map.from(this::getEnableAutoCommit).to(properties.in(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG));
 			map.from(this::getFetchMaxWait).asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG));
-			map.from(this::getFetchMinSize)
-					.to(properties.in(ConsumerConfig.FETCH_MIN_BYTES_CONFIG));
+			map.from(this::getFetchMinSize).to(properties.in(ConsumerConfig.FETCH_MIN_BYTES_CONFIG));
 			map.from(this::getGroupId).to(properties.in(ConsumerConfig.GROUP_ID_CONFIG));
 			map.from(this::getHeartbeatInterval).asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG));
-			map.from(this::getKeyDeserializer)
-					.to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
-			map.from(this::getValueDeserializer)
-					.to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
-			map.from(this::getMaxPollRecords)
-					.to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
+			map.from(this::getKeyDeserializer).to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
+			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
+			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
 			return properties.with(this.ssl, this.properties);
 		}
 
@@ -558,21 +548,14 @@ public class KafkaProperties {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
-			map.from(this::getBatchSize)
-					.to(properties.in(ProducerConfig.BATCH_SIZE_CONFIG));
-			map.from(this::getBootstrapServers)
-					.to(properties.in(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
-			map.from(this::getBufferMemory)
-					.to(properties.in(ProducerConfig.BUFFER_MEMORY_CONFIG));
-			map.from(this::getClientId)
-					.to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
-			map.from(this::getCompressionType)
-					.to(properties.in(ProducerConfig.COMPRESSION_TYPE_CONFIG));
-			map.from(this::getKeySerializer)
-					.to(properties.in(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG));
+			map.from(this::getBatchSize).to(properties.in(ProducerConfig.BATCH_SIZE_CONFIG));
+			map.from(this::getBootstrapServers).to(properties.in(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
+			map.from(this::getBufferMemory).to(properties.in(ProducerConfig.BUFFER_MEMORY_CONFIG));
+			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
+			map.from(this::getCompressionType).to(properties.in(ProducerConfig.COMPRESSION_TYPE_CONFIG));
+			map.from(this::getKeySerializer).to(properties.in(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG));
 			map.from(this::getRetries).to(properties.in(ProducerConfig.RETRIES_CONFIG));
-			map.from(this::getValueSerializer)
-					.to(properties.in(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG));
+			map.from(this::getValueSerializer).to(properties.in(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG));
 			return properties.with(this.ssl, this.properties);
 		}
 
@@ -624,8 +607,7 @@ public class KafkaProperties {
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(this::getClientId)
-					.to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
+			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
 			return properties.with(this.ssl, this.properties);
 		}
 
@@ -922,20 +904,15 @@ public class KafkaProperties {
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(this::getKeyPassword)
-					.to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
+			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
 			map.from(this::getKeystoreLocation).as(this::resourceToPath)
 					.to(properties.in(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG));
-			map.from(this::getKeystorePassword)
-					.to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
-			map.from(this::getKeyStoreType)
-					.to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
+			map.from(this::getKeystorePassword).to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
+			map.from(this::getKeyStoreType).to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
 			map.from(this::getTruststoreLocation).as(this::resourceToPath)
 					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG));
-			map.from(this::getTruststorePassword)
-					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
-			map.from(this::getTrustStoreType)
-					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
+			map.from(this::getTruststorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
+			map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
 			map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
 			return properties;
 		}
@@ -945,8 +922,7 @@ public class KafkaProperties {
 				return resource.getFile().getAbsolutePath();
 			}
 			catch (IOException ex) {
-				throw new IllegalStateException(
-						"Resource '" + resource + "' must be on a file system", ex);
+				throw new IllegalStateException("Resource '" + resource + "' must be on a file system", ex);
 			}
 		}
 
@@ -994,8 +970,7 @@ public class KafkaProperties {
 			return this.controlFlag;
 		}
 
-		public void setControlFlag(
-				KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
+		public void setControlFlag(KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
 			this.controlFlag = controlFlag;
 		}
 

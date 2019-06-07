@@ -42,11 +42,9 @@ class ProjectGenerator {
 		this.initializrService = initializrService;
 	}
 
-	public void generateProject(ProjectGenerationRequest request, boolean force)
-			throws IOException {
+	public void generateProject(ProjectGenerationRequest request, boolean force) throws IOException {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
-		String fileName = (request.getOutput() != null) ? request.getOutput()
-				: response.getFileName();
+		String fileName = (request.getOutput() != null) ? request.getOutput() : response.getFileName();
 		if (shouldExtract(request, response)) {
 			if (isZipArchive(response)) {
 				extractProject(response, request.getOutput(), force);
@@ -59,10 +57,8 @@ class ProjectGenerator {
 			}
 		}
 		if (fileName == null) {
-			throw new ReportableException(
-					"Could not save the project, the server did not set a preferred "
-							+ "file name and no location was set. Specify the output location "
-							+ "for the project.");
+			throw new ReportableException("Could not save the project, the server did not set a preferred "
+					+ "file name and no location was set. Specify the output location " + "for the project.");
 		}
 		writeProject(response, fileName, force);
 	}
@@ -73,14 +69,12 @@ class ProjectGenerator {
 	 * @param response the generation response
 	 * @return if the project should be extracted
 	 */
-	private boolean shouldExtract(ProjectGenerationRequest request,
-			ProjectGenerationResponse response) {
+	private boolean shouldExtract(ProjectGenerationRequest request, ProjectGenerationResponse response) {
 		if (request.isExtract()) {
 			return true;
 		}
 		// explicit name hasn't been provided for an archive and there is no extension
-		if (isZipArchive(response) && request.getOutput() != null
-				&& !request.getOutput().contains(".")) {
+		if (isZipArchive(response) && request.getOutput() != null && !request.getOutput().contains(".")) {
 			return true;
 		}
 		return false;
@@ -98,15 +92,12 @@ class ProjectGenerator {
 		return false;
 	}
 
-	private void extractProject(ProjectGenerationResponse entity, String output,
-			boolean overwrite) throws IOException {
-		File outputFolder = (output != null) ? new File(output)
-				: new File(System.getProperty("user.dir"));
+	private void extractProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
+		File outputFolder = (output != null) ? new File(output) : new File(System.getProperty("user.dir"));
 		if (!outputFolder.exists()) {
 			outputFolder.mkdirs();
 		}
-		try (ZipInputStream zipStream = new ZipInputStream(
-				new ByteArrayInputStream(entity.getContent()))) {
+		try (ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(entity.getContent()))) {
 			extractFromStream(zipStream, overwrite, outputFolder);
 			fixExecutableFlag(outputFolder, "mvnw");
 			fixExecutableFlag(outputFolder, "gradlew");
@@ -114,29 +105,24 @@ class ProjectGenerator {
 		}
 	}
 
-	private void extractFromStream(ZipInputStream zipStream, boolean overwrite,
-			File outputFolder) throws IOException {
+	private void extractFromStream(ZipInputStream zipStream, boolean overwrite, File outputFolder) throws IOException {
 		ZipEntry entry = zipStream.getNextEntry();
 		String canonicalOutputPath = outputFolder.getCanonicalPath() + File.separator;
 		while (entry != null) {
 			File file = new File(outputFolder, entry.getName());
 			String canonicalEntryPath = file.getCanonicalPath();
 			if (!canonicalEntryPath.startsWith(canonicalOutputPath)) {
-				throw new ReportableException("Entry '" + entry.getName()
-						+ "' would be written to '" + canonicalEntryPath
-						+ "'. This is outside the output location of '"
-						+ canonicalOutputPath
+				throw new ReportableException("Entry '" + entry.getName() + "' would be written to '"
+						+ canonicalEntryPath + "'. This is outside the output location of '" + canonicalOutputPath
 						+ "'. Verify your target server configuration.");
 			}
 			if (file.exists() && !overwrite) {
-				throw new ReportableException((file.isDirectory() ? "Directory" : "File")
-						+ " '" + file.getName()
+				throw new ReportableException((file.isDirectory() ? "Directory" : "File") + " '" + file.getName()
 						+ "' already exists. Use --force if you want to overwrite or "
 						+ "specify an alternate location.");
 			}
 			if (!entry.isDirectory()) {
-				FileCopyUtils.copy(StreamUtils.nonClosing(zipStream),
-						new FileOutputStream(file));
+				FileCopyUtils.copy(StreamUtils.nonClosing(zipStream), new FileOutputStream(file));
 			}
 			else {
 				file.mkdir();
@@ -146,18 +132,16 @@ class ProjectGenerator {
 		}
 	}
 
-	private void writeProject(ProjectGenerationResponse entity, String output,
-			boolean overwrite) throws IOException {
+	private void writeProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
 		File outputFile = new File(output);
 		if (outputFile.exists()) {
 			if (!overwrite) {
-				throw new ReportableException("File '" + outputFile.getName()
-						+ "' already exists. Use --force if you want to "
-						+ "overwrite or specify an alternate location.");
+				throw new ReportableException(
+						"File '" + outputFile.getName() + "' already exists. Use --force if you want to "
+								+ "overwrite or specify an alternate location.");
 			}
 			if (!outputFile.delete()) {
-				throw new ReportableException(
-						"Failed to delete existing file " + outputFile.getPath());
+				throw new ReportableException("Failed to delete existing file " + outputFile.getPath());
 			}
 		}
 		FileCopyUtils.copy(entity.getContent(), outputFile);

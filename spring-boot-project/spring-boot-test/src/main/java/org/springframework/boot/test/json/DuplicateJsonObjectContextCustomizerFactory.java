@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,15 +44,12 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		return new DuplicateJsonObjectContextCustomizer();
 	}
 
-	private static class DuplicateJsonObjectContextCustomizer
-			implements ContextCustomizer {
+	private static class DuplicateJsonObjectContextCustomizer implements ContextCustomizer {
 
-		private final Log logger = LogFactory
-				.getLog(DuplicateJsonObjectContextCustomizer.class);
+		private final Log logger = LogFactory.getLog(DuplicateJsonObjectContextCustomizer.class);
 
 		@Override
-		public void customizeContext(ConfigurableApplicationContext context,
-				MergedContextConfiguration mergedConfig) {
+		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 			List<URL> jsonObjects = findJsonObjects();
 			if (jsonObjects.size() > 1) {
 				logDuplicateJsonObjectsWarning(jsonObjects);
@@ -62,8 +59,7 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		private List<URL> findJsonObjects() {
 			List<URL> jsonObjects = new ArrayList<>();
 			try {
-				Enumeration<URL> resources = getClass().getClassLoader()
-						.getResources("org/json/JSONObject.class");
+				Enumeration<URL> resources = getClass().getClassLoader().getResources("org/json/JSONObject.class");
 				while (resources.hasMoreElements()) {
 					jsonObjects.add(resources.nextElement());
 				}
@@ -76,13 +72,12 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 
 		private void logDuplicateJsonObjectsWarning(List<URL> jsonObjects) {
 			StringBuilder message = new StringBuilder(
-					String.format("%n%nFound multiple occurrences of"
-							+ " org.json.JSONObject on the class path:%n%n"));
+					String.format("%n%nFound multiple occurrences of" + " org.json.JSONObject on the class path:%n%n"));
 			for (URL jsonObject : jsonObjects) {
 				message.append(String.format("\t%s%n", jsonObject));
 			}
-			message.append(String.format("%nYou may wish to exclude one of them to ensure"
-					+ " predictable runtime behavior%n"));
+			message.append(String
+					.format("%nYou may wish to exclude one of them to ensure" + " predictable runtime behavior%n"));
 			this.logger.warn(message);
 		}
 

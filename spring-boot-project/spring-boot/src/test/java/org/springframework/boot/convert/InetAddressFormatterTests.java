@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public class InetAddressFormatterTests {
 	}
 
 	@Test
-	public void convertFromInetAddressToStringShouldConvert()
-			throws UnknownHostException {
+	public void convertFromInetAddressToStringShouldConvert() throws UnknownHostException {
 		assumeResolves("example.com", true);
 		InetAddress address = InetAddress.getByName("example.com");
 		String converted = this.conversionService.convert(address, String.class);
@@ -61,8 +60,7 @@ public class InetAddressFormatterTests {
 	@Test
 	public void convertFromStringToInetAddressShouldConvert() {
 		assumeResolves("example.com", true);
-		InetAddress converted = this.conversionService.convert("example.com",
-				InetAddress.class);
+		InetAddress converted = this.conversionService.convert("example.com", InetAddress.class);
 		assertThat(converted.toString()).startsWith("example.com");
 	}
 
@@ -77,8 +75,7 @@ public class InetAddressFormatterTests {
 	private void assumeResolves(String host, boolean expectedToResolve) {
 		boolean resolved = isResolvable(host);
 		if (resolved != expectedToResolve) {
-			throw new AssumptionViolatedException(
-					"Host " + host + " resolved " + resolved);
+			throw new AssumptionViolatedException("Host " + host + " resolved " + resolved);
 		}
 	}
 

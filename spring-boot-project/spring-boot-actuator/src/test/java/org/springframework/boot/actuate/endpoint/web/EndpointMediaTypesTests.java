@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,16 +53,14 @@ public class EndpointMediaTypesTests {
 	@Test
 	public void getProducedShouldReturnProduced() {
 		List<String> produced = Arrays.asList("a", "b", "c");
-		EndpointMediaTypes types = new EndpointMediaTypes(produced,
-				Collections.emptyList());
+		EndpointMediaTypes types = new EndpointMediaTypes(produced, Collections.emptyList());
 		assertThat(types.getProduced()).isEqualTo(produced);
 	}
 
 	@Test
 	public void getConsumedShouldReturnConsumed() {
 		List<String> consumed = Arrays.asList("a", "b", "c");
-		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(),
-				consumed);
+		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(), consumed);
 		assertThat(types.getConsumed()).isEqualTo(consumed);
 	}
 

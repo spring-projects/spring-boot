@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,9 +69,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		this.autoConfiguredClass = autoConfiguredClass;
 		this.contextRunner = new ApplicationContextRunner()
 				.withPropertyValues("spring.datasource.generate-unique-name=true")
-				.withUserConfiguration(TestConfiguration.class).withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class,
-								TransactionAutoConfiguration.class, autoConfiguredClass));
+				.withUserConfiguration(TestConfiguration.class).withConfiguration(AutoConfigurations.of(
+						DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class, autoConfiguredClass));
 	}
 
 	protected ApplicationContextRunner contextRunner() {
@@ -80,17 +79,14 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void notConfiguredIfDataSourceIsNotAvailable() {
-		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(this.autoConfiguredClass))
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(this.autoConfiguredClass))
 				.run(assertJpaIsNotAutoConfigured());
 	}
 
 	@Test
 	public void notConfiguredIfNoSingleDataSourceCandidateIsAvailable() {
-		new ApplicationContextRunner()
-				.withUserConfiguration(TestTwoDataSourcesConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(this.autoConfiguredClass))
-				.run(assertJpaIsNotAutoConfigured());
+		new ApplicationContextRunner().withUserConfiguration(TestTwoDataSourcesConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(this.autoConfiguredClass)).run(assertJpaIsNotAutoConfigured());
 	}
 
 	protected ContextConsumer<AssertableApplicationContext> assertJpaIsNotAutoConfigured() {
@@ -113,71 +109,55 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void configuredWithSingleCandidateDataSource() {
-		this.contextRunner
-				.withUserConfiguration(TestTwoDataSourcesAndPrimaryConfiguration.class)
-				.run((context) -> {
-					assertThat(context).getBeans(DataSource.class).hasSize(2);
-					assertThat(context).hasSingleBean(JpaTransactionManager.class);
-					assertThat(context).hasSingleBean(EntityManagerFactory.class);
-				});
+		this.contextRunner.withUserConfiguration(TestTwoDataSourcesAndPrimaryConfiguration.class).run((context) -> {
+			assertThat(context).getBeans(DataSource.class).hasSize(2);
+			assertThat(context).hasSingleBean(JpaTransactionManager.class);
+			assertThat(context).hasSingleBean(EntityManagerFactory.class);
+		});
 	}
 
 	@Test
 	public void jtaTransactionManagerTakesPrecedence() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations
-						.of(DataSourceTransactionManagerAutoConfiguration.class))
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSource.class);
 					assertThat(context).hasSingleBean(JpaTransactionManager.class);
-					assertThat(context).getBean("transactionManager")
-							.isInstanceOf(JpaTransactionManager.class);
+					assertThat(context).getBean("transactionManager").isInstanceOf(JpaTransactionManager.class);
 				});
 	}
 
 	@Test
 	public void openEntityManagerInViewInterceptorIsCreated() {
-		new WebApplicationContextRunner()
-				.withPropertyValues("spring.datasource.generate-unique-name=true")
+		new WebApplicationContextRunner().withPropertyValues("spring.datasource.generate-unique-name=true")
 				.withUserConfiguration(TestConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(
-						DataSourceAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						TransactionAutoConfiguration.class, this.autoConfiguredClass))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(OpenEntityManagerInViewInterceptor.class));
+				.run((context) -> assertThat(context).hasSingleBean(OpenEntityManagerInViewInterceptor.class));
 	}
 
 	@Test
 	public void openEntityManagerInViewInterceptorIsNotRegisteredWhenFilterPresent() {
-		new WebApplicationContextRunner()
-				.withPropertyValues("spring.datasource.generate-unique-name=true")
+		new WebApplicationContextRunner().withPropertyValues("spring.datasource.generate-unique-name=true")
 				.withUserConfiguration(TestFilterConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(
-						DataSourceAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						TransactionAutoConfiguration.class, this.autoConfiguredClass))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(OpenEntityManagerInViewInterceptor.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(OpenEntityManagerInViewInterceptor.class));
 	}
 
 	@Test
 	public void openEntityManagerInViewInterceptorISNotRegisteredWhenExplicitlyOff() {
 		new WebApplicationContextRunner()
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.jpa.open-in-view=false")
+				.withPropertyValues("spring.datasource.generate-unique-name=true", "spring.jpa.open-in-view=false")
 				.withUserConfiguration(TestConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(
-						DataSourceAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						TransactionAutoConfiguration.class, this.autoConfiguredClass))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(OpenEntityManagerInViewInterceptor.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(OpenEntityManagerInViewInterceptor.class));
 	}
 
 	@Test
 	public void customJpaProperties() {
-		this.contextRunner
-				.withPropertyValues("spring.jpa.properties.a:b",
-						"spring.jpa.properties.a.b:c", "spring.jpa.properties.c:d")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c",
+				"spring.jpa.properties.c:d").run((context) -> {
 					LocalContainerEntityManagerFactoryBean bean = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class);
 					Map<String, Object> map = bean.getJpaPropertyMap();
@@ -189,9 +169,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
-		this.contextRunner
-				.withUserConfiguration(
-						TestConfigurationWithLocalContainerEntityManagerFactoryBean.class)
+		this.contextRunner.withUserConfiguration(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class)
 				.run((context) -> {
 					LocalContainerEntityManagerFactoryBean factoryBean = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class);
@@ -202,12 +180,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedEntityManagerFactoryIfAvailable() {
-		this.contextRunner
-				.withUserConfiguration(
-						TestConfigurationWithLocalContainerEntityManagerFactoryBean.class)
+		this.contextRunner.withUserConfiguration(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class)
 				.run((context) -> {
-					EntityManagerFactory factoryBean = context
-							.getBean(EntityManagerFactory.class);
+					EntityManagerFactory factoryBean = context.getBean(EntityManagerFactory.class);
 					Map<String, Object> map = factoryBean.getProperties();
 					assertThat(map.get("configured")).isEqualTo("manually");
 				});
@@ -215,20 +190,15 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedTransactionManagerBeanIfAvailable() {
-		this.contextRunner
-				.withUserConfiguration(TestConfigurationWithTransactionManager.class)
-				.run((context) -> {
-					PlatformTransactionManager txManager = context
-							.getBean(PlatformTransactionManager.class);
-					assertThat(txManager).isInstanceOf(CustomJpaTransactionManager.class);
-				});
+		this.contextRunner.withUserConfiguration(TestConfigurationWithTransactionManager.class).run((context) -> {
+			PlatformTransactionManager txManager = context.getBean(PlatformTransactionManager.class);
+			assertThat(txManager).isInstanceOf(CustomJpaTransactionManager.class);
+		});
 	}
 
 	@Test
 	public void customPersistenceUnitManager() {
-		this.contextRunner
-				.withUserConfiguration(
-						TestConfigurationWithCustomPersistenceUnitManager.class)
+		this.contextRunner.withUserConfiguration(TestConfigurationWithCustomPersistenceUnitManager.class)
 				.run((context) -> {
 					LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class);
@@ -299,12 +269,11 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean
-			extends TestConfiguration {
+	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean extends TestConfiguration {
 
 		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-				DataSource dataSource, JpaVendorAdapter adapter) {
+		public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
+				JpaVendorAdapter adapter) {
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
@@ -319,12 +288,10 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory
-			extends TestConfiguration {
+	protected static class TestConfigurationWithEntityManagerFactory extends TestConfiguration {
 
 		@Bean
-		public EntityManagerFactory entityManagerFactory(DataSource dataSource,
-				JpaVendorAdapter adapter) {
+		public EntityManagerFactory entityManagerFactory(DataSource dataSource, JpaVendorAdapter adapter) {
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);

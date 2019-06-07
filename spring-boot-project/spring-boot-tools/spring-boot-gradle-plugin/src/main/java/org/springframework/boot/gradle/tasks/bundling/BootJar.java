@@ -37,8 +37,8 @@ import org.gradle.api.tasks.bundling.Jar;
  */
 public class BootJar extends Jar implements BootArchive {
 
-	private final BootArchiveSupport support = new BootArchiveSupport(
-			"org.springframework.boot.loader.JarLauncher", this::resolveZipCompression);
+	private final BootArchiveSupport support = new BootArchiveSupport("org.springframework.boot.loader.JarLauncher",
+			this::resolveZipCompression);
 
 	private final CopySpec bootInf;
 
@@ -57,16 +57,14 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
-		return (copySpec) -> copySpec
-				.from((Callable<Iterable<File>>) () -> (this.classpath != null)
-						? this.classpath.filter(filter) : Collections.emptyList());
+		return (copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> (this.classpath != null)
+				? this.classpath.filter(filter) : Collections.emptyList());
 
 	}
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/",
-				"BOOT-INF/lib/");
+		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/", "BOOT-INF/lib/");
 		super.copy();
 	}
 
@@ -78,8 +76,7 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public String getMainClassName() {
 		if (this.mainClassName == null) {
-			String manifestStartClass = (String) getManifest().getAttributes()
-					.get("Start-Class");
+			String manifestStartClass = (String) getManifest().getAttributes().get("Start-Class");
 			if (manifestStartClass != null) {
 				setMainClassName(manifestStartClass);
 			}
@@ -125,8 +122,7 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void classpath(Object... classpath) {
 		FileCollection existingClasspath = this.classpath;
-		this.classpath = getProject().files(
-				(existingClasspath != null) ? existingClasspath : Collections.emptyList(),
+		this.classpath = getProject().files((existingClasspath != null) ? existingClasspath : Collections.emptyList(),
 				classpath);
 	}
 

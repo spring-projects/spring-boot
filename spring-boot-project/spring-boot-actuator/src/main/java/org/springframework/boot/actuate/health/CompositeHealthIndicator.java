@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param indicators a map of {@link HealthIndicator}s with the key being used as an
 	 * indicator name.
 	 */
-	public CompositeHealthIndicator(HealthAggregator healthAggregator,
-			Map<String, HealthIndicator> indicators) {
+	public CompositeHealthIndicator(HealthAggregator healthAggregator, Map<String, HealthIndicator> indicators) {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(indicators, "Indicators must not be null");
 		this.indicators = new LinkedHashMap<>(indicators);

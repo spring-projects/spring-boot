@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ public class OperationMethod {
 		Assert.notNull(operationType, "OperationType must not be null");
 		this.method = method;
 		this.operationType = operationType;
-		this.operationParameters = new OperationMethodParameters(method,
-				DEFAULT_PARAMETER_NAME_DISCOVERER);
+		this.operationParameters = new OperationMethodParameters(method, DEFAULT_PARAMETER_NAME_DISCOVERER);
 	}
 
 	/**
@@ -82,8 +81,7 @@ public class OperationMethod {
 
 	@Override
 	public String toString() {
-		return "Operation " + this.operationType.name().toLowerCase(Locale.ENGLISH)
-				+ " method " + this.method;
+		return "Operation " + this.operationType.name().toLowerCase(Locale.ENGLISH) + " method " + this.method;
 	}
 
 }

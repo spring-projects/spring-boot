@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,8 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 		Assert.notNull(indicators, "Indicators must not be null");
 		this.indicators = new LinkedHashMap<>(indicators);
 		this.healthAggregator = healthAggregator;
-		this.timeoutCompose = (mono) -> (this.timeout != null) ? mono.timeout(
-				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
+		this.timeoutCompose = (mono) -> (this.timeout != null)
+				? mono.timeout(Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
 	}
 
 	/**
@@ -67,8 +67,7 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	 * @param indicator the health indicator to add
 	 * @return this instance
 	 */
-	public CompositeReactiveHealthIndicator addHealthIndicator(String name,
-			ReactiveHealthIndicator indicator) {
+	public CompositeReactiveHealthIndicator addHealthIndicator(String name, ReactiveHealthIndicator indicator) {
 		this.indicators.put(name, indicator);
 		return this;
 	}
@@ -82,21 +81,17 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	 * {@code timeout}
 	 * @return this instance
 	 */
-	public CompositeReactiveHealthIndicator timeoutStrategy(long timeout,
-			Health timeoutHealth) {
+	public CompositeReactiveHealthIndicator timeoutStrategy(long timeout, Health timeoutHealth) {
 		this.timeout = timeout;
-		this.timeoutHealth = (timeoutHealth != null) ? timeoutHealth
-				: Health.unknown().build();
+		this.timeoutHealth = (timeoutHealth != null) ? timeoutHealth : Health.unknown().build();
 		return this;
 	}
 
 	@Override
 	public Mono<Health> health() {
-		return Flux.fromIterable(this.indicators.entrySet())
-				.flatMap((entry) -> Mono.zip(Mono.just(entry.getKey()),
-						entry.getValue().health().compose(this.timeoutCompose)))
-				.collectMap(Tuple2::getT1, Tuple2::getT2)
-				.map(this.healthAggregator::aggregate);
+		return Flux.fromIterable(this.indicators.entrySet()).flatMap(
+				(entry) -> Mono.zip(Mono.just(entry.getKey()), entry.getValue().health().compose(this.timeoutCompose)))
+				.collectMap(Tuple2::getT1, Tuple2::getT2).map(this.healthAggregator::aggregate);
 	}
 
 }

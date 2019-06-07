@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class,
-					DataSourceHealthIndicatorAutoConfiguration.class))
+					HealthIndicatorAutoConfiguration.class, DataSourceHealthIndicatorAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode=never");
 
 	@Test
@@ -64,37 +63,28 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void runWhenMultipleDataSourceBeansShouldCreateCompositeIndicator() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
-				DataSourceConfig.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, DataSourceConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(HealthIndicator.class);
-					HealthIndicator indicator = context
-							.getBean(CompositeHealthIndicator.class);
-					assertThat(indicator.health().getDetails())
-							.containsOnlyKeys("dataSource", "testDataSource");
+					HealthIndicator indicator = context.getBean(CompositeHealthIndicator.class);
+					assertThat(indicator.health().getDetails()).containsOnlyKeys("dataSource", "testDataSource");
 				});
 	}
 
 	@Test
 	public void runShouldFilterRoutingDataSource() {
-		this.contextRunner
-				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
-						RoutingDatasourceConfig.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(DataSourceHealthIndicator.class)
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDatasourceConfig.class)
+				.run((context) -> assertThat(context).hasSingleBean(DataSourceHealthIndicator.class)
 						.doesNotHaveBean(CompositeHealthIndicator.class));
 	}
 
 	@Test
 	public void runWithValidationQueryPropertyShouldUseCustomQuery() {
 		this.contextRunner
-				.withUserConfiguration(DataSourceConfig.class,
-						DataSourcePoolMetadataProvidersConfiguration.class)
-				.withPropertyValues(
-						"spring.datasource.test.validation-query:SELECT from FOOBAR")
-				.run((context) -> {
+				.withUserConfiguration(DataSourceConfig.class, DataSourcePoolMetadataProvidersConfiguration.class)
+				.withPropertyValues("spring.datasource.test.validation-query:SELECT from FOOBAR").run((context) -> {
 					assertThat(context).hasSingleBean(HealthIndicator.class);
-					DataSourceHealthIndicator indicator = context
-							.getBean(DataSourceHealthIndicator.class);
+					DataSourceHealthIndicator indicator = context.getBean(DataSourceHealthIndicator.class);
 					assertThat(indicator.getQuery()).isEqualTo("SELECT from FOOBAR");
 				});
 	}
@@ -103,8 +93,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("management.health.db.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(DataSourceHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(DataSourceHealthIndicator.class)
 						.doesNotHaveBean(CompositeHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
@@ -116,10 +105,8 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.test")
 		public DataSource testDataSource() {
-			return DataSourceBuilder.create()
-					.type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
-					.url("jdbc:hsqldb:mem:test").username("sa").build();
+			return DataSourceBuilder.create().type(org.apache.tomcat.jdbc.pool.DataSource.class)
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver").url("jdbc:hsqldb:mem:test").username("sa").build();
 		}
 
 	}

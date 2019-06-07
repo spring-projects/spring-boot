@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,29 +33,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpTraceEndpointAutoConfigurationTests {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class,
-					HttpTraceEndpointAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(HttpTraceAutoConfiguration.class, HttpTraceEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(HttpTraceEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.httptrace.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HttpTraceEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.httptrace.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
 	public void endpointBacksOffWhenRepositoryIsNotAvailable() {
 		this.contextRunner.withPropertyValues("management.trace.http.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HttpTraceEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,8 @@ class MockDefinition extends Definition {
 
 	private final boolean serializable;
 
-	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces,
-			Answers answer, boolean serializable, MockReset reset,
-			QualifierDefinition qualifier) {
+	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces, Answers answer,
+			boolean serializable, MockReset reset, QualifierDefinition qualifier) {
 		super(name, reset, false, qualifier);
 		Assert.notNull(typeToMock, "TypeToMock must not be null");
 		this.typeToMock = typeToMock;
@@ -111,8 +110,7 @@ class MockDefinition extends Definition {
 		MockDefinition other = (MockDefinition) obj;
 		boolean result = super.equals(obj);
 		result = result && ObjectUtils.nullSafeEquals(this.typeToMock, other.typeToMock);
-		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces,
-				other.extraInterfaces);
+		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces, other.extraInterfaces);
 		result = result && ObjectUtils.nullSafeEquals(this.answer, other.answer);
 		result = result && this.serializable == other.serializable;
 		return result;
@@ -130,11 +128,9 @@ class MockDefinition extends Definition {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", getName())
-				.append("typeToMock", this.typeToMock)
-				.append("extraInterfaces", this.extraInterfaces)
-				.append("answer", this.answer).append("serializable", this.serializable)
-				.append("reset", getReset()).toString();
+		return new ToStringCreator(this).append("name", getName()).append("typeToMock", this.typeToMock)
+				.append("extraInterfaces", this.extraInterfaces).append("answer", this.answer)
+				.append("serializable", this.serializable).append("reset", getReset()).toString();
 	}
 
 	public <T> T createMock() {

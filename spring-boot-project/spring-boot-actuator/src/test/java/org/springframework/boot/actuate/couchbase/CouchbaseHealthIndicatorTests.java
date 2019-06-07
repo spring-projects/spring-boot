@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,25 +60,22 @@ public class CouchbaseHealthIndicatorTests {
 	@Test
 	public void couchbaseOperationsIsUp() throws UnknownHostException {
 		BucketInfo bucketInfo = mock(BucketInfo.class);
-		given(bucketInfo.nodeList()).willReturn(
-				Collections.singletonList(InetAddress.getByName("127.0.0.1")));
+		given(bucketInfo.nodeList()).willReturn(Collections.singletonList(InetAddress.getByName("127.0.0.1")));
 		BucketManager bucketManager = mock(BucketManager.class);
 		given(bucketManager.info(2000, TimeUnit.MILLISECONDS)).willReturn(bucketInfo);
 		Bucket bucket = mock(Bucket.class);
 		given(bucket.bucketManager()).willReturn(bucketManager);
 		ClusterInfo clusterInfo = mock(ClusterInfo.class);
-		given(clusterInfo.getAllVersions())
-				.willReturn(Collections.singletonList(new Version(1, 2, 3)));
+		given(clusterInfo.getAllVersions()).willReturn(Collections.singletonList(new Version(1, 2, 3)));
 		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
 		given(couchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
 		given(couchbaseOperations.getCouchbaseClusterInfo()).willReturn(clusterInfo);
 		@SuppressWarnings("deprecation")
-		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
-				couchbaseOperations, Duration.ofSeconds(2));
+		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(couchbaseOperations,
+				Duration.ofSeconds(2));
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(entry("versions", "1.2.3"),
-				entry("nodes", "/127.0.0.1"));
+		assertThat(health.getDetails()).containsOnly(entry("versions", "1.2.3"), entry("nodes", "/127.0.0.1"));
 		verify(clusterInfo).getAllVersions();
 		verify(bucketInfo).nodeList();
 	}
@@ -86,28 +83,26 @@ public class CouchbaseHealthIndicatorTests {
 	@Test
 	public void couchbaseOperationsTimeout() {
 		BucketManager bucketManager = mock(BucketManager.class);
-		given(bucketManager.info(1500, TimeUnit.MILLISECONDS)).willThrow(
-				new RuntimeException(new TimeoutException("timeout, expected")));
+		given(bucketManager.info(1500, TimeUnit.MILLISECONDS))
+				.willThrow(new RuntimeException(new TimeoutException("timeout, expected")));
 		Bucket bucket = mock(Bucket.class);
 		given(bucket.bucketManager()).willReturn(bucketManager);
 		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
 		given(couchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
 		@SuppressWarnings("deprecation")
-		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
-				couchbaseOperations, Duration.ofMillis(1500));
+		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(couchbaseOperations,
+				Duration.ofMillis(1500));
 		Health health = healthIndicator.health();
-		assertThat((String) health.getDetails().get("error"))
-				.contains("timeout, expected");
+		assertThat((String) health.getDetails().get("error")).contains("timeout, expected");
 	}
 
 	@Test
 	public void couchbaseOperationsIsDown() {
 		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
-		given(couchbaseOperations.getCouchbaseClusterInfo())
-				.willThrow(new IllegalStateException("test, expected"));
+		given(couchbaseOperations.getCouchbaseClusterInfo()).willThrow(new IllegalStateException("test, expected"));
 		@SuppressWarnings("deprecation")
-		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
-				couchbaseOperations, Duration.ofSeconds(1));
+		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(couchbaseOperations,
+				Duration.ofSeconds(1));
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("test, expected");
@@ -119,18 +114,15 @@ public class CouchbaseHealthIndicatorTests {
 	public void couchbaseClusterIsUp() {
 		Cluster cluster = mock(Cluster.class);
 		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(cluster);
-		List<EndpointHealth> endpoints = Arrays.asList(new EndpointHealth(
-				ServiceType.BINARY, LifecycleState.CONNECTED, new InetSocketAddress(0),
-				new InetSocketAddress(0), 1234, "endpoint-1"));
-		DiagnosticsReport diagnostics = new DiagnosticsReport(endpoints, "test-sdk",
-				"test-id");
+		List<EndpointHealth> endpoints = Arrays.asList(new EndpointHealth(ServiceType.BINARY, LifecycleState.CONNECTED,
+				new InetSocketAddress(0), new InetSocketAddress(0), 1234, "endpoint-1"));
+		DiagnosticsReport diagnostics = new DiagnosticsReport(endpoints, "test-sdk", "test-id");
 		given(cluster.diagnostics()).willReturn(diagnostics);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("sdk", "test-sdk");
 		assertThat(health.getDetails()).containsKey("endpoints");
-		assertThat((List<Map<String, Object>>) health.getDetails().get("endpoints"))
-				.hasSize(1);
+		assertThat((List<Map<String, Object>>) health.getDetails().get("endpoints")).hasSize(1);
 		verify(cluster).diagnostics();
 	}
 
@@ -140,21 +132,17 @@ public class CouchbaseHealthIndicatorTests {
 		Cluster cluster = mock(Cluster.class);
 		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(cluster);
 		List<EndpointHealth> endpoints = Arrays.asList(
-				new EndpointHealth(ServiceType.BINARY, LifecycleState.CONNECTED,
-						new InetSocketAddress(0), new InetSocketAddress(0), 1234,
-						"endpoint-1"),
-				new EndpointHealth(ServiceType.BINARY, LifecycleState.CONNECTING,
-						new InetSocketAddress(0), new InetSocketAddress(0), 1234,
-						"endpoint-2"));
-		DiagnosticsReport diagnostics = new DiagnosticsReport(endpoints, "test-sdk",
-				"test-id");
+				new EndpointHealth(ServiceType.BINARY, LifecycleState.CONNECTED, new InetSocketAddress(0),
+						new InetSocketAddress(0), 1234, "endpoint-1"),
+				new EndpointHealth(ServiceType.BINARY, LifecycleState.CONNECTING, new InetSocketAddress(0),
+						new InetSocketAddress(0), 1234, "endpoint-2"));
+		DiagnosticsReport diagnostics = new DiagnosticsReport(endpoints, "test-sdk", "test-id");
 		given(cluster.diagnostics()).willReturn(diagnostics);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).containsEntry("sdk", "test-sdk");
 		assertThat(health.getDetails()).containsKey("endpoints");
-		assertThat((List<Map<String, Object>>) health.getDetails().get("endpoints"))
-				.hasSize(2);
+		assertThat((List<Map<String, Object>>) health.getDetails().get("endpoints")).hasSize(2);
 		verify(cluster).diagnostics();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketMessagingAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class,
-			ObjectMapper.class })
+	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })
 	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
-	static class WebSocketMessageConverterConfiguration
-			implements WebSocketMessageBrokerConfigurer {
+	static class WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
 
 		private final ObjectMapper objectMapper;
 
@@ -64,8 +62,7 @@ public class WebSocketMessagingAutoConfiguration {
 		}
 
 		@Override
-		public boolean configureMessageConverters(
-				List<MessageConverter> messageConverters) {
+		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
 			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
 			converter.setObjectMapper(this.objectMapper);
 			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,17 +104,13 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
-		ServletContextInitializerBeans initializers = new ServletContextInitializerBeans(
-				this.context);
+		ServletContextInitializerBeans initializers = new ServletContextInitializerBeans(this.context);
 		initializers.stream().filter(AbstractFilterRegistrationBean.class::isInstance)
-				.map(AbstractFilterRegistrationBean.class::cast)
-				.filter(AbstractFilterRegistrationBean::isEnabled)
-				.forEach((registration) -> addFilter(builder, registration.getFilter(),
-						registration.getUrlPatterns()));
+				.map(AbstractFilterRegistrationBean.class::cast).filter(AbstractFilterRegistrationBean::isEnabled)
+				.forEach((registration) -> addFilter(builder, registration.getFilter(), registration.getUrlPatterns()));
 	}
 
-	private void addFilter(ConfigurableMockMvcBuilder<?> builder, Filter filter,
-			Collection<String> urls) {
+	private void addFilter(ConfigurableMockMvcBuilder<?> builder, Filter filter, Collection<String> urls) {
 		if (urls.isEmpty()) {
 			builder.addFilters(filter);
 		}
@@ -229,8 +225,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		DeferredLinesWriter(WebApplicationContext context, LinesWriter delegate) {
 			Assert.state(context instanceof ConfigurableApplicationContext,
 					"A ConfigurableApplicationContext is required for printOnlyOnFailure");
-			((ConfigurableApplicationContext) context).getBeanFactory()
-					.registerSingleton(BEAN_NAME, this);
+			((ConfigurableApplicationContext) context).getBeanFactory().registerSingleton(BEAN_NAME, this);
 			this.delegate = delegate;
 		}
 
@@ -259,8 +254,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	 */
 	private static class LoggingLinesWriter implements LinesWriter {
 
-		private static final Log logger = LogFactory
-				.getLog("org.springframework.test.web.servlet.result");
+		private static final Log logger = LogFactory.getLog("org.springframework.test.web.servlet.result");
 
 		@Override
 		public void write(List<String> lines) {

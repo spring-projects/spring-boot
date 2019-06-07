@@ -59,15 +59,12 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 
 	@Test
 	public void toAllEndpointsShouldMatch() {
-		getContextRunner().withPropertyValues("spring.security.user.password=password")
-				.run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/actuator/e2").exchange().expectStatus()
-							.isUnauthorized();
-					webTestClient.get().uri("/actuator/e2")
-							.header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
-				});
+		getContextRunner().withPropertyValues("spring.security.user.password=password").run((context) -> {
+			WebTestClient webTestClient = getWebTestClient(context);
+			webTestClient.get().uri("/actuator/e2").exchange().expectStatus().isUnauthorized();
+			webTestClient.get().uri("/actuator/e2").header("Authorization", getBasicAuth()).exchange().expectStatus()
+					.isOk();
+		});
 	}
 
 	@Test
@@ -80,9 +77,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 	}
 
 	protected WebTestClient getWebTestClient(AssertableWebApplicationContext context) {
-		int port = context
-				.getSourceApplicationContext(
-						AnnotationConfigServletWebServerApplicationContext.class)
+		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
 				.getWebServer().getPort();
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
 	}
@@ -157,8 +152,7 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 
 	}
 
-	public interface TestPathMappedEndpoint
-			extends ExposableEndpoint<Operation>, PathMappedEndpoint {
+	public interface TestPathMappedEndpoint extends ExposableEndpoint<Operation>, PathMappedEndpoint {
 
 	}
 
@@ -170,12 +164,10 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 			return new WebSecurityConfigurerAdapter() {
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests().requestMatchers(EndpointRequest.toLinks())
-							.permitAll()
-							.requestMatchers(EndpointRequest.to(TestEndpoint1.class))
-							.permitAll().requestMatchers(EndpointRequest.toAnyEndpoint())
-							.authenticated().anyRequest().hasRole("ADMIN").and()
-							.httpBasic();
+					http.authorizeRequests().requestMatchers(EndpointRequest.toLinks()).permitAll()
+							.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll()
+							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated().anyRequest()
+							.hasRole("ADMIN").and().httpBasic();
 				}
 			};
 		}

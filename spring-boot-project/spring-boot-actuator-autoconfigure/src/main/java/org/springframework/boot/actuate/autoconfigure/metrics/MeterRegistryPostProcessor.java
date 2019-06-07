@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof MeterRegistry) {
 			getConfigurer().configure((MeterRegistry) bean);
 		}
@@ -68,8 +67,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 
 	private MeterRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
-			this.configurer = new MeterRegistryConfigurer(
-					this.meterBinders.getIfAvailable(Collections::emptyList),
+			this.configurer = new MeterRegistryConfigurer(this.meterBinders.getIfAvailable(Collections::emptyList),
 					this.meterFilters.getIfAvailable(Collections::emptyList),
 					this.meterRegistryCustomizers.getIfAvailable(Collections::emptyList),
 					this.metricsProperties.getObject().isUseGlobalRegistry());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,19 +83,14 @@ public class InstallerTests {
 		File alpha = createTemporaryFile("alpha.jar");
 		File bravo = createTemporaryFile("bravo.jar");
 		File charlie = createTemporaryFile("charlie.jar");
-		given(this.resolver.resolve(Arrays.asList("bravo")))
-				.willReturn(Arrays.asList(bravo, alpha));
-		given(this.resolver.resolve(Arrays.asList("charlie")))
-				.willReturn(Arrays.asList(charlie, alpha));
+		given(this.resolver.resolve(Arrays.asList("bravo"))).willReturn(Arrays.asList(bravo, alpha));
+		given(this.resolver.resolve(Arrays.asList("charlie"))).willReturn(Arrays.asList(charlie, alpha));
 		this.installer.install(Arrays.asList("bravo"));
-		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar",
-				".installed");
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar", ".installed");
 		this.installer.install(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar",
-				"charlie.jar", ".installed");
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar", "charlie.jar", ".installed");
 		this.installer.uninstall(Arrays.asList("bravo"));
-		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "charlie.jar",
-				".installed");
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "charlie.jar", ".installed");
 		this.installer.uninstall(Arrays.asList("charlie"));
 		assertThat(getNamesOfFilesInLibExt()).containsOnly(".installed");
 	}
@@ -105,14 +100,11 @@ public class InstallerTests {
 		File alpha = createTemporaryFile("alpha.jar");
 		File bravo = createTemporaryFile("bravo.jar");
 		File charlie = createTemporaryFile("charlie.jar");
-		given(this.resolver.resolve(Arrays.asList("bravo")))
-				.willReturn(Arrays.asList(bravo, alpha));
-		given(this.resolver.resolve(Arrays.asList("charlie")))
-				.willReturn(Arrays.asList(charlie, alpha));
+		given(this.resolver.resolve(Arrays.asList("bravo"))).willReturn(Arrays.asList(bravo, alpha));
+		given(this.resolver.resolve(Arrays.asList("charlie"))).willReturn(Arrays.asList(charlie, alpha));
 		this.installer.install(Arrays.asList("bravo"));
 		this.installer.install(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar",
-				"charlie.jar", ".installed");
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar", "charlie.jar", ".installed");
 		this.installer.uninstallAll();
 		assertThat(getNamesOfFilesInLibExt()).containsOnly(".installed");
 	}

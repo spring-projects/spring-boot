@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,16 +105,14 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	@Test
 	public void logWarningIfScanningProblemPackages() {
 		load(InRealButScanningProblemPackages.class);
-		assertThat(this.output.toString())
-				.contains("Your ApplicationContext is unlikely to start due to a "
-						+ "@ComponentScan of the default package, 'org.springframework'.");
+		assertThat(this.output.toString()).contains("Your ApplicationContext is unlikely to start due to a "
+				+ "@ComponentScan of the default package, 'org.springframework'.");
 
 	}
 
 	private void load(Class<?> configClass) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			new TestConfigurationWarningsApplicationContextInitializer()
-					.initialize(context);
+			new TestConfigurationWarningsApplicationContextInitializer().initialize(context);
 			context.register(configClass);
 			context.refresh();
 		}
@@ -140,8 +138,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	static class TestComponentScanPackageCheck extends ComponentScanPackageCheck {
 
 		@Override
-		protected Set<String> getComponentScanningPackages(
-				BeanDefinitionRegistry registry) {
+		protected Set<String> getComponentScanningPackages(BeanDefinitionRegistry registry) {
 			Set<String> scannedPackages = super.getComponentScanningPackages(registry);
 			Set<String> result = new LinkedHashSet<>();
 			for (String scannedPackage : scannedPackages) {
