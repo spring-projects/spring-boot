@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class InitializrServiceMetadataTests {
 		assertThat(metadata.getDefaults().get("javaVersion")).isEqualTo("1.7");
 		assertThat(metadata.getDefaults().get("groupId")).isEqualTo("org.test");
 		assertThat(metadata.getDefaults().get("name")).isEqualTo("demo");
-		assertThat(metadata.getDefaults().get("description"))
-				.isEqualTo("Demo project for Spring Boot");
+		assertThat(metadata.getDefaults().get("description")).isEqualTo("Demo project for Spring Boot");
 		assertThat(metadata.getDefaults().get("packaging")).isEqualTo("jar");
 		assertThat(metadata.getDefaults().get("language")).isEqualTo("java");
 		assertThat(metadata.getDefaults().get("artifactId")).isEqualTo("demo");
@@ -63,8 +62,7 @@ public class InitializrServiceMetadataTests {
 		// Security description
 		assertThat(metadata.getDependency("aop").getName()).isEqualTo("AOP");
 		assertThat(metadata.getDependency("security").getName()).isEqualTo("Security");
-		assertThat(metadata.getDependency("security").getDescription())
-				.isEqualTo("Security description");
+		assertThat(metadata.getDependency("security").getDescription()).isEqualTo("Security description");
 		assertThat(metadata.getDependency("jdbc").getName()).isEqualTo("JDBC");
 		assertThat(metadata.getDependency("data-jpa").getName()).isEqualTo("JPA");
 		assertThat(metadata.getDependency("data-mongodb").getName()).isEqualTo("MongoDB");
@@ -79,8 +77,7 @@ public class InitializrServiceMetadataTests {
 		assertThat(projectType.getTags().get("format")).isEqualTo("project");
 	}
 
-	private static InitializrServiceMetadata createInstance(String version)
-			throws JSONException {
+	private static InitializrServiceMetadata createInstance(String version) throws JSONException {
 		try {
 			return new InitializrServiceMetadata(readJson(version));
 		}
@@ -90,11 +87,9 @@ public class InitializrServiceMetadataTests {
 	}
 
 	private static JSONObject readJson(String version) throws IOException, JSONException {
-		Resource resource = new ClassPathResource(
-				"metadata/service-metadata-" + version + ".json");
+		Resource resource = new ClassPathResource("metadata/service-metadata-" + version + ".json");
 		try (InputStream stream = resource.getInputStream()) {
-			return new JSONObject(
-					StreamUtils.copyToString(stream, StandardCharsets.UTF_8));
+			return new JSONObject(StreamUtils.copyToString(stream, StandardCharsets.UTF_8));
 		}
 	}
 

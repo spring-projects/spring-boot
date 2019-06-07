@@ -46,8 +46,7 @@ public class WebEndpointPropertiesTests {
 	@Test
 	public void basePathMustStartWithSlash() {
 		WebEndpointProperties properties = new WebEndpointProperties();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> properties.setBasePath("admin"))
+		assertThatIllegalArgumentException().isThrownBy(() -> properties.setBasePath("admin"))
 				.withMessageContaining("Base path must start with '/' or be empty");
 	}
 

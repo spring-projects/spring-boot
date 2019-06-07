@@ -28,7 +28,7 @@ import io.rsocket.RSocketFactory;
  * @since 2.2.0
  */
 @FunctionalInterface
-public interface ServerRSocketFactoryCustomizer extends
-		Function<RSocketFactory.ServerRSocketFactory, RSocketFactory.ServerRSocketFactory> {
+public interface ServerRSocketFactoryCustomizer
+		extends Function<RSocketFactory.ServerRSocketFactory, RSocketFactory.ServerRSocketFactory> {
 
 }

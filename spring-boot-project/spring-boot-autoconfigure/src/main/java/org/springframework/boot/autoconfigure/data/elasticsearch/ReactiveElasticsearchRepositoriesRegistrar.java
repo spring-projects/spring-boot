@@ -31,8 +31,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Brian Clozel
  * @since 2.2.0
  */
-class ReactiveElasticsearchRepositoriesRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class ReactiveElasticsearchRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class CentralDirectoryParserTests {
 		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
 		List<String> invocations = visitor.getInvocations();
-		assertThat(invocations).startsWith("visitStart").endsWith("visitEnd")
-				.contains("visitFileHeader");
+		assertThat(invocations).startsWith("visitStart").endsWith("visitEnd").contains("visitFileHeader");
 	}
 
 	@Test
@@ -91,13 +90,11 @@ public class CentralDirectoryParserTests {
 		private List<CentralDirectoryFileHeader> headers = new ArrayList<>();
 
 		@Override
-		public void visitStart(CentralDirectoryEndRecord endRecord,
-				RandomAccessData centralDirectoryData) {
+		public void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
 		}
 
 		@Override
-		public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
-				int dataOffset) {
+		public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
 			this.headers.add(fileHeader.clone());
 		}
 
@@ -116,14 +113,12 @@ public class CentralDirectoryParserTests {
 		private final List<String> invocations = new ArrayList<>();
 
 		@Override
-		public void visitStart(CentralDirectoryEndRecord endRecord,
-				RandomAccessData centralDirectoryData) {
+		public void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
 			this.invocations.add("visitStart");
 		}
 
 		@Override
-		public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
-				int dataOffset) {
+		public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
 			this.invocations.add("visitFileHeader");
 		}
 

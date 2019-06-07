@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public class WhitespaceThrowablePatternConverterTests {
 		LogEvent event = Log4jLogEvent.newBuilder().setThrown(new Exception()).build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
-		assertThat(builder.toString()).startsWith(System.lineSeparator())
-				.endsWith(System.lineSeparator());
+		assertThat(builder.toString()).startsWith(System.lineSeparator()).endsWith(System.lineSeparator());
 	}
 
 }

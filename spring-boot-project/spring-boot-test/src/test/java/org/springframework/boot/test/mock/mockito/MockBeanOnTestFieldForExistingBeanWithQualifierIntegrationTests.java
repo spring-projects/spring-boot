@@ -62,8 +62,7 @@ public class MockBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
 	@Test
 	public void onlyQualifiedBeanIsReplaced() {
 		assertThat(this.applicationContext.getBean("service")).isSameAs(this.service);
-		ExampleService anotherService = this.applicationContext.getBean("anotherService",
-				ExampleService.class);
+		ExampleService anotherService = this.applicationContext.getBean("anotherService", ExampleService.class);
 		assertThat(anotherService.greeting()).isEqualTo("Another");
 	}
 

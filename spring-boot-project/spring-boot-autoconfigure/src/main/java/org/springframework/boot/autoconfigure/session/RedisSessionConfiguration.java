@@ -49,12 +49,10 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 class RedisSessionConfiguration {
 
 	@Configuration
-	public static class SpringBootRedisHttpSessionConfiguration
-			extends RedisHttpSessionConfiguration {
+	public static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties,
-				RedisSessionProperties redisSessionProperties) {
+		public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());

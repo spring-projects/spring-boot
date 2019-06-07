@@ -28,8 +28,7 @@ import javax.persistence.SequenceGenerator;
 public class Tag {
 
 	@Id
-	@SequenceGenerator(name = "tag_generator", sequenceName = "tag_sequence",
-			initialValue = 4)
+	@SequenceGenerator(name = "tag_generator", sequenceName = "tag_sequence", initialValue = 4)
 	@GeneratedValue(generator = "tag_generator")
 	private long id;
 

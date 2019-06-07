@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,31 +33,26 @@ public class OverrideAutoConfigurationContextCustomizerFactoryTests {
 
 	@Test
 	public void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(NoAnnotation.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
 	public void getContextCustomizerWhenHasAnnotationEnabledTrueShouldReturnNull() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithAnnotationEnabledTrue.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledTrue.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
 	public void getContextCustomizerWhenHasAnnotationEnabledFalseShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	public void hashCodeAndEquals() {
-		ContextCustomizer customizer1 = this.factory
-				.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
-		ContextCustomizer customizer2 = this.factory
-				.createContextCustomizer(WithSameAnnotation.class, null);
+		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
+		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameAnnotation.class, null);
 		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2);
 	}

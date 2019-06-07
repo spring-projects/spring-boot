@@ -49,8 +49,7 @@ public class OnWsdlLocationsConditionTests {
 
 	@Test
 	public void wsdlLocationsDefinedAsList() {
-		this.contextRunner
-				.withPropertyValues("spring.webservices.wsdl-locations[0]=value1")
+		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations[0]=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 

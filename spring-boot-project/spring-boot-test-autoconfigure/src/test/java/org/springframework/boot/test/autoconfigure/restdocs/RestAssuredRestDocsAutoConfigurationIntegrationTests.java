@@ -59,8 +59,7 @@ public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 
 	@Before
 	public void deleteSnippets() {
-		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
-				"generated-snippets");
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
 		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}
 
@@ -68,15 +67,12 @@ public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 	public void defaultSnippetsAreWritten() {
 		given(this.documentationSpec)
 				.filter(document("default-snippets",
-						preprocessRequest(modifyUris().scheme("https")
-								.host("api.example.com").removePort())))
+						preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc")))
-				.contains("'https://api.example.com/'");
-		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc")))
-				.contains("api.example.com");
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc"))).contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc"))).contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
 	}
 

@@ -56,17 +56,15 @@ class UserVehicleControllerApplicationTests {
 
 	@Test
 	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
-				.andExpect(status().isOk()).andExpect(content().string("Honda Civic"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk())
+				.andExpect(content().string("Honda Civic"));
 	}
 
 	@Test
 	void welcomeCommandLineRunnerShouldBeAvailable() {
 		// Since we're a @SpringBootTest all beans should be available.
-		assertThat(this.applicationContext.getBean(WelcomeCommandLineRunner.class))
-				.isNotNull();
+		assertThat(this.applicationContext.getBean(WelcomeCommandLineRunner.class)).isNotNull();
 	}
 
 }

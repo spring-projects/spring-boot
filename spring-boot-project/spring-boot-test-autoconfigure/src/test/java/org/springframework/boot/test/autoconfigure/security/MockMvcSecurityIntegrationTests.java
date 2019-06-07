@@ -53,16 +53,13 @@ public class MockMvcSecurityIntegrationTests {
 
 	@Test
 	public void unauthorizedResponseWithNoUser() throws Exception {
-		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnauthorized());
+		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void okResponseWithBasicAuthCredentialsForKnownUser() throws Exception {
-		this.mockMvc
-				.perform(get("/").header(HttpHeaders.AUTHORIZATION,
-						"Basic " + Base64Utils.encodeToString("user:secret".getBytes())))
-				.andExpect(status().isOk());
+		this.mockMvc.perform(get("/").header(HttpHeaders.AUTHORIZATION,
+				"Basic " + Base64Utils.encodeToString("user:secret".getBytes()))).andExpect(status().isOk());
 	}
 
 }

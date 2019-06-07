@@ -41,8 +41,7 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 
 	private final HttpHeaders headers = new HttpHeaders();
 
-	private final BasicAuthentication authentication = new BasicAuthentication("spring",
-			"boot", null);
+	private final BasicAuthentication authentication = new BasicAuthentication("spring", "boot", null);
 
 	private ClientHttpRequestFactory requestFactory;
 
@@ -52,30 +51,25 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
 		given(requestFactory.createRequest(any(), any())).willReturn(request);
 		given(request.getHeaders()).willReturn(this.headers);
-		this.requestFactory = new BasicAuthenticationClientHttpRequestFactory(
-				this.authentication, requestFactory);
+		this.requestFactory = new BasicAuthenticationClientHttpRequestFactory(this.authentication, requestFactory);
 	}
 
 	@Test
 	public void shouldAddAuthorizationHeader() throws IOException {
 		ClientHttpRequest request = createRequest();
-		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION))
-				.containsExactly("Basic c3ByaW5nOmJvb3Q=");
+		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
 
 	@Test
-	public void shouldNotAddAuthorizationHeaderAuthorizationAlreadySet()
-			throws IOException {
+	public void shouldNotAddAuthorizationHeaderAuthorizationAlreadySet() throws IOException {
 		this.headers.setBasicAuth("boot", "spring");
 		ClientHttpRequest request = createRequest();
-		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION))
-				.doesNotContain("Basic c3ByaW5nOmJvb3Q=");
+		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).doesNotContain("Basic c3ByaW5nOmJvb3Q=");
 
 	}
 
 	private ClientHttpRequest createRequest() throws IOException {
-		return this.requestFactory.createRequest(URI.create("https://localhost:8080"),
-				HttpMethod.POST);
+		return this.requestFactory.createRequest(URI.create("https://localhost:8080"), HttpMethod.POST);
 	}
 
 }

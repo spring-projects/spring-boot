@@ -31,32 +31,28 @@ public class DynatracePropertiesConfigAdapterTests {
 	public void whenPropertiesUriIsSetAdapterUriReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.setUri("https://dynatrace.example.com");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).uri())
-				.isEqualTo("https://dynatrace.example.com");
+		assertThat(new DynatracePropertiesConfigAdapter(properties).uri()).isEqualTo("https://dynatrace.example.com");
 	}
 
 	@Test
 	public void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.setApiToken("123ABC");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).apiToken())
-				.isEqualTo("123ABC");
+		assertThat(new DynatracePropertiesConfigAdapter(properties).apiToken()).isEqualTo("123ABC");
 	}
 
 	@Test
 	public void whenPropertiesDeviceIdIsSetAdapterDeviceIdReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.setDeviceId("dev-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).deviceId())
-				.isEqualTo("dev-1");
+		assertThat(new DynatracePropertiesConfigAdapter(properties).deviceId()).isEqualTo("dev-1");
 	}
 
 	@Test
 	public void whenPropertiesTechnologyTypeIsSetAdapterTechnologyTypeReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.setTechnologyType("tech-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).technologyType())
-				.isEqualTo("tech-1");
+		assertThat(new DynatracePropertiesConfigAdapter(properties).technologyType()).isEqualTo("tech-1");
 	}
 
 }

@@ -35,8 +35,7 @@ import org.springframework.integration.config.IntegrationComponentScanRegistrar;
  * @author Artem Bilan
  * @author Phillip Webb
  */
-class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScanRegistrar
-		implements BeanFactoryAware {
+class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScanRegistrar implements BeanFactoryAware {
 
 	private BeanFactory beanFactory;
 
@@ -48,15 +47,14 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			final BeanDefinitionRegistry registry) {
-		super.registerBeanDefinitions(AnnotationMetadata
-				.introspect(IntegrationComponentScanConfiguration.class), registry);
+		super.registerBeanDefinitions(AnnotationMetadata.introspect(IntegrationComponentScanConfiguration.class),
+				registry);
 	}
 
 	@Override
-	protected Collection<String> getBasePackages(
-			AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		return (AutoConfigurationPackages.has(this.beanFactory)
-				? AutoConfigurationPackages.get(this.beanFactory)
+	protected Collection<String> getBasePackages(AnnotationMetadata importingClassMetadata,
+			BeanDefinitionRegistry registry) {
+		return (AutoConfigurationPackages.has(this.beanFactory) ? AutoConfigurationPackages.get(this.beanFactory)
 				: Collections.emptyList());
 	}
 

@@ -65,8 +65,8 @@ class SampleWebUiApplicationTests {
 
 	@Test
 	void testCss() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}

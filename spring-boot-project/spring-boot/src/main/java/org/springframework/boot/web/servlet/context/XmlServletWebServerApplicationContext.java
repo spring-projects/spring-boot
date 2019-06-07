@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * @see ServletWebServerApplicationContext
  * @see XmlWebApplicationContext
  */
-public class XmlServletWebServerApplicationContext
-		extends ServletWebServerApplicationContext {
+public class XmlServletWebServerApplicationContext extends ServletWebServerApplicationContext {
 
 	private final XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(this);
 
@@ -79,8 +78,7 @@ public class XmlServletWebServerApplicationContext
 	 * specified resource name
 	 * @param resourceNames relatively-qualified names of resources to load
 	 */
-	public XmlServletWebServerApplicationContext(Class<?> relativeClass,
-			String... resourceNames) {
+	public XmlServletWebServerApplicationContext(Class<?> relativeClass, String... resourceNames) {
 		load(relativeClass, resourceNames);
 		refresh();
 	}

@@ -30,8 +30,7 @@ public class InvalidConfigurationPropertiesFailureAnalyzer
 		extends AbstractFailureAnalyzer<InvalidConfigurationPropertiesException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			InvalidConfigurationPropertiesException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, InvalidConfigurationPropertiesException cause) {
 		String configurationProperties = cause.getConfigurationProperties().getName();
 		String component = cause.getComponent().getSimpleName();
 		return new FailureAnalysis(getDescription(configurationProperties, component),
@@ -39,8 +38,7 @@ public class InvalidConfigurationPropertiesFailureAnalyzer
 	}
 
 	private String getDescription(String configurationProperties, String component) {
-		return configurationProperties
-				+ " is annotated with @ConfigurationProperties and @" + component
+		return configurationProperties + " is annotated with @ConfigurationProperties and @" + component
 				+ ". This may cause the @ConfigurationProperties bean to be registered twice.";
 	}
 

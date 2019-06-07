@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,14 +160,13 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
-		ServerConnector connector = new ServerConnector(server, this.acceptors,
-				this.selectors);
+		ServerConnector connector = new ServerConnector(server, this.acceptors, this.selectors);
 		connector.setHost(address.getHostString());
 		connector.setPort(address.getPort());
 		for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 			if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-				((HttpConfiguration.ConnectionFactory) connectionFactory)
-						.getHttpConfiguration().setSendServerVersion(false);
+				((HttpConfiguration.ConnectionFactory) connectionFactory).getHttpConfiguration()
+						.setSendServerVersion(false);
 			}
 		}
 		return connector;
@@ -175,12 +174,10 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private Handler addHandlerWrappers(Handler handler) {
 		if (getCompression() != null && getCompression().getEnabled()) {
-			handler = applyWrapper(handler,
-					JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
+			handler = applyWrapper(handler, JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
 		}
 		if (StringUtils.hasText(getServerHeader())) {
-			handler = applyWrapper(handler, JettyHandlerWrappers
-					.createServerHeaderHandlerWrapper(getServerHeader()));
+			handler = applyWrapper(handler, JettyHandlerWrappers.createServerHeaderHandlerWrapper(getServerHeader()));
 		}
 		return handler;
 	}
@@ -191,8 +188,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private void customizeSsl(Server server, InetSocketAddress address) {
-		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2())
-				.customize(server);
+		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2()).customize(server);
 	}
 
 	/**
@@ -200,8 +196,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param context the context to configure
 	 * @param initializers the set of initializers to apply
 	 */
-	protected final void configureWebAppContext(WebAppContext context,
-			ServletContextInitializer... initializers) {
+	protected final void configureWebAppContext(WebAppContext context, ServletContextInitializer... initializers) {
 		Assert.notNull(context, "Context must not be null");
 		context.setTempDirectory(getTempDirectory());
 		if (this.resourceLoader != null) {
@@ -220,8 +215,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 		addLocaleMappings(context);
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		Configuration[] configurations = getWebAppContextConfigurations(context,
-				initializersToUse);
+		Configuration[] configurations = getWebAppContextConfigurations(context, initializersToUse);
 		context.setConfigurations(configurations);
 		context.setThrowUnavailableOnStartupException(true);
 		configureSession(context);
@@ -231,8 +225,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
 		Duration sessionTimeout = getSession().getTimeout();
-		handler.setMaxInactiveInterval(
-				isNegative(sessionTimeout) ? -1 : (int) sessionTimeout.getSeconds());
+		handler.setMaxInactiveInterval(isNegative(sessionTimeout) ? -1 : (int) sessionTimeout.getSeconds());
 		if (getSession().isPersistent()) {
 			DefaultSessionCache cache = new DefaultSessionCache(handler);
 			FileSessionDataStore store = new FileSessionDataStore();
@@ -247,8 +240,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private void addLocaleMappings(WebAppContext context) {
-		getLocaleCharsetMappings().forEach((locale, charset) -> context
-				.addLocaleEncoding(locale.toString(), charset.toString()));
+		getLocaleCharsetMappings()
+				.forEach((locale, charset) -> context.addLocaleEncoding(locale.toString(), charset.toString()));
 	}
 
 	private File getTempDirectory() {
@@ -261,19 +254,16 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		File docBase = (root != null) ? root : createTempDir("jetty-docbase");
 		try {
 			List<Resource> resources = new ArrayList<>();
-			Resource rootResource = (docBase.isDirectory()
-					? Resource.newResource(docBase.getCanonicalFile())
+			Resource rootResource = (docBase.isDirectory() ? Resource.newResource(docBase.getCanonicalFile())
 					: JarResource.newJarResource(Resource.newResource(docBase)));
-			resources.add((root != null) ? new LoaderHidingResource(rootResource)
-					: rootResource);
+			resources.add((root != null) ? new LoaderHidingResource(rootResource) : rootResource);
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				if (resource.exists() && resource.isDirectory()) {
 					resources.add(resource);
 				}
 			}
-			handler.setBaseResource(
-					new ResourceCollection(resources.toArray(new Resource[0])));
+			handler.setBaseResource(new ResourceCollection(resources.toArray(new Resource[0])));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -333,8 +323,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	protected Configuration[] getWebAppContextConfigurations(WebAppContext webAppContext,
 			ServletContextInitializer... initializers) {
 		List<Configuration> configurations = new ArrayList<>();
-		configurations.add(
-				getServletContextInitializerConfiguration(webAppContext, initializers));
+		configurations.add(getServletContextInitializerConfiguration(webAppContext, initializers));
 		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
@@ -369,8 +358,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			public void configure(WebAppContext context) throws Exception {
 				MimeTypes mimeTypes = context.getMimeTypes();
 				for (MimeMappings.Mapping mapping : getMimeMappings()) {
-					mimeTypes.addMimeMapping(mapping.getExtension(),
-							mapping.getMimeType());
+					mimeTypes.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 				}
 			}
 
@@ -385,8 +373,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param initializers the {@link ServletContextInitializer}s to apply
 	 * @return the {@link Configuration} instance
 	 */
-	protected Configuration getServletContextInitializerConfiguration(
-			WebAppContext webAppContext, ServletContextInitializer... initializers) {
+	protected Configuration getServletContextInitializerConfiguration(WebAppContext webAppContext,
+			ServletContextInitializer... initializers) {
 		return new ServletContextInitializerConfiguration(initializers);
 	}
 
@@ -435,8 +423,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * before it is started. Calling this method will replace any existing customizers.
 	 * @param customizers the Jetty customizers to apply
 	 */
-	public void setServerCustomizers(
-			Collection<? extends JettyServerCustomizer> customizers) {
+	public void setServerCustomizers(Collection<? extends JettyServerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers = new ArrayList<>(customizers);
 	}
@@ -503,23 +490,19 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		this.threadPool = threadPool;
 	}
 
-	private void addJettyErrorPages(ErrorHandler errorHandler,
-			Collection<ErrorPage> errorPages) {
+	private void addJettyErrorPages(ErrorHandler errorHandler, Collection<ErrorPage> errorPages) {
 		if (errorHandler instanceof ErrorPageErrorHandler) {
 			ErrorPageErrorHandler handler = (ErrorPageErrorHandler) errorHandler;
 			for (ErrorPage errorPage : errorPages) {
 				if (errorPage.isGlobal()) {
-					handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE,
-							errorPage.getPath());
+					handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE, errorPage.getPath());
 				}
 				else {
 					if (errorPage.getExceptionName() != null) {
-						handler.addErrorPage(errorPage.getExceptionName(),
-								errorPage.getPath());
+						handler.addErrorPage(errorPage.getExceptionName(), errorPage.getPath());
 					}
 					else {
-						handler.addErrorPage(errorPage.getStatusCode(),
-								errorPage.getPath());
+						handler.addErrorPage(errorPage.getStatusCode(), errorPage.getPath());
 					}
 				}
 			}

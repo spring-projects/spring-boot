@@ -37,10 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0",
-				"management.endpoints.web.base-path=/admin",
-				"management.endpoint.health.show-details=never" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port=0",
+		"management.endpoints.web.base-path=/admin", "management.endpoint.health.show-details=never" })
 class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalServerPort
@@ -67,17 +65,15 @@ class ManagementPortAndPathSampleActuatorApplicationTests {
 	void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.withBasicAuth("user", getPassword())
-				.getForEntity("http://localhost:" + this.managementPort + "/admin/health",
-						String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", getPassword())
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\"}");
 	}
@@ -86,19 +82,15 @@ class ManagementPortAndPathSampleActuatorApplicationTests {
 	void testEnvNotFound() {
 		String unknownProperty = "test-does-not-exist";
 		assertThat(this.environment.containsProperty(unknownProperty)).isFalse();
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.withBasicAuth("user", getPassword()).getForEntity("http://localhost:"
-						+ this.managementPort + "/admin/env/" + unknownProperty,
-						String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", getPassword()).getForEntity(
+				"http://localhost:" + this.managementPort + "/admin/env/" + unknownProperty, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
 	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity(
-						"http://localhost:" + this.managementPort + "/admin/missing",
-						String.class);
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}
@@ -118,8 +110,7 @@ class ManagementPortAndPathSampleActuatorApplicationTests {
 	void testManagementErrorPage() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.managementPort + "/error",
-						Map.class);
+				.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

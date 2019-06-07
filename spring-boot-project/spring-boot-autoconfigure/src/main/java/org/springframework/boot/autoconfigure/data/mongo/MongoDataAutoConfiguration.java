@@ -73,8 +73,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ MongoClient.class, com.mongodb.client.MongoClient.class,
-		MongoTemplate.class })
+@ConditionalOnClass({ MongoClient.class, com.mongodb.client.MongoClient.class, MongoTemplate.class })
 @Conditional(AnyMongoClientAvailable.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @Import(MongoDataConfiguration.class)
@@ -93,41 +92,35 @@ public class MongoDataAutoConfiguration {
 			ObjectProvider<com.mongodb.client.MongoClient> mongoClient) {
 		MongoClient preferredClient = mongo.getIfAvailable();
 		if (preferredClient != null) {
-			return new SimpleMongoDbFactory(preferredClient,
-					this.properties.getMongoClientDatabase());
+			return new SimpleMongoDbFactory(preferredClient, this.properties.getMongoClientDatabase());
 		}
 		com.mongodb.client.MongoClient fallbackClient = mongoClient.getIfAvailable();
 		if (fallbackClient != null) {
-			return new SimpleMongoClientDbFactory(fallbackClient,
-					this.properties.getMongoClientDatabase());
+			return new SimpleMongoClientDbFactory(fallbackClient, this.properties.getMongoClientDatabase());
 		}
 		throw new IllegalStateException("Expected to find at least one MongoDB client.");
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory,
-			MongoConverter converter) {
+	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory, MongoConverter converter) {
 		return new MongoTemplate(mongoDbFactory, converter);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConverter.class)
-	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory,
-			MongoMappingContext context, MongoCustomConversions conversions) {
+	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context,
+			MongoCustomConversions conversions) {
 		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
-		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
-				context);
+		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver, context);
 		mappingConverter.setCustomConversions(conversions);
 		return mappingConverter;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
-			MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(
-				new GridFsMongoDbFactory(mongoDbFactory, this.properties),
+	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory, MongoTemplate mongoTemplate) {
+		return new GridFsTemplate(new GridFsMongoDbFactory(mongoDbFactory, this.properties),
 				mongoTemplate.getConverter());
 	}
 

@@ -35,8 +35,7 @@ public class ReactiveRestClientProperties {
 	/**
 	 * Comma-separated list of the Elasticsearch endpoints to connect to.
 	 */
-	private List<String> endpoints = new ArrayList<>(
-			Collections.singletonList("localhost:9200"));
+	private List<String> endpoints = new ArrayList<>(Collections.singletonList("localhost:9200"));
 
 	/**
 	 * Whether the client should use SSL to connect to the endpoints.

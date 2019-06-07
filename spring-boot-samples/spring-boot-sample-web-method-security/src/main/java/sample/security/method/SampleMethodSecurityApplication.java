@@ -62,8 +62,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 			return new InMemoryUserDetailsManager(
 					User.withDefaultPasswordEncoder().username("admin").password("admin")
 							.roles("ADMIN", "USER", "ACTUATOR").build(),
-					User.withDefaultPasswordEncoder().username("user").password("user")
-							.roles("USER").build());
+					User.withDefaultPasswordEncoder().username("user").password("user").roles("USER").build());
 		}
 
 	}

@@ -42,8 +42,7 @@ public class JolokiaEndpoint implements Supplier<EndpointServlet> {
 
 	@Override
 	public EndpointServlet get() {
-		return new EndpointServlet(AgentServlet.class)
-				.withInitParameters(this.initParameters);
+		return new EndpointServlet(AgentServlet.class).withInitParameters(this.initParameters);
 	}
 
 }

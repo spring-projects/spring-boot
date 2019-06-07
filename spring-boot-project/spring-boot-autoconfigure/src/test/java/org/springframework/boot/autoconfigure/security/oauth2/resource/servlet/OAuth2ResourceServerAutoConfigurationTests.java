@@ -60,8 +60,7 @@ import static org.mockito.Mockito.mock;
 public class OAuth2ResourceServerAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
 			.withUserConfiguration(TestConfig.class);
 
 	private MockWebServer server;
@@ -75,8 +74,8 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationShouldConfigureResourceServer() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
@@ -85,39 +84,46 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationShouldMatchDefaultJwsAlgorithm() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					Object processor = ReflectionTestUtils.getField(jwtDecoder,
-							"jwtProcessor");
-					Object keySelector = ReflectionTestUtils.getField(processor,
-							"jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg",
-							JWSAlgorithm.RS256);
+					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
+					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
+					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg", JWSAlgorithm.RS256);
 				});
 	}
 
 	@Test
 	public void autoConfigurationShouldConfigureResourceServerWithJwsAlgorithm() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
-				"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS384")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS384")
 				.run((context) -> {
 					JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-					Object processor = ReflectionTestUtils.getField(jwtDecoder,
-							"jwtProcessor");
-					Object keySelector = ReflectionTestUtils.getField(processor,
-							"jwsKeySelector");
-					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg",
-							JWSAlgorithm.RS384);
+					Object processor = ReflectionTestUtils.getField(jwtDecoder, "jwtProcessor");
+					Object keySelector = ReflectionTestUtils.getField(processor, "jwsKeySelector");
+					assertThat(keySelector).hasFieldOrPropertyWithValue("jwsAlg", JWSAlgorithm.RS384);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
 				});
 	}
 
 	@Test
-	public void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri()
-			throws Exception {
+	public void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
+				+ this.server.getHostName() + ":" + this.server.getPort()).run((context) -> {
+					assertThat(context).hasSingleBean(JwtDecoder.class);
+					assertThat(getBearerTokenFilter(context)).isNotNull();
+				});
+	}
+
+	@Test
+	public void autoConfigurationShouldConfigureResourceServerUsingPublicKeyValue() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
@@ -125,24 +131,7 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 		setupMockResponse(cleanIssuerPath);
 		this.contextRunner
 				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
-								+ this.server.getHostName() + ":" + this.server.getPort())
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JwtDecoder.class);
-					assertThat(getBearerTokenFilter(context)).isNotNull();
-				});
-	}
-
-	@Test
-	public void autoConfigurationShouldConfigureResourceServerUsingPublicKeyValue()
-			throws Exception {
-		this.server = new MockWebServer();
-		this.server.start();
-		String issuer = this.server.url("").toString();
-		String cleanIssuerPath = cleanIssuerPath(issuer);
-		setupMockResponse(cleanIssuerPath);
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
@@ -151,8 +140,9 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationShouldFailIfPublicKeyLocationDoesNotExist() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:does-not-exist")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:does-not-exist")
 				.run((context) -> assertThat(context).hasFailed().getFailure()
 						.hasMessageContaining("class path resource [does-not-exist]")
 						.hasMessageContaining("Public key location does not exist"));
@@ -160,10 +150,10 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationWhenSetUriKeyLocationAndIssuerUriPresentShouldUseSetUri() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer-uri.com",
-				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=https://issuer-uri.com",
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
+						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
@@ -173,17 +163,17 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationWhenKeyLocationAndIssuerUriPresentShouldUseIssuerUri()
-			throws Exception {
+	public void autoConfigurationWhenKeyLocationAndIssuerUriPresentShouldUseIssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
 		String issuer = this.server.url("").toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
 		setupMockResponse(cleanIssuerPath);
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
-						+ this.server.getHostName() + ":" + this.server.getPort(),
-				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://" + this.server.getHostName() + ":"
+								+ this.server.getPort(),
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
@@ -193,30 +183,30 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationWhenJwkSetUriNullShouldNotFail() {
-		this.contextRunner
-				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
+		this.contextRunner.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
 	}
 
 	@Test
 	public void jwtDecoderByJwkSetUriIsConditionalOnMissingBean() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNotNull());
 	}
 
 	@Test
 	public void jwtDecoderByOidcIssuerUriIsConditionalOnMissingBean() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNotNull());
 	}
 
 	@Test
 	public void autoConfigurationShouldBeConditionalOnJwtAuthenticationTokenClass() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.withClassLoader(new FilteredClassLoader(JwtAuthenticationToken.class))
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
@@ -224,21 +214,18 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationShouldBeConditionalOnJwtDecoderClass() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.withClassLoader(new FilteredClassLoader(JwtDecoder.class))
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
 	}
 
 	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
-		FilterChainProxy filterChain = (FilterChainProxy) context
-				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
+		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = filterChains.get(0).getFilters();
-		return filters.stream()
-				.filter((f) -> f instanceof BearerTokenAuthenticationFilter).findFirst()
-				.orElse(null);
+		return filters.stream().filter((f) -> f instanceof BearerTokenAuthenticationFilter).findFirst().orElse(null);
 	}
 
 	private String cleanIssuerPath(String issuer) {
@@ -249,8 +236,7 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	private void setupMockResponse(String issuer) throws JsonProcessingException {
-		MockResponse mockResponse = new MockResponse()
-				.setResponseCode(HttpStatus.OK.value())
+		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.server.enqueue(mockResponse);
@@ -268,11 +254,9 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 		response.put("revocation_endpoint", "https://example.com/o/oauth2/revoke");
 		response.put("scopes_supported", Collections.singletonList("openid"));
 		response.put("subject_types_supported", Collections.singletonList("public"));
-		response.put("grant_types_supported",
-				Collections.singletonList("authorization_code"));
+		response.put("grant_types_supported", Collections.singletonList("authorization_code"));
 		response.put("token_endpoint", "https://example.com/oauth2/v4/token");
-		response.put("token_endpoint_auth_methods_supported",
-				Collections.singletonList("client_secret_basic"));
+		response.put("token_endpoint_auth_methods_supported", Collections.singletonList("client_secret_basic"));
 		response.put("userinfo_endpoint", "https://example.com/oauth2/v3/userinfo");
 		return response;
 	}

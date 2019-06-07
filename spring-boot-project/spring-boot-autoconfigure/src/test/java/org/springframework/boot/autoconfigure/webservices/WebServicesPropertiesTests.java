@@ -39,16 +39,14 @@ public class WebServicesPropertiesTests {
 	@Test
 	public void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new WebServicesProperties();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.properties.setPath("/"))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("/"))
 				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.properties = new WebServicesProperties();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.properties.setPath("custom"))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("custom"))
 				.withMessageContaining("Path must start with '/'");
 	}
 

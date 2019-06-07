@@ -35,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0", "management.endpoint.health.show-details=always" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0", "management.endpoint.health.show-details=always" })
 class ManagementPortSampleActuatorApplicationTests {
 
 	@LocalServerPort
@@ -60,18 +60,15 @@ class ManagementPortSampleActuatorApplicationTests {
 	void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/actuator/metrics",
-				Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.withBasicAuth("user", getPassword()).getForEntity(
-						"http://localhost:" + this.managementPort + "/actuator/health",
-						String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", getPassword())
+				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 		assertThat(entity.getBody()).contains("\"example\"");
@@ -82,8 +79,7 @@ class ManagementPortSampleActuatorApplicationTests {
 	void testErrorPage() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.managementPort + "/error",
-						Map.class);
+				.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

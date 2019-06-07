@@ -34,8 +34,7 @@ import org.springframework.util.ReflectionUtils;
  */
 public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallback {
 
-	private static final Pattern GRADLE_VERSION_PATTERN = Pattern
-			.compile("\\[Gradle .+\\]");
+	private static final Pattern GRADLE_VERSION_PATTERN = Pattern.compile("\\[Gradle .+\\]");
 
 	private Dsl dsl = Dsl.GROOVY;
 
@@ -51,8 +50,7 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 
 	private GradleBuild extractGradleBuild(ExtensionContext context) throws Exception {
 		Object testInstance = context.getRequiredTestInstance();
-		Field gradleBuildField = ReflectionUtils.findField(testInstance.getClass(),
-				"gradleBuild");
+		Field gradleBuildField = ReflectionUtils.findField(testInstance.getClass(), "gradleBuild");
 		gradleBuildField.setAccessible(true);
 		GradleBuild gradleBuild = (GradleBuild) gradleBuildField.get(testInstance);
 		return gradleBuild;
@@ -68,8 +66,7 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 
 	private URL getScriptForTestMethod(ExtensionContext context) {
 		Class<?> testClass = context.getRequiredTestClass();
-		String name = testClass.getSimpleName() + "-"
-				+ removeGradleVersion(context.getRequiredTestMethod().getName())
+		String name = testClass.getSimpleName() + "-" + removeGradleVersion(context.getRequiredTestMethod().getName())
 				+ this.dsl.getExtension();
 		return testClass.getResource(name);
 	}

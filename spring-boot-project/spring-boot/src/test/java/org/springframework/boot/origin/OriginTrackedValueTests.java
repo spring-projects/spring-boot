@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ public class OriginTrackedValueTests {
 		OriginTrackedValue tracked2 = OriginTrackedValue.of(value1, mock(Origin.class));
 		OriginTrackedValue tracked3 = OriginTrackedValue.of(new Object());
 		assertThat(tracked1.hashCode()).isEqualTo(tracked2.hashCode());
-		assertThat(tracked1).isEqualTo(tracked1).isEqualTo(tracked2)
-				.isNotEqualTo(tracked3);
+		assertThat(tracked1).isEqualTo(tracked1).isEqualTo(tracked2).isNotEqualTo(tracked3);
 	}
 
 	@Test

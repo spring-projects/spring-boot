@@ -35,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0",
-				"management.server.servlet.context-path=/management" })
+		properties = { "management.server.port=0", "management.server.servlet.context-path=/management" })
 class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalServerPort
@@ -55,24 +54,22 @@ class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@Test
 	void actuatorPathOnMainPortShouldNotMatch() {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/actuator/health", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testSecureActuator() {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/management/actuator/env",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/env", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testInsecureActuator() {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/management/actuator/health",
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
@@ -80,8 +77,7 @@ class ManagementPortAndPathSampleActuatorApplicationTests {
 	@Test
 	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity("http://localhost:" + this.managementPort
-						+ "/management/actuator/missing", String.class);
+				.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}

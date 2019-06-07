@@ -38,18 +38,15 @@ public class WebConversionServiceTests {
 		Date date = new DateTime(2018, 1, 1, 20, 30).toDate();
 		assertThat(conversionService.convert(date, String.class)).isEqualTo("01*01*2018");
 		LocalDate jodaDate = LocalDate.fromDateFields(date);
-		assertThat(conversionService.convert(jodaDate, String.class))
-				.isEqualTo("01*01*2018");
+		assertThat(conversionService.convert(jodaDate, String.class)).isEqualTo("01*01*2018");
 		java.time.LocalDate localDate = java.time.LocalDate.of(2018, 1, 1);
-		assertThat(conversionService.convert(localDate, String.class))
-				.isEqualTo("01*01*2018");
+		assertThat(conversionService.convert(localDate, String.class)).isEqualTo("01*01*2018");
 	}
 
 	@Test
 	public void convertFromStringToDate() {
 		WebConversionService conversionService = new WebConversionService("yyyy-MM-dd");
-		java.time.LocalDate date = conversionService.convert("2018-01-01",
-				java.time.LocalDate.class);
+		java.time.LocalDate date = conversionService.convert("2018-01-01", java.time.LocalDate.class);
 		assertThat(date).isEqualTo(java.time.LocalDate.of(2018, 1, 1));
 	}
 

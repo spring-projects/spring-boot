@@ -58,10 +58,8 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	@Test
 	public void shouldCreateInstancesForReactiveAndImperativeRepositories() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialization-mode:never")
-				.applyTo(this.context);
-		this.context.register(ImperativeAndReactiveConfiguration.class,
-				BaseConfiguration.class);
+		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
+		this.context.register(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
@@ -70,8 +68,7 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CouchbaseAutoConfigurationTests.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityRepository.class)
-	@EnableReactiveCouchbaseRepositories(
-			basePackageClasses = ReactiveCityRepository.class)
+	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityRepository.class)
 	protected static class ImperativeAndReactiveConfiguration {
 
 	}
@@ -88,8 +85,7 @@ public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			List<String> names = new ArrayList<>();
 			for (Class<?> type : new Class<?>[] { CouchbaseAutoConfiguration.class,
-					CouchbaseDataAutoConfiguration.class,
-					CouchbaseRepositoriesAutoConfiguration.class,
+					CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class,
 					CouchbaseReactiveDataAutoConfiguration.class,
 					CouchbaseReactiveRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());

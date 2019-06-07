@@ -36,15 +36,14 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void initFieldsWhenTestIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
+		assertThatIllegalArgumentException().isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
 				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
 				.withMessageContaining("Marshaller must not be null");
 	}
 
@@ -61,8 +60,7 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 	}
 
 	@Override
-	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
-			ResolvableType type) {
+	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type) {
 		return new GsonTester<>(resourceLoadClass, type, new GsonBuilder().create());
 	}
 
@@ -70,9 +68,8 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public GsonTester<ExampleObject> base;
 
-		public GsonTester<ExampleObject> baseSet = new GsonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new GsonBuilder().create());
+		public GsonTester<ExampleObject> baseSet = new GsonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());
 
 	}
 
@@ -80,9 +77,8 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public GsonTester<List<ExampleObject>> test;
 
-		public GsonTester<ExampleObject> testSet = new GsonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new GsonBuilder().create());
+		public GsonTester<ExampleObject> testSet = new GsonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());
 
 	}
 

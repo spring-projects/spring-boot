@@ -46,8 +46,8 @@ public class HypermediaAutoConfigurationWithoutJacksonTests {
 		this.context.refresh();
 	}
 
-	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, HypermediaAutoConfiguration.class })
+	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HypermediaAutoConfiguration.class })
 	static class BaseConfig {
 
 	}

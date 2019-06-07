@@ -31,10 +31,9 @@ public class AutoConfigurationsTests {
 
 	@Test
 	public void ofShouldCreateOrderedConfigurations() {
-		Configurations configurations = AutoConfigurations.of(AutoConfigureA.class,
-				AutoConfigureB.class);
-		assertThat(Configurations.getClasses(configurations))
-				.containsExactly(AutoConfigureB.class, AutoConfigureA.class);
+		Configurations configurations = AutoConfigurations.of(AutoConfigureA.class, AutoConfigureB.class);
+		assertThat(Configurations.getClasses(configurations)).containsExactly(AutoConfigureB.class,
+				AutoConfigureA.class);
 	}
 
 	@AutoConfigureAfter(AutoConfigureB.class)

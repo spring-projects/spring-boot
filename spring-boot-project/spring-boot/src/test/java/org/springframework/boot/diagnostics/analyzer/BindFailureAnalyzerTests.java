@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,32 +46,27 @@ public class BindFailureAnalyzerTests {
 
 	@Test
 	public void analysisForUnboundElementsIsNull() {
-		FailureAnalysis analysis = performAnalysis(
-				UnboundElementsFailureConfiguration.class, "test.foo.listValue[0]=hello",
-				"test.foo.listValue[2]=world");
+		FailureAnalysis analysis = performAnalysis(UnboundElementsFailureConfiguration.class,
+				"test.foo.listValue[0]=hello", "test.foo.listValue[2]=world");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
 	public void analysisForValidationExceptionIsNull() {
-		FailureAnalysis analysis = performAnalysis(
-				FieldValidationFailureConfiguration.class, "test.foo.value=1");
+		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class, "test.foo.value=1");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
 	public void bindExceptionDueToOtherFailure() {
-		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
-				"test.foo.value=alpha");
+		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class, "test.foo.value=alpha");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "alpha",
-				"\"test.foo.value\" from property source \"test\"",
-				"failed to convert java.lang.String to int"));
+				"\"test.foo.value\" from property source \"test\"", "failed to convert java.lang.String to int"));
 	}
 
 	@Test
 	public void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
-		FailureAnalysis analysis = performAnalysis(EnumFailureConfiguration.class,
-				"test.foo.fruit=apple,strawberry");
+		FailureAnalysis analysis = performAnalysis(EnumFailureConfiguration.class, "test.foo.fruit=apple,strawberry");
 		for (Fruit fruit : Fruit.values()) {
 			assertThat(analysis.getAction()).contains(fruit.name());
 		}
@@ -79,28 +74,23 @@ public class BindFailureAnalyzerTests {
 
 	@Test
 	public void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
-		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class,
-				"test.foo.value=hello");
+		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class, "test.foo.value=hello");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "hello",
 				"\"test.foo.value\" from property source \"test\"", "This is a failure"));
 	}
 
-	private static String failure(String property, String value, String origin,
-			String reason) {
-		return String.format(
-				"Property: %s%n    Value: %s%n    Origin: %s%n    Reason: %s", property,
-				value, origin, reason);
+	private static String failure(String property, String value, String origin, String reason) {
+		return String.format("Property: %s%n    Value: %s%n    Origin: %s%n    Reason: %s", property, value, origin,
+				reason);
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration,
-			String... environment) {
+	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
 		BeanCreationException failure = createFailure(configuration, environment);
 		assertThat(failure).isNotNull();
 		return new BindFailureAnalyzer().analyze(failure);
 	}
 
-	private BeanCreationException createFailure(Class<?> configuration,
-			String... environment) {
+	private BeanCreationException createFailure(Class<?> configuration, String... environment) {
 		try {
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 			addEnvironment(context, environment);
@@ -114,8 +104,7 @@ public class BindFailureAnalyzerTests {
 		}
 	}
 
-	private void addEnvironment(AnnotationConfigApplicationContext context,
-			String[] environment) {
+	private void addEnvironment(AnnotationConfigApplicationContext context, String[] environment) {
 		MutablePropertySources sources = context.getEnvironment().getPropertySources();
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {

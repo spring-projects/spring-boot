@@ -40,8 +40,7 @@ public class SpringBootTestArgsTests {
 	public void applicationArgumentsPopulated() {
 		assertThat(this.args.getOptionNames()).containsOnly("option.foo");
 		assertThat(this.args.getOptionValues("option.foo")).containsOnly("foo-value");
-		assertThat(this.args.getNonOptionArgs())
-				.containsOnly("other.bar=other-bar-value");
+		assertThat(this.args.getNonOptionArgs()).containsOnly("other.bar=other-bar-value");
 	}
 
 	@Configuration(proxyBeanMethods = false)

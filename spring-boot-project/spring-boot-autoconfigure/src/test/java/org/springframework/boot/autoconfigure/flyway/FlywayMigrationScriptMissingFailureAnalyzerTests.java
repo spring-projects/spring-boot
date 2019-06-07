@@ -34,20 +34,18 @@ public class FlywayMigrationScriptMissingFailureAnalyzerTests {
 	@Test
 	public void analysisForMissingScriptLocation() {
 		FailureAnalysis failureAnalysis = performAnalysis();
-		assertThat(failureAnalysis.getDescription())
-				.contains("no migration scripts location is configured");
-		assertThat(failureAnalysis.getAction())
-				.contains("Check your Flyway configuration");
+		assertThat(failureAnalysis.getDescription()).contains("no migration scripts location is configured");
+		assertThat(failureAnalysis.getAction()).contains("Check your Flyway configuration");
 	}
 
 	@Test
 	public void analysisForScriptLocationsNotFound() {
 		FailureAnalysis failureAnalysis = performAnalysis("classpath:db/migration");
-		assertThat(failureAnalysis.getDescription()).contains(
-				"none of the following migration scripts locations could be found")
+		assertThat(failureAnalysis.getDescription())
+				.contains("none of the following migration scripts locations could be found")
 				.contains("classpath:db/migration");
-		assertThat(failureAnalysis.getAction()).contains(
-				"Review the locations above or check your Flyway configuration");
+		assertThat(failureAnalysis.getAction())
+				.contains("Review the locations above or check your Flyway configuration");
 	}
 
 	private FailureAnalysis performAnalysis(String... locations) {

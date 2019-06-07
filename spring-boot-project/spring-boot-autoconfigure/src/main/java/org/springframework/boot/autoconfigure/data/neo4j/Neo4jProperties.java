@@ -166,8 +166,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 	}
 
 	private void configureUriWithDefaults(Builder builder) {
-		if (!getEmbedded().isEnabled()
-				|| !ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
+		if (!getEmbedded().isEnabled() || !ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
 			builder.uri(DEFAULT_BOLT_URI);
 		}
 	}

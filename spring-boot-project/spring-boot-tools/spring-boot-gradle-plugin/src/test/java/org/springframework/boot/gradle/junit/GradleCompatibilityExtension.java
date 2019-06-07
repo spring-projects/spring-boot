@@ -35,17 +35,14 @@ import org.springframework.boot.gradle.testkit.GradleBuildExtension;
  *
  * @author Andy Wilkinson
  */
-public final class GradleCompatibilityExtension
-		implements TestTemplateInvocationContextProvider {
+public final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
 
-	private static final List<String> GRADLE_VERSIONS = Arrays.asList("default", "5.0",
-			"5.1.1", "5.2.1", "5.3.1", "5.4.1");
+	private static final List<String> GRADLE_VERSIONS = Arrays.asList("default", "5.0", "5.1.1", "5.2.1", "5.3.1",
+			"5.4.1");
 
 	@Override
-	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(
-			ExtensionContext context) {
-		return GRADLE_VERSIONS.stream()
-				.map(GradleVersionTestTemplateInvocationContext::new);
+	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
+		return GRADLE_VERSIONS.stream().map(GradleVersionTestTemplateInvocationContext::new);
 	}
 
 	@Override
@@ -53,8 +50,7 @@ public final class GradleCompatibilityExtension
 		return true;
 	}
 
-	private static final class GradleVersionTestTemplateInvocationContext
-			implements TestTemplateInvocationContext {
+	private static final class GradleVersionTestTemplateInvocationContext implements TestTemplateInvocationContext {
 
 		private final String gradleVersion;
 
@@ -73,8 +69,7 @@ public final class GradleCompatibilityExtension
 			if (!this.gradleVersion.equals("default")) {
 				gradleBuild.gradleVersion(this.gradleVersion);
 			}
-			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild),
-					new GradleBuildExtension());
+			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
 	}

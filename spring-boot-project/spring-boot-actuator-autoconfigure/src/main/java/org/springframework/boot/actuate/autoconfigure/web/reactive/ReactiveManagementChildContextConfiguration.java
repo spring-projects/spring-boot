@@ -60,16 +60,13 @@ public class ReactiveManagementChildContextConfiguration {
 		return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 	}
 
-	class ReactiveManagementWebServerFactoryCustomizer extends
-			ManagementWebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
+	class ReactiveManagementWebServerFactoryCustomizer
+			extends ManagementWebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
 
 		ReactiveManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, ReactiveWebServerFactoryCustomizer.class,
-					TomcatWebServerFactoryCustomizer.class,
-					TomcatReactiveWebServerFactoryCustomizer.class,
-					JettyWebServerFactoryCustomizer.class,
-					UndertowWebServerFactoryCustomizer.class,
-					NettyWebServerFactoryCustomizer.class);
+			super(beanFactory, ReactiveWebServerFactoryCustomizer.class, TomcatWebServerFactoryCustomizer.class,
+					TomcatReactiveWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
+					UndertowWebServerFactoryCustomizer.class, NettyWebServerFactoryCustomizer.class);
 		}
 
 	}

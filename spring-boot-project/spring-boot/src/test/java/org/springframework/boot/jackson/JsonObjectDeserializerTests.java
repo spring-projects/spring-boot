@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ public class JsonObjectDeserializerTests {
 		module.addDeserializer(NameAndAge.class, deserializer);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}",
-				NameAndAge.class);
+		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
 	}
@@ -67,8 +66,8 @@ public class JsonObjectDeserializerTests {
 
 	@Test
 	public void nullSafeValueWhenClassIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
 				.withMessageContaining("Type must not be null");
 	}
 
@@ -132,8 +131,7 @@ public class JsonObjectDeserializerTests {
 	public void nullSafeValueWhenClassIsBigDecimalShouldReturnBigDecimal() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.decimalValue()).willReturn(BigDecimal.TEN);
-		BigDecimal value = this.testDeserializer.testNullSafeValue(node,
-				BigDecimal.class);
+		BigDecimal value = this.testDeserializer.testNullSafeValue(node, BigDecimal.class);
 		assertThat(value).isEqualTo(BigDecimal.TEN);
 	}
 
@@ -141,24 +139,21 @@ public class JsonObjectDeserializerTests {
 	public void nullSafeValueWhenClassIsBigIntegerShouldReturnBigInteger() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.bigIntegerValue()).willReturn(BigInteger.TEN);
-		BigInteger value = this.testDeserializer.testNullSafeValue(node,
-				BigInteger.class);
+		BigInteger value = this.testDeserializer.testNullSafeValue(node, BigInteger.class);
 		assertThat(value).isEqualTo(BigInteger.TEN);
 	}
 
 	@Test
 	public void nullSafeValueWhenClassIsUnknownShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.testDeserializer
-						.testNullSafeValue(mock(JsonNode.class), InputStream.class))
+				.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), InputStream.class))
 				.withMessageContaining("Unsupported value type java.io.InputStream");
 
 	}
 
 	@Test
 	public void getRequiredNodeWhenTreeIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.testDeserializer.testGetRequiredNode(null, "test"))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(null, "test"))
 				.withMessageContaining("Tree must not be null");
 	}
 
@@ -166,8 +161,7 @@ public class JsonObjectDeserializerTests {
 	public void getRequiredNodeWhenNodeIsNullShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
+		assertThatIllegalStateException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
 				.withMessageContaining("Missing JSON field 'test'");
 	}
 
@@ -175,8 +169,7 @@ public class JsonObjectDeserializerTests {
 	public void getRequiredNodeWhenNodeIsNullNodeShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(NullNode.instance);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
+		assertThatIllegalStateException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
 				.withMessageContaining("Missing JSON field 'test'");
 	}
 
@@ -185,15 +178,14 @@ public class JsonObjectDeserializerTests {
 		JsonNode node = mock(JsonNode.class);
 		JsonNode tree = node;
 		given(tree.get("test")).willReturn(node);
-		assertThat(this.testDeserializer.testGetRequiredNode(tree, "test"))
-				.isEqualTo(node);
+		assertThat(this.testDeserializer.testGetRequiredNode(tree, "test")).isEqualTo(node);
 	}
 
 	static class TestJsonObjectDeserializer<T> extends JsonObjectDeserializer<T> {
 
 		@Override
-		protected T deserializeObject(JsonParser jsonParser,
-				DeserializationContext context, ObjectCodec codec, JsonNode tree) {
+		protected T deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
+				JsonNode tree) {
 			return null;
 		}
 

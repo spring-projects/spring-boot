@@ -42,8 +42,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	private static final String FILE_NAME = ".spring-boot-devtools.properties";
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
 			File home = getHomeFolder();
 			File propertyFile = (home != null) ? new File(home, FILE_NAME) : null;
@@ -52,8 +51,8 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 				Properties properties;
 				try {
 					properties = PropertiesLoaderUtils.loadProperties(resource);
-					environment.getPropertySources().addFirst(
-							new PropertiesPropertySource("devtools-local", properties));
+					environment.getPropertySources()
+							.addFirst(new PropertiesPropertySource("devtools-local", properties));
 				}
 				catch (IOException ex) {
 					throw new IllegalStateException("Unable to load " + FILE_NAME, ex);

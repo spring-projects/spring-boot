@@ -22,11 +22,9 @@ import org.cassandraunit.spring.CassandraUnitDependencyInjectionTestExecutionLis
 
 import org.springframework.core.Ordered;
 
-public class OrderedCassandraTestExecutionListener
-		extends CassandraUnitDependencyInjectionTestExecutionListener {
+public class OrderedCassandraTestExecutionListener extends CassandraUnitDependencyInjectionTestExecutionListener {
 
-	private static final Log logger = LogFactory
-			.getLog(OrderedCassandraTestExecutionListener.class);
+	private static final Log logger = LogFactory.getLog(OrderedCassandraTestExecutionListener.class);
 
 	@Override
 	public int getOrder() {

@@ -67,8 +67,7 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 
 	@Before
 	public void deleteSnippets() {
-		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
-				"generated-snippets");
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
 		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}
 
@@ -76,15 +75,12 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 	public void snippetGeneration() {
 		given(this.documentationSpec)
 				.filter(document("default-snippets",
-						preprocessRequest(modifyUris().scheme("https")
-								.host("api.example.com").removePort())))
+						preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md")))
-				.contains("'https://api.example.com/'");
-		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.md")))
-				.contains("api.example.com");
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md"))).contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.md"))).contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
@@ -99,14 +95,13 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 
 		@Bean
 		public RestDocsRestAssuredConfigurationCustomizer templateFormatCustomizer() {
-			return (configurer) -> configurer.snippets()
-					.withTemplateFormat(TemplateFormats.markdown());
+			return (configurer) -> configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 		}
 
 		@Bean
 		public RestDocsRestAssuredConfigurationCustomizer defaultSnippetsCustomizer() {
-			return (configurer) -> configurer.snippets().withAdditionalDefaults(
-					responseFields(fieldWithPath("_links.self").description("Main URL")));
+			return (configurer) -> configurer.snippets()
+					.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}

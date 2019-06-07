@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@ class PropertiesMigrationReporter {
 
 	PropertiesMigrationReporter(ConfigurationMetadataRepository metadataRepository,
 			ConfigurableEnvironment environment) {
-		this.allProperties = Collections
-				.unmodifiableMap(metadataRepository.getAllProperties());
+		this.allProperties = Collections.unmodifiableMap(metadataRepository.getAllProperties());
 		this.environment = environment;
 	}
 
@@ -63,14 +62,12 @@ class PropertiesMigrationReporter {
 	 */
 	public PropertiesMigrationReport getReport() {
 		PropertiesMigrationReport report = new PropertiesMigrationReport();
-		Map<String, List<PropertyMigration>> properties = getMatchingProperties(
-				deprecatedFilter());
+		Map<String, List<PropertyMigration>> properties = getMatchingProperties(deprecatedFilter());
 		if (properties.isEmpty()) {
 			return report;
 		}
 		properties.forEach((name, candidates) -> {
-			PropertySource<?> propertySource = mapPropertiesWithReplacement(report, name,
-					candidates);
+			PropertySource<?> propertySource = mapPropertiesWithReplacement(report, name, candidates);
 			if (propertySource != null) {
 				this.environment.getPropertySources().addBefore(name, propertySource);
 			}
@@ -78,20 +75,18 @@ class PropertiesMigrationReporter {
 		return report;
 	}
 
-	private PropertySource<?> mapPropertiesWithReplacement(
-			PropertiesMigrationReport report, String name,
+	private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
 			List<PropertyMigration> properties) {
 		report.add(name, properties);
-		List<PropertyMigration> renamed = properties.stream()
-				.filter(PropertyMigration::isCompatibleType).collect(Collectors.toList());
+		List<PropertyMigration> renamed = properties.stream().filter(PropertyMigration::isCompatibleType)
+				.collect(Collectors.toList());
 		if (renamed.isEmpty()) {
 			return null;
 		}
 		String target = "migrate-" + name;
 		Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
 		for (PropertyMigration candidate : renamed) {
-			OriginTrackedValue value = OriginTrackedValue.of(
-					candidate.getProperty().getValue(),
+			OriginTrackedValue value = OriginTrackedValue.of(candidate.getProperty().getValue(),
 					candidate.getProperty().getOrigin());
 			content.put(candidate.getMetadata().getDeprecation().getReplacement(), value);
 		}
@@ -101,28 +96,25 @@ class PropertiesMigrationReporter {
 	private Map<String, List<PropertyMigration>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
-		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
-				.stream().filter(filter).collect(Collectors.toList());
+		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter)
+				.collect(Collectors.toList());
 		getPropertySourcesAsMap().forEach((name, source) -> {
 			candidates.forEach((metadata) -> {
 				ConfigurationProperty configurationProperty = source
-						.getConfigurationProperty(
-								ConfigurationPropertyName.of(metadata.getId()));
+						.getConfigurationProperty(ConfigurationPropertyName.of(metadata.getId()));
 				if (configurationProperty != null) {
-					result.add(name, new PropertyMigration(configurationProperty,
-							metadata, determineReplacementMetadata(metadata)));
+					result.add(name, new PropertyMigration(configurationProperty, metadata,
+							determineReplacementMetadata(metadata)));
 				}
 			});
 		});
 		return result;
 	}
 
-	private ConfigurationMetadataProperty determineReplacementMetadata(
-			ConfigurationMetadataProperty metadata) {
+	private ConfigurationMetadataProperty determineReplacementMetadata(ConfigurationMetadataProperty metadata) {
 		String replacementId = metadata.getDeprecation().getReplacement();
 		if (StringUtils.hasText(replacementId)) {
-			ConfigurationMetadataProperty replacement = this.allProperties
-					.get(replacementId);
+			ConfigurationMetadataProperty replacement = this.allProperties.get(replacementId);
 			if (replacement != null) {
 				return replacement;
 			}
@@ -146,8 +138,7 @@ class PropertiesMigrationReporter {
 
 	private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {
 		Map<String, ConfigurationPropertySource> map = new LinkedHashMap<>();
-		for (ConfigurationPropertySource source : ConfigurationPropertySources
-				.get(this.environment)) {
+		for (ConfigurationPropertySource source : ConfigurationPropertySources.get(this.environment)) {
 			map.put(determinePropertySourceName(source), source);
 		}
 		return map;

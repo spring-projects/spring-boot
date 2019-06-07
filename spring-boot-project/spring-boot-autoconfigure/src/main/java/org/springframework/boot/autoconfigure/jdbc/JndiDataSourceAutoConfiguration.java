@@ -41,8 +41,7 @@ import org.springframework.jmx.support.JmxUtils;
  * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
-		DataSourceAutoConfiguration.class })
+@AutoConfigureBefore({ XADataSourceAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @ConditionalOnProperty(prefix = "spring.datasource", name = "jndi-name")
 @EnableConfigurationProperties(DataSourceProperties.class)
@@ -50,18 +49,15 @@ public class JndiDataSourceAutoConfiguration {
 
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
-	public DataSource dataSource(DataSourceProperties properties,
-			ApplicationContext context) {
+	public DataSource dataSource(DataSourceProperties properties, ApplicationContext context) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
 		DataSource dataSource = dataSourceLookup.getDataSource(properties.getJndiName());
 		excludeMBeanIfNecessary(dataSource, "dataSource", context);
 		return dataSource;
 	}
 
-	private void excludeMBeanIfNecessary(Object candidate, String beanName,
-			ApplicationContext context) {
-		for (MBeanExporter mbeanExporter : context.getBeansOfType(MBeanExporter.class)
-				.values()) {
+	private void excludeMBeanIfNecessary(Object candidate, String beanName, ApplicationContext context) {
+		for (MBeanExporter mbeanExporter : context.getBeansOfType(MBeanExporter.class).values()) {
 			if (JmxUtils.isMBean(candidate.getClass())) {
 				mbeanExporter.addExcludedBean(beanName);
 			}

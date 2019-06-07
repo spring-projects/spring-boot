@@ -36,14 +36,12 @@ class SampleAtomikosApplicationTests {
 	@Test
 	void testTransactionRollback(CapturedOutput capturedOutput) throws Exception {
 		SampleAtomikosApplication.main(new String[] {});
-		assertThat(capturedOutput.toString()).has(substring(1, "---->"))
-				.has(substring(1, "----> josh")).has(substring(2, "Count is 1"))
-				.has(substring(1, "Simulated error"));
+		assertThat(capturedOutput.toString()).has(substring(1, "---->")).has(substring(1, "----> josh"))
+				.has(substring(2, "Count is 1")).has(substring(1, "Simulated error"));
 	}
 
 	private Condition<String> substring(int times, String substring) {
-		return new Condition<String>(
-				"containing '" + substring + "' " + times + " times") {
+		return new Condition<String>("containing '" + substring + "' " + times + " times") {
 
 			@Override
 			public boolean matches(String value) {

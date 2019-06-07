@@ -57,17 +57,14 @@ class TypeElementMembers {
 	}
 
 	private void process(TypeElement element) {
-		for (ExecutableElement method : ElementFilter
-				.methodsIn(element.getEnclosedElements())) {
+		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
 			processMethod(method);
 		}
-		for (VariableElement field : ElementFilter
-				.fieldsIn(element.getEnclosedElements())) {
+		for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
 			processField(field);
 		}
 		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
-		if (superType instanceof TypeElement
-				&& !OBJECT_CLASS_NAME.equals(superType.toString())) {
+		if (superType instanceof TypeElement && !OBJECT_CLASS_NAME.equals(superType.toString())) {
 			process((TypeElement) superType);
 		}
 	}
@@ -80,8 +77,8 @@ class TypeElementMembers {
 			}
 			else if (isSetter(method)) {
 				String propertyName = getAccessorName(name);
-				List<ExecutableElement> matchingSetters = this.publicSetters
-						.computeIfAbsent(propertyName, (k) -> new ArrayList<>());
+				List<ExecutableElement> matchingSetters = this.publicSetters.computeIfAbsent(propertyName,
+						(k) -> new ArrayList<>());
 				TypeMirror paramType = method.getParameters().get(0).asType();
 				if (getMatchingSetter(matchingSetters, paramType) == null) {
 					matchingSetters.add(method);
@@ -92,13 +89,11 @@ class TypeElementMembers {
 
 	private boolean isPublic(ExecutableElement method) {
 		Set<Modifier> modifiers = method.getModifiers();
-		return modifiers.contains(Modifier.PUBLIC)
-				&& !modifiers.contains(Modifier.ABSTRACT)
+		return modifiers.contains(Modifier.PUBLIC) && !modifiers.contains(Modifier.ABSTRACT)
 				&& !modifiers.contains(Modifier.STATIC);
 	}
 
-	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates,
-			TypeMirror type) {
+	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
 		for (ExecutableElement candidate : candidates) {
 			TypeMirror paramType = candidate.getParameters().get(0).asType();
 			if (this.env.getTypeUtils().isSameType(paramType, type)) {
@@ -110,27 +105,24 @@ class TypeElementMembers {
 
 	private boolean isGetter(ExecutableElement method) {
 		String name = method.getSimpleName().toString();
-		return ((name.startsWith("get") && name.length() > 3)
-				|| (name.startsWith("is") && name.length() > 2))
-				&& method.getParameters().isEmpty()
-				&& (TypeKind.VOID != method.getReturnType().getKind());
+		return ((name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2))
+				&& method.getParameters().isEmpty() && (TypeKind.VOID != method.getReturnType().getKind());
 	}
 
 	private boolean isSetter(ExecutableElement method) {
 		final String name = method.getSimpleName().toString();
-		return (name.startsWith("set") && name.length() > 3
-				&& method.getParameters().size() == 1 && isSetterReturnType(method));
+		return (name.startsWith("set") && name.length() > 3 && method.getParameters().size() == 1
+				&& isSetterReturnType(method));
 	}
 
 	private boolean isSetterReturnType(ExecutableElement method) {
 		TypeMirror returnType = method.getReturnType();
-		return (TypeKind.VOID == returnType.getKind() || this.env.getTypeUtils()
-				.isSameType(method.getEnclosingElement().asType(), returnType));
+		return (TypeKind.VOID == returnType.getKind()
+				|| this.env.getTypeUtils().isSameType(method.getEnclosingElement().asType(), returnType));
 	}
 
 	private String getAccessorName(String methodName) {
-		String name = methodName.startsWith("is") ? methodName.substring(2)
-				: methodName.substring(3);
+		String name = methodName.startsWith("is") ? methodName.substring(2) : methodName.substring(3);
 		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 		return name;
 	}
@@ -157,10 +149,8 @@ class TypeElementMembers {
 			if (this.env.getTypeUtils().isSameType(returnType, type)) {
 				return candidate;
 			}
-			TypeMirror alternative = this.env.getTypeUtils()
-					.getWrapperOrPrimitiveFor(type);
-			if (alternative != null
-					&& this.env.getTypeUtils().isSameType(returnType, alternative)) {
+			TypeMirror alternative = this.env.getTypeUtils().getWrapperOrPrimitiveFor(type);
+			if (alternative != null && this.env.getTypeUtils().isSameType(returnType, alternative)) {
 				return candidate;
 			}
 		}
@@ -174,8 +164,7 @@ class TypeElementMembers {
 			if (matching != null) {
 				return matching;
 			}
-			TypeMirror alternative = this.env.getTypeUtils()
-					.getWrapperOrPrimitiveFor(type);
+			TypeMirror alternative = this.env.getTypeUtils().getWrapperOrPrimitiveFor(type);
 			if (alternative != null) {
 				return getMatchingSetter(candidates, alternative);
 			}

@@ -32,30 +32,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ShutdownEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ShutdownEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ShutdownEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
 				.withPropertyValues("management.endpoints.web.exposure.include=shutdown")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ShutdownEndpoint.class));
+				.run((context) -> assertThat(context).hasSingleBean(ShutdownEndpoint.class));
 	}
 
 	@Test
 	public void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ShutdownEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ShutdownEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.shutdown.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ShutdownEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(ShutdownEndpoint.class));
 	}
 
 }

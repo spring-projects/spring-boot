@@ -43,8 +43,7 @@ import org.springframework.context.annotation.Configuration;
 class CacheMeterBinderProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ CaffeineCache.class,
-			com.github.benmanes.caffeine.cache.Cache.class })
+	@ConditionalOnClass({ CaffeineCache.class, com.github.benmanes.caffeine.cache.Cache.class })
 	static class CaffeineCacheMeterBinderProviderConfiguration {
 
 		@Bean

@@ -48,22 +48,17 @@ class SampleSessionWebFluxApplicationTests {
 
 	@Test
 	void userDefinedMappingsSecureByDefault() throws Exception {
-		WebClient webClient = this.webClientBuilder
-				.baseUrl("http://localhost:" + this.port + "/").build();
-		ClientResponse response = webClient.get().header("Authorization", getBasicAuth())
-				.exchange().block(Duration.ofSeconds(30));
+		WebClient webClient = this.webClientBuilder.baseUrl("http://localhost:" + this.port + "/").build();
+		ClientResponse response = webClient.get().header("Authorization", getBasicAuth()).exchange()
+				.block(Duration.ofSeconds(30));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
 		ResponseCookie sessionCookie = response.cookies().getFirst("SESSION");
-		String sessionId = response.bodyToMono(String.class)
-				.block(Duration.ofSeconds(30));
-		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
-				.block(Duration.ofSeconds(30));
+		String sessionId = response.bodyToMono(String.class).block(Duration.ofSeconds(30));
+		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange().block(Duration.ofSeconds(30));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.bodyToMono(String.class).block(Duration.ofSeconds(30)))
-				.isEqualTo(sessionId);
+		assertThat(response.bodyToMono(String.class).block(Duration.ofSeconds(30))).isEqualTo(sessionId);
 		Thread.sleep(2000);
-		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange()
-				.block(Duration.ofSeconds(30));
+		response = webClient.get().cookie("SESSION", sessionCookie.getValue()).exchange().block(Duration.ofSeconds(30));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 

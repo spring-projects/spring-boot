@@ -49,10 +49,8 @@ public class OverrideAutoConfigurationEnabledTrueIntegrationTests {
 	@Test
 	public void autoConfiguredContext() {
 		ApplicationContext context = this.context;
-		assertThat(context.getBean(OverrideAutoConfigurationSpringBootApplication.class))
-				.isNotNull();
-		assertThat(context.getBean(ConfigurationPropertiesBindingPostProcessor.class))
-				.isNotNull();
+		assertThat(context.getBean(OverrideAutoConfigurationSpringBootApplication.class)).isNotNull();
+		assertThat(context.getBean(ConfigurationPropertiesBindingPostProcessor.class)).isNotNull();
 	}
 
 }

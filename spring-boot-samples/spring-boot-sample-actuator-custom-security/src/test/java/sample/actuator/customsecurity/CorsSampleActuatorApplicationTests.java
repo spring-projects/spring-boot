@@ -52,36 +52,31 @@ class CorsSampleActuatorApplicationTests {
 	@BeforeEach
 	public void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-				this.applicationContext.getEnvironment(), "http");
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(this.applicationContext.getEnvironment(),
+				"http");
 		builder = builder.uriTemplateHandler(handler);
 		this.testRestTemplate = new TestRestTemplate(builder);
 	}
 
 	@Test
 	void endpointShouldReturnUnauthorized() {
-		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env",
-				Map.class);
+		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void preflightRequestToEndpointShouldReturnOk() throws Exception {
 		RequestEntity<?> healthRequest = RequestEntity.options(new URI("/actuator/env"))
-				.header("Origin", "http://localhost:8080")
-				.header("Access-Control-Request-Method", "GET").build();
-		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest,
-				Map.class);
+				.header("Origin", "http://localhost:8080").header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest, Map.class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() throws Exception {
 		RequestEntity<?> entity = RequestEntity.options(new URI("/actuator/env"))
-				.header("Origin", "http://localhost:9095")
-				.header("Access-Control-Request-Method", "GET").build();
-		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity,
-				byte[].class);
+				.header("Origin", "http://localhost:9095").header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity, byte[].class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 

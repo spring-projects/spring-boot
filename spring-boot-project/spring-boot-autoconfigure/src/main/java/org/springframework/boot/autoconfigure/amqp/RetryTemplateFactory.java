@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ class RetryTemplateFactory {
 		map.from(properties::getInitialInterval).whenNonNull().as(Duration::toMillis)
 				.to(backOffPolicy::setInitialInterval);
 		map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
-		map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis)
-				.to(backOffPolicy::setMaxInterval);
+		map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis).to(backOffPolicy::setMaxInterval);
 		template.setBackOffPolicy(backOffPolicy);
 		if (this.customizers != null) {
 			for (RabbitRetryTemplateCustomizer customizer : this.customizers) {

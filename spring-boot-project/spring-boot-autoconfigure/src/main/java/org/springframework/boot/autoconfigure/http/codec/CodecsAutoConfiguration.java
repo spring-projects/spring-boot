@@ -60,10 +60,8 @@ public class CodecsAutoConfiguration {
 		public CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
 			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
-				defaults.jackson2JsonDecoder(
-						new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
-				defaults.jackson2JsonEncoder(
-						new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
+				defaults.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
+				defaults.jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
 			};
 		}
 

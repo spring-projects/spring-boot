@@ -55,8 +55,7 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
-		RequestMatcher matcher = this.resourceRequest.atCommonLocations()
-				.excluding(StaticResourceLocation.CSS);
+		RequestMatcher matcher = this.resourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
@@ -77,16 +76,13 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.resourceRequest.at(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> this.resourceRequest.atCommonLocations().excluding(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
@@ -124,8 +120,7 @@ public class StaticResourceRequestTests {
 		}
 
 		private void matches(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Matches " + getRequestPath(request)).isTrue();
+			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
 		public void doesNotMatch(String path) {
@@ -137,8 +132,7 @@ public class StaticResourceRequestTests {
 		}
 
 		private void doesNotMatch(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Does not match " + getRequestPath(request)).isFalse();
+			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
 		private MockHttpServletRequest mockRequest(String path) {
@@ -147,9 +141,7 @@ public class StaticResourceRequestTests {
 
 		private MockHttpServletRequest mockRequest(String servletPath, String path) {
 			MockServletContext servletContext = new MockServletContext();
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-					this.context);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
 				request.setServletPath(servletPath);

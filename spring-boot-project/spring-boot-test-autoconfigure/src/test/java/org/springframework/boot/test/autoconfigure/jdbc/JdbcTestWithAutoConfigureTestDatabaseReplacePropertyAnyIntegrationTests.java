@@ -51,8 +51,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplacePropertyAnyIntegrationT
 	@Test
 	public void replacesDefinedDataSourceWithExplicit() throws Exception {
 		// H2 is explicitly defined but HSQL is the override.
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("HSQL");
 	}
 
@@ -62,8 +61,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplacePropertyAnyIntegrationT
 
 		@Bean
 		public DataSource dataSource() {
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseType.H2).build();
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.H2).build();
 		}
 
 	}

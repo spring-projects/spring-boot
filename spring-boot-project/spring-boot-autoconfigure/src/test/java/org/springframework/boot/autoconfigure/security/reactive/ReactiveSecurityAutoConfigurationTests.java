@@ -38,22 +38,17 @@ public class ReactiveSecurityAutoConfigurationTests {
 
 	@Test
 	public void backsOffWhenWebFilterChainProxyBeanPresent() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 				.withUserConfiguration(WebFilterChainProxyConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(WebFilterChainProxy.class));
+				.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
 	}
 
 	@Test
 	public void enablesWebFluxSecurity() {
 		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-								ReactiveUserDetailsServiceAutoConfiguration.class))
-				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class)
-						.isNotNull());
+				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+						ReactiveUserDetailsServiceAutoConfiguration.class))
+				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
 	}
 
 	@Configuration(proxyBeanMethods = false)

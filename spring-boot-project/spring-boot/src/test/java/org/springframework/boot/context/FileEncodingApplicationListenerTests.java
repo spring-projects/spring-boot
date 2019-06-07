@@ -47,8 +47,7 @@ public class FileEncodingApplicationListenerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.mandatory_file_encoding=FOO");
 		ConfigurationPropertySources.attach(this.environment);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.initializer.onApplicationEvent(this.event));
+		assertThatIllegalStateException().isThrownBy(() -> this.initializer.onApplicationEvent(this.event));
 	}
 
 	@Test

@@ -83,11 +83,9 @@ public class FilterAnnotationsTests {
 		return new FilterAnnotations(getClass().getClassLoader(), filters.value());
 	}
 
-	private boolean match(FilterAnnotations filterAnnotations, Class<?> type)
-			throws IOException {
+	private boolean match(FilterAnnotations filterAnnotations, Class<?> type) throws IOException {
 		MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
-		MetadataReader metadataReader = metadataReaderFactory
-				.getMetadataReader(type.getName());
+		MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(type.getName());
 		return filterAnnotations.anyMatches(metadataReader, metadataReaderFactory);
 	}
 
@@ -96,8 +94,7 @@ public class FilterAnnotationsTests {
 
 	}
 
-	@Filters(@Filter(type = FilterType.ASSIGNABLE_TYPE,
-			classes = ExampleWithoutAnnotation.class))
+	@Filters(@Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ExampleWithoutAnnotation.class))
 	static class FilterByType {
 
 	}
@@ -107,8 +104,7 @@ public class FilterAnnotationsTests {
 
 	}
 
-	@Filters(@Filter(type = FilterType.ASPECTJ,
-			pattern = "(*..*ExampleWithoutAnnotation)"))
+	@Filters(@Filter(type = FilterType.ASPECTJ, pattern = "(*..*ExampleWithoutAnnotation)"))
 	static class FilterByAspectJ {
 
 	}
@@ -130,10 +126,8 @@ public class FilterAnnotationsTests {
 	static class ExampleCustomFilter implements TypeFilter {
 
 		@Override
-		public boolean match(MetadataReader metadataReader,
-				MetadataReaderFactory metadataReaderFactory) {
-			return metadataReader.getClassMetadata().getClassName()
-					.equals(ExampleWithoutAnnotation.class.getName());
+		public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) {
+			return metadataReader.getClassMetadata().getClassName().equals(ExampleWithoutAnnotation.class.getName());
 		}
 
 	}

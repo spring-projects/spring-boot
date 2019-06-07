@@ -69,11 +69,9 @@ public class LdapRepositoriesAutoConfigurationTests {
 
 	private void load(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.ldap.urls:ldap://localhost:389")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.ldap.urls:ldap://localhost:389").applyTo(this.context);
 		this.context.register(configurationClasses);
-		this.context.register(LdapAutoConfiguration.class,
-				LdapRepositoriesAutoConfiguration.class,
+		this.context.register(LdapAutoConfiguration.class, LdapRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}

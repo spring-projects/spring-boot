@@ -35,8 +35,7 @@ class SampleJooqApplicationTests {
 	@Test
 	void outputResults(CapturedOutput capturedOutput) {
 		SampleJooqApplication.main(NO_ARGS);
-		assertThat(capturedOutput).contains("jOOQ Fetch 1 Greg Turnquest")
-				.contains("jOOQ Fetch 2 Craig Walls")
+		assertThat(capturedOutput).contains("jOOQ Fetch 1 Greg Turnquest").contains("jOOQ Fetch 2 Craig Walls")
 				.contains("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
 						+ "Spring Boot in Action : Craig Walls]");
 	}

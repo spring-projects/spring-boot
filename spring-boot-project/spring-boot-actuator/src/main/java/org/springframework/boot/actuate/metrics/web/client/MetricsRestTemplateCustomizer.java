@@ -50,8 +50,8 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 	 * {@link #MetricsRestTemplateCustomizer(MeterRegistry, RestTemplateExchangeTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
+	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
+			String metricName) {
 		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
@@ -66,11 +66,9 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
-	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider tagProvider, String metricName,
-			AutoTimer autoTimer) {
-		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry,
-				tagProvider, metricName, autoTimer);
+	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
+			String metricName, AutoTimer autoTimer) {
+		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry, tagProvider, metricName, autoTimer);
 	}
 
 	@Override
@@ -78,8 +76,7 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
 		templateHandler = this.interceptor.createUriTemplateHandler(templateHandler);
 		restTemplate.setUriTemplateHandler(templateHandler);
-		List<ClientHttpRequestInterceptor> existingInterceptors = restTemplate
-				.getInterceptors();
+		List<ClientHttpRequestInterceptor> existingInterceptors = restTemplate.getInterceptors();
 		if (!existingInterceptors.contains(this.interceptor)) {
 			List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 			interceptors.add(this.interceptor);

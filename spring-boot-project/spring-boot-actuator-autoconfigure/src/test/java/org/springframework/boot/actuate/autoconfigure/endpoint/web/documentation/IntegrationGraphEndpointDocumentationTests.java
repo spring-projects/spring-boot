@@ -35,8 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Tim Ysewyn
  */
-public class IntegrationGraphEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+public class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void graph() throws Exception {
@@ -46,8 +45,7 @@ public class IntegrationGraphEndpointDocumentationTests
 
 	@Test
 	public void rebuild() throws Exception {
-		this.mockMvc.perform(post("/actuator/integrationgraph"))
-				.andExpect(status().isNoContent())
+		this.mockMvc.perform(post("/actuator/integrationgraph")).andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
 	}
 
@@ -62,8 +60,7 @@ public class IntegrationGraphEndpointDocumentationTests
 		}
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint(
-				IntegrationGraphServer integrationGraphServer) {
+		public IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
 			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 

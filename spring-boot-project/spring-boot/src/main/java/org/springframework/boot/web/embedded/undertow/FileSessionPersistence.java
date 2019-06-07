@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	@Override
-	public void persistSessions(String deploymentName,
-			Map<String, PersistentSession> sessionData) {
+	public void persistSessions(String deploymentName, Map<String, PersistentSession> sessionData) {
 		try {
 			save(sessionData, getSessionFile(deploymentName));
 		}
@@ -58,25 +57,20 @@ class FileSessionPersistence implements SessionPersistenceManager {
 		}
 	}
 
-	private void save(Map<String, PersistentSession> sessionData, File file)
-			throws IOException {
-		try (ObjectOutputStream stream = new ObjectOutputStream(
-				new FileOutputStream(file))) {
+	private void save(Map<String, PersistentSession> sessionData, File file) throws IOException {
+		try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
 			save(sessionData, stream);
 		}
 	}
 
-	private void save(Map<String, PersistentSession> sessionData,
-			ObjectOutputStream stream) throws IOException {
+	private void save(Map<String, PersistentSession> sessionData, ObjectOutputStream stream) throws IOException {
 		Map<String, Serializable> session = new LinkedHashMap<>();
-		sessionData.forEach((key, value) -> session.put(key,
-				new SerializablePersistentSession(value)));
+		sessionData.forEach((key, value) -> session.put(key, new SerializablePersistentSession(value)));
 		stream.writeObject(session);
 	}
 
 	@Override
-	public Map<String, PersistentSession> loadSessionAttributes(String deploymentName,
-			final ClassLoader classLoader) {
+	public Map<String, PersistentSession> loadSessionAttributes(String deploymentName, final ClassLoader classLoader) {
 		try {
 			File file = getSessionFile(deploymentName);
 			if (file.exists()) {
@@ -91,14 +85,12 @@ class FileSessionPersistence implements SessionPersistenceManager {
 
 	private Map<String, PersistentSession> load(File file, ClassLoader classLoader)
 			throws IOException, ClassNotFoundException {
-		try (ObjectInputStream stream = new ConfigurableObjectInputStream(
-				new FileInputStream(file), classLoader)) {
+		try (ObjectInputStream stream = new ConfigurableObjectInputStream(new FileInputStream(file), classLoader)) {
 			return load(stream);
 		}
 	}
 
-	private Map<String, PersistentSession> load(ObjectInputStream stream)
-			throws ClassNotFoundException, IOException {
+	private Map<String, PersistentSession> load(ObjectInputStream stream) throws ClassNotFoundException, IOException {
 		Map<String, SerializablePersistentSession> session = readSession(stream);
 		long time = System.currentTimeMillis();
 		Map<String, PersistentSession> result = new LinkedHashMap<>();
@@ -112,8 +104,8 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, SerializablePersistentSession> readSession(
-			ObjectInputStream stream) throws ClassNotFoundException, IOException {
+	private Map<String, SerializablePersistentSession> readSession(ObjectInputStream stream)
+			throws ClassNotFoundException, IOException {
 		return ((Map<String, SerializablePersistentSession>) stream.readObject());
 	}
 

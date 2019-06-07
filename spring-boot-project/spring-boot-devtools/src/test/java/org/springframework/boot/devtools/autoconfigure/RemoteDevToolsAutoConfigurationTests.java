@@ -92,8 +92,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void ignoresUnmappedUrl() throws Exception {
-		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret"));
+		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/restart");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -103,8 +102,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void ignoresIfMissingSecretFromRequest() throws Exception {
-		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret"));
+		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
 		filter.doFilter(this.request, this.response, this.chain);
@@ -113,8 +111,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void ignoresInvalidSecretInRequest() throws Exception {
-		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret"));
+		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "invalid");
@@ -124,8 +121,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void invokeRestartWithDefaultSetup() throws Exception {
-		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret"));
+		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -136,8 +132,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	public void invokeRestartWithCustomServerContextPath() throws Exception {
 		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret",
-						"server.servlet.context-path:/test"));
+				() -> loadContext("spring.devtools.remote.secret:supersecret", "server.servlet.context-path:/test"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/restart");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -147,17 +142,15 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	@Test
 	public void disableRestart() throws Exception {
-		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret",
-						"spring.devtools.remote.restart.enabled:false"));
+		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret",
+				"spring.devtools.remote.restart.enabled:false"));
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean("remoteRestartHandlerMapper"));
 	}
 
 	@Test
 	public void devToolsHealthReturns200() throws Exception {
-		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret"));
+		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH);
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -169,8 +162,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	public void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
 		this.context = getContext(
-				() -> loadContext("spring.devtools.remote.secret:supersecret",
-						"server.servlet.context-path:/test"));
+				() -> loadContext("spring.devtools.remote.secret:supersecret", "server.servlet.context-path:/test"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH);
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -180,8 +172,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	private AnnotationConfigServletWebApplicationContext getContext(
-			Supplier<AnnotationConfigServletWebApplicationContext> supplier)
-			throws Exception {
+			Supplier<AnnotationConfigServletWebApplicationContext> supplier) throws Exception {
 		AtomicReference<AnnotationConfigServletWebApplicationContext> atomicReference = new AtomicReference<>();
 		Thread thread = new Thread(() -> {
 			AnnotationConfigServletWebApplicationContext context = supplier.get();
@@ -193,12 +184,10 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	private void assertRestartInvoked(boolean value) {
-		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked)
-				.isEqualTo(value);
+		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked).isEqualTo(value);
 	}
 
-	private AnnotationConfigServletWebApplicationContext loadContext(
-			String... properties) {
+	private AnnotationConfigServletWebApplicationContext loadContext(String... properties) {
 		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		context.setServletContext(new MockServletContext());
 		context.register(Config.class, PropertyPlaceholderAutoConfiguration.class);
@@ -213,8 +202,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		@Bean
 		public HttpRestartServer remoteRestartHttpRestartServer() {
-			SourceFolderUrlFilter sourceFolderUrlFilter = mock(
-					SourceFolderUrlFilter.class);
+			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
 		}
 

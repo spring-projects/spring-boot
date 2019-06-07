@@ -42,8 +42,8 @@ import org.springframework.data.elasticsearch.repository.config.EnableReactiveEl
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ElasticsearchTemplate.class })
-@AutoConfigureAfter({ ElasticsearchAutoConfiguration.class,
-		RestClientAutoConfiguration.class, ReactiveRestClientAutoConfiguration.class })
+@AutoConfigureAfter({ ElasticsearchAutoConfiguration.class, RestClientAutoConfiguration.class,
+		ReactiveRestClientAutoConfiguration.class })
 @Import({ ElasticsearchDataConfiguration.BaseConfiguration.class,
 		ElasticsearchDataConfiguration.TransportClientConfiguration.class,
 		ElasticsearchDataConfiguration.RestClientConfiguration.class,

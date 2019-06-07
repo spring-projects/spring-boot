@@ -56,10 +56,8 @@ public class WebTestClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WebHandler.class)
 	public WebTestClient webTestClient(ApplicationContext applicationContext,
-			List<WebTestClientBuilderCustomizer> customizers,
-			List<MockServerConfigurer> configurers) {
-		WebTestClient.MockServerSpec<?> mockServerSpec = WebTestClient
-				.bindToApplicationContext(applicationContext);
+			List<WebTestClientBuilderCustomizer> customizers, List<MockServerConfigurer> configurers) {
+		WebTestClient.MockServerSpec<?> mockServerSpec = WebTestClient.bindToApplicationContext(applicationContext);
 		for (MockServerConfigurer configurer : configurers) {
 			mockServerSpec.apply(configurer);
 		}

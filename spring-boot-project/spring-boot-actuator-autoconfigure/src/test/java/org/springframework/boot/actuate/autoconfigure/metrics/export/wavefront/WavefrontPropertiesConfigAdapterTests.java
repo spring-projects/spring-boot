@@ -29,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class WavefrontPropertiesConfigAdapterTests extends
-		StepRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
+public class WavefrontPropertiesConfigAdapterTests
+		extends StepRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
 
 	@Override
 	protected WavefrontProperties createProperties() {
@@ -38,8 +38,7 @@ public class WavefrontPropertiesConfigAdapterTests extends
 	}
 
 	@Override
-	protected WavefrontPropertiesConfigAdapter createConfigAdapter(
-			WavefrontProperties properties) {
+	protected WavefrontPropertiesConfigAdapter createConfigAdapter(WavefrontProperties properties) {
 		return new WavefrontPropertiesConfigAdapter(properties);
 	}
 
@@ -47,8 +46,7 @@ public class WavefrontPropertiesConfigAdapterTests extends
 	public void whenPropertiesUriIsSetAdapterUriReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setUri(URI.create("https://wavefront.example.com"));
-		assertThat(createConfigAdapter(properties).uri())
-				.isEqualTo("https://wavefront.example.com");
+		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://wavefront.example.com");
 	}
 
 	@Test

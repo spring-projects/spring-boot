@@ -58,68 +58,57 @@ import org.springframework.util.ObjectUtils;
 public class TestDatabaseAutoConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace",
-			havingValue = "AUTO_CONFIGURED")
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(Environment environment) {
 		return new EmbeddedDataSourceFactory(environment).getEmbeddedDatabase();
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace",
-			havingValue = "ANY", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY",
+			matchIfMissing = true)
 	public static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor() {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor();
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class EmbeddedDataSourceBeanFactoryPostProcessor
-			implements BeanDefinitionRegistryPostProcessor {
+	private static class EmbeddedDataSourceBeanFactoryPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
-		private static final Log logger = LogFactory
-				.getLog(EmbeddedDataSourceBeanFactoryPostProcessor.class);
+		private static final Log logger = LogFactory.getLog(EmbeddedDataSourceBeanFactoryPostProcessor.class);
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, registry,
-					"Test Database Auto-configuration can only be "
-							+ "used with a ConfigurableListableBeanFactory");
+					"Test Database Auto-configuration can only be " + "used with a ConfigurableListableBeanFactory");
 			process(registry, (ConfigurableListableBeanFactory) registry);
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
-		private void process(BeanDefinitionRegistry registry,
-				ConfigurableListableBeanFactory beanFactory) {
+		private void process(BeanDefinitionRegistry registry, ConfigurableListableBeanFactory beanFactory) {
 			BeanDefinitionHolder holder = getDataSourceBeanDefinition(beanFactory);
 			if (holder != null) {
 				String beanName = holder.getBeanName();
 				boolean primary = holder.getBeanDefinition().isPrimary();
-				logger.info("Replacing '" + beanName + "' DataSource bean with "
-						+ (primary ? "primary " : "") + "embedded version");
+				logger.info("Replacing '" + beanName + "' DataSource bean with " + (primary ? "primary " : "")
+						+ "embedded version");
 				registry.removeBeanDefinition(beanName);
-				registry.registerBeanDefinition(beanName,
-						createEmbeddedBeanDefinition(primary));
+				registry.registerBeanDefinition(beanName, createEmbeddedBeanDefinition(primary));
 			}
 		}
 
 		private BeanDefinition createEmbeddedBeanDefinition(boolean primary) {
-			BeanDefinition beanDefinition = new RootBeanDefinition(
-					EmbeddedDataSourceFactoryBean.class);
+			BeanDefinition beanDefinition = new RootBeanDefinition(EmbeddedDataSourceFactoryBean.class);
 			beanDefinition.setPrimary(primary);
 			return beanDefinition;
 		}
 
-		private BeanDefinitionHolder getDataSourceBeanDefinition(
-				ConfigurableListableBeanFactory beanFactory) {
+		private BeanDefinitionHolder getDataSourceBeanDefinition(ConfigurableListableBeanFactory beanFactory) {
 			String[] beanNames = beanFactory.getBeanNamesForType(DataSource.class);
 			if (ObjectUtils.isEmpty(beanNames)) {
-				logger.warn("No DataSource beans found, "
-						+ "embedded version will not be used");
+				logger.warn("No DataSource beans found, " + "embedded version will not be used");
 				return null;
 			}
 			if (beanNames.length == 1) {
@@ -133,8 +122,7 @@ public class TestDatabaseAutoConfiguration {
 					return new BeanDefinitionHolder(beanDefinition, beanName);
 				}
 			}
-			logger.warn("No primary DataSource found, "
-					+ "embedded version will not be used");
+			logger.warn("No primary DataSource found, " + "embedded version will not be used");
 			return null;
 		}
 
@@ -183,19 +171,16 @@ public class TestDatabaseAutoConfiguration {
 		}
 
 		public EmbeddedDatabase getEmbeddedDatabase() {
-			EmbeddedDatabaseConnection connection = this.environment.getProperty(
-					"spring.test.database.connection", EmbeddedDatabaseConnection.class,
-					EmbeddedDatabaseConnection.NONE);
+			EmbeddedDatabaseConnection connection = this.environment.getProperty("spring.test.database.connection",
+					EmbeddedDatabaseConnection.class, EmbeddedDatabaseConnection.NONE);
 			if (EmbeddedDatabaseConnection.NONE.equals(connection)) {
 				connection = EmbeddedDatabaseConnection.get(getClass().getClassLoader());
 			}
 			Assert.state(connection != EmbeddedDatabaseConnection.NONE,
 					"Failed to replace DataSource with an embedded database for tests. If "
 							+ "you want an embedded database please put a supported one "
-							+ "on the classpath or tune the replace attribute of "
-							+ "@AutoConfigureTestDatabase.");
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(connection.getType()).build();
+							+ "on the classpath or tune the replace attribute of " + "@AutoConfigureTestDatabase.");
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(connection.getType()).build();
 		}
 
 	}

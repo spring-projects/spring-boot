@@ -49,32 +49,27 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
-					RestClientAutoConfiguration.class,
-					ElasticsearchRepositoriesAutoConfiguration.class,
-					ElasticsearchDataAutoConfiguration.class))
-			.withPropertyValues("spring.elasticsearch.rest.uris=localhost:"
-					+ elasticsearch.getMappedHttpPort());
+			.withConfiguration(
+					AutoConfigurations.of(ElasticsearchAutoConfiguration.class, RestClientAutoConfiguration.class,
+							ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
+			.withPropertyValues("spring.elasticsearch.rest.uris=localhost:" + elasticsearch.getMappedHttpPort());
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
-						.hasSingleBean(ElasticsearchRestTemplate.class));
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(CityRepository.class).hasSingleBean(ElasticsearchRestTemplate.class));
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ElasticsearchRestTemplate.class));
+				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestTemplate.class));
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(CityElasticsearchDbRepository.class));
+				.run((context) -> assertThat(context).hasSingleBean(CityElasticsearchDbRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -91,8 +86,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(ElasticsearchRepositoriesAutoConfigurationTests.class)
-	@EnableElasticsearchRepositories(
-			basePackageClasses = CityElasticsearchDbRepository.class)
+	@EnableElasticsearchRepositories(basePackageClasses = CityElasticsearchDbRepository.class)
 	static class CustomizedConfiguration {
 
 	}

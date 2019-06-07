@@ -53,8 +53,7 @@ public class OutputCaptureRule implements TestRule {
 					try {
 						if (!OutputCaptureRule.this.matchers.isEmpty()) {
 							String output = OutputCaptureRule.this.delegate.toString();
-							Assert.assertThat(output,
-									allOf(OutputCaptureRule.this.matchers));
+							Assert.assertThat(output, allOf(OutputCaptureRule.this.matchers));
 						}
 					}
 					finally {

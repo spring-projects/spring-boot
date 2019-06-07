@@ -57,11 +57,10 @@ class SampleWebMustacheApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> responseEntity = this.restTemplate
-				.exchange("/does-not-exist", HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> responseEntity = this.restTemplate.exchange("/does-not-exist", HttpMethod.GET,
+				requestEntity, String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(responseEntity.getBody())
-				.contains("Something went wrong: 404 Not Found");
+		assertThat(responseEntity.getBody()).contains("Something went wrong: 404 Not Found");
 	}
 
 	@Test
@@ -69,8 +68,8 @@ class SampleWebMustacheApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/serviceUnavailable",
-				HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/serviceUnavailable", HttpMethod.GET, requestEntity,
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 		assertThat(entity.getBody()).contains("I'm a 503");
 	}
@@ -80,8 +79,8 @@ class SampleWebMustacheApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/bang",
-				HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/bang", HttpMethod.GET, requestEntity,
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(entity.getBody()).contains("I'm a 5xx");
 	}
@@ -91,8 +90,8 @@ class SampleWebMustacheApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/insufficientStorage",
-				HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/insufficientStorage", HttpMethod.GET,
+				requestEntity, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_STORAGE);
 		assertThat(entity.getBody()).contains("I'm a 507");
 	}

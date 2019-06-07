@@ -43,19 +43,15 @@ public class RSocketServerAutoConfigurationTests {
 	@Test
 	public void shouldNotCreateBeansByDefault() {
 		ApplicationContextRunner contextRunner = createContextRunner();
-		contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(WebServerFactoryCustomizer.class)
-				.doesNotHaveBean(RSocketServerFactory.class)
-				.doesNotHaveBean(RSocketServerBootstrap.class));
+		contextRunner.run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
+				.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
 	public void shouldNotCreateDefaultBeansForReactiveWebAppWithoutMapping() {
 		ReactiveWebApplicationContextRunner contextRunner = createReactiveWebContextRunner();
-		contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(WebServerFactoryCustomizer.class)
-				.doesNotHaveBean(RSocketServerFactory.class)
-				.doesNotHaveBean(RSocketServerBootstrap.class));
+		contextRunner.run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
+				.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
@@ -64,10 +60,8 @@ public class RSocketServerAutoConfigurationTests {
 		contextRunner
 				.withPropertyValues("spring.rsocket.server.transport=tcp",
 						"spring.rsocket.server.mapping-path=/rsocket")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(WebServerFactoryCustomizer.class)
-						.doesNotHaveBean(RSocketServerFactory.class)
-						.doesNotHaveBean(RSocketServerBootstrap.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
+						.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
@@ -76,29 +70,24 @@ public class RSocketServerAutoConfigurationTests {
 		contextRunner
 				.withPropertyValues("spring.rsocket.server.transport=websocket",
 						"spring.rsocket.server.mapping-path=/rsocket")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(RSocketWebSocketNettyRouteProvider.class));
+				.run((context) -> assertThat(context).hasSingleBean(RSocketWebSocketNettyRouteProvider.class));
 	}
 
 	@Test
 	public void shouldCreateDefaultBeansForRSocketServerWhenPortIsSet() {
 		ReactiveWebApplicationContextRunner contextRunner = createReactiveWebContextRunner();
-		contextRunner.withPropertyValues("spring.rsocket.server.port=0")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(RSocketServerFactory.class)
-						.hasSingleBean(RSocketServerBootstrap.class));
+		contextRunner.withPropertyValues("spring.rsocket.server.port=0").run((context) -> assertThat(context)
+				.hasSingleBean(RSocketServerFactory.class).hasSingleBean(RSocketServerBootstrap.class));
 	}
 
 	private ApplicationContextRunner createContextRunner() {
-		return new ApplicationContextRunner()
-				.withUserConfiguration(BaseConfiguration.class).withConfiguration(
-						AutoConfigurations.of(RSocketServerAutoConfiguration.class));
+		return new ApplicationContextRunner().withUserConfiguration(BaseConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class));
 	}
 
 	private ReactiveWebApplicationContextRunner createReactiveWebContextRunner() {
-		return new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(BaseConfiguration.class).withConfiguration(
-						AutoConfigurations.of(RSocketServerAutoConfiguration.class));
+		return new ReactiveWebApplicationContextRunner().withUserConfiguration(BaseConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class));
 	}
 
 	@Configuration
@@ -108,8 +97,7 @@ public class RSocketServerAutoConfigurationTests {
 		public MessageHandlerAcceptor messageHandlerAcceptor() {
 			MessageHandlerAcceptor messageHandlerAcceptor = new MessageHandlerAcceptor();
 			messageHandlerAcceptor.setRSocketStrategies(RSocketStrategies.builder()
-					.encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly()).build());
+					.encoder(CharSequenceEncoder.textPlainOnly()).decoder(StringDecoder.textPlainOnly()).build());
 			return messageHandlerAcceptor;
 		}
 

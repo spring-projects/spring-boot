@@ -51,23 +51,19 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketFactory.class, RSocketStrategies.class,
-		PooledByteBufAllocator.class })
+@ConditionalOnClass({ RSocketFactory.class, RSocketStrategies.class, PooledByteBufAllocator.class })
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
 public class RSocketStrategiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RSocketStrategies rSocketStrategies(
-			ObjectProvider<RSocketStrategiesCustomizer> customizers) {
+	public RSocketStrategies rSocketStrategies(ObjectProvider<RSocketStrategiesCustomizer> customizers) {
 		RSocketStrategies.Builder builder = RSocketStrategies.builder();
 		builder.reactiveAdapterStrategy(ReactiveAdapterRegistry.getSharedInstance());
-		customizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(builder));
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		builder.decoder(StringDecoder.textPlainOnly());
 		builder.encoder(CharSequenceEncoder.textPlainOnly());
-		builder.dataBufferFactory(
-				new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT));
+		builder.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT));
 		return builder.build();
 	}
 
@@ -80,8 +76,7 @@ public class RSocketStrategiesAutoConfiguration {
 		@Bean
 		@Order(0)
 		@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
-		public RSocketStrategiesCustomizer jacksonCborStrategyCustomizer(
-				Jackson2ObjectMapperBuilder builder) {
+		public RSocketStrategiesCustomizer jacksonCborStrategyCustomizer(Jackson2ObjectMapperBuilder builder) {
 			return (strategy) -> {
 				ObjectMapper objectMapper = builder.factory(new CBORFactory()).build();
 				strategy.decoder(new Jackson2CborDecoder(objectMapper, SUPPORTED_TYPES));
@@ -101,8 +96,7 @@ public class RSocketStrategiesAutoConfiguration {
 		@Bean
 		@Order(1)
 		@ConditionalOnBean(ObjectMapper.class)
-		public RSocketStrategiesCustomizer jacksonJsonStrategyCustomizer(
-				ObjectMapper objectMapper) {
+		public RSocketStrategiesCustomizer jacksonJsonStrategyCustomizer(ObjectMapper objectMapper) {
 			return (strategy) -> {
 				strategy.decoder(new Jackson2JsonDecoder(objectMapper, SUPPORTED_TYPES));
 				strategy.encoder(new Jackson2JsonEncoder(objectMapper, SUPPORTED_TYPES));

@@ -84,8 +84,7 @@ class BitronixJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(TransactionManager.class)
-	public BitronixTransactionManager bitronixTransactionManager(
-			bitronix.tm.Configuration configuration) {
+	public BitronixTransactionManager bitronixTransactionManager(bitronix.tm.Configuration configuration) {
 		// Inject configuration to force ordering
 		return TransactionManagerServices.getTransactionManager();
 	}
@@ -106,10 +105,8 @@ class BitronixJtaConfiguration {
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
-				userTransaction, transactionManager);
-		transactionManagerCustomizers.ifAvailable(
-				(customizers) -> customizers.customize(jtaTransactionManager));
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(jtaTransactionManager));
 		return jtaTransactionManager;
 	}
 

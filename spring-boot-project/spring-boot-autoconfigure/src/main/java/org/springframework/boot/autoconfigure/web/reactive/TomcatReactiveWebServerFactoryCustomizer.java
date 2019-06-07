@@ -38,8 +38,7 @@ public class TomcatReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		factory.setDisableMBeanRegistry(
-				!this.serverProperties.getTomcat().getMbeanregistry().isEnabled());
+		factory.setDisableMBeanRegistry(!this.serverProperties.getTomcat().getMbeanregistry().isEnabled());
 	}
 
 }

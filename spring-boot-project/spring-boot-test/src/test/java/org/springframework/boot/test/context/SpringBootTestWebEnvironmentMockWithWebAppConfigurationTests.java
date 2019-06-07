@@ -48,8 +48,7 @@ public class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
 
 	@Test
 	public void resourcePath() {
-		assertThat(this.servletContext).hasFieldOrPropertyWithValue("resourceBasePath",
-				"src/mymain/mywebapp");
+		assertThat(this.servletContext).hasFieldOrPropertyWithValue("resourceBasePath", "src/mymain/mywebapp");
 	}
 
 	@Configuration(proxyBeanMethods = false)

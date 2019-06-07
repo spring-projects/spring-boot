@@ -48,8 +48,7 @@ public class OnEnabledDevToolsConditionTests {
 		AtomicBoolean containsBean = new AtomicBoolean();
 		Thread thread = new Thread(() -> {
 			OnEnabledDevToolsConditionTests.this.context.refresh();
-			containsBean.set(
-					OnEnabledDevToolsConditionTests.this.context.containsBean("test"));
+			containsBean.set(OnEnabledDevToolsConditionTests.this.context.containsBean("test"));
 		});
 		thread.start();
 		thread.join();
@@ -59,8 +58,7 @@ public class OnEnabledDevToolsConditionTests {
 	@Test
 	public void outcomeWhenDevtoolsShouldBeEnabledIsFalseShouldNotMatch() {
 		OnEnabledDevToolsConditionTests.this.context.refresh();
-		assertThat(OnEnabledDevToolsConditionTests.this.context.containsBean("test"))
-				.isFalse();
+		assertThat(OnEnabledDevToolsConditionTests.this.context.containsBean("test")).isFalse();
 	}
 
 	@Configuration(proxyBeanMethods = false)

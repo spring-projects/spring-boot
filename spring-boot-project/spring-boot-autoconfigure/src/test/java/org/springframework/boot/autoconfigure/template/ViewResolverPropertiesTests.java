@@ -33,8 +33,7 @@ public class ViewResolverPropertiesTests {
 
 	@Test
 	public void defaultContentType() {
-		assertThat(new ViewResolverProperties().getContentType())
-				.hasToString("text/html;charset=UTF-8");
+		assertThat(new ViewResolverProperties().getContentType()).hasToString("text/html;charset=UTF-8");
 	}
 
 	@Test
@@ -64,8 +63,7 @@ public class ViewResolverPropertiesTests {
 		ViewResolverProperties properties = new ViewResolverProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain;foo=bar"));
 		properties.setCharset(StandardCharsets.UTF_16);
-		assertThat(properties.getContentType())
-				.hasToString("text/plain;charset=UTF-16;foo=bar");
+		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-16;foo=bar");
 	}
 
 	private static class ViewResolverProperties extends AbstractViewResolverProperties {

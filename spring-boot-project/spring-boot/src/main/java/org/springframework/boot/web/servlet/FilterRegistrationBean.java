@@ -40,8 +40,7 @@ import org.springframework.util.Assert;
  * @see ServletContext#addFilter(String, Filter)
  * @see DelegatingFilterProxyRegistrationBean
  */
-public class FilterRegistrationBean<T extends Filter>
-		extends AbstractFilterRegistrationBean<T> {
+public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegistrationBean<T> {
 
 	private T filter;
 
@@ -57,8 +56,7 @@ public class FilterRegistrationBean<T extends Filter>
 	 * @param filter the filter to register
 	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
 	 */
-	public FilterRegistrationBean(T filter,
-			ServletRegistrationBean<?>... servletRegistrationBeans) {
+	public FilterRegistrationBean(T filter, ServletRegistrationBean<?>... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
 		Assert.notNull(filter, "Filter must not be null");
 		this.filter = filter;

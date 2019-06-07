@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,9 @@ final class Versions {
 
 	public static String getBootVersion() {
 		String baseDir = StringUtils.cleanPath(new File(".").getAbsolutePath());
-		String mainBaseDir = evaluateExpression("pom.xml",
-				PROPERTIES + "/*[local-name()='main.basedir']/text()");
+		String mainBaseDir = evaluateExpression("pom.xml", PROPERTIES + "/*[local-name()='main.basedir']/text()");
 		mainBaseDir = mainBaseDir.replace("${basedir}", baseDir);
-		return evaluateExpression(mainBaseDir + "/pom.xml",
-				PROPERTIES + "/*[local-name()='revision']/text()");
+		return evaluateExpression(mainBaseDir + "/pom.xml", PROPERTIES + "/*[local-name()='revision']/text()");
 	}
 
 	private static String evaluateExpression(String file, String expression) {

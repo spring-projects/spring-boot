@@ -36,28 +36,22 @@ public class LocalApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	@Override
-	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher,
-			File serverPortFile) throws Exception {
+	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher, File serverPortFile) throws Exception {
 		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(),
-				"com.example.DevToolsTestApplication", serverPortFile.getAbsolutePath(),
-				"--server.port=0");
-		return new LaunchedApplication(getDirectories().getAppDirectory(),
-				jvm.getStandardOut(), jvm.getStandardError(), jvm.getProcess(), null,
-				null);
+				"com.example.DevToolsTestApplication", serverPortFile.getAbsolutePath(), "--server.port=0");
+		return new LaunchedApplication(getDirectories().getAppDirectory(), jvm.getStandardOut(), jvm.getStandardError(),
+				jvm.getProcess(), null, null);
 	}
 
 	@Override
-	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher,
-			File serverPortFile, String... additionalArgs) throws Exception {
-		List<String> args = new ArrayList<>(
-				Arrays.asList("com.example.DevToolsTestApplication",
-						serverPortFile.getAbsolutePath(), "--server.port=0"));
+	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher, File serverPortFile, String... additionalArgs)
+			throws Exception {
+		List<String> args = new ArrayList<>(Arrays.asList("com.example.DevToolsTestApplication",
+				serverPortFile.getAbsolutePath(), "--server.port=0"));
 		args.addAll(Arrays.asList(additionalArgs));
-		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(),
-				args.toArray(new String[] {}));
-		return new LaunchedApplication(getDirectories().getAppDirectory(),
-				jvm.getStandardOut(), jvm.getStandardError(), jvm.getProcess(), null,
-				null);
+		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(), args.toArray(new String[] {}));
+		return new LaunchedApplication(getDirectories().getAppDirectory(), jvm.getStandardOut(), jvm.getStandardError(),
+				jvm.getProcess(), null, null);
 	}
 
 	protected String createApplicationClassPath() throws Exception {

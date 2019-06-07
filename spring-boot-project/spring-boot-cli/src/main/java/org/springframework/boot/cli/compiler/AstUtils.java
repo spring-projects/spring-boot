@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,12 +76,10 @@ public abstract class AstUtils {
 	 * @return {@code true} if at least one of the annotations is found, otherwise
 	 * {@code false}
 	 */
-	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node,
-			String... annotations) {
+	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node, String... annotations) {
 		for (AnnotationNode annotationNode : node.getAnnotations()) {
 			for (String annotation : annotations) {
-				if (PatternMatchUtils.simpleMatch(annotation,
-						annotationNode.getClassNode().getName())) {
+				if (PatternMatchUtils.simpleMatch(annotation, annotationNode.getClassNode().getName())) {
 					return true;
 				}
 			}
@@ -147,13 +145,11 @@ public abstract class AstUtils {
 	 * @param remove whether or not the extracted closure should be removed
 	 * @return a beans Closure if one can be found, null otherwise
 	 */
-	public static ClosureExpression getClosure(BlockStatement block, String name,
-			boolean remove) {
+	public static ClosureExpression getClosure(BlockStatement block, String name, boolean remove) {
 		for (ExpressionStatement statement : getExpressionStatements(block)) {
 			Expression expression = statement.getExpression();
 			if (expression instanceof MethodCallExpression) {
-				ClosureExpression closure = getClosure(name,
-						(MethodCallExpression) expression);
+				ClosureExpression closure = getClosure(name, (MethodCallExpression) expression);
 				if (closure != null) {
 					if (remove) {
 						block.getStatements().remove(statement);
@@ -165,8 +161,7 @@ public abstract class AstUtils {
 		return null;
 	}
 
-	private static List<ExpressionStatement> getExpressionStatements(
-			BlockStatement block) {
+	private static List<ExpressionStatement> getExpressionStatements(BlockStatement block) {
 		List<ExpressionStatement> statements = new ArrayList<>();
 		for (Statement statement : block.getStatements()) {
 			if (statement instanceof ExpressionStatement) {
@@ -176,13 +171,10 @@ public abstract class AstUtils {
 		return statements;
 	}
 
-	private static ClosureExpression getClosure(String name,
-			MethodCallExpression expression) {
+	private static ClosureExpression getClosure(String name, MethodCallExpression expression) {
 		Expression method = expression.getMethod();
-		if (method instanceof ConstantExpression
-				&& name.equals(((ConstantExpression) method).getValue())) {
-			return (ClosureExpression) ((ArgumentListExpression) expression
-					.getArguments()).getExpression(0);
+		if (method instanceof ConstantExpression && name.equals(((ConstantExpression) method).getValue())) {
+			return (ClosureExpression) ((ArgumentListExpression) expression.getArguments()).getExpression(0);
 		}
 		return null;
 	}

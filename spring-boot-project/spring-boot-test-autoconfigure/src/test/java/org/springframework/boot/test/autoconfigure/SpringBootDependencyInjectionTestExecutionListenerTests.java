@@ -51,8 +51,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 	@Test
 	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener() {
 		Ordered injectionListener = new DependencyInjectionTestExecutionListener();
-		assertThat(this.reportListener.getOrder())
-				.isEqualTo(injectionListener.getOrder());
+		assertThat(this.reportListener.getOrder()).isEqualTo(injectionListener.getOrder());
 	}
 
 	@Test
@@ -82,8 +81,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		given(testContext.getApplicationContext()).willThrow(new RuntimeException());
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.reportListener.prepareTestInstance(testContext))
+		assertThatIllegalStateException().isThrownBy(() -> this.reportListener.prepareTestInstance(testContext))
 				.isEqualTo(originalFailure);
 	}
 

@@ -35,21 +35,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("spring-security-*")
-public class SessionAutoConfigurationWithoutSecurityTests
-		extends AbstractSessionAutoConfigurationTests {
+public class SessionAutoConfigurationWithoutSecurityTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
 	public void sessionCookieConfigurationIsAppliedToAutoConfiguredCookieSerializer() {
-		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.run((context) -> {
-					DefaultCookieSerializer cookieSerializer = context
-							.getBean(DefaultCookieSerializer.class);
-					assertThat(cookieSerializer).hasFieldOrPropertyWithValue(
-							"rememberMeRequestAttribute", null);
-				});
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class).run((context) -> {
+			DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
+			assertThat(cookieSerializer).hasFieldOrPropertyWithValue("rememberMeRequestAttribute", null);
+		});
 	}
 
 }

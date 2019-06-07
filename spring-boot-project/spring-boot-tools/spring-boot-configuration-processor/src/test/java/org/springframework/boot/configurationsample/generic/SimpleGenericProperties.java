@@ -26,7 +26,6 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Stephane Nicoll
  */
 @ConfigurationProperties("generic")
-public class SimpleGenericProperties
-		extends AbstractIntermediateGenericProperties<Duration> {
+public class SimpleGenericProperties extends AbstractIntermediateGenericProperties<Duration> {
 
 }

@@ -49,30 +49,24 @@ public class TomcatServletWebServerFactoryCustomizer
 	public void customize(TomcatServletWebServerFactory factory) {
 		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
 		if (!ObjectUtils.isEmpty(tomcatProperties.getAdditionalTldSkipPatterns())) {
-			factory.getTldSkipPatterns()
-					.addAll(tomcatProperties.getAdditionalTldSkipPatterns());
+			factory.getTldSkipPatterns().addAll(tomcatProperties.getAdditionalTldSkipPatterns());
 		}
 		if (tomcatProperties.getRedirectContextRoot() != null) {
-			customizeRedirectContextRoot(factory,
-					tomcatProperties.getRedirectContextRoot());
+			customizeRedirectContextRoot(factory, tomcatProperties.getRedirectContextRoot());
 		}
 		if (tomcatProperties.getUseRelativeRedirects() != null) {
-			customizeUseRelativeRedirects(factory,
-					tomcatProperties.getUseRelativeRedirects());
+			customizeUseRelativeRedirects(factory, tomcatProperties.getUseRelativeRedirects());
 		}
 		factory.setDisableMBeanRegistry(!tomcatProperties.getMbeanregistry().isEnabled());
 	}
 
-	private void customizeRedirectContextRoot(ConfigurableTomcatWebServerFactory factory,
-			boolean redirectContextRoot) {
-		factory.addContextCustomizers((context) -> context
-				.setMapperContextRootRedirectEnabled(redirectContextRoot));
+	private void customizeRedirectContextRoot(ConfigurableTomcatWebServerFactory factory, boolean redirectContextRoot) {
+		factory.addContextCustomizers((context) -> context.setMapperContextRootRedirectEnabled(redirectContextRoot));
 	}
 
 	private void customizeUseRelativeRedirects(ConfigurableTomcatWebServerFactory factory,
 			boolean useRelativeRedirects) {
-		factory.addContextCustomizers(
-				(context) -> context.setUseRelativeRedirects(useRelativeRedirects));
+		factory.addContextCustomizers((context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 	}
 
 }

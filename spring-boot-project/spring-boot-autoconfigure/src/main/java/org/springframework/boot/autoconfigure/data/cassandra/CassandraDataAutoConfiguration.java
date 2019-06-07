@@ -69,16 +69,15 @@ public class CassandraDataAutoConfiguration {
 
 	private final Cluster cluster;
 
-	public CassandraDataAutoConfiguration(CassandraProperties properties,
-			Cluster cluster) {
+	public CassandraDataAutoConfiguration(CassandraProperties properties, Cluster cluster) {
 		this.properties = properties;
 		this.cluster = cluster;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMapping(BeanFactory beanFactory,
-			CassandraCustomConversions conversions) throws ClassNotFoundException {
+	public CassandraMappingContext cassandraMapping(BeanFactory beanFactory, CassandraCustomConversions conversions)
+			throws ClassNotFoundException {
 		CassandraMappingContext context = new CassandraMappingContext();
 		List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
@@ -87,8 +86,8 @@ public class CassandraDataAutoConfiguration {
 		if (!packages.isEmpty()) {
 			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
 		}
-		PropertyMapper.get().from(this.properties::getKeyspaceName).whenHasText()
-				.as(this::createSimpleUserTypeResolver).to(context::setUserTypeResolver);
+		PropertyMapper.get().from(this.properties::getKeyspaceName).whenHasText().as(this::createSimpleUserTypeResolver)
+				.to(context::setUserTypeResolver);
 		context.setCustomConversions(conversions);
 		return context;
 	}
@@ -108,22 +107,19 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Session.class)
-	public CassandraSessionFactoryBean cassandraSession(Environment environment,
-			CassandraConverter converter) {
+	public CassandraSessionFactoryBean cassandraSession(Environment environment, CassandraConverter converter) {
 		CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
 		Binder binder = Binder.get(environment);
-		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class)
-				.ifBound(session::setSchemaAction);
+		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
 		return session;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraTemplate cassandraTemplate(Session session,
-			CassandraConverter converter) {
+	public CassandraTemplate cassandraTemplate(Session session, CassandraConverter converter) {
 		return new CassandraTemplate(session, converter);
 	}
 

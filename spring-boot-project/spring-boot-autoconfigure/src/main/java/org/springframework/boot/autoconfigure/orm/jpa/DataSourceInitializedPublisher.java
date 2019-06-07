@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private HibernateProperties hibernateProperties;
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
 			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
 			factory.setJpaVendorAdapter(new DataSourceSchemaCreatedPublisher(factory));
@@ -70,8 +69,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof DataSource) {
 			// Normally this will be the right DataSource
 			this.dataSource = (DataSource) bean;
@@ -94,27 +92,23 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private void publishEventIfRequired(EntityManagerFactory entityManagerFactory) {
 		DataSource dataSource = findDataSource(entityManagerFactory);
 		if (dataSource != null && isInitializingDatabase(dataSource)) {
-			this.applicationContext
-					.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
+			this.applicationContext.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
 		}
 	}
 
 	private DataSource findDataSource(EntityManagerFactory entityManagerFactory) {
-		Object dataSource = entityManagerFactory.getProperties()
-				.get("javax.persistence.nonJtaDataSource");
-		return (dataSource instanceof DataSource) ? (DataSource) dataSource
-				: this.dataSource;
+		Object dataSource = entityManagerFactory.getProperties().get("javax.persistence.nonJtaDataSource");
+		return (dataSource instanceof DataSource) ? (DataSource) dataSource : this.dataSource;
 	}
 
 	private boolean isInitializingDatabase(DataSource dataSource) {
 		if (this.jpaProperties == null || this.hibernateProperties == null) {
 			return true; // better safe than sorry
 		}
-		Supplier<String> defaultDdlAuto = () -> (EmbeddedDatabaseConnection
-				.isEmbedded(dataSource) ? "create-drop" : "none");
-		Map<String, Object> hibernate = this.hibernateProperties
-				.determineHibernateProperties(this.jpaProperties.getProperties(),
-						new HibernateSettings().ddlAuto(defaultDdlAuto));
+		Supplier<String> defaultDdlAuto = () -> (EmbeddedDatabaseConnection.isEmbedded(dataSource) ? "create-drop"
+				: "none");
+		Map<String, Object> hibernate = this.hibernateProperties.determineHibernateProperties(
+				this.jpaProperties.getProperties(), new HibernateSettings().ddlAuto(defaultDdlAuto));
 		if (hibernate.containsKey("hibernate.hbm2ddl.auto")) {
 			return true;
 		}
@@ -152,8 +146,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 		private final LocalContainerEntityManagerFactoryBean factory;
 
-		private DataSourceSchemaCreatedPublisher(
-				LocalContainerEntityManagerFactoryBean factory) {
+		private DataSourceSchemaCreatedPublisher(LocalContainerEntityManagerFactoryBean factory) {
 			this.delegate = factory.getJpaVendorAdapter();
 			this.factory = factory;
 		}
@@ -198,8 +191,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 			this.delegate.postProcessEntityManagerFactory(emf);
 			AsyncTaskExecutor bootstrapExecutor = this.factory.getBootstrapExecutor();
 			if (bootstrapExecutor != null) {
-				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this
-						.publishEventIfRequired(emf));
+				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this.publishEventIfRequired(emf));
 			}
 		}
 

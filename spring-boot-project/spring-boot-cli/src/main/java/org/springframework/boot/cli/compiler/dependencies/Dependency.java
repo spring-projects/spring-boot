@@ -54,8 +54,7 @@ public final class Dependency {
 	 * @param version the version
 	 * @param exclusions the exclusions
 	 */
-	public Dependency(String groupId, String artifactId, String version,
-			List<Exclusion> exclusions) {
+	public Dependency(String groupId, String artifactId, String version, List<Exclusion> exclusions) {
 		Assert.notNull(groupId, "GroupId must not be null");
 		Assert.notNull(artifactId, "ArtifactId must not be null");
 		Assert.notNull(version, "Version must not be null");

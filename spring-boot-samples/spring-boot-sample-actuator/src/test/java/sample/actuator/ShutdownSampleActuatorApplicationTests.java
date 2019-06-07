@@ -38,10 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringBootTest(
-		classes = { ShutdownSampleActuatorApplicationTests.SecurityConfiguration.class,
-				SampleActuatorApplication.class },
-		webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { ShutdownSampleActuatorApplicationTests.SecurityConfiguration.class,
+		SampleActuatorApplication.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 class ShutdownSampleActuatorApplicationTests {
 
 	@Autowired
@@ -50,8 +48,8 @@ class ShutdownSampleActuatorApplicationTests {
 	@Test
 	void testHome() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword()).getForEntity("/", Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/",
+				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -62,8 +60,7 @@ class ShutdownSampleActuatorApplicationTests {
 	@DirtiesContext
 	public void testShutdown() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
+		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
 				.postForEntity("/actuator/shutdown", null, Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")

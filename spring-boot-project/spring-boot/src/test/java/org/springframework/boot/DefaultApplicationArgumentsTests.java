@@ -32,13 +32,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 public class DefaultApplicationArgumentsTests {
 
-	private static final String[] ARGS = new String[] { "--foo=bar", "--foo=baz",
-			"--debug", "spring", "boot" };
+	private static final String[] ARGS = new String[] { "--foo=bar", "--foo=baz", "--debug", "spring", "boot" };
 
 	@Test
 	public void argumentsMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DefaultApplicationArguments((String[]) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultApplicationArguments((String[]) null))
 				.withMessageContaining("Args must not be null");
 	}
 
@@ -66,8 +64,7 @@ public class DefaultApplicationArgumentsTests {
 	@Test
 	public void getOptionValues() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getOptionValues("foo"))
-				.isEqualTo(Arrays.asList("bar", "baz"));
+		assertThat(arguments.getOptionValues("foo")).isEqualTo(Arrays.asList("bar", "baz"));
 		assertThat(arguments.getOptionValues("debug")).isEmpty();
 		assertThat(arguments.getOptionValues("spring")).isNull();
 	}

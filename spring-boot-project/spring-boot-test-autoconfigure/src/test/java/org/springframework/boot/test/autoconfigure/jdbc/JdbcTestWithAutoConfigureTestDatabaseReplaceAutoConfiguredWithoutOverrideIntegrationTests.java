@@ -42,8 +42,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplaceAutoConfiguredWithoutOv
 
 	@Test
 	public void usesDefaultEmbeddedDatabase() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		// @AutoConfigureTestDatabase would use H2 but HSQL is manually defined
 		assertThat(product).startsWith("HSQL");
 	}

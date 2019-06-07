@@ -46,48 +46,38 @@ public class ReactiveHealthEndpointWebExtension {
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext) {
-		return this.delegate.health()
-				.map((health) -> this.responseMapper.map(health, securityContext));
+		return this.delegate.health().map((health) -> this.responseMapper.map(health, securityContext));
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> healthForComponent(
-			SecurityContext securityContext, @Selector String component) {
-		return responseFromIndicator(getNestedHealthIndicator(this.delegate, component),
-				securityContext);
+	public Mono<WebEndpointResponse<Health>> healthForComponent(SecurityContext securityContext,
+			@Selector String component) {
+		return responseFromIndicator(getNestedHealthIndicator(this.delegate, component), securityContext);
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> healthForComponentInstance(
-			SecurityContext securityContext, @Selector String component,
-			@Selector String instance) {
-		ReactiveHealthIndicator indicator = getNestedHealthIndicator(this.delegate,
-				component);
+	public Mono<WebEndpointResponse<Health>> healthForComponentInstance(SecurityContext securityContext,
+			@Selector String component, @Selector String instance) {
+		ReactiveHealthIndicator indicator = getNestedHealthIndicator(this.delegate, component);
 		if (indicator != null) {
 			indicator = getNestedHealthIndicator(indicator, instance);
 		}
 		return responseFromIndicator(indicator, securityContext);
 	}
 
-	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext,
-			ShowDetails showDetails) {
-		return this.delegate.health().map((health) -> this.responseMapper.map(health,
-				securityContext, showDetails));
+	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext, ShowDetails showDetails) {
+		return this.delegate.health().map((health) -> this.responseMapper.map(health, securityContext, showDetails));
 	}
 
-	private Mono<WebEndpointResponse<Health>> responseFromIndicator(
-			ReactiveHealthIndicator indicator, SecurityContext securityContext) {
+	private Mono<WebEndpointResponse<Health>> responseFromIndicator(ReactiveHealthIndicator indicator,
+			SecurityContext securityContext) {
 		return (indicator != null)
-				? indicator.health()
-						.map((health) -> this.responseMapper.map(health, securityContext))
-				: Mono.empty();
+				? indicator.health().map((health) -> this.responseMapper.map(health, securityContext)) : Mono.empty();
 	}
 
-	private ReactiveHealthIndicator getNestedHealthIndicator(
-			ReactiveHealthIndicator healthIndicator, String name) {
+	private ReactiveHealthIndicator getNestedHealthIndicator(ReactiveHealthIndicator healthIndicator, String name) {
 		if (healthIndicator instanceof CompositeReactiveHealthIndicator) {
-			return ((CompositeReactiveHealthIndicator) healthIndicator).getRegistry()
-					.get(name);
+			return ((CompositeReactiveHealthIndicator) healthIndicator).getRegistry().get(name);
 		}
 		return null;
 	}

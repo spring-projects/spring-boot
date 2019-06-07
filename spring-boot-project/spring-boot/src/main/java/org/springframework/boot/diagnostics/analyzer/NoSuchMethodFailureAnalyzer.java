@@ -50,8 +50,8 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 		String description = getDescription(cause, className, candidates, actual);
 		return new FailureAnalysis(description,
-				"Correct the classpath of your application so that it contains a single,"
-						+ " compatible version of " + className,
+				"Correct the classpath of your application so that it contains a single," + " compatible version of "
+						+ className,
 				cause);
 	}
 
@@ -71,8 +71,7 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 	private List<URL> findCandidates(String className) {
 		try {
 			return Collections.list(NoSuchMethodFailureAnalyzer.class.getClassLoader()
-					.getResources(ClassUtils.convertClassNameToResourcePath(className)
-							+ ".class"));
+					.getResources(ClassUtils.convertClassNameToResourcePath(className) + ".class"));
 		}
 		catch (Throwable ex) {
 			return null;
@@ -81,16 +80,14 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 
 	private URL getActual(String className) {
 		try {
-			return getClass().getClassLoader().loadClass(className).getProtectionDomain()
-					.getCodeSource().getLocation();
+			return getClass().getClassLoader().loadClass(className).getProtectionDomain().getCodeSource().getLocation();
 		}
 		catch (Throwable ex) {
 			return null;
 		}
 	}
 
-	private String getDescription(NoSuchMethodError cause, String className,
-			List<URL> candidates, URL actual) {
+	private String getDescription(NoSuchMethodError cause, String className, List<URL> candidates, URL actual) {
 		StringWriter description = new StringWriter();
 		PrintWriter writer = new PrintWriter(description);
 		writer.println("An attempt was made to call a method that does not"
@@ -104,8 +101,7 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		writer.print("    ");
 		writer.println(cause.getMessage());
 		writer.println();
-		writer.println("The method's class, " + className
-				+ ", is available from the following locations:");
+		writer.println("The method's class, " + className + ", is available from the following locations:");
 		writer.println();
 		for (URL candidate : candidates) {
 			writer.print("    ");

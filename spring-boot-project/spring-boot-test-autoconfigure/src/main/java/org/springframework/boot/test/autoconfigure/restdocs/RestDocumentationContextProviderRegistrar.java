@@ -35,8 +35,7 @@ import org.springframework.util.StringUtils;
 class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionRegistrar {
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
 				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
 		BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder
@@ -45,8 +44,7 @@ class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionR
 		if (StringUtils.hasText(outputDir)) {
 			definitionBuilder.addConstructorArgValue(outputDir);
 		}
-		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(),
-				definitionBuilder.getBeanDefinition());
+		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(), definitionBuilder.getBeanDefinition());
 	}
 
 }

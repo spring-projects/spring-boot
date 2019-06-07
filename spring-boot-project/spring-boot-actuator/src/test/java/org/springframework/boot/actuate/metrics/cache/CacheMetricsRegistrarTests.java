@@ -41,30 +41,24 @@ public class CacheMetricsRegistrarTests {
 	public void bindToSupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
-		assertThat(registrar.bindCacheToRegistry(
-				new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
-		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter())
-				.isNotNull();
+		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
+		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter()).isNotNull();
 	}
 
 	@Test
 	public void bindToSupportedCacheWrappedInTransactionProxy() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
-		assertThat(registrar.bindCacheToRegistry(new TransactionAwareCacheDecorator(
-				new CaffeineCache("test", Caffeine.newBuilder().build())))).isTrue();
-		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter())
-				.isNotNull();
+		assertThat(registrar.bindCacheToRegistry(
+				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build())))).isTrue();
+		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter()).isNotNull();
 	}
 
 	@Test
 	public void bindToUnsupportedCache() {
-		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
-				Collections.emptyList());
-		assertThat(registrar.bindCacheToRegistry(
-				new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
-		assertThat(this.meterRegistry.find("cache.gets").tags("name", "test").meter())
-				.isNull();
+		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry, Collections.emptyList());
+		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
+		assertThat(this.meterRegistry.find("cache.gets").tags("name", "test").meter()).isNull();
 	}
 
 }

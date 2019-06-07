@@ -33,8 +33,7 @@ class SampleCouchbaseApplicationTests {
 	@Test
 	void testDefaultSettings(CapturedOutput capturedOutput) {
 		try {
-			new SpringApplicationBuilder(SampleCouchbaseApplication.class)
-					.run("--server.port=0");
+			new SpringApplicationBuilder(SampleCouchbaseApplication.class).run("--server.port=0");
 		}
 		catch (RuntimeException ex) {
 			if (serverNotRunning(ex)) {

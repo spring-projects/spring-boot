@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,37 +47,31 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	public void execute(Project project) {
 		ApplicationPluginConvention applicationConvention = project.getConvention()
 				.getPlugin(ApplicationPluginConvention.class);
-		DistributionContainer distributions = project.getExtensions()
-				.getByType(DistributionContainer.class);
+		DistributionContainer distributions = project.getExtensions().getByType(DistributionContainer.class);
 		Distribution distribution = distributions.create("boot");
 		if (distribution instanceof IConventionAware) {
 			((IConventionAware) distribution).getConventionMapping().map("baseName",
 					() -> applicationConvention.getApplicationName() + "-boot");
 		}
-		CreateBootStartScripts bootStartScripts = project.getTasks()
-				.create("bootStartScripts", CreateBootStartScripts.class);
-		bootStartScripts.setDescription("Generates OS-specific start scripts to run the"
-				+ " project as a Spring Boot application.");
+		CreateBootStartScripts bootStartScripts = project.getTasks().create("bootStartScripts",
+				CreateBootStartScripts.class);
+		bootStartScripts.setDescription(
+				"Generates OS-specific start scripts to run the" + " project as a Spring Boot application.");
 		((TemplateBasedScriptGenerator) bootStartScripts.getUnixStartScriptGenerator())
-				.setTemplate(project.getResources().getText()
-						.fromString(loadResource("/unixStartScript.txt")));
+				.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
 		((TemplateBasedScriptGenerator) bootStartScripts.getWindowsStartScriptGenerator())
-				.setTemplate(project.getResources().getText()
-						.fromString(loadResource("/windowsStartScript.txt")));
+				.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
 		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
 				CopySpec libCopySpec = project.copySpec().into("lib")
-						.from((Callable<FileCollection>) () -> configuration
-								.getArtifacts().getFiles());
+						.from((Callable<FileCollection>) () -> configuration.getArtifacts().getFiles());
 				libCopySpec.setFileMode(0644);
 				distribution.getContents().with(libCopySpec);
 				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
-		bootStartScripts.getConventionMapping().map("outputDir",
-				() -> new File(project.getBuildDir(), "bootScripts"));
-		bootStartScripts.getConventionMapping().map("applicationName",
-				applicationConvention::getApplicationName);
+		bootStartScripts.getConventionMapping().map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
+		bootStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
 		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
 				applicationConvention::getApplicationDefaultJvmArgs);
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
@@ -91,8 +85,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	}
 
 	private String loadResource(String name) {
-		try (InputStreamReader reader = new InputStreamReader(
-				getClass().getResourceAsStream(name))) {
+		try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(name))) {
 			char[] buffer = new char[4096];
 			int read = 0;
 			StringWriter writer = new StringWriter();

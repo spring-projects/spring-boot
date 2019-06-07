@@ -26,8 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
-				"YAHOO-CLIENT-ID=my-google-client-id",
-				"YAHOO-CLIENT-SECRET=my-google-client-secret" })
+				"YAHOO-CLIENT-ID=my-google-client-id", "YAHOO-CLIENT-SECRET=my-google-client-secret" })
 class SampleReactiveOAuth2ClientApplicationTests {
 
 	@Autowired
@@ -35,14 +34,14 @@ class SampleReactiveOAuth2ClientApplicationTests {
 
 	@Test
 	void everythingShouldRedirectToLogin() {
-		this.webTestClient.get().uri("/").exchange().expectStatus().isFound()
-				.expectHeader().valueEquals("Location", "/login");
+		this.webTestClient.get().uri("/").exchange().expectStatus().isFound().expectHeader().valueEquals("Location",
+				"/login");
 	}
 
 	@Test
 	void loginShouldHaveBothOAuthClientsToChooseFrom() {
-		byte[] body = this.webTestClient.get().uri("/login").exchange().expectStatus()
-				.isOk().returnResult(String.class).getResponseBodyContent();
+		byte[] body = this.webTestClient.get().uri("/login").exchange().expectStatus().isOk().returnResult(String.class)
+				.getResponseBodyContent();
 		String bodyString = new String(body);
 		assertThat(bodyString).contains("/oauth2/authorization/yahoo");
 		assertThat(bodyString).contains("/oauth2/authorization/github-client-1");

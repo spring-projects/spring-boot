@@ -49,63 +49,50 @@ public class ElasticsearchDataAutoConfigurationTests {
 	@Container
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
-					RestClientAutoConfiguration.class,
-					ReactiveRestClientAutoConfiguration.class,
-					ElasticsearchDataAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(ElasticsearchAutoConfiguration.class, RestClientAutoConfiguration.class,
+					ReactiveRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class));
 
 	@Test
 	public void defaultTransportBeansAreRegistered() {
 		this.contextRunner
 				.withPropertyValues(
-						"spring.data.elasticsearch.cluster-nodes:localhost:"
-								+ elasticsearch.getMappedTransportPort(),
+						"spring.data.elasticsearch.cluster-nodes:localhost:" + elasticsearch.getMappedTransportPort(),
 						"spring.data.elasticsearch.cluster-name:docker-cluster")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ElasticsearchTemplate.class)
+				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchTemplate.class)
 						.hasSingleBean(SimpleElasticsearchMappingContext.class)
 						.hasSingleBean(ElasticsearchConverter.class));
 	}
 
 	@Test
 	public void defaultTransportBeansNotRegisteredIfNoTransportClient() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(ElasticsearchTemplate.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchTemplate.class));
 	}
 
 	@Test
 	public void defaultRestBeansRegistered() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ElasticsearchRestTemplate.class)
-				.hasSingleBean(ReactiveElasticsearchTemplate.class)
-				.hasSingleBean(ElasticsearchConverter.class)
-				.hasSingleBean(SimpleElasticsearchMappingContext.class)
-				.hasSingleBean(EntityMapper.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestTemplate.class)
+				.hasSingleBean(ReactiveElasticsearchTemplate.class).hasSingleBean(ElasticsearchConverter.class)
+				.hasSingleBean(SimpleElasticsearchMappingContext.class).hasSingleBean(EntityMapper.class)
 				.hasSingleBean(ElasticsearchConverter.class));
 	}
 
 	@Test
 	public void customTransportTemplateShouldBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class)
-				.run((context) -> assertThat(context)
-						.getBeanNames(ElasticsearchTemplate.class).hasSize(1)
-						.contains("elasticsearchTemplate"));
+		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class).run((context) -> assertThat(context)
+				.getBeanNames(ElasticsearchTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
 	}
 
 	@Test
 	public void customRestTemplateShouldBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRestTemplate.class)
-				.run((context) -> assertThat(context)
-						.getBeanNames(ElasticsearchRestTemplate.class).hasSize(1)
-						.contains("elasticsearchTemplate"));
+		this.contextRunner.withUserConfiguration(CustomRestTemplate.class).run((context) -> assertThat(context)
+				.getBeanNames(ElasticsearchRestTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
 	}
 
 	@Test
 	public void customReactiveRestTemplateShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomReactiveRestTemplate.class)
-				.run((context) -> assertThat(context)
-						.getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
+				.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
 						.contains("reactiveElasticsearchTemplate"));
 	}
 

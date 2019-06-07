@@ -61,9 +61,8 @@ public class SampleMongoApplication implements CommandLineRunner {
 
 	@Bean
 	public MongoClientSettingsBuilderCustomizer customizer() {
-		return (builder) -> builder
-				.applyToConnectionPoolSettings((connectionPool) -> connectionPool
-						.maxConnectionIdleTime(5, TimeUnit.MINUTES));
+		return (builder) -> builder.applyToConnectionPoolSettings(
+				(connectionPool) -> connectionPool.maxConnectionIdleTime(5, TimeUnit.MINUTES));
 	}
 
 	public static void main(String[] args) {

@@ -38,8 +38,8 @@ public class BeanDefinitionOverrideFailureAnalyzerTests {
 	public void analyzeBeanDefinitionOverrideException() {
 		FailureAnalysis analysis = performAnalysis(BeanOverrideConfiguration.class);
 		String description = analysis.getDescription();
-		assertThat(description).contains("The bean 'testBean', defined in "
-				+ SecondConfiguration.class.getName() + ", could not be registered.");
+		assertThat(description).contains("The bean 'testBean', defined in " + SecondConfiguration.class.getName()
+				+ ", could not be registered.");
 		assertThat(description).contains(FirstConfiguration.class.getName());
 	}
 

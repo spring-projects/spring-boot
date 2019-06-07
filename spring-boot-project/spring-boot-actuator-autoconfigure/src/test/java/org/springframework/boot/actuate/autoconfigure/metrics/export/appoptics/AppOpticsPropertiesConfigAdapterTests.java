@@ -27,8 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AppOpticsPropertiesConfigAdapterTests extends
-		StepRegistryPropertiesConfigAdapterTests<AppOpticsProperties, AppOpticsPropertiesConfigAdapter> {
+public class AppOpticsPropertiesConfigAdapterTests
+		extends StepRegistryPropertiesConfigAdapterTests<AppOpticsProperties, AppOpticsPropertiesConfigAdapter> {
 
 	@Override
 	protected AppOpticsProperties createProperties() {
@@ -36,8 +36,7 @@ public class AppOpticsPropertiesConfigAdapterTests extends
 	}
 
 	@Override
-	protected AppOpticsPropertiesConfigAdapter createConfigAdapter(
-			AppOpticsProperties properties) {
+	protected AppOpticsPropertiesConfigAdapter createConfigAdapter(AppOpticsProperties properties) {
 		return new AppOpticsPropertiesConfigAdapter(properties);
 	}
 
@@ -45,8 +44,7 @@ public class AppOpticsPropertiesConfigAdapterTests extends
 	public void whenPropertiesUrisIsSetAdapterUriReturnsIt() {
 		AppOpticsProperties properties = createProperties();
 		properties.setUri("https://appoptics.example.com/v1/measurements");
-		assertThat(createConfigAdapter(properties).uri())
-				.isEqualTo("https://appoptics.example.com/v1/measurements");
+		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://appoptics.example.com/v1/measurements");
 	}
 
 	@Test

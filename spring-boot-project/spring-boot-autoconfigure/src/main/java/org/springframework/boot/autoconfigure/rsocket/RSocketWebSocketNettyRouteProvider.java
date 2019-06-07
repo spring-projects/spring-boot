@@ -35,18 +35,16 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
 	private final MessageHandlerAcceptor messageHandlerAcceptor;
 
-	RSocketWebSocketNettyRouteProvider(String mappingPath,
-			MessageHandlerAcceptor messageHandlerAcceptor) {
+	RSocketWebSocketNettyRouteProvider(String mappingPath, MessageHandlerAcceptor messageHandlerAcceptor) {
 		this.mappingPath = mappingPath;
 		this.messageHandlerAcceptor = messageHandlerAcceptor;
 	}
 
 	@Override
 	public HttpServerRoutes apply(HttpServerRoutes httpServerRoutes) {
-		ServerTransport.ConnectionAcceptor acceptor = RSocketFactory.receive()
-				.acceptor(this.messageHandlerAcceptor).toConnectionAcceptor();
-		return httpServerRoutes.ws(this.mappingPath,
-				WebsocketRouteTransport.newHandler(acceptor));
+		ServerTransport.ConnectionAcceptor acceptor = RSocketFactory.receive().acceptor(this.messageHandlerAcceptor)
+				.toConnectionAcceptor();
+		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(acceptor));
 	}
 
 }

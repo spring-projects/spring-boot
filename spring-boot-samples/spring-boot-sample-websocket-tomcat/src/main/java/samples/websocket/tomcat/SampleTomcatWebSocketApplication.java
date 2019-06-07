@@ -40,8 +40,7 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableWebSocket
-public class SampleTomcatWebSocketApplication extends SpringBootServletInitializer
-		implements WebSocketConfigurer {
+public class SampleTomcatWebSocketApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

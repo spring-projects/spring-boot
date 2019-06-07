@@ -43,8 +43,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @ConditionalOnSingleCandidate(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(JdbcProperties.class)
-@Import({ JdbcTemplateConfiguration.class,
-		NamedParameterJdbcTemplateConfiguration.class })
+@Import({ JdbcTemplateConfiguration.class, NamedParameterJdbcTemplateConfiguration.class })
 public class JdbcTemplateAutoConfiguration {
 
 }

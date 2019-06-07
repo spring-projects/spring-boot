@@ -41,8 +41,8 @@ public class HazelcastCacheMeterBinderProviderTests {
 		IMap<Object, Object> nativeCache = mock(IMap.class);
 		given(nativeCache.getName()).willReturn("test");
 		HazelcastCache cache = new HazelcastCache(nativeCache);
-		MeterBinder meterBinder = new HazelcastCacheMeterBinderProvider()
-				.getMeterBinder(cache, Collections.emptyList());
+		MeterBinder meterBinder = new HazelcastCacheMeterBinderProvider().getMeterBinder(cache,
+				Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(HazelcastCacheMetrics.class);
 	}
 

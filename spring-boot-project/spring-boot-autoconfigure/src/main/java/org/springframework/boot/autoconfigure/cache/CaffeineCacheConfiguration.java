@@ -46,13 +46,10 @@ import org.springframework.util.StringUtils;
 class CaffeineCacheConfiguration {
 
 	@Bean
-	public CaffeineCacheManager cacheManager(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers,
-			ObjectProvider<Caffeine<Object, Object>> caffeine,
-			ObjectProvider<CaffeineSpec> caffeineSpec,
+	public CaffeineCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
+			ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
 			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
-		CaffeineCacheManager cacheManager = createCacheManager(cacheProperties, caffeine,
-				caffeineSpec, cacheLoader);
+		CaffeineCacheManager cacheManager = createCacheManager(cacheProperties, caffeine, caffeineSpec, cacheLoader);
 		List<String> cacheNames = cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			cacheManager.setCacheNames(cacheNames);
@@ -61,19 +58,16 @@ class CaffeineCacheConfiguration {
 	}
 
 	private CaffeineCacheManager createCacheManager(CacheProperties cacheProperties,
-			ObjectProvider<Caffeine<Object, Object>> caffeine,
-			ObjectProvider<CaffeineSpec> caffeineSpec,
+			ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
 			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
 		CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-		setCacheBuilder(cacheProperties, caffeineSpec.getIfAvailable(),
-				caffeine.getIfAvailable(), cacheManager);
+		setCacheBuilder(cacheProperties, caffeineSpec.getIfAvailable(), caffeine.getIfAvailable(), cacheManager);
 		cacheLoader.ifAvailable(cacheManager::setCacheLoader);
 		return cacheManager;
 	}
 
-	private void setCacheBuilder(CacheProperties cacheProperties,
-			CaffeineSpec caffeineSpec, Caffeine<Object, Object> caffeine,
-			CaffeineCacheManager cacheManager) {
+	private void setCacheBuilder(CacheProperties cacheProperties, CaffeineSpec caffeineSpec,
+			Caffeine<Object, Object> caffeine, CaffeineCacheManager cacheManager) {
 		String specification = cacheProperties.getCaffeine().getSpec();
 		if (StringUtils.hasText(specification)) {
 			cacheManager.setCacheSpecification(specification);

@@ -35,8 +35,8 @@ import org.springframework.data.ldap.repository.support.LdapRepositoryFactoryBea
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ LdapContext.class, LdapRepository.class })
-@ConditionalOnProperty(prefix = "spring.data.ldap.repositories", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.ldap.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @ConditionalOnMissingBean(LdapRepositoryFactoryBean.class)
 @Import(LdapRepositoriesRegistrar.class)
 public class LdapRepositoriesAutoConfiguration {

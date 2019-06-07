@@ -56,10 +56,8 @@ public enum ManagementPortType {
 			return DISABLED;
 		}
 		Integer serverPort = getPortProperty(environment, "server.");
-		return ((managementPort == null
-				|| (serverPort == null && managementPort.equals(8080))
-				|| (managementPort != 0 && managementPort.equals(serverPort))) ? SAME
-						: DIFFERENT);
+		return ((managementPort == null || (serverPort == null && managementPort.equals(8080))
+				|| (managementPort != 0 && managementPort.equals(serverPort))) ? SAME : DIFFERENT);
 	}
 
 	private static Integer getPortProperty(Environment environment, String prefix) {

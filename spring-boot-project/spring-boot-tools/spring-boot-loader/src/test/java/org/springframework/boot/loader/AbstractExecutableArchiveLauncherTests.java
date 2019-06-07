@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 
 	protected File createJarArchive(String name, String entryPrefix) throws IOException {
 		File archive = this.temp.newFile(name);
-		JarOutputStream jarOutputStream = new JarOutputStream(
-				new FileOutputStream(archive));
+		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(archive));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/classes/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/lib/"));
@@ -80,8 +79,7 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 				entryFile.mkdirs();
 			}
 			else {
-				FileCopyUtils.copy(jarFile.getInputStream(entry),
-						new FileOutputStream(entryFile));
+				FileCopyUtils.copy(jarFile.getInputStream(entry), new FileOutputStream(entryFile));
 			}
 		}
 		jarFile.close();

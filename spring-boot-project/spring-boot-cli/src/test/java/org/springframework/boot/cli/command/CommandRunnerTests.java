@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,8 +94,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void runWithoutArguments() throws Exception {
-		assertThatExceptionOfType(NoArgumentsException.class)
-				.isThrownBy(this.commandRunner::run);
+		assertThatExceptionOfType(NoArgumentsException.class).isThrownBy(this.commandRunner::run);
 	}
 
 	@Test
@@ -106,8 +105,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void missingCommand() throws Exception {
-		assertThatExceptionOfType(NoSuchCommandException.class)
-				.isThrownBy(() -> this.commandRunner.run("missing"));
+		assertThatExceptionOfType(NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("missing"));
 	}
 
 	@Test

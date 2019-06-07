@@ -39,8 +39,7 @@ public class MockResetTests {
 
 	@Test
 	public void withSettingsOfNoneAttachesReset() {
-		ExampleService mock = mock(ExampleService.class,
-				MockReset.withSettings(MockReset.NONE));
+		ExampleService mock = mock(ExampleService.class, MockReset.withSettings(MockReset.NONE));
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.NONE);
 	}
 
@@ -58,15 +57,13 @@ public class MockResetTests {
 
 	@Test
 	public void withSettingsAttachesReset() {
-		ExampleService mock = mock(ExampleService.class,
-				MockReset.withSettings(MockReset.BEFORE));
+		ExampleService mock = mock(ExampleService.class, MockReset.withSettings(MockReset.BEFORE));
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
 	}
 
 	@Test
 	public void apply() {
-		ExampleService mock = mock(ExampleService.class,
-				MockReset.apply(MockReset.AFTER, withSettings()));
+		ExampleService mock = mock(ExampleService.class, MockReset.apply(MockReset.AFTER, withSettings()));
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.AFTER);
 	}
 

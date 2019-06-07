@@ -44,10 +44,8 @@ public class AbstractNestedConditionTests {
 	public void invalidMemberPhase() {
 		this.contextRunner.withUserConfiguration(InvalidConfig.class).run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context.getStartupFailure().getCause())
-					.isInstanceOf(IllegalStateException.class)
-					.hasMessageContaining("Nested condition "
-							+ InvalidNestedCondition.class.getName()
+			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)
+					.hasMessageContaining("Nested condition " + InvalidNestedCondition.class.getName()
 							+ " uses a configuration phase that is inappropriate for class "
 							+ OnBeanCondition.class.getName());
 		});
@@ -55,16 +53,13 @@ public class AbstractNestedConditionTests {
 
 	@Test
 	public void invalidNestedMemberPhase() {
-		this.contextRunner.withUserConfiguration(DoubleNestedConfig.class)
-				.run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure().getCause())
-							.isInstanceOf(IllegalStateException.class)
-							.hasMessageContaining("Nested condition "
-									+ DoubleNestedCondition.class.getName()
-									+ " uses a configuration phase that is inappropriate for class "
-									+ ValidNestedCondition.class.getName());
-				});
+		this.contextRunner.withUserConfiguration(DoubleNestedConfig.class).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)
+					.hasMessageContaining("Nested condition " + DoubleNestedCondition.class.getName()
+							+ " uses a configuration phase that is inappropriate for class "
+							+ ValidNestedCondition.class.getName());
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -85,8 +80,7 @@ public class AbstractNestedConditionTests {
 		}
 
 		@Override
-		protected ConditionOutcome getFinalMatchOutcome(
-				MemberMatchOutcomes memberOutcomes) {
+		protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 			return ConditionOutcome.match();
 		}
 
@@ -115,8 +109,7 @@ public class AbstractNestedConditionTests {
 		}
 
 		@Override
-		protected ConditionOutcome getFinalMatchOutcome(
-				MemberMatchOutcomes memberOutcomes) {
+		protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 			return ConditionOutcome.match();
 		}
 
@@ -140,8 +133,7 @@ public class AbstractNestedConditionTests {
 		}
 
 		@Override
-		protected ConditionOutcome getFinalMatchOutcome(
-				MemberMatchOutcomes memberOutcomes) {
+		protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 			return ConditionOutcome.match();
 		}
 

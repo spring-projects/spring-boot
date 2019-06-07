@@ -41,8 +41,8 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE
-				+ "|`+something+`" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+something+`" + NEWLINE
+				+ "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|"
-				+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo(
+				"|`+spring.test.prop+`" + NEWLINE + "|" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
@@ -68,9 +68,8 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE
-				+ "|`+first{vbar}" + NEWLINE + "second+`" + NEWLINE
-				+ "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first{vbar}" + NEWLINE
+				+ "second+`" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
@@ -83,9 +82,8 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString())
-				.isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first\\\\second+`"
-						+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first\\\\second+`" + NEWLINE
+				+ "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
@@ -97,8 +95,8 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop.*+`" + NEWLINE + "|"
-				+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo(
+				"|`+spring.test.prop.*+`" + NEWLINE + "|" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
@@ -112,9 +110,8 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE
-				+ "|`+first," + NEWLINE + "second," + NEWLINE + "third+`" + NEWLINE
-				+ "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first," + NEWLINE + "second,"
+				+ NEWLINE + "third+`" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 }

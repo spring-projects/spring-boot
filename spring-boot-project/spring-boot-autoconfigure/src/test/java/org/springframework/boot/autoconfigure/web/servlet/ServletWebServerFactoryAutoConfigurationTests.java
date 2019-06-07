@@ -73,8 +73,8 @@ import static org.mockito.Mockito.verify;
 public class ServletWebServerFactoryAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
-			AnnotationConfigServletWebServerApplicationContext::new).withConfiguration(
-					AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
+			AnnotationConfigServletWebServerApplicationContext::new)
+					.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
 							DispatcherServletAutoConfiguration.class))
 					.withUserConfiguration(WebServerConfiguration.class);
 
@@ -85,43 +85,36 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	@Test
 	public void contextAlreadyHasDispatcherServletWithDefaultName() {
-		this.contextRunner.withUserConfiguration(DispatcherServletConfiguration.class)
-				.run(verifyContext());
+		this.contextRunner.withUserConfiguration(DispatcherServletConfiguration.class).run(verifyContext());
 	}
 
 	@Test
 	public void contextAlreadyHasDispatcherServlet() {
-		this.contextRunner.withUserConfiguration(SpringServletConfiguration.class)
-				.run((context) -> {
-					verifyContext(context);
-					assertThat(context.getBeanNamesForType(DispatcherServlet.class))
-							.hasSize(2);
-				});
+		this.contextRunner.withUserConfiguration(SpringServletConfiguration.class).run((context) -> {
+			verifyContext(context);
+			assertThat(context.getBeanNamesForType(DispatcherServlet.class)).hasSize(2);
+		});
 	}
 
 	@Test
 	public void contextAlreadyHasNonDispatcherServlet() {
-		this.contextRunner.withUserConfiguration(NonSpringServletConfiguration.class)
-				.run((context) -> {
-					verifyContext(context); // the non default servlet is still registered
-					assertThat(context).doesNotHaveBean(DispatcherServlet.class);
-				});
+		this.contextRunner.withUserConfiguration(NonSpringServletConfiguration.class).run((context) -> {
+			verifyContext(context); // the non default servlet is still registered
+			assertThat(context).doesNotHaveBean(DispatcherServlet.class);
+		});
 	}
 
 	@Test
 	public void contextAlreadyHasNonServlet() {
-		this.contextRunner.withUserConfiguration(NonServletConfiguration.class)
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(DispatcherServlet.class);
-					assertThat(context).doesNotHaveBean(Servlet.class);
-				});
+		this.contextRunner.withUserConfiguration(NonServletConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(DispatcherServlet.class);
+			assertThat(context).doesNotHaveBean(Servlet.class);
+		});
 	}
 
 	@Test
 	public void contextAlreadyHasDispatcherServletAndRegistration() {
-		this.contextRunner
-				.withUserConfiguration(
-						DispatcherServletWithRegistrationConfiguration.class)
+		this.contextRunner.withUserConfiguration(DispatcherServletWithRegistrationConfiguration.class)
 				.run((context) -> {
 					verifyContext(context);
 					assertThat(context).hasSingleBean(DispatcherServlet.class);
@@ -130,20 +123,15 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	@Test
 	public void webServerHasNoServletContext() {
-		this.contextRunner.withUserConfiguration(EnsureWebServerHasNoServletContext.class)
-				.run(verifyContext());
+		this.contextRunner.withUserConfiguration(EnsureWebServerHasNoServletContext.class).run(verifyContext());
 	}
 
 	@Test
 	public void customizeWebServerFactoryThroughCallback() {
-		this.contextRunner
-				.withUserConfiguration(CallbackEmbeddedServerFactoryCustomizer.class)
-				.run((context) -> {
-					verifyContext(context);
-					assertThat(
-							context.getBean(MockServletWebServerFactory.class).getPort())
-									.isEqualTo(9000);
-				});
+		this.contextRunner.withUserConfiguration(CallbackEmbeddedServerFactoryCustomizer.class).run((context) -> {
+			verifyContext(context);
+			assertThat(context.getBean(MockServletWebServerFactory.class).getPort()).isEqualTo(9000);
+		});
 	}
 
 	@Test
@@ -160,14 +148,11 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public void jettyServerCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(
-								new FilteredClassLoader(Tomcat.class, HttpServer.class))
-						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
 						.withUserConfiguration(JettyServerCustomizerConfiguration.class);
 		runner.run((context) -> {
-			JettyServletWebServerFactory factory = context
-					.getBean(JettyServletWebServerFactory.class);
+			JettyServletWebServerFactory factory = context.getBean(JettyServletWebServerFactory.class);
 			assertThat(factory.getServerCustomizers()).hasSize(1);
 		});
 	}
@@ -176,15 +161,11 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class,
-								HttpServer.class, Server.class))
-						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								UndertowDeploymentInfoCustomizerConfiguration.class);
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(UndertowDeploymentInfoCustomizerConfiguration.class);
 		runner.run((context) -> {
-			UndertowServletWebServerFactory factory = context
-					.getBean(UndertowServletWebServerFactory.class);
+			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
 		});
 	}
@@ -193,15 +174,11 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public void undertowBuilderCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class,
-								HttpServer.class, Server.class))
-						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								UndertowBuilderCustomizerConfiguration.class);
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class);
 		runner.run((context) -> {
-			UndertowServletWebServerFactory factory = context
-					.getBean(UndertowServletWebServerFactory.class);
+			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getBuilderCustomizers()).hasSize(1);
 		});
 	}
@@ -210,13 +187,10 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								TomcatConnectorCustomizerConfiguration.class);
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class);
 		runner.run((context) -> {
-			TomcatServletWebServerFactory factory = context
-					.getBean(TomcatServletWebServerFactory.class);
+			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			assertThat(factory.getTomcatConnectorCustomizers()).hasSize(1);
 		});
 	}
@@ -225,11 +199,9 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public void tomcatContextCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class));
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class));
 		runner.run((context) -> {
-			TomcatServletWebServerFactory factory = context
-					.getBean(TomcatServletWebServerFactory.class);
+			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			assertThat(factory.getTomcatContextCustomizers()).hasSize(1);
 		});
 	}
@@ -238,41 +210,34 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								TomcatProtocolHandlerCustomizerConfiguration.class);
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class);
 		runner.run((context) -> {
-			TomcatServletWebServerFactory factory = context
-					.getBean(TomcatServletWebServerFactory.class);
+			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
 		});
 	}
 
 	@Test
 	public void forwardedHeaderFilterShouldBeConfigured() {
-		this.contextRunner.withPropertyValues("server.forward-headers-strategy=framework")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(FilterRegistrationBean.class);
-					Filter filter = context.getBean(FilterRegistrationBean.class)
-							.getFilter();
-					assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
-				});
+		this.contextRunner.withPropertyValues("server.forward-headers-strategy=framework").run((context) -> {
+			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
+		});
 	}
 
 	@Test
 	public void forwardedHeaderFilterWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.contextRunner.withPropertyValues("server.forward-headers-strategy=native")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(FilterRegistrationBean.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
 	}
 
 	@Test
 	public void forwardedHeaderFilterWhenFilterAlreadyRegisteredShouldBackOff() {
 		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=framework")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(FilterRegistrationBean.class));
+				.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
@@ -280,10 +245,8 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	private void verifyContext(ApplicationContext context) {
-		MockServletWebServerFactory factory = context
-				.getBean(MockServletWebServerFactory.class);
-		Servlet servlet = context.getBean(
-				DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
+		MockServletWebServerFactory factory = context.getBean(MockServletWebServerFactory.class);
+		Servlet servlet = context.getBean(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
 				Servlet.class);
 		verify(factory.getServletContext()).addServlet("dispatcherServlet", servlet);
 	}
@@ -326,8 +289,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		public FrameworkServlet dispatcherServlet() {
 			return new FrameworkServlet() {
 				@Override
-				protected void doService(HttpServletRequest request,
-						HttpServletResponse response) {
+				protected void doService(HttpServletRequest request, HttpServletResponse response) {
 				}
 			};
 		}
@@ -353,8 +315,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 		}
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(
-				DispatcherServlet dispatcherServlet) {
+		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(DispatcherServlet dispatcherServlet) {
 			return new ServletRegistrationBean<>(dispatcherServlet, "/app/*");
 		}
 
@@ -364,8 +325,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	public static class EnsureWebServerHasNoServletContext implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof ConfigurableServletWebServerFactory) {
 				MockServletWebServerFactory webServerFactory = (MockServletWebServerFactory) bean;
 				assertThat(webServerFactory.getServletContext()).isNull();

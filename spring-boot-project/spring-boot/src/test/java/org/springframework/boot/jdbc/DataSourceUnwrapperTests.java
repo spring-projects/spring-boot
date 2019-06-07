@@ -43,65 +43,54 @@ public class DataSourceUnwrapperTests {
 	@Test
 	public void unwrapWithTarget() {
 		DataSource dataSource = new HikariDataSource();
-		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithWrongTarget() {
 		DataSource dataSource = new HikariDataSource();
-		assertThat(
-				DataSourceUnwrapper.unwrap(dataSource, SingleConnectionDataSource.class))
-						.isNull();
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, SingleConnectionDataSource.class)).isNull();
 	}
 
 	@Test
 	public void unwrapWithDelegate() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInDelegate(wrapInDelegate(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithProxy() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithProxyAndDelegate() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInDelegate(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapWithSeveralLevelOfWrapping() {
 		DataSource dataSource = new HikariDataSource();
-		DataSource actual = wrapInProxy(
-				wrapInDelegate(wrapInDelegate(wrapInProxy(wrapInDelegate(dataSource)))));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class))
-				.isSameAs(dataSource);
+		DataSource actual = wrapInProxy(wrapInDelegate(wrapInDelegate(wrapInProxy(wrapInDelegate(dataSource)))));
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
 	}
 
 	@Test
 	public void unwrapDataSourceProxy() {
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
 		DataSource actual = wrapInDelegate(wrapInProxy(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, DataSourceProxy.class))
-				.isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, DataSourceProxy.class)).isSameAs(dataSource);
 	}
 
 	@Test
-	public void unwrappingIsNotAttemptedWhenDataSourceIsNotWrapperForTarget()
-			throws SQLException {
+	public void unwrappingIsNotAttemptedWhenDataSourceIsNotWrapperForTarget() throws SQLException {
 		DataSource dataSource = mock(DataSource.class);
-		DataSource actual = DataSourceUnwrapper.unwrap(dataSource,
-				HikariDataSource.class);
+		DataSource actual = DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
 		assertThat(actual).isNull();
 		verify(dataSource).isWrapperFor(HikariDataSource.class);
 		verifyNoMoreInteractions(dataSource);

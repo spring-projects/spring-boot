@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,33 +40,26 @@ public class ResourceMatcherTests {
 
 	@Test
 	public void nonExistentRoot() throws IOException {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(
-				Arrays.asList("alpha/**", "bravo/*", "*"),
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**", "bravo/*", "*"),
 				Arrays.asList(".*", "alpha/**/excluded"));
-		List<MatchedResource> matchedResources = resourceMatcher
-				.find(Arrays.asList(new File("does-not-exist")));
+		List<MatchedResource> matchedResources = resourceMatcher.find(Arrays.asList(new File("does-not-exist")));
 		assertThat(matchedResources).isEmpty();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void defaults() {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
-				Arrays.asList(""));
-		Collection<String> includes = (Collection<String>) ReflectionTestUtils
-				.getField(resourceMatcher, "includes");
-		Collection<String> excludes = (Collection<String>) ReflectionTestUtils
-				.getField(resourceMatcher, "excludes");
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""), Arrays.asList(""));
+		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "includes");
+		Collection<String> excludes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "excludes");
 		assertThat(includes).contains("static/**");
 		assertThat(excludes).contains("**/*.jar");
 	}
 
 	@Test
 	public void excludedWins() throws Exception {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
-				Arrays.asList("**/*.jar"));
-		List<MatchedResource> found = resourceMatcher
-				.find(Arrays.asList(new File("src/test/resources")));
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"), Arrays.asList("**/*.jar"));
+		List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File("src/test/resources")));
 		assertThat(found).areNot(new Condition<MatchedResource>() {
 
 			@Override
@@ -80,10 +73,8 @@ public class ResourceMatcherTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void includedDeltas() {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**"),
-				Arrays.asList(""));
-		Collection<String> includes = (Collection<String>) ReflectionTestUtils
-				.getField(resourceMatcher, "includes");
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**"), Arrays.asList(""));
+		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "includes");
 		assertThat(includes).contains("templates/**");
 		assertThat(includes).doesNotContain("static/**");
 	}
@@ -91,12 +82,10 @@ public class ResourceMatcherTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void includedDeltasAndNewEntries() {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(
-				Arrays.asList("-static/**", "foo.jar"), Arrays.asList("-**/*.jar"));
-		Collection<String> includes = (Collection<String>) ReflectionTestUtils
-				.getField(resourceMatcher, "includes");
-		Collection<String> excludes = (Collection<String>) ReflectionTestUtils
-				.getField(resourceMatcher, "excludes");
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**", "foo.jar"),
+				Arrays.asList("-**/*.jar"));
+		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "includes");
+		Collection<String> excludes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "excludes");
 		assertThat(includes).contains("foo.jar");
 		assertThat(includes).contains("templates/**");
 		assertThat(includes).doesNotContain("static/**");
@@ -106,20 +95,16 @@ public class ResourceMatcherTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void excludedDeltas() {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
-				Arrays.asList("-**/*.jar"));
-		Collection<String> excludes = (Collection<String>) ReflectionTestUtils
-				.getField(resourceMatcher, "excludes");
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""), Arrays.asList("-**/*.jar"));
+		Collection<String> excludes = (Collection<String>) ReflectionTestUtils.getField(resourceMatcher, "excludes");
 		assertThat(excludes).doesNotContain("**/*.jar");
 	}
 
 	@Test
 	public void jarFileAlwaysMatches() throws Exception {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
-				Arrays.asList("**/*.jar"));
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"), Arrays.asList("**/*.jar"));
 		List<MatchedResource> found = resourceMatcher
-				.find(Arrays.asList(new File("src/test/resources/templates"),
-						new File("src/test/resources/foo.jar")));
+				.find(Arrays.asList(new File("src/test/resources/templates"), new File("src/test/resources/foo.jar")));
 		assertThat(found).areAtLeastOne(new Condition<MatchedResource>() {
 
 			@Override
@@ -132,8 +117,7 @@ public class ResourceMatcherTests {
 
 	@Test
 	public void resourceMatching() throws IOException {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(
-				Arrays.asList("alpha/**", "bravo/*", "*"),
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**", "bravo/*", "*"),
 				Arrays.asList(".*", "alpha/**/excluded"));
 		List<MatchedResource> matchedResources = resourceMatcher
 				.find(Arrays.asList(new File("src/test/resources/resource-matcher/one"),
@@ -143,8 +127,7 @@ public class ResourceMatcherTests {
 		for (MatchedResource resource : matchedResources) {
 			paths.add(resource.getName());
 		}
-		assertThat(paths).containsOnly("alpha/nested/fileA", "bravo/fileC", "fileD",
-				"bravo/fileE", "fileF", "three");
+		assertThat(paths).containsOnly("alpha/nested/fileA", "bravo/fileC", "fileD", "bravo/fileE", "fileF", "three");
 	}
 
 }

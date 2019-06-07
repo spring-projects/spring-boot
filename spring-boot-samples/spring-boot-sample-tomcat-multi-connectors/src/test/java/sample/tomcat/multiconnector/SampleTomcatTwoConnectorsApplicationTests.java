@@ -68,12 +68,12 @@ class SampleTomcatTwoConnectorsApplicationTests {
 	void testHello() {
 		assertThat(this.ports.getHttpsPort()).isEqualTo(this.port);
 		assertThat(this.ports.getHttpPort()).isNotEqualTo(this.port);
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("hello");
-		ResponseEntity<String> httpsEntity = this.restTemplate
-				.getForEntity("https://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> httpsEntity = this.restTemplate.getForEntity("https://localhost:" + this.port + "/hello",
+				String.class);
 		assertThat(httpsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(httpsEntity.getBody()).isEqualTo("hello");
 	}
@@ -87,8 +87,7 @@ class SampleTomcatTwoConnectorsApplicationTests {
 
 		@Override
 		public void onApplicationEvent(WebServerInitializedEvent event) {
-			Service service = ((TomcatWebServer) event.getWebServer()).getTomcat()
-					.getService();
+			Service service = ((TomcatWebServer) event.getWebServer()).getTomcat().getService();
 			for (Connector connector : service.findConnectors()) {
 				if (connector.getSecure()) {
 					this.httpsPort = connector.getLocalPort();

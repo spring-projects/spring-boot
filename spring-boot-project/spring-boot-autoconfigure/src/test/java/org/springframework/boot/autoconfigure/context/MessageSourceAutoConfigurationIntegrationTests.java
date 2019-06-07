@@ -35,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest("spring.messages.basename:test/messages")
-@ImportAutoConfiguration({ MessageSourceAutoConfiguration.class,
-		PropertyPlaceholderAutoConfiguration.class })
+@ImportAutoConfiguration({ MessageSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 @DirtiesContext
 public class MessageSourceAutoConfigurationIntegrationTests {
 
@@ -45,8 +44,7 @@ public class MessageSourceAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testMessageSourceFromPropertySourceAnnotation() {
-		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
-				.isEqualTo("bar");
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 	}
 
 	@Configuration(proxyBeanMethods = false)

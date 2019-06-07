@@ -39,8 +39,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ServletEndpointDiscoverer
-		extends EndpointDiscoverer<ExposableServletEndpoint, Operation>
+public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServletEndpoint, Operation>
 		implements ServletEndpointsSupplier {
 
 	private final List<PathMapper> endpointPathMappers;
@@ -51,11 +50,9 @@ public class ServletEndpointDiscoverer
 	 * @param endpointPathMappers the endpoint path mappers
 	 * @param filters filters to apply
 	 */
-	public ServletEndpointDiscoverer(ApplicationContext applicationContext,
-			List<PathMapper> endpointPathMappers,
+	public ServletEndpointDiscoverer(ApplicationContext applicationContext, List<PathMapper> endpointPathMappers,
 			Collection<EndpointFilter<ExposableServletEndpoint>> filters) {
-		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(),
-				filters);
+		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters);
 		this.endpointPathMappers = endpointPathMappers;
 	}
 
@@ -66,16 +63,15 @@ public class ServletEndpointDiscoverer
 	}
 
 	@Override
-	protected ExposableServletEndpoint createEndpoint(Object endpointBean, EndpointId id,
-			boolean enabledByDefault, Collection<Operation> operations) {
+	protected ExposableServletEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+			Collection<Operation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
-		return new DiscoveredServletEndpoint(this, endpointBean, id, rootPath,
-				enabledByDefault);
+		return new DiscoveredServletEndpoint(this, endpointBean, id, rootPath, enabledByDefault);
 	}
 
 	@Override
-	protected Operation createOperation(EndpointId endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
+	protected Operation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
+			OperationInvoker invoker) {
 		throw new IllegalStateException("ServletEndpoints must not declare operations");
 	}
 

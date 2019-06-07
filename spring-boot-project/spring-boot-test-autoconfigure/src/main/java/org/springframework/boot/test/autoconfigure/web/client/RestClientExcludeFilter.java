@@ -31,8 +31,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Stephane Nicoll
  */
-class RestClientExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<RestClientTest> {
+class RestClientExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<RestClientTest> {
 
 	private static final Class<?>[] NO_COMPONENTS = {};
 
@@ -42,15 +41,13 @@ class RestClientExcludeFilter
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
-		if (ClassUtils.isPresent(DATABIND_MODULE_CLASS_NAME,
-				RestClientExcludeFilter.class.getClassLoader())) {
+		if (ClassUtils.isPresent(DATABIND_MODULE_CLASS_NAME, RestClientExcludeFilter.class.getClassLoader())) {
 			try {
 				includes.add(Class.forName(DATABIND_MODULE_CLASS_NAME, true,
 						RestClientExcludeFilter.class.getClassLoader()));
 			}
 			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(
-						"Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
+				throw new IllegalStateException("Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
 			}
 			includes.add(JsonComponent.class);
 		}
@@ -61,8 +58,7 @@ class RestClientExcludeFilter
 
 	RestClientExcludeFilter(Class<?> testClass) {
 		super(testClass);
-		this.components = getAnnotation().getValue("components", Class[].class)
-				.orElse(NO_COMPONENTS);
+		this.components = getAnnotation().getValue("components", Class[].class).orElse(NO_COMPONENTS);
 	}
 
 	@Override

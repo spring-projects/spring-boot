@@ -48,8 +48,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class TomcatReactiveWebServerFactoryTests
-		extends AbstractReactiveWebServerFactoryTests {
+public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected TomcatReactiveWebServerFactory getFactory() {
@@ -61,8 +60,7 @@ public class TomcatReactiveWebServerFactoryTests
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer[] customizers = new TomcatContextCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatContextCustomizer.class));
-		factory.setTomcatContextCustomizers(
-				Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatContextCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addContextCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -111,35 +109,31 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void setNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
-				.withMessageContaining(
-						"TomcatProtocolHandlerCustomizers must not be null");
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
+				.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
 	}
 
 	@Test
 	public void addNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException().isThrownBy(() -> factory
-				.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
-				.withMessageContaining(
-						"TomcatProtocolHandlerCustomizers must not be null");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
+				.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
 	}
 
 	@Test
@@ -148,8 +142,7 @@ public class TomcatReactiveWebServerFactoryTests
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatConnectorCustomizer[] customizers = new TomcatConnectorCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatConnectorCustomizer.class));
-		factory.setTomcatConnectorCustomizers(
-				Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatConnectorCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addConnectorCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -165,8 +158,7 @@ public class TomcatReactiveWebServerFactoryTests
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>>[] customizers = new TomcatProtocolHandlerCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
-		factory.setTomcatProtocolHandlerCustomizers(
-				Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatProtocolHandlerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addProtocolHandlerCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);

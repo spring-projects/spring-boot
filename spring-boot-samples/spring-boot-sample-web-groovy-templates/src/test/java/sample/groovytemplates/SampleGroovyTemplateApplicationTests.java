@@ -65,8 +65,7 @@ class SampleGroovyTemplateApplicationTests {
 
 	@Test
 	void testCss() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}

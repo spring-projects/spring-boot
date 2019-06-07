@@ -50,8 +50,7 @@ public class XADataSourceAutoConfigurationTests {
 
 	@Test
 	public void createFromUrl() {
-		ApplicationContext context = createContext(FromProperties.class,
-				"spring.datasource.url:jdbc:hsqldb:mem:test",
+		ApplicationContext context = createContext(FromProperties.class, "spring.datasource.url:jdbc:hsqldb:mem:test",
 				"spring.datasource.username:un");
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);

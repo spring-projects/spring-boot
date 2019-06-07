@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,14 +53,13 @@ public class IgnoreErrorsBindHandlerTests {
 
 	@Test
 	public void bindWhenNotIgnoringErrorsShouldFail() {
-		assertThatExceptionOfType(BindException.class).isThrownBy(
-				() -> this.binder.bind("example", Bindable.of(Example.class)));
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)));
 	}
 
 	@Test
 	public void bindWhenIgnoringErrorsShouldBind() {
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreErrorsBindHandler()).get();
+		Example bound = this.binder.bind("example", Bindable.of(Example.class), new IgnoreErrorsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo(0);
 	}
 

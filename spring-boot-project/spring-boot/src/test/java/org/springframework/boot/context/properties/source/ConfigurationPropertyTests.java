@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,20 +33,17 @@ import static org.mockito.Mockito.mock;
  */
 public class ConfigurationPropertyTests {
 
-	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
-			.of("foo");
+	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenValueIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
 				.withMessageContaining("Value must not be null");
 	}
 
@@ -71,17 +68,12 @@ public class ConfigurationPropertyTests {
 
 	@Test
 	public void equalsAndHashCode() {
-		ConfigurationProperty property1 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("foo"), "bar", null);
-		ConfigurationProperty property2 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("foo"), "bar", null);
-		ConfigurationProperty property3 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("foo"), "baz", null);
-		ConfigurationProperty property4 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("baz"), "bar", null);
+		ConfigurationProperty property1 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "bar", null);
+		ConfigurationProperty property2 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "bar", null);
+		ConfigurationProperty property3 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "baz", null);
+		ConfigurationProperty property4 = new ConfigurationProperty(ConfigurationPropertyName.of("baz"), "bar", null);
 		assertThat(property1.hashCode()).isEqualTo(property2.hashCode());
-		assertThat(property1).isEqualTo(property2).isNotEqualTo(property3)
-				.isNotEqualTo(property4);
+		assertThat(property1).isEqualTo(property2).isNotEqualTo(property3).isNotEqualTo(property4);
 	}
 
 	@Test

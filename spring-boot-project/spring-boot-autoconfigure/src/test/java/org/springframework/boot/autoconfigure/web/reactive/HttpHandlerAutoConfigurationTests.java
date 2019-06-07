@@ -44,18 +44,15 @@ public class HttpHandlerAutoConfigurationTests {
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {
-		this.contextRunner.withUserConfiguration(CustomHttpHandler.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(HttpHandler.class);
-					assertThat(context).getBean(HttpHandler.class)
-							.isSameAs(context.getBean("customHttpHandler"));
-				});
+		this.contextRunner.withUserConfiguration(CustomHttpHandler.class).run((context) -> {
+			assertThat(context).hasSingleBean(HttpHandler.class);
+			assertThat(context).getBean(HttpHandler.class).isSameAs(context.getBean("customHttpHandler"));
+		});
 	}
 
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(HttpHandler.class));
 	}
 

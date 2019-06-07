@@ -42,8 +42,7 @@ public class PrometheusScrapeEndpointIntegrationTests {
 
 	@Test
 	public void scrapeHasContentTypeText004() {
-		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk()
-				.expectHeader()
+		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk().expectHeader()
 				.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004));
 	}
 
@@ -51,8 +50,7 @@ public class PrometheusScrapeEndpointIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public PrometheusScrapeEndpoint prometheusScrapeEndpoint(
-				CollectorRegistry collectorRegistry) {
+		public PrometheusScrapeEndpoint prometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
 

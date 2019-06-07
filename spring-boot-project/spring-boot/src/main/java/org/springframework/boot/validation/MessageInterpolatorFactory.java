@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,16 +42,14 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 
 	static {
 		Set<String> fallbacks = new LinkedHashSet<>();
-		fallbacks.add("org.hibernate.validator.messageinterpolation"
-				+ ".ParameterMessageInterpolator");
+		fallbacks.add("org.hibernate.validator.messageinterpolation" + ".ParameterMessageInterpolator");
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
 	}
 
 	@Override
 	public MessageInterpolator getObject() throws BeansException {
 		try {
-			return Validation.byDefaultProvider().configure()
-					.getDefaultMessageInterpolator();
+			return Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();
 		}
 		catch (ValidationException ex) {
 			MessageInterpolator fallback = getFallback();

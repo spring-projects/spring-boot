@@ -100,8 +100,7 @@ class StartupInfoLogger {
 	}
 
 	private void appendApplicationName(StringBuilder message) {
-		String name = (this.sourceClass != null)
-				? ClassUtils.getShortName(this.sourceClass) : "application";
+		String name = (this.sourceClass != null) ? ClassUtils.getShortName(this.sourceClass) : "application";
 		message.append(name);
 	}
 
@@ -149,8 +148,7 @@ class StartupInfoLogger {
 		append(message, prefix, call, "");
 	}
 
-	private void append(StringBuilder message, String prefix, Callable<Object> call,
-			String defaultValue) {
+	private void append(StringBuilder message, String prefix, Callable<Object> call, String defaultValue) {
 		Object result = callIfPossible(call);
 		String value = (result != null) ? result.toString() : null;
 		if (!StringUtils.hasLength(value)) {

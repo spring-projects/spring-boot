@@ -42,13 +42,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(StatsdMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.statsd", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.statsd", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(StatsdProperties.class)
 public class StatsdMetricsExportAutoConfiguration {
 
@@ -60,8 +59,7 @@ public class StatsdMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig,
-			Clock clock) {
+	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig, Clock clock) {
 		return new StatsdMeterRegistry(statsdConfig, clock);
 	}
 

@@ -63,23 +63,20 @@ public class JettyWebServerFactoryCustomizerTests {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new JettyWebServerFactoryCustomizer(this.environment,
-				this.serverProperties);
+		this.customizer = new JettyWebServerFactoryCustomizer(this.environment, this.serverProperties);
 	}
 
 	@Test
 	public void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
-		ConfigurableJettyWebServerFactory factory = mock(
-				ConfigurableJettyWebServerFactory.class);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
 
 	@Test
 	public void defaultUseForwardHeaders() {
-		ConfigurableJettyWebServerFactory factory = mock(
-				ConfigurableJettyWebServerFactory.class);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
@@ -87,18 +84,13 @@ public class JettyWebServerFactoryCustomizerTests {
 	@Test
 	public void accessLogCanBeCustomized() throws IOException {
 		File logFile = File.createTempFile("jetty_log", ".log");
-		bind("server.jetty.accesslog.enabled=true",
-				"server.jetty.accesslog.format=extended_ncsa",
-				"server.jetty.accesslog.filename="
-						+ logFile.getAbsolutePath().replace("\\", "\\\\"),
-				"server.jetty.accesslog.file-date-format=yyyy-MM-dd",
-				"server.jetty.accesslog.retention-period=42",
-				"server.jetty.accesslog.append=true",
-				"server.jetty.accesslog.ignore-paths=/a/path,/b/path");
+		bind("server.jetty.accesslog.enabled=true", "server.jetty.accesslog.format=extended_ncsa",
+				"server.jetty.accesslog.filename=" + logFile.getAbsolutePath().replace("\\", "\\\\"),
+				"server.jetty.accesslog.file-date-format=yyyy-MM-dd", "server.jetty.accesslog.retention-period=42",
+				"server.jetty.accesslog.append=true", "server.jetty.accesslog.ignore-paths=/a/path,/b/path");
 		JettyWebServer server = customizeAndGetServer();
 		CustomRequestLog requestLog = getRequestLog(server);
-		assertThat(requestLog.getFormatString())
-				.isEqualTo(CustomRequestLog.EXTENDED_NCSA_FORMAT);
+		assertThat(requestLog.getFormatString()).isEqualTo(CustomRequestLog.EXTENDED_NCSA_FORMAT);
 		assertThat(requestLog.getIgnorePaths().length).isEqualTo(2);
 		assertThat(requestLog.getIgnorePaths()).containsExactly("/a/path", "/b/path");
 		RequestLogWriter logWriter = getLogWriter(requestLog);
@@ -135,8 +127,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	@Test
 	public void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
-		ConfigurableJettyWebServerFactory factory = mock(
-				ConfigurableJettyWebServerFactory.class);
+		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
@@ -172,8 +163,7 @@ public class JettyWebServerFactoryCustomizerTests {
 		server.stop();
 		Connector[] connectors = server.getServer().getConnectors();
 		for (Connector connector : connectors) {
-			connector.getConnectionFactories().stream()
-					.filter((factory) -> factory instanceof ConnectionFactory)
+			connector.getConnectionFactories().stream().filter((factory) -> factory instanceof ConnectionFactory)
 					.forEach((cf) -> {
 						ConnectionFactory factory = (ConnectionFactory) cf;
 						HttpConfiguration configuration = factory.getHttpConfiguration();
@@ -184,8 +174,7 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	private void bind(String... inlinedProperties) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				inlinedProperties);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
 		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
 				Bindable.ofInstance(this.serverProperties));
 	}

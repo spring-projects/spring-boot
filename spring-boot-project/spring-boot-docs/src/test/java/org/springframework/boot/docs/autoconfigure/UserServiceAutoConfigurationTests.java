@@ -60,12 +60,10 @@ public class UserServiceAutoConfigurationTests {
 	// tag::test-user-config[]
 	@Test
 	public void defaultServiceBacksOff() {
-		this.contextRunner.withUserConfiguration(UserConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(UserService.class);
-					assertThat(context).getBean("myUserService")
-							.isSameAs(context.getBean(UserService.class));
-				});
+		this.contextRunner.withUserConfiguration(UserConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(UserService.class);
+			assertThat(context).getBean("myUserService").isSameAs(context.getBean(UserService.class));
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

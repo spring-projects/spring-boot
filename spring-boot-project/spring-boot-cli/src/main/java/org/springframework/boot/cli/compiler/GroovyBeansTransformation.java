@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,10 +96,8 @@ public class GroovyBeansTransformation implements ASTTransformation {
 				// Implement the interface by adding a public read-only property with the
 				// same name as the method in the interface (getBeans). Make it return the
 				// closure.
-				this.classNode.addProperty(
-						new PropertyNode(BEANS, Modifier.PUBLIC | Modifier.FINAL,
-								ClassHelper.CLOSURE_TYPE.getPlainNodeReference(),
-								this.classNode, closure, null, null));
+				this.classNode.addProperty(new PropertyNode(BEANS, Modifier.PUBLIC | Modifier.FINAL,
+						ClassHelper.CLOSURE_TYPE.getPlainNodeReference(), this.classNode, closure, null, null));
 				// Only do this once per class
 				this.xformed = true;
 			}

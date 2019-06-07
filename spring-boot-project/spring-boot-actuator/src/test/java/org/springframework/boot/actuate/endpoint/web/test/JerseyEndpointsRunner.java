@@ -69,8 +69,7 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			JerseyAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, JerseyAutoConfiguration.class })
 	static class JerseyEndpointConfiguration {
 
 		private final ApplicationContext applicationContext;
@@ -95,18 +94,14 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 		}
 
 		private void customize(ResourceConfig config) {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
-					mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
-					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, null, Collections.emptyList(),
+			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON, ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
-			Collection<Resource> resources = new JerseyEndpointResourceFactory()
-					.createEndpointResources(new EndpointMapping("/actuator"),
-							discoverer.getEndpoints(), endpointMediaTypes,
-							new EndpointLinksResolver(discoverer.getEndpoints()));
+			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
+					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
+					new EndpointLinksResolver(discoverer.getEndpoints()));
 			config.registerResources(new HashSet<>(resources));
 		}
 

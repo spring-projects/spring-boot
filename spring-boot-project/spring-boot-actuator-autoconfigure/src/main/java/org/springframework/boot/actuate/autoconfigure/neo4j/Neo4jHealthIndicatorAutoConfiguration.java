@@ -48,13 +48,12 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnEnabledHealthIndicator("neo4j")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
-public class Neo4jHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<Neo4jHealthIndicator, SessionFactory> {
+public class Neo4jHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<Neo4jHealthIndicator, SessionFactory> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "neo4jHealthIndicator")
-	public HealthIndicator neo4jHealthIndicator(
-			Map<String, SessionFactory> sessionFactories) {
+	public HealthIndicator neo4jHealthIndicator(Map<String, SessionFactory> sessionFactories) {
 		return createHealthIndicator(sessionFactories);
 	}
 

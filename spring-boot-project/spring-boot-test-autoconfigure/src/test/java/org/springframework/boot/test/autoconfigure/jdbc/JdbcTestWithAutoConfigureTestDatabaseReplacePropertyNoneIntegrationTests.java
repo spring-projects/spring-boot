@@ -44,8 +44,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplacePropertyNoneIntegration
 	@Test
 	public void usesDefaultEmbeddedDatabase() throws Exception {
 		// HSQL is explicitly defined and should not be replaced
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("HSQL");
 	}
 

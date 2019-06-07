@@ -42,8 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT,
-		properties = { "server.port=0", "value=123" })
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties = { "server.port=0", "value=123" })
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfiguration.class),
 		@ContextConfiguration(classes = ChildConfiguration.class) })
 public class SpringBootTestWebEnvironmentContextHierarchyTests {

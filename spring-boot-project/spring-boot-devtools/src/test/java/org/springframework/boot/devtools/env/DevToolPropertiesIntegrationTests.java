@@ -64,30 +64,25 @@ public class DevToolPropertiesIntegrationTests {
 
 	@Test
 	public void classPropertyConditionIsAffectedByDevToolProperties() throws Exception {
-		SpringApplication application = new SpringApplication(
-				ClassConditionConfiguration.class);
+		SpringApplication application = new SpringApplication(ClassConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		this.context.getBean(ClassConditionConfiguration.class);
 	}
 
 	@Test
-	public void beanMethodPropertyConditionIsAffectedByDevToolProperties()
-			throws Exception {
-		SpringApplication application = new SpringApplication(
-				BeanConditionConfiguration.class);
+	public void beanMethodPropertyConditionIsAffectedByDevToolProperties() throws Exception {
+		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		this.context.getBean(MyBean.class);
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource()
-			throws Exception {
+	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource() throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
-		SpringApplication application = new SpringApplication(
-				BeanConditionConfiguration.class);
+		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
@@ -95,15 +90,12 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource()
-			throws Exception {
+	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource() throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
-		SpringApplication application = new SpringApplication(
-				BeanConditionConfiguration.class);
+		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setDefaultProperties(
-				Collections.singletonMap("spring.devtools.remote.secret", "donttell"));
+		application.setDefaultProperties(Collections.singletonMap("spring.devtools.remote.secret", "donttell"));
 		this.context = getContext(application::run);
 		this.context.getBean(MyBean.class);
 	}
@@ -115,12 +107,11 @@ public class DevToolPropertiesIntegrationTests {
 		this.context = getContext(application::run);
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		String property = environment.getProperty("server.error.include-stacktrace");
-		assertThat(property)
-				.isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+		assertThat(property).isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
 	}
 
-	protected ConfigurableApplicationContext getContext(
-			Supplier<ConfigurableApplicationContext> supplier) throws Exception {
+	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)
+			throws Exception {
 		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
 		Thread thread = new Thread(() -> {
 			ConfigurableApplicationContext context = supplier.get();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,21 +47,18 @@ class WarPluginAction implements PluginApplicationAction {
 	@Override
 	public void execute(Project project) {
 		project.getTasks().getByName(WarPlugin.WAR_TASK_NAME).setEnabled(false);
-		BootWar bootWar = project.getTasks().create(SpringBootPlugin.BOOT_WAR_TASK_NAME,
-				BootWar.class);
+		BootWar bootWar = project.getTasks().create(SpringBootPlugin.BOOT_WAR_TASK_NAME, BootWar.class);
 		bootWar.setGroup(BasePlugin.BUILD_GROUP);
 		bootWar.setDescription("Assembles an executable war archive containing webapp"
 				+ " content, and the main classes and their dependencies.");
 		bootWar.providedClasspath(providedRuntimeConfiguration(project));
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootWar);
 		this.singlePublishedArtifact.addCandidate(artifact);
-		bootWar.conventionMapping("mainClassName",
-				new MainClassConvention(project, bootWar::getClasspath));
+		bootWar.conventionMapping("mainClassName", new MainClassConvention(project, bootWar::getClasspath));
 	}
 
 	private Configuration providedRuntimeConfiguration(Project project) {
-		return project.getConfigurations()
-				.getByName(WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
+		return project.getConfigurations().getByName(WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
 	}
 
 }

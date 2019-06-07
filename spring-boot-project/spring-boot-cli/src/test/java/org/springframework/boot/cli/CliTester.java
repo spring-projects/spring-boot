@@ -85,18 +85,15 @@ public class CliTester implements TestRule {
 		boolean classpathUpdated = false;
 		for (String arg : args) {
 			if (arg.startsWith("--classpath=")) {
-				arg = arg + ":"
-						+ this.buildOutput.getTestClassesLocation().getAbsolutePath();
+				arg = arg + ":" + this.buildOutput.getTestClassesLocation().getAbsolutePath();
 				classpathUpdated = true;
 			}
 			updatedArgs.add(arg);
 		}
 		if (!classpathUpdated) {
-			updatedArgs.add("--classpath=.:"
-					+ this.buildOutput.getTestClassesLocation().getAbsolutePath());
+			updatedArgs.add("--classpath=.:" + this.buildOutput.getTestClassesLocation().getAbsolutePath());
 		}
-		Future<RunCommand> future = submitCommand(new RunCommand(),
-				StringUtils.toStringArray(updatedArgs));
+		Future<RunCommand> future = submitCommand(new RunCommand(), StringUtils.toStringArray(updatedArgs));
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}
@@ -113,8 +110,7 @@ public class CliTester implements TestRule {
 		return getOutput();
 	}
 
-	private <T extends OptionParsingCommand> Future<T> submitCommand(T command,
-			String... args) {
+	private <T extends OptionParsingCommand> Future<T> submitCommand(T command, String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
 		return Executors.newSingleThreadExecutor().submit(() -> {
@@ -172,25 +168,21 @@ public class CliTester implements TestRule {
 	}
 
 	private String getOutput() {
-		String output = this.outputCapture.toString()
-				.substring(this.previousOutput.length());
+		String output = this.outputCapture.toString().substring(this.previousOutput.length());
 		this.previousOutput = output;
 		return output;
 	}
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		final Statement statement = this.temp.apply(
-				this.outputCapture.apply(new RunLauncherStatement(base), description),
-				description);
+		final Statement statement = this.temp
+				.apply(this.outputCapture.apply(new RunLauncherStatement(base), description), description);
 		return new Statement() {
 
 			@Override
 			public void evaluate() throws Throwable {
-				Assume.assumeTrue(
-						"Not running sample integration tests because integration profile not active",
-						System.getProperty("spring.profiles.active", "integration")
-								.contains("integration"));
+				Assume.assumeTrue("Not running sample integration tests because integration profile not active",
+						System.getProperty("spring.profiles.active", "integration").contains("integration"));
 				statement.evaluate();
 			}
 
@@ -203,10 +195,8 @@ public class CliTester implements TestRule {
 
 	public String getHttpOutput(String uri) {
 		try {
-			int port = Integer.parseInt(
-					FileCopyUtils.copyToString(new FileReader(this.serverPortFile)));
-			InputStream stream = URI.create("http://localhost:" + port + uri).toURL()
-					.openStream();
+			int port = Integer.parseInt(FileCopyUtils.copyToString(new FileReader(this.serverPortFile)));
+			InputStream stream = URI.create("http://localhost:" + port + uri).toURL().openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			return reader.lines().collect(Collectors.joining());
 		}

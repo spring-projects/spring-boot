@@ -58,8 +58,8 @@ public class FilterRegistrationIntegrationTests {
 	}
 
 	private void load(Class<?> configuration) {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ContainerConfiguration.class, configuration);
+		this.context = new AnnotationConfigServletWebServerApplicationContext(ContainerConfiguration.class,
+				configuration);
 	}
 
 	@Configuration(proxyBeanMethods = false)

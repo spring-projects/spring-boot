@@ -50,10 +50,9 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Neo4jSession.class, Neo4jRepository.class })
-@ConditionalOnMissingBean({ Neo4jRepositoryFactoryBean.class,
-		Neo4jRepositoryConfigurationExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnMissingBean({ Neo4jRepositoryFactoryBean.class, Neo4jRepositoryConfigurationExtension.class })
+@ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @Import(Neo4jRepositoriesRegistrar.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
 public class Neo4jRepositoriesAutoConfiguration {

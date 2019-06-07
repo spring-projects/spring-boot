@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ public abstract class FileUtils {
 	 * @param outputDirectory the output directory
 	 * @param originDirectory the origin directory
 	 */
-	public static void removeDuplicatesFromOutputDirectory(File outputDirectory,
-			File originDirectory) {
+	public static void removeDuplicatesFromOutputDirectory(File outputDirectory, File originDirectory) {
 		if (originDirectory.isDirectory()) {
 			for (String name : originDirectory.list()) {
 				File targetFile = new File(outputDirectory, name);
@@ -48,8 +47,7 @@ public abstract class FileUtils {
 						targetFile.delete();
 					}
 					else {
-						FileUtils.removeDuplicatesFromOutputDirectory(targetFile,
-								new File(originDirectory, name));
+						FileUtils.removeDuplicatesFromOutputDirectory(targetFile, new File(originDirectory, name));
 					}
 				}
 			}
@@ -64,8 +62,8 @@ public abstract class FileUtils {
 	 */
 	public static String sha1Hash(File file) throws IOException {
 		try {
-			try (DigestInputStream inputStream = new DigestInputStream(
-					new FileInputStream(file), MessageDigest.getInstance("SHA-1"))) {
+			try (DigestInputStream inputStream = new DigestInputStream(new FileInputStream(file),
+					MessageDigest.getInstance("SHA-1"))) {
 				byte[] buffer = new byte[4098];
 				while (inputStream.read(buffer) != -1) {
 					// Read the entire stream

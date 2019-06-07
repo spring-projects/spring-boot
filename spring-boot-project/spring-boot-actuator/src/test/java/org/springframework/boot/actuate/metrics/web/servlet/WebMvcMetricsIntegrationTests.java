@@ -73,25 +73,21 @@ public class WebMvcMetricsIntegrationTests {
 
 	@BeforeEach
 	public void setupMockMvc() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(this.filter).build();
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(this.filter).build();
 	}
 
 	@Test
 	public void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
-		assertThat(this.registry.get("http.server.requests")
-				.tags("exception", "Exception1", "status", "500").timer().count())
-						.isEqualTo(1L);
+		assertThat(this.registry.get("http.server.requests").tags("exception", "Exception1", "status", "500").timer()
+				.count()).isEqualTo(1L);
 	}
 
 	@Test
 	public void rethrownExceptionIsRecordedInMetricTag() {
-		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError"))
-				.andExpect(status().is5xxServerError()));
-		assertThat(this.registry.get("http.server.requests")
-				.tags("exception", "Exception2", "status", "500").timer().count())
-						.isEqualTo(1L);
+		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError")).andExpect(status().is5xxServerError()));
+		assertThat(this.registry.get("http.server.requests").tags("exception", "Exception2", "status", "500").timer()
+				.count()).isEqualTo(1L);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -109,10 +105,9 @@ public class WebMvcMetricsIntegrationTests {
 		}
 
 		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
-				WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", AutoTimer.ENABLED);
+		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
+					AutoTimer.ENABLED);
 		}
 
 		@Configuration(proxyBeanMethods = false)
@@ -153,8 +148,7 @@ public class WebMvcMetricsIntegrationTests {
 
 		@ExceptionHandler
 		ResponseEntity<String> handleError(Exception1 ex) {
-			return new ResponseEntity<>("this is a custom exception body",
-					HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("this is a custom exception body", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		@ExceptionHandler

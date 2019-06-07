@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ import org.springframework.boot.web.reactive.context.ReactiveWebApplicationConte
  * @see ReactiveWebApplicationContext
  * @see ReactiveWebApplicationContext
  */
-public interface AssertableReactiveWebApplicationContext extends
-		ApplicationContextAssertProvider<ConfigurableReactiveWebApplicationContext>,
+public interface AssertableReactiveWebApplicationContext
+		extends ApplicationContextAssertProvider<ConfigurableReactiveWebApplicationContext>,
 		ConfigurableReactiveWebApplicationContext {
 
 	/**
@@ -47,8 +47,7 @@ public interface AssertableReactiveWebApplicationContext extends
 	 */
 	static AssertableReactiveWebApplicationContext get(
 			Supplier<? extends ConfigurableReactiveWebApplicationContext> contextSupplier) {
-		return ApplicationContextAssertProvider.get(
-				AssertableReactiveWebApplicationContext.class,
+		return ApplicationContextAssertProvider.get(AssertableReactiveWebApplicationContext.class,
 				ConfigurableReactiveWebApplicationContext.class, contextSupplier);
 	}
 

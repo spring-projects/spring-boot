@@ -36,10 +36,8 @@ public class KairosPropertiesTests extends StepRegistryPropertiesTests {
 		KairosConfig config = KairosConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getUri()).isEqualToIgnoringWhitespace(config.uri());
-		assertThat(properties.getUserName())
-				.isEqualToIgnoringWhitespace(config.userName());
-		assertThat(properties.getPassword())
-				.isEqualToIgnoringWhitespace(config.password());
+		assertThat(properties.getUserName()).isEqualToIgnoringWhitespace(config.userName());
+		assertThat(properties.getPassword()).isEqualToIgnoringWhitespace(config.password());
 	}
 
 }

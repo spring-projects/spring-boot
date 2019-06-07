@@ -49,8 +49,7 @@ public class WebMvcTestOneControllerIntegrationTests {
 
 	@Test
 	public void shouldFindController2() throws Exception {
-		this.mvc.perform(get("/two")).andExpect(content().string("hellotwo"))
-				.andExpect(status().isOk());
+		this.mvc.perform(get("/two")).andExpect(content().string("hellotwo")).andExpect(status().isOk());
 	}
 
 }

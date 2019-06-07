@@ -35,9 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0", "management.server.address=127.0.0.1",
-				"management.server.servlet.context-path:/admin" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port=0",
+		"management.server.address=127.0.0.1", "management.server.servlet.context-path:/admin" })
 class ManagementAddressActuatorApplicationTests {
 
 	@LocalServerPort
@@ -49,16 +48,14 @@ class ManagementAddressActuatorApplicationTests {
 	@Test
 	void testHome() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port, Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.withBasicAuth("user", getPassword()).getForEntity("http://localhost:"
-						+ this.managementPort + "/admin/actuator/health", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", getPassword())
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

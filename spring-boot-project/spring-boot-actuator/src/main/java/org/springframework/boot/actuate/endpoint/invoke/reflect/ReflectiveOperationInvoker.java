@@ -78,8 +78,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	private void validateRequiredParameters(InvocationContext context) {
 		Set<OperationParameter> missing = this.operationMethod.getParameters().stream()
-				.filter((parameter) -> isMissing(context, parameter))
-				.collect(Collectors.toSet());
+				.filter((parameter) -> isMissing(context, parameter)).collect(Collectors.toSet());
 		if (!missing.isEmpty()) {
 			throw new MissingParametersException(missing);
 		}
@@ -99,12 +98,11 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	}
 
 	private Object[] resolveArguments(InvocationContext context) {
-		return this.operationMethod.getParameters().stream()
-				.map((parameter) -> resolveArgument(parameter, context)).toArray();
+		return this.operationMethod.getParameters().stream().map((parameter) -> resolveArgument(parameter, context))
+				.toArray();
 	}
 
-	private Object resolveArgument(OperationParameter parameter,
-			InvocationContext context) {
+	private Object resolveArgument(OperationParameter parameter, InvocationContext context) {
 		if (Principal.class.equals(parameter.getType())) {
 			return context.getSecurityContext().getPrincipal();
 		}
@@ -117,8 +115,8 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("target", this.target)
-				.append("method", this.operationMethod).toString();
+		return new ToStringCreator(this).append("target", this.target).append("method", this.operationMethod)
+				.toString();
 	}
 
 }

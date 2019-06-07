@@ -36,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @DirtiesContext
 @SpringBootTest
-@ContextConfiguration(
-		classes = SpringBootTestWithContextConfigurationIntegrationTests.Config.class)
+@ContextConfiguration(classes = SpringBootTestWithContextConfigurationIntegrationTests.Config.class)
 public class SpringBootTestWithContextConfigurationIntegrationTests {
 
 	@Autowired

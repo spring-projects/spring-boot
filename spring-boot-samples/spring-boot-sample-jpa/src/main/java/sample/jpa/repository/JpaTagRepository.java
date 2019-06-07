@@ -33,8 +33,7 @@ class JpaTagRepository implements TagRepository {
 
 	@Override
 	public List<Tag> findAll() {
-		return this.entityManager.createQuery("SELECT t FROM Tag t", Tag.class)
-				.getResultList();
+		return this.entityManager.createQuery("SELECT t FROM Tag t", Tag.class).getResultList();
 	}
 
 }

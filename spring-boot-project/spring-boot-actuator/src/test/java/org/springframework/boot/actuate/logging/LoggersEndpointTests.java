@@ -46,27 +46,24 @@ public class LoggersEndpointTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void loggersShouldReturnLoggerConfigurations() {
-		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
-				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
-		given(this.loggingSystem.getSupportedLogLevels())
-				.willReturn(EnumSet.allOf(LogLevel.class));
+		given(this.loggingSystem.getLoggerConfigurations())
+				.willReturn(Collections.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
+		given(this.loggingSystem.getSupportedLogLevels()).willReturn(EnumSet.allOf(LogLevel.class));
 		Map<String, Object> result = new LoggersEndpoint(this.loggingSystem).loggers();
-		Map<String, LoggerLevels> loggers = (Map<String, LoggerLevels>) result
-				.get("loggers");
+		Map<String, LoggerLevels> loggers = (Map<String, LoggerLevels>) result.get("loggers");
 		Set<LogLevel> levels = (Set<LogLevel>) result.get("levels");
 		LoggerLevels rootLevels = loggers.get("ROOT");
 		assertThat(rootLevels.getConfiguredLevel()).isNull();
 		assertThat(rootLevels.getEffectiveLevel()).isEqualTo("DEBUG");
-		assertThat(levels).containsExactly(LogLevel.OFF, LogLevel.FATAL, LogLevel.ERROR,
-				LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG, LogLevel.TRACE);
+		assertThat(levels).containsExactly(LogLevel.OFF, LogLevel.FATAL, LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO,
+				LogLevel.DEBUG, LogLevel.TRACE);
 	}
 
 	@Test
 	public void loggerLevelsWhenNameSpecifiedShouldReturnLevels() {
 		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
-		LoggerLevels levels = new LoggersEndpoint(this.loggingSystem)
-				.loggerLevels("ROOT");
+		LoggerLevels levels = new LoggersEndpoint(this.loggingSystem).loggerLevels("ROOT");
 		assertThat(levels.getConfiguredLevel()).isNull();
 		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}

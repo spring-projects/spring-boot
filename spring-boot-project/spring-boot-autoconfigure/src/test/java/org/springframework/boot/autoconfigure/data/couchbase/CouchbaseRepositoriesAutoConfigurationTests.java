@@ -64,8 +64,7 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void reactiveRepositories() {
-		load(DefaultConfiguration.class,
-				"spring.data.couchbase.repositories.type=reactive");
+		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=reactive");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
@@ -87,9 +86,8 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 		if (config != null) {
 			context.register(config);
 		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
-				CouchbaseRepositoriesAutoConfiguration.class);
+		context.register(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}

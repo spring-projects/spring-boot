@@ -47,8 +47,7 @@ public class AutoConfigurationReproTests {
 	@Test
 	public void doesNotEarlyInitializeFactoryBeans() {
 		SpringApplication application = new SpringApplication(EarlyInitConfig.class,
-				PropertySourcesPlaceholderConfigurer.class,
-				ServletWebServerFactoryAutoConfiguration.class);
+				PropertySourcesPlaceholderConfigurer.class, ServletWebServerFactoryAutoConfiguration.class);
 		this.context = application.run("--server.port=0");
 		String bean = (String) this.context.getBean("earlyInit");
 		assertThat(bean).isEqualTo("bucket");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,42 +39,37 @@ import org.springframework.util.StringUtils;
 class OnJndiCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
-				metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		AnnotationAttributes annotationAttributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
 		String[] locations = annotationAttributes.getStringArray("value");
 		try {
 			return getMatchOutcome(locations);
 		}
 		catch (NoClassDefFoundError ex) {
 			return ConditionOutcome
-					.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class)
-							.because("JNDI class not found"));
+					.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class).because("JNDI class not found"));
 		}
 	}
 
 	private ConditionOutcome getMatchOutcome(String[] locations) {
 		if (!isJndiAvailable()) {
 			return ConditionOutcome
-					.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class)
-							.notAvailable("JNDI environment"));
+					.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class).notAvailable("JNDI environment"));
 		}
 		if (locations.length == 0) {
-			return ConditionOutcome.match(ConditionMessage
-					.forCondition(ConditionalOnJndi.class).available("JNDI environment"));
+			return ConditionOutcome
+					.match(ConditionMessage.forCondition(ConditionalOnJndi.class).available("JNDI environment"));
 		}
 		JndiLocator locator = getJndiLocator(locations);
 		String location = locator.lookupFirstLocation();
 		String details = "(" + StringUtils.arrayToCommaDelimitedString(locations) + ")";
 		if (location != null) {
-			return ConditionOutcome
-					.match(ConditionMessage.forCondition(ConditionalOnJndi.class, details)
-							.foundExactly("\"" + location + "\""));
+			return ConditionOutcome.match(ConditionMessage.forCondition(ConditionalOnJndi.class, details)
+					.foundExactly("\"" + location + "\""));
 		}
-		return ConditionOutcome
-				.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class, details)
-						.didNotFind("any matching JNDI location").atAll());
+		return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class, details)
+				.didNotFind("any matching JNDI location").atAll());
 	}
 
 	protected boolean isJndiAvailable() {

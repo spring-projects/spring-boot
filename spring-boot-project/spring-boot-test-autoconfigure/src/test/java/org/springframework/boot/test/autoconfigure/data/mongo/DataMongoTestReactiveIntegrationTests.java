@@ -46,11 +46,9 @@ public class DataMongoTestReactiveIntegrationTests {
 	public void testRepository() {
 		ExampleDocument exampleDocument = new ExampleDocument();
 		exampleDocument.setText("Look, new @DataMongoTest!");
-		exampleDocument = this.exampleRepository.save(exampleDocument)
-				.block(Duration.ofSeconds(30));
+		exampleDocument = this.exampleRepository.save(exampleDocument).block(Duration.ofSeconds(30));
 		assertThat(exampleDocument.getId()).isNotNull();
-		assertThat(this.mongoTemplate.collectionExists("exampleDocuments")
-				.block(Duration.ofSeconds(30))).isTrue();
+		assertThat(this.mongoTemplate.collectionExists("exampleDocuments").block(Duration.ofSeconds(30))).isTrue();
 	}
 
 }

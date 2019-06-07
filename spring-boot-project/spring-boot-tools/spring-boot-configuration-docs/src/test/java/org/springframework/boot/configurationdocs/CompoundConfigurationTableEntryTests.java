@@ -42,15 +42,14 @@ public class CompoundConfigurationTableEntryTests {
 		ConfigurationMetadataProperty thirdProp = new ConfigurationMetadataProperty();
 		thirdProp.setId("spring.test.third");
 		thirdProp.setType("java.lang.String");
-		CompoundConfigurationTableEntry entry = new CompoundConfigurationTableEntry(
-				"spring.test", "This is a description.");
+		CompoundConfigurationTableEntry entry = new CompoundConfigurationTableEntry("spring.test",
+				"This is a description.");
 		entry.addConfigurationKeys(firstProp, secondProp, thirdProp);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
 		assertThat(builder.toString()).isEqualTo(
-				"|`+spring.test.first+` +" + NEWLINE + "`+spring.test.second+` +"
-						+ NEWLINE + "`+spring.test.third+` +" + NEWLINE + NEWLINE + "|"
-						+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+				"|`+spring.test.first+` +" + NEWLINE + "`+spring.test.second+` +" + NEWLINE + "`+spring.test.third+` +"
+						+ NEWLINE + NEWLINE + "|" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 }

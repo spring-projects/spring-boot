@@ -41,8 +41,7 @@ public class EndpointIdTests {
 
 	@Test
 	public void ofWhenEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(""))
-				.withMessage("Value must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("")).withMessage("Value must not be empty");
 	}
 
 	@Test
@@ -89,8 +88,8 @@ public class EndpointIdTests {
 	public void ofWhenContainsDeprecatedCharsLogsWarning(CapturedOutput capturedOutput) {
 		EndpointId.resetLoggedWarnings();
 		EndpointId.of("foo-bar");
-		assertThat(capturedOutput.toString()).contains(
-				"Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
+		assertThat(capturedOutput.toString())
+				.contains("Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
 	}
 
 	@Test
@@ -102,8 +101,8 @@ public class EndpointIdTests {
 		EndpointId five = EndpointId.of("barfoo1");
 		EndpointId six = EndpointId.of("foobar2");
 		assertThat(one.hashCode()).isEqualTo(two.hashCode());
-		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(three).isEqualTo(four)
-				.isNotEqualTo(five).isNotEqualTo(six);
+		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(three).isEqualTo(four).isNotEqualTo(five)
+				.isNotEqualTo(six);
 	}
 
 	@Test

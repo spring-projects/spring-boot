@@ -37,23 +37,19 @@ import static org.mockito.Mockito.mock;
 public class LdapHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(LdapOperations.class, () -> mock(LdapOperations.class))
-			.withConfiguration(
-					AutoConfigurations.of(LdapHealthIndicatorAutoConfiguration.class,
-							HealthIndicatorAutoConfiguration.class));
+			.withBean(LdapOperations.class, () -> mock(LdapOperations.class)).withConfiguration(AutoConfigurations
+					.of(LdapHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(LdapHealthIndicator.class)
-						.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(LdapHealthIndicator.class)
+				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.ldap.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LdapHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(LdapHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 

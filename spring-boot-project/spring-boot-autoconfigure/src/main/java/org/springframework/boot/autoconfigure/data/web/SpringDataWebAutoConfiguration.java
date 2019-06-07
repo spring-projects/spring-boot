@@ -48,8 +48,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration(proxyBeanMethods = false)
 @EnableSpringDataWebSupport
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class,
-		WebMvcConfigurer.class })
+@ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class, WebMvcConfigurer.class })
 @ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
 @EnableConfigurationProperties(SpringDataWebProperties.class)
 @AutoConfigureAfter(RepositoryRestMvcAutoConfiguration.class)
@@ -71,8 +70,7 @@ public class SpringDataWebAutoConfiguration {
 			resolver.setOneIndexedParameters(pageable.isOneIndexedParameters());
 			resolver.setPrefix(pageable.getPrefix());
 			resolver.setQualifierDelimiter(pageable.getQualifierDelimiter());
-			resolver.setFallbackPageable(
-					PageRequest.of(0, pageable.getDefaultPageSize()));
+			resolver.setFallbackPageable(PageRequest.of(0, pageable.getDefaultPageSize()));
 			resolver.setMaxPageSize(pageable.getMaxPageSize());
 		};
 	}
@@ -80,8 +78,7 @@ public class SpringDataWebAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
-		return (resolver) -> resolver
-				.setSortParameter(this.properties.getSort().getSortParameter());
+		return (resolver) -> resolver.setSortParameter(this.properties.getSort().getSortParameter());
 	}
 
 }

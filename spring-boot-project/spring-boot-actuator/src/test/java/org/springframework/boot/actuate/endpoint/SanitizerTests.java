@@ -39,8 +39,7 @@ public class SanitizerTests {
 		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
-		assertThat(sanitizer.sanitize("sun.java.command",
-				"--spring.redis.password=pa55w0rd")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
 	}
 
 	@Test

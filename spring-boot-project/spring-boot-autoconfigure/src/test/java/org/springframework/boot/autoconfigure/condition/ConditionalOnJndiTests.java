@@ -56,16 +56,14 @@ public class ConditionalOnJndiTests {
 	@BeforeEach
 	public void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
-		Thread.currentThread().setContextClassLoader(
-				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
+		Thread.currentThread().setContextClassLoader(new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
 	@AfterEach
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
-			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-					this.initialContextFactory);
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);
 		}
 		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
@@ -75,18 +73,14 @@ public class ConditionalOnJndiTests {
 
 	@Test
 	public void jndiNotAvailable() {
-		this.contextRunner
-				.withUserConfiguration(JndiAvailableConfiguration.class,
-						JndiConditionConfiguration.class)
+		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	public void jndiAvailable() {
 		setupJndi();
-		this.contextRunner
-				.withUserConfiguration(JndiAvailableConfiguration.class,
-						JndiConditionConfiguration.class)
+		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
@@ -107,31 +101,27 @@ public class ConditionalOnJndiTests {
 
 	@Test
 	public void jndiLocationNotFound() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
-				mockMetaData("java:/a"));
+		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a"));
 		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
 	public void jndiLocationFound() {
 		this.condition.setFoundLocation("java:/b");
-		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
-				mockMetaData("java:/a", "java:/b"));
+		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetaData("java:/a", "java:/b"));
 		assertThat(outcome.isMatch()).isTrue();
 	}
 
 	private void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
-		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				TestableInitialContextFactory.class.getName());
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestableInitialContextFactory.class.getName());
 	}
 
 	private AnnotatedTypeMetadata mockMetaData(String... value) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("value", value);
-		given(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()))
-				.willReturn(attributes);
+		given(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName())).willReturn(attributes);
 		return metadata;
 	}
 

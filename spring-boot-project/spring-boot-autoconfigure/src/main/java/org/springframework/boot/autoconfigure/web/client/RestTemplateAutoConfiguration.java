@@ -52,16 +52,14 @@ public class RestTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RestTemplateBuilder restTemplateBuilder(
-			ObjectProvider<HttpMessageConverters> messageConverters,
+	public RestTemplateBuilder restTemplateBuilder(ObjectProvider<HttpMessageConverters> messageConverters,
 			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers) {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		HttpMessageConverters converters = messageConverters.getIfUnique();
 		if (converters != null) {
 			builder = builder.messageConverters(converters.getConverters());
 		}
-		List<RestTemplateCustomizer> customizers = restTemplateCustomizers.orderedStream()
-				.collect(Collectors.toList());
+		List<RestTemplateCustomizer> customizers = restTemplateCustomizers.orderedStream().collect(Collectors.toList());
 		if (!customizers.isEmpty()) {
 			builder = builder.customizers(customizers);
 		}

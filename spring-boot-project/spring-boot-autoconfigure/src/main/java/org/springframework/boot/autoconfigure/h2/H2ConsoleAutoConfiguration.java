@@ -39,8 +39,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebServlet.class)
-@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled",
-		havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 public class H2ConsoleAutoConfiguration {
 
@@ -48,8 +47,7 @@ public class H2ConsoleAutoConfiguration {
 	public ServletRegistrationBean<WebServlet> h2Console(H2ConsoleProperties properties) {
 		String path = properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
-		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(
-				new WebServlet(), urlMapping);
+		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(new WebServlet(), urlMapping);
 		H2ConsoleProperties.Settings settings = properties.getSettings();
 		if (settings.isTrace()) {
 			registration.addInitParameter("trace", "");

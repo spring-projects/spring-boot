@@ -56,8 +56,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 
 	@Test
 	public void exceptionTranslationPostProcessorUsesCglibByDefault() {
-		this.context = new AnnotationConfigApplicationContext(
-				PersistenceExceptionTranslationAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(PersistenceExceptionTranslationAutoConfiguration.class);
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).hasSize(1);
@@ -67,8 +66,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	@Test
 	public void exceptionTranslationPostProcessorCanBeConfiguredToUseJdkProxy() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.aop.proxy-target-class=false")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.aop.proxy-target-class=false").applyTo(this.context);
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
@@ -80,8 +78,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	@Test
 	public void exceptionTranslationPostProcessorCanBeDisabled() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.dao.exceptiontranslation.enabled=false")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.dao.exceptiontranslation.enabled=false").applyTo(this.context);
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
@@ -101,12 +98,11 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 
 	@Test
 	public void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
-		this.context = new AnnotationConfigApplicationContext(
-				EmbeddedDataSourceConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext(EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class, TestConfiguration.class,
 				PersistenceExceptionTranslationAutoConfiguration.class);
-		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class).isThrownBy(
-				() -> this.context.getBean(TestRepository.class).doSomething());
+		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
+				.isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
 	}
 
 	@Configuration(proxyBeanMethods = false)

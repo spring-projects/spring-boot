@@ -32,20 +32,17 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 public class AnnotatedClassFinderTests {
 
-	private AnnotatedClassFinder finder = new AnnotatedClassFinder(
-			SpringBootConfiguration.class);
+	private AnnotatedClassFinder finder = new AnnotatedClassFinder(SpringBootConfiguration.class);
 
 	@Test
 	public void findFromClassWhenSourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void findFromPackageWhenSourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.finder.findFromPackage((String) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromPackage((String) null))
 				.withMessageContaining("Source must not be null");
 	}
 
@@ -63,8 +60,7 @@ public class AnnotatedClassFinderTests {
 
 	@Test
 	public void findFromPackageWhenConfigurationIsFoundShouldReturnConfiguration() {
-		Class<?> config = this.finder
-				.findFromPackage("org.springframework.boot.test.context.example.scan");
+		Class<?> config = this.finder.findFromPackage("org.springframework.boot.test.context.example.scan");
 		assertThat(config).isEqualTo(ExampleConfig.class);
 	}
 

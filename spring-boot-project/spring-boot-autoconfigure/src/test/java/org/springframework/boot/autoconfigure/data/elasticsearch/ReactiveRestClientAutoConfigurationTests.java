@@ -49,49 +49,39 @@ public class ReactiveRestClientAutoConfigurationTests {
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class));
 
 	@Test
 	public void configureShouldCreateDefaultBeans() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(ClientConfiguration.class)
-						.hasSingleBean(ReactiveElasticsearchClient.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ClientConfiguration.class)
+				.hasSingleBean(ReactiveElasticsearchClient.class));
 	}
 
 	@Test
 	public void configureWhenCustomClientShouldBackOff() {
-		this.contextRunner.withUserConfiguration(CustomClientConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ReactiveElasticsearchClient.class)
-						.hasBean("customClient"));
+		this.contextRunner.withUserConfiguration(CustomClientConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(ReactiveElasticsearchClient.class).hasBean("customClient"));
 	}
 
 	@Test
 	public void configureWhenCustomClientConfig() {
 		this.contextRunner.withUserConfiguration(CustomClientConfigConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ReactiveElasticsearchClient.class)
-						.hasSingleBean(ClientConfiguration.class)
-						.hasBean("customClientConfiguration"));
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class)
+						.hasSingleBean(ClientConfiguration.class).hasBean("customClientConfiguration"));
 	}
 
 	@Test
 	public void restClientCanQueryElasticsearchNode() {
 		this.contextRunner.withPropertyValues(
-				"spring.data.elasticsearch.client.reactive.endpoints=localhost:"
-						+ elasticsearch.getMappedPort())
+				"spring.data.elasticsearch.client.reactive.endpoints=localhost:" + elasticsearch.getMappedPort())
 				.run((context) -> {
-					ReactiveElasticsearchClient client = context
-							.getBean(ReactiveElasticsearchClient.class);
+					ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
-					IndexRequest index = new IndexRequest("foo", "bar", "1")
-							.source(source);
+					IndexRequest index = new IndexRequest("foo", "bar", "1").source(source);
 					GetRequest getRequest = new GetRequest("foo", "bar", "1");
-					GetResult getResult = client.index(index).then(client.get(getRequest))
-							.block();
+					GetResult getResult = client.index(index).then(client.get(getRequest)).block();
 					assertThat(getResult.isExists()).isTrue();
 				});
 	}

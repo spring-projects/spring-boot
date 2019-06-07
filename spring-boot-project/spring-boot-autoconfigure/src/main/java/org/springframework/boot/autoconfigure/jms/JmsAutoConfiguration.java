@@ -76,26 +76,21 @@ public class JmsAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get();
 			JmsTemplate template = new JmsTemplate(connectionFactory);
 			template.setPubSubDomain(this.properties.isPubSubDomain());
-			map.from(this.destinationResolver::getIfUnique).whenNonNull()
-					.to(template::setDestinationResolver);
-			map.from(this.messageConverter::getIfUnique).whenNonNull()
-					.to(template::setMessageConverter);
+			map.from(this.destinationResolver::getIfUnique).whenNonNull().to(template::setDestinationResolver);
+			map.from(this.messageConverter::getIfUnique).whenNonNull().to(template::setMessageConverter);
 			mapTemplateProperties(this.properties.getTemplate(), template);
 			return template;
 		}
 
 		private void mapTemplateProperties(Template properties, JmsTemplate template) {
 			PropertyMapper map = PropertyMapper.get();
-			map.from(properties::getDefaultDestination).whenNonNull()
-					.to(template::setDefaultDestinationName);
-			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis)
-					.to(template::setDeliveryDelay);
+			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
+			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
 			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
 			map.from(properties::getDeliveryMode).whenNonNull().as(DeliveryMode::getValue)
 					.to(template::setDeliveryMode);
 			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
-			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis)
-					.to(template::setTimeToLive);
+			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
 			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
 					.to(template::setReceiveTimeout);
 		}
@@ -110,19 +105,15 @@ public class JmsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
-		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties,
-				JmsTemplate jmsTemplate) {
-			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(
-					jmsTemplate);
+		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties, JmsTemplate jmsTemplate) {
+			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(jmsTemplate);
 			mapTemplateProperties(properties.getTemplate(), messagingTemplate);
 			return messagingTemplate;
 		}
 
-		private void mapTemplateProperties(Template properties,
-				JmsMessagingTemplate messagingTemplate) {
+		private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(properties::getDefaultDestination)
-					.to(messagingTemplate::setDefaultDestinationName);
+			map.from(properties::getDefaultDestination).to(messagingTemplate::setDefaultDestinationName);
 		}
 
 	}

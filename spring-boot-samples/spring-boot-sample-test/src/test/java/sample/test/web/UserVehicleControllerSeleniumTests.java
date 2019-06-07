@@ -45,8 +45,7 @@ class UserVehicleControllerSeleniumTests {
 
 	@Test
 	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
 		this.webDriver.get("/sboot/vehicle.html");
 		WebElement element = this.webDriver.findElement(By.tagName("h1"));
 		assertThat(element.getText()).isEqualTo("Honda Civic");

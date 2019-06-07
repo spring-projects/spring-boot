@@ -41,43 +41,32 @@ public class AppSystemPropertiesTests {
 
 	@Test
 	public void bindWithDefaultUnit() {
-		this.contextRunner
-				.withPropertyValues("app.system.session-timeout=40",
-						"app.system.read-timeout=5000")
+		this.contextRunner.withPropertyValues("app.system.session-timeout=40", "app.system.read-timeout=5000")
 				.run(assertBinding((properties) -> {
-					assertThat(properties.getSessionTimeout())
-							.isEqualTo(Duration.ofSeconds(40));
-					assertThat(properties.getReadTimeout())
-							.isEqualTo(Duration.ofMillis(5000));
+					assertThat(properties.getSessionTimeout()).isEqualTo(Duration.ofSeconds(40));
+					assertThat(properties.getReadTimeout()).isEqualTo(Duration.ofMillis(5000));
 				}));
 	}
 
 	@Test
 	public void bindWithExplicitUnit() {
-		this.contextRunner.withPropertyValues("app.system.session-timeout=1h",
-				"app.system.read-timeout=5s").run(assertBinding((properties) -> {
-					assertThat(properties.getSessionTimeout())
-							.isEqualTo(Duration.ofMinutes(60));
-					assertThat(properties.getReadTimeout())
-							.isEqualTo(Duration.ofMillis(5000));
+		this.contextRunner.withPropertyValues("app.system.session-timeout=1h", "app.system.read-timeout=5s")
+				.run(assertBinding((properties) -> {
+					assertThat(properties.getSessionTimeout()).isEqualTo(Duration.ofMinutes(60));
+					assertThat(properties.getReadTimeout()).isEqualTo(Duration.ofMillis(5000));
 				}));
 	}
 
 	@Test
 	public void bindWithIso8601Format() {
-		this.contextRunner
-				.withPropertyValues("app.system.session-timeout=PT15S",
-						"app.system.read-timeout=PT0.5S")
+		this.contextRunner.withPropertyValues("app.system.session-timeout=PT15S", "app.system.read-timeout=PT0.5S")
 				.run(assertBinding((properties) -> {
-					assertThat(properties.getSessionTimeout())
-							.isEqualTo(Duration.ofSeconds(15));
-					assertThat(properties.getReadTimeout())
-							.isEqualTo(Duration.ofMillis(500));
+					assertThat(properties.getSessionTimeout()).isEqualTo(Duration.ofSeconds(15));
+					assertThat(properties.getReadTimeout()).isEqualTo(Duration.ofMillis(500));
 				}));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertBinding(
-			Consumer<AppSystemProperties> properties) {
+	private ContextConsumer<AssertableApplicationContext> assertBinding(Consumer<AppSystemProperties> properties) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(AppSystemProperties.class);
 			properties.accept(context.getBean(AppSystemProperties.class));

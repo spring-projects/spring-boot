@@ -54,8 +54,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		DevToolsSettings settings = DevToolsSettings.get();
 		List<URL> reloadableUrls = new ArrayList<>(urls.length);
 		for (URL url : urls) {
-			if ((settings.isRestartInclude(url) || isFolderUrl(url.toString()))
-					&& !settings.isRestartExclude(url)) {
+			if ((settings.isRestartInclude(url) || isFolderUrl(url.toString())) && !settings.isRestartExclude(url)) {
 				reloadableUrls.add(url);
 			}
 		}
@@ -104,9 +103,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		if (classLoader instanceof URLClassLoader) {
 			return ((URLClassLoader) classLoader).getURLs();
 		}
-		return Stream
-				.of(ManagementFactory.getRuntimeMXBean().getClassPath()
-						.split(File.pathSeparator))
+		return Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
 				.map(ChangeableUrls::toURL).toArray(URL[]::new);
 	}
 
@@ -115,8 +112,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			return new File(classPathEntry).toURI().toURL();
 		}
 		catch (MalformedURLException ex) {
-			throw new IllegalArgumentException(
-					"URL could not be created from '" + classPathEntry + "'", ex);
+			throw new IllegalArgumentException("URL could not be created from '" + classPathEntry + "'", ex);
 		}
 	}
 
@@ -129,9 +125,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			return getUrlsFromManifestClassPathAttribute(url, jarFile);
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException(
-					"Failed to read Class-Path attribute from manifest of jar " + url,
-					ex);
+			throw new IllegalStateException("Failed to read Class-Path attribute from manifest of jar " + url, ex);
 		}
 	}
 
@@ -148,14 +142,12 @@ final class ChangeableUrls implements Iterable<URL> {
 		return null;
 	}
 
-	private static List<URL> getUrlsFromManifestClassPathAttribute(URL jarUrl,
-			JarFile jarFile) throws IOException {
+	private static List<URL> getUrlsFromManifestClassPathAttribute(URL jarUrl, JarFile jarFile) throws IOException {
 		Manifest manifest = jarFile.getManifest();
 		if (manifest == null) {
 			return Collections.emptyList();
 		}
-		String classPath = manifest.getMainAttributes()
-				.getValue(Attributes.Name.CLASS_PATH);
+		String classPath = manifest.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
 		if (!StringUtils.hasText(classPath)) {
 			return Collections.emptyList();
 		}
@@ -173,8 +165,7 @@ final class ChangeableUrls implements Iterable<URL> {
 				}
 			}
 			catch (MalformedURLException ex) {
-				throw new IllegalStateException(
-						"Class-Path attribute contains malformed URL", ex);
+				throw new IllegalStateException("Class-Path attribute contains malformed URL", ex);
 			}
 		}
 		if (!nonExistentEntries.isEmpty()) {

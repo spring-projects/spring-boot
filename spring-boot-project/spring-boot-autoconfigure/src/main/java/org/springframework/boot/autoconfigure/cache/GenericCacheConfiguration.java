@@ -41,8 +41,7 @@ import org.springframework.context.annotation.Configuration;
 class GenericCacheConfiguration {
 
 	@Bean
-	public SimpleCacheManager cacheManager(CacheManagerCustomizers customizers,
-			Collection<Cache> caches) {
+	public SimpleCacheManager cacheManager(CacheManagerCustomizers customizers, Collection<Cache> caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(caches);
 		return customizers.customize(cacheManager);

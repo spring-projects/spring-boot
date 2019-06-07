@@ -55,8 +55,7 @@ public class SendGridProperties {
 	}
 
 	public boolean isProxyConfigured() {
-		return this.proxy != null && this.proxy.getHost() != null
-				&& this.proxy.getPort() != null;
+		return this.proxy != null && this.proxy.getHost() != null && this.proxy.getPort() != null;
 	}
 
 	public static class Proxy {

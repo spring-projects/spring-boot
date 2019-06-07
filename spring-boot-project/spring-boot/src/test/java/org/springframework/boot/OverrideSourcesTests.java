@@ -53,8 +53,7 @@ public class OverrideSourcesTests {
 
 	@Test
 	public void primaryBeanInjectedProvingSourcesNotOverridden() {
-		this.context = SpringApplication.run(
-				new Class<?>[] { MainConfiguration.class, TestConfiguration.class },
+		this.context = SpringApplication.run(new Class<?>[] { MainConfiguration.class, TestConfiguration.class },
 				new String[] { "--spring.main.web-application-type=none",
 						"--spring.main.allow-bean-definition-overriding=true",
 						"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });

@@ -51,8 +51,7 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 
 	private final Set<Include> includes;
 
-	public HttpTraceWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer,
-			Set<Include> includes) {
+	public HttpTraceWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer, Set<Include> includes) {
 		this.repository = repository;
 		this.tracer = tracer;
 		this.includes = includes;
@@ -70,14 +69,10 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 		Mono<?> principal = (this.includes.contains(Include.PRINCIPAL)
-				? exchange.getPrincipal().cast(Object.class).defaultIfEmpty(NONE)
-				: Mono.just(NONE));
-		Mono<?> session = (this.includes.contains(Include.SESSION_ID)
-				? exchange.getSession() : Mono.just(NONE));
-		return Mono.zip(principal, session)
-				.flatMap((tuple) -> filter(exchange, chain,
-						asType(tuple.getT1(), Principal.class),
-						asType(tuple.getT2(), WebSession.class)));
+				? exchange.getPrincipal().cast(Object.class).defaultIfEmpty(NONE) : Mono.just(NONE));
+		Mono<?> session = (this.includes.contains(Include.SESSION_ID) ? exchange.getSession() : Mono.just(NONE));
+		return Mono.zip(principal, session).flatMap((tuple) -> filter(exchange, chain,
+				asType(tuple.getT1(), Principal.class), asType(tuple.getT2(), WebSession.class)));
 	}
 
 	private <T> T asType(Object object, Class<T> type) {
@@ -87,16 +82,13 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 		return null;
 	}
 
-	private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain,
-			Principal principal, WebSession session) {
-		ServerWebExchangeTraceableRequest request = new ServerWebExchangeTraceableRequest(
-				exchange);
+	private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain, Principal principal,
+			WebSession session) {
+		ServerWebExchangeTraceableRequest request = new ServerWebExchangeTraceableRequest(exchange);
 		HttpTrace trace = this.tracer.receivedRequest(request);
 		exchange.getResponse().beforeCommit(() -> {
-			TraceableServerHttpResponse response = new TraceableServerHttpResponse(
-					exchange.getResponse());
-			this.tracer.sendingResponse(trace, response, () -> principal,
-					() -> getStartedSessionId(session));
+			TraceableServerHttpResponse response = new TraceableServerHttpResponse(exchange.getResponse());
+			this.tracer.sendingResponse(trace, response, () -> principal, () -> getStartedSessionId(session));
 			this.repository.add(trace);
 			return Mono.empty();
 		});

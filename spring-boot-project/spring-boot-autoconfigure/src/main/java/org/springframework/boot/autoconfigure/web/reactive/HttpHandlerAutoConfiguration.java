@@ -56,8 +56,7 @@ public class HttpHandlerAutoConfiguration {
 
 		@Bean
 		public HttpHandler httpHandler() {
-			return WebHttpHandlerBuilder.applicationContext(this.applicationContext)
-					.build();
+			return WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
 		}
 
 	}

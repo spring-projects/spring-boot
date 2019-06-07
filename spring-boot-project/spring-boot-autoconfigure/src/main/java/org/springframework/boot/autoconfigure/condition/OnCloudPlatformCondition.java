@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,19 +33,15 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnCloudPlatformCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata
-				.getAnnotationAttributes(ConditionalOnCloudPlatform.class.getName());
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnCloudPlatform.class.getName());
 		CloudPlatform cloudPlatform = (CloudPlatform) attributes.get("value");
 		return getMatchOutcome(context.getEnvironment(), cloudPlatform);
 	}
 
-	private ConditionOutcome getMatchOutcome(Environment environment,
-			CloudPlatform cloudPlatform) {
+	private ConditionOutcome getMatchOutcome(Environment environment, CloudPlatform cloudPlatform) {
 		String name = cloudPlatform.name();
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition(ConditionalOnCloudPlatform.class);
+		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnCloudPlatform.class);
 		if (cloudPlatform.isActive(environment)) {
 			return ConditionOutcome.match(message.foundExactly(name));
 		}

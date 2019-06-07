@@ -30,16 +30,13 @@ class SampleLogbackApplicationTests {
 	@Test
 	void testLoadedCustomLogbackConfig(CapturedOutput capturedOutput) throws Exception {
 		SampleLogbackApplication.main(new String[0]);
-		assertThat(capturedOutput).contains("Sample Debug Message")
-				.doesNotContain("Sample Trace Message");
+		assertThat(capturedOutput).contains("Sample Debug Message").doesNotContain("Sample Trace Message");
 	}
 
 	@Test
 	void testProfile(CapturedOutput capturedOutput) throws Exception {
-		SampleLogbackApplication
-				.main(new String[] { "--spring.profiles.active=staging" });
-		assertThat(capturedOutput).contains("Sample Debug Message")
-				.contains("Sample Trace Message");
+		SampleLogbackApplication.main(new String[] { "--spring.profiles.active=staging" });
+		assertThat(capturedOutput).contains("Sample Debug Message").contains("Sample Trace Message");
 	}
 
 }

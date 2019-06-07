@@ -77,8 +77,7 @@ public class HeapDumpWebEndpoint {
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
 				try {
-					return new WebEndpointResponse<>(
-							dumpHeap((live != null) ? live : true));
+					return new WebEndpointResponse<>(dumpHeap((live != null) ? live : true));
 				}
 				finally {
 					this.lock.unlock();
@@ -89,12 +88,10 @@ public class HeapDumpWebEndpoint {
 			Thread.currentThread().interrupt();
 		}
 		catch (IOException ex) {
-			return new WebEndpointResponse<>(
-					WebEndpointResponse.STATUS_INTERNAL_SERVER_ERROR);
+			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_INTERNAL_SERVER_ERROR);
 		}
 		catch (HeapDumperUnavailableException ex) {
-			return new WebEndpointResponse<>(
-					WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
+			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
 		}
 		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_TOO_MANY_REQUESTS);
 	}
@@ -110,8 +107,7 @@ public class HeapDumpWebEndpoint {
 
 	private File createTempFile(boolean live) throws IOException {
 		String date = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
-		File file = File.createTempFile("heapdump" + date + (live ? "-live" : ""),
-				".hprof");
+		File file = File.createTempFile("heapdump" + date + (live ? "-live" : ""), ".hprof");
 		file.delete();
 		return file;
 	}
@@ -156,23 +152,21 @@ public class HeapDumpWebEndpoint {
 		@SuppressWarnings("unchecked")
 		protected HotSpotDiagnosticMXBeanHeapDumper() {
 			try {
-				Class<?> diagnosticMXBeanClass = ClassUtils.resolveClassName(
-						"com.sun.management.HotSpotDiagnosticMXBean", null);
-				this.diagnosticMXBean = ManagementFactory.getPlatformMXBean(
-						(Class<PlatformManagedObject>) diagnosticMXBeanClass);
-				this.dumpHeapMethod = ReflectionUtils.findMethod(diagnosticMXBeanClass,
-						"dumpHeap", String.class, Boolean.TYPE);
+				Class<?> diagnosticMXBeanClass = ClassUtils
+						.resolveClassName("com.sun.management.HotSpotDiagnosticMXBean", null);
+				this.diagnosticMXBean = ManagementFactory
+						.getPlatformMXBean((Class<PlatformManagedObject>) diagnosticMXBeanClass);
+				this.dumpHeapMethod = ReflectionUtils.findMethod(diagnosticMXBeanClass, "dumpHeap", String.class,
+						Boolean.TYPE);
 			}
 			catch (Throwable ex) {
-				throw new HeapDumperUnavailableException(
-						"Unable to locate HotSpotDiagnosticMXBean", ex);
+				throw new HeapDumperUnavailableException("Unable to locate HotSpotDiagnosticMXBean", ex);
 			}
 		}
 
 		@Override
 		public void dumpHeap(File file, boolean live) {
-			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean,
-					file.getAbsolutePath(), live);
+			ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, file.getAbsolutePath(), live);
 		}
 
 	}
@@ -245,9 +239,8 @@ public class HeapDumpWebEndpoint {
 				Files.delete(getFile().toPath());
 			}
 			catch (IOException ex) {
-				TemporaryFileSystemResource.this.logger.warn(
-						"Failed to delete temporary heap dump file '" + getFile() + "'",
-						ex);
+				TemporaryFileSystemResource.this.logger
+						.warn("Failed to delete temporary heap dump file '" + getFile() + "'", ex);
 			}
 		}
 

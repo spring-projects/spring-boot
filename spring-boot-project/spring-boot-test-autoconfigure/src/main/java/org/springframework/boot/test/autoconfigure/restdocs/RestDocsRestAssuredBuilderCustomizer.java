@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ class RestDocsRestAssuredBuilderCustomizer implements InitializingBean {
 
 	private final RequestSpecification delegate;
 
-	RestDocsRestAssuredBuilderCustomizer(RestDocsProperties properties,
-			RequestSpecification delegate) {
+	RestDocsRestAssuredBuilderCustomizer(RestDocsProperties properties, RequestSpecification delegate) {
 		this.properties = properties;
 		this.delegate = delegate;
 	}
@@ -43,8 +42,8 @@ class RestDocsRestAssuredBuilderCustomizer implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		PropertyMapper map = PropertyMapper.get();
 		String host = this.properties.getUriHost();
-		map.from(this.properties::getUriScheme).when(
-				(scheme) -> StringUtils.hasText(scheme) && StringUtils.hasText(host))
+		map.from(this.properties::getUriScheme)
+				.when((scheme) -> StringUtils.hasText(scheme) && StringUtils.hasText(host))
 				.to((scheme) -> this.delegate.baseUri(scheme + "://" + host));
 		map.from(this.properties::getUriPort).whenNonNull().to(this.delegate::port);
 	}

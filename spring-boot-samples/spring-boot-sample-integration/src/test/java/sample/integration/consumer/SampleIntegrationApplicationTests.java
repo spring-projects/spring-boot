@@ -62,10 +62,10 @@ class SampleIntegrationApplicationTests {
 	void testVanillaExchange(@TempDir Path temp) throws Exception {
 		File inputDir = new File(temp.toFile(), "input");
 		File outputDir = new File(temp.toFile(), "output");
-		this.context = SpringApplication.run(SampleIntegrationApplication.class,
-				"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir);
-		SpringApplication.run(ProducerApplication.class, "World",
-				"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir);
+		this.context = SpringApplication.run(SampleIntegrationApplication.class, "--service.input-dir=" + inputDir,
+				"--service.output-dir=" + outputDir);
+		SpringApplication.run(ProducerApplication.class, "World", "--service.input-dir=" + inputDir,
+				"--service.output-dir=" + outputDir);
 		String output = getOutput(outputDir);
 		assertThat(output).contains("Hello World");
 	}
@@ -74,44 +74,38 @@ class SampleIntegrationApplicationTests {
 	void testMessageGateway(@TempDir Path temp) throws Exception {
 		File inputDir = new File(temp.toFile(), "input");
 		File outputDir = new File(temp.toFile(), "output");
-		this.context = SpringApplication.run(SampleIntegrationApplication.class,
-				"testviamg", "--service.input-dir=" + inputDir,
-				"--service.output-dir=" + outputDir);
-		String output = getOutput(
-				this.context.getBean(ServiceProperties.class).getOutputDir());
+		this.context = SpringApplication.run(SampleIntegrationApplication.class, "testviamg",
+				"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir);
+		String output = getOutput(this.context.getBean(ServiceProperties.class).getOutputDir());
 		assertThat(output).contains("testviamg");
 	}
 
 	private String getOutput(File outputDir) throws Exception {
-		Future<String> future = Executors.newSingleThreadExecutor()
-				.submit(new Callable<String>() {
-					@Override
-					public String call() throws Exception {
-						Resource[] resources = getResourcesWithContent(outputDir);
-						while (resources.length == 0) {
-							Thread.sleep(200);
-							resources = getResourcesWithContent(outputDir);
-						}
-						StringBuilder builder = new StringBuilder();
-						for (Resource resource : resources) {
-							try (InputStream inputStream = resource.getInputStream()) {
-								builder.append(new String(
-										StreamUtils.copyToByteArray(inputStream)));
-							}
-						}
-						return builder.toString();
+		Future<String> future = Executors.newSingleThreadExecutor().submit(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				Resource[] resources = getResourcesWithContent(outputDir);
+				while (resources.length == 0) {
+					Thread.sleep(200);
+					resources = getResourcesWithContent(outputDir);
+				}
+				StringBuilder builder = new StringBuilder();
+				for (Resource resource : resources) {
+					try (InputStream inputStream = resource.getInputStream()) {
+						builder.append(new String(StreamUtils.copyToByteArray(inputStream)));
 					}
-				});
+				}
+				return builder.toString();
+			}
+		});
 		return future.get(30, TimeUnit.SECONDS);
 	}
 
 	private Resource[] getResourcesWithContent(File outputDir) throws IOException {
-		Resource[] candidates = ResourcePatternUtils
-				.getResourcePatternResolver(new DefaultResourceLoader())
+		Resource[] candidates = ResourcePatternUtils.getResourcePatternResolver(new DefaultResourceLoader())
 				.getResources("file:" + outputDir.getAbsolutePath() + "/**");
 		for (Resource candidate : candidates) {
-			if ((candidate.getFilename() != null
-					&& candidate.getFilename().endsWith(".writing"))
+			if ((candidate.getFilename() != null && candidate.getFilename().endsWith(".writing"))
 					|| candidate.contentLength() == 0) {
 				return new Resource[0];
 			}

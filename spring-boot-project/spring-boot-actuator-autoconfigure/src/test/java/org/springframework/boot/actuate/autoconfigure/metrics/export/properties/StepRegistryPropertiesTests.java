@@ -28,8 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class StepRegistryPropertiesTests {
 
 	@SuppressWarnings("deprecation")
-	protected void assertStepRegistryDefaultValues(StepRegistryProperties properties,
-			StepRegistryConfig config) {
+	protected void assertStepRegistryDefaultValues(StepRegistryProperties properties, StepRegistryConfig config) {
 		assertThat(properties.getStep()).isEqualTo(config.step());
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());
 		assertThat(properties.getConnectTimeout()).isEqualTo(config.connectTimeout());

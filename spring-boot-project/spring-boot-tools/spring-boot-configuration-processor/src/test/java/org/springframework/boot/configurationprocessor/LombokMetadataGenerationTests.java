@@ -55,63 +55,51 @@ public class LombokMetadataGenerationTests extends AbstractMetadataGenerationTes
 	@Test
 	public void lombokExplicitProperties() {
 		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
-		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class,
-				"explicit");
+		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class, "explicit");
 		assertThat(metadata.getItems()).hasSize(6);
 	}
 
 	@Test
 	public void lombokAccessLevelProperties() {
 		ConfigurationMetadata metadata = compile(LombokAccessLevelProperties.class);
-		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class,
-				"accesslevel", 2);
+		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class, "accesslevel", 2);
 	}
 
 	@Test
 	public void lombokAccessLevelOverwriteDataProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokAccessLevelOverwriteDataProperties.class);
-		assertAccessLevelOverwriteLombokProperties(metadata,
-				LombokAccessLevelOverwriteDataProperties.class,
+		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteDataProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteDataProperties.class,
 				"accesslevel.overwrite.data");
 	}
 
 	@Test
 	public void lombokAccessLevelOverwriteExplicitProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokAccessLevelOverwriteExplicitProperties.class);
-		assertAccessLevelOverwriteLombokProperties(metadata,
-				LombokAccessLevelOverwriteExplicitProperties.class,
+		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteExplicitProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteExplicitProperties.class,
 				"accesslevel.overwrite.explicit");
 	}
 
 	@Test
 	public void lombokAccessLevelOverwriteDefaultProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokAccessLevelOverwriteDefaultProperties.class);
-		assertAccessLevelOverwriteLombokProperties(metadata,
-				LombokAccessLevelOverwriteDefaultProperties.class,
+		ConfigurationMetadata metadata = compile(LombokAccessLevelOverwriteDefaultProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata, LombokAccessLevelOverwriteDefaultProperties.class,
 				"accesslevel.overwrite.default");
 	}
 
 	@Test
 	public void lombokInnerClassProperties() {
 		ConfigurationMetadata metadata = compile(LombokInnerClassProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("config")
-				.fromSource(LombokInnerClassProperties.class));
-		assertThat(metadata).has(Metadata.withGroup("config.first")
-				.ofType(LombokInnerClassProperties.Foo.class)
+		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.first").ofType(LombokInnerClassProperties.Foo.class)
 				.fromSource(LombokInnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.first.bar.name"));
-		assertThat(metadata).has(
-				Metadata.withGroup("config.second", LombokInnerClassProperties.Foo.class)
-						.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.second", LombokInnerClassProperties.Foo.class)
+				.fromSource(LombokInnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.second.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.second.bar.name"));
-		assertThat(metadata)
-				.has(Metadata.withGroup("config.third").ofType(SimpleLombokPojo.class)
-						.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.third").ofType(SimpleLombokPojo.class)
+				.fromSource(LombokInnerClassProperties.class));
 		// For some reason the annotation processor resolves a type for SimpleLombokPojo
 		// that is resolved (compiled) and the source annotations are gone. Because we
 		// don't see the @Data annotation anymore, no field is harvested. What is crazy is
@@ -124,43 +112,38 @@ public class LombokMetadataGenerationTests extends AbstractMetadataGenerationTes
 
 	@Test
 	public void lombokInnerClassWithGetterProperties() {
-		ConfigurationMetadata metadata = compile(
-				LombokInnerClassWithGetterProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("config")
-				.fromSource(LombokInnerClassWithGetterProperties.class));
-		assertThat(metadata).has(Metadata.withGroup("config.first")
-				.ofType(LombokInnerClassWithGetterProperties.Foo.class)
-				.fromSourceMethod("getFirst()")
-				.fromSource(LombokInnerClassWithGetterProperties.class));
+		ConfigurationMetadata metadata = compile(LombokInnerClassWithGetterProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassWithGetterProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("config.first").ofType(LombokInnerClassWithGetterProperties.Foo.class)
+						.fromSourceMethod("getFirst()").fromSource(LombokInnerClassWithGetterProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
-	private void assertSimpleLombokProperties(ConfigurationMetadata metadata,
-			Class<?> source, String prefix) {
+	private void assertSimpleLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix) {
 		assertThat(metadata).has(Metadata.withGroup(prefix).fromSource(source));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".id"));
-		assertThat(metadata).has(Metadata.withProperty(prefix + ".name", String.class)
-				.fromSource(source).withDescription("Name description."));
+		assertThat(metadata).has(Metadata.withProperty(prefix + ".name", String.class).fromSource(source)
+				.withDescription("Name description."));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".description"));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".counter"));
-		assertThat(metadata).has(Metadata.withProperty(prefix + ".number")
-				.fromSource(source).withDefaultValue(0).withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty(prefix + ".number").fromSource(source).withDefaultValue(0)
+				.withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".items"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
 	}
 
-	private void assertAccessLevelOverwriteLombokProperties(
-			ConfigurationMetadata metadata, Class<?> source, String prefix) {
+	private void assertAccessLevelOverwriteLombokProperties(ConfigurationMetadata metadata, Class<?> source,
+			String prefix) {
 		assertAccessLevelLombokProperties(metadata, source, prefix, 7);
 	}
 
-	private void assertAccessLevelLombokProperties(ConfigurationMetadata metadata,
-			Class<?> source, String prefix, int countNameFields) {
+	private void assertAccessLevelLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix,
+			int countNameFields) {
 		assertThat(metadata).has(Metadata.withGroup(prefix).fromSource(source));
 		for (int i = 0; i < countNameFields; i++) {
-			assertThat(metadata)
-					.has(Metadata.withProperty(prefix + ".name" + i, String.class));
+			assertThat(metadata).has(Metadata.withProperty(prefix + ".name" + i, String.class));
 		}
 		assertThat(metadata.getItems()).hasSize(1 + countNameFields);
 	}

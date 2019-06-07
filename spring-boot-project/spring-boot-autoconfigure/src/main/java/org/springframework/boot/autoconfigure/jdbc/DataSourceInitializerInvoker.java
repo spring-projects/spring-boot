@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,9 @@ import org.springframework.context.ApplicationListener;
  * @author Stephane Nicoll
  * @see DataSourceAutoConfiguration
  */
-class DataSourceInitializerInvoker
-		implements ApplicationListener<DataSourceSchemaCreatedEvent>, InitializingBean {
+class DataSourceInitializerInvoker implements ApplicationListener<DataSourceSchemaCreatedEvent>, InitializingBean {
 
-	private static final Log logger = LogFactory
-			.getLog(DataSourceInitializerInvoker.class);
+	private static final Log logger = LogFactory.getLog(DataSourceInitializerInvoker.class);
 
 	private final ObjectProvider<DataSource> dataSource;
 
@@ -50,8 +48,8 @@ class DataSourceInitializerInvoker
 
 	private boolean initialized;
 
-	DataSourceInitializerInvoker(ObjectProvider<DataSource> dataSource,
-			DataSourceProperties properties, ApplicationContext applicationContext) {
+	DataSourceInitializerInvoker(ObjectProvider<DataSource> dataSource, DataSourceProperties properties,
+			ApplicationContext applicationContext) {
 		this.dataSource = dataSource;
 		this.properties = properties;
 		this.applicationContext = applicationContext;
@@ -70,8 +68,7 @@ class DataSourceInitializerInvoker
 
 	private void initialize(DataSourceInitializer initializer) {
 		try {
-			this.applicationContext.publishEvent(
-					new DataSourceSchemaCreatedEvent(initializer.getDataSource()));
+			this.applicationContext.publishEvent(new DataSourceSchemaCreatedEvent(initializer.getDataSource()));
 			// The listener might not be registered yet, so don't rely on it.
 			if (!this.initialized) {
 				this.dataSourceInitializer.initSchema();
@@ -79,8 +76,7 @@ class DataSourceInitializerInvoker
 			}
 		}
 		catch (IllegalStateException ex) {
-			logger.warn("Could not send event to complete DataSource initialization ("
-					+ ex.getMessage() + ")");
+			logger.warn("Could not send event to complete DataSource initialization (" + ex.getMessage() + ")");
 		}
 	}
 
@@ -99,8 +95,7 @@ class DataSourceInitializerInvoker
 		if (this.dataSourceInitializer == null) {
 			DataSource ds = this.dataSource.getIfUnique();
 			if (ds != null) {
-				this.dataSourceInitializer = new DataSourceInitializer(ds,
-						this.properties, this.applicationContext);
+				this.dataSourceInitializer = new DataSourceInitializer(ds, this.properties, this.applicationContext);
 			}
 		}
 		return this.dataSourceInitializer;

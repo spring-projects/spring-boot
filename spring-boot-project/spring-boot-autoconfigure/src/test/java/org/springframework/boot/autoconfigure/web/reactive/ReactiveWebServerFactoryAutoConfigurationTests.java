@@ -58,20 +58,15 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
-					.withConfiguration(AutoConfigurations
-							.of(ReactiveWebServerFactoryAutoConfiguration.class));
+					.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class));
 
 	@Test
 	public void createFromConfigClass() {
-		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class,
-				HttpHandlerConfiguration.class).run((context) -> {
-					assertThat(context.getBeansOfType(ReactiveWebServerFactory.class))
-							.hasSize(1);
-					assertThat(context.getBeansOfType(WebServerFactoryCustomizer.class))
-							.hasSize(2);
-					assertThat(context
-							.getBeansOfType(ReactiveWebServerFactoryCustomizer.class))
-									.hasSize(1);
+		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class)
+				.run((context) -> {
+					assertThat(context.getBeansOfType(ReactiveWebServerFactory.class)).hasSize(1);
+					assertThat(context.getBeansOfType(WebServerFactoryCustomizer.class)).hasSize(2);
+					assertThat(context.getBeansOfType(ReactiveWebServerFactoryCustomizer.class)).hasSize(1);
 				});
 	}
 
@@ -86,44 +81,38 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	@Test
 	public void multipleHttpHandler() {
 		this.contextRunner
-				.withUserConfiguration(MockWebServerConfiguration.class,
-						HttpHandlerConfiguration.class, TooManyHttpHandlers.class)
+				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
+						TooManyHttpHandlers.class)
 				.run((context) -> assertThat(context.getStartupFailure())
 						.isInstanceOf(ApplicationContextException.class)
-						.hasMessageContaining("multiple HttpHandler beans : "
-								+ "httpHandler,additionalHttpHandler"));
+						.hasMessageContaining("multiple HttpHandler beans : " + "httpHandler,additionalHttpHandler"));
 	}
 
 	@Test
 	public void customizeReactiveWebServer() {
-		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class,
-				HttpHandlerConfiguration.class, ReactiveWebServerCustomization.class)
-				.run((context) -> assertThat(
-						context.getBean(MockReactiveWebServerFactory.class).getPort())
-								.isEqualTo(9000));
+		this.contextRunner
+				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
+						ReactiveWebServerCustomization.class)
+				.run((context) -> assertThat(context.getBean(MockReactiveWebServerFactory.class).getPort())
+						.isEqualTo(9000));
 	}
 
 	@Test
 	public void defaultWebServerIsTomcat() {
 		// Tomcat should be chosen over Netty if the Tomcat library is present.
-		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port=0")
-				.run((context) -> assertThat(
-						context.getBean(ReactiveWebServerFactory.class))
-								.isInstanceOf(TomcatReactiveWebServerFactory.class));
+		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class).withPropertyValues("server.port=0")
+				.run((context) -> assertThat(context.getBean(ReactiveWebServerFactory.class))
+						.isInstanceOf(TomcatReactiveWebServerFactory.class));
 	}
 
 	@Test
 	public void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								TomcatConnectorCustomizerConfiguration.class);
+						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class);
 		runner.run((context) -> {
-			TomcatReactiveWebServerFactory factory = context
-					.getBean(TomcatReactiveWebServerFactory.class);
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			assertThat(factory.getTomcatConnectorCustomizers()).hasSize(1);
 		});
 	}
@@ -132,13 +121,10 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	public void tomcatContextCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								TomcatContextCustomizerConfiguration.class);
+						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(TomcatContextCustomizerConfiguration.class);
 		runner.run((context) -> {
-			TomcatReactiveWebServerFactory factory = context
-					.getBean(TomcatReactiveWebServerFactory.class);
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			assertThat(factory.getTomcatContextCustomizers()).hasSize(1);
 		});
 	}
@@ -147,94 +133,71 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	public void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(
-								TomcatProtocolHandlerCustomizerConfiguration.class);
+						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class);
 		runner.run((context) -> {
-			TomcatReactiveWebServerFactory factory = context
-					.getBean(TomcatReactiveWebServerFactory.class);
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
 		});
 	}
 
 	@Test
 	public void jettyServerCustomizerBeanIsAddedToFactory() {
-		new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withClassLoader(
-								new FilteredClassLoader(Tomcat.class, HttpServer.class))
-						.withUserConfiguration(JettyServerCustomizerConfiguration.class,
-								HttpHandlerConfiguration.class)
-						.run((context) -> {
-							JettyReactiveWebServerFactory factory = context
-									.getBean(JettyReactiveWebServerFactory.class);
-							assertThat(factory.getServerCustomizers()).hasSize(1);
-						});
+		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+				.withUserConfiguration(JettyServerCustomizerConfiguration.class, HttpHandlerConfiguration.class)
+				.run((context) -> {
+					JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
+					assertThat(factory.getServerCustomizers()).hasSize(1);
+				});
 	}
 
 	@Test
 	public void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
-		new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withClassLoader(new FilteredClassLoader(Tomcat.class,
-								HttpServer.class, Server.class))
-						.withUserConfiguration(
-								UndertowDeploymentInfoCustomizerConfiguration.class,
-								HttpHandlerConfiguration.class)
-						.run((context) -> {
-							UndertowReactiveWebServerFactory factory = context
-									.getBean(UndertowReactiveWebServerFactory.class);
-							assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
-						});
+		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+				.withUserConfiguration(UndertowDeploymentInfoCustomizerConfiguration.class,
+						HttpHandlerConfiguration.class)
+				.run((context) -> {
+					UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
+					assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
+				});
 	}
 
 	@Test
 	public void undertowBuilderCustomizerBeanIsAddedToFactory() {
-		new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withClassLoader(new FilteredClassLoader(Tomcat.class,
-								HttpServer.class, Server.class))
-						.withUserConfiguration(
-								UndertowBuilderCustomizerConfiguration.class,
-								HttpHandlerConfiguration.class)
-						.run((context) -> {
-							UndertowReactiveWebServerFactory factory = context
-									.getBean(UndertowReactiveWebServerFactory.class);
-							assertThat(factory.getBuilderCustomizers()).hasSize(1);
-						});
+		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+				.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class, HttpHandlerConfiguration.class)
+				.run((context) -> {
+					UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
+					assertThat(factory.getBuilderCustomizers()).hasSize(1);
+				});
 	}
 
 	@Test
 	public void forwardedHeaderTransformerShouldBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=framework")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ForwardedHeaderTransformer.class));
+				.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
 	public void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=native")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ForwardedHeaderTransformer.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
 	public void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
 		this.contextRunner
-				.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class,
-						HttpHandlerConfiguration.class)
+				.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class, HttpHandlerConfiguration.class)
 				.withPropertyValues("server.forward-headers-strategy=framework")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ForwardedHeaderTransformer.class));
+				.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

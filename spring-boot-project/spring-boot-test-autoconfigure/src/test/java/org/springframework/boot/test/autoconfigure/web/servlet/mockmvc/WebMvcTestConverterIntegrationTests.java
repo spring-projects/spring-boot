@@ -47,8 +47,7 @@ public class WebMvcTestConverterIntegrationTests {
 	@Test
 	public void shouldFindConverter() throws Exception {
 		String id = UUID.randomUUID().toString();
-		this.mvc.perform(get("/two/" + id)).andExpect(content().string(id + "two"))
-				.andExpect(status().isOk());
+		this.mvc.perform(get("/two/" + id)).andExpect(content().string(id + "two")).andExpect(status().isOk());
 	}
 
 }

@@ -36,43 +36,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AuditEventsEndpointAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(AuditAutoConfiguration.class,
-					AuditEventsEndpointAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(AuditAutoConfiguration.class, AuditEventsEndpointAutoConfiguration.class));
 
 	@Test
 	public void runWhenRepositoryBeanAvailableShouldHaveEndpointBean() {
-		this.contextRunner
-				.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withPropertyValues(
-						"management.endpoints.web.exposure.include=auditevents")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(AuditEventsEndpoint.class));
+		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
+				.run((context) -> assertThat(context).hasSingleBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
 	public void endpointBacksOffWhenRepositoryNotAvailable() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.endpoints.web.exposure.include=auditevents")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(AuditEventsEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
+				.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
 	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(AuditEventsEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpoint() {
-		this.contextRunner
-				.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
 				.withPropertyValues("management.endpoint.auditevents.enabled:false")
 				.withPropertyValues("management.endpoints.web.exposure.include=*")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(AuditEventsEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

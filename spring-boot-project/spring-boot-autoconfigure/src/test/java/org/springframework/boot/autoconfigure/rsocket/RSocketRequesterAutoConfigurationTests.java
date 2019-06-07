@@ -34,36 +34,29 @@ import static org.mockito.Mockito.mock;
  */
 public class RSocketRequesterAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class,
-							RSocketRequesterAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class, RSocketRequesterAutoConfiguration.class));
 
 	@Test
 	public void shouldCreateBuilder() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(RSocketRequester.Builder.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RSocketRequester.Builder.class));
 	}
 
 	@Test
 	public void shouldGetPrototypeScopedBean() {
 		this.contextRunner.run((context) -> {
-			RSocketRequester.Builder first = context
-					.getBean(RSocketRequester.Builder.class);
-			RSocketRequester.Builder second = context
-					.getBean(RSocketRequester.Builder.class);
+			RSocketRequester.Builder first = context.getBean(RSocketRequester.Builder.class);
+			RSocketRequester.Builder second = context.getBean(RSocketRequester.Builder.class);
 			assertThat(first).isNotEqualTo(second);
 		});
 	}
 
 	@Test
 	public void shouldNotCreateBuilderIfAlreadyPresent() {
-		this.contextRunner.withUserConfiguration(CustomRSocketRequesterBuilder.class)
-				.run((context) -> {
-					RSocketRequester.Builder builder = context
-							.getBean(RSocketRequester.Builder.class);
-					assertThat(builder).isInstanceOf(MyRSocketRequesterBuilder.class);
-				});
+		this.contextRunner.withUserConfiguration(CustomRSocketRequesterBuilder.class).run((context) -> {
+			RSocketRequester.Builder builder = context.getBean(RSocketRequester.Builder.class);
+			assertThat(builder).isInstanceOf(MyRSocketRequesterBuilder.class);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

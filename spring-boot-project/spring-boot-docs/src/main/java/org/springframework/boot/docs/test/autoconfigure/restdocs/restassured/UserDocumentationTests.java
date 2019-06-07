@@ -45,8 +45,8 @@ public class UserDocumentationTests {
 
 	@Test
 	public void listUsers() {
-		given(this.documentationSpec).filter(document("list-users")).when()
-				.port(this.port).get("/").then().assertThat().statusCode(is(200));
+		given(this.documentationSpec).filter(document("list-users")).when().port(this.port).get("/").then().assertThat()
+				.statusCode(is(200));
 	}
 
 }

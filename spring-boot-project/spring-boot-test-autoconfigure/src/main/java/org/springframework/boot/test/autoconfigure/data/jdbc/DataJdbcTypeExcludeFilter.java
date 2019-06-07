@@ -24,8 +24,7 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  *
  * @author Andy Wilkinson
  */
-class DataJdbcTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<DataJdbcTest> {
+class DataJdbcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataJdbcTest> {
 
 	DataJdbcTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);

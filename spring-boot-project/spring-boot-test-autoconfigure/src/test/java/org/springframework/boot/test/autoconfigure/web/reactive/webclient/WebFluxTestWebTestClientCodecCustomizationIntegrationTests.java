@@ -41,8 +41,7 @@ public class WebFluxTestWebTestClientCodecCustomizationIntegrationTests {
 
 	@Test
 	public void shouldBeAbleToCreatePojoViaParametersModule() {
-		this.webClient.get().uri("/json").exchange().expectStatus().isOk()
-				.expectBody(ExamplePojo.class);
+		this.webClient.get().uri("/json").exchange().expectStatus().isOk().expectBody(ExamplePojo.class);
 	}
 
 }

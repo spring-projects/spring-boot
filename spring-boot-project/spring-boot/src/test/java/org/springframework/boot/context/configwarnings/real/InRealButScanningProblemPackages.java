@@ -22,8 +22,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-@ComponentScan(basePackageClasses = { InDefaultPackageConfiguration.class,
-		InOrgSpringPackageConfiguration.class })
+@ComponentScan(basePackageClasses = { InDefaultPackageConfiguration.class, InOrgSpringPackageConfiguration.class })
 public class InRealButScanningProblemPackages {
 
 }

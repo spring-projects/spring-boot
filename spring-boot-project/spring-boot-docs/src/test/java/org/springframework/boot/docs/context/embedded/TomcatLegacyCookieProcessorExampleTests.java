@@ -42,10 +42,9 @@ public class TomcatLegacyCookieProcessorExampleTests {
 	public void cookieProcessorIsCustomized() {
 		ServletWebServerApplicationContext applicationContext = (ServletWebServerApplicationContext) new SpringApplication(
 				TestConfiguration.class, LegacyCookieProcessorConfiguration.class).run();
-		Context context = (Context) ((TomcatWebServer) applicationContext.getWebServer())
-				.getTomcat().getHost().findChildren()[0];
-		assertThat(context.getCookieProcessor())
-				.isInstanceOf(LegacyCookieProcessor.class);
+		Context context = (Context) ((TomcatWebServer) applicationContext.getWebServer()).getTomcat().getHost()
+				.findChildren()[0];
+		assertThat(context.getCookieProcessor()).isInstanceOf(LegacyCookieProcessor.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)

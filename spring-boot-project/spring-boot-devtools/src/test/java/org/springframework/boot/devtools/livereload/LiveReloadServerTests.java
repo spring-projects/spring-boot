@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,7 @@ public class LiveReloadServerTests {
 		this.server.triggerReload();
 		Thread.sleep(200);
 		this.server.stop();
-		assertThat(handler.getMessages().get(0))
-				.contains("http://livereload.com/protocols/official-7");
+		assertThat(handler.getMessages().get(0)).contains("http://livereload.com/protocols/official-7");
 		assertThat(handler.getMessages().get(1)).contains("command\":\"reload\"");
 	}
 
@@ -109,8 +108,7 @@ public class LiveReloadServerTests {
 
 	private void awaitClosedException() throws InterruptedException {
 		long startTime = System.currentTimeMillis();
-		while (this.server.getClosedExceptions().isEmpty()
-				&& System.currentTimeMillis() - startTime < 10000) {
+		while (this.server.getClosedExceptions().isEmpty() && System.currentTimeMillis() - startTime < 10000) {
 			Thread.sleep(100);
 		}
 	}
@@ -164,8 +162,8 @@ public class LiveReloadServerTests {
 		}
 
 		@Override
-		protected Connection createConnection(java.net.Socket socket,
-				InputStream inputStream, OutputStream outputStream) throws IOException {
+		protected Connection createConnection(java.net.Socket socket, InputStream inputStream,
+				OutputStream outputStream) throws IOException {
 			return new MonitoredConnection(socket, inputStream, outputStream);
 		}
 
@@ -177,8 +175,8 @@ public class LiveReloadServerTests {
 
 		private class MonitoredConnection extends Connection {
 
-			MonitoredConnection(java.net.Socket socket, InputStream inputStream,
-					OutputStream outputStream) throws IOException {
+			MonitoredConnection(java.net.Socket socket, InputStream inputStream, OutputStream outputStream)
+					throws IOException {
 				super(socket, inputStream, outputStream);
 			}
 
@@ -212,8 +210,7 @@ public class LiveReloadServerTests {
 		private CloseStatus closeStatus;
 
 		@Override
-		public void afterConnectionEstablished(WebSocketSession session)
-				throws Exception {
+		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 			this.session = session;
 			session.sendMessage(new TextMessage(HANDSHAKE));
 			this.helloLatch.countDown();

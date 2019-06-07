@@ -140,8 +140,8 @@ public class ServerProperties {
 	}
 
 	public void setUseForwardHeaders(Boolean useForwardHeaders) {
-		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders)
-				? ForwardHeadersStrategy.NATIVE : ForwardHeadersStrategy.NONE;
+		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders) ? ForwardHeadersStrategy.NATIVE
+				: ForwardHeadersStrategy.NONE;
 	}
 
 	public String getServerHeader() {
@@ -294,8 +294,7 @@ public class ServerProperties {
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
 				+ "0:0:0:0:0:0:0:1|::1";
 
 		/**

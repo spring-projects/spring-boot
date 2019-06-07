@@ -68,10 +68,8 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			WebFluxAutoConfiguration.class })
-	static class WebFluxEndpointConfiguration
-			implements ApplicationListener<WebServerInitializedEvent> {
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, WebFluxAutoConfiguration.class })
+	static class WebFluxEndpointConfiguration implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
 
@@ -103,18 +101,13 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 
 		@Bean
 		public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
-			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes,
-					mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(
-					this.applicationContext, new ConversionServiceParameterValueMapper(),
-					endpointMediaTypes, null, Collections.emptyList(),
+			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
+			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
-			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"),
-					discoverer.getEndpoints(), endpointMediaTypes,
-					new CorsConfiguration(),
-					new EndpointLinksResolver(discoverer.getEndpoints()));
+			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
 		}
 
 	}

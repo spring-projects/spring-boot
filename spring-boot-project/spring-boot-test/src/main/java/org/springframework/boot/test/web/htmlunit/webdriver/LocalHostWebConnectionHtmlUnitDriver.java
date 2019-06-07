@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,22 +39,19 @@ public class LocalHostWebConnectionHtmlUnitDriver extends WebConnectionHtmlUnitD
 		this.environment = environment;
 	}
 
-	public LocalHostWebConnectionHtmlUnitDriver(Environment environment,
-			boolean enableJavascript) {
+	public LocalHostWebConnectionHtmlUnitDriver(Environment environment, boolean enableJavascript) {
 		super(enableJavascript);
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
-	public LocalHostWebConnectionHtmlUnitDriver(Environment environment,
-			BrowserVersion browserVersion) {
+	public LocalHostWebConnectionHtmlUnitDriver(Environment environment, BrowserVersion browserVersion) {
 		super(browserVersion);
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
-	public LocalHostWebConnectionHtmlUnitDriver(Environment environment,
-			Capabilities capabilities) {
+	public LocalHostWebConnectionHtmlUnitDriver(Environment environment, Capabilities capabilities) {
 		super(capabilities);
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;

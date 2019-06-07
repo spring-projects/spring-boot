@@ -40,8 +40,7 @@ final class GradleBuildFieldSetter implements BeforeEachCallback {
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		Field field = ReflectionUtils.findField(context.getRequiredTestClass(),
-				"gradleBuild");
+		Field field = ReflectionUtils.findField(context.getRequiredTestClass(), "gradleBuild");
 		field.setAccessible(true);
 		field.set(context.getRequiredTestInstance(), this.gradleBuild);
 

@@ -49,11 +49,9 @@ public class ValidationAutoConfigurationWithoutValidatorTests {
 
 	@Test
 	public void validationIsDisabled() {
-		this.context = new AnnotationConfigApplicationContext(
-				ValidationAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(ValidationAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
-				.isEmpty();
+		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class)).isEmpty();
 	}
 
 }

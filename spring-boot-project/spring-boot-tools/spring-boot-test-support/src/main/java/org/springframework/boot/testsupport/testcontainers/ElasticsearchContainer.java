@@ -26,10 +26,8 @@ import java.time.Duration;
 public class ElasticsearchContainer extends Container {
 
 	public ElasticsearchContainer() {
-		super("elasticsearch:6.7.2", 9200,
-				(container) -> container.withStartupTimeout(Duration.ofSeconds(120))
-						.withStartupAttempts(5).withEnv("discovery.type", "single-node")
-						.addExposedPorts(9200, 9300));
+		super("elasticsearch:6.7.2", 9200, (container) -> container.withStartupTimeout(Duration.ofSeconds(120))
+				.withStartupAttempts(5).withEnv("discovery.type", "single-node").addExposedPorts(9200, 9300));
 	}
 
 	public int getMappedTransportPort() {

@@ -66,19 +66,17 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 
 	@Before
 	public void deleteSnippets() {
-		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
-				"generated-snippets");
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
 		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}
 
 	@Test
 	public void snippetGeneration() throws Exception {
-		this.mvc.perform(get("/")).andDo(this.documentationHandler.document(links(
-				linkWithRel("self").description("Canonical location of this resource"))));
+		this.mvc.perform(get("/")).andDo(this.documentationHandler
+				.document(links(linkWithRel("self").description("Canonical location of this resource"))));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md")))
-				.contains("'http://localhost:8080/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md"))).contains("'http://localhost:8080/'");
 		assertThat(new File(defaultSnippetsDir, "links.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
@@ -93,14 +91,13 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 
 		@Bean
 		public RestDocsMockMvcConfigurationCustomizer templateFormatCustomizer() {
-			return (configurer) -> configurer.snippets()
-					.withTemplateFormat(TemplateFormats.markdown());
+			return (configurer) -> configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 		}
 
 		@Bean
 		public RestDocsMockMvcConfigurationCustomizer defaultSnippetsCustomizer() {
-			return (configurer) -> configurer.snippets().withAdditionalDefaults(
-					responseFields(fieldWithPath("_links.self").description("Main URL")));
+			return (configurer) -> configurer.snippets()
+					.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}

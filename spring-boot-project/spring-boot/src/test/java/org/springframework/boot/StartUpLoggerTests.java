@@ -41,8 +41,7 @@ public class StartUpLoggerTests {
 		new StartupInfoLogger(getClass()).logStarting(this.log);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
-		assertThat(captor.getValue().toString())
-				.startsWith("Starting " + getClass().getSimpleName());
+		assertThat(captor.getValue().toString()).startsWith("Starting " + getClass().getSimpleName());
 	}
 
 }

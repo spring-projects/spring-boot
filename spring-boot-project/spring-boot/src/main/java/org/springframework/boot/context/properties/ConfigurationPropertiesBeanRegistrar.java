@@ -37,19 +37,16 @@ import org.springframework.util.MultiValueMap;
 class ConfigurationPropertiesBeanRegistrar implements ImportBeanDefinitionRegistrar {
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata metadata,
-			BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) registry;
-		getTypes(metadata)
-				.forEach((type) -> ConfigurationPropertiesBeanDefinitionRegistrar
-						.register(registry, beanFactory, type));
+		getTypes(metadata).forEach(
+				(type) -> ConfigurationPropertiesBeanDefinitionRegistrar.register(registry, beanFactory, type));
 	}
 
 	private List<Class<?>> getTypes(AnnotationMetadata metadata) {
-		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
-				EnableConfigurationProperties.class.getName(), false);
-		return collectClasses(
-				(attributes != null) ? attributes.get("value") : Collections.emptyList());
+		MultiValueMap<String, Object> attributes = metadata
+				.getAllAnnotationAttributes(EnableConfigurationProperties.class.getName(), false);
+		return collectClasses((attributes != null) ? attributes.get("value") : Collections.emptyList());
 	}
 
 	private List<Class<?>> collectClasses(List<?> values) {

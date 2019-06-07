@@ -65,16 +65,15 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
-	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(
-			MongoProperties properties, MongoClient mongo) {
+	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoProperties properties,
+			MongoClient mongo) {
 		String database = properties.getMongoClientDatabase();
 		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveMongoTemplate reactiveMongoTemplate(
-			ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
+	public ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MongoConverter converter) {
 		return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
 	}
@@ -83,8 +82,7 @@ public class MongoReactiveDataAutoConfiguration {
 	@ConditionalOnMissingBean(MongoConverter.class)
 	public MappingMongoConverter mappingMongoConverter(MongoMappingContext context,
 			MongoCustomConversions conversions) {
-		MappingMongoConverter mappingConverter = new MappingMongoConverter(
-				NoOpDbRefResolver.INSTANCE, context);
+		MappingMongoConverter mappingConverter = new MappingMongoConverter(NoOpDbRefResolver.INSTANCE, context);
 		mappingConverter.setCustomConversions(conversions);
 		return mappingConverter;
 	}
@@ -97,12 +95,9 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveGridFsTemplate reactiveGridFsTemplate(
-			ReactiveMongoDatabaseFactory reactiveMongoDbFactory,
-			MappingMongoConverter mappingMongoConverter,
-			DataBufferFactory dataBufferFactory) {
-		return new ReactiveGridFsTemplate(dataBufferFactory, reactiveMongoDbFactory,
-				mappingMongoConverter, null);
+	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDbFactory,
+			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory) {
+		return new ReactiveGridFsTemplate(dataBufferFactory, reactiveMongoDbFactory, mappingMongoConverter, null);
 	}
 
 }

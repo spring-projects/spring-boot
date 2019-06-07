@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,8 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		this.excludeGroupIds = excludeGroupIds;
 	}
 
-	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
-			FilterArtifacts filters) throws MojoExecutionException {
+	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
+			throws MojoExecutionException {
 		try {
 			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);
 			filtered.retainAll(filters.filter(dependencies));
@@ -97,8 +97,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		for (ArtifactsFilter additionalFilter : additionalFilters) {
 			filters.addFilter(additionalFilter);
 		}
-		filters.addFilter(
-				new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
+		filters.addFilter(new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
 		if (this.includes != null && !this.includes.isEmpty()) {
 			filters.addFilter(new IncludeFilter(this.includes));
 		}

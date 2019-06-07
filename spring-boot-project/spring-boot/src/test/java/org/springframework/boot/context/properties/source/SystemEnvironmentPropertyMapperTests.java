@@ -36,34 +36,23 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	@Test
 	public void mapFromStringShouldReturnBestGuess() {
 		assertThat(namesFromString("SERVER")).toIterable().containsExactly("server");
-		assertThat(namesFromString("SERVER_PORT")).toIterable()
-				.containsExactly("server.port");
+		assertThat(namesFromString("SERVER_PORT")).toIterable().containsExactly("server.port");
 		assertThat(namesFromString("HOST_0")).toIterable().containsExactly("host[0]");
-		assertThat(namesFromString("HOST_0_1")).toIterable()
-				.containsExactly("host[0][1]");
-		assertThat(namesFromString("HOST_0_NAME")).toIterable()
-				.containsExactly("host[0].name");
-		assertThat(namesFromString("HOST_F00_NAME")).toIterable()
-				.containsExactly("host.f00.name");
+		assertThat(namesFromString("HOST_0_1")).toIterable().containsExactly("host[0][1]");
+		assertThat(namesFromString("HOST_0_NAME")).toIterable().containsExactly("host[0].name");
+		assertThat(namesFromString("HOST_F00_NAME")).toIterable().containsExactly("host.f00.name");
 		assertThat(namesFromString("S-ERVER")).toIterable().containsExactly("s-erver");
 	}
 
 	@Test
 	public void mapFromConfigurationShouldReturnBestGuess() {
-		assertThat(namesFromConfiguration("server")).toIterable()
-				.containsExactly("SERVER");
-		assertThat(namesFromConfiguration("server.port")).toIterable()
-				.containsExactly("SERVER_PORT");
-		assertThat(namesFromConfiguration("host[0]")).toIterable()
-				.containsExactly("HOST_0");
-		assertThat(namesFromConfiguration("host[0][1]")).toIterable()
-				.containsExactly("HOST_0_1");
-		assertThat(namesFromConfiguration("host[0].name")).toIterable()
-				.containsExactly("HOST_0_NAME");
-		assertThat(namesFromConfiguration("host.f00.name")).toIterable()
-				.containsExactly("HOST_F00_NAME");
-		assertThat(namesFromConfiguration("foo.the-bar")).toIterable()
-				.containsExactly("FOO_THEBAR", "FOO_THE_BAR");
+		assertThat(namesFromConfiguration("server")).toIterable().containsExactly("SERVER");
+		assertThat(namesFromConfiguration("server.port")).toIterable().containsExactly("SERVER_PORT");
+		assertThat(namesFromConfiguration("host[0]")).toIterable().containsExactly("HOST_0");
+		assertThat(namesFromConfiguration("host[0][1]")).toIterable().containsExactly("HOST_0_1");
+		assertThat(namesFromConfiguration("host[0].name")).toIterable().containsExactly("HOST_0_NAME");
+		assertThat(namesFromConfiguration("host.f00.name")).toIterable().containsExactly("HOST_F00_NAME");
+		assertThat(namesFromConfiguration("foo.the-bar")).toIterable().containsExactly("FOO_THEBAR", "FOO_THE_BAR");
 	}
 
 	@Test

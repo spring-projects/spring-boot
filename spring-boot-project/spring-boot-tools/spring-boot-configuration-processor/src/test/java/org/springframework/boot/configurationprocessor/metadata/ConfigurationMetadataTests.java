@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,14 +44,12 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseWordsUnderscore() {
-		assertThat(toDashedCase("Word_With_underscore"))
-				.isEqualTo("word-with-underscore");
+		assertThat(toDashedCase("Word_With_underscore")).isEqualTo("word-with-underscore");
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderscores() {
-		assertThat(toDashedCase("Word___With__underscore"))
-				.isEqualTo("word---with--underscore");
+		assertThat(toDashedCase("Word___With__underscore")).isEqualTo("word---with--underscore");
 	}
 
 	@Test

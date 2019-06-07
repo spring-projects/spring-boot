@@ -53,48 +53,37 @@ public class LdapAutoConfigurationTests {
 
 	@Test
 	public void contextSourceWithSingleUrl() {
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123")
-				.run((context) -> {
-					LdapContextSource contextSource = context
-							.getBean(LdapContextSource.class);
-					assertThat(contextSource.getUrls())
-							.containsExactly("ldap://localhost:123");
-				});
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123").run((context) -> {
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:123");
+		});
 	}
 
 	@Test
 	public void contextSourceWithSeveralUrls() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123")
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123")
 				.run((context) -> {
-					LdapContextSource contextSource = context
-							.getBean(LdapContextSource.class);
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
-					assertThat(contextSource.getUrls()).containsExactly(
-							"ldap://localhost:123", "ldap://mycompany:123");
+					assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:123", "ldap://mycompany:123");
 					assertThat(ldapProperties.getUrls()).hasSize(2);
 				});
 	}
 
 	@Test
 	public void contextSourceWithExtraCustomization() {
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123",
-				"spring.ldap.username:root", "spring.ldap.password:secret",
-				"spring.ldap.anonymous-read-only:true",
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123", "spring.ldap.username:root",
+				"spring.ldap.password:secret", "spring.ldap.anonymous-read-only:true",
 				"spring.ldap.base:cn=SpringDevelopers",
-				"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5")
-				.run((context) -> {
-					LdapContextSource contextSource = context
-							.getBean(LdapContextSource.class);
+				"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5").run((context) -> {
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 					assertThat(contextSource.getUserDn()).isEqualTo("root");
 					assertThat(contextSource.getPassword()).isEqualTo("secret");
 					assertThat(contextSource.isAnonymousReadOnly()).isTrue();
-					assertThat(contextSource.getBaseLdapPathAsString())
-							.isEqualTo("cn=SpringDevelopers");
+					assertThat(contextSource.getBaseLdapPathAsString()).isEqualTo("cn=SpringDevelopers");
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
-					assertThat(ldapProperties.getBaseEnvironment()).containsEntry(
-							"java.naming.security.authentication", "DIGEST-MD5");
+					assertThat(ldapProperties.getBaseEnvironment()).containsEntry("java.naming.security.authentication",
+							"DIGEST-MD5");
 				});
 	}
 
@@ -106,14 +95,11 @@ public class LdapAutoConfigurationTests {
 
 	@Test
 	public void contextSourceWithUserProvidedPooledContextSource() {
-		this.contextRunner.withUserConfiguration(PooledContextSourceConfig.class)
-				.run((context) -> {
-					LdapContextSource contextSource = context
-							.getBean(LdapContextSource.class);
-					assertThat(contextSource.getUrls())
-							.containsExactly("ldap://localhost:389");
-					assertThat(contextSource.isAnonymousReadOnly()).isFalse();
-				});
+		this.contextRunner.withUserConfiguration(PooledContextSourceConfig.class).run((context) -> {
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
+			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -121,10 +107,8 @@ public class LdapAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public PooledContextSource pooledContextSource(
-				LdapContextSource ldapContextSource) {
-			PooledContextSource pooledContextSource = new PooledContextSource(
-					new PoolConfig());
+		public PooledContextSource pooledContextSource(LdapContextSource ldapContextSource) {
+			PooledContextSource pooledContextSource = new PooledContextSource(new PoolConfig());
 			pooledContextSource.setContextSource(ldapContextSource);
 			return pooledContextSource;
 		}

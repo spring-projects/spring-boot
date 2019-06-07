@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,30 +47,28 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	@Override
-	public boolean match(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
 		if (hasAnnotation()) {
-			return !(include(metadataReader, metadataReaderFactory)
-					&& !exclude(metadataReader, metadataReaderFactory));
+			return !(include(metadataReader, metadataReaderFactory) && !exclude(metadataReader, metadataReaderFactory));
 		}
 		return false;
 	}
 
-	protected boolean include(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		if (new FilterAnnotations(this.classLoader, getFilters(FilterType.INCLUDE))
-				.anyMatches(metadataReader, metadataReaderFactory)) {
+	protected boolean include(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		if (new FilterAnnotations(this.classLoader, getFilters(FilterType.INCLUDE)).anyMatches(metadataReader,
+				metadataReaderFactory)) {
 			return true;
 		}
-		if (isUseDefaultFilters()
-				&& defaultInclude(metadataReader, metadataReaderFactory)) {
+		if (isUseDefaultFilters() && defaultInclude(metadataReader, metadataReaderFactory)) {
 			return true;
 		}
 		return false;
 	}
 
-	protected boolean defaultInclude(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
+	protected boolean defaultInclude(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
 		for (Class<?> include : getDefaultIncludes()) {
 			if (isTypeOrAnnotated(metadataReader, metadataReaderFactory, include)) {
 				return true;
@@ -84,18 +82,16 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 		return false;
 	}
 
-	protected boolean exclude(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		return new FilterAnnotations(this.classLoader, getFilters(FilterType.EXCLUDE))
-				.anyMatches(metadataReader, metadataReaderFactory);
+	protected boolean exclude(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		return new FilterAnnotations(this.classLoader, getFilters(FilterType.EXCLUDE)).anyMatches(metadataReader,
+				metadataReaderFactory);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected final boolean isTypeOrAnnotated(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory, Class<?> type)
-			throws IOException {
-		AnnotationTypeFilter annotationFilter = new AnnotationTypeFilter(
-				(Class<? extends Annotation>) type);
+			MetadataReaderFactory metadataReaderFactory, Class<?> type) throws IOException {
+		AnnotationTypeFilter annotationFilter = new AnnotationTypeFilter((Class<? extends Annotation>) type);
 		AssignableTypeFilter typeFilter = new AssignableTypeFilter(type);
 		return annotationFilter.match(metadataReader, metadataReaderFactory)
 				|| typeFilter.match(metadataReader, metadataReaderFactory);
@@ -129,14 +125,11 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 		boolean result = true;
 		result = result && hasAnnotation() == other.hasAnnotation();
 		for (FilterType filterType : FilterType.values()) {
-			result &= ObjectUtils.nullSafeEquals(getFilters(filterType),
-					other.getFilters(filterType));
+			result &= ObjectUtils.nullSafeEquals(getFilters(filterType), other.getFilters(filterType));
 		}
 		result = result && isUseDefaultFilters() == other.isUseDefaultFilters();
-		result = result && ObjectUtils.nullSafeEquals(getDefaultIncludes(),
-				other.getDefaultIncludes());
-		result = result && ObjectUtils.nullSafeEquals(getComponentIncludes(),
-				other.getComponentIncludes());
+		result = result && ObjectUtils.nullSafeEquals(getDefaultIncludes(), other.getDefaultIncludes());
+		result = result && ObjectUtils.nullSafeEquals(getComponentIncludes(), other.getComponentIncludes());
 		return result;
 	}
 
@@ -146,8 +139,7 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 		int result = 0;
 		result = prime * result + Boolean.hashCode(hasAnnotation());
 		for (FilterType filterType : FilterType.values()) {
-			result = prime * result
-					+ ObjectUtils.nullSafeHashCode(getFilters(filterType));
+			result = prime * result + ObjectUtils.nullSafeHashCode(getFilters(filterType));
 		}
 		result = prime * result + Boolean.hashCode(isUseDefaultFilters());
 		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());

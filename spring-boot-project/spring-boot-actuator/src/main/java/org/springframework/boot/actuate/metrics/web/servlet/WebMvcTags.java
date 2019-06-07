@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,9 +91,7 @@ public final class WebMvcTags {
 	 * @return the status tag derived from the status of the response
 	 */
 	public static Tag status(HttpServletResponse response) {
-		return (response != null)
-				? Tag.of("status", Integer.toString(response.getStatus()))
-				: STATUS_UNKNOWN;
+		return (response != null) ? Tag.of("status", Integer.toString(response.getStatus())) : STATUS_UNKNOWN;
 	}
 
 	/**
@@ -141,13 +139,11 @@ public final class WebMvcTags {
 	}
 
 	private static String getMatchingPattern(HttpServletRequest request) {
-		PathPattern dataRestPathPattern = (PathPattern) request
-				.getAttribute(DATA_REST_PATH_PATTERN_ATTRIBUTE);
+		PathPattern dataRestPathPattern = (PathPattern) request.getAttribute(DATA_REST_PATH_PATTERN_ATTRIBUTE);
 		if (dataRestPathPattern != null) {
 			return dataRestPathPattern.getPatternString();
 		}
-		return (String) request
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		return (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 	}
 
 	private static String getPathInfo(HttpServletRequest request) {
@@ -166,8 +162,7 @@ public final class WebMvcTags {
 	public static Tag exception(Throwable exception) {
 		if (exception != null) {
 			String simpleName = exception.getClass().getSimpleName();
-			return Tag.of("exception", StringUtils.hasText(simpleName) ? simpleName
-					: exception.getClass().getName());
+			return Tag.of("exception", StringUtils.hasText(simpleName) ? simpleName : exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
 	}

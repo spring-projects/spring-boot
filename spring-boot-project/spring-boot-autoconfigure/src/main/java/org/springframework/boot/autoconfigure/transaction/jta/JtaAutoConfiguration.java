@@ -38,11 +38,9 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(javax.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
-@AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
-		ActiveMQAutoConfiguration.class, ArtemisAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
-@Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
-		AtomikosJtaConfiguration.class })
+@AutoConfigureBefore({ XADataSourceAutoConfiguration.class, ActiveMQAutoConfiguration.class,
+		ArtemisAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class, AtomikosJtaConfiguration.class })
 public class JtaAutoConfiguration {
 
 }

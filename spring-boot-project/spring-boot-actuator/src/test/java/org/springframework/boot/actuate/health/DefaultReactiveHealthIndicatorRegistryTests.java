@@ -44,10 +44,8 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 
 	@BeforeEach
 	public void setUp() {
-		given(this.one.health()).willReturn(
-				Mono.just(new Health.Builder().unknown().withDetail("1", "1").build()));
-		given(this.two.health()).willReturn(
-				Mono.just(new Health.Builder().unknown().withDetail("2", "2").build()));
+		given(this.one.health()).willReturn(Mono.just(new Health.Builder().unknown().withDetail("1", "1").build()));
+		given(this.two.health()).willReturn(Mono.just(new Health.Builder().unknown().withDetail("2", "2").build()));
 		this.registry = new DefaultReactiveHealthIndicatorRegistry();
 	}
 
@@ -63,10 +61,8 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	@Test
 	public void registerAlreadyUsedName() {
 		this.registry.register("one", this.one);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.registry.register("one", this.two))
-				.withMessageContaining(
-						"HealthIndicator with name 'one' already registered");
+		assertThatIllegalStateException().isThrownBy(() -> this.registry.register("one", this.two))
+				.withMessageContaining("HealthIndicator with name 'one' already registered");
 	}
 
 	@Test
@@ -101,8 +97,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	public void getAllIsImmutable() {
 		this.registry.register("one", this.one);
 		Map<String, ReactiveHealthIndicator> snapshot = this.registry.getAll();
-		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(snapshot::clear);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(snapshot::clear);
 	}
 
 }

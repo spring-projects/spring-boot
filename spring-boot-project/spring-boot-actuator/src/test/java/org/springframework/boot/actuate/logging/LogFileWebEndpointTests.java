@@ -70,8 +70,7 @@ public class LogFileWebEndpointTests {
 		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(),
-				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
 	}
 
 	@Test
@@ -80,18 +79,15 @@ public class LogFileWebEndpointTests {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(),
-				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
 	}
 
 	@Test
 	public void resourceResponseWithExternalLogFile() throws Exception {
-		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment,
-				this.logFile);
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment, this.logFile);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(),
-				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
 	}
 
 }

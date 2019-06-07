@@ -98,8 +98,7 @@ class ServletManagementChildContextConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN,
-			search = SearchStrategy.ANCESTORS)
+	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN, search = SearchStrategy.ANCESTORS)
 	static class ServletManagementContextSecurityConfiguration {
 
 		@Bean
@@ -110,25 +109,20 @@ class ServletManagementChildContextConfiguration {
 
 	}
 
-	static class ServletManagementWebServerFactoryCustomizer extends
-			ManagementWebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+	static class ServletManagementWebServerFactoryCustomizer
+			extends ManagementWebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
 		ServletManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, ServletWebServerFactoryCustomizer.class,
-					TomcatServletWebServerFactoryCustomizer.class,
-					TomcatWebServerFactoryCustomizer.class,
-					JettyWebServerFactoryCustomizer.class,
+			super(beanFactory, ServletWebServerFactoryCustomizer.class, TomcatServletWebServerFactoryCustomizer.class,
+					TomcatWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
 					UndertowWebServerFactoryCustomizer.class);
 		}
 
 		@Override
 		protected void customize(ConfigurableServletWebServerFactory webServerFactory,
-				ManagementServerProperties managementServerProperties,
-				ServerProperties serverProperties) {
-			super.customize(webServerFactory, managementServerProperties,
-					serverProperties);
-			webServerFactory.setContextPath(
-					managementServerProperties.getServlet().getContextPath());
+				ManagementServerProperties managementServerProperties, ServerProperties serverProperties) {
+			super.customize(webServerFactory, managementServerProperties, serverProperties);
+			webServerFactory.setContextPath(managementServerProperties.getServlet().getContextPath());
 		}
 
 	}

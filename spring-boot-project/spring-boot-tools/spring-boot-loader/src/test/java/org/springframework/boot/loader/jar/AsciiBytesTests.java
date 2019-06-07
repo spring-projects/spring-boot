@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,7 @@ public class AsciiBytesTests {
 		assertThat(abcd.substring(2).toString()).isEqualTo("CD");
 		assertThat(abcd.substring(3).toString()).isEqualTo("D");
 		assertThat(abcd.substring(4).toString()).isEqualTo("");
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> abcd.substring(5));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> abcd.substring(5));
 	}
 
 	@Test
@@ -100,16 +99,14 @@ public class AsciiBytesTests {
 		assertThat(abcd.substring(1, 3).toString()).isEqualTo("BC");
 		assertThat(abcd.substring(3, 4).toString()).isEqualTo("D");
 		assertThat(abcd.substring(3, 3).toString()).isEqualTo("");
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> abcd.substring(3, 5));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> abcd.substring(3, 5));
 	}
 
 	@Test
 	public void hashCodeAndEquals() {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 66, 67 });
-		AsciiBytes bc_substring = new AsciiBytes(new byte[] { 65, 66, 67, 68 })
-				.substring(1, 3);
+		AsciiBytes bc_substring = new AsciiBytes(new byte[] { 65, 66, 67, 68 }).substring(1, 3);
 		AsciiBytes bc_string = new AsciiBytes("BC");
 		assertThat(bc.hashCode()).isEqualTo(bc.hashCode());
 		assertThat(bc.hashCode()).isEqualTo(bc_substring.hashCode());

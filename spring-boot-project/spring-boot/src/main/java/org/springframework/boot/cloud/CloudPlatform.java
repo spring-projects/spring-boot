@@ -39,8 +39,7 @@ public enum CloudPlatform {
 
 		@Override
 		public boolean isActive(Environment environment) {
-			return environment.containsProperty("VCAP_APPLICATION")
-					|| environment.containsProperty("VCAP_SERVICES");
+			return environment.containsProperty("VCAP_APPLICATION") || environment.containsProperty("VCAP_SERVICES");
 		}
 
 	},
@@ -100,8 +99,7 @@ public enum CloudPlatform {
 				if (propertyName.endsWith(SERVICE_HOST_SUFFIX)) {
 					String serviceName = propertyName.substring(0,
 							propertyName.length() - SERVICE_HOST_SUFFIX.length());
-					if (environmentPropertySource
-							.getProperty(serviceName + SERVICE_PORT_SUFFIX) != null) {
+					if (environmentPropertySource.getProperty(serviceName + SERVICE_PORT_SUFFIX) != null) {
 						return true;
 					}
 				}

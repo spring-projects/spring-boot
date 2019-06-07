@@ -39,8 +39,7 @@ import static org.mockito.BDDMockito.given;
  */
 class UserVehicleServiceTests {
 
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"00000000000000000");
+	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Mock
 	private VehicleDetailsService vehicleDetailsService;
@@ -53,14 +52,12 @@ class UserVehicleServiceTests {
 	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.service = new UserVehicleService(this.userRepository,
-				this.vehicleDetailsService);
+		this.service = new UserVehicleService(this.userRepository, this.vehicleDetailsService);
 	}
 
 	@Test
 	void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.service.getVehicleDetails(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.service.getVehicleDetails(null))
 				.withMessage("Username must not be null");
 	}
 
@@ -73,8 +70,7 @@ class UserVehicleServiceTests {
 
 	@Test
 	void getVehicleDetailsShouldReturnMakeAndModel() {
-		given(this.userRepository.findByUsername(anyString()))
-				.willReturn(new User("sboot", VIN));
+		given(this.userRepository.findByUsername(anyString())).willReturn(new User("sboot", VIN));
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");
 		given(this.vehicleDetailsService.getVehicleDetails(VIN)).willReturn(details);
 		VehicleDetails actual = this.service.getVehicleDetails("sboot");

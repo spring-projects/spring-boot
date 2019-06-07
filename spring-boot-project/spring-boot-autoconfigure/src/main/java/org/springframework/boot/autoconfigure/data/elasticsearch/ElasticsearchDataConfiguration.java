@@ -56,8 +56,7 @@ abstract class ElasticsearchDataConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ElasticsearchConverter elasticsearchConverter(
-				SimpleElasticsearchMappingContext mappingContext) {
+		public ElasticsearchConverter elasticsearchConverter(SimpleElasticsearchMappingContext mappingContext) {
 			return new MappingElasticsearchConverter(mappingContext);
 		}
 
@@ -68,15 +67,13 @@ abstract class ElasticsearchDataConfiguration {
 		}
 
 		@Bean
-		public EntityMapper entityMapper(
-				SimpleElasticsearchMappingContext mappingContext) {
+		public EntityMapper entityMapper(SimpleElasticsearchMappingContext mappingContext) {
 			return new DefaultEntityMapper(mappingContext);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ResultsMapper resultsMapper(
-				SimpleElasticsearchMappingContext mappingContext,
+		public ResultsMapper resultsMapper(SimpleElasticsearchMappingContext mappingContext,
 				EntityMapper entityMapper) {
 			return new DefaultResultMapper(mappingContext, entityMapper);
 		}
@@ -88,8 +85,7 @@ abstract class ElasticsearchDataConfiguration {
 	static class RestClientConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ElasticsearchOperations.class,
-				name = "elasticsearchTemplate")
+		@ConditionalOnMissingBean(value = ElasticsearchOperations.class, name = "elasticsearchTemplate")
 		@ConditionalOnBean(RestHighLevelClient.class)
 		public ElasticsearchRestTemplate elasticsearchTemplate(RestHighLevelClient client,
 				ElasticsearchConverter converter, ResultsMapper resultsMapper) {
@@ -103,11 +99,10 @@ abstract class ElasticsearchDataConfiguration {
 	static class TransportClientConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ElasticsearchOperations.class,
-				name = "elasticsearchTemplate")
+		@ConditionalOnMissingBean(value = ElasticsearchOperations.class, name = "elasticsearchTemplate")
 		@ConditionalOnBean(Client.class)
-		public ElasticsearchTemplate elasticsearchTemplate(Client client,
-				ElasticsearchConverter converter, ResultsMapper resultsMapper) {
+		public ElasticsearchTemplate elasticsearchTemplate(Client client, ElasticsearchConverter converter,
+				ResultsMapper resultsMapper) {
 			try {
 				return new ElasticsearchTemplate(client, converter, resultsMapper);
 			}
@@ -123,14 +118,12 @@ abstract class ElasticsearchDataConfiguration {
 	static class ReactiveRestClientConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ReactiveElasticsearchOperations.class,
-				name = "reactiveElasticsearchTemplate")
+		@ConditionalOnMissingBean(value = ReactiveElasticsearchOperations.class, name = "reactiveElasticsearchTemplate")
 		@ConditionalOnBean(ReactiveElasticsearchClient.class)
-		public ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(
-				ReactiveElasticsearchClient client, ElasticsearchConverter converter,
-				ResultsMapper resultsMapper) {
-			ReactiveElasticsearchTemplate template = new ReactiveElasticsearchTemplate(
-					client, converter, resultsMapper);
+		public ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(ReactiveElasticsearchClient client,
+				ElasticsearchConverter converter, ResultsMapper resultsMapper) {
+			ReactiveElasticsearchTemplate template = new ReactiveElasticsearchTemplate(client, converter,
+					resultsMapper);
 			template.setIndicesOptions(IndicesOptions.strictExpandOpenAndForbidClosed());
 			template.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
 			return template;

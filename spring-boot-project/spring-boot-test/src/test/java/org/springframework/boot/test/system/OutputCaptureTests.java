@@ -80,8 +80,7 @@ class OutputCaptureTests {
 
 	@Test
 	void popWhenEmptyThrowsException() {
-		assertThatExceptionOfType(NoSuchElementException.class)
-				.isThrownBy(this.output::pop);
+		assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(this.output::pop);
 	}
 
 	@Test

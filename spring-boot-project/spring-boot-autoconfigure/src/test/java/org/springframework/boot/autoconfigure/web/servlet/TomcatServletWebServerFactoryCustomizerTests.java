@@ -49,8 +49,7 @@ public class TomcatServletWebServerFactoryCustomizerTests {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new TomcatServletWebServerFactoryCustomizer(
-				this.serverProperties);
+		this.customizer = new TomcatServletWebServerFactoryCustomizer(this.serverProperties);
 	}
 
 	@Test
@@ -69,8 +68,7 @@ public class TomcatServletWebServerFactoryCustomizerTests {
 	private void testCustomTldSkip(String... expectedJars) {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getTldSkipPatterns()).contains(expectedJars);
-		assertThat(factory.getTldSkipPatterns()).contains("junit-*.jar",
-				"spring-boot-*.jar");
+		assertThat(factory.getTldSkipPatterns()).contains("junit-*.jar", "spring-boot-*.jar");
 	}
 
 	@Test
@@ -93,8 +91,7 @@ public class TomcatServletWebServerFactoryCustomizerTests {
 	}
 
 	private void bind(String... inlinedProperties) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				inlinedProperties);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
 		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
 				Bindable.ofInstance(this.serverProperties));
 	}

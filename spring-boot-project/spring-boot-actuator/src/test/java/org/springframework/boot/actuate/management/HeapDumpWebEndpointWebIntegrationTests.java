@@ -60,15 +60,13 @@ public class HeapDumpWebEndpointWebIntegrationTests {
 	@Test
 	public void invokeWhenNotAvailableShouldReturnServiceUnavailableStatus() {
 		this.endpoint.setAvailable(false);
-		client.get().uri("/actuator/heapdump").exchange().expectStatus()
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+		client.get().uri("/actuator/heapdump").exchange().expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	@Test
 	public void getRequestShouldReturnHeapDumpInResponseBody() throws Exception {
-		client.get().uri("/actuator/heapdump").exchange().expectStatus().isOk()
-				.expectHeader().contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.expectBody(String.class).isEqualTo("HEAPDUMP");
+		client.get().uri("/actuator/heapdump").exchange().expectStatus().isOk().expectHeader()
+				.contentType(MediaType.APPLICATION_OCTET_STREAM).expectBody(String.class).isEqualTo("HEAPDUMP");
 		assertHeapDumpFileIsDeleted();
 	}
 
@@ -117,8 +115,7 @@ public class HeapDumpWebEndpointWebIntegrationTests {
 				if (file.exists()) {
 					throw new IOException("File exists");
 				}
-				FileCopyUtils.copy(TestHeapDumpWebEndpoint.this.heapDump.getBytes(),
-						file);
+				FileCopyUtils.copy(TestHeapDumpWebEndpoint.this.heapDump.getBytes(), file);
 			};
 		}
 

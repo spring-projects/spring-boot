@@ -63,15 +63,13 @@ class AtomikosJtaConfiguration {
 
 	@Bean(initMethod = "init", destroyMethod = "shutdownWait")
 	@ConditionalOnMissingBean(UserTransactionService.class)
-	public UserTransactionServiceImp userTransactionService(
-			AtomikosProperties atomikosProperties, JtaProperties jtaProperties) {
+	public UserTransactionServiceImp userTransactionService(AtomikosProperties atomikosProperties,
+			JtaProperties jtaProperties) {
 		Properties properties = new Properties();
 		if (StringUtils.hasText(jtaProperties.getTransactionManagerId())) {
-			properties.setProperty("com.atomikos.icatch.tm_unique_name",
-					jtaProperties.getTransactionManagerId());
+			properties.setProperty("com.atomikos.icatch.tm_unique_name", jtaProperties.getTransactionManagerId());
 		}
-		properties.setProperty("com.atomikos.icatch.log_base_dir",
-				getLogBaseDir(jtaProperties));
+		properties.setProperty("com.atomikos.icatch.log_base_dir", getLogBaseDir(jtaProperties));
 		properties.putAll(atomikosProperties.asProperties());
 		return new UserTransactionServiceImp(properties);
 	}
@@ -86,8 +84,8 @@ class AtomikosJtaConfiguration {
 
 	@Bean(initMethod = "init", destroyMethod = "close")
 	@ConditionalOnMissingBean
-	public UserTransactionManager atomikosTransactionManager(
-			UserTransactionService userTransactionService) throws Exception {
+	public UserTransactionManager atomikosTransactionManager(UserTransactionService userTransactionService)
+			throws Exception {
 		UserTransactionManager manager = new UserTransactionManager();
 		manager.setStartupTransactionService(false);
 		manager.setForceShutdown(true);
@@ -110,10 +108,8 @@ class AtomikosJtaConfiguration {
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
-				userTransaction, transactionManager);
-		transactionManagerCustomizers.ifAvailable(
-				(customizers) -> customizers.customize(jtaTransactionManager));
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(jtaTransactionManager));
 		return jtaTransactionManager;
 	}
 

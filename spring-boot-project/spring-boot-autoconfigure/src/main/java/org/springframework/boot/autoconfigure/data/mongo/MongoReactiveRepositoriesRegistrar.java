@@ -31,8 +31,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Mark Paluch
  * @since 2.0.0
  */
-class MongoReactiveRepositoriesRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class MongoReactiveRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

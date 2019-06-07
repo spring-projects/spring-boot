@@ -54,8 +54,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 	public void loadsHomeProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(
-				new File(this.home, ".spring-boot-devtools.properties"));
+		OutputStream out = new FileOutputStream(new File(this.home, ".spring-boot-devtools.properties"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = new MockEnvironment();
@@ -78,8 +77,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		thread.join();
 	}
 
-	private class MockDevToolHomePropertiesPostProcessor
-			extends DevToolsHomePropertiesPostProcessor {
+	private class MockDevToolHomePropertiesPostProcessor extends DevToolsHomePropertiesPostProcessor {
 
 		@Override
 		protected File getHomeFolder() {

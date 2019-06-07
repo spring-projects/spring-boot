@@ -83,8 +83,7 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 	}
 
 	private String getExcludedUserAgents() {
-		return StringUtils
-				.arrayToCommaDelimitedString(this.compression.getExcludedUserAgents());
+		return StringUtils.arrayToCommaDelimitedString(this.compression.getExcludedUserAgents());
 	}
 
 }

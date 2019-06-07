@@ -55,8 +55,7 @@ import org.springframework.util.StringUtils;
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
-@ConditionalOnClass({ DataSource.class, TransactionManager.class,
-		EmbeddedDatabaseType.class })
+@ConditionalOnClass({ DataSource.class, TransactionManager.class, EmbeddedDatabaseType.class })
 @ConditionalOnBean(XADataSourceWrapper.class)
 @ConditionalOnMissingBean(DataSource.class)
 public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
@@ -64,11 +63,9 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private ClassLoader classLoader;
 
 	@Bean
-	public DataSource dataSource(XADataSourceWrapper wrapper,
-			DataSourceProperties properties, ObjectProvider<XADataSource> xaDataSource)
-			throws Exception {
-		return wrapper.wrapDataSource(
-				xaDataSource.getIfAvailable(() -> createXaDataSource(properties)));
+	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
+			ObjectProvider<XADataSource> xaDataSource) throws Exception {
+		return wrapper.wrapDataSource(xaDataSource.getIfAvailable(() -> createXaDataSource(properties)));
 	}
 
 	@Override
@@ -79,11 +76,9 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private XADataSource createXaDataSource(DataSourceProperties properties) {
 		String className = properties.getXa().getDataSourceClassName();
 		if (!StringUtils.hasLength(className)) {
-			className = DatabaseDriver.fromJdbcUrl(properties.determineUrl())
-					.getXaDataSourceClassName();
+			className = DatabaseDriver.fromJdbcUrl(properties.determineUrl()).getXaDataSourceClassName();
 		}
-		Assert.state(StringUtils.hasLength(className),
-				"No XA DataSource class name specified");
+		Assert.state(StringUtils.hasLength(className), "No XA DataSource class name specified");
 		XADataSource dataSource = createXaDataSourceInstance(className);
 		bindXaProperties(dataSource, properties);
 		return dataSource;
@@ -97,19 +92,16 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 			return (XADataSource) instance;
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to create XADataSource instance from '" + className + "'");
+			throw new IllegalStateException("Unable to create XADataSource instance from '" + className + "'");
 		}
 	}
 
-	private void bindXaProperties(XADataSource target,
-			DataSourceProperties dataSourceProperties) {
+	private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties) {
 		Binder binder = new Binder(getBinderSource(dataSourceProperties));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
-	private ConfigurationPropertySource getBinderSource(
-			DataSourceProperties dataSourceProperties) {
+	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties) {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("user", dataSourceProperties.determineUsername());
 		source.put("password", dataSourceProperties.determinePassword());

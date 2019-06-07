@@ -43,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  */
 @Testcontainers
-public class SessionAutoConfigurationRedisTests
-		extends AbstractSessionAutoConfigurationTests {
+public class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfigurationTests {
 
 	@Container
 	public static RedisContainer redis = new RedisContainer();
@@ -55,52 +54,41 @@ public class SessionAutoConfigurationRedisTests
 	@Test
 	public void defaultConfig() {
 		this.contextRunner
-				.withPropertyValues("spring.session.store-type=redis",
-						"spring.redis.port=" + redis.getMappedPort())
+				.withPropertyValues("spring.session.store-type=redis", "spring.redis.port=" + redis.getMappedPort())
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:",
-						RedisFlushMode.ON_SAVE, "0 * * * * *"));
+				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", RedisFlushMode.ON_SAVE,
+						"0 * * * * *"));
 	}
 
 	@Test
 	public void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
-						JdbcOperationsSessionRepository.class,
-						MongoOperationsSessionRepository.class))
+						JdbcOperationsSessionRepository.class, MongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.redis.port=" + redis.getMappedPort())
-				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:",
-						RedisFlushMode.ON_SAVE, "0 * * * * *"));
+				.withPropertyValues("spring.redis.port=" + redis.getMappedPort()).run(validateSpringSessionUsesRedis(
+						"spring:session:event:0:created:", RedisFlushMode.ON_SAVE, "0 * * * * *"));
 	}
 
 	@Test
 	public void redisSessionStoreWithCustomizations() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis",
-						"spring.session.redis.namespace=foo",
-						"spring.session.redis.flush-mode=immediate",
-						"spring.session.redis.cleanup-cron=0 0 12 * * *",
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
+						"spring.session.redis.flush-mode=immediate", "spring.session.redis.cleanup-cron=0 0 12 * * *",
 						"spring.redis.port=" + redis.getMappedPort())
-				.run(validateSpringSessionUsesRedis("foo:event:0:created:",
-						RedisFlushMode.IMMEDIATE, "0 0 12 * * *"));
+				.run(validateSpringSessionUsesRedis("foo:event:0:created:", RedisFlushMode.IMMEDIATE, "0 0 12 * * *"));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
-			String sessionCreatedChannelPrefix, RedisFlushMode flushMode,
-			String cleanupCron) {
+			String sessionCreatedChannelPrefix, RedisFlushMode flushMode, String cleanupCron) {
 		return (context) -> {
-			RedisOperationsSessionRepository repository = validateSessionRepository(
-					context, RedisOperationsSessionRepository.class);
-			assertThat(repository.getSessionCreatedChannelPrefix())
-					.isEqualTo(sessionCreatedChannelPrefix);
-			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode",
-					flushMode);
+			RedisOperationsSessionRepository repository = validateSessionRepository(context,
+					RedisOperationsSessionRepository.class);
+			assertThat(repository.getSessionCreatedChannelPrefix()).isEqualTo(sessionCreatedChannelPrefix);
+			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode", flushMode);
 			SpringBootRedisHttpSessionConfiguration configuration = context
 					.getBean(SpringBootRedisHttpSessionConfiguration.class);
-			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron",
-					cleanupCron);
+			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", cleanupCron);
 		};
 	}
 

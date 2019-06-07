@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping
-		implements InitializingBean {
+public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping implements InitializingBean {
 
 	private final EndpointLinksResolver linksResolver;
 
@@ -55,8 +54,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 * @param linksResolver resolver for determining links to available endpoints
 	 */
-	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
+	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping, Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
 			EndpointLinksResolver linksResolver) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
@@ -77,12 +75,10 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		@Override
 		@ResponseBody
 		public Map<String, Map<String, Link>> links(ServerWebExchange exchange) {
-			String requestUri = UriComponentsBuilder
-					.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
+			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
 					.toUriString();
 			return Collections.singletonMap("_links",
-					WebFluxEndpointHandlerMapping.this.linksResolver
-							.resolveLinks(requestUri));
+					WebFluxEndpointHandlerMapping.this.linksResolver.resolveLinks(requestUri));
 		}
 
 		@Override

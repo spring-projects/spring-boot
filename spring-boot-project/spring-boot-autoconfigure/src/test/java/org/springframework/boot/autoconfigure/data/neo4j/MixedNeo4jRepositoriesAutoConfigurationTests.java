@@ -95,11 +95,9 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
-		TestPropertyValues.of(environment)
-				.and("spring.datasource.initialization-mode=never").applyTo(context);
+		TestPropertyValues.of(environment).and("spring.datasource.initialization-mode=never").applyTo(context);
 		context.register(config);
-		context.register(DataSourceAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
+		context.register(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class);
 		context.refresh();

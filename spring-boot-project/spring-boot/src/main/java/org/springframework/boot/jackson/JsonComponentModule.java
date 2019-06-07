@@ -68,22 +68,19 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 				addJsonBeans((ListableBeanFactory) beanFactory);
 			}
 			beanFactory = (beanFactory instanceof HierarchicalBeanFactory)
-					? ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory()
-					: null;
+					? ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory() : null;
 		}
 	}
 
 	private void addJsonBeans(ListableBeanFactory beanFactory) {
-		Map<String, Object> beans = beanFactory
-				.getBeansWithAnnotation(JsonComponent.class);
+		Map<String, Object> beans = beanFactory.getBeansWithAnnotation(JsonComponent.class);
 		for (Object bean : beans.values()) {
 			addJsonBean(bean);
 		}
 	}
 
 	private void addJsonBean(Object bean) {
-		MergedAnnotation<JsonComponent> annotation = MergedAnnotations
-				.from(bean.getClass(), SearchStrategy.EXHAUSTIVE)
+		MergedAnnotation<JsonComponent> annotation = MergedAnnotations.from(bean.getClass(), SearchStrategy.EXHAUSTIVE)
 				.get(JsonComponent.class);
 		Class<?>[] types = annotation.getClassArray("type");
 		Scope scope = annotation.getEnum("scope", JsonComponent.Scope.class);
@@ -109,27 +106,23 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	private boolean isSuitableInnerClass(Class<?> innerClass) {
-		return !Modifier.isAbstract(innerClass.getModifiers())
-				&& (JsonSerializer.class.isAssignableFrom(innerClass)
-						|| JsonDeserializer.class.isAssignableFrom(innerClass)
-						|| KeyDeserializer.class.isAssignableFrom(innerClass));
+		return !Modifier.isAbstract(innerClass.getModifiers()) && (JsonSerializer.class.isAssignableFrom(innerClass)
+				|| JsonDeserializer.class.isAssignableFrom(innerClass)
+				|| KeyDeserializer.class.isAssignableFrom(innerClass));
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> void addJsonSerializerBean(JsonSerializer<T> serializer,
-			JsonComponent.Scope scope, Class<?>[] types) {
-		Class<T> baseType = (Class<T>) ResolvableType
-				.forClass(JsonSerializer.class, serializer.getClass()).resolveGeneric();
+	private <T> void addJsonSerializerBean(JsonSerializer<T> serializer, JsonComponent.Scope scope, Class<?>[] types) {
+		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonSerializer.class, serializer.getClass())
+				.resolveGeneric();
 		addBeanToModule(serializer, baseType, types,
 				(scope == Scope.VALUES) ? this::addSerializer : this::addKeySerializer);
 
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> void addJsonDeserializerBean(JsonDeserializer<T> deserializer,
-			Class<?>[] types) {
-		Class<T> baseType = (Class<T>) ResolvableType
-				.forClass(JsonDeserializer.class, deserializer.getClass())
+	private <T> void addJsonDeserializerBean(JsonDeserializer<T> deserializer, Class<?>[] types) {
+		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonDeserializer.class, deserializer.getClass())
 				.resolveGeneric();
 		addBeanToModule(deserializer, baseType, types, this::addDeserializer);
 	}

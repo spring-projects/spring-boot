@@ -74,8 +74,7 @@ public class ConfigurationPropertiesScanTests {
 		DefaultResourceLoader resourceLoader = Mockito.mock(DefaultResourceLoader.class);
 		this.context.setResourceLoader(resourceLoader);
 		willCallRealMethod().given(resourceLoader).getClassLoader();
-		given(resourceLoader.getResource("test"))
-				.willReturn(new ByteArrayResource("test".getBytes()));
+		given(resourceLoader.getResource("test")).willReturn(new ByteArrayResource("test".getBytes()));
 		load(TestConfiguration.class);
 		assertThat(this.context.containsBean(
 				"resource-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$MyResourceProperties"))

@@ -34,30 +34,24 @@ import org.springframework.test.context.MergedContextConfiguration;
  *
  * @author Phillip Webb
  */
-class OverrideAutoConfigurationContextCustomizerFactory
-		implements ContextCustomizerFactory {
+class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
 		boolean enabled = MergedAnnotations.from(testClass, SearchStrategy.EXHAUSTIVE)
-				.get(OverrideAutoConfiguration.class).getValue("enabled", Boolean.class)
-				.orElse(true);
+				.get(OverrideAutoConfiguration.class).getValue("enabled", Boolean.class).orElse(true);
 		return !enabled ? new DisableAutoConfigurationContextCustomizer() : null;
 	}
 
 	/**
 	 * {@link ContextCustomizer} to disable full auto-configuration.
 	 */
-	private static class DisableAutoConfigurationContextCustomizer
-			implements ContextCustomizer {
+	private static class DisableAutoConfigurationContextCustomizer implements ContextCustomizer {
 
 		@Override
-		public void customizeContext(ConfigurableApplicationContext context,
-				MergedContextConfiguration mergedConfig) {
-			TestPropertyValues
-					.of(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false")
-					.applyTo(context);
+		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
+			TestPropertyValues.of(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY + "=false").applyTo(context);
 		}
 
 		@Override

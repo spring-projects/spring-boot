@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ class TestPropertySourceLoader2 implements PropertySourceLoader {
 	}
 
 	@Override
-	public List<PropertySource<?>> load(String name, Resource resource)
-			throws IOException {
+	public List<PropertySource<?>> load(String name, Resource resource) throws IOException {
 		Map<String, Object> map = Collections.singletonMap("customloader2", "true");
 		return Collections.singletonList(new MapPropertySource(name, map));
 	}

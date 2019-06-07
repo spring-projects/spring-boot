@@ -32,8 +32,7 @@ public class InfoTests {
 	@Test
 	public void infoIsImmutable() {
 		Info info = new Info.Builder().withDetail("foo", "bar").build();
-		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(info.getDetails()::clear);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(info.getDetails()::clear);
 	}
 
 	@Test

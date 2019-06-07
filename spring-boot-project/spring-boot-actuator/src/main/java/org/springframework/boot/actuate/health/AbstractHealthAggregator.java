@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 
 	@Override
 	public final Health aggregate(Map<String, Health> healths) {
-		List<Status> statusCandidates = healths.values().stream().map(Health::getStatus)
-				.collect(Collectors.toList());
+		List<Status> statusCandidates = healths.values().stream().map(Health::getStatus).collect(Collectors.toList());
 		Status status = aggregateStatus(statusCandidates);
 		Map<String, Object> details = aggregateDetails(healths);
 		return new Health.Builder(status, details).build();

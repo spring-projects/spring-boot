@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,12 +94,11 @@ public class HelpCommand extends AbstractCommand {
 		String commandName = args[0];
 		for (Command command : this.commandRunner) {
 			if (command.getName().equals(commandName)) {
-				Log.info(this.commandRunner.getName() + command.getName() + " - "
-						+ command.getDescription());
+				Log.info(this.commandRunner.getName() + command.getName() + " - " + command.getDescription());
 				Log.info("");
 				if (command.getUsageHelp() != null) {
-					Log.info("usage: " + this.commandRunner.getName() + command.getName()
-							+ " " + command.getUsageHelp());
+					Log.info("usage: " + this.commandRunner.getName() + command.getName() + " "
+							+ command.getUsageHelp());
 					Log.info("");
 				}
 				if (command.getHelp() != null) {

@@ -45,12 +45,10 @@ class Container implements Startable {
 	}
 
 	@SuppressWarnings({ "unchecked", "resource" })
-	<T extends GenericContainer<T>> Container(String dockerImageName, int port,
-			Consumer<T> customizer) {
+	<T extends GenericContainer<T>> Container(String dockerImageName, int port, Consumer<T> customizer) {
 		this.port = port;
 		this.containerFactory = () -> {
-			T container = (T) new GenericContainer<>(dockerImageName)
-					.withExposedPorts(port);
+			T container = (T) new GenericContainer<>(dockerImageName).withExposedPorts(port);
 			if (customizer != null) {
 				customizer.accept(container);
 			}
@@ -68,8 +66,7 @@ class Container implements Startable {
 
 	@Override
 	public void start() {
-		Assumptions.assumeTrue(isDockerRunning(),
-				"Could not find valid docker environment.");
+		Assumptions.assumeTrue(isDockerRunning(), "Could not find valid docker environment.");
 		this.container = this.containerFactory.get();
 		this.container.start();
 	}

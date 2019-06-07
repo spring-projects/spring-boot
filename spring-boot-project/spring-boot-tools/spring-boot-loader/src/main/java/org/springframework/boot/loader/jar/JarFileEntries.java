@@ -59,8 +59,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int version;
 		try {
 			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
-			version = (int) runtimeVersion.getClass().getMethod("major")
-					.invoke(runtimeVersion);
+			version = (int) runtimeVersion.getClass().getMethod("major").invoke(runtimeVersion);
 		}
 		catch (Throwable ex) {
 			version = BASE_VERSION;
@@ -96,8 +95,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			.synchronizedMap(new LinkedHashMap<Integer, FileHeader>(16, 0.75f, true) {
 
 				@Override
-				protected boolean removeEldestEntry(
-						Map.Entry<Integer, FileHeader> eldest) {
+				protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
 					if (JarFileEntries.this.jarFile.isSigned()) {
 						return false;
 					}
@@ -115,8 +113,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	}
 
 	@Override
-	public void visitStart(CentralDirectoryEndRecord endRecord,
-			RandomAccessData centralDirectoryData) {
+	public void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {
 		int maxSize = endRecord.getNumberOfRecords();
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
@@ -235,25 +232,21 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		// local directory to the central directory. We need to re-read
 		// here to skip them
 		RandomAccessData data = this.jarFile.getData();
-		byte[] localHeader = data.read(entry.getLocalHeaderOffset(),
-				LOCAL_FILE_HEADER_SIZE);
+		byte[] localHeader = data.read(entry.getLocalHeaderOffset(), LOCAL_FILE_HEADER_SIZE);
 		long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
 		long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
-		return data.getSubsection(entry.getLocalHeaderOffset() + LOCAL_FILE_HEADER_SIZE
-				+ nameLength + extraLength, entry.getCompressedSize());
+		return data.getSubsection(entry.getLocalHeaderOffset() + LOCAL_FILE_HEADER_SIZE + nameLength + extraLength,
+				entry.getCompressedSize());
 	}
 
-	private <T extends FileHeader> T getEntry(CharSequence name, Class<T> type,
-			boolean cacheEntry) {
+	private <T extends FileHeader> T getEntry(CharSequence name, Class<T> type, boolean cacheEntry) {
 		T entry = doGetEntry(name, type, cacheEntry, null);
 		if (!isMetaInfEntry(name) && isMultiReleaseJar()) {
 			int version = RUNTIME_VERSION;
-			AsciiBytes nameAlias = (entry instanceof JarEntry)
-					? ((JarEntry) entry).getAsciiBytesName()
+			AsciiBytes nameAlias = (entry instanceof JarEntry) ? ((JarEntry) entry).getAsciiBytesName()
 					: new AsciiBytes(name.toString());
 			while (version > BASE_VERSION) {
-				T versionedEntry = doGetEntry("META-INF/versions/" + version + "/" + name,
-						type, cacheEntry, nameAlias);
+				T versionedEntry = doGetEntry("META-INF/versions/" + version + "/" + name, type, cacheEntry, nameAlias);
 				if (versionedEntry != null) {
 					return versionedEntry;
 				}
@@ -289,8 +282,8 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return multiRelease;
 	}
 
-	private <T extends FileHeader> T doGetEntry(CharSequence name, Class<T> type,
-			boolean cacheEntry, AsciiBytes nameAlias) {
+	private <T extends FileHeader> T doGetEntry(CharSequence name, Class<T> type, boolean cacheEntry,
+			AsciiBytes nameAlias) {
 		int hashCode = AsciiBytes.hashCode(name);
 		T entry = getEntry(hashCode, name, NO_SUFFIX, type, cacheEntry, nameAlias);
 		if (entry == null) {
@@ -300,8 +293,8 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return entry;
 	}
 
-	private <T extends FileHeader> T getEntry(int hashCode, CharSequence name,
-			char suffix, Class<T> type, boolean cacheEntry, AsciiBytes nameAlias) {
+	private <T extends FileHeader> T getEntry(int hashCode, CharSequence name, char suffix, Class<T> type,
+			boolean cacheEntry, AsciiBytes nameAlias) {
 		int index = getFirstIndex(hashCode);
 		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
 			T entry = getEntry(index, type, cacheEntry, nameAlias);
@@ -314,18 +307,13 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends FileHeader> T getEntry(int index, Class<T> type,
-			boolean cacheEntry, AsciiBytes nameAlias) {
+	private <T extends FileHeader> T getEntry(int index, Class<T> type, boolean cacheEntry, AsciiBytes nameAlias) {
 		try {
 			FileHeader cached = this.entriesCache.get(index);
-			FileHeader entry = (cached != null) ? cached
-					: CentralDirectoryFileHeader.fromRandomAccessData(
-							this.centralDirectoryData,
-							this.centralDirectoryOffsets[index], this.filter);
-			if (CentralDirectoryFileHeader.class.equals(entry.getClass())
-					&& type.equals(JarEntry.class)) {
-				entry = new JarEntry(this.jarFile, (CentralDirectoryFileHeader) entry,
-						nameAlias);
+			FileHeader entry = (cached != null) ? cached : CentralDirectoryFileHeader
+					.fromRandomAccessData(this.centralDirectoryData, this.centralDirectoryOffsets[index], this.filter);
+			if (CentralDirectoryFileHeader.class.equals(entry.getClass()) && type.equals(JarEntry.class)) {
+				entry = new JarEntry(this.jarFile, (CentralDirectoryFileHeader) entry, nameAlias);
 			}
 			if (cacheEntry && cached != entry) {
 				this.entriesCache.put(index, entry);

@@ -45,8 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RSocketStrategiesAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(BaseConfiguration.class).withConfiguration(
-					AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class));
+			.withUserConfiguration(BaseConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class));
 
 	@Test
 	public void shouldCreateDefaultBeans() {
@@ -54,18 +54,13 @@ public class RSocketStrategiesAutoConfigurationTests {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
 			assertThat(strategies.decoders()).hasSize(3);
-			assertThat(strategies.decoders().get(0))
-					.isInstanceOf(Jackson2CborDecoder.class);
-			assertThat(strategies.decoders().get(1))
-					.isInstanceOf(Jackson2JsonDecoder.class);
+			assertThat(strategies.decoders().get(0)).isInstanceOf(Jackson2CborDecoder.class);
+			assertThat(strategies.decoders().get(1)).isInstanceOf(Jackson2JsonDecoder.class);
 			assertThat(strategies.decoders().get(2)).isInstanceOf(StringDecoder.class);
 			assertThat(strategies.encoders()).hasSize(3);
-			assertThat(strategies.encoders().get(0))
-					.isInstanceOf(Jackson2CborEncoder.class);
-			assertThat(strategies.encoders().get(1))
-					.isInstanceOf(Jackson2JsonEncoder.class);
-			assertThat(strategies.encoders().get(2))
-					.isInstanceOf(CharSequenceEncoder.class);
+			assertThat(strategies.encoders().get(0)).isInstanceOf(Jackson2CborEncoder.class);
+			assertThat(strategies.encoders().get(1)).isInstanceOf(Jackson2JsonEncoder.class);
+			assertThat(strategies.encoders().get(2)).isInstanceOf(CharSequenceEncoder.class);
 		});
 	}
 
@@ -73,23 +68,18 @@ public class RSocketStrategiesAutoConfigurationTests {
 	public void shouldUseCustomStrategies() {
 		this.contextRunner.withUserConfiguration(UserStrategies.class).run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
-			assertThat(context.getBeanNamesForType(RSocketStrategies.class))
-					.contains("customRSocketStrategies");
+			assertThat(context.getBeanNamesForType(RSocketStrategies.class)).contains("customRSocketStrategies");
 		});
 	}
 
 	@Test
 	public void shouldUseStrategiesCustomizer() {
-		this.contextRunner.withUserConfiguration(StrategiesCustomizer.class)
-				.run((context) -> {
-					assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
-					RSocketStrategies strategies = context
-							.getBean(RSocketStrategies.class);
-					assertThat(strategies.decoders()).hasSize(4)
-							.hasAtLeastOneElementOfType(ByteArrayDecoder.class);
-					assertThat(strategies.encoders()).hasSize(4)
-							.hasAtLeastOneElementOfType(ByteArrayEncoder.class);
-				});
+		this.contextRunner.withUserConfiguration(StrategiesCustomizer.class).run((context) -> {
+			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
+			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
+			assertThat(strategies.decoders()).hasSize(4).hasAtLeastOneElementOfType(ByteArrayDecoder.class);
+			assertThat(strategies.encoders()).hasSize(4).hasAtLeastOneElementOfType(ByteArrayEncoder.class);
+		});
 	}
 
 	@Configuration
@@ -112,8 +102,7 @@ public class RSocketStrategiesAutoConfigurationTests {
 
 		@Bean
 		public RSocketStrategies customRSocketStrategies() {
-			return RSocketStrategies.builder()
-					.encoder(CharSequenceEncoder.textPlainOnly())
+			return RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
 					.decoder(StringDecoder.textPlainOnly()).build();
 		}
 
@@ -124,8 +113,7 @@ public class RSocketStrategiesAutoConfigurationTests {
 
 		@Bean
 		public RSocketStrategiesCustomizer myCustomizer() {
-			return (strategies) -> strategies.encoder(new ByteArrayEncoder())
-					.decoder(new ByteArrayDecoder());
+			return (strategies) -> strategies.encoder(new ByteArrayEncoder()).decoder(new ByteArrayDecoder());
 		}
 
 	}

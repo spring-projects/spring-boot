@@ -41,13 +41,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(JmxMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.jmx", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.jmx", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(JmxProperties.class)
 public class JmxMetricsExportAutoConfiguration {
 

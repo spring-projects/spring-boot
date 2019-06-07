@@ -42,8 +42,7 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 class MetricsClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
-	private static final ThreadLocal<String> urlTemplate = new NamedThreadLocal<>(
-			"Rest Template URL Template");
+	private static final ThreadLocal<String> urlTemplate = new NamedThreadLocal<>("Rest Template URL Template");
 
 	private final MeterRegistry meterRegistry;
 
@@ -62,8 +61,8 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	 * {@link #MetricsClientHttpRequestInterceptor(MeterRegistry, RestTemplateExchangeTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
+	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
+			String metricName) {
 		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
@@ -75,9 +74,8 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
-	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider tagProvider, String metricName,
-			AutoTimer autoTimer) {
+	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry, RestTemplateExchangeTagsProvider tagProvider,
+			String metricName, AutoTimer autoTimer) {
 		this.tagProvider = tagProvider;
 		this.meterRegistry = meterRegistry;
 		this.metricName = metricName;
@@ -85,8 +83,8 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	}
 
 	@Override
-	public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-			ClientHttpRequestExecution execution) throws IOException {
+	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+			throws IOException {
 		if (!this.autoTimer.isEnabled()) {
 			return execution.execute(request, body);
 		}
@@ -97,8 +95,8 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 			return response;
 		}
 		finally {
-			getTimeBuilder(request, response).register(this.meterRegistry)
-					.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+			getTimeBuilder(request, response).register(this.meterRegistry).record(System.nanoTime() - startTime,
+					TimeUnit.NANOSECONDS);
 			urlTemplate.remove();
 		}
 	}
@@ -121,8 +119,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 		};
 	}
 
-	private Timer.Builder getTimeBuilder(HttpRequest request,
-			ClientHttpResponse response) {
+	private Timer.Builder getTimeBuilder(HttpRequest request, ClientHttpResponse response) {
 		return this.autoTimer.builder(this.metricName)
 				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
 				.description("Timer of RestTemplate operation");

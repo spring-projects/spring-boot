@@ -40,14 +40,13 @@ public class EhCache2CacheMeterBinderProviderTests {
 	@Test
 	public void ehCache2CacheProvider() {
 		CacheManager cacheManager = new CacheManager(
-				new Configuration().name("EhCacheCacheTests")
-						.defaultCache(new CacheConfiguration("default", 100)));
+				new Configuration().name("EhCacheCacheTests").defaultCache(new CacheConfiguration("default", 100)));
 		try {
 			Cache nativeCache = new Cache(new CacheConfiguration("test", 100));
 			cacheManager.addCache(nativeCache);
 			EhCacheCache cache = new EhCacheCache(nativeCache);
-			MeterBinder meterBinder = new EhCache2CacheMeterBinderProvider()
-					.getMeterBinder(cache, Collections.emptyList());
+			MeterBinder meterBinder = new EhCache2CacheMeterBinderProvider().getMeterBinder(cache,
+					Collections.emptyList());
 			assertThat(meterBinder).isInstanceOf(EhCache2Metrics.class);
 		}
 		finally {

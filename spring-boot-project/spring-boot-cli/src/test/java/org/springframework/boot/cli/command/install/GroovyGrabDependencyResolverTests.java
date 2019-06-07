@@ -72,8 +72,7 @@ public class GroovyGrabDependencyResolverTests {
 
 			@Override
 			public List<RepositoryConfiguration> getRepositoryConfiguration() {
-				return RepositoryConfigurationFactory
-						.createDefaultRepositoryConfiguration();
+				return RepositoryConfigurationFactory.createDefaultRepositoryConfiguration();
 			}
 
 			@Override
@@ -92,19 +91,16 @@ public class GroovyGrabDependencyResolverTests {
 
 	@Test
 	public void resolveArtifactWithNoDependencies() throws Exception {
-		List<File> resolved = this.resolver
-				.resolve(Arrays.asList("commons-logging:commons-logging:1.1.3"));
+		List<File> resolved = this.resolver.resolve(Arrays.asList("commons-logging:commons-logging:1.1.3"));
 		assertThat(resolved).hasSize(1);
 		assertThat(getNames(resolved)).containsOnly("commons-logging-1.1.3.jar");
 	}
 
 	@Test
 	public void resolveArtifactWithDependencies() throws Exception {
-		List<File> resolved = this.resolver
-				.resolve(Arrays.asList("org.springframework:spring-core:4.1.1.RELEASE"));
+		List<File> resolved = this.resolver.resolve(Arrays.asList("org.springframework:spring-core:4.1.1.RELEASE"));
 		assertThat(resolved).hasSize(2);
-		assertThat(getNames(resolved)).containsOnly("commons-logging-1.1.3.jar",
-				"spring-core-4.1.1.RELEASE.jar");
+		assertThat(getNames(resolved)).containsOnly("commons-logging-1.1.3.jar", "spring-core-4.1.1.RELEASE.jar");
 	}
 
 	@Test
@@ -112,18 +108,17 @@ public class GroovyGrabDependencyResolverTests {
 	public void resolveShorthandArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-beans"));
 		assertThat(resolved).hasSize(3);
-		assertThat(getNames(resolved))
-				.has((Condition) Matched.by(hasItems(startsWith("spring-core-"),
-						startsWith("spring-beans-"), startsWith("spring-jcl-"))));
+		assertThat(getNames(resolved)).has((Condition) Matched
+				.by(hasItems(startsWith("spring-core-"), startsWith("spring-beans-"), startsWith("spring-jcl-"))));
 	}
 
 	@Test
 	public void resolveMultipleArtifacts() throws Exception {
-		List<File> resolved = this.resolver.resolve(Arrays.asList("junit:junit:4.11",
-				"commons-logging:commons-logging:1.1.3"));
+		List<File> resolved = this.resolver
+				.resolve(Arrays.asList("junit:junit:4.11", "commons-logging:commons-logging:1.1.3"));
 		assertThat(resolved).hasSize(4);
-		assertThat(getNames(resolved)).containsOnly("junit-4.11.jar",
-				"commons-logging-1.1.3.jar", "hamcrest-core-2.1.jar", "hamcrest-2.1.jar");
+		assertThat(getNames(resolved)).containsOnly("junit-4.11.jar", "commons-logging-1.1.3.jar",
+				"hamcrest-core-2.1.jar", "hamcrest-2.1.jar");
 	}
 
 	public Set<String> getNames(Collection<File> files) {

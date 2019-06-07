@@ -56,27 +56,23 @@ public class RestClientAutoConfigurationTests {
 
 	@Test
 	public void configureShouldCreateBothRestClientVariants() {
-		this.contextRunner
-				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
-						.hasSingleBean(RestHighLevelClient.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
+				.hasSingleBean(RestHighLevelClient.class));
 	}
 
 	@Test
 	public void configureWhenCustomClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
-						.hasBean("customRestClient"));
+				.run((context) -> assertThat(context).hasSingleBean(RestClient.class).hasBean("customRestClient"));
 	}
 
 	@Test
 	public void configureWhenBuilderCustomizerShouldApply() {
-		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RestClient.class);
-					RestClient restClient = context.getBean(RestClient.class);
-					assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix",
-							"/test");
-				});
+		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/test");
+		});
 	}
 
 	@Test
@@ -84,52 +80,40 @@ public class RestClientAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class);
 			RestClient restClient = context.getBean(RestClient.class);
-			assertTimeouts(restClient,
-					Duration.ofMillis(RestClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
+			assertTimeouts(restClient, Duration.ofMillis(RestClientBuilder.DEFAULT_CONNECT_TIMEOUT_MILLIS),
 					Duration.ofMillis(RestClientBuilder.DEFAULT_SOCKET_TIMEOUT_MILLIS));
 		});
 	}
 
 	@Test
 	public void configureWithCustomTimeouts() {
-		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.connection-timeout=15s",
-						"spring.elasticsearch.rest.read-timeout=1m")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.connection-timeout=15s",
+				"spring.elasticsearch.rest.read-timeout=1m").run((context) -> {
 					assertThat(context).hasSingleBean(RestClient.class);
 					RestClient restClient = context.getBean(RestClient.class);
-					assertTimeouts(restClient, Duration.ofSeconds(15),
-							Duration.ofMinutes(1));
+					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
 				});
 	}
 
-	private static void assertTimeouts(RestClient restClient, Duration connectTimeout,
-			Duration readTimeout) {
+	private static void assertTimeouts(RestClient restClient, Duration connectTimeout, Duration readTimeout) {
 		Object client = ReflectionTestUtils.getField(restClient, "client");
 		Object config = ReflectionTestUtils.getField(client, "defaultConfig");
-		assertThat(config).hasFieldOrPropertyWithValue("socketTimeout",
-				Math.toIntExact(readTimeout.toMillis()));
-		assertThat(config).hasFieldOrPropertyWithValue("connectTimeout",
-				Math.toIntExact(connectTimeout.toMillis()));
+		assertThat(config).hasFieldOrPropertyWithValue("socketTimeout", Math.toIntExact(readTimeout.toMillis()));
+		assertThat(config).hasFieldOrPropertyWithValue("connectTimeout", Math.toIntExact(connectTimeout.toMillis()));
 	}
 
 	@Test
 	public void restClientCanQueryElasticsearchNode() {
-		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:"
-						+ RestClientAutoConfigurationTests.elasticsearch.getMappedPort())
-				.run((context) -> {
-					RestHighLevelClient client = context
-							.getBean(RestHighLevelClient.class);
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:"
+				+ RestClientAutoConfigurationTests.elasticsearch.getMappedPort()).run((context) -> {
+					RestHighLevelClient client = context.getBean(RestHighLevelClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
-					IndexRequest index = new IndexRequest("foo", "bar", "1")
-							.source(source);
+					IndexRequest index = new IndexRequest("foo", "bar", "1").source(source);
 					client.index(index, RequestOptions.DEFAULT);
 					GetRequest getRequest = new GetRequest("foo", "bar", "1");
-					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists())
-							.isTrue();
+					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists()).isTrue();
 				});
 	}
 

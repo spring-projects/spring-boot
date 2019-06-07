@@ -60,10 +60,8 @@ import org.springframework.context.annotation.Bean;
 class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
-	public ResourceConfigCustomizer webEndpointRegistrar(
-			WebEndpointsSupplier webEndpointsSupplier,
-			ServletEndpointsSupplier servletEndpointsSupplier,
-			EndpointMediaTypes endpointMediaTypes,
+	public ResourceConfigCustomizer webEndpointRegistrar(WebEndpointsSupplier webEndpointsSupplier,
+			ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpointsSupplier.getEndpoints());
@@ -74,10 +72,8 @@ class JerseyWebEndpointManagementContextConfiguration {
 			EndpointMapping endpointMapping = new EndpointMapping(basePath);
 			Collection<ExposableWebEndpoint> webEndpoints = Collections
 					.unmodifiableCollection(webEndpointsSupplier.getEndpoints());
-			resourceConfig.registerResources(
-					new HashSet<>(resourceFactory.createEndpointResources(endpointMapping,
-							webEndpoints, endpointMediaTypes,
-							new EndpointLinksResolver(allEndpoints, basePath))));
+			resourceConfig.registerResources(new HashSet<>(resourceFactory.createEndpointResources(endpointMapping,
+					webEndpoints, endpointMediaTypes, new EndpointLinksResolver(allEndpoints, basePath))));
 		};
 	}
 

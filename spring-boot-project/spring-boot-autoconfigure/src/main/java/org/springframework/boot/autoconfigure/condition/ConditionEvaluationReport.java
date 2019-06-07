@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,7 @@ public final class ConditionEvaluationReport {
 	 * @param condition the condition evaluated
 	 * @param outcome the condition outcome
 	 */
-	public void recordConditionEvaluation(String source, Condition condition,
-			ConditionOutcome outcome) {
+	public void recordConditionEvaluation(String source, Condition condition, ConditionOutcome outcome) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(condition, "Condition must not be null");
 		Assert.notNull(outcome, "Outcome must not be null");
@@ -127,8 +126,8 @@ public final class ConditionEvaluationReport {
 		String prefix = source + "$";
 		this.outcomes.forEach((candidateSource, sourceOutcomes) -> {
 			if (candidateSource.startsWith(prefix)) {
-				ConditionOutcome outcome = ConditionOutcome.noMatch(ConditionMessage
-						.forCondition("Ancestor " + source).because("did not match"));
+				ConditionOutcome outcome = ConditionOutcome
+						.noMatch(ConditionMessage.forCondition("Ancestor " + source).because("did not match"));
 				sourceOutcomes.add(ANCESTOR_CONDITION, outcome);
 			}
 		});
@@ -168,8 +167,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public static ConditionEvaluationReport find(BeanFactory beanFactory) {
 		if (beanFactory != null && beanFactory instanceof ConfigurableBeanFactory) {
-			return ConditionEvaluationReport
-					.get((ConfigurableListableBeanFactory) beanFactory);
+			return ConditionEvaluationReport.get((ConfigurableListableBeanFactory) beanFactory);
 		}
 		return null;
 	}
@@ -179,8 +177,7 @@ public final class ConditionEvaluationReport {
 	 * @param beanFactory the bean factory
 	 * @return an existing or new {@link ConditionEvaluationReport}
 	 */
-	public static ConditionEvaluationReport get(
-			ConfigurableListableBeanFactory beanFactory) {
+	public static ConditionEvaluationReport get(ConfigurableListableBeanFactory beanFactory) {
 		synchronized (beanFactory) {
 			ConditionEvaluationReport report;
 			if (beanFactory.containsSingleton(BEAN_NAME)) {
@@ -195,12 +192,9 @@ public final class ConditionEvaluationReport {
 		}
 	}
 
-	private static void locateParent(BeanFactory beanFactory,
-			ConditionEvaluationReport report) {
-		if (beanFactory != null && report.parent == null
-				&& beanFactory.containsBean(BEAN_NAME)) {
-			report.parent = beanFactory.getBean(BEAN_NAME,
-					ConditionEvaluationReport.class);
+	private static void locateParent(BeanFactory beanFactory, ConditionEvaluationReport report) {
+		if (beanFactory != null && report.parent == null && beanFactory.containsBean(BEAN_NAME)) {
+			report.parent = beanFactory.getBean(BEAN_NAME, ConditionEvaluationReport.class);
 		}
 	}
 
@@ -208,12 +202,9 @@ public final class ConditionEvaluationReport {
 		ConditionEvaluationReport delta = new ConditionEvaluationReport();
 		this.outcomes.forEach((source, sourceOutcomes) -> {
 			ConditionAndOutcomes previous = previousReport.outcomes.get(source);
-			if (previous == null
-					|| previous.isFullMatch() != sourceOutcomes.isFullMatch()) {
-				sourceOutcomes.forEach(
-						(conditionAndOutcome) -> delta.recordConditionEvaluation(source,
-								conditionAndOutcome.getCondition(),
-								conditionAndOutcome.getOutcome()));
+			if (previous == null || previous.isFullMatch() != sourceOutcomes.isFullMatch()) {
+				sourceOutcomes.forEach((conditionAndOutcome) -> delta.recordConditionEvaluation(source,
+						conditionAndOutcome.getCondition(), conditionAndOutcome.getOutcome()));
 			}
 		});
 		List<String> newExclusions = new ArrayList<>(this.exclusions);
@@ -287,8 +278,7 @@ public final class ConditionEvaluationReport {
 				return false;
 			}
 			ConditionAndOutcome other = (ConditionAndOutcome) obj;
-			return (ObjectUtils.nullSafeEquals(this.condition.getClass(),
-					other.condition.getClass())
+			return (ObjectUtils.nullSafeEquals(this.condition.getClass(), other.condition.getClass())
 					&& ObjectUtils.nullSafeEquals(this.outcome, other.outcome));
 		}
 

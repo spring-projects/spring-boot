@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ import org.springframework.util.ClassUtils;
  */
 public class EndpointMBean implements DynamicMBean {
 
-	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent(
-			"reactor.core.publisher.Mono", EndpointMBean.class.getClassLoader());
+	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent("reactor.core.publisher.Mono",
+			EndpointMBean.class.getClassLoader());
 
 	private final JmxOperationResponseMapper responseMapper;
 
@@ -61,8 +61,7 @@ public class EndpointMBean implements DynamicMBean {
 
 	private final Map<String, JmxOperation> operations;
 
-	EndpointMBean(JmxOperationResponseMapper responseMapper, ClassLoader classLoader,
-			ExposableJmxEndpoint endpoint) {
+	EndpointMBean(JmxOperationResponseMapper responseMapper, ClassLoader classLoader, ExposableJmxEndpoint endpoint) {
 		Assert.notNull(responseMapper, "ResponseMapper must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		this.responseMapper = responseMapper;
@@ -74,8 +73,7 @@ public class EndpointMBean implements DynamicMBean {
 
 	private Map<String, JmxOperation> getOperations(ExposableJmxEndpoint endpoint) {
 		Map<String, JmxOperation> operations = new HashMap<>();
-		endpoint.getOperations()
-				.forEach((operation) -> operations.put(operation.getName(), operation));
+		endpoint.getOperations().forEach((operation) -> operations.put(operation.getName(), operation));
 		return Collections.unmodifiableMap(operations);
 	}
 
@@ -89,12 +87,11 @@ public class EndpointMBean implements DynamicMBean {
 			throws MBeanException, ReflectionException {
 		JmxOperation operation = this.operations.get(actionName);
 		if (operation == null) {
-			String message = "Endpoint with id '" + this.endpoint.getEndpointId()
-					+ "' has no operation named " + actionName;
+			String message = "Endpoint with id '" + this.endpoint.getEndpointId() + "' has no operation named "
+					+ actionName;
 			throw new ReflectionException(new IllegalArgumentException(message), message);
 		}
-		ClassLoader previousClassLoader = overrideThreadContextClassLoader(
-				this.classLoader);
+		ClassLoader previousClassLoader = overrideThreadContextClassLoader(this.classLoader);
 		try {
 			return invoke(operation, params);
 		}
@@ -115,14 +112,12 @@ public class EndpointMBean implements DynamicMBean {
 		return null;
 	}
 
-	private Object invoke(JmxOperation operation, Object[] params)
-			throws MBeanException, ReflectionException {
+	private Object invoke(JmxOperation operation, Object[] params) throws MBeanException, ReflectionException {
 		try {
-			String[] parameterNames = operation.getParameters().stream()
-					.map(JmxOperationParameter::getName).toArray(String[]::new);
+			String[] parameterNames = operation.getParameters().stream().map(JmxOperationParameter::getName)
+					.toArray(String[]::new);
 			Map<String, Object> arguments = getArguments(parameterNames, params);
-			InvocationContext context = new InvocationContext(SecurityContext.NONE,
-					arguments);
+			InvocationContext context = new InvocationContext(SecurityContext.NONE, arguments);
 			Object result = operation.invoke(context);
 			if (REACTOR_PRESENT) {
 				result = ReactiveHandler.handle(result);
@@ -130,8 +125,7 @@ public class EndpointMBean implements DynamicMBean {
 			return this.responseMapper.mapResponse(result);
 		}
 		catch (InvalidEndpointRequestException ex) {
-			throw new ReflectionException(new IllegalArgumentException(ex.getMessage()),
-					ex.getMessage());
+			throw new ReflectionException(new IllegalArgumentException(ex.getMessage()), ex.getMessage());
 		}
 		catch (Exception ex) {
 			throw new MBeanException(translateIfNecessary(ex), ex.getMessage());
@@ -160,8 +154,8 @@ public class EndpointMBean implements DynamicMBean {
 	}
 
 	@Override
-	public void setAttribute(Attribute attribute) throws AttributeNotFoundException,
-			InvalidAttributeValueException, MBeanException, ReflectionException {
+	public void setAttribute(Attribute attribute)
+			throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
 		throw new AttributeNotFoundException("EndpointMBeans do not support attributes");
 	}
 

@@ -39,27 +39,23 @@ class SampleBitronixApplicationTests {
 	@Test
 	void testTransactionRollback(CapturedOutput capturedOutput) throws Exception {
 		SampleBitronixApplication.main(new String[] {});
-		assertThat(capturedOutput.toString()).has(substring(1, "---->"))
-				.has(substring(1, "----> josh")).has(substring(2, "Count is 1"))
-				.has(substring(1, "Simulated error"));
+		assertThat(capturedOutput.toString()).has(substring(1, "---->")).has(substring(1, "----> josh"))
+				.has(substring(2, "Count is 1")).has(substring(1, "Simulated error"));
 	}
 
 	@Test
 	void testExposesXaAndNonXa() {
-		ApplicationContext context = SpringApplication
-				.run(SampleBitronixApplication.class);
+		ApplicationContext context = SpringApplication.run(SampleBitronixApplication.class);
 		Object jmsConnectionFactory = context.getBean("jmsConnectionFactory");
 		Object xaJmsConnectionFactory = context.getBean("xaJmsConnectionFactory");
 		Object nonXaJmsConnectionFactory = context.getBean("nonXaJmsConnectionFactory");
 		assertThat(jmsConnectionFactory).isSameAs(xaJmsConnectionFactory);
 		assertThat(jmsConnectionFactory).isInstanceOf(PoolingConnectionFactory.class);
-		assertThat(nonXaJmsConnectionFactory)
-				.isNotInstanceOf(PoolingConnectionFactory.class);
+		assertThat(nonXaJmsConnectionFactory).isNotInstanceOf(PoolingConnectionFactory.class);
 	}
 
 	private Condition<String> substring(int times, String substring) {
-		return new Condition<String>(
-				"containing '" + substring + "' " + times + " times") {
+		return new Condition<String>("containing '" + substring + "' " + times + " times") {
 
 			@Override
 			public boolean matches(String value) {

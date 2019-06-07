@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,7 @@ public class ResourceBannerTests {
 	@Test
 	public void renderFormattedVersions() {
 		Resource resource = new ByteArrayResource(
-				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
-						.getBytes());
+				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
 		String banner = printBanner(resource, "10.2", "2.0", null);
 		assertThat(banner).startsWith("banner 1 (v10.2) (v2.0)");
 	}
@@ -75,16 +74,14 @@ public class ResourceBannerTests {
 	@Test
 	public void renderWithoutFormattedVersions() {
 		Resource resource = new ByteArrayResource(
-				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
-						.getBytes());
+				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("banner 1");
 	}
 
 	@Test
 	public void renderWithColors() {
-		Resource resource = new ByteArrayResource(
-				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
+		Resource resource = new ByteArrayResource("${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("\u001B[31mThis is red.\u001B[0m");
@@ -92,8 +89,7 @@ public class ResourceBannerTests {
 
 	@Test
 	public void renderWithColorsButDisabled() {
-		Resource resource = new ByteArrayResource(
-				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
+		Resource resource = new ByteArrayResource("${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("This is red.");
@@ -101,24 +97,21 @@ public class ResourceBannerTests {
 
 	@Test
 	public void renderWithTitle() {
-		Resource resource = new ByteArrayResource(
-				"banner ${application.title} ${a}".getBytes());
+		Resource resource = new ByteArrayResource("banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, "title");
 		assertThat(banner).startsWith("banner title 1");
 	}
 
 	@Test
 	public void renderWithoutTitle() {
-		Resource resource = new ByteArrayResource(
-				"banner ${application.title} ${a}".getBytes());
+		Resource resource = new ByteArrayResource("banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("banner  1");
 	}
 
-	private String printBanner(Resource resource, String bootVersion,
-			String applicationVersion, String applicationTitle) {
-		ResourceBanner banner = new MockResourceBanner(resource, bootVersion,
-				applicationVersion, applicationTitle);
+	private String printBanner(Resource resource, String bootVersion, String applicationVersion,
+			String applicationTitle) {
+		ResourceBanner banner = new MockResourceBanner(resource, bootVersion, applicationVersion, applicationTitle);
 		ConfigurableEnvironment environment = new MockEnvironment();
 		Map<String, Object> source = Collections.singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
@@ -135,8 +128,7 @@ public class ResourceBannerTests {
 
 		private final String applicationTitle;
 
-		MockResourceBanner(Resource resource, String bootVersion,
-				String applicationVersion, String applicationTitle) {
+		MockResourceBanner(Resource resource, String bootVersion, String applicationVersion, String applicationTitle) {
 			super(resource);
 			this.bootVersion = bootVersion;
 			this.applicationVersion = applicationVersion;

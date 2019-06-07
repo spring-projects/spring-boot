@@ -45,8 +45,7 @@ class SamplePropertyValidationApplicationTests {
 	@Test
 	void bindValidProperties() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		TestPropertyValues.of("sample.host:192.168.0.1", "sample.port:9090")
-				.applyTo(this.context);
+		TestPropertyValues.of("sample.host:192.168.0.1", "sample.port:9090").applyTo(this.context);
 		this.context.refresh();
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
 		assertThat(properties.getHost()).isEqualTo("192.168.0.1");
@@ -56,18 +55,15 @@ class SamplePropertyValidationApplicationTests {
 	@Test
 	void bindInvalidHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		TestPropertyValues.of("sample.host:xxxxxx", "sample.port:9090")
-				.applyTo(this.context);
-		assertThatExceptionOfType(BeanCreationException.class)
-				.isThrownBy(() -> this.context.refresh())
+		TestPropertyValues.of("sample.host:xxxxxx", "sample.port:9090").applyTo(this.context);
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> this.context.refresh())
 				.withMessageContaining("Failed to bind properties under 'sample'");
 	}
 
 	@Test
 	void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		assertThatExceptionOfType(BeanCreationException.class)
-				.isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> this.context.refresh())
 				.withMessageContaining("Failed to bind properties under 'sample'");
 	}
 
@@ -75,8 +71,7 @@ class SamplePropertyValidationApplicationTests {
 	void validatorOnlyCalledOnSupportedClass() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		this.context.register(ServerProperties.class); // our validator will not apply
-		TestPropertyValues.of("sample.host:192.168.0.1", "sample.port:9090")
-				.applyTo(this.context);
+		TestPropertyValues.of("sample.host:192.168.0.1", "sample.port:9090").applyTo(this.context);
 		this.context.refresh();
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
 		assertThat(properties.getHost()).isEqualTo("192.168.0.1");

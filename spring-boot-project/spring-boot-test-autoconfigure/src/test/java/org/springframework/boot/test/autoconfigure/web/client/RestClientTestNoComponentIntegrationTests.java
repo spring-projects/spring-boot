@@ -52,15 +52,14 @@ public class RestClientTestNoComponentIntegrationTests {
 
 	@Test
 	public void exampleRestClientIsNotInjected() {
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(
-				() -> this.applicationContext.getBean(ExampleRestClient.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.applicationContext.getBean(ExampleRestClient.class));
 	}
 
 	@Test
 	public void manuallyCreateBean() {
 		ExampleRestClient client = new ExampleRestClient(this.restTemplateBuilder);
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(client.test()).isEqualTo("hello");
 	}
 

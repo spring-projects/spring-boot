@@ -59,8 +59,7 @@ public class MetricsRestTemplateCustomizerTests {
 		this.restTemplate = new RestTemplate();
 		this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 		this.customizer = new MetricsRestTemplateCustomizer(this.registry,
-				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests",
-				AutoTimer.ENABLED);
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests", AutoTimer.ENABLED);
 		this.customizer.customize(this.restTemplate);
 	}
 
@@ -68,15 +67,12 @@ public class MetricsRestTemplateCustomizerTests {
 	public void interceptRestTemplate() {
 		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess("OK",
-						MediaType.APPLICATION_JSON));
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
 		String result = this.restTemplate.getForObject("/test/{id}", String.class, 123);
-		assertThat(this.registry.find("http.client.requests").meters()).anySatisfy(
-				(m) -> assertThat(m.getId().getTags().stream().map(Tag::getKey))
-						.doesNotContain("bucket"));
-		assertThat(this.registry.get("http.client.requests")
-				.tags("method", "GET", "uri", "/test/{id}", "status", "200").timer()
-				.count()).isEqualTo(1);
+		assertThat(this.registry.find("http.client.requests").meters())
+				.anySatisfy((m) -> assertThat(m.getId().getTags().stream().map(Tag::getKey)).doesNotContain("bucket"));
+		assertThat(this.registry.get("http.client.requests").tags("method", "GET", "uri", "/test/{id}", "status", "200")
+				.timer().count()).isEqualTo(1);
 		assertThat(result).isEqualTo("OK");
 		this.mockServer.verify();
 	}
@@ -93,8 +89,7 @@ public class MetricsRestTemplateCustomizerTests {
 	public void normalizeUriToContainLeadingSlash() {
 		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess("OK",
-						MediaType.APPLICATION_JSON));
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
 		String result = this.restTemplate.getForObject("test/{id}", String.class, 123);
 		this.registry.get("http.client.requests").tags("uri", "/test/{id}").timer();
 		assertThat(result).isEqualTo("OK");
@@ -103,13 +98,10 @@ public class MetricsRestTemplateCustomizerTests {
 
 	@Test
 	public void interceptRestTemplateWithUri() throws URISyntaxException {
-		this.mockServer
-				.expect(MockRestRequestMatchers.requestTo("http://localhost/test/123"))
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("http://localhost/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess("OK",
-						MediaType.APPLICATION_JSON));
-		String result = this.restTemplate
-				.getForObject(new URI("http://localhost/test/123"), String.class);
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+		String result = this.restTemplate.getForObject(new URI("http://localhost/test/123"), String.class);
 		assertThat(result).isEqualTo("OK");
 		this.registry.get("http.client.requests").tags("uri", "/test/123").timer();
 		this.mockServer.verify();

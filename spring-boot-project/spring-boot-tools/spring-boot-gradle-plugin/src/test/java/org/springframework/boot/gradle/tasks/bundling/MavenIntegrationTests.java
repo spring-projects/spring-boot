@@ -43,23 +43,20 @@ public class MavenIntegrationTests {
 	@TestTemplate
 	public void bootJarCanBeUploaded() throws FileNotFoundException, IOException {
 		BuildResult result = this.gradleBuild.build("uploadBootArchives");
-		assertThat(result.task(":uploadBootArchives").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("jar")).isFile();
 		assertThat(artifactWithSuffix("pom")).is(pomWith().groupId("com.example")
-				.artifactId(this.gradleBuild.getProjectDir().getName()).version("1.0")
-				.noPackaging().noDependencies());
+				.artifactId(this.gradleBuild.getProjectDir().getName()).version("1.0").noPackaging().noDependencies());
 	}
 
 	@TestTemplate
 	public void bootWarCanBeUploaded() throws IOException {
 		BuildResult result = this.gradleBuild.build("uploadBootArchives");
-		assertThat(result.task(":uploadBootArchives").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("war")).isFile();
-		assertThat(artifactWithSuffix("pom")).is(pomWith().groupId("com.example")
-				.artifactId(this.gradleBuild.getProjectDir().getName()).version("1.0")
-				.packaging("war").noDependencies());
+		assertThat(artifactWithSuffix("pom"))
+				.is(pomWith().groupId("com.example").artifactId(this.gradleBuild.getProjectDir().getName())
+						.version("1.0").packaging("war").noDependencies());
 	}
 
 	private File artifactWithSuffix(String suffix) {

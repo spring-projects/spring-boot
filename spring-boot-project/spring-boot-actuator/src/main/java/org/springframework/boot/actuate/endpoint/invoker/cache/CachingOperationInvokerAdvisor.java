@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,13 @@ public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 
 	private final Function<EndpointId, Long> endpointIdTimeToLive;
 
-	public CachingOperationInvokerAdvisor(
-			Function<EndpointId, Long> endpointIdTimeToLive) {
+	public CachingOperationInvokerAdvisor(Function<EndpointId, Long> endpointIdTimeToLive) {
 		this.endpointIdTimeToLive = endpointIdTimeToLive;
 	}
 
 	@Override
-	public OperationInvoker apply(EndpointId endpointId, OperationType operationType,
-			OperationParameters parameters, OperationInvoker invoker) {
+	public OperationInvoker apply(EndpointId endpointId, OperationType operationType, OperationParameters parameters,
+			OperationInvoker invoker) {
 		if (operationType == OperationType.READ && !hasMandatoryParameter(parameters)) {
 			Long timeToLive = this.endpointIdTimeToLive.apply(endpointId);
 			if (timeToLive != null && timeToLive > 0) {
@@ -55,8 +54,7 @@ public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 
 	private boolean hasMandatoryParameter(OperationParameters parameters) {
 		for (OperationParameter parameter : parameters) {
-			if (parameter.isMandatory()
-					&& !SecurityContext.class.isAssignableFrom(parameter.getType())) {
+			if (parameter.isMandatory() && !SecurityContext.class.isAssignableFrom(parameter.getType())) {
 				return true;
 			}
 		}

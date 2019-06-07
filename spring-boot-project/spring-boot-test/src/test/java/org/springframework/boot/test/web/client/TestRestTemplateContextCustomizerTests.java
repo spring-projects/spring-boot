@@ -41,16 +41,11 @@ public class TestRestTemplateContextCustomizerTests {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void whenContextIsNotABeanDefinitionRegistryTestRestTemplateIsRegistered() {
-		new ApplicationContextRunner(TestApplicationContext::new)
-				.withInitializer((context) -> {
-					MergedContextConfiguration configuration = mock(
-							MergedContextConfiguration.class);
-					given(configuration.getTestClass())
-							.willReturn((Class) TestClass.class);
-					new TestRestTemplateContextCustomizer().customizeContext(context,
-							configuration);
-				}).run((context) -> assertThat(context)
-						.hasSingleBean(TestRestTemplate.class));
+		new ApplicationContextRunner(TestApplicationContext::new).withInitializer((context) -> {
+			MergedContextConfiguration configuration = mock(MergedContextConfiguration.class);
+			given(configuration.getTestClass()).willReturn((Class) TestClass.class);
+			new TestRestTemplateContextCustomizer().customizeContext(context, configuration);
+		}).run((context) -> assertThat(context).hasSingleBean(TestRestTemplate.class));
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -72,8 +67,7 @@ public class TestRestTemplateContextCustomizerTests {
 		}
 
 		@Override
-		public ConfigurableListableBeanFactory getBeanFactory()
-				throws IllegalStateException {
+		public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
 			return this.beanFactory;
 		}
 

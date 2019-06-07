@@ -41,8 +41,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(AuditEventRepository.class)
-@ConditionalOnProperty(prefix = "management.auditevents", name = "enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.auditevents", name = "enabled", matchIfMissing = true)
 public class AuditAutoConfiguration {
 
 	@Bean
@@ -52,16 +51,14 @@ public class AuditAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass(
-			name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
+	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
 	@ConditionalOnMissingBean(AbstractAuthenticationAuditListener.class)
 	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
 		return new AuthenticationAuditListener();
 	}
 
 	@Bean
-	@ConditionalOnClass(
-			name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
+	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
 	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();

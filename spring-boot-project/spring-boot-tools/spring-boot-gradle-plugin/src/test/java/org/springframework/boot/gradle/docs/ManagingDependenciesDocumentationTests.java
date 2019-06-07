@@ -39,32 +39,27 @@ public class ManagingDependenciesDocumentationTests {
 
 	@TestTemplate
 	public void dependenciesExampleEvaluatesSuccessfully() {
-		this.gradleBuild.script("src/main/gradle/managing-dependencies/dependencies")
-				.build();
+		this.gradleBuild.script("src/main/gradle/managing-dependencies/dependencies").build();
 	}
 
 	@TestTemplate
 	public void customManagedVersions() {
-		assertThat(this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/custom-version")
-				.build("slf4jVersion").getOutput()).contains("1.7.20");
+		assertThat(this.gradleBuild.script("src/main/gradle/managing-dependencies/custom-version").build("slf4jVersion")
+				.getOutput()).contains("1.7.20");
 	}
 
 	@TestTemplate
 	public void dependencyManagementInIsolation() {
-		assertThat(this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/configure-bom")
-				.build("dependencyManagement").getOutput())
-						.contains("org.springframework.boot:spring-boot-starter ");
+		assertThat(this.gradleBuild.script("src/main/gradle/managing-dependencies/configure-bom")
+				.build("dependencyManagement").getOutput()).contains("org.springframework.boot:spring-boot-starter ");
 	}
 
 	@TestTemplate
 	public void dependencyManagementInIsolationWithPluginsBlock() {
 		Assume.assumeTrue(this.gradleBuild.getDsl() == Dsl.KOTLIN);
-		assertThat(this.gradleBuild.script(
-				"src/main/gradle/managing-dependencies/configure-bom-with-plugins")
-				.build("dependencyManagement").getOutput()).contains(
-						"org.springframework.boot:spring-boot-starter TEST-SNAPSHOT");
+		assertThat(this.gradleBuild.script("src/main/gradle/managing-dependencies/configure-bom-with-plugins")
+				.build("dependencyManagement").getOutput())
+						.contains("org.springframework.boot:spring-boot-starter TEST-SNAPSHOT");
 	}
 
 }

@@ -61,8 +61,7 @@ public class BootRun extends JavaExec {
 	 * @param sourceSet the source set
 	 */
 	public void sourceResources(SourceSet sourceSet) {
-		setClasspath(getProject()
-				.files(sourceSet.getResources().getSrcDirs(), getClasspath())
+		setClasspath(getProject().files(sourceSet.getResources().getSrcDirs(), getClasspath())
 				.filter((file) -> !file.equals(sourceSet.getOutput().getResourcesDir())));
 	}
 

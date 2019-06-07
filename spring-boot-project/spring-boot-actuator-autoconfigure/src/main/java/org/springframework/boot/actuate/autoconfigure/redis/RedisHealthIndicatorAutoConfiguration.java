@@ -48,15 +48,13 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 @ConditionalOnBean(RedisConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("redis")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({ RedisAutoConfiguration.class,
-		RedisReactiveHealthIndicatorAutoConfiguration.class })
-public class RedisHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
+@AutoConfigureAfter({ RedisAutoConfiguration.class, RedisReactiveHealthIndicatorAutoConfiguration.class })
+public class RedisHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "redisHealthIndicator")
-	public HealthIndicator redisHealthIndicator(
-			Map<String, RedisConnectionFactory> redisConnectionFactories) {
+	public HealthIndicator redisHealthIndicator(Map<String, RedisConnectionFactory> redisConnectionFactories) {
 		return createHealthIndicator(redisConnectionFactories);
 	}
 

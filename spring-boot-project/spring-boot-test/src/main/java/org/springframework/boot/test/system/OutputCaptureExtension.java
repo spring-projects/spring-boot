@@ -54,8 +54,8 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * @since 2.2.0
  * @see CapturedOutput
  */
-public class OutputCaptureExtension implements BeforeAllCallback, AfterAllCallback,
-		BeforeEachCallback, AfterEachCallback, ParameterResolver {
+public class OutputCaptureExtension
+		implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
 	private final OutputCapture outputCapture = new OutputCapture();
 
@@ -84,14 +84,14 @@ public class OutputCaptureExtension implements BeforeAllCallback, AfterAllCallba
 	}
 
 	@Override
-	public boolean supportsParameter(ParameterContext parameterContext,
-			ExtensionContext extensionContext) throws ParameterResolutionException {
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+			throws ParameterResolutionException {
 		return CapturedOutput.class.equals(parameterContext.getParameter().getType());
 	}
 
 	@Override
-	public Object resolveParameter(ParameterContext parameterContext,
-			ExtensionContext extensionContext) throws ParameterResolutionException {
+	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+			throws ParameterResolutionException {
 		return this.outputCapture;
 	}
 

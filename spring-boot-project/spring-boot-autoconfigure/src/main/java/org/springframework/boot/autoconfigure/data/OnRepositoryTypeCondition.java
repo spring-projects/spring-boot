@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,29 +35,24 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnRepositoryTypeCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(
-				ConditionalOnRepositoryType.class.getName(), true);
-		RepositoryType configuredType = getTypeProperty(context.getEnvironment(),
-				(String) attributes.get("store"));
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnRepositoryType.class.getName(),
+				true);
+		RepositoryType configuredType = getTypeProperty(context.getEnvironment(), (String) attributes.get("store"));
 		RepositoryType requiredType = (RepositoryType) attributes.get("type");
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition(ConditionalOnRepositoryType.class);
+		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnRepositoryType.class);
 		if (configuredType == requiredType || configuredType == RepositoryType.AUTO) {
-			return ConditionOutcome.match(message.because("configured type of '"
-					+ configuredType.name() + "' matched required type"));
+			return ConditionOutcome
+					.match(message.because("configured type of '" + configuredType.name() + "' matched required type"));
 		}
-		return ConditionOutcome
-				.noMatch(message.because("configured type (" + configuredType.name()
-						+ ") did not match required type (" + requiredType.name() + ")"));
+		return ConditionOutcome.noMatch(message.because("configured type (" + configuredType.name()
+				+ ") did not match required type (" + requiredType.name() + ")"));
 	}
 
 	private RepositoryType getTypeProperty(Environment environment, String store) {
-		return RepositoryType.valueOf(environment
-				.getProperty(String.format("spring.data.%s.repositories.type", store),
-						"auto")
-				.toUpperCase(Locale.ENGLISH));
+		return RepositoryType
+				.valueOf(environment.getProperty(String.format("spring.data.%s.repositories.type", store), "auto")
+						.toUpperCase(Locale.ENGLISH));
 	}
 
 }

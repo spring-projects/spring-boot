@@ -29,14 +29,12 @@ import org.springframework.boot.context.properties.scan.valid.b.BScanConfigurati
 public class ConfigurationPropertiesScanConfiguration {
 
 	@ConfigurationPropertiesScan
-	@EnableConfigurationProperties({
-			ConfigurationPropertiesScanConfiguration.FooProperties.class })
+	@EnableConfigurationProperties({ ConfigurationPropertiesScanConfiguration.FooProperties.class })
 	public static class TestConfiguration {
 
 	}
 
-	@ConfigurationPropertiesScan(
-			basePackages = "org.springframework.boot.context.properties.scan.valid.a",
+	@ConfigurationPropertiesScan(basePackages = "org.springframework.boot.context.properties.scan.valid.a",
 			basePackageClasses = BScanConfiguration.class)
 	public static class DifferentPackageConfiguration {
 

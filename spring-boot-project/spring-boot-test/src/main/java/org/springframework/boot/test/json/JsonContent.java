@@ -59,8 +59,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * @param json the actual JSON content
 	 * @param configuration the JsonPath configuration
 	 */
-	JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json,
-			Configuration configuration) {
+	JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json, Configuration configuration) {
 		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
 		Assert.notNull(json, "JSON must not be null");
 		Assert.notNull(configuration, "Configuration must not be null");
@@ -79,8 +78,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	@Override
 	@Deprecated
 	public JsonContentAssert assertThat() {
-		return new JsonContentAssert(this.resourceLoadClass, null, this.json,
-				this.configuration);
+		return new JsonContentAssert(this.resourceLoadClass, null, this.json, this.configuration);
 	}
 
 	/**

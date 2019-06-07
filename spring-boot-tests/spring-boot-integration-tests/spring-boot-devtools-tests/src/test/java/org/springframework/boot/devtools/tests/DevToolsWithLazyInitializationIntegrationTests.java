@@ -57,8 +57,7 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 	@ClassRule
 	public static final TemporaryFolder temp = new TemporaryFolder();
 
-	private static final BuildOutput buildOutput = new BuildOutput(
-			DevToolsIntegrationTests.class);
+	private static final BuildOutput buildOutput = new BuildOutput(DevToolsIntegrationTests.class);
 
 	private LaunchedApplication launchedApplication;
 
@@ -69,8 +68,7 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 	@Rule
 	public JvmLauncher javaLauncher = new JvmLauncher();
 
-	public DevToolsWithLazyInitializationIntegrationTests(
-			ApplicationLauncher applicationLauncher) {
+	public DevToolsWithLazyInitializationIntegrationTests(ApplicationLauncher applicationLauncher) {
 		this.applicationLauncher = applicationLauncher;
 		this.serverPortFile = new File(buildOutput.getRootLocation(), "server.port");
 	}
@@ -78,8 +76,7 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 	@Before
 	public void launchApplication() throws Exception {
 		this.serverPortFile.delete();
-		this.launchedApplication = this.applicationLauncher.launchApplication(
-				this.javaLauncher, this.serverPortFile,
+		this.launchedApplication = this.applicationLauncher.launchApplication(this.javaLauncher, this.serverPortFile,
 				"--spring.main.lazy-initialization=true");
 	}
 
@@ -92,17 +89,13 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 	public void addARequestMappingToAnExistingControllerWhenLazyInit() throws Exception {
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
-		assertThat(template.getForObject(urlBase + "/one", String.class))
-				.isEqualTo("one");
+		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(template.getForEntity(urlBase + "/two", String.class).getStatusCode())
 				.isEqualTo(HttpStatus.NOT_FOUND);
-		controller("com.example.ControllerOne").withRequestMapping("one")
-				.withRequestMapping("two").build();
+		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
-		assertThat(template.getForObject(urlBase + "/one", String.class))
-				.isEqualTo("one");
-		assertThat(template.getForObject(urlBase + "/two", String.class))
-				.isEqualTo("two");
+		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
+		assertThat(template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 	}
 
 	private int awaitServerPort() throws Exception {
@@ -112,13 +105,10 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 		while (this.serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(
-						"server.port file '" + this.serverPortFile
-								+ "' was not written within " + timeToWait.toMillis()
+						"server.port file '" + this.serverPortFile + "' was not written within " + timeToWait.toMillis()
 								+ "ms. " + "Application output:%n%s%s",
-						FileCopyUtils.copyToString(new FileReader(
-								this.launchedApplication.getStandardOut())),
-						FileCopyUtils.copyToString(new FileReader(
-								this.launchedApplication.getStandardError()))));
+						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardOut())),
+						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardError()))));
 			}
 			Thread.sleep(100);
 		}
@@ -132,8 +122,7 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 	}
 
 	private ControllerBuilder controller(String name) {
-		return new ControllerBuilder(name,
-				this.launchedApplication.getClassesDirectory());
+		return new ControllerBuilder(name, this.launchedApplication.getClassesDirectory());
 	}
 
 	@Parameterized.Parameters(name = "{0}")
@@ -164,14 +153,12 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 		}
 
 		public void build() throws Exception {
-			DynamicType.Builder<Object> builder = new ByteBuddy().subclass(Object.class)
-					.name(this.name).annotateType(AnnotationDescription.Builder
-							.ofType(RestController.class).build());
+			DynamicType.Builder<Object> builder = new ByteBuddy().subclass(Object.class).name(this.name)
+					.annotateType(AnnotationDescription.Builder.ofType(RestController.class).build());
 			for (String mapping : this.mappings) {
 				builder = builder.defineMethod(mapping, String.class, Visibility.PUBLIC)
-						.intercept(FixedValue.value(mapping)).annotateMethod(
-								AnnotationDescription.Builder.ofType(RequestMapping.class)
-										.defineArray("value", mapping).build());
+						.intercept(FixedValue.value(mapping)).annotateMethod(AnnotationDescription.Builder
+								.ofType(RequestMapping.class).defineArray("value", mapping).build());
 			}
 			builder.make().saveIn(this.classesDirectory);
 		}

@@ -40,9 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = "spring.main.web-application-type=reactive",
-		classes = { WebTestClientSpringBootTestIntegrationTests.TestConfiguration.class,
-				ExampleWebFluxApplication.class })
+@SpringBootTest(properties = "spring.main.web-application-type=reactive", classes = {
+		WebTestClientSpringBootTestIntegrationTests.TestConfiguration.class, ExampleWebFluxApplication.class })
 @AutoConfigureWebTestClient
 public class WebTestClientSpringBootTestIntegrationTests {
 
@@ -54,20 +53,17 @@ public class WebTestClientSpringBootTestIntegrationTests {
 
 	@Test
 	public void shouldFindController1() {
-		this.webClient.get().uri("/one").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("one");
+		this.webClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
 	}
 
 	@Test
 	public void shouldFindController2() {
-		this.webClient.get().uri("/two").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("two");
+		this.webClient.get().uri("/two").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("two");
 	}
 
 	@Test
 	public void shouldHaveRealService() {
-		assertThat(this.applicationContext.getBeansOfType(ExampleRealService.class))
-				.hasSize(1);
+		assertThat(this.applicationContext.getBeansOfType(ExampleRealService.class)).hasSize(1);
 	}
 
 	@Configuration(proxyBeanMethods = false)

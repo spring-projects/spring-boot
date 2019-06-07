@@ -35,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(
-		classes = TestRestTemplateContextCustomizerWithFactoryBeanTests.TestClassWithFactoryBean.class,
+@SpringBootTest(classes = TestRestTemplateContextCustomizerWithFactoryBeanTests.TestClassWithFactoryBean.class,
 		webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class TestRestTemplateContextCustomizerWithFactoryBeanTests {

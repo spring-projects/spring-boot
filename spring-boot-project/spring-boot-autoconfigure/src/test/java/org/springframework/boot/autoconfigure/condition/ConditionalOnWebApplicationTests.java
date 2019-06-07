@@ -55,33 +55,30 @@ public class ConditionalOnWebApplicationTests {
 	@Test
 	public void testWebApplicationWithServletContext() {
 		AnnotationConfigServletWebApplicationContext ctx = new AnnotationConfigServletWebApplicationContext();
-		ctx.register(AnyWebApplicationConfiguration.class,
-				ServletWebApplicationConfiguration.class,
+		ctx.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.setServletContext(new MockServletContext());
 		ctx.refresh();
 		this.context = ctx;
-		assertThat(this.context.getBeansOfType(String.class))
-				.containsExactly(entry("any", "any"), entry("servlet", "servlet"));
+		assertThat(this.context.getBeansOfType(String.class)).containsExactly(entry("any", "any"),
+				entry("servlet", "servlet"));
 	}
 
 	@Test
 	public void testWebApplicationWithReactiveContext() {
 		AnnotationConfigReactiveWebApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
-		context.register(AnyWebApplicationConfiguration.class,
-				ServletWebApplicationConfiguration.class,
+		context.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		context.refresh();
 		this.context = context;
-		assertThat(this.context.getBeansOfType(String.class))
-				.containsExactly(entry("any", "any"), entry("reactive", "reactive"));
+		assertThat(this.context.getBeansOfType(String.class)).containsExactly(entry("any", "any"),
+				entry("reactive", "reactive"));
 	}
 
 	@Test
 	public void testNonWebApplication() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(AnyWebApplicationConfiguration.class,
-				ServletWebApplicationConfiguration.class,
+		ctx.register(AnyWebApplicationConfiguration.class, ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

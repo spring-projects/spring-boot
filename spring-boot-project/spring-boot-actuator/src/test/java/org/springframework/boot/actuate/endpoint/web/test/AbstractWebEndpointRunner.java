@@ -54,8 +54,8 @@ abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 
 	private final TestContext testContext;
 
-	protected AbstractWebEndpointRunner(Class<?> testClass, String name,
-			ContextFactory contextFactory) throws InitializationError {
+	protected AbstractWebEndpointRunner(Class<?> testClass, String name, ContextFactory contextFactory)
+			throws InitializationError {
 		super(testClass);
 		this.name = name;
 		this.testContext = new TestContext(testClass, contextFactory);
@@ -104,8 +104,7 @@ abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 	}
 
 	@Override
-	protected Statement withBefores(FrameworkMethod method, Object target,
-			Statement statement) {
+	protected Statement withBefores(FrameworkMethod method, Object target, Statement statement) {
 		Statement delegate = super.withBefores(method, target, statement);
 		return new Statement() {
 
@@ -119,8 +118,7 @@ abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 	}
 
 	@Override
-	protected Statement withAfters(FrameworkMethod method, Object target,
-			Statement statement) {
+	protected Statement withAfters(FrameworkMethod method, Object target, Statement statement) {
 		Statement delegate = super.withAfters(method, target, statement);
 		return new Statement() {
 
@@ -175,37 +173,33 @@ abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 
 		private ConfigurableApplicationContext createApplicationContext() {
 			Class<?>[] members = this.testClass.getDeclaredClasses();
-			List<Class<?>> configurationClasses = Stream.of(members)
-					.filter(this::isConfiguration).collect(Collectors.toList());
-			return this.contextFactory
-					.createContext(new ArrayList<>(configurationClasses));
+			List<Class<?>> configurationClasses = Stream.of(members).filter(this::isConfiguration)
+					.collect(Collectors.toList());
+			return this.contextFactory.createContext(new ArrayList<>(configurationClasses));
 		}
 
 		private boolean isConfiguration(Class<?> candidate) {
-			return MergedAnnotations.from(candidate, SearchStrategy.EXHAUSTIVE)
-					.isPresent(Configuration.class);
+			return MergedAnnotations.from(candidate, SearchStrategy.EXHAUSTIVE).isPresent(Configuration.class);
 		}
 
 		private WebTestClient createWebTestClient() {
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(
 					"http://localhost:" + determinePort());
 			uriBuilderFactory.setEncodingMode(EncodingMode.NONE);
-			return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory)
-					.responseTimeout(TIMEOUT).build();
+			return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory).responseTimeout(TIMEOUT).build();
 		}
 
 		private int determinePort() {
 			if (this.applicationContext instanceof AnnotationConfigServletWebServerApplicationContext) {
-				return ((AnnotationConfigServletWebServerApplicationContext) this.applicationContext)
-						.getWebServer().getPort();
+				return ((AnnotationConfigServletWebServerApplicationContext) this.applicationContext).getWebServer()
+						.getPort();
 			}
 			return this.applicationContext.getBean(PortHolder.class).getPort();
 		}
 
 		private void injectIfPossible(Class<?> target, Object value) {
 			ReflectionUtils.doWithFields(target, (field) -> {
-				if (Modifier.isStatic(field.getModifiers())
-						&& field.getType().isInstance(value)) {
+				if (Modifier.isStatic(field.getModifiers()) && field.getType().isInstance(value)) {
 					ReflectionUtils.makeAccessible(field);
 					ReflectionUtils.setField(field, null, value);
 				}
@@ -214,16 +208,13 @@ abstract class AbstractWebEndpointRunner extends BlockJUnit4ClassRunner {
 
 		private void capturePropertySources() {
 			this.propertySources = new ArrayList<>();
-			this.applicationContext.getEnvironment().getPropertySources()
-					.forEach(this.propertySources::add);
+			this.applicationContext.getEnvironment().getPropertySources().forEach(this.propertySources::add);
 		}
 
 		private void restorePropertySources() {
 			List<String> names = new ArrayList<>();
-			MutablePropertySources propertySources = this.applicationContext
-					.getEnvironment().getPropertySources();
-			propertySources
-					.forEach((propertySource) -> names.add(propertySource.getName()));
+			MutablePropertySources propertySources = this.applicationContext.getEnvironment().getPropertySources();
+			propertySources.forEach((propertySource) -> names.add(propertySource.getName()));
 			names.forEach(propertySources::remove);
 			this.propertySources.forEach(propertySources::addLast);
 		}

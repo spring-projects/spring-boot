@@ -92,12 +92,12 @@ public class ErrorPageFilterIntegrationTests {
 		assertThat(this.controller.getStatus()).isEqualTo(200);
 	}
 
-	private void doTest(AnnotationConfigServletWebServerApplicationContext context,
-			String resourcePath, HttpStatus status) throws Exception {
+	private void doTest(AnnotationConfigServletWebServerApplicationContext context, String resourcePath,
+			HttpStatus status) throws Exception {
 		int port = context.getWebServer().getPort();
 		RestTemplate template = new RestTemplate();
-		ResponseEntity<String> entity = template.getForEntity(
-				new URI("http://localhost:" + port + resourcePath), String.class);
+		ResponseEntity<String> entity = template.getForEntity(new URI("http://localhost:" + port + resourcePath),
+				String.class);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 		assertThat(entity.getStatusCode()).isEqualTo(status);
 	}
@@ -136,8 +136,7 @@ public class ErrorPageFilterIntegrationTests {
 		private CountDownLatch latch = new CountDownLatch(1);
 
 		public int getStatus() throws InterruptedException {
-			assertThat(this.latch.await(1, TimeUnit.SECONDS))
-					.as("Timed out waiting for latch").isTrue();
+			assertThat(this.latch.await(1, TimeUnit.SECONDS)).as("Timed out waiting for latch").isTrue();
 			return this.status;
 		}
 
@@ -154,8 +153,7 @@ public class ErrorPageFilterIntegrationTests {
 		public void addInterceptors(InterceptorRegistry registry) {
 			registry.addInterceptor(new HandlerInterceptorAdapter() {
 				@Override
-				public void postHandle(HttpServletRequest request,
-						HttpServletResponse response, Object handler,
+				public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 						ModelAndView modelAndView) {
 					HelloWorldController.this.setStatus(response.getStatus());
 					HelloWorldController.this.latch.countDown();

@@ -30,15 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HeapDumpWebEndpointTests {
 
 	@Test
-	public void parallelRequestProducesTooManyRequestsResponse()
-			throws InterruptedException {
+	public void parallelRequestProducesTooManyRequestsResponse() throws InterruptedException {
 		CountDownLatch dumpingLatch = new CountDownLatch(1);
 		CountDownLatch blockingLatch = new CountDownLatch(1);
 		HeapDumpWebEndpoint slowEndpoint = new HeapDumpWebEndpoint(2500) {
 
 			@Override
-			protected HeapDumper createHeapDumper()
-					throws HeapDumperUnavailableException {
+			protected HeapDumper createHeapDumper() throws HeapDumperUnavailableException {
 				return (file, live) -> {
 					dumpingLatch.countDown();
 					blockingLatch.await();

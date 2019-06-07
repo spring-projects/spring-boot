@@ -47,8 +47,7 @@ abstract class BeanPropertyName {
 		String replaced = name.replace('_', '-');
 		for (int i = start; i < replaced.length(); i++) {
 			char ch = replaced.charAt(i);
-			if (Character.isUpperCase(ch) && result.length() > 0
-					&& result.charAt(result.length() - 1) != '-') {
+			if (Character.isUpperCase(ch) && result.length() > 0 && result.charAt(result.length() - 1) != '-') {
 				result.append('-');
 			}
 			result.append(Character.toLowerCase(ch));

@@ -36,8 +36,7 @@ public class NameAndCareerJsonComponent {
 	public static class Serializer extends JsonObjectSerializer<Name> {
 
 		@Override
-		protected void serializeObject(Name value, JsonGenerator jgen,
-				SerializerProvider provider) throws IOException {
+		protected void serializeObject(Name value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 			jgen.writeStringField("name", value.getName());
 		}
 
@@ -46,9 +45,8 @@ public class NameAndCareerJsonComponent {
 	public static class Deserializer extends JsonObjectDeserializer<Name> {
 
 		@Override
-		protected Name deserializeObject(JsonParser jsonParser,
-				DeserializationContext context, ObjectCodec codec, JsonNode tree)
-				throws IOException {
+		protected Name deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
+				JsonNode tree) throws IOException {
 			String name = nullSafeValue(tree.get("name"), String.class);
 			String career = nullSafeValue(tree.get("career"), String.class);
 			return new NameAndCareer(name, career);

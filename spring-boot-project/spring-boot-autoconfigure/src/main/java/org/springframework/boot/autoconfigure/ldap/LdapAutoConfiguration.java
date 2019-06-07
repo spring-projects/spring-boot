@@ -44,16 +44,14 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(LdapProperties properties,
-			Environment environment) {
+	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment) {
 		LdapContextSource source = new LdapContextSource();
 		source.setUserDn(properties.getUsername());
 		source.setPassword(properties.getPassword());
 		source.setAnonymousReadOnly(properties.getAnonymousReadOnly());
 		source.setBase(properties.getBase());
 		source.setUrls(properties.determineUrls(environment));
-		source.setBaseEnvironmentProperties(
-				Collections.unmodifiableMap(properties.getBaseEnvironment()));
+		source.setBaseEnvironmentProperties(Collections.unmodifiableMap(properties.getBaseEnvironment()));
 		return source;
 	}
 

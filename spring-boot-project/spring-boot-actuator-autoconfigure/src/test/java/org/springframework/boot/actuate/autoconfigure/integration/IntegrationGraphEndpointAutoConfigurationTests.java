@@ -36,27 +36,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IntegrationGraphEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
-					IntegrationAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class,
 					IntegrationGraphEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.endpoints.web.exposure.include=integrationgraph")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(IntegrationGraphEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=integrationgraph")
+				.run((context) -> assertThat(context).hasSingleBean(IntegrationGraphEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.integrationgraph.enabled:false")
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
-					assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);
-				});
+		this.contextRunner.withPropertyValues("management.endpoint.integrationgraph.enabled:false").run((context) -> {
+			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
+			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);
+		});
 	}
 
 	@Test
@@ -70,8 +64,7 @@ public class IntegrationGraphEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenSpringIntegrationIsNotEnabledShouldNotHaveEndpointBean() {
 		ApplicationContextRunner noSpringIntegrationRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations
-						.of(IntegrationGraphEndpointAutoConfiguration.class));
+				.withConfiguration(AutoConfigurations.of(IntegrationGraphEndpointAutoConfiguration.class));
 		noSpringIntegrationRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
 			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);

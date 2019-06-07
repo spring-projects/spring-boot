@@ -52,8 +52,7 @@ public class WebMvcTestPrintAlwaysIntegrationTests {
 
 	@Test
 	public void shouldPrint() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(content().string("one"))
-				.andExpect(status().isOk());
+		this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
 		assertThat(this.output.toString()).contains("Request URI = /one");
 	}
 

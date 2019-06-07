@@ -52,23 +52,18 @@ class ReactorCoreAutoConfigurationTests {
 
 	@Test
 	void debugOperatorIsSetWithProperty() {
-		this.contextRunner.withPropertyValues("spring.reactor.debug=true")
-				.run(assertDebugOperator(true));
+		this.contextRunner.withPropertyValues("spring.reactor.debug=true").run(assertDebugOperator(true));
 	}
 
 	@Test
 	@Deprecated
 	void debugOperatorIsSetWithDeprecatedProperty() {
-		this.contextRunner
-				.withPropertyValues("spring.reactor.stacktrace-mode.enabled=true")
+		this.contextRunner.withPropertyValues("spring.reactor.stacktrace-mode.enabled=true")
 				.run(assertDebugOperator(true));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertDebugOperator(
-			boolean expected) {
-		return (context) -> assertThat(
-				ReflectionTestUtils.getField(Hooks.class, "GLOBAL_TRACE"))
-						.isEqualTo(expected);
+	private ContextConsumer<AssertableApplicationContext> assertDebugOperator(boolean expected) {
+		return (context) -> assertThat(ReflectionTestUtils.getField(Hooks.class, "GLOBAL_TRACE")).isEqualTo(expected);
 	}
 
 }

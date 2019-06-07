@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void simple() {
 		String s = "one two";
-		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("one",
-				"two");
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("one", "two");
 		assertThat(this.delimiter.parseArguments(s)).containsExactly("one", "two");
 		assertThat(this.delimiter.isDelimiter(s, 2)).isFalse();
 		assertThat(this.delimiter.isDelimiter(s, 3)).isTrue();
@@ -44,8 +43,7 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void escaped() {
 		String s = "o\\ ne two";
-		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("o\\ ne",
-				"two");
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("o\\ ne", "two");
 		assertThat(this.delimiter.parseArguments(s)).containsExactly("o ne", "two");
 		assertThat(this.delimiter.isDelimiter(s, 2)).isFalse();
 		assertThat(this.delimiter.isDelimiter(s, 3)).isFalse();
@@ -56,26 +54,22 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void quoted() {
 		String s = "'o ne' 't w o'";
-		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("'o ne'",
-				"'t w o'");
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("'o ne'", "'t w o'");
 		assertThat(this.delimiter.parseArguments(s)).containsExactly("o ne", "t w o");
 	}
 
 	@Test
 	public void doubleQuoted() {
 		String s = "\"o ne\" \"t w o\"";
-		assertThat(this.delimiter.delimit(s, 0).getArguments())
-				.containsExactly("\"o ne\"", "\"t w o\"");
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("\"o ne\"", "\"t w o\"");
 		assertThat(this.delimiter.parseArguments(s)).containsExactly("o ne", "t w o");
 	}
 
 	@Test
 	public void nestedQuotes() {
 		String s = "\"o 'n''e\" 't \"w o'";
-		assertThat(this.delimiter.delimit(s, 0).getArguments())
-				.containsExactly("\"o 'n''e\"", "'t \"w o'");
-		assertThat(this.delimiter.parseArguments(s)).containsExactly("o 'n''e",
-				"t \"w o");
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("\"o 'n''e\"", "'t \"w o'");
+		assertThat(this.delimiter.parseArguments(s)).containsExactly("o 'n''e", "t \"w o");
 	}
 
 	@Test

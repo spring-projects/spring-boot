@@ -40,8 +40,7 @@ public class CloudServiceConnectorsAutoConfigurationTests {
 
 	@Test
 	public void testOrder() {
-		TestAutoConfigurationSorter sorter = new TestAutoConfigurationSorter(
-				new CachingMetadataReaderFactory());
+		TestAutoConfigurationSorter sorter = new TestAutoConfigurationSorter(new CachingMetadataReaderFactory());
 		Collection<String> classNames = new ArrayList<>();
 		classNames.add(MongoAutoConfiguration.class.getName());
 		classNames.add(DataSourceAutoConfiguration.class.getName());
@@ -49,8 +48,7 @@ public class CloudServiceConnectorsAutoConfigurationTests {
 		classNames.add(JpaRepositoriesAutoConfiguration.class.getName());
 		classNames.add(CloudServiceConnectorsAutoConfiguration.class.getName());
 		List<String> ordered = sorter.getInPriorityOrder(classNames);
-		assertThat(ordered.get(0))
-				.isEqualTo(CloudServiceConnectorsAutoConfiguration.class.getName());
+		assertThat(ordered.get(0)).isEqualTo(CloudServiceConnectorsAutoConfiguration.class.getName());
 	}
 
 }

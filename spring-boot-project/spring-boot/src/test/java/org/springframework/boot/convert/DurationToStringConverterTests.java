@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,23 +39,20 @@ public class DurationToStringConverterTests {
 
 	private final ConversionService conversionService;
 
-	public DurationToStringConverterTests(String name,
-			ConversionService conversionService) {
+	public DurationToStringConverterTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	@Test
 	public void convertWithoutStyleShouldReturnIso8601() {
-		String converted = this.conversionService.convert(Duration.ofSeconds(1),
-				String.class);
+		String converted = this.conversionService.convert(Duration.ofSeconds(1), String.class);
 		assertThat(converted).isEqualTo("PT1S");
 	}
 
 	@Test
 	public void convertWithFormatShouldUseFormatAndMs() {
 		String converted = (String) this.conversionService.convert(Duration.ofSeconds(1),
-				MockDurationTypeDescriptor.get(null, DurationStyle.SIMPLE),
-				TypeDescriptor.valueOf(String.class));
+				MockDurationTypeDescriptor.get(null, DurationStyle.SIMPLE), TypeDescriptor.valueOf(String.class));
 		assertThat(converted).isEqualTo("1000ms");
 	}
 

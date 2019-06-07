@@ -27,8 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class KairosPropertiesConfigAdapterTests extends
-		StepRegistryPropertiesConfigAdapterTests<KairosProperties, KairosPropertiesConfigAdapter> {
+public class KairosPropertiesConfigAdapterTests
+		extends StepRegistryPropertiesConfigAdapterTests<KairosProperties, KairosPropertiesConfigAdapter> {
 
 	@Override
 	protected KairosProperties createProperties() {
@@ -36,8 +36,7 @@ public class KairosPropertiesConfigAdapterTests extends
 	}
 
 	@Override
-	protected KairosPropertiesConfigAdapter createConfigAdapter(
-			KairosProperties properties) {
+	protected KairosPropertiesConfigAdapter createConfigAdapter(KairosProperties properties) {
 		return new KairosPropertiesConfigAdapter(properties);
 	}
 

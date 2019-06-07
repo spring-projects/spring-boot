@@ -36,8 +36,7 @@ public class SamplePropertiesValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(errors, "host", "host.empty");
 		ValidationUtils.rejectIfEmpty(errors, "port", "port.empty");
 		SampleProperties properties = (SampleProperties) o;
-		if (properties.getHost() != null
-				&& !this.pattern.matcher(properties.getHost()).matches()) {
+		if (properties.getHost() != null && !this.pattern.matcher(properties.getHost()).matches()) {
 			errors.rejectValue("host", "Invalid host");
 		}
 	}

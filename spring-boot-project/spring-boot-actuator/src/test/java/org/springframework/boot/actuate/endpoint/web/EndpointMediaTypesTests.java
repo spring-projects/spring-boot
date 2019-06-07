@@ -34,31 +34,27 @@ public class EndpointMediaTypesTests {
 
 	@Test
 	public void createWhenProducedIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
+		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
 				.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
 	public void createWhenConsumedIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
 				.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test
 	public void getProducedShouldReturnProduced() {
 		List<String> produced = Arrays.asList("a", "b", "c");
-		EndpointMediaTypes types = new EndpointMediaTypes(produced,
-				Collections.emptyList());
+		EndpointMediaTypes types = new EndpointMediaTypes(produced, Collections.emptyList());
 		assertThat(types.getProduced()).isEqualTo(produced);
 	}
 
 	@Test
 	public void getConsumedShouldReturnConsumed() {
 		List<String> consumed = Arrays.asList("a", "b", "c");
-		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(),
-				consumed);
+		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(), consumed);
 		assertThat(types.getConsumed()).isEqualTo(consumed);
 	}
 

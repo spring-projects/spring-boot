@@ -41,10 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0" },
-		classes = { ManagementPortSampleSecureWebFluxTests.SecurityConfiguration.class,
-				SampleSecureWebFluxApplication.class })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port=0" }, classes = {
+		ManagementPortSampleSecureWebFluxTests.SecurityConfiguration.class, SampleSecureWebFluxApplication.class })
 class ManagementPortSampleSecureWebFluxTests {
 
 	@LocalServerPort
@@ -59,35 +57,29 @@ class ManagementPortSampleSecureWebFluxTests {
 	@Test
 	void testHome() {
 		this.webClient.get().uri("http://localhost:" + this.port, String.class)
-				.header("Authorization", "basic " + getBasicAuth()).exchange()
-				.expectStatus().isOk().expectBody(String.class).isEqualTo("Hello user");
+				.header("Authorization", "basic " + getBasicAuth()).exchange().expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("Hello user");
 	}
 
 	@Test
 	void actuatorPathOnMainPortShouldNotMatch() {
-		this.webClient.get()
-				.uri("http://localhost:" + this.port + "/actuator", String.class)
-				.exchange().expectStatus().isUnauthorized();
-		this.webClient.get()
-				.uri("http://localhost:" + this.port + "/actuator/health", String.class)
-				.exchange().expectStatus().isUnauthorized();
+		this.webClient.get().uri("http://localhost:" + this.port + "/actuator", String.class).exchange().expectStatus()
+				.isUnauthorized();
+		this.webClient.get().uri("http://localhost:" + this.port + "/actuator/health", String.class).exchange()
+				.expectStatus().isUnauthorized();
 	}
 
 	@Test
 	void testSecureActuator() {
-		this.webClient.get()
-				.uri("http://localhost:" + this.managementPort + "/actuator/env",
-						String.class)
-				.exchange().expectStatus().isUnauthorized();
+		this.webClient.get().uri("http://localhost:" + this.managementPort + "/actuator/env", String.class).exchange()
+				.expectStatus().isUnauthorized();
 	}
 
 	@Test
 	void testInsecureActuator() {
 		String responseBody = this.webClient.get()
-				.uri("http://localhost:" + this.managementPort + "/actuator/health",
-						String.class)
-				.exchange().expectStatus().isOk().expectBody(String.class).returnResult()
-				.getResponseBody();
+				.uri("http://localhost:" + this.managementPort + "/actuator/health", String.class).exchange()
+				.expectStatus().isOk().expectBody(String.class).returnResult().getResponseBody();
 		assertThat(responseBody).contains("\"status\":\"UP\"");
 	}
 
@@ -100,14 +92,10 @@ class ManagementPortSampleSecureWebFluxTests {
 
 		@Bean
 		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
-					.permitAll()
-					.matchers(EndpointRequest.toAnyEndpoint()
-							.excluding(MappingsEndpoint.class))
-					.hasRole("ACTUATOR")
-					.matchers(PathRequest.toStaticResources().atCommonLocations())
-					.permitAll().pathMatchers("/login").permitAll().anyExchange()
-					.authenticated().and().httpBasic().and().build();
+			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info")).permitAll()
+					.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
+					.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().pathMatchers("/login")
+					.permitAll().anyExchange().authenticated().and().httpBasic().and().build();
 		}
 
 	}

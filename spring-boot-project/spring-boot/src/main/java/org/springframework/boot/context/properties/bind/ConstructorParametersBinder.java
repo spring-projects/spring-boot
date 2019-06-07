@@ -50,8 +50,8 @@ class ConstructorParametersBinder implements BeanBinder {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
-			Binder.Context context, BeanPropertyBinder propertyBinder) {
+	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Binder.Context context,
+			BeanPropertyBinder propertyBinder) {
 		Bean bean = Bean.get(target);
 		if (bean == null) {
 			return null;
@@ -60,8 +60,7 @@ class ConstructorParametersBinder implements BeanBinder {
 		return (T) BeanUtils.instantiateClass(bean.getConstructor(), bound.toArray());
 	}
 
-	private List<Object> bind(BeanPropertyBinder propertyBinder, Bean bean,
-			BindConverter converter) {
+	private List<Object> bind(BeanPropertyBinder propertyBinder, Bean bean, BindConverter converter) {
 		Collection<ConstructorParameter> parameters = bean.getParameters().values();
 		List<Object> boundParameters = new ArrayList<>(parameters.size());
 		for (ConstructorParameter parameter : parameters) {
@@ -74,17 +73,14 @@ class ConstructorParametersBinder implements BeanBinder {
 		return boundParameters;
 	}
 
-	private Object getDefaultValue(ConstructorParameter parameter,
-			BindConverter converter) {
+	private Object getDefaultValue(ConstructorParameter parameter, BindConverter converter) {
 		if (parameter.getDefaultValue() == null) {
 			return null;
 		}
-		return converter.convert(parameter.getDefaultValue(), parameter.getType(),
-				parameter.getAnnotations());
+		return converter.convert(parameter.getDefaultValue(), parameter.getType(), parameter.getAnnotations());
 	}
 
-	private Object bind(ConstructorParameter parameter,
-			BeanPropertyBinder propertyBinder) {
+	private Object bind(ConstructorParameter parameter, BeanPropertyBinder propertyBinder) {
 		String propertyName = parameter.getName();
 		ResolvableType type = parameter.getType();
 		return propertyBinder.bindProperty(propertyName, Bindable.of(type));
@@ -96,8 +92,7 @@ class ConstructorParametersBinder implements BeanBinder {
 
 		private final Map<String, ConstructorParameter> parameters;
 
-		private Bean(Constructor<?> constructor,
-				Map<String, ConstructorParameter> parameters) {
+		private Bean(Constructor<?> constructor, Map<String, ConstructorParameter> parameters) {
 			this.constructor = constructor;
 			this.parameters = parameters;
 		}
@@ -134,32 +129,28 @@ class ConstructorParametersBinder implements BeanBinder {
 
 		public static Bean get(Class<?> type) {
 			Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
-			if (primaryConstructor != null
-					&& primaryConstructor.getParameterCount() > 0) {
+			if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
 				return get(primaryConstructor);
 			}
 			return null;
 		}
 
 		private static Bean get(Constructor<?> constructor) {
-			KFunction<?> kotlinConstructor = ReflectJvmMapping
-					.getKotlinFunction(constructor);
+			KFunction<?> kotlinConstructor = ReflectJvmMapping.getKotlinFunction(constructor);
 			if (kotlinConstructor != null) {
 				return new Bean(constructor, parseParameters(kotlinConstructor));
 			}
 			return SimpleBeanProvider.get(constructor);
 		}
 
-		private static Map<String, ConstructorParameter> parseParameters(
-				KFunction<?> constructor) {
+		private static Map<String, ConstructorParameter> parseParameters(KFunction<?> constructor) {
 			Map<String, ConstructorParameter> parameters = new LinkedHashMap<>();
 			for (KParameter parameter : constructor.getParameters()) {
 				String name = parameter.getName();
 				Type type = ReflectJvmMapping.getJavaType(parameter.getType());
-				Annotation[] annotations = parameter.getAnnotations()
-						.toArray(new Annotation[0]);
-				parameters.computeIfAbsent(name, (s) -> new ConstructorParameter(name,
-						ResolvableType.forType(type), annotations, null));
+				Annotation[] annotations = parameter.getAnnotations().toArray(new Annotation[0]);
+				parameters.computeIfAbsent(name,
+						(s) -> new ConstructorParameter(name, ResolvableType.forType(type), annotations, null));
 			}
 			return parameters;
 		}
@@ -186,24 +177,18 @@ class ConstructorParametersBinder implements BeanBinder {
 			return new Bean(constructor, parseParameters(constructor));
 		}
 
-		private static Map<String, ConstructorParameter> parseParameters(
-				Constructor<?> constructor) {
-			String[] parameterNames = PARAMETER_NAME_DISCOVERER
-					.getParameterNames(constructor);
-			Assert.state(parameterNames != null,
-					() -> "Failed to extract parameter names for " + constructor);
+		private static Map<String, ConstructorParameter> parseParameters(Constructor<?> constructor) {
+			String[] parameterNames = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
+			Assert.state(parameterNames != null, () -> "Failed to extract parameter names for " + constructor);
 			Map<String, ConstructorParameter> parametersByName = new LinkedHashMap<>();
 			Parameter[] parameters = constructor.getParameters();
 			for (int i = 0; i < parameterNames.length; i++) {
 				String name = parameterNames[i];
 				Parameter parameter = parameters[i];
-				DefaultValue[] annotationsByType = parameter
-						.getAnnotationsByType(DefaultValue.class);
-				String[] defaultValue = (annotationsByType.length > 0)
-						? annotationsByType[0].value() : null;
+				DefaultValue[] annotationsByType = parameter.getAnnotationsByType(DefaultValue.class);
+				String[] defaultValue = (annotationsByType.length > 0) ? annotationsByType[0].value() : null;
 				parametersByName.computeIfAbsent(name,
-						(key) -> new ConstructorParameter(name,
-								ResolvableType.forClass(parameter.getType()),
+						(key) -> new ConstructorParameter(name, ResolvableType.forClass(parameter.getType()),
 								parameter.getDeclaredAnnotations(), defaultValue));
 			}
 			return parametersByName;
@@ -224,8 +209,7 @@ class ConstructorParametersBinder implements BeanBinder {
 
 		private final String[] defaultValue;
 
-		ConstructorParameter(String name, ResolvableType type, Annotation[] annotations,
-				String[] defaultValue) {
+		ConstructorParameter(String name, ResolvableType type, Annotation[] annotations, String[] defaultValue) {
 			this.name = BeanPropertyName.toDashedForm(name);
 			this.type = type;
 			this.annotations = annotations;

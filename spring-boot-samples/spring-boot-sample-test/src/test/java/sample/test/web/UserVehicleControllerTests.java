@@ -45,8 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserVehicleController.class)
 class UserVehicleControllerTests {
 
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"00000000000000000");
+	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Autowired
 	private MockMvc mvc;
@@ -59,34 +58,28 @@ class UserVehicleControllerTests {
 
 	@Test
 	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
-				.andExpect(status().isOk()).andExpect(content().string("Honda Civic"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk())
+				.andExpect(content().string("Honda Civic"));
 	}
 
 	@Test
 	void getVehicleWhenRequestingJsonShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().json("{'make':'Honda','model':'Civic'}"));
 	}
 
 	@Test
 	void getVehicleWhenRequestingHtmlShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle.html").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk())
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
+		this.mvc.perform(get("/sboot/vehicle.html").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(content().string(containsString("<h1>Honda Civic</h1>")));
 	}
 
 	@Test
 	void getVehicleWhenUserNotFoundShouldReturnNotFound() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willThrow(new UserNameNotFoundException("sboot"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willThrow(new UserNameNotFoundException("sboot"));
 		this.mvc.perform(get("/sboot/vehicle")).andExpect(status().isNotFound());
 	}
 
@@ -100,8 +93,7 @@ class UserVehicleControllerTests {
 	@Test
 	void welcomeCommandLineRunnerShouldBeAvailable() {
 		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available.
-		Assertions.assertThatThrownBy(
-				() -> this.applicationContext.getBean(WelcomeCommandLineRunner.class))
+		Assertions.assertThatThrownBy(() -> this.applicationContext.getBean(WelcomeCommandLineRunner.class))
 				.isInstanceOf(NoSuchBeanDefinitionException.class);
 	}
 

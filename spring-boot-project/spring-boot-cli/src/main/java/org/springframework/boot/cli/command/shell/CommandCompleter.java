@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ public class CommandCompleter extends StringsCompleter {
 
 	private final ConsoleReader console;
 
-	public CommandCompleter(ConsoleReader consoleReader,
-			ArgumentDelimiter argumentDelimiter, Iterable<Command> commands) {
+	public CommandCompleter(ConsoleReader consoleReader, ArgumentDelimiter argumentDelimiter,
+			Iterable<Command> commands) {
 		this.console = consoleReader;
 		List<String> names = new ArrayList<>();
 		for (Command command : commands) {
@@ -59,10 +59,9 @@ public class CommandCompleter extends StringsCompleter {
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				options.addAll(optionHelp.getOptions());
 			}
-			AggregateCompleter argumentCompleters = new AggregateCompleter(
-					new StringsCompleter(options), new FileNameCompleter());
-			ArgumentCompleter argumentCompleter = new ArgumentCompleter(argumentDelimiter,
-					argumentCompleters);
+			AggregateCompleter argumentCompleters = new AggregateCompleter(new StringsCompleter(options),
+					new FileNameCompleter());
+			ArgumentCompleter argumentCompleter = new ArgumentCompleter(argumentDelimiter, argumentCompleters);
 			argumentCompleter.setStrict(false);
 			this.commandCompleters.put(command.getName(), argumentCompleter);
 		}
@@ -99,16 +98,15 @@ public class CommandCompleter extends StringsCompleter {
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				OptionHelpLine optionHelpLine = new OptionHelpLine(optionHelp);
 				optionHelpLines.add(optionHelpLine);
-				maxOptionsLength = Math.max(maxOptionsLength,
-						optionHelpLine.getOptions().length());
+				maxOptionsLength = Math.max(maxOptionsLength, optionHelpLine.getOptions().length());
 			}
 
 			this.console.println();
 			this.console.println("Usage:");
 			this.console.println(command.getName() + " " + command.getUsageHelp());
 			for (OptionHelpLine optionHelpLine : optionHelpLines) {
-				this.console.println(String.format("\t%" + maxOptionsLength + "s: %s",
-						optionHelpLine.getOptions(), optionHelpLine.getUsage()));
+				this.console.println(String.format("\t%" + maxOptionsLength + "s: %s", optionHelpLine.getOptions(),
+						optionHelpLine.getUsage()));
 			}
 			this.console.drawLine();
 		}

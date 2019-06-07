@@ -55,15 +55,13 @@ public class SolrRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() {
 		initContext(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(SolrClient.class))
-				.isInstanceOf(HttpSolrClient.class);
+		assertThat(this.context.getBean(SolrClient.class)).isInstanceOf(HttpSolrClient.class);
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		initContext(EmptyConfiguration.class);
-		assertThat(this.context.getBean(SolrClient.class))
-				.isInstanceOf(HttpSolrClient.class);
+		assertThat(this.context.getBean(SolrClient.class)).isInstanceOf(HttpSolrClient.class);
 	}
 
 	@Test
@@ -82,8 +80,7 @@ public class SolrRepositoriesAutoConfigurationTests {
 	private void initContext(Class<?> configClass) {
 
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(configClass, SolrAutoConfiguration.class,
-				SolrRepositoriesAutoConfiguration.class,
+		this.context.register(configClass, SolrAutoConfiguration.class, SolrRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}

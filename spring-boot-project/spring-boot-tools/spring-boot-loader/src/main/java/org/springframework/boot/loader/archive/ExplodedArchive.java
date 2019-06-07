@@ -42,8 +42,7 @@ import java.util.jar.Manifest;
  */
 public class ExplodedArchive implements Archive {
 
-	private static final Set<String> SKIPPED_NAMES = new HashSet<>(
-			Arrays.asList(".", ".."));
+	private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
 
 	private final File root;
 
@@ -116,8 +115,7 @@ public class ExplodedArchive implements Archive {
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		File file = ((FileEntry) entry).getFile();
-		return (file.isDirectory() ? new ExplodedArchive(file)
-				: new JarFileArchive(file));
+		return (file.isDirectory() ? new ExplodedArchive(file) : new JarFileArchive(file));
 	}
 
 	@Override
@@ -163,13 +161,11 @@ public class ExplodedArchive implements Archive {
 				throw new NoSuchElementException();
 			}
 			File file = this.current;
-			if (file.isDirectory()
-					&& (this.recursive || file.getParentFile().equals(this.root))) {
+			if (file.isDirectory() && (this.recursive || file.getParentFile().equals(this.root))) {
 				this.stack.addFirst(listFiles(file));
 			}
 			this.current = poll();
-			String name = file.toURI().getPath()
-					.substring(this.root.toURI().getPath().length());
+			String name = file.toURI().getPath().substring(this.root.toURI().getPath().length());
 			return new FileEntry(name, file);
 		}
 

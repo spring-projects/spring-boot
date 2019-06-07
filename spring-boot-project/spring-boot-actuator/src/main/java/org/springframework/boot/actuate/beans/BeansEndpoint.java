@@ -62,8 +62,7 @@ public class BeansEndpoint {
 		return new ApplicationBeans(contexts);
 	}
 
-	private static ConfigurableApplicationContext getConfigurableParent(
-			ConfigurableApplicationContext context) {
+	private static ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
 		ApplicationContext parent = context.getParent();
 		if (parent instanceof ConfigurableApplicationContext) {
 			return (ConfigurableApplicationContext) parent;
@@ -117,12 +116,10 @@ public class BeansEndpoint {
 				return null;
 			}
 			ConfigurableApplicationContext parent = getConfigurableParent(context);
-			return new ContextBeans(describeBeans(context.getBeanFactory()),
-					(parent != null) ? parent.getId() : null);
+			return new ContextBeans(describeBeans(context.getBeanFactory()), (parent != null) ? parent.getId() : null);
 		}
 
-		private static Map<String, BeanDescriptor> describeBeans(
-				ConfigurableListableBeanFactory beanFactory) {
+		private static Map<String, BeanDescriptor> describeBeans(ConfigurableListableBeanFactory beanFactory) {
 			Map<String, BeanDescriptor> beans = new HashMap<>();
 			for (String beanName : beanFactory.getBeanDefinitionNames()) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
@@ -135,13 +132,11 @@ public class BeansEndpoint {
 
 		private static BeanDescriptor describeBean(String name, BeanDefinition definition,
 				ConfigurableListableBeanFactory factory) {
-			return new BeanDescriptor(factory.getAliases(name), definition.getScope(),
-					factory.getType(name), definition.getResourceDescription(),
-					factory.getDependenciesForBean(name));
+			return new BeanDescriptor(factory.getAliases(name), definition.getScope(), factory.getType(name),
+					definition.getResourceDescription(), factory.getDependenciesForBean(name));
 		}
 
-		private static boolean isBeanEligible(String beanName, BeanDefinition bd,
-				ConfigurableBeanFactory bf) {
+		private static boolean isBeanEligible(String beanName, BeanDefinition bd, ConfigurableBeanFactory bf) {
 			return (bd.getRole() != BeanDefinition.ROLE_INFRASTRUCTURE
 					&& (!bd.isLazyInit() || bf.containsSingleton(beanName)));
 		}
@@ -164,11 +159,9 @@ public class BeansEndpoint {
 
 		private final String[] dependencies;
 
-		private BeanDescriptor(String[] aliases, String scope, Class<?> type,
-				String resource, String[] dependencies) {
+		private BeanDescriptor(String[] aliases, String scope, Class<?> type, String resource, String[] dependencies) {
 			this.aliases = aliases;
-			this.scope = (StringUtils.hasText(scope) ? scope
-					: BeanDefinition.SCOPE_SINGLETON);
+			this.scope = (StringUtils.hasText(scope) ? scope : BeanDefinition.SCOPE_SINGLETON);
 			this.type = type;
 			this.resource = resource;
 			this.dependencies = dependencies;

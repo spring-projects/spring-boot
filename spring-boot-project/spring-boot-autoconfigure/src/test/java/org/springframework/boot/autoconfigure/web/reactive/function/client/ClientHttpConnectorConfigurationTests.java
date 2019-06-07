@@ -47,8 +47,7 @@ public class ClientHttpConnectorConfigurationTests {
 		jettyResourceFactory.setByteBufferPool(byteBufferPool);
 		jettyResourceFactory.setScheduler(scheduler);
 		JettyClientHttpConnector connector = getClientHttpConnector(jettyResourceFactory);
-		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector,
-				"httpClient");
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient.getExecutor()).isSameAs(executor);
 		assertThat(httpClient.getByteBufferPool()).isSameAs(byteBufferPool);
 		assertThat(httpClient.getScheduler()).isSameAs(scheduler);
@@ -59,17 +58,14 @@ public class ClientHttpConnectorConfigurationTests {
 		// gh-16810
 		JettyResourceFactory jettyResourceFactory = new JettyResourceFactory();
 		JettyClientHttpConnector connector = getClientHttpConnector(jettyResourceFactory);
-		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector,
-				"httpClient");
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient.getSslContextFactory()).isNotNull();
 	}
 
-	private JettyClientHttpConnector getClientHttpConnector(
-			JettyResourceFactory jettyResourceFactory) {
+	private JettyClientHttpConnector getClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
 		ClientHttpConnectorConfiguration.JettyClient jettyClient = new ClientHttpConnectorConfiguration.JettyClient();
 		// We shouldn't usually call this method directly since it's on a non-proxy config
-		return ReflectionTestUtils.invokeMethod(jettyClient, "jettyClientHttpConnector",
-				jettyResourceFactory);
+		return ReflectionTestUtils.invokeMethod(jettyClient, "jettyClientHttpConnector", jettyResourceFactory);
 	}
 
 }

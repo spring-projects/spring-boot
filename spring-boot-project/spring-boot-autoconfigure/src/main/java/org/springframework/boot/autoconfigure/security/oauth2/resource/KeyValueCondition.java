@@ -33,31 +33,23 @@ import org.springframework.util.StringUtils;
 public class KeyValueCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Public Key Value Condition");
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Public Key Value Condition");
 		Environment environment = context.getEnvironment();
-		String publicKeyLocation = environment.getProperty(
-				"spring.security.oauth2.resourceserver.jwt.public-key-location");
+		String publicKeyLocation = environment
+				.getProperty("spring.security.oauth2.resourceserver.jwt.public-key-location");
 		if (!StringUtils.hasText(publicKeyLocation)) {
-			return ConditionOutcome
-					.noMatch(message.didNotFind("public-key-location property").atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("public-key-location property").atAll());
 		}
-		String issuerUri = environment
-				.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri");
-		String jwkSetUri = environment
-				.getProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
+		String issuerUri = environment.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri");
+		String jwkSetUri = environment.getProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
 		if (StringUtils.hasText(jwkSetUri)) {
-			return ConditionOutcome
-					.noMatch(message.found("jwk-set-uri property").items(jwkSetUri));
+			return ConditionOutcome.noMatch(message.found("jwk-set-uri property").items(jwkSetUri));
 		}
 		if (StringUtils.hasText(issuerUri)) {
-			return ConditionOutcome
-					.noMatch(message.found("issuer-uri property").items(issuerUri));
+			return ConditionOutcome.noMatch(message.found("issuer-uri property").items(issuerUri));
 		}
-		return ConditionOutcome
-				.match(message.foundExactly("public key location property"));
+		return ConditionOutcome.match(message.foundExactly("public key location property"));
 	}
 
 }

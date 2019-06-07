@@ -31,30 +31,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConditionsReportEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(ConditionsReportEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ConditionsReportEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.endpoints.web.exposure.include=conditions")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ConditionsReportEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=conditions")
+				.run((context) -> assertThat(context).hasSingleBean(ConditionsReportEndpoint.class));
 	}
 
 	@Test
 	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(ConditionsReportEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ConditionsReportEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.conditions.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ConditionsReportEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.conditions.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(ConditionsReportEndpoint.class));
 	}
 
 }

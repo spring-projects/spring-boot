@@ -57,12 +57,9 @@ class RedisCacheConfiguration {
 	public RedisCacheManager cacheManager(CacheProperties cacheProperties,
 			CacheManagerCustomizers cacheManagerCustomizers,
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
-			RedisConnectionFactory redisConnectionFactory,
-			ResourceLoader resourceLoader) {
-		RedisCacheManagerBuilder builder = RedisCacheManager
-				.builder(redisConnectionFactory)
-				.cacheDefaults(determineConfiguration(cacheProperties,
-						redisCacheConfiguration, resourceLoader.getClassLoader()));
+			RedisConnectionFactory redisConnectionFactory, ResourceLoader resourceLoader) {
+		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(
+				determineConfiguration(cacheProperties, redisCacheConfiguration, resourceLoader.getClassLoader()));
 		List<String> cacheNames = cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
@@ -74,8 +71,7 @@ class RedisCacheConfiguration {
 			CacheProperties cacheProperties,
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ClassLoader classLoader) {
-		return redisCacheConfiguration
-				.getIfAvailable(() -> createConfiguration(cacheProperties, classLoader));
+		return redisCacheConfiguration.getIfAvailable(() -> createConfiguration(cacheProperties, classLoader));
 
 	}
 
@@ -84,8 +80,8 @@ class RedisCacheConfiguration {
 		Redis redisProperties = cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig();
-		config = config.serializeValuesWith(SerializationPair
-				.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
+		config = config.serializeValuesWith(
+				SerializationPair.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
 		if (redisProperties.getTimeToLive() != null) {
 			config = config.entryTtl(redisProperties.getTimeToLive());
 		}

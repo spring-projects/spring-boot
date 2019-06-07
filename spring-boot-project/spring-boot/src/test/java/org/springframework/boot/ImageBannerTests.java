@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,32 +61,28 @@ public class ImageBannerTests {
 	@Test
 	public void printBannerShouldResetForegroundAndBackground() {
 		String banner = printBanner("black-and-white.gif");
-		String expected = AnsiOutput.encode(AnsiColor.DEFAULT)
-				+ AnsiOutput.encode(AnsiBackground.DEFAULT);
+		String expected = AnsiOutput.encode(AnsiColor.DEFAULT) + AnsiOutput.encode(AnsiBackground.DEFAULT);
 		assertThat(banner).startsWith(expected);
 	}
 
 	@Test
 	public void printBannerWhenInvertedShouldResetForegroundAndBackground() {
 		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
-		String expected = AnsiOutput.encode(AnsiColor.DEFAULT)
-				+ AnsiOutput.encode(AnsiBackground.BLACK);
+		String expected = AnsiOutput.encode(AnsiColor.DEFAULT) + AnsiOutput.encode(AnsiBackground.BLACK);
 		assertThat(banner).startsWith(expected);
 	}
 
 	@Test
 	public void printBannerShouldPrintWhiteAsBrightWhiteHighLuminance() {
 		String banner = printBanner("black-and-white.gif");
-		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE)
-				+ HIGH_LUMINANCE_CHARACTER;
+		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE) + HIGH_LUMINANCE_CHARACTER;
 		assertThat(banner).contains(expected);
 	}
 
 	@Test
 	public void printBannerWhenInvertedShouldPrintWhiteAsBrightWhiteLowLuminance() {
 		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
-		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE)
-				+ LOW_LUMINANCE_CHARACTER;
+		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE) + LOW_LUMINANCE_CHARACTER;
 		assertThat(banner).contains(expected);
 	}
 
@@ -117,8 +113,7 @@ public class ImageBannerTests {
 	@Test
 	public void printBannerShouldRenderGradient() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner("gradient.gif", "spring.banner.image.width=10",
-				"spring.banner.image.margin=0");
+		String banner = printBanner("gradient.gif", "spring.banner.image.width=10", "spring.banner.image.margin=0");
 		assertThat(banner).contains("@#8&o:*.  ");
 	}
 
@@ -130,8 +125,7 @@ public class ImageBannerTests {
 
 	@Test
 	public void printBannerWhenHasHeightPropertyShouldSetHeight() {
-		String banner = printBanner("large.gif", "spring.banner.image.width=20",
-				"spring.banner.image.height=30");
+		String banner = printBanner("large.gif", "spring.banner.image.width=20", "spring.banner.image.height=30");
 		assertThat(getBannerHeight(banner)).isEqualTo(30);
 	}
 
@@ -189,8 +183,7 @@ public class ImageBannerTests {
 	private String printBanner(String path, String... properties) {
 		ImageBanner banner = new ImageBanner(new ClassPathResource(path, getClass()));
 		ConfigurableEnvironment environment = new MockEnvironment();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
-				properties);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, properties);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		banner.printBanner(environment, getClass(), new PrintStream(out));
 		return out.toString();

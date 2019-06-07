@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProperties>
-		implements GangliaConfig {
+class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProperties> implements GangliaConfig {
 
 	GangliaPropertiesConfigAdapter(GangliaProperties properties) {
 		super(properties);
@@ -59,20 +58,17 @@ class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProp
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GangliaProperties::getDurationUnits,
-				GangliaConfig.super::durationUnits);
+		return get(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
 	}
 
 	@Override
 	public String protocolVersion() {
-		return get(GangliaProperties::getProtocolVersion,
-				GangliaConfig.super::protocolVersion);
+		return get(GangliaProperties::getProtocolVersion, GangliaConfig.super::protocolVersion);
 	}
 
 	@Override
 	public GMetric.UDPAddressingMode addressingMode() {
-		return get(GangliaProperties::getAddressingMode,
-				GangliaConfig.super::addressingMode);
+		return get(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
 	}
 
 	@Override

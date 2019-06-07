@@ -46,9 +46,8 @@ public class WarPluginActionIntegrationTests {
 
 	@TestTemplate
 	public void applyingWarPluginCreatesBootWarTask() {
-		assertThat(this.gradleBuild
-				.build("taskExists", "-PtaskName=bootWar", "-PapplyWarPlugin")
-				.getOutput()).contains("bootWar exists = true");
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootWar", "-PapplyWarPlugin").getOutput())
+				.contains("bootWar exists = true");
 	}
 
 	@TestTemplate
@@ -66,16 +65,14 @@ public class WarPluginActionIntegrationTests {
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
 				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"),
-				new File(buildLibs,
-						this.gradleBuild.getProjectDir().getName() + "-boot.war"));
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-boot.war"));
 	}
 
 	@TestTemplate
 	public void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyWarPlugin");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains(
-				"Main class name has not been configured and it could not be resolved");
+		assertThat(result.getOutput()).contains("Main class name has not been configured and it could not be resolved");
 	}
 
 }

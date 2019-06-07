@@ -82,8 +82,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void testAddressBinding() throws Exception {
 		bind("server.address", "127.0.0.1");
-		assertThat(this.properties.getAddress())
-				.isEqualTo(InetAddress.getByName("127.0.0.1"));
+		assertThat(this.properties.getAddress()).isEqualTo(InetAddress.getByName("127.0.0.1"));
 	}
 
 	@Test
@@ -106,8 +105,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void testConnectionTimeout() {
 		bind("server.connection-timeout", "60s");
-		assertThat(this.properties.getConnectionTimeout())
-				.isEqualTo(Duration.ofMillis(60000));
+		assertThat(this.properties.getConnectionTimeout()).isEqualTo(Duration.ofMillis(60000));
 	}
 
 	@Test
@@ -146,10 +144,8 @@ public class ServerPropertiesTests {
 		assertThat(accesslog.isRequestAttributesEnabled()).isTrue();
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
-		assertThat(tomcat.getInternalProxies())
-				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
-		assertThat(tomcat.getBackgroundProcessorDelay())
-				.isEqualTo(Duration.ofSeconds(10));
+		assertThat(tomcat.getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(Duration.ofSeconds(10));
 	}
 
 	@Test
@@ -173,8 +169,7 @@ public class ServerPropertiesTests {
 	@Test
 	public void testContextPathWithTrailingWhitespace() {
 		bind("server.servlet.context-path", "/assets/copy/ ");
-		assertThat(this.properties.getServlet().getContextPath())
-				.isEqualTo("/assets/copy");
+		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets/copy");
 	}
 
 	@Test
@@ -186,29 +181,25 @@ public class ServerPropertiesTests {
 	@Test
 	public void testContextPathWithLeadingAndTrailingWhitespaceAndContextWithSpace() {
 		bind("server.servlet.context-path", "  /assets /copy/    ");
-		assertThat(this.properties.getServlet().getContextPath())
-				.isEqualTo("/assets /copy");
+		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/assets /copy");
 	}
 
 	@Test
 	public void testCustomizeUriEncoding() {
 		bind("server.tomcat.uri-encoding", "US-ASCII");
-		assertThat(this.properties.getTomcat().getUriEncoding())
-				.isEqualTo(StandardCharsets.US_ASCII);
+		assertThat(this.properties.getTomcat().getUriEncoding()).isEqualTo(StandardCharsets.US_ASCII);
 	}
 
 	@Test
 	public void testCustomizeHeaderSize() {
 		bind("server.max-http-header-size", "1MB");
-		assertThat(this.properties.getMaxHttpHeaderSize())
-				.isEqualTo(DataSize.ofMegabytes(1));
+		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(DataSize.ofMegabytes(1));
 	}
 
 	@Test
 	public void testCustomizeHeaderSizeUseBytesByDefault() {
 		bind("server.max-http-header-size", "1024");
-		assertThat(this.properties.getMaxHttpHeaderSize())
-				.isEqualTo(DataSize.ofKilobytes(1));
+		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(DataSize.ofKilobytes(1));
 	}
 
 	@Test
@@ -240,34 +231,28 @@ public class ServerPropertiesTests {
 		assertThat(jetty.getAccesslog().getFileDateFormat()).isEqualTo("yyyymmdd");
 		assertThat(jetty.getAccesslog().getRetentionPeriod()).isEqualTo(4);
 		assertThat(jetty.getAccesslog().isAppend()).isTrue();
-		assertThat(jetty.getAccesslog().getCustomFormat())
-				.isEqualTo("{client}a - %u %t \"%r\" %s %O");
-		assertThat(jetty.getAccesslog().getIgnorePaths()).containsExactly("/a/path",
-				"/b/path");
+		assertThat(jetty.getAccesslog().getCustomFormat()).isEqualTo("{client}a - %u %t \"%r\" %s %O");
+		assertThat(jetty.getAccesslog().getIgnorePaths()).containsExactly("/a/path", "/b/path");
 	}
 
 	@Test
 	public void tomcatAcceptCountMatchesProtocolDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getAcceptCount())
-				.isEqualTo(getDefaultProtocol().getAcceptCount());
+		assertThat(this.properties.getTomcat().getAcceptCount()).isEqualTo(getDefaultProtocol().getAcceptCount());
 	}
 
 	@Test
 	public void tomcatProcessorCacheMatchesProtocolDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getProcessorCache())
-				.isEqualTo(getDefaultProtocol().getProcessorCache());
+		assertThat(this.properties.getTomcat().getProcessorCache()).isEqualTo(getDefaultProtocol().getProcessorCache());
 	}
 
 	@Test
 	public void tomcatMaxConnectionsMatchesProtocolDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getMaxConnections())
-				.isEqualTo(getDefaultProtocol().getMaxConnections());
+		assertThat(this.properties.getTomcat().getMaxConnections()).isEqualTo(getDefaultProtocol().getMaxConnections());
 	}
 
 	@Test
 	public void tomcatMaxThreadsMatchesProtocolDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getMaxThreads())
-				.isEqualTo(getDefaultProtocol().getMaxThreads());
+		assertThat(this.properties.getTomcat().getMaxThreads()).isEqualTo(getDefaultProtocol().getMaxThreads());
 	}
 
 	@Test
@@ -284,8 +269,8 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void tomcatBackgroundProcessorDelayMatchesEngineDefault() {
-		assertThat(this.properties.getTomcat().getBackgroundProcessorDelay()).isEqualTo(
-				Duration.ofSeconds((new StandardEngine().getBackgroundProcessorDelay())));
+		assertThat(this.properties.getTomcat().getBackgroundProcessorDelay())
+				.isEqualTo(Duration.ofSeconds((new StandardEngine().getBackgroundProcessorDelay())));
 	}
 
 	@Test
@@ -308,9 +293,8 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void tomcatAccessLogRequestAttributesEnabledMatchesDefault() {
-		assertThat(
-				this.properties.getTomcat().getAccesslog().isRequestAttributesEnabled())
-						.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
+		assertThat(this.properties.getTomcat().getAccesslog().isRequestAttributesEnabled())
+				.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
 	}
 
 	@Test
@@ -322,21 +306,19 @@ public class ServerPropertiesTests {
 	@Test
 	public void jettyMaxHttpPostSizeMatchesDefault() throws Exception {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
-		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer(
-				(ServletContextInitializer) (servletContext) -> servletContext
+		JettyWebServer jetty = (JettyWebServer) jettyFactory
+				.getWebServer((ServletContextInitializer) (servletContext) -> servletContext
 						.addServlet("formPost", new HttpServlet() {
 
 							@Override
-							protected void doPost(HttpServletRequest req,
-									HttpServletResponse resp)
+							protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 									throws ServletException, IOException {
 								req.getParameterMap();
 							}
 
 						}).addMapping("/form"));
 		jetty.start();
-		org.eclipse.jetty.server.Connector connector = jetty.getServer()
-				.getConnectors()[0];
+		org.eclipse.jetty.server.Connector connector = jetty.getServer().getConnectors()[0];
 		final AtomicReference<Throwable> failure = new AtomicReference<>();
 		connector.addBean(new HttpChannel.Listener() {
 
@@ -369,17 +351,12 @@ public class ServerPropertiesTests {
 				data.append("a");
 			}
 			body.add("data", data.toString());
-			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body,
-					headers);
-			template.postForEntity(
-					URI.create("http://localhost:" + jetty.getPort() + "/form"), entity,
-					Void.class);
+			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
+			template.postForEntity(URI.create("http://localhost:" + jetty.getPort() + "/form"), entity, Void.class);
 			assertThat(failure.get()).isNotNull();
 			String message = failure.get().getCause().getMessage();
-			int defaultMaxPostSize = Integer
-					.valueOf(message.substring(message.lastIndexOf(' ')).trim());
-			assertThat(this.properties.getJetty().getMaxHttpPostSize().toBytes())
-					.isEqualTo(defaultMaxPostSize);
+			int defaultMaxPostSize = Integer.valueOf(message.substring(message.lastIndexOf(' ')).trim());
+			assertThat(this.properties.getJetty().getMaxHttpPostSize().toBytes()).isEqualTo(defaultMaxPostSize);
 		}
 		finally {
 			jetty.stop();
@@ -397,8 +374,7 @@ public class ServerPropertiesTests {
 	}
 
 	private AbstractProtocol<?> getDefaultProtocol() throws Exception {
-		return (AbstractProtocol<?>) Class
-				.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL).newInstance();
+		return (AbstractProtocol<?>) Class.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL).newInstance();
 	}
 
 	private void bind(String name, String value) {

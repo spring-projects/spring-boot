@@ -37,8 +37,8 @@ public class DiscoveredOperationMethodTests {
 	@Test
 	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
 				.withMessageContaining("AnnotationAttributes must not be null");
 	}
 
@@ -48,10 +48,9 @@ public class DiscoveredOperationMethodTests {
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		String[] produces = new String[] { "application/json" };
 		annotationAttributes.put("produces", produces);
-		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method,
-				OperationType.READ, annotationAttributes);
-		assertThat(discovered.getProducesMediaTypes())
-				.containsExactly("application/json");
+		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method, OperationType.READ,
+				annotationAttributes);
+		assertThat(discovered.getProducesMediaTypes()).containsExactly("application/json");
 	}
 
 	public void example() {

@@ -111,8 +111,7 @@ public class BuildInfoTests {
 		Instant now = Instant.now();
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setTime(now);
-		assertThat(buildInfoProperties(task)).containsEntry("build.time",
-				DateTimeFormatter.ISO_INSTANT.format(now));
+		assertThat(buildInfoProperties(task)).containsEntry("build.time", DateTimeFormatter.ISO_INSTANT.format(now));
 	}
 
 	@Test
@@ -126,8 +125,7 @@ public class BuildInfoTests {
 
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
-		return ProjectBuilder.builder().withProjectDir(projectDir).withName(projectName)
-				.build();
+		return ProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
 	}
 
 	private BuildInfo createTask(Project project) {
@@ -136,8 +134,7 @@ public class BuildInfoTests {
 
 	private Properties buildInfoProperties(BuildInfo task) {
 		task.generateBuildProperties();
-		return buildInfoProperties(
-				new File(task.getDestinationDir(), "build-info.properties"));
+		return buildInfoProperties(new File(task.getDestinationDir(), "build-info.properties"));
 	}
 
 	private Properties buildInfoProperties(File file) {

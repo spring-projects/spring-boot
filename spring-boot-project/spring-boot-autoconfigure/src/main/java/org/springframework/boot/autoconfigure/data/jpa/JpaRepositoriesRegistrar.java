@@ -56,8 +56,7 @@ class JpaRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupp
 
 	@Override
 	protected BootstrapMode getBootstrapMode() {
-		return (this.bootstrapMode == null) ? super.getBootstrapMode()
-				: this.bootstrapMode;
+		return (this.bootstrapMode == null) ? super.getBootstrapMode() : this.bootstrapMode;
 	}
 
 	@Override
@@ -67,11 +66,9 @@ class JpaRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupp
 	}
 
 	private void configureBootstrapMode(Environment environment) {
-		String property = environment
-				.getProperty("spring.data.jpa.repositories.bootstrap-mode");
+		String property = environment.getProperty("spring.data.jpa.repositories.bootstrap-mode");
 		if (StringUtils.hasText(property)) {
-			this.bootstrapMode = BootstrapMode
-					.valueOf(property.toUpperCase(Locale.ENGLISH));
+			this.bootstrapMode = BootstrapMode.valueOf(property.toUpperCase(Locale.ENGLISH));
 		}
 	}
 

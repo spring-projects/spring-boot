@@ -43,10 +43,8 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		Class<?>[] filterClasses = MergedAnnotations
-				.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-				.get(TypeExcludeFilters.class)
-				.getValue(MergedAnnotation.VALUE, Class[].class).orElse(NO_FILTERS);
+		Class<?>[] filterClasses = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(TypeExcludeFilters.class).getValue(MergedAnnotation.VALUE, Class[].class).orElse(NO_FILTERS);
 		if (ObjectUtils.isEmpty(filterClasses)) {
 			return null;
 		}
@@ -54,10 +52,9 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 	}
 
 	@SuppressWarnings("unchecked")
-	private ContextCustomizer createContextCustomizer(Class<?> testClass,
-			Class<?>[] filterClasses) {
-		return new TypeExcludeFiltersContextCustomizer(testClass, new LinkedHashSet<>(
-				Arrays.asList((Class<? extends TypeExcludeFilter>[]) filterClasses)));
+	private ContextCustomizer createContextCustomizer(Class<?> testClass, Class<?>[] filterClasses) {
+		return new TypeExcludeFiltersContextCustomizer(testClass,
+				new LinkedHashSet<>(Arrays.asList((Class<? extends TypeExcludeFilter>[]) filterClasses)));
 	}
 
 }

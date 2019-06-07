@@ -37,11 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = {
-		"boot-test-inlined=foo", "b=boot-test-inlined", "c=boot-test-inlined" })
+@SpringBootTest(webEnvironment = WebEnvironment.NONE,
+		properties = { "boot-test-inlined=foo", "b=boot-test-inlined", "c=boot-test-inlined" })
 @TestPropertySource(
-		properties = { "property-source-inlined=bar", "a=property-source-inlined",
-				"c=property-source-inlined" },
+		properties = { "property-source-inlined=bar", "a=property-source-inlined", "c=property-source-inlined" },
 		locations = "classpath:/test-property-source-annotation.properties")
 public class SpringBootTestWithTestPropertySourceTests {
 
@@ -71,14 +70,12 @@ public class SpringBootTestWithTestPropertySourceTests {
 
 	@Test
 	public void propertyFromBootTestPropertiesOverridesPropertyFromPropertySourceLocations() {
-		assertThat(this.config.bootTestInlinedOverridesPropertySourceLocation)
-				.isEqualTo("boot-test-inlined");
+		assertThat(this.config.bootTestInlinedOverridesPropertySourceLocation).isEqualTo("boot-test-inlined");
 	}
 
 	@Test
 	public void propertyFromPropertySourcePropertiesOverridesPropertyFromBootTestProperties() {
-		assertThat(this.config.propertySourceInlinedOverridesBootTestInlined)
-				.isEqualTo("property-source-inlined");
+		assertThat(this.config.propertySourceInlinedOverridesBootTestInlined).isEqualTo("property-source-inlined");
 	}
 
 	@Configuration(proxyBeanMethods = false)

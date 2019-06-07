@@ -99,8 +99,8 @@ public class OAuth2ResourceServerProperties {
 			String key = "spring.security.oauth2.resourceserver.public-key-location";
 			Assert.notNull(this.publicKeyLocation, "PublicKeyLocation must not be null");
 			if (!this.publicKeyLocation.exists()) {
-				throw new InvalidConfigurationPropertyValueException(key,
-						this.publicKeyLocation, "Public key location does not exist");
+				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
+						"Public key location does not exist");
 			}
 			try (InputStream inputStream = this.publicKeyLocation.getInputStream()) {
 				return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);

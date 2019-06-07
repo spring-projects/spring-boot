@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.security.access.event.AbstractAuthorizationEvent;
  * @author Vedran Pavic
  * @since 1.3.0
  */
-public abstract class AbstractAuthorizationAuditListener implements
-		ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
+public abstract class AbstractAuthorizationAuditListener
+		implements ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
 
 	private ApplicationEventPublisher publisher;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,10 +55,9 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	@Test
 	public void setBeanFactoryWhenNotListableShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
-				.withMessageContaining("WebServerCustomizerBeanPostProcessor can only "
-						+ "be used with a ListableBeanFactory");
+		assertThatIllegalArgumentException().isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
+				.withMessageContaining(
+						"WebServerCustomizerBeanPostProcessor can only " + "be used with a ListableBeanFactory");
 	}
 
 	@Test
@@ -155,8 +154,8 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void addMockBeans(Map<String, ?> beans) {
-		given(this.beanFactory.getBeansOfType(WebServerFactoryCustomizer.class, false,
-				false)).willReturn((Map<String, WebServerFactoryCustomizer>) beans);
+		given(this.beanFactory.getBeansOfType(WebServerFactoryCustomizer.class, false, false))
+				.willReturn((Map<String, WebServerFactoryCustomizer>) beans);
 	}
 
 	private void postProcessBeforeInitialization(Class<?> type) {
@@ -191,18 +190,15 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	}
 
-	private static class WebServerFactoryOneCustomizer
-			extends MockWebServerFactoryCustomizer<WebServerFactoryOne> {
+	private static class WebServerFactoryOneCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryOne> {
 
 	}
 
-	private static class WebServerFactoryTwoCustomizer
-			extends MockWebServerFactoryCustomizer<WebServerFactoryTwo> {
+	private static class WebServerFactoryTwoCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryTwo> {
 
 	}
 
-	private static class WebServerFactoryAllCustomizer
-			extends MockWebServerFactoryCustomizer<WebServerFactory> {
+	private static class WebServerFactoryAllCustomizer extends MockWebServerFactoryCustomizer<WebServerFactory> {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,20 +59,17 @@ public interface IterableConfigurationPropertySource
 	Stream<ConfigurationPropertyName> stream();
 
 	@Override
-	default ConfigurationPropertyState containsDescendantOf(
-			ConfigurationPropertyName name) {
+	default ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 
 	@Override
-	default IterableConfigurationPropertySource filter(
-			Predicate<ConfigurationPropertyName> filter) {
+	default IterableConfigurationPropertySource filter(Predicate<ConfigurationPropertyName> filter) {
 		return new FilteredIterableConfigurationPropertiesSource(this, filter);
 	}
 
 	@Override
-	default IterableConfigurationPropertySource withAliases(
-			ConfigurationPropertyNameAliases aliases) {
+	default IterableConfigurationPropertySource withAliases(ConfigurationPropertyNameAliases aliases) {
 		return new AliasedIterableConfigurationPropertySource(this, aliases);
 	}
 

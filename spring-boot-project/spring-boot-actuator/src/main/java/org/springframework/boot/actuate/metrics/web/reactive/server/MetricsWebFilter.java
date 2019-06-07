@@ -59,8 +59,8 @@ public class MetricsWebFilter implements WebFilter {
 	 * {@link #MetricsWebFilter(MeterRegistry, WebFluxTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider,
-			String metricName, boolean autoTimeRequests) {
+	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider, String metricName,
+			boolean autoTimeRequests) {
 		this(registry, tagsProvider, metricName, AutoTimer.ENABLED);
 	}
 
@@ -72,8 +72,8 @@ public class MetricsWebFilter implements WebFilter {
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
-	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider,
-			String metricName, AutoTimer autoTimer) {
+	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider, String metricName,
+			AutoTimer autoTimer) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
@@ -113,8 +113,8 @@ public class MetricsWebFilter implements WebFilter {
 
 	private void record(ServerWebExchange exchange, long start, Throwable cause) {
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
-		this.autoTimer.builder(this.metricName).tags(tags).register(this.registry)
-				.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+		this.autoTimer.builder(this.metricName).tags(tags).register(this.registry).record(System.nanoTime() - start,
+				TimeUnit.NANOSECONDS);
 	}
 
 }

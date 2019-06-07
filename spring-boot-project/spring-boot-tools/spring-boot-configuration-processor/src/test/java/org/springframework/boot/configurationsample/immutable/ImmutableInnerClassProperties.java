@@ -35,8 +35,7 @@ public class ImmutableInnerClassProperties {
 
 	private final Fourth fourth;
 
-	public ImmutableInnerClassProperties(Foo first, Foo second, SimplePojo third,
-			Fourth fourth) {
+	public ImmutableInnerClassProperties(Foo first, Foo second, SimplePojo third, Fourth fourth) {
 		this.first = first;
 		this.second = second;
 		this.third = third;

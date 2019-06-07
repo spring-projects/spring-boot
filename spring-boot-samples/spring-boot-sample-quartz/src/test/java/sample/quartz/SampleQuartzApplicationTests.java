@@ -36,11 +36,9 @@ class SampleQuartzApplicationTests {
 
 	@Test
 	void quartzJobIsTriggered(CapturedOutput capturedOutput) throws InterruptedException {
-		try (ConfigurableApplicationContext context = SpringApplication
-				.run(SampleQuartzApplication.class)) {
+		try (ConfigurableApplicationContext context = SpringApplication.run(SampleQuartzApplication.class)) {
 			long end = System.currentTimeMillis() + 5000;
-			while ((!capturedOutput.toString().contains("Hello World!"))
-					&& System.currentTimeMillis() < end) {
+			while ((!capturedOutput.toString().contains("Hello World!")) && System.currentTimeMillis() < end) {
 				Thread.sleep(100);
 			}
 			assertThat(capturedOutput).contains("Hello World!");

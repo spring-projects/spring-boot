@@ -58,8 +58,7 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() {
 		prepareApplicationContext(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		Neo4jMappingContext mappingContext = this.context
-				.getBean(Neo4jMappingContext.class);
+		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
 		assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
 	}
 
@@ -84,11 +83,9 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.neo4j.uri=http://localhost:9797")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.data.neo4j.uri=http://localhost:9797").applyTo(this.context);
 		this.context.register(configurationClasses);
-		this.context.register(Neo4jDataAutoConfiguration.class,
-				Neo4jRepositoriesAutoConfiguration.class,
+		this.context.register(Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}

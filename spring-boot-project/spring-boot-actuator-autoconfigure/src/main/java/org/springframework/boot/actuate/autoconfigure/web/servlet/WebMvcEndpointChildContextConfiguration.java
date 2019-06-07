@@ -72,8 +72,7 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-	public DispatcherServletRegistrationBean dispatcherServletRegistrationBean(
-			DispatcherServlet dispatcherServlet) {
+	public DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
 		return new DispatcherServletRegistrationBean(dispatcherServlet, "/");
 	}
 
@@ -83,8 +82,7 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	@Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
-	public CompositeHandlerAdapter compositeHandlerAdapter(
-			ListableBeanFactory beanFactory) {
+	public CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		return new CompositeHandlerAdapter(beanFactory);
 	}
 
@@ -94,8 +92,7 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ RequestContextListener.class,
-			RequestContextFilter.class })
+	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 	public RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
 	}

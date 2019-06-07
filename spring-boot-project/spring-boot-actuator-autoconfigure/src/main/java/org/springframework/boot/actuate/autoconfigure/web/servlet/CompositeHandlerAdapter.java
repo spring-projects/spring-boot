@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 	}
 
 	@Override
-	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
 		Optional<HandlerAdapter> adapter = getAdapter(handler);
 		if (adapter.isPresent()) {
 			return adapter.get().handle(request, response, handler);
@@ -63,9 +63,7 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 	@Override
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		Optional<HandlerAdapter> adapter = getAdapter(handler);
-		return adapter
-				.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler))
-				.orElse(0L);
+		return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);
 	}
 
 	private Optional<HandlerAdapter> getAdapter(Object handler) {

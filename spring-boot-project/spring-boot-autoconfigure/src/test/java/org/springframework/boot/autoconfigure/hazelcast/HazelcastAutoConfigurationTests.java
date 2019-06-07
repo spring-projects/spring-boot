@@ -43,8 +43,7 @@ public class HazelcastAutoConfigurationTests {
 		// as both hazelcast.yaml and hazelcast.xml in test classpath.
 		this.contextRunner.run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
-			assertThat(config.getConfigurationUrl())
-					.isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
+			assertThat(config.getConfigurationUrl()).isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
 		});
 	}
 

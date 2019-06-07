@@ -33,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0", "spring.jersey.application-path=/app" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0", "spring.jersey.application-path=/app" })
 class JerseyApplicationPathAndManagementPortTests {
 
 	@LocalServerPort
@@ -48,9 +48,8 @@ class JerseyApplicationPathAndManagementPortTests {
 
 	@Test
 	void applicationPathShouldNotAffectActuators() {
-		ResponseEntity<String> entity = this.testRestTemplate.getForEntity(
-				"http://localhost:" + this.managementPort + "/actuator/health",
-				String.class);
+		ResponseEntity<String> entity = this.testRestTemplate
+				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

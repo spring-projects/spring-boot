@@ -31,8 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Dmytro Nosan
  */
-class BasicAuthenticationClientHttpRequestFactory
-		extends AbstractClientHttpRequestFactoryWrapper {
+class BasicAuthenticationClientHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
 
 	private final BasicAuthentication authentication;
 
@@ -44,8 +43,8 @@ class BasicAuthenticationClientHttpRequestFactory
 	}
 
 	@Override
-	protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
-			ClientHttpRequestFactory requestFactory) throws IOException {
+	protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod, ClientHttpRequestFactory requestFactory)
+			throws IOException {
 		ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
 		this.authentication.applyTo(request);
 		return request;

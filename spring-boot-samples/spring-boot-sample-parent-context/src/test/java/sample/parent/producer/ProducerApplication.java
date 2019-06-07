@@ -42,8 +42,7 @@ public class ProducerApplication implements ApplicationRunner {
 		this.serviceProperties.getInputDir().mkdirs();
 		if (args.getNonOptionArgs().size() > 0) {
 			FileOutputStream stream = new FileOutputStream(
-					new File(this.serviceProperties.getInputDir(),
-							"data" + System.currentTimeMillis() + ".txt"));
+					new File(this.serviceProperties.getInputDir(), "data" + System.currentTimeMillis() + ".txt"));
 			for (String arg : args.getNonOptionArgs()) {
 				stream.write(arg.getBytes());
 			}

@@ -60,8 +60,7 @@ public class ObjectContentAssertTests {
 
 	@Test
 	public void asArrayForNonArrayShouldFail() {
-		assertThatExceptionOfType(AssertionError.class)
-				.isThrownBy(() -> assertThat(forObject(SOURCE)).asArray());
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertThat(forObject(SOURCE)).asArray());
 	}
 
 	@Test
@@ -72,8 +71,7 @@ public class ObjectContentAssertTests {
 
 	@Test
 	public void asMapForNonMapShouldFail() {
-		assertThatExceptionOfType(AssertionError.class)
-				.isThrownBy(() -> assertThat(forObject(SOURCE)).asMap());
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertThat(forObject(SOURCE)).asMap());
 	}
 
 	private AssertProvider<ObjectContentAssert<Object>> forObject(Object source) {

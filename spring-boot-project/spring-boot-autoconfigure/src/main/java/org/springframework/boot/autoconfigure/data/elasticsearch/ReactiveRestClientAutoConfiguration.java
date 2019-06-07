@@ -45,10 +45,9 @@ public class ReactiveRestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ClientConfiguration clientConfiguration(
-			ReactiveRestClientProperties properties) {
-		ClientConfiguration.MaybeSecureClientConfigurationBuilder builder = ClientConfiguration
-				.builder().connectedTo(properties.getEndpoints().toArray(new String[0]));
+	public ClientConfiguration clientConfiguration(ReactiveRestClientProperties properties) {
+		ClientConfiguration.MaybeSecureClientConfigurationBuilder builder = ClientConfiguration.builder()
+				.connectedTo(properties.getEndpoints().toArray(new String[0]));
 		if (properties.isUseSsl()) {
 			builder.usingSsl();
 		}
@@ -56,14 +55,11 @@ public class ReactiveRestClientAutoConfiguration {
 		return builder.build();
 	}
 
-	private void configureTimeouts(
-			ClientConfiguration.TerminalClientConfigurationBuilder builder,
+	private void configureTimeouts(ClientConfiguration.TerminalClientConfigurationBuilder builder,
 			ReactiveRestClientProperties properties) {
 		PropertyMapper map = PropertyMapper.get();
-		map.from(properties.getConnectionTimeout()).whenNonNull()
-				.to(builder::withConnectTimeout);
-		map.from(properties.getSocketTimeout()).whenNonNull()
-				.to(builder::withSocketTimeout);
+		map.from(properties.getConnectionTimeout()).whenNonNull().to(builder::withConnectTimeout);
+		map.from(properties.getSocketTimeout()).whenNonNull().to(builder::withSocketTimeout);
 		map.from(properties.getUsername()).whenHasText().to((username) -> {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setBasicAuth(username, properties.getPassword());
@@ -73,8 +69,7 @@ public class ReactiveRestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveElasticsearchClient reactiveElasticsearchClient(
-			ClientConfiguration clientConfiguration) {
+	public ReactiveElasticsearchClient reactiveElasticsearchClient(ClientConfiguration clientConfiguration) {
 		return ReactiveRestClients.create(clientConfiguration);
 	}
 

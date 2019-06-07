@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 	private OAuth2ClientPropertiesRegistrationAdapter() {
 	}
 
-	public static Map<String, ClientRegistration> getClientRegistrations(
-			OAuth2ClientProperties properties) {
+	public static Map<String, ClientRegistration> getClientRegistrations(OAuth2ClientProperties properties) {
 		Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
 		properties.getRegistration().forEach((key, value) -> clientRegistrations.put(key,
 				getClientRegistration(key, value, properties.getProvider())));
@@ -56,18 +55,15 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 	}
 
 	private static ClientRegistration getClientRegistration(String registrationId,
-			OAuth2ClientProperties.Registration properties,
-			Map<String, Provider> providers) {
-		Builder builder = getBuilderFromIssuerIfPossible(registrationId,
-				properties.getProvider(), providers);
+			OAuth2ClientProperties.Registration properties, Map<String, Provider> providers) {
+		Builder builder = getBuilderFromIssuerIfPossible(registrationId, properties.getProvider(), providers);
 		if (builder == null) {
 			builder = getBuilder(registrationId, properties.getProvider(), providers);
 		}
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getClientId).to(builder::clientId);
 		map.from(properties::getClientSecret).to(builder::clientSecret);
-		map.from(properties::getClientAuthenticationMethod)
-				.as(ClientAuthenticationMethod::new)
+		map.from(properties::getClientAuthenticationMethod).as(ClientAuthenticationMethod::new)
 				.to(builder::clientAuthenticationMethod);
 		map.from(properties::getAuthorizationGrantType).as(AuthorizationGrantType::new)
 				.to(builder::authorizationGrantType);
@@ -77,16 +73,14 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		return builder.build();
 	}
 
-	private static Builder getBuilderFromIssuerIfPossible(String registrationId,
-			String configuredProviderId, Map<String, Provider> providers) {
-		String providerId = (configuredProviderId != null) ? configuredProviderId
-				: registrationId;
+	private static Builder getBuilderFromIssuerIfPossible(String registrationId, String configuredProviderId,
+			Map<String, Provider> providers) {
+		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
 		if (providers.containsKey(providerId)) {
 			Provider provider = providers.get(providerId);
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
-				Builder builder = ClientRegistrations.fromOidcIssuerLocation(issuer)
-						.registrationId(registrationId);
+				Builder builder = ClientRegistrations.fromOidcIssuerLocation(issuer).registrationId(registrationId);
 				return getBuilder(builder, provider);
 			}
 		}
@@ -95,12 +89,10 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static Builder getBuilder(String registrationId, String configuredProviderId,
 			Map<String, Provider> providers) {
-		String providerId = (configuredProviderId != null) ? configuredProviderId
-				: registrationId;
+		String providerId = (configuredProviderId != null) ? configuredProviderId : registrationId;
 		CommonOAuth2Provider provider = getCommonProvider(providerId);
 		if (provider == null && !providers.containsKey(providerId)) {
-			throw new IllegalStateException(
-					getErrorMessage(configuredProviderId, registrationId));
+			throw new IllegalStateException(getErrorMessage(configuredProviderId, registrationId));
 		}
 		Builder builder = (provider != null) ? provider.getBuilder(registrationId)
 				: ClientRegistration.withRegistrationId(registrationId);
@@ -110,12 +102,9 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		return builder;
 	}
 
-	private static String getErrorMessage(String configuredProviderId,
-			String registrationId) {
-		return ((configuredProviderId != null)
-				? "Unknown provider ID '" + configuredProviderId + "'"
-				: "Provider ID must be specified for client registration '"
-						+ registrationId + "'");
+	private static String getErrorMessage(String configuredProviderId, String registrationId) {
+		return ((configuredProviderId != null) ? "Unknown provider ID '" + configuredProviderId + "'"
+				: "Provider ID must be specified for client registration '" + registrationId + "'");
 	}
 
 	private static Builder getBuilder(Builder builder, Provider provider) {
@@ -132,8 +121,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static CommonOAuth2Provider getCommonProvider(String providerId) {
 		try {
-			return ApplicationConversionService.getSharedInstance().convert(providerId,
-					CommonOAuth2Provider.class);
+			return ApplicationConversionService.getSharedInstance().convert(providerId, CommonOAuth2Provider.class);
 		}
 		catch (ConversionException ex) {
 			return null;

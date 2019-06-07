@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ public class FileSnapshotTests {
 
 	private static final long TWO_MINS = TimeUnit.MINUTES.toMillis(2);
 
-	private static final long MODIFIED = new Date().getTime()
-			- TimeUnit.DAYS.toMillis(10);
+	private static final long MODIFIED = new Date().getTime() - TimeUnit.DAYS.toMillis(10);
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -53,8 +52,7 @@ public class FileSnapshotTests {
 
 	@Test
 	public void fileMustNotBeAFolder() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
+		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
 				.withMessageContaining("File must not be a folder");
 	}
 
@@ -98,8 +96,7 @@ public class FileSnapshotTests {
 		return file;
 	}
 
-	private void setupFile(File file, String content, long lastModified)
-			throws IOException {
+	private void setupFile(File file, String content, long lastModified) throws IOException {
 		FileCopyUtils.copy(content.getBytes(), file);
 		file.setLastModified(lastModified);
 	}

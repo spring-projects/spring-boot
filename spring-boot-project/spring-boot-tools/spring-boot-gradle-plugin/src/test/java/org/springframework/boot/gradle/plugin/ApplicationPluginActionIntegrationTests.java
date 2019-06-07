@@ -49,120 +49,100 @@ public class ApplicationPluginActionIntegrationTests {
 
 	@TestTemplate
 	public void noBootDistributionWithoutApplicationPluginApplied() {
-		assertThat(this.gradleBuild.build("distributionExists", "-PdistributionName=boot")
-				.getOutput()).contains("boot exists = false");
+		assertThat(this.gradleBuild.build("distributionExists", "-PdistributionName=boot").getOutput())
+				.contains("boot exists = false");
 	}
 
 	@TestTemplate
 	public void applyingApplicationPluginCreatesBootDistribution() {
-		assertThat(this.gradleBuild.build("distributionExists", "-PdistributionName=boot",
-				"-PapplyApplicationPlugin").getOutput()).contains("boot exists = true");
+		assertThat(this.gradleBuild.build("distributionExists", "-PdistributionName=boot", "-PapplyApplicationPlugin")
+				.getOutput()).contains("boot exists = true");
 	}
 
 	@TestTemplate
 	public void noBootStartScriptsTaskWithoutApplicationPluginApplied() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootStartScripts")
-				.getOutput()).contains("bootStartScripts exists = false");
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootStartScripts").getOutput())
+				.contains("bootStartScripts exists = false");
 	}
 
 	@TestTemplate
 	public void applyingApplicationPluginCreatesBootStartScriptsTask() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootStartScripts",
-				"-PapplyApplicationPlugin").getOutput())
-						.contains("bootStartScripts exists = true");
+		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootStartScripts", "-PapplyApplicationPlugin")
+				.getOutput()).contains("bootStartScripts exists = true");
 	}
 
 	@TestTemplate
 	public void createsBootStartScriptsTaskUsesApplicationPluginsDefaultJvmOpts() {
-		assertThat(this.gradleBuild
-				.build("startScriptsDefaultJvmOpts", "-PapplyApplicationPlugin")
-				.getOutput()).contains(
-						"bootStartScripts defaultJvmOpts = [-Dcom.example.a=alpha, -Dcom.example.b=bravo]");
+		assertThat(this.gradleBuild.build("startScriptsDefaultJvmOpts", "-PapplyApplicationPlugin").getOutput())
+				.contains("bootStartScripts defaultJvmOpts = [-Dcom.example.a=alpha, -Dcom.example.b=bravo]");
 	}
 
 	@TestTemplate
 	public void zipDistributionForJarCanBeBuilt() throws IOException {
-		assertThat(
-				this.gradleBuild.build("bootDistZip").task(":bootDistZip").getOutcome())
-						.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootDistZip").task(":bootDistZip").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
-		File distribution = new File(this.gradleBuild.getProjectDir(),
-				"build/distributions/" + name + "-boot.zip");
+		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.zip");
 		assertThat(distribution).isFile();
-		assertThat(zipEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/",
-				name + "-boot/lib/", name + "-boot/lib/" + name + ".jar",
-				name + "-boot/bin/", name + "-boot/bin/" + name,
+		assertThat(zipEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/", name + "-boot/lib/",
+				name + "-boot/lib/" + name + ".jar", name + "-boot/bin/", name + "-boot/bin/" + name,
 				name + "-boot/bin/" + name + ".bat");
 	}
 
 	@TestTemplate
 	public void tarDistributionForJarCanBeBuilt() throws IOException {
-		assertThat(
-				this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-						.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
-		File distribution = new File(this.gradleBuild.getProjectDir(),
-				"build/distributions/" + name + "-boot.tar");
+		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.tar");
 		assertThat(distribution).isFile();
-		assertThat(tarEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/",
-				name + "-boot/lib/", name + "-boot/lib/" + name + ".jar",
-				name + "-boot/bin/", name + "-boot/bin/" + name,
+		assertThat(tarEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/", name + "-boot/lib/",
+				name + "-boot/lib/" + name + ".jar", name + "-boot/bin/", name + "-boot/bin/" + name,
 				name + "-boot/bin/" + name + ".bat");
 	}
 
 	@TestTemplate
 	public void zipDistributionForWarCanBeBuilt() throws IOException {
-		assertThat(
-				this.gradleBuild.build("bootDistZip").task(":bootDistZip").getOutcome())
-						.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootDistZip").task(":bootDistZip").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
-		File distribution = new File(this.gradleBuild.getProjectDir(),
-				"build/distributions/" + name + "-boot.zip");
+		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.zip");
 		assertThat(distribution).isFile();
-		assertThat(zipEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/",
-				name + "-boot/lib/", name + "-boot/lib/" + name + ".war",
-				name + "-boot/bin/", name + "-boot/bin/" + name,
+		assertThat(zipEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/", name + "-boot/lib/",
+				name + "-boot/lib/" + name + ".war", name + "-boot/bin/", name + "-boot/bin/" + name,
 				name + "-boot/bin/" + name + ".bat");
 	}
 
 	@TestTemplate
 	public void tarDistributionForWarCanBeBuilt() throws IOException {
-		assertThat(
-				this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-						.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
-		File distribution = new File(this.gradleBuild.getProjectDir(),
-				"build/distributions/" + name + "-boot.tar");
+		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.tar");
 		assertThat(distribution).isFile();
-		assertThat(tarEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/",
-				name + "-boot/lib/", name + "-boot/lib/" + name + ".war",
-				name + "-boot/bin/", name + "-boot/bin/" + name,
+		assertThat(tarEntryNames(distribution)).containsExactlyInAnyOrder(name + "-boot/", name + "-boot/lib/",
+				name + "-boot/lib/" + name + ".war", name + "-boot/bin/", name + "-boot/bin/" + name,
 				name + "-boot/bin/" + name + ".bat");
 	}
 
 	@TestTemplate
 	public void applicationNameCanBeUsedToCustomizeDistributionName() throws IOException {
-		assertThat(
-				this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-						.isEqualTo(TaskOutcome.SUCCESS);
-		File distribution = new File(this.gradleBuild.getProjectDir(),
-				"build/distributions/custom-boot.tar");
+		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/custom-boot.tar");
 		assertThat(distribution).isFile();
 		String name = this.gradleBuild.getProjectDir().getName();
-		assertThat(tarEntryNames(distribution)).containsExactlyInAnyOrder("custom-boot/",
-				"custom-boot/lib/", "custom-boot/lib/" + name + ".jar",
-				"custom-boot/bin/", "custom-boot/bin/custom",
+		assertThat(tarEntryNames(distribution)).containsExactlyInAnyOrder("custom-boot/", "custom-boot/lib/",
+				"custom-boot/lib/" + name + ".jar", "custom-boot/bin/", "custom-boot/bin/custom",
 				"custom-boot/bin/custom.bat");
 	}
 
 	@TestTemplate
 	public void scriptsHaveCorrectPermissions() throws IOException {
-		assertThat(
-				this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-						.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
-		File distribution = new File(this.gradleBuild.getProjectDir(),
-				"build/distributions/" + name + "-boot.tar");
+		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.tar");
 		assertThat(distribution).isFile();
 		tarEntries(distribution, (entry) -> {
 			int filePermissions = entry.getMode() & 0777;
@@ -188,8 +168,7 @@ public class ApplicationPluginActionIntegrationTests {
 
 	private List<String> tarEntryNames(File distribution) throws IOException {
 		List<String> entryNames = new ArrayList<>();
-		try (TarArchiveInputStream input = new TarArchiveInputStream(
-				new FileInputStream(distribution))) {
+		try (TarArchiveInputStream input = new TarArchiveInputStream(new FileInputStream(distribution))) {
 			TarArchiveEntry entry;
 			while ((entry = input.getNextTarEntry()) != null) {
 				entryNames.add(entry.getName());
@@ -198,10 +177,8 @@ public class ApplicationPluginActionIntegrationTests {
 		return entryNames;
 	}
 
-	private void tarEntries(File distribution, Consumer<TarArchiveEntry> consumer)
-			throws IOException {
-		try (TarArchiveInputStream input = new TarArchiveInputStream(
-				new FileInputStream(distribution))) {
+	private void tarEntries(File distribution, Consumer<TarArchiveEntry> consumer) throws IOException {
+		try (TarArchiveInputStream input = new TarArchiveInputStream(new FileInputStream(distribution))) {
 			TarArchiveEntry entry;
 			while ((entry = input.getNextTarEntry()) != null) {
 				consumer.accept(entry);

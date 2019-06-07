@@ -50,8 +50,7 @@ public class MappingsEndpointAutoConfiguration {
 	@ConditionalOnAvailableEndpoint
 	public MappingsEndpoint mappingsEndpoint(ApplicationContext applicationContext,
 			ObjectProvider<MappingDescriptionProvider> descriptionProviders) {
-		return new MappingsEndpoint(
-				descriptionProviders.orderedStream().collect(Collectors.toList()),
+		return new MappingsEndpoint(descriptionProviders.orderedStream().collect(Collectors.toList()),
 				applicationContext);
 	}
 

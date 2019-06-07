@@ -32,31 +32,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ThreadDumpEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ThreadDumpEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ThreadDumpEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues(
-						"management.endpoints.web.exposure.include=threaddump")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ThreadDumpEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=threaddump")
+				.run((context) -> assertThat(context).hasSingleBean(ThreadDumpEndpoint.class));
 	}
 
 	@Test
 	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(ThreadDumpEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=*")
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.withPropertyValues("management.endpoint.threaddump.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ThreadDumpEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ThreadDumpEndpoint.class));
 	}
 
 }

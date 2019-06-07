@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,16 +48,14 @@ public class LogFileTests {
 
 	@Test
 	public void loggingFile() {
-		PropertyResolver resolver = getPropertyResolver(
-				Collections.singletonMap("logging.file.name", "log.file"));
+		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.file.name", "log.file"));
 		testLoggingFile(resolver);
 	}
 
 	@Test
 	@Deprecated
 	public void loggingFileWithDeprecatedProperties() {
-		PropertyResolver resolver = getPropertyResolver(
-				Collections.singletonMap("logging.file", "log.file"));
+		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.file", "log.file"));
 		testLoggingFile(resolver);
 	}
 
@@ -66,23 +64,20 @@ public class LogFileTests {
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile.toString()).isEqualTo("log.file");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("log.file");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isNull();
 	}
 
 	@Test
 	public void loggingPath() {
-		PropertyResolver resolver = getPropertyResolver(
-				Collections.singletonMap("logging.file.path", "logpath"));
+		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.file.path", "logpath"));
 		testLoggingPath(resolver);
 	}
 
 	@Test
 	@Deprecated
 	public void loggingPathWithDeprecatedProperties() {
-		PropertyResolver resolver = getPropertyResolver(
-				Collections.singletonMap("logging.path", "logpath"));
+		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.path", "logpath"));
 		testLoggingPath(resolver);
 	}
 
@@ -90,12 +85,10 @@ public class LogFileTests {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString())
-				.isEqualTo("logpath" + File.separatorChar + "spring.log");
+		assertThat(logFile.toString()).isEqualTo("logpath" + File.separatorChar + "spring.log");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
 				.isEqualTo("logpath" + File.separatorChar + "spring.log");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
-				.isEqualTo("logpath");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("logpath");
 	}
 
 	@Test
@@ -122,15 +115,12 @@ public class LogFileTests {
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
 		assertThat(logFile.toString()).isEqualTo("log.file");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("log.file");
-		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH))
-				.isEqualTo("logpath");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("log.file");
+		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("logpath");
 	}
 
 	private PropertyResolver getPropertyResolver(Map<String, Object> properties) {
-		PropertySource<?> propertySource = new MapPropertySource("properties",
-				properties);
+		PropertySource<?> propertySource = new MapPropertySource("properties", properties);
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(propertySource);
 		return new PropertySourcesPropertyResolver(propertySources);

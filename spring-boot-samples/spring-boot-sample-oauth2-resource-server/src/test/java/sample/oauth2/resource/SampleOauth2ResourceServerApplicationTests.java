@@ -68,8 +68,7 @@ class SampleOauth2ResourceServerApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(VALID_TOKEN);
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
-				request, String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, request, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -77,8 +76,7 @@ class SampleOauth2ResourceServerApplicationTests {
 	void withNoBearerTokenShouldNotAllowAccess() {
 		HttpHeaders headers = new HttpHeaders();
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
-				request, String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, request, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
@@ -100,8 +98,7 @@ class SampleOauth2ResourceServerApplicationTests {
 				+ "V9gWuOzSJ0iEuWvtQ6eGBP5M6m7pccLNZfwUse8Cb4Ngx3XiTlyuqM7pv0LPyppZusfEHVEdeelou7Dy9k0OQ_nJTI3b2E1WBoHC5"
 				+ "8CJ453lo4gcBm1efURN3LIVc1V9NQY_ESBKVdwqYyoJPEanURLVGRd6cQKn6YrCbbIRHjqAyqOE-z3KmgDJnPriljfR5XhSGyM9eq"
 				+ "D9Xpy6zu_MAeMJJfSArp857zLPk-Wf5VP9STAcjyfdBIybMKnwBYr2qHMT675hQ\"}]}";
-		return new MockResponse()
-				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+		return new MockResponse().setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.setResponseCode(200).setBody(body);
 	}
 

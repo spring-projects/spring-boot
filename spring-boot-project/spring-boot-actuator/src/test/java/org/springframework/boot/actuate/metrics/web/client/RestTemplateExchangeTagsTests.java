@@ -45,40 +45,35 @@ public class RestTemplateExchangeTagsTests {
 
 	@Test
 	public void outcomeTagIsInformationalWhenResponseIs1xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.CONTINUE);
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.CONTINUE);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
 	}
 
 	@Test
 	public void outcomeTagIsSuccessWhenResponseIs2xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.OK);
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.OK);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
 	@Test
 	public void outcomeTagIsRedirectionWhenResponseIs3xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.MOVED_PERMANENTLY);
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
 	}
 
 	@Test
 	public void outcomeTagIsClientErrorWhenResponseIs4xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.BAD_REQUEST);
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.BAD_REQUEST);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
 	public void outcomeTagIsServerErrorWhenResponseIs5xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.BAD_GATEWAY);
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.BAD_GATEWAY);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
 	}

@@ -50,18 +50,15 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 @ConditionalOnMissingBean({ SecurityWebFilterChain.class, WebFilterChainProxy.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
-@AutoConfigureAfter({ HealthEndpointAutoConfiguration.class,
-		InfoEndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-		ReactiveOAuth2ClientAutoConfiguration.class,
+@AutoConfigureAfter({ HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+		WebEndpointAutoConfiguration.class, ReactiveOAuth2ClientAutoConfiguration.class,
 		ReactiveOAuth2ResourceServerAutoConfiguration.class })
 public class ReactiveManagementWebSecurityAutoConfiguration {
 
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		return http.authorizeExchange()
-				.matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class))
-				.permitAll().anyExchange().authenticated().and().httpBasic().and()
-				.formLogin().and().build();
+		return http.authorizeExchange().matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class))
+				.permitAll().anyExchange().authenticated().and().httpBasic().and().formLogin().and().build();
 	}
 
 }

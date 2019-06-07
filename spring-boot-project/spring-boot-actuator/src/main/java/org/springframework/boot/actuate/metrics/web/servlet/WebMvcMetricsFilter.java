@@ -71,8 +71,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
-			String metricName, boolean autoTimeRequests) {
+	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider, String metricName,
+			boolean autoTimeRequests) {
 		this(registry, tagsProvider, metricName, AutoTimer.ENABLED);
 	}
 
@@ -84,8 +84,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
-	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
-			String metricName, AutoTimer autoTimer) {
+	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider, String metricName,
+			AutoTimer autoTimer) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
@@ -98,8 +98,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		TimingContext timingContext = TimingContext.get(request);
 		if (timingContext == null) {
@@ -112,8 +111,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 				// If async was started by something further down the chain we wait
 				// until the second filter invocation (but we'll be using the
 				// TimingContext that was attached to the first)
-				Throwable exception = (Throwable) request
-						.getAttribute(DispatcherServlet.EXCEPTION_ATTRIBUTE);
+				Throwable exception = (Throwable) request.getAttribute(DispatcherServlet.EXCEPTION_ATTRIBUTE);
 				record(timingContext, request, response, exception);
 			}
 		}
@@ -135,8 +133,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		return timingContext;
 	}
 
-	private void record(TimingContext timingContext, HttpServletRequest request,
-			HttpServletResponse response, Throwable exception) {
+	private void record(TimingContext timingContext, HttpServletRequest request, HttpServletResponse response,
+			Throwable exception) {
 		Object handler = getHandler(request);
 		Set<Timed> annotations = getTimedAnnotations(handler);
 		Timer.Sample timerSample = timingContext.getTimerSample();
@@ -175,15 +173,12 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		if (!annotations.isPresent(Timed.class)) {
 			return Collections.emptySet();
 		}
-		return annotations.stream(Timed.class)
-				.collect(MergedAnnotationCollectors.toAnnotationSet());
+		return annotations.stream(Timed.class).collect(MergedAnnotationCollectors.toAnnotationSet());
 	}
 
-	private Timer getTimer(Builder builder, Object handler, HttpServletRequest request,
-			HttpServletResponse response, Throwable exception) {
-		return builder
-				.tags(this.tagsProvider.getTags(request, response, handler, exception))
-				.register(this.registry);
+	private Timer getTimer(Builder builder, Object handler, HttpServletRequest request, HttpServletResponse response,
+			Throwable exception) {
+		return builder.tags(this.tagsProvider.getTags(request, response, handler, exception)).register(this.registry);
 	}
 
 	/**

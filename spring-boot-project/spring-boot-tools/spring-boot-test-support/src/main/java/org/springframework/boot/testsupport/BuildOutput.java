@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,17 +38,14 @@ public class BuildOutput {
 	 */
 	public File getTestClassesLocation() {
 		try {
-			File location = new File(this.testClass.getProtectionDomain().getCodeSource()
-					.getLocation().toURI());
+			File location = new File(this.testClass.getProtectionDomain().getCodeSource().getLocation().toURI());
 			if (location.getPath().endsWith(path("target", "test-classes"))) {
 				return location;
 			}
-			throw new IllegalStateException(
-					"Unexpected test classes location '" + location + "'");
+			throw new IllegalStateException("Unexpected test classes location '" + location + "'");
 		}
 		catch (URISyntaxException ex) {
-			throw new IllegalStateException("Invalid test class code source location",
-					ex);
+			throw new IllegalStateException("Invalid test class code source location", ex);
 		}
 	}
 
@@ -62,8 +59,7 @@ public class BuildOutput {
 			return testClassesLocation;
 		}
 		throw new IllegalStateException(
-				"Cannot determine test resources location from classes location '"
-						+ testClassesLocation + "'");
+				"Cannot determine test resources location from classes location '" + testClassesLocation + "'");
 	}
 
 	/**

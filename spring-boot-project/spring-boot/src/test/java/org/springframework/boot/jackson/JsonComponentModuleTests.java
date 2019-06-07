@@ -74,8 +74,8 @@ public class JsonComponentModuleTests {
 
 	@Test
 	public void moduleShouldAllowInnerAbstractClasses() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				JsonComponentModule.class, ComponentWithInnerAbstractClass.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(JsonComponentModule.class,
+				ComponentWithInnerAbstractClass.class);
 		JsonComponentModule module = context.getBean(JsonComponentModule.class);
 		assertSerialize(module);
 		context.close();
@@ -107,8 +107,7 @@ public class JsonComponentModuleTests {
 	public void moduleShouldRegisterOnlyForSpecifiedClasses() throws Exception {
 		load(NameAndCareerJsonComponent.class);
 		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
-		assertSerialize(module, new NameAndCareer("spring", "developer"),
-				"{\"name\":\"spring\"}");
+		assertSerialize(module, new NameAndCareer("spring", "developer"), "{\"name\":\"spring\"}");
 		assertSerialize(module);
 		assertDeserializeForSpecifiedClasses(module);
 	}
@@ -121,8 +120,7 @@ public class JsonComponentModuleTests {
 		this.context = context;
 	}
 
-	private void assertSerialize(Module module, Name value, String expectedJson)
-			throws Exception {
+	private void assertSerialize(Module module, Name value, String expectedJson) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
 		String json = mapper.writeValueAsString(value);
@@ -130,27 +128,24 @@ public class JsonComponentModuleTests {
 	}
 
 	private void assertSerialize(Module module) throws Exception {
-		assertSerialize(module, new NameAndAge("spring", 100),
-				"{\"name\":\"spring\",\"age\":100}");
+		assertSerialize(module, new NameAndAge("spring", 100), "{\"name\":\"spring\",\"age\":100}");
 	}
 
 	private void assertDeserialize(Module module) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}",
-				NameAndAge.class);
+		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
 	}
 
-	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module)
-			throws IOException {
+	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		assertThatExceptionOfType(JsonMappingException.class).isThrownBy(() -> mapper
-				.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
-		NameAndCareer nameAndCareer = mapper.readValue(
-				"{\"name\":\"spring\",\"career\":\"developer\"}", NameAndCareer.class);
+		assertThatExceptionOfType(JsonMappingException.class)
+				.isThrownBy(() -> mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
+		NameAndCareer nameAndCareer = mapper.readValue("{\"name\":\"spring\",\"career\":\"developer\"}",
+				NameAndCareer.class);
 		assertThat(nameAndCareer.getName()).isEqualTo("spring");
 		assertThat(nameAndCareer.getCareer()).isEqualTo("developer");
 	}
@@ -169,8 +164,7 @@ public class JsonComponentModuleTests {
 		mapper.registerModule(module);
 		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<Map<NameAndAge, Boolean>>() {
 		};
-		Map<NameAndAge, Boolean> map = mapper.readValue("{\"spring is 100\":  true}",
-				typeRef);
+		Map<NameAndAge, Boolean> map = mapper.readValue("{\"spring is 100\":  true}", typeRef);
 		assertThat(map).containsEntry(new NameAndAge("spring", 100), true);
 	}
 
@@ -187,8 +181,7 @@ public class JsonComponentModuleTests {
 	@JsonComponent
 	static class ComponentWithInnerAbstractClass {
 
-		private abstract static class AbstractSerializer
-				extends NameAndAgeJsonComponent.Serializer {
+		private abstract static class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
 
 		}
 

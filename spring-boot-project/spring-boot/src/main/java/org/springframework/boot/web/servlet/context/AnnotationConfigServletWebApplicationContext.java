@@ -56,8 +56,8 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see #register(Class...)
  * @see #scan(String...)
  */
-public class AnnotationConfigServletWebApplicationContext
-		extends GenericWebApplicationContext implements AnnotationConfigRegistry {
+public class AnnotationConfigServletWebApplicationContext extends GenericWebApplicationContext
+		implements AnnotationConfigRegistry {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
@@ -83,8 +83,7 @@ public class AnnotationConfigServletWebApplicationContext
 	 * {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 */
-	public AnnotationConfigServletWebApplicationContext(
-			DefaultListableBeanFactory beanFactory) {
+	public AnnotationConfigServletWebApplicationContext(DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
@@ -144,8 +143,7 @@ public class AnnotationConfigServletWebApplicationContext
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.reader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
-		this.getBeanFactory().registerSingleton(
-				AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+		this.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
 				beanNameGenerator);
 	}
 
@@ -177,8 +175,7 @@ public class AnnotationConfigServletWebApplicationContext
 	 */
 	@Override
 	public final void register(Class<?>... annotatedClasses) {
-		Assert.notEmpty(annotatedClasses,
-				"At least one annotated class must be specified");
+		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
 		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 
@@ -213,8 +210,8 @@ public class AnnotationConfigServletWebApplicationContext
 	}
 
 	@Override
-	public <T> void registerBean(String beanName, Class<T> beanClass,
-			Supplier<T> supplier, BeanDefinitionCustomizer... customizers) {
+	public <T> void registerBean(String beanName, Class<T> beanClass, Supplier<T> supplier,
+			BeanDefinitionCustomizer... customizers) {
 		this.reader.registerBean(beanClass, beanName, supplier, customizers);
 	}
 

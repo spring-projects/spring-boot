@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class DelegatingApplicationContextInitializerTests {
 	public void orderedInitialize() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
-				"context.initializer.classes=" + MockInitB.class.getName() + ","
-						+ MockInitA.class.getName());
+				"context.initializer.classes=" + MockInitB.class.getName() + "," + MockInitA.class.getName());
 		this.initializer.initialize(context);
 		assertThat(context.getBeanFactory().getSingleton("a")).isEqualTo("a");
 		assertThat(context.getBeanFactory().getSingleton("b")).isEqualTo("b");
@@ -60,8 +59,7 @@ public class DelegatingApplicationContextInitializerTests {
 	@Test
 	public void emptyInitializers() {
 		StaticApplicationContext context = new StaticApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
-				"context.initializer.classes:");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, "context.initializer.classes:");
 		this.initializer.initialize(context);
 	}
 
@@ -79,8 +77,7 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + Object.class.getName());
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.initializer.initialize(context));
+		assertThatIllegalArgumentException().isThrownBy(() -> this.initializer.initialize(context));
 	}
 
 	@Test
@@ -88,14 +85,12 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.initializer.initialize(context))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.initializer.initialize(context))
 				.withMessageContaining("generic parameter");
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private static class MockInitA
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	private static class MockInitA implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -105,20 +100,17 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class MockInitB
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	private static class MockInitB implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
-			assertThat(applicationContext.getBeanFactory().getSingleton("a"))
-					.isEqualTo("a");
+			assertThat(applicationContext.getBeanFactory().getSingleton("a")).isEqualTo("a");
 			applicationContext.getBeanFactory().registerSingleton("b", "b");
 		}
 
 	}
 
-	private static class NotSuitableInit
-			implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
+	private static class NotSuitableInit implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableWebApplicationContext applicationContext) {

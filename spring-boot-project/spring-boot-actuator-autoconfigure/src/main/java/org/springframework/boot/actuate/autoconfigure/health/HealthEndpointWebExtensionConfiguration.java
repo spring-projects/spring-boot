@@ -48,8 +48,7 @@ class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthStatusHttpMapper createHealthStatusHttpMapper(
-			HealthIndicatorProperties healthIndicatorProperties) {
+	public HealthStatusHttpMapper createHealthStatusHttpMapper(HealthIndicatorProperties healthIndicatorProperties) {
 		HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
 		if (healthIndicatorProperties.getHttpMapping() != null) {
 			statusHttpMapper.addStatusMapping(healthIndicatorProperties.getHttpMapping());
@@ -59,11 +58,10 @@ class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthWebEndpointResponseMapper healthWebEndpointResponseMapper(
-			HealthStatusHttpMapper statusHttpMapper,
+	public HealthWebEndpointResponseMapper healthWebEndpointResponseMapper(HealthStatusHttpMapper statusHttpMapper,
 			HealthEndpointProperties properties) {
-		return new HealthWebEndpointResponseMapper(statusHttpMapper,
-				properties.getShowDetails(), properties.getRoles());
+		return new HealthWebEndpointResponseMapper(statusHttpMapper, properties.getShowDetails(),
+				properties.getRoles());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -75,14 +73,10 @@ class HealthEndpointWebExtensionConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(HealthEndpoint.class)
 		public ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
-				ObjectProvider<HealthAggregator> healthAggregator,
-				ReactiveHealthIndicatorRegistry registry,
+				ObjectProvider<HealthAggregator> healthAggregator, ReactiveHealthIndicatorRegistry registry,
 				HealthWebEndpointResponseMapper responseMapper) {
-			return new ReactiveHealthEndpointWebExtension(
-					new CompositeReactiveHealthIndicator(
-							healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
-							registry),
-					responseMapper);
+			return new ReactiveHealthEndpointWebExtension(new CompositeReactiveHealthIndicator(
+					healthAggregator.getIfAvailable(OrderedHealthAggregator::new), registry), responseMapper);
 		}
 
 	}
@@ -94,8 +88,7 @@ class HealthEndpointWebExtensionConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(HealthEndpoint.class)
-		public HealthEndpointWebExtension healthEndpointWebExtension(
-				HealthEndpoint healthEndpoint,
+		public HealthEndpointWebExtension healthEndpointWebExtension(HealthEndpoint healthEndpoint,
 				HealthWebEndpointResponseMapper responseMapper) {
 			return new HealthEndpointWebExtension(healthEndpoint, responseMapper);
 		}

@@ -82,10 +82,10 @@ public class MeterValueTests {
 	public void valueOfShouldWorkInBinder() {
 		MockEnvironment environment = new MockEnvironment();
 		TestPropertyValues.of("duration=10ms", "long=20").applyTo(environment);
-		assertThat(Binder.get(environment).bind("duration", Bindable.of(MeterValue.class))
-				.get().getValue(Type.TIMER)).isEqualTo(10000000);
-		assertThat(Binder.get(environment).bind("long", Bindable.of(MeterValue.class))
-				.get().getValue(Type.TIMER)).isEqualTo(20000000);
+		assertThat(Binder.get(environment).bind("duration", Bindable.of(MeterValue.class)).get().getValue(Type.TIMER))
+				.isEqualTo(10000000);
+		assertThat(Binder.get(environment).bind("long", Bindable.of(MeterValue.class)).get().getValue(Type.TIMER))
+				.isEqualTo(20000000);
 	}
 
 }

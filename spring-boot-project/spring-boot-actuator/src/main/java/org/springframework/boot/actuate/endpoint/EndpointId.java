@@ -52,12 +52,9 @@ public final class EndpointId {
 
 	private EndpointId(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		Assert.isTrue(VALID_PATTERN.matcher(value).matches(),
-				"Value must only contain valid chars");
-		Assert.isTrue(!Character.isDigit(value.charAt(0)),
-				"Value must not start with a number");
-		Assert.isTrue(!Character.isUpperCase(value.charAt(0)),
-				"Value must not start with an uppercase letter");
+		Assert.isTrue(VALID_PATTERN.matcher(value).matches(), "Value must only contain valid chars");
+		Assert.isTrue(!Character.isDigit(value.charAt(0)), "Value must not start with a number");
+		Assert.isTrue(!Character.isUpperCase(value.charAt(0)), "Value must not start with an uppercase letter");
 		if (WARNING_PATTERN.matcher(value).find()) {
 			logWarning(value);
 		}
@@ -85,8 +82,7 @@ public final class EndpointId {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		return this.lowerCaseAlphaNumeric
-				.equals(((EndpointId) obj).lowerCaseAlphaNumeric);
+		return this.lowerCaseAlphaNumeric.equals(((EndpointId) obj).lowerCaseAlphaNumeric);
 	}
 
 	@Override
@@ -132,8 +128,7 @@ public final class EndpointId {
 
 	private static void logWarning(String value) {
 		if (logger.isWarnEnabled() && loggedWarnings.add(value)) {
-			logger.warn("Endpoint ID '" + value
-					+ "' contains invalid characters, please migrate to a valid format.");
+			logger.warn("Endpoint ID '" + value + "' contains invalid characters, please migrate to a valid format.");
 		}
 	}
 

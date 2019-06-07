@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,8 @@ public class DevToolsPropertiesTests {
 	public void additionalExcludeKeepsDefaults() {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setAdditionalExclude("foo/**,bar/**");
-		assertThat(restart.getAllExclude()).containsOnly("META-INF/maven/**",
-				"META-INF/resources/**", "resources/**", "static/**", "public/**",
-				"templates/**", "**/*Test.class", "**/*Tests.class", "git.properties",
+		assertThat(restart.getAllExclude()).containsOnly("META-INF/maven/**", "META-INF/resources/**", "resources/**",
+				"static/**", "public/**", "templates/**", "**/*Test.class", "**/*Tests.class", "git.properties",
 				"META-INF/build-info.properties", "foo/**", "bar/**");
 	}
 

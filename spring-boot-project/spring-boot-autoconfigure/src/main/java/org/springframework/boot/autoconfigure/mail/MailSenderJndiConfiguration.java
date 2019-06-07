@@ -60,13 +60,10 @@ class MailSenderJndiConfiguration {
 	public Session session() {
 		String jndiName = this.properties.getJndiName();
 		try {
-			return JndiLocatorDelegate.createDefaultResourceRefLocator().lookup(jndiName,
-					Session.class);
+			return JndiLocatorDelegate.createDefaultResourceRefLocator().lookup(jndiName, Session.class);
 		}
 		catch (NamingException ex) {
-			throw new IllegalStateException(
-					String.format("Unable to find Session in JNDI location %s", jndiName),
-					ex);
+			throw new IllegalStateException(String.format("Unable to find Session in JNDI location %s", jndiName), ex);
 		}
 	}
 

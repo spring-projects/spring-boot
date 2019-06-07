@@ -104,8 +104,7 @@ public class JarFileArchive implements Archive {
 			return new JarFileArchive(jarFile);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Failed to get nested archive for entry " + entry.getName(), ex);
+			throw new IllegalStateException("Failed to get nested archive for entry " + entry.getName(), ex);
 		}
 	}
 
@@ -133,14 +132,12 @@ public class JarFileArchive implements Archive {
 		int attempts = 0;
 		while (attempts++ < 1000) {
 			String fileName = new File(this.jarFile.getName()).getName();
-			File unpackFolder = new File(parent,
-					fileName + "-spring-boot-libs-" + UUID.randomUUID());
+			File unpackFolder = new File(parent, fileName + "-spring-boot-libs-" + UUID.randomUUID());
 			if (unpackFolder.mkdirs()) {
 				return unpackFolder;
 			}
 		}
-		throw new IllegalStateException(
-				"Failed to create unpack folder in directory '" + parent + "'");
+		throw new IllegalStateException("Failed to create unpack folder in directory '" + parent + "'");
 	}
 
 	private void unpack(JarEntry entry, File file) throws IOException {

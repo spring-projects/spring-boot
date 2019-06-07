@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.springframework.cache.jcache.JCacheCache;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class JCacheCacheMeterBinderProvider
-		implements CacheMeterBinderProvider<JCacheCache> {
+public class JCacheCacheMeterBinderProvider implements CacheMeterBinderProvider<JCacheCache> {
 
 	@Override
 	public MeterBinder getMeterBinder(JCacheCache cache, Iterable<Tag> tags) {

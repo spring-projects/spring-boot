@@ -50,18 +50,16 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	 * @param filters filters to apply
 	 */
 	public CloudFoundryWebEndpointDiscoverer(ApplicationContext applicationContext,
-			ParameterValueMapper parameterValueMapper,
-			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
-			Collection<OperationInvokerAdvisor> invokerAdvisors,
+			ParameterValueMapper parameterValueMapper, EndpointMediaTypes endpointMediaTypes,
+			List<PathMapper> endpointPathMappers, Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
-		super(applicationContext, parameterValueMapper, endpointMediaTypes,
-				endpointPathMappers, invokerAdvisors, filters);
+		super(applicationContext, parameterValueMapper, endpointMediaTypes, endpointPathMappers, invokerAdvisors,
+				filters);
 	}
 
 	@Override
 	protected boolean isExtensionExposed(Object extensionBean) {
-		if (isHealthEndpointExtension(extensionBean)
-				&& !isCloudFoundryHealthEndpointExtension(extensionBean)) {
+		if (isHealthEndpointExtension(extensionBean) && !isCloudFoundryHealthEndpointExtension(extensionBean)) {
 			// Filter regular health endpoint extensions so a CF version can replace them
 			return false;
 		}
@@ -69,14 +67,12 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	}
 
 	private boolean isHealthEndpointExtension(Object extensionBean) {
-		return MergedAnnotations.from(extensionBean.getClass())
-				.get(EndpointWebExtension.class).getValue("endpoint", Class.class)
-				.map(HealthEndpoint.class::isAssignableFrom).orElse(false);
+		return MergedAnnotations.from(extensionBean.getClass()).get(EndpointWebExtension.class)
+				.getValue("endpoint", Class.class).map(HealthEndpoint.class::isAssignableFrom).orElse(false);
 	}
 
 	private boolean isCloudFoundryHealthEndpointExtension(Object extensionBean) {
-		return MergedAnnotations.from(extensionBean.getClass())
-				.isPresent(EndpointCloudFoundryExtension.class);
+		return MergedAnnotations.from(extensionBean.getClass()).isPresent(EndpointCloudFoundryExtension.class);
 	}
 
 }

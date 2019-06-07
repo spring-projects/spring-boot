@@ -45,16 +45,14 @@ public class WebMvcTagsTests {
 		this.request.setAttribute(
 				"org.springframework.data.rest.webmvc.RepositoryRestHandlerMapping.EFFECTIVE_REPOSITORY_RESOURCE_LOOKUP_PATH",
 				new PathPatternParser().parse("/api/cities"));
-		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				"/api/{repository}");
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/api/{repository}");
 		Tag tag = WebMvcTags.uri(this.request, this.response);
 		assertThat(tag.getValue()).isEqualTo("/api/cities");
 	}
 
 	@Test
 	public void uriTagValueIsBestMatchingPatternWhenAvailable() {
-		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				"/spring");
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/spring");
 		this.response.setStatus(301);
 		Tag tag = WebMvcTags.uri(this.request, this.response);
 		assertThat(tag.getValue()).isEqualTo("/spring");

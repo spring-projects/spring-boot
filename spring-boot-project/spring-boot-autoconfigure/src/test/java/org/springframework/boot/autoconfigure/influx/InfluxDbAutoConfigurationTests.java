@@ -46,36 +46,30 @@ public class InfluxDbAutoConfigurationTests {
 
 	@Test
 	public void influxDbRequiresUrl() {
-		this.contextRunner
-				.run((context) -> assertThat(context.getBeansOfType(InfluxDB.class))
-						.isEmpty());
+		this.contextRunner.run((context) -> assertThat(context.getBeansOfType(InfluxDB.class)).isEmpty());
 	}
 
 	@Test
 	public void influxDbCanBeCustomized() {
 		this.contextRunner
-				.withPropertyValues("spring.influx.url=http://localhost",
-						"spring.influx.password:password", "spring.influx.user:user")
-				.run(((context) -> assertThat(context.getBeansOfType(InfluxDB.class))
-						.hasSize(1)));
+				.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.password:password",
+						"spring.influx.user:user")
+				.run(((context) -> assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1)));
 	}
 
 	@Test
 	public void influxDbCanBeCreatedWithoutCredentials() {
-		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost")
-				.run((context) -> {
-					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
-					int readTimeout = getReadTimeoutProperty(context);
-					assertThat(readTimeout).isEqualTo(10_000);
-				});
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost").run((context) -> {
+			assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+			int readTimeout = getReadTimeoutProperty(context);
+			assertThat(readTimeout).isEqualTo(10_000);
+		});
 	}
 
 	@Test
 	public void influxDbWithOkHttpClientBuilderProvider() {
-		this.contextRunner
-				.withUserConfiguration(CustomOkHttpClientBuilderProviderConfig.class)
-				.withPropertyValues("spring.influx.url=http://localhost")
-				.run((context) -> {
+		this.contextRunner.withUserConfiguration(CustomOkHttpClientBuilderProviderConfig.class)
+				.withPropertyValues("spring.influx.url=http://localhost").run((context) -> {
 					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
 					int readTimeout = getReadTimeoutProperty(context);
 					assertThat(readTimeout).isEqualTo(40_000);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,10 +64,8 @@ public class GitInfoContributor extends InfoPropertiesInfoContributor<GitPropert
 	 */
 	@Override
 	protected void postProcessContent(Map<String, Object> content) {
-		replaceValue(getNestedMap(content, "commit"), "time",
-				getProperties().getCommitTime());
-		replaceValue(getNestedMap(content, "build"), "time",
-				getProperties().getInstant("build.time"));
+		replaceValue(getNestedMap(content, "commit"), "time", getProperties().getCommitTime());
+		replaceValue(getNestedMap(content, "build"), "time", getProperties().getInstant("build.time"));
 	}
 
 }

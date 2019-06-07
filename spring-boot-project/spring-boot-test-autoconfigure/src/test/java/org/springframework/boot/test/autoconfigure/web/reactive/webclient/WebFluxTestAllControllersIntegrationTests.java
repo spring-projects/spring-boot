@@ -40,14 +40,12 @@ public class WebFluxTestAllControllersIntegrationTests {
 
 	@Test
 	public void shouldFindController1() {
-		this.webClient.get().uri("/one").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("one");
+		this.webClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
 	}
 
 	@Test
 	public void shouldFindController2() {
-		this.webClient.get().uri("/two").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("two");
+		this.webClient.get().uri("/two").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("two");
 	}
 
 	@Test

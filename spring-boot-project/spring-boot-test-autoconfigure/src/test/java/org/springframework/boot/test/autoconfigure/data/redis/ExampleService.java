@@ -40,8 +40,8 @@ public class ExampleService {
 	}
 
 	public boolean hasRecord(PersonHash personHash) {
-		return this.operations.execute((RedisConnection connection) -> connection
-				.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
+		return this.operations.execute(
+				(RedisConnection connection) -> connection.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
 	}
 
 }

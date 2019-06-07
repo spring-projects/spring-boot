@@ -48,12 +48,11 @@ class SampleWebStaticApplicationTests {
 
 	@Test
 	void testCss() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"/webjars/bootstrap/3.0.3/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
-		assertThat(entity.getHeaders().getContentType())
-				.isEqualTo(MediaType.valueOf("text/css"));
+		assertThat(entity.getHeaders().getContentType()).isEqualTo(MediaType.valueOf("text/css"));
 	}
 
 }

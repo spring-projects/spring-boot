@@ -40,15 +40,12 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableWebSocket
-public class SampleUndertowWebSocketsApplication extends SpringBootServletInitializer
-		implements WebSocketConfigurer {
+public class SampleUndertowWebSocketsApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(echoWebSocketHandler(), "/echo").setAllowedOrigins("*")
-				.withSockJS();
-		registry.addHandler(snakeWebSocketHandler(), "/snake").setAllowedOrigins("*")
-				.withSockJS();
+		registry.addHandler(echoWebSocketHandler(), "/echo").setAllowedOrigins("*").withSockJS();
+		registry.addHandler(snakeWebSocketHandler(), "/snake").setAllowedOrigins("*").withSockJS();
 	}
 
 	@Override

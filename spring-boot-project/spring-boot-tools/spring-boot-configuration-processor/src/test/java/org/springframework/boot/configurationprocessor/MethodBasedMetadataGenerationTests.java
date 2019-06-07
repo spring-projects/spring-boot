@@ -38,31 +38,30 @@ public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerati
 	@Test
 	public void simpleMethodConfig() {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
 		assertThat(metadata)
-				.has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
+				.has(Metadata.withProperty("foo.name", String.class).fromSource(SimpleMethodConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
 				.fromSource(SimpleMethodConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(SimpleMethodConfig.Foo.class));
 	}
 
 	@Test
 	public void invalidMethodConfig() {
 		ConfigurationMetadata metadata = compile(InvalidMethodConfig.class);
-		assertThat(metadata).has(Metadata.withProperty("something.name", String.class)
-				.fromSource(InvalidMethodConfig.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("something.name", String.class).fromSource(InvalidMethodConfig.class));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("invalid.name"));
 	}
 
 	@Test
 	public void methodAndClassConfig() {
 		ConfigurationMetadata metadata = compile(MethodAndClassConfig.class);
-		assertThat(metadata).has(Metadata.withProperty("conflict.name", String.class)
+		assertThat(metadata)
+				.has(Metadata.withProperty("conflict.name", String.class).fromSource(MethodAndClassConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class).withDefaultValue(false)
 				.fromSource(MethodAndClassConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(MethodAndClassConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("conflict.value", String.class)
-				.fromSource(MethodAndClassConfig.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("conflict.value", String.class).fromSource(MethodAndClassConfig.class));
 	}
 
 	@Test
@@ -77,11 +76,9 @@ public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerati
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
-				.fromSource(DeprecatedMethodConfig.Foo.class)
-				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(DeprecatedMethodConfig.Foo.class)
-				.withDeprecation(null, null));
+				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
 	}
 
 	@Test
@@ -91,13 +88,10 @@ public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerati
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
-				.fromSource(
-						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false)
-				.fromSource(
-						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
 	}
 

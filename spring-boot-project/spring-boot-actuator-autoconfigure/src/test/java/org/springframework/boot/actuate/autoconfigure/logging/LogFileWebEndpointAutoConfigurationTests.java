@@ -44,104 +44,82 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LogFileWebEndpointAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
 
 	@Test
 	public void runWithOnlyExposedShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LogFileWebEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void runWhenLoggingFileIsSetAndNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("logging.file.name:test.log")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LogFileWebEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void runWhenLoggingFileIsSetAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
-				.withPropertyValues("logging.file.name:test.log",
-						"management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(LogFileWebEndpoint.class));
+				.withPropertyValues("logging.file.name:test.log", "management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	@Deprecated
 	public void runWhenLoggingFileIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
-				.withPropertyValues("logging.file:test.log",
-						"management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(LogFileWebEndpoint.class));
+				.withPropertyValues("logging.file:test.log", "management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void runWhenLoggingPathIsSetAndNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("logging.file.path:test/logs")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LogFileWebEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void runWhenLoggingPathIsSetAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
-				.withPropertyValues("logging.file.path:test/logs",
-						"management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(LogFileWebEndpoint.class));
+				.withPropertyValues("logging.file.path:test/logs", "management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	@Deprecated
 	public void runWhenLoggingPathIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
-				.withPropertyValues("logging.path:test/logs",
-						"management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(LogFileWebEndpoint.class));
+				.withPropertyValues("logging.path:test/logs", "management.endpoints.web.exposure.include=logfile")
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
 		this.contextRunner
-				.withPropertyValues(
-						"management.endpoint.logfile.external-file:external.log",
+				.withPropertyValues("management.endpoint.logfile.external-file:external.log",
 						"management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(LogFileWebEndpoint.class));
+				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	public void logFileWebEndpointCanBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("logging.file.name:test.log",
-						"management.endpoint.logfile.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LogFileWebEndpoint.class));
+		this.contextRunner.withPropertyValues("logging.file.name:test.log", "management.endpoint.logfile.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
-	public void logFileWebEndpointUsesConfiguredExternalFile(@TempDir Path temp)
-			throws IOException {
+	public void logFileWebEndpointUsesConfiguredExternalFile(@TempDir Path temp) throws IOException {
 		File file = new File(temp.toFile(), "logfile");
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
-		this.contextRunner.withPropertyValues(
-				"management.endpoints.web.exposure.include=logfile",
-				"management.endpoint.logfile.external-file:" + file.getAbsolutePath())
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=logfile",
+				"management.endpoint.logfile.external-file:" + file.getAbsolutePath()).run((context) -> {
 					assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
-					LogFileWebEndpoint endpoint = context
-							.getBean(LogFileWebEndpoint.class);
+					LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
 					Resource resource = endpoint.logFile();
 					assertThat(resource).isNotNull();
-					assertThat(StreamUtils.copyToString(resource.getInputStream(),
-							StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+					assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8))
+							.isEqualTo("--TEST--");
 				});
 	}
 

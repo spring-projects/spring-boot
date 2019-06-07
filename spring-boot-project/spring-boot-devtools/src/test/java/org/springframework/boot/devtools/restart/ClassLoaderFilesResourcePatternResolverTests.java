@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	@Before
 	public void setup() {
 		this.files = new ClassLoaderFiles();
-		this.resolver = new ClassLoaderFilesResourcePatternResolver(
-				new GenericApplicationContext(), this.files);
+		this.resolver = new ClassLoaderFilesResourcePatternResolver(new GenericApplicationContext(), this.files);
 	}
 
 	@Test
@@ -81,8 +80,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 
 	@Test
 	public void getResourceWhenHasServletContextShouldReturnServletResource() {
-		GenericWebApplicationContext context = new GenericWebApplicationContext(
-				new MockServletContext());
+		GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		Resource resource = this.resolver.getResource("index.html");
 		assertThat(resource).isNotNull().isInstanceOf(ServletContextResource.class);
@@ -92,19 +90,16 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	public void getResourceWhenDeletedShouldReturnDeletedResource() throws Exception {
 		File folder = this.temp.newFolder();
 		File file = createFile(folder, "name.class");
-		this.files.addFile(folder.getName(), "name.class",
-				new ClassLoaderFile(Kind.DELETED, null));
+		this.files.addFile(folder.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
 		Resource resource = this.resolver.getResource("file:" + file.getAbsolutePath());
-		assertThat(resource).isNotNull()
-				.isInstanceOf(DeletedClassLoaderFileResource.class);
+		assertThat(resource).isNotNull().isInstanceOf(DeletedClassLoaderFileResource.class);
 	}
 
 	@Test
 	public void getResourcesShouldReturnResources() throws Exception {
 		File folder = this.temp.newFolder();
 		createFile(folder, "name.class");
-		Resource[] resources = this.resolver
-				.getResources("file:" + folder.getAbsolutePath() + "/**");
+		Resource[] resources = this.resolver.getResources("file:" + folder.getAbsolutePath() + "/**");
 		assertThat(resources).isNotEmpty();
 	}
 
@@ -112,10 +107,8 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	public void getResourcesWhenDeletedShouldFilterDeleted() throws Exception {
 		File folder = this.temp.newFolder();
 		createFile(folder, "name.class");
-		this.files.addFile(folder.getName(), "name.class",
-				new ClassLoaderFile(Kind.DELETED, null));
-		Resource[] resources = this.resolver
-				.getResources("file:" + folder.getAbsolutePath() + "/**");
+		this.files.addFile(folder.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
+		Resource[] resources = this.resolver.getResources("file:" + folder.getAbsolutePath() + "/**");
 		assertThat(resources).isEmpty();
 	}
 
@@ -143,8 +136,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 
 	@Test
 	public void customResourceLoaderIsUsedInWebApplication() {
-		GenericWebApplicationContext context = new GenericWebApplicationContext(
-				new MockServletContext());
+		GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
 		ResourceLoader resourceLoader = mock(ResourceLoader.class);
 		context.setResourceLoader(resourceLoader);
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
@@ -154,8 +146,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 
 	@Test
 	public void customProtocolResolverIsUsedInWebApplication() {
-		GenericWebApplicationContext context = new GenericWebApplicationContext(
-				new MockServletContext());
+		GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
 		Resource resource = mock(Resource.class);
 		ProtocolResolver resolver = mockProtocolResolver("foo:some-file.txt", resource);
 		context.addProtocolResolver(resolver);

@@ -36,8 +36,7 @@ class TestRestTemplateContextCustomizerFactory implements ContextCustomizerFacto
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		MergedAnnotations annotations = MergedAnnotations.from(testClass,
-				SearchStrategy.INHERITED_ANNOTATIONS);
+		MergedAnnotations annotations = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS);
 		if (annotations.isPresent(SpringBootTest.class)) {
 			return new TestRestTemplateContextCustomizer();
 		}

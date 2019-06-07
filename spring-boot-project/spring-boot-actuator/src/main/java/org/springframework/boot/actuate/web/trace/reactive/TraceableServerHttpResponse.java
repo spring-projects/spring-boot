@@ -36,8 +36,7 @@ class TraceableServerHttpResponse implements TraceableResponse {
 	private final Map<String, List<String>> headers;
 
 	TraceableServerHttpResponse(ServerHttpResponse response) {
-		this.status = (response.getStatusCode() != null)
-				? response.getStatusCode().value() : HttpStatus.OK.value();
+		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
 		this.headers = new LinkedHashMap<>(response.getHeaders());
 	}
 

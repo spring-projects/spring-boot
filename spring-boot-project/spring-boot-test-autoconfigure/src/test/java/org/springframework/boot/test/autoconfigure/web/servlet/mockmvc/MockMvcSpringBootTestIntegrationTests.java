@@ -62,21 +62,18 @@ public class MockMvcSpringBootTestIntegrationTests {
 
 	@Test
 	public void shouldFindController1() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(content().string("one"))
-				.andExpect(status().isOk());
+		this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
 		assertThat(this.output.toString()).contains("Request URI = /one");
 	}
 
 	@Test
 	public void shouldFindController2() throws Exception {
-		this.mvc.perform(get("/two")).andExpect(content().string("hellotwo"))
-				.andExpect(status().isOk());
+		this.mvc.perform(get("/two")).andExpect(content().string("hellotwo")).andExpect(status().isOk());
 	}
 
 	@Test
 	public void shouldFindControllerAdvice() throws Exception {
-		this.mvc.perform(get("/error")).andExpect(content().string("recovered"))
-				.andExpect(status().isOk());
+		this.mvc.perform(get("/error")).andExpect(content().string("recovered")).andExpect(status().isOk());
 	}
 
 	@Test

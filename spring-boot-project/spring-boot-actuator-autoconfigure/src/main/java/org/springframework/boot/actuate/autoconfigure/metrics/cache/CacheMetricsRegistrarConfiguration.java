@@ -51,13 +51,11 @@ class CacheMetricsRegistrarConfiguration {
 
 	private final Map<String, CacheManager> cacheManagers;
 
-	CacheMetricsRegistrarConfiguration(MeterRegistry registry,
-			Collection<CacheMeterBinderProvider<?>> binderProviders,
+	CacheMetricsRegistrarConfiguration(MeterRegistry registry, Collection<CacheMeterBinderProvider<?>> binderProviders,
 			Map<String, CacheManager> cacheManagers) {
 		this.registry = registry;
 		this.cacheManagers = cacheManagers;
-		this.cacheMetricsRegistrar = new CacheMetricsRegistrar(this.registry,
-				binderProviders);
+		this.cacheMetricsRegistrar = new CacheMetricsRegistrar(this.registry, binderProviders);
 	}
 
 	@Bean
@@ -71,8 +69,8 @@ class CacheMetricsRegistrarConfiguration {
 	}
 
 	private void bindCacheManagerToRegistry(String beanName, CacheManager cacheManager) {
-		cacheManager.getCacheNames().forEach((cacheName) -> bindCacheToRegistry(beanName,
-				cacheManager.getCache(cacheName)));
+		cacheManager.getCacheNames()
+				.forEach((cacheName) -> bindCacheToRegistry(beanName, cacheManager.getCache(cacheName)));
 	}
 
 	private void bindCacheToRegistry(String beanName, Cache cache) {
@@ -88,8 +86,7 @@ class CacheMetricsRegistrarConfiguration {
 	private String getCacheManagerName(String beanName) {
 		if (beanName.length() > CACHE_MANAGER_SUFFIX.length()
 				&& StringUtils.endsWithIgnoreCase(beanName, CACHE_MANAGER_SUFFIX)) {
-			return beanName.substring(0,
-					beanName.length() - CACHE_MANAGER_SUFFIX.length());
+			return beanName.substring(0, beanName.length() - CACHE_MANAGER_SUFFIX.length());
 		}
 		return beanName;
 	}

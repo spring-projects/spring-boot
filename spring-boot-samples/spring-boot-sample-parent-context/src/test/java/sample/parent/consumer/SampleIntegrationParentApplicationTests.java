@@ -46,13 +46,11 @@ class SampleIntegrationParentApplicationTests {
 	void testVanillaExchange(@TempDir Path temp) throws Exception {
 		File inputDir = new File(temp.toFile(), "input");
 		File outputDir = new File(temp.toFile(), "output");
-		ConfigurableApplicationContext app = SpringApplication.run(
-				SampleParentContextApplication.class, "--service.input-dir=" + inputDir,
-				"--service.output-dir=" + outputDir);
+		ConfigurableApplicationContext app = SpringApplication.run(SampleParentContextApplication.class,
+				"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir);
 		try {
-			ConfigurableApplicationContext producer = SpringApplication.run(
-					ProducerApplication.class, "--service.input-dir=" + inputDir,
-					"--service.output-dir=" + outputDir, "World");
+			ConfigurableApplicationContext producer = SpringApplication.run(ProducerApplication.class,
+					"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir, "World");
 			try {
 				awaitOutputContaining(outputDir, "Hello World");
 			}
@@ -65,8 +63,7 @@ class SampleIntegrationParentApplicationTests {
 		}
 	}
 
-	private void awaitOutputContaining(File outputDir, String requiredContents)
-			throws Exception {
+	private void awaitOutputContaining(File outputDir, String requiredContents) throws Exception {
 		long endTime = System.currentTimeMillis() + 30000;
 		String output = null;
 		while (System.currentTimeMillis() < endTime) {
@@ -86,21 +83,18 @@ class SampleIntegrationParentApplicationTests {
 				}
 			}
 		}
-		fail("Timed out awaiting output containing '" + requiredContents
-				+ "'. Output was '" + output + "'");
+		fail("Timed out awaiting output containing '" + requiredContents + "'. Output was '" + output + "'");
 	}
 
 	private Resource[] findResources(File outputDir) throws IOException {
-		return ResourcePatternUtils
-				.getResourcePatternResolver(new DefaultResourceLoader())
+		return ResourcePatternUtils.getResourcePatternResolver(new DefaultResourceLoader())
 				.getResources("file:" + outputDir.getAbsolutePath() + "/*.txt");
 	}
 
 	private String readResources(Resource[] resources) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			builder.append(
-					new String(StreamUtils.copyToByteArray(resource.getInputStream())));
+			builder.append(new String(StreamUtils.copyToByteArray(resource.getInputStream())));
 		}
 		return builder.toString();
 	}

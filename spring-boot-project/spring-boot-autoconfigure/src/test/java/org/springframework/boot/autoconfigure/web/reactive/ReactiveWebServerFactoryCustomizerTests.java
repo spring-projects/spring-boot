@@ -47,8 +47,7 @@ public class ReactiveWebServerFactoryCustomizerTests {
 
 	@Test
 	public void testCustomizeServerPort() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.properties.setPort(9000);
 		this.customizer.customize(factory);
 		verify(factory).setPort(9000);
@@ -56,8 +55,7 @@ public class ReactiveWebServerFactoryCustomizerTests {
 
 	@Test
 	public void testCustomizeServerAddress() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		InetAddress address = mock(InetAddress.class);
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);
@@ -66,8 +64,7 @@ public class ReactiveWebServerFactoryCustomizerTests {
 
 	@Test
 	public void testCustomizeServerSsl() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);

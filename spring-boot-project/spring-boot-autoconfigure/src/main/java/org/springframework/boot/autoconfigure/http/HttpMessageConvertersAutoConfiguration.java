@@ -54,10 +54,8 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HttpMessageConverter.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
-@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
-		JsonbAutoConfiguration.class })
-@Import({ JacksonHttpMessageConvertersConfiguration.class,
-		GsonHttpMessageConvertersConfiguration.class,
+@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class, JsonbAutoConfiguration.class })
+@Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
 
@@ -65,10 +63,8 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HttpMessageConverters messageConverters(
-			ObjectProvider<HttpMessageConverter<?>> converters) {
-		return new HttpMessageConverters(
-				converters.orderedStream().collect(Collectors.toList()));
+	public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -78,8 +74,7 @@ public class HttpMessageConvertersAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public StringHttpMessageConverter stringHttpMessageConverter(
-				HttpProperties httpProperties) {
+		public StringHttpMessageConverter stringHttpMessageConverter(HttpProperties httpProperties) {
 			StringHttpMessageConverter converter = new StringHttpMessageConverter(
 					httpProperties.getEncoding().getCharset());
 			converter.setWriteAcceptCharset(false);

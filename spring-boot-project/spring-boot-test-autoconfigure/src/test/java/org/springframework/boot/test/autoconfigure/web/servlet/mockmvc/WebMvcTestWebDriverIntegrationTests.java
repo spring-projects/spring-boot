@@ -62,8 +62,7 @@ public class WebMvcTestWebDriverIntegrationTests {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
-		assertThatExceptionOfType(NoSuchWindowException.class)
-				.isThrownBy(previousWebDriver::getWindowHandle);
+		assertThatExceptionOfType(NoSuchWindowException.class).isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
 	}
 

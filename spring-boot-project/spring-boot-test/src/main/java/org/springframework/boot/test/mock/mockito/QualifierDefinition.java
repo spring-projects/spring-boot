@@ -105,8 +105,7 @@ class QualifierDefinition {
 			return true;
 		}
 		MergedAnnotations metaAnnotations = MergedAnnotations.from(type);
-		return metaAnnotations.isPresent(MockBean.class)
-				|| metaAnnotations.isPresent(SpyBean.class);
+		return metaAnnotations.isPresent(MockBean.class) || metaAnnotations.isPresent(SpyBean.class);
 	}
 
 }

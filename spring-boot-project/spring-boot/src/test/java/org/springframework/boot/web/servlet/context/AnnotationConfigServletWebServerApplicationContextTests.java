@@ -60,24 +60,22 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	@Test
 	public void createFromScan() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ExampleServletWebServerApplicationConfiguration.class.getPackage()
-						.getName());
+				ExampleServletWebServerApplicationConfiguration.class.getPackage().getName());
 		verifyContext();
 	}
 
 	@Test
 	public void sessionScopeAvailable() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ExampleServletWebServerApplicationConfiguration.class,
-				SessionScopedComponent.class);
+				ExampleServletWebServerApplicationConfiguration.class, SessionScopedComponent.class);
 		verifyContext();
 	}
 
 	@Test
 	public void sessionScopeAvailableToServlet() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ExampleServletWebServerApplicationConfiguration.class,
-				ExampleServletWithAutowired.class, SessionScopedComponent.class);
+				ExampleServletWebServerApplicationConfiguration.class, ExampleServletWithAutowired.class,
+				SessionScopedComponent.class);
 		Servlet servlet = this.context.getBean(ExampleServletWithAutowired.class);
 		assertThat(servlet).isNotNull();
 	}
@@ -110,8 +108,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	@Test
 	public void scanAndRefresh() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.scan(ExampleServletWebServerApplicationConfiguration.class
-				.getPackage().getName());
+		this.context.scan(ExampleServletWebServerApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}
@@ -123,8 +120,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 		verifyContext();
 		// You can't initialize the application context and inject the servlet context
 		// because of a cycle - we'd like this to be not null but it never will be
-		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class)
-				.getServletContext()).isNull();
+		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class).getServletContext()).isNull();
 	}
 
 	@Test
@@ -132,18 +128,15 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 		AnnotationConfigServletWebServerApplicationContext parent = new AnnotationConfigServletWebServerApplicationContext(
 				WebServerConfiguration.class);
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(WebServerConfiguration.class,
-				ServletContextAwareConfiguration.class);
+		this.context.register(WebServerConfiguration.class, ServletContextAwareConfiguration.class);
 		this.context.setParent(parent);
 		this.context.refresh();
 		verifyContext();
-		assertThat(this.context.getBean(ServletContextAwareConfiguration.class)
-				.getServletContext()).isNotNull();
+		assertThat(this.context.getBean(ServletContextAwareConfiguration.class).getServletContext()).isNotNull();
 	}
 
 	private void verifyContext() {
-		MockServletWebServerFactory factory = this.context
-				.getBean(MockServletWebServerFactory.class);
+		MockServletWebServerFactory factory = this.context.getBean(MockServletWebServerFactory.class);
 		Servlet servlet = this.context.getBean(Servlet.class);
 		verify(factory.getServletContext()).addServlet("servlet", servlet);
 	}
@@ -170,8 +163,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	public static class ServletContextAwareEmbeddedConfiguration
-			implements ServletContextAware {
+	public static class ServletContextAwareEmbeddedConfiguration implements ServletContextAware {
 
 		private ServletContext servletContext;
 

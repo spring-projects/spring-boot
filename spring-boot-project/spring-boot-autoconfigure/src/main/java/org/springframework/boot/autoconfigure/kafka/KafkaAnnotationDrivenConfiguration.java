@@ -71,14 +71,13 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<BatchMessageConverter> batchMessageConverter,
 			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
 			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
-			ObjectProvider<ConsumerAwareRebalanceListener> rebalanceListener,
-			ObjectProvider<ErrorHandler> errorHandler,
+			ObjectProvider<ConsumerAwareRebalanceListener> rebalanceListener, ObjectProvider<ErrorHandler> errorHandler,
 			ObjectProvider<BatchErrorHandler> batchErrorHandler,
 			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor) {
 		this.properties = properties;
 		this.messageConverter = messageConverter.getIfUnique();
-		this.batchMessageConverter = batchMessageConverter.getIfUnique(
-				() -> new BatchMessagingMessageConverter(this.messageConverter));
+		this.batchMessageConverter = batchMessageConverter
+				.getIfUnique(() -> new BatchMessagingMessageConverter(this.messageConverter));
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
 		this.rebalanceListener = rebalanceListener.getIfUnique();
@@ -92,8 +91,8 @@ class KafkaAnnotationDrivenConfiguration {
 	public ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
 		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
 		configurer.setKafkaProperties(this.properties);
-		MessageConverter messageConverterToUse = (this.properties.getListener().getType()
-				.equals(Type.BATCH)) ? this.batchMessageConverter : this.messageConverter;
+		MessageConverter messageConverterToUse = (this.properties.getListener().getType().equals(Type.BATCH))
+				? this.batchMessageConverter : this.messageConverter;
 		configurer.setMessageConverter(messageConverterToUse);
 		configurer.setReplyTemplate(this.kafkaTemplate);
 		configurer.setTransactionManager(this.transactionManager);
@@ -116,8 +115,7 @@ class KafkaAnnotationDrivenConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableKafka
-	@ConditionalOnMissingBean(
-			name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+	@ConditionalOnMissingBean(name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableKafkaConfiguration {
 
 	}

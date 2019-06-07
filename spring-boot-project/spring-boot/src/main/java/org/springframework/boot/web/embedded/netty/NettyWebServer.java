@@ -61,8 +61,7 @@ public class NettyWebServer implements WebServer {
 
 	private DisposableServer disposableServer;
 
-	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
-			Duration lifecycleTimeout) {
+	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout) {
 		Assert.notNull(httpServer, "HttpServer must not be null");
 		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
 		this.httpServer = httpServer;

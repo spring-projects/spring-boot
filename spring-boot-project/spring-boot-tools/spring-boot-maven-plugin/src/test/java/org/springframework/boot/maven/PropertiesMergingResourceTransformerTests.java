@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,25 +36,21 @@ public class PropertiesMergingResourceTransformerTests {
 	@Test
 	public void testProcess() throws Exception {
 		assertThat(this.transformer.hasTransformedResource()).isFalse();
-		this.transformer.processResource("foo",
-				new ByteArrayInputStream("foo=bar".getBytes()), null);
+		this.transformer.processResource("foo", new ByteArrayInputStream("foo=bar".getBytes()), null);
 		assertThat(this.transformer.hasTransformedResource()).isTrue();
 	}
 
 	@Test
 	public void testMerge() throws Exception {
-		this.transformer.processResource("foo",
-				new ByteArrayInputStream("foo=bar".getBytes()), null);
-		this.transformer.processResource("bar",
-				new ByteArrayInputStream("foo=spam".getBytes()), null);
+		this.transformer.processResource("foo", new ByteArrayInputStream("foo=bar".getBytes()), null);
+		this.transformer.processResource("bar", new ByteArrayInputStream("foo=spam".getBytes()), null);
 		assertThat(this.transformer.getData().getProperty("foo")).isEqualTo("bar,spam");
 	}
 
 	@Test
 	public void testOutput() throws Exception {
 		this.transformer.setResource("foo");
-		this.transformer.processResource("foo",
-				new ByteArrayInputStream("foo=bar".getBytes()), null);
+		this.transformer.processResource("foo", new ByteArrayInputStream("foo=bar".getBytes()), null);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		JarOutputStream os = new JarOutputStream(out);
 		this.transformer.modifyOutputStream(os);

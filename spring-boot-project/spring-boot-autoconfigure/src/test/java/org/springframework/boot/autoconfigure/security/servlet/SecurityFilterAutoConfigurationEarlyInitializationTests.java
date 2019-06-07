@@ -55,32 +55,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	@Test
-	public void testSecurityFilterDoesNotCauseEarlyInitialization(
-			CapturedOutput capturedOutput) {
+	public void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput capturedOutput) {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
-			String password = capturedOutput.toString()
-					.split("Using generated security password: ")[1].split("\n")[0]
-							.trim();
-			new TestRestTemplate("user", password)
-					.getForEntity("http://localhost:" + port, Object.class);
+			String password = capturedOutput.toString().split("Using generated security password: ")[1].split("\n")[0]
+					.trim();
+			new TestRestTemplate("user", password).getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
 
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class,
-			ConverterBean.class })
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, SecurityAutoConfiguration.class,
-			UserDetailsServiceAutoConfiguration.class,
-			SecurityFilterAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class, ConverterBean.class })
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class,
+			SecurityFilterAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 
 		@Bean

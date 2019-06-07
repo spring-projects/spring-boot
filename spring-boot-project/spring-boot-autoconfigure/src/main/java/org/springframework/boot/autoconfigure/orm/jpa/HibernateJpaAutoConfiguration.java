@@ -59,23 +59,19 @@ public class HibernateJpaAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
 
-		private static final String[] CLASS_NAMES = {
-				"org.hibernate.ejb.HibernateEntityManager",
+		private static final String[] CLASS_NAMES = { "org.hibernate.ejb.HibernateEntityManager",
 				"org.hibernate.jpa.HibernateEntityManager" };
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("HibernateEntityManager");
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage.forCondition("HibernateEntityManager");
 			for (String className : CLASS_NAMES) {
 				if (ClassUtils.isPresent(className, context.getClassLoader())) {
-					return ConditionOutcome
-							.match(message.found("class").items(Style.QUOTE, className));
+					return ConditionOutcome.match(message.found("class").items(Style.QUOTE, className));
 				}
 			}
-			return ConditionOutcome.noMatch(message.didNotFind("class", "classes")
-					.items(Style.QUOTE, Arrays.asList(CLASS_NAMES)));
+			return ConditionOutcome
+					.noMatch(message.didNotFind("class", "classes").items(Style.QUOTE, Arrays.asList(CLASS_NAMES)));
 		}
 
 	}

@@ -30,8 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
-@SpringBootTest(
-		properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
+@SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @EmbeddedKafka(topics = "testTopic")
 class SampleKafkaApplicationTests {
 
@@ -41,12 +40,10 @@ class SampleKafkaApplicationTests {
 	@Test
 	void testVanillaExchange() throws Exception {
 		long end = System.currentTimeMillis() + 10000;
-		while (this.consumer.getMessages().isEmpty()
-				&& System.currentTimeMillis() < end) {
+		while (this.consumer.getMessages().isEmpty() && System.currentTimeMillis() < end) {
 			Thread.sleep(250);
 		}
-		assertThat(this.consumer.getMessages()).extracting("message")
-				.containsOnly("A simple test message");
+		assertThat(this.consumer.getMessages()).extracting("message").containsOnly("A simple test message");
 	}
 
 }

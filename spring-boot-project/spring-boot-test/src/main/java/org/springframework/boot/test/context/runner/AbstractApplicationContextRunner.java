@@ -124,9 +124,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param contextFactory the factory used to create the actual context
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
-		this(contextFactory, Collections.emptyList(), TestPropertyValues.empty(),
-				TestPropertyValues.empty(), null, null, Collections.emptyList(),
-				Collections.emptyList());
+		this(contextFactory, Collections.emptyList(), TestPropertyValues.empty(), TestPropertyValues.empty(), null,
+				null, Collections.emptyList(), Collections.emptyList());
 	}
 
 	/**
@@ -141,11 +140,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param configurations the configuration
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
-			List<ApplicationContextInitializer<? super C>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations,
-			List<Configurations> configurations) {
+			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
+			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
+			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
 		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
 		Assert.notNull(systemProperties, "SystemProperties must not be null");
@@ -169,9 +166,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	public SELF withInitializer(ApplicationContextInitializer<? super C> initializer) {
 		Assert.notNull(initializer, "Initializer must not be null");
-		return newInstance(this.contextFactory, add(this.initializers, initializer),
-				this.environmentProperties, this.systemProperties, this.classLoader,
-				this.parent, this.beanRegistrations, this.configurations);
+		return newInstance(this.contextFactory, add(this.initializers, initializer), this.environmentProperties,
+				this.systemProperties, this.classLoader, this.parent, this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -185,10 +181,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withPropertyValues(String... pairs) {
-		return newInstance(this.contextFactory, this.initializers,
-				this.environmentProperties.and(pairs), this.systemProperties,
-				this.classLoader, this.parent, this.beanRegistrations,
-				this.configurations);
+		return newInstance(this.contextFactory, this.initializers, this.environmentProperties.and(pairs),
+				this.systemProperties, this.classLoader, this.parent, this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -202,9 +196,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withSystemProperties(String... pairs) {
-		return newInstance(this.contextFactory, this.initializers,
-				this.environmentProperties, this.systemProperties.and(pairs),
-				this.classLoader, this.parent, this.beanRegistrations,
+		return newInstance(this.contextFactory, this.initializers, this.environmentProperties,
+				this.systemProperties.and(pairs), this.classLoader, this.parent, this.beanRegistrations,
 				this.configurations);
 	}
 
@@ -216,9 +209,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @see FilteredClassLoader
 	 */
 	public SELF withClassLoader(ClassLoader classLoader) {
-		return newInstance(this.contextFactory, this.initializers,
-				this.environmentProperties, this.systemProperties, classLoader,
-				this.parent, this.beanRegistrations, this.configurations);
+		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
+				classLoader, this.parent, this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -228,9 +220,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @return a new instance with the updated parent
 	 */
 	public SELF withParent(ApplicationContext parent) {
-		return newInstance(this.contextFactory, this.initializers,
-				this.environmentProperties, this.systemProperties, this.classLoader,
-				parent, this.beanRegistrations, this.configurations);
+		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
+				this.classLoader, parent, this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -265,12 +256,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @return a new instance with the updated bean
 	 */
 	public <T> SELF withBean(String name, Class<T> type, Object... constructorArgs) {
-		return newInstance(this.contextFactory, this.initializers,
-				this.environmentProperties, this.systemProperties, this.classLoader,
-				this.parent,
-				add(this.beanRegistrations,
-						new BeanRegistration<>(name, type, constructorArgs)),
-				this.configurations);
+		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
+				this.classLoader, this.parent,
+				add(this.beanRegistrations, new BeanRegistration<>(name, type, constructorArgs)), this.configurations);
 	}
 
 	/**
@@ -287,8 +275,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param <T> the type of the bean
 	 * @return a new instance with the updated bean
 	 */
-	public <T> SELF withBean(Class<T> type, Supplier<T> supplier,
-			BeanDefinitionCustomizer... customizers) {
+	public <T> SELF withBean(Class<T> type, Supplier<T> supplier, BeanDefinitionCustomizer... customizers) {
 		return withBean(null, type, supplier, customizers);
 	}
 
@@ -309,11 +296,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	public <T> SELF withBean(String name, Class<T> type, Supplier<T> supplier,
 			BeanDefinitionCustomizer... customizers) {
-		return newInstance(this.contextFactory, this.initializers,
-				this.environmentProperties, this.systemProperties, this.classLoader,
-				this.parent,
-				add(this.beanRegistrations,
-						new BeanRegistration<>(name, type, supplier, customizers)),
+		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
+				this.classLoader, this.parent,
+				add(this.beanRegistrations, new BeanRegistration<>(name, type, supplier, customizers)),
 				this.configurations);
 	}
 
@@ -334,10 +319,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	public SELF withConfiguration(Configurations configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
-		return newInstance(this.contextFactory, this.initializers,
-				this.environmentProperties, this.systemProperties, this.classLoader,
-				this.parent, this.beanRegistrations,
-				add(this.configurations, configurations));
+		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
+				this.classLoader, this.parent, this.beanRegistrations, add(this.configurations, configurations));
 	}
 
 	/**
@@ -357,11 +340,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	protected abstract SELF newInstance(Supplier<C> contextFactory,
-			List<ApplicationContextInitializer<? super C>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations,
-			List<Configurations> configurations);
+			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
+			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
+			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations);
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
@@ -402,12 +383,10 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 	@SuppressWarnings("unchecked")
 	private A createAssertableContext() {
-		ResolvableType resolvableType = ResolvableType
-				.forClass(AbstractApplicationContextRunner.class, getClass());
+		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		return ApplicationContextAssertProvider.get(assertType, contextType,
-				this::createAndLoadContext);
+		return ApplicationContextAssertProvider.get(assertType, contextType, this::createAndLoadContext);
 	}
 
 	private C createAndLoadContext() {
@@ -464,14 +443,12 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		Consumer<GenericApplicationContext> registrar;
 
 		public BeanRegistration(String name, Class<T> type, Object... constructorArgs) {
-			this.registrar = (context) -> context.registerBean(name, type,
-					constructorArgs);
+			this.registrar = (context) -> context.registerBean(name, type, constructorArgs);
 		}
 
 		public BeanRegistration(String name, Class<T> type, Supplier<T> supplier,
 				BeanDefinitionCustomizer... customizers) {
-			this.registrar = (context) -> context.registerBean(name, type, supplier,
-					customizers);
+			this.registrar = (context) -> context.registerBean(name, type, supplier, customizers);
 		}
 
 		public void apply(ConfigurableApplicationContext context) {

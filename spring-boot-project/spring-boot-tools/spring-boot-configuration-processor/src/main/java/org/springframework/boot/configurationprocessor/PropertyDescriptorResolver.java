@@ -49,22 +49,19 @@ class PropertyDescriptorResolver {
 	 * or {@code null}
 	 * @return the candidate properties for metadata generation
 	 */
-	public Stream<PropertyDescriptor<?>> resolve(TypeElement type,
-			ExecutableElement factoryMethod) {
+	public Stream<PropertyDescriptor<?>> resolve(TypeElement type, ExecutableElement factoryMethod) {
 		TypeElementMembers members = new TypeElementMembers(this.environment, type);
 		ExecutableElement constructor = resolveConstructor(type);
 		if (constructor != null) {
-			return resolveConstructorProperties(type, factoryMethod, members,
-					constructor);
+			return resolveConstructorProperties(type, factoryMethod, members, constructor);
 		}
 		else {
 			return resolveJavaBeanProperties(type, factoryMethod, members);
 		}
 	}
 
-	public Stream<PropertyDescriptor<?>> resolveConstructorProperties(TypeElement type,
-			ExecutableElement factoryMethod, TypeElementMembers members,
-			ExecutableElement constructor) {
+	public Stream<PropertyDescriptor<?>> resolveConstructorProperties(TypeElement type, ExecutableElement factoryMethod,
+			TypeElementMembers members, ExecutableElement constructor) {
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
 		constructor.getParameters().forEach((parameter) -> {
 			String name = parameter.getSimpleName().toString();
@@ -72,49 +69,44 @@ class PropertyDescriptorResolver {
 			ExecutableElement getter = members.getPublicGetter(name, propertyType);
 			ExecutableElement setter = members.getPublicSetter(name, propertyType);
 			VariableElement field = members.getFields().get(name);
-			register(candidates, new ConstructorParameterPropertyDescriptor(type,
-					factoryMethod, parameter, name, propertyType, field, getter, setter));
+			register(candidates, new ConstructorParameterPropertyDescriptor(type, factoryMethod, parameter, name,
+					propertyType, field, getter, setter));
 		});
 		return candidates.values().stream();
 	}
 
-	public Stream<PropertyDescriptor<?>> resolveJavaBeanProperties(TypeElement type,
-			ExecutableElement factoryMethod, TypeElementMembers members) {
+	public Stream<PropertyDescriptor<?>> resolveJavaBeanProperties(TypeElement type, ExecutableElement factoryMethod,
+			TypeElementMembers members) {
 		// First check if we have regular java bean properties there
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
 		members.getPublicGetters().forEach((name, getter) -> {
 			TypeMirror propertyType = getter.getReturnType();
-			register(candidates,
-					new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name,
-							propertyType, members.getFields().get(name),
-							members.getPublicSetter(name, propertyType)));
+			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name, propertyType,
+					members.getFields().get(name), members.getPublicSetter(name, propertyType)));
 		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
 			TypeMirror propertyType = field.asType();
 			ExecutableElement getter = members.getPublicGetter(name, propertyType);
 			ExecutableElement setter = members.getPublicSetter(name, propertyType);
-			register(candidates, new LombokPropertyDescriptor(type, factoryMethod, field,
-					name, propertyType, getter, setter));
+			register(candidates,
+					new LombokPropertyDescriptor(type, factoryMethod, field, name, propertyType, getter, setter));
 		});
 		return candidates.values().stream();
 	}
 
-	private void register(Map<String, PropertyDescriptor<?>> candidates,
-			PropertyDescriptor<?> descriptor) {
+	private void register(Map<String, PropertyDescriptor<?>> candidates, PropertyDescriptor<?> descriptor) {
 		if (!candidates.containsKey(descriptor.getName()) && isCandidate(descriptor)) {
 			candidates.put(descriptor.getName(), descriptor);
 		}
 	}
 
 	private boolean isCandidate(PropertyDescriptor<?> descriptor) {
-		return descriptor.isProperty(this.environment)
-				|| descriptor.isNested(this.environment);
+		return descriptor.isProperty(this.environment) || descriptor.isNested(this.environment);
 	}
 
 	private ExecutableElement resolveConstructor(TypeElement type) {
-		List<ExecutableElement> constructors = ElementFilter
-				.constructorsIn(type.getEnclosedElements());
+		List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
 		if (constructors.size() == 1 && constructors.get(0).getParameters().size() > 0) {
 			return constructors.get(0);
 		}

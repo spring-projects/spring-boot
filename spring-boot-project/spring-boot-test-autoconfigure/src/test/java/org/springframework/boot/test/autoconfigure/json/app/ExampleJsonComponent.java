@@ -42,8 +42,8 @@ public class ExampleJsonComponent {
 	public static class Serializer extends JsonObjectSerializer<ExampleCustomObject> {
 
 		@Override
-		protected void serializeObject(ExampleCustomObject value, JsonGenerator jgen,
-				SerializerProvider provider) throws IOException {
+		protected void serializeObject(ExampleCustomObject value, JsonGenerator jgen, SerializerProvider provider)
+				throws IOException {
 			jgen.writeStringField("value", value.toString());
 		}
 
@@ -52,11 +52,9 @@ public class ExampleJsonComponent {
 	public static class Deserializer extends JsonObjectDeserializer<ExampleCustomObject> {
 
 		@Override
-		protected ExampleCustomObject deserializeObject(JsonParser jsonParser,
-				DeserializationContext context, ObjectCodec codec, JsonNode tree)
-				throws IOException {
-			return new ExampleCustomObject(
-					nullSafeValue(tree.get("value"), String.class));
+		protected ExampleCustomObject deserializeObject(JsonParser jsonParser, DeserializationContext context,
+				ObjectCodec codec, JsonNode tree) throws IOException {
+			return new ExampleCustomObject(nullSafeValue(tree.get("value"), String.class));
 		}
 
 	}

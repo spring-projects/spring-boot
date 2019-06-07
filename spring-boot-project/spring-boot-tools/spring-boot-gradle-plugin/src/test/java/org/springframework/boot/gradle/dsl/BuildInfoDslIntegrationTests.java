@@ -44,24 +44,21 @@ public class BuildInfoDslIntegrationTests {
 
 	@Test
 	public void basicJar() throws IOException {
-		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace")
-				.task(":bootBuildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
-		assertThat(properties).containsEntry("build.name",
-				this.gradleBuild.getProjectDir().getName());
-		assertThat(properties).containsEntry("build.artifact",
-				this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.artifact", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.group", "com.example");
 		assertThat(properties).containsEntry("build.version", "1.0");
 	}
 
 	@Test
 	public void jarWithCustomName() throws IOException {
-		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace")
-				.task(":bootBuildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
-		assertThat(properties).containsEntry("build.name",
-				this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.artifact", "foo");
 		assertThat(properties).containsEntry("build.group", "com.example");
 		assertThat(properties).containsEntry("build.version", "1.0");
@@ -69,24 +66,21 @@ public class BuildInfoDslIntegrationTests {
 
 	@Test
 	public void basicWar() throws IOException {
-		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace")
-				.task(":bootBuildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
-		assertThat(properties).containsEntry("build.name",
-				this.gradleBuild.getProjectDir().getName());
-		assertThat(properties).containsEntry("build.artifact",
-				this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.artifact", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.group", "com.example");
 		assertThat(properties).containsEntry("build.version", "1.0");
 	}
 
 	@Test
 	public void warWithCustomName() throws IOException {
-		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace")
-				.task(":bootBuildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
-		assertThat(properties).containsEntry("build.name",
-				this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.artifact", "foo");
 		assertThat(properties).containsEntry("build.group", "com.example");
 		assertThat(properties).containsEntry("build.version", "1.0");
@@ -94,13 +88,11 @@ public class BuildInfoDslIntegrationTests {
 
 	@Test
 	public void additionalProperties() throws IOException {
-		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace")
-				.task(":bootBuildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
-		assertThat(properties).containsEntry("build.name",
-				this.gradleBuild.getProjectDir().getName());
-		assertThat(properties).containsEntry("build.artifact",
-				this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
+		assertThat(properties).containsEntry("build.artifact", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.group", "com.example");
 		assertThat(properties).containsEntry("build.version", "1.0");
 		assertThat(properties).containsEntry("build.a", "alpha");
@@ -109,13 +101,12 @@ public class BuildInfoDslIntegrationTests {
 
 	@Test
 	public void classesDependency() throws IOException {
-		assertThat(this.gradleBuild.build("classes", "--stacktrace")
-				.task(":bootBuildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("classes", "--stacktrace").task(":bootBuildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	private Properties buildInfoProperties() {
-		File file = new File(this.gradleBuild.getProjectDir(),
-				"build/resources/main/META-INF/build-info.properties");
+		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();
 		Properties properties = new Properties();
 		try (FileReader reader = new FileReader(file)) {

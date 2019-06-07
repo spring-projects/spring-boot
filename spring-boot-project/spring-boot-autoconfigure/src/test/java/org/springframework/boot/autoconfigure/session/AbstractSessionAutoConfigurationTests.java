@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractSessionAutoConfigurationTests {
 
-	protected <T extends SessionRepository<?>> T validateSessionRepository(
-			AssertableWebApplicationContext context, Class<T> type) {
+	protected <T extends SessionRepository<?>> T validateSessionRepository(AssertableWebApplicationContext context,
+			Class<T> type) {
 		assertThat(context).hasSingleBean(SessionRepositoryFilter.class);
 		assertThat(context).hasSingleBean(SessionRepository.class);
 		SessionRepository<?> repository = context.getBean(SessionRepository.class);
@@ -51,8 +51,7 @@ public abstract class AbstractSessionAutoConfigurationTests {
 			AssertableReactiveWebApplicationContext context, Class<T> type) {
 		assertThat(context).hasSingleBean(WebSessionManager.class);
 		assertThat(context).hasSingleBean(ReactiveSessionRepository.class);
-		ReactiveSessionRepository<?> repository = context
-				.getBean(ReactiveSessionRepository.class);
+		ReactiveSessionRepository<?> repository = context.getBean(ReactiveSessionRepository.class);
 		assertThat(repository).as("Wrong session repository type").isInstanceOf(type);
 		return type.cast(repository);
 	}

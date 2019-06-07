@@ -71,8 +71,7 @@ public class JpaPropertiesTests {
 	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithKnownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Database database = properties
-					.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 			assertThat(database).isEqualTo(Database.H2);
 		}));
 	}
@@ -81,12 +80,10 @@ public class JpaPropertiesTests {
 	@Deprecated
 	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
-		this.contextRunner.withPropertyValues("spring.jpa.database=mysql")
-				.run(assertJpaProperties((properties) -> {
-					Database database = properties
-							.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
-					assertThat(database).isEqualTo(Database.MYSQL);
-				}));
+		this.contextRunner.withPropertyValues("spring.jpa.database=mysql").run(assertJpaProperties((properties) -> {
+			Database database = properties.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
+			assertThat(database).isEqualTo(Database.MYSQL);
+		}));
 	}
 
 	@Test
@@ -94,8 +91,7 @@ public class JpaPropertiesTests {
 	@SuppressWarnings("deprecation")
 	public void determineDatabaseWithUnknownUrl() {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
-			Database database = properties
-					.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
+			Database database = properties.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
 			assertThat(database).isEqualTo(Database.DEFAULT);
 		}));
 	}
@@ -126,8 +122,7 @@ public class JpaPropertiesTests {
 		return ds;
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertJpaProperties(
-			Consumer<JpaProperties> consumer) {
+	private ContextConsumer<AssertableApplicationContext> assertJpaProperties(Consumer<JpaProperties> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(JpaProperties.class);
 			consumer.accept(context.getBean(JpaProperties.class));

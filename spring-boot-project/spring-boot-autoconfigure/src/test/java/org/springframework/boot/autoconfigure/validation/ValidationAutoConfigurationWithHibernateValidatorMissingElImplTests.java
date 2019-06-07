@@ -50,11 +50,9 @@ public class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests
 
 	@Test
 	public void missingElDependencyIsTolerated() {
-		this.context = new AnnotationConfigApplicationContext(
-				ValidationAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(ValidationAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
 	}
 
 }

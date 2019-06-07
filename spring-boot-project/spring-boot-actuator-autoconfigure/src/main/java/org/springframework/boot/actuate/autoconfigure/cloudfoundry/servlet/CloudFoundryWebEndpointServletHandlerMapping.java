@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,17 +49,15 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Phillip Webb
  * @author Brian Clozel
  */
-class CloudFoundryWebEndpointServletHandlerMapping
-		extends AbstractWebMvcEndpointHandlerMapping {
+class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
 	private final CloudFoundrySecurityInterceptor securityInterceptor;
 
 	private final EndpointLinksResolver linksResolver;
 
 	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			CloudFoundrySecurityInterceptor securityInterceptor,
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
 			EndpointLinksResolver linksResolver) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
 		this.securityInterceptor = securityInterceptor;
@@ -67,10 +65,9 @@ class CloudFoundryWebEndpointServletHandlerMapping
 	}
 
 	@Override
-	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint,
-			WebOperation operation, ServletWebOperation servletWebOperation) {
-		return new SecureServletWebOperation(servletWebOperation,
-				this.securityInterceptor, endpoint.getEndpointId());
+	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint, WebOperation operation,
+			ServletWebOperation servletWebOperation) {
+		return new SecureServletWebOperation(servletWebOperation, this.securityInterceptor, endpoint.getEndpointId());
 	}
 
 	@Override
@@ -82,15 +79,13 @@ class CloudFoundryWebEndpointServletHandlerMapping
 
 		@Override
 		@ResponseBody
-		public Map<String, Map<String, Link>> links(HttpServletRequest request,
-				HttpServletResponse response) {
+		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
 			SecurityResponse securityResponse = CloudFoundryWebEndpointServletHandlerMapping.this.securityInterceptor
 					.preHandle(request, null);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				sendFailureResponse(response, securityResponse);
 			}
-			AccessLevel accessLevel = (AccessLevel) request
-					.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
+			AccessLevel accessLevel = (AccessLevel) request.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
 			Map<String, Link> filteredLinks = new LinkedHashMap<>();
 			if (accessLevel == null) {
 				return Collections.singletonMap("_links", filteredLinks);
@@ -98,8 +93,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
 					.resolveLinks(request.getRequestURL().toString());
 			filteredLinks = links.entrySet().stream()
-					.filter((e) -> e.getKey().equals("self")
-							|| accessLevel.isAccessAllowed(e.getKey()))
+					.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return Collections.singletonMap("_links", filteredLinks);
 		}
@@ -109,11 +103,9 @@ class CloudFoundryWebEndpointServletHandlerMapping
 			return "Actuator root web endpoint";
 		}
 
-		private void sendFailureResponse(HttpServletResponse response,
-				SecurityResponse securityResponse) {
+		private void sendFailureResponse(HttpServletResponse response, SecurityResponse securityResponse) {
 			try {
-				response.sendError(securityResponse.getStatus().value(),
-						securityResponse.getMessage());
+				response.sendError(securityResponse.getStatus().value(), securityResponse.getMessage());
 			}
 			catch (Exception ex) {
 				logger.debug("Failed to send error response", ex);
@@ -133,8 +125,7 @@ class CloudFoundryWebEndpointServletHandlerMapping
 
 		private final EndpointId endpointId;
 
-		SecureServletWebOperation(ServletWebOperation delegate,
-				CloudFoundrySecurityInterceptor securityInterceptor,
+		SecureServletWebOperation(ServletWebOperation delegate, CloudFoundrySecurityInterceptor securityInterceptor,
 				EndpointId endpointId) {
 			this.delegate = delegate;
 			this.securityInterceptor = securityInterceptor;
@@ -143,11 +134,9 @@ class CloudFoundryWebEndpointServletHandlerMapping
 
 		@Override
 		public Object handle(HttpServletRequest request, Map<String, String> body) {
-			SecurityResponse securityResponse = this.securityInterceptor
-					.preHandle(request, this.endpointId);
+			SecurityResponse securityResponse = this.securityInterceptor.preHandle(request, this.endpointId);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-				return new ResponseEntity<Object>(securityResponse.getMessage(),
-						securityResponse.getStatus());
+				return new ResponseEntity<Object>(securityResponse.getMessage(), securityResponse.getStatus());
 			}
 			return this.delegate.handle(request, body);
 		}

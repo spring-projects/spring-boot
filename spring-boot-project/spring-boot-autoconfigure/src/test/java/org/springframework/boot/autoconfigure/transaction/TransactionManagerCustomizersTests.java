@@ -36,8 +36,7 @@ public class TransactionManagerCustomizersTests {
 
 	@Test
 	public void customizeWithNullCustomizersShouldDoNothing() {
-		new TransactionManagerCustomizers(null)
-				.customize(mock(PlatformTransactionManager.class));
+		new TransactionManagerCustomizers(null).customize(mock(PlatformTransactionManager.class));
 	}
 
 	@Test
@@ -45,8 +44,7 @@ public class TransactionManagerCustomizersTests {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestJtaCustomizer());
-		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(
-				list);
+		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(list);
 		customizers.customize(mock(PlatformTransactionManager.class));
 		customizers.customize(mock(JtaTransactionManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);

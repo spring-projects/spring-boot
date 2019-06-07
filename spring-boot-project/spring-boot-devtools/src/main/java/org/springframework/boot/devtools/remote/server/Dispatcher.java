@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public class Dispatcher {
 	 * @return {@code true} if the request was dispatched
 	 * @throws IOException in case of I/O errors
 	 */
-	public boolean handle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public boolean handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		for (HandlerMapper mapper : this.mappers) {
 			Handler handler = mapper.getHandler(request);
 			if (handler != null) {
@@ -69,8 +68,7 @@ public class Dispatcher {
 		return false;
 	}
 
-	private void handle(Handler handler, ServerHttpRequest request,
-			ServerHttpResponse response) throws IOException {
+	private void handle(Handler handler, ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		if (!this.accessManager.isAllowed(request)) {
 			response.setStatusCode(HttpStatus.FORBIDDEN);
 			return;

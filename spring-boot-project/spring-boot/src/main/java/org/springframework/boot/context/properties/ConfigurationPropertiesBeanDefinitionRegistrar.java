@@ -46,25 +46,22 @@ final class ConfigurationPropertiesBeanDefinitionRegistrar {
 	private ConfigurationPropertiesBeanDefinitionRegistrar() {
 	}
 
-	public static void register(BeanDefinitionRegistry registry,
-			ConfigurableListableBeanFactory beanFactory, Class<?> type) {
-		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
-				.from(type, SearchStrategy.EXHAUSTIVE).get(ConfigurationProperties.class);
+	public static void register(BeanDefinitionRegistry registry, ConfigurableListableBeanFactory beanFactory,
+			Class<?> type) {
+		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations.from(type, SearchStrategy.EXHAUSTIVE)
+				.get(ConfigurationProperties.class);
 		String name = getName(type, annotation);
 		if (!containsBeanDefinition(beanFactory, name)) {
 			registerBeanDefinition(registry, beanFactory, name, type, annotation);
 		}
 	}
 
-	private static String getName(Class<?> type,
-			MergedAnnotation<ConfigurationProperties> annotation) {
+	private static String getName(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
 		String prefix = annotation.isPresent() ? annotation.getString("prefix") : "";
-		return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
-				: type.getName());
+		return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName() : type.getName());
 	}
 
-	private static boolean containsBeanDefinition(
-			ConfigurableListableBeanFactory beanFactory, String name) {
+	private static boolean containsBeanDefinition(ConfigurableListableBeanFactory beanFactory, String name) {
 		if (beanFactory.containsBeanDefinition(name)) {
 			return true;
 		}
@@ -78,15 +75,13 @@ final class ConfigurationPropertiesBeanDefinitionRegistrar {
 	private static void registerBeanDefinition(BeanDefinitionRegistry registry,
 			ConfigurableListableBeanFactory beanFactory, String name, Class<?> type,
 			MergedAnnotation<ConfigurationProperties> annotation) {
-		Assert.isTrue(annotation.isPresent(),
-				() -> "No " + ConfigurationProperties.class.getSimpleName()
-						+ " annotation found on  '" + type.getName() + "'.");
-		registry.registerBeanDefinition(name,
-				createBeanDefinition(beanFactory, name, type));
+		Assert.isTrue(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
+				+ " annotation found on  '" + type.getName() + "'.");
+		registry.registerBeanDefinition(name, createBeanDefinition(beanFactory, name, type));
 	}
 
-	private static BeanDefinition createBeanDefinition(
-			ConfigurableListableBeanFactory beanFactory, String name, Class<?> type) {
+	private static BeanDefinition createBeanDefinition(ConfigurableListableBeanFactory beanFactory, String name,
+			Class<?> type) {
 		if (canBindAtCreationTime(type)) {
 			return ConfigurationPropertiesBeanDefinition.from(beanFactory, name, type);
 		}

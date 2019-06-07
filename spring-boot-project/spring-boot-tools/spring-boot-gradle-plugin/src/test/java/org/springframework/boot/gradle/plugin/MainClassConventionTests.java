@@ -47,29 +47,27 @@ public class MainClassConventionTests {
 
 	@Test
 	public void mainClassNameProjectPropertyIsUsed() throws Exception {
-		this.project.getExtensions().getByType(ExtraPropertiesExtension.class)
-				.set("mainClassName", "com.example.MainClass");
+		this.project.getExtensions().getByType(ExtraPropertiesExtension.class).set("mainClassName",
+				"com.example.MainClass");
 		assertThat(this.convention.call()).isEqualTo("com.example.MainClass");
 	}
 
 	@Test
 	public void springBootExtensionMainClassNameIsUsed() throws Exception {
-		SpringBootExtension extension = this.project.getExtensions().create("springBoot",
-				SpringBootExtension.class, this.project);
+		SpringBootExtension extension = this.project.getExtensions().create("springBoot", SpringBootExtension.class,
+				this.project);
 		extension.setMainClassName("com.example.MainClass");
 		assertThat(this.convention.call()).isEqualTo("com.example.MainClass");
 	}
 
 	@Test
-	public void springBootExtensionMainClassNameIsUsedInPreferenceToMainClassNameProjectProperty()
-			throws Exception {
-		this.project.getExtensions().getByType(ExtraPropertiesExtension.class)
-				.set("mainClassName", "com.example.ProjectPropertyMainClass");
-		SpringBootExtension extension = this.project.getExtensions().create("springBoot",
-				SpringBootExtension.class, this.project);
+	public void springBootExtensionMainClassNameIsUsedInPreferenceToMainClassNameProjectProperty() throws Exception {
+		this.project.getExtensions().getByType(ExtraPropertiesExtension.class).set("mainClassName",
+				"com.example.ProjectPropertyMainClass");
+		SpringBootExtension extension = this.project.getExtensions().create("springBoot", SpringBootExtension.class,
+				this.project);
 		extension.setMainClassName("com.example.SpringBootExtensionMainClass");
-		assertThat(this.convention.call())
-				.isEqualTo("com.example.SpringBootExtensionMainClass");
+		assertThat(this.convention.call()).isEqualTo("com.example.SpringBootExtensionMainClass");
 	}
 
 }

@@ -79,12 +79,10 @@ public class DataRedisTestIntegrationTests {
 				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
-	static class Initializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
-		public void initialize(
-				ConfigurableApplicationContext configurableApplicationContext) {
+		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
 			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}

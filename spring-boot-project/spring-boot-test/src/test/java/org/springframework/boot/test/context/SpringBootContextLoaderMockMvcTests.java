@@ -67,14 +67,12 @@ public class SpringBootContextLoaderMockMvcTests {
 
 	@Test
 	public void testMockHttpEndpoint() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(content().string("Hello World"));
+		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello World"));
 	}
 
 	@Test
 	public void validateWebApplicationContextIsSet() {
-		assertThat(this.context).isSameAs(
-				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
+		assertThat(this.context).isSameAs(WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
 	@Configuration(proxyBeanMethods = false)

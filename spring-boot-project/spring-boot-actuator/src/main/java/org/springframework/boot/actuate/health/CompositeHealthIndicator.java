@@ -39,8 +39,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param indicators a map of {@link HealthIndicator HealthIndicators} with the key
 	 * being used as an indicator name.
 	 */
-	public CompositeHealthIndicator(HealthAggregator healthAggregator,
-			Map<String, HealthIndicator> indicators) {
+	public CompositeHealthIndicator(HealthAggregator healthAggregator, Map<String, HealthIndicator> indicators) {
 		this(healthAggregator, new DefaultHealthIndicatorRegistry(indicators));
 	}
 
@@ -50,8 +49,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param healthAggregator the health aggregator
 	 * @param registry the registry of {@link HealthIndicator HealthIndicators}.
 	 */
-	public CompositeHealthIndicator(HealthAggregator healthAggregator,
-			HealthIndicatorRegistry registry) {
+	public CompositeHealthIndicator(HealthAggregator healthAggregator, HealthIndicatorRegistry registry) {
 		this.aggregator = healthAggregator;
 		this.registry = registry;
 	}
@@ -68,8 +66,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	@Override
 	public Health health() {
 		Map<String, Health> healths = new LinkedHashMap<>();
-		for (Map.Entry<String, HealthIndicator> entry : this.registry.getAll()
-				.entrySet()) {
+		for (Map.Entry<String, HealthIndicator> entry : this.registry.getAll().entrySet()) {
 			healths.put(entry.getKey(), entry.getValue().health());
 		}
 		return this.aggregator.aggregate(healths);

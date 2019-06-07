@@ -44,8 +44,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 	private final OAuth2ResourceServerProperties.Jwt properties;
 
-	ReactiveOAuth2ResourceServerJwkConfiguration(
-			OAuth2ResourceServerProperties properties) {
+	ReactiveOAuth2ResourceServerJwkConfiguration(OAuth2ResourceServerProperties properties) {
 		this.properties = properties.getJwt();
 	}
 
@@ -61,14 +60,12 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	@ConditionalOnMissingBean
 	public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 		RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-				.generatePublic(new X509EncodedKeySpec(
-						getKeySpec(this.properties.readPublicKey())));
+				.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 		return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
 	}
 
 	private byte[] getKeySpec(String keyValue) {
-		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "")
-				.replace("-----END PUBLIC KEY-----", "");
+		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
 		return Base64.getMimeDecoder().decode(keyValue);
 	}
 

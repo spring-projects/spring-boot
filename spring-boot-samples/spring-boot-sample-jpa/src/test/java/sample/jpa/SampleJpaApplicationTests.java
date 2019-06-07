@@ -52,8 +52,7 @@ class SampleJpaApplicationTests {
 
 	@Test
 	void testHome() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(xpath("//tbody/tr").nodeCount(4));
+		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(xpath("//tbody/tr").nodeCount(4));
 	}
 
 }

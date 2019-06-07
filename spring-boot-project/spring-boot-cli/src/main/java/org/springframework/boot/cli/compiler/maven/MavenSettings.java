@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,14 +93,13 @@ public class MavenSettings {
 	private MirrorSelector createMirrorSelector(Settings settings) {
 		DefaultMirrorSelector selector = new DefaultMirrorSelector();
 		for (Mirror mirror : settings.getMirrors()) {
-			selector.add(mirror.getId(), mirror.getUrl(), mirror.getLayout(), false,
-					mirror.getMirrorOf(), mirror.getMirrorOfLayouts());
+			selector.add(mirror.getId(), mirror.getUrl(), mirror.getLayout(), false, mirror.getMirrorOf(),
+					mirror.getMirrorOfLayouts());
 		}
 		return selector;
 	}
 
-	private AuthenticationSelector createAuthenticationSelector(
-			SettingsDecryptionResult decryptedSettings) {
+	private AuthenticationSelector createAuthenticationSelector(SettingsDecryptionResult decryptedSettings) {
 		DefaultAuthenticationSelector selector = new DefaultAuthenticationSelector();
 		for (Server server : decryptedSettings.getServers()) {
 			AuthenticationBuilder auth = new AuthenticationBuilder();
@@ -111,28 +110,22 @@ public class MavenSettings {
 		return new ConservativeAuthenticationSelector(selector);
 	}
 
-	private ProxySelector createProxySelector(
-			SettingsDecryptionResult decryptedSettings) {
+	private ProxySelector createProxySelector(SettingsDecryptionResult decryptedSettings) {
 		DefaultProxySelector selector = new DefaultProxySelector();
 		for (Proxy proxy : decryptedSettings.getProxies()) {
-			Authentication authentication = new AuthenticationBuilder()
-					.addUsername(proxy.getUsername()).addPassword(proxy.getPassword())
-					.build();
-			selector.add(
-					new org.eclipse.aether.repository.Proxy(proxy.getProtocol(),
-							proxy.getHost(), proxy.getPort(), authentication),
-					proxy.getNonProxyHosts());
+			Authentication authentication = new AuthenticationBuilder().addUsername(proxy.getUsername())
+					.addPassword(proxy.getPassword()).build();
+			selector.add(new org.eclipse.aether.repository.Proxy(proxy.getProtocol(), proxy.getHost(), proxy.getPort(),
+					authentication), proxy.getNonProxyHosts());
 		}
 		return selector;
 	}
 
 	private List<Profile> determineActiveProfiles(Settings settings) {
 		SpringBootCliModelProblemCollector problemCollector = new SpringBootCliModelProblemCollector();
-		List<org.apache.maven.model.Profile> activeModelProfiles = createProfileSelector()
-				.getActiveProfiles(createModelProfiles(settings.getProfiles()),
-						new SpringBootCliProfileActivationContext(
-								settings.getActiveProfiles()),
-						problemCollector);
+		List<org.apache.maven.model.Profile> activeModelProfiles = createProfileSelector().getActiveProfiles(
+				createModelProfiles(settings.getProfiles()),
+				new SpringBootCliProfileActivationContext(settings.getActiveProfiles()), problemCollector);
 		if (!problemCollector.getProblems().isEmpty()) {
 			throw new IllegalStateException(createFailureMessage(problemCollector));
 		}
@@ -144,14 +137,12 @@ public class MavenSettings {
 		return activeProfiles;
 	}
 
-	private String createFailureMessage(
-			SpringBootCliModelProblemCollector problemCollector) {
+	private String createFailureMessage(SpringBootCliModelProblemCollector problemCollector) {
 		StringWriter message = new StringWriter();
 		PrintWriter printer = new PrintWriter(message);
 		printer.println("Failed to determine active profiles:");
 		for (ModelProblemCollectorRequest problem : problemCollector.getProblems()) {
-			String location = (problem.getLocation() != null)
-					? " at " + problem.getLocation() : "";
+			String location = (problem.getLocation() != null) ? " at " + problem.getLocation() : "";
 			printer.println("    " + problem.getMessage() + location);
 			if (problem.getException() != null) {
 				printer.println(indentStackTrace(problem.getException(), "        "));
@@ -182,31 +173,27 @@ public class MavenSettings {
 	private DefaultProfileSelector createProfileSelector() {
 		DefaultProfileSelector selector = new DefaultProfileSelector();
 
-		selector.addProfileActivator(new FileProfileActivator()
-				.setPathTranslator(new DefaultPathTranslator()));
+		selector.addProfileActivator(new FileProfileActivator().setPathTranslator(new DefaultPathTranslator()));
 		selector.addProfileActivator(new JdkVersionProfileActivator());
 		selector.addProfileActivator(new PropertyProfileActivator());
 		selector.addProfileActivator(new OperatingSystemProfileActivator());
 		return selector;
 	}
 
-	private List<org.apache.maven.model.Profile> createModelProfiles(
-			List<Profile> profiles) {
+	private List<org.apache.maven.model.Profile> createModelProfiles(List<Profile> profiles) {
 		List<org.apache.maven.model.Profile> modelProfiles = new ArrayList<>();
 		for (Profile profile : profiles) {
 			org.apache.maven.model.Profile modelProfile = new org.apache.maven.model.Profile();
 			modelProfile.setId(profile.getId());
 			if (profile.getActivation() != null) {
-				modelProfile
-						.setActivation(createModelActivation(profile.getActivation()));
+				modelProfile.setActivation(createModelActivation(profile.getActivation()));
 			}
 			modelProfiles.add(modelProfile);
 		}
 		return modelProfiles;
 	}
 
-	private org.apache.maven.model.Activation createModelActivation(
-			Activation activation) {
+	private org.apache.maven.model.Activation createModelActivation(Activation activation) {
 		org.apache.maven.model.Activation modelActivation = new org.apache.maven.model.Activation();
 		modelActivation.setActiveByDefault(activation.isActiveByDefault());
 		if (activation.getFile() != null) {
@@ -257,8 +244,7 @@ public class MavenSettings {
 		return this.activeProfiles;
 	}
 
-	private static final class SpringBootCliProfileActivationContext
-			implements ProfileActivationContext {
+	private static final class SpringBootCliProfileActivationContext implements ProfileActivationContext {
 
 		private final List<String> activeProfiles;
 
@@ -299,8 +285,7 @@ public class MavenSettings {
 
 	}
 
-	private static final class SpringBootCliModelProblemCollector
-			implements ModelProblemCollector {
+	private static final class SpringBootCliModelProblemCollector implements ModelProblemCollector {
 
 		private final List<ModelProblemCollectorRequest> problems = new ArrayList<>();
 

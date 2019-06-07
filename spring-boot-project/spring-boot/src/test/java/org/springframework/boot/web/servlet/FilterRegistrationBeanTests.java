@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,23 +46,20 @@ public class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanT
 	@Test
 	public void setFilterMustNotBeNull() throws Exception {
 		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> bean.onStartup(this.servletContext))
+		assertThatIllegalArgumentException().isThrownBy(() -> bean.onStartup(this.servletContext))
 				.withMessageContaining("Filter must not be null");
 	}
 
 	@Test
 	public void constructFilterMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FilterRegistrationBean<>(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new FilterRegistrationBean<>(null))
 				.withMessageContaining("Filter must not be null");
 	}
 
 	@Test
 	public void createServletRegistrationBeanMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FilterRegistrationBean<>(this.filter,
-						(ServletRegistrationBean[]) null))
+				.isThrownBy(() -> new FilterRegistrationBean<>(this.filter, (ServletRegistrationBean[]) null))
 				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 

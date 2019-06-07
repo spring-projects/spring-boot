@@ -45,8 +45,7 @@ public class SecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
-	public DefaultAuthenticationEventPublisher authenticationEventPublisher(
-			ApplicationEventPublisher publisher) {
+	public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
 	}
 

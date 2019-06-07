@@ -32,8 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0", "spring.main.lazy-initialization=true" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0", "spring.main.lazy-initialization=true" })
 class ManagementPortWithLazyInitializationTests {
 
 	@LocalManagementPort
@@ -41,10 +41,8 @@ class ManagementPortWithLazyInitializationTests {
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.withBasicAuth("user", "password").getForEntity(
-						"http://localhost:" + this.managementPort + "/actuator/health",
-						String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
+				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

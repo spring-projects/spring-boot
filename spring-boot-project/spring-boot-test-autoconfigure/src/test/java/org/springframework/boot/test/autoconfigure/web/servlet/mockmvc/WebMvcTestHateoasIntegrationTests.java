@@ -50,8 +50,8 @@ public class WebMvcTestHateoasIntegrationTests {
 
 	@Test
 	public void hateoasResponse() throws Exception {
-		this.mockMvc.perform(get("/hateoas/resource")).andExpect(header()
-				.string(HttpHeaders.CONTENT_TYPE, "application/hal+json;charset=UTF-8"));
+		this.mockMvc.perform(get("/hateoas/resource"))
+				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/hal+json;charset=UTF-8"));
 	}
 
 }

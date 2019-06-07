@@ -49,8 +49,7 @@ public class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
 		assertThat(initializerBeans.size()).isEqualTo(1);
-		assertThat(initializerBeans.iterator()).toIterable()
-				.hasOnlyElementsOfType(TestServlet.class);
+		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServlet.class);
 	}
 
 	@Test
@@ -59,8 +58,7 @@ public class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
 		assertThat(initializerBeans.size()).isEqualTo(1);
-		assertThat(initializerBeans.iterator()).toIterable()
-				.hasOnlyElementsOfType(TestFilter.class);
+		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestFilter.class);
 	}
 
 	@Test
@@ -69,8 +67,7 @@ public class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory(), TestServletContextInitializer.class);
 		assertThat(initializerBeans.size()).isEqualTo(1);
-		assertThat(initializerBeans.iterator()).toIterable()
-				.hasOnlyElementsOfType(TestServletContextInitializer.class);
+		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServletContextInitializer.class);
 	}
 
 	private void load(Class<?>... configuration) {
@@ -134,8 +131,7 @@ public class ServletContextInitializerBeansTests {
 		}
 
 		@Override
-		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) {
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
 
 		}
 

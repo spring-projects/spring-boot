@@ -68,8 +68,7 @@ public class TestRestTemplateContextCustomizerIntegrationTests {
 	static class TestServlet extends GenericServlet {
 
 		@Override
-		public void service(ServletRequest request, ServletResponse response)
-				throws ServletException, IOException {
+		public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 			try (PrintWriter writer = response.getWriter()) {
 				writer.println("hello");
 			}

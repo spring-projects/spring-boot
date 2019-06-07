@@ -144,12 +144,10 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
 	}
 
-	private void assertVersionProperty(ConfigurableApplicationContext context,
-			String expectedVersion, String... expectedActiveProfiles) {
-		assertThat(context.getEnvironment().getActiveProfiles())
-				.isEqualTo(expectedActiveProfiles);
-		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
-				.isEqualTo(expectedVersion);
+	private void assertVersionProperty(ConfigurableApplicationContext context, String expectedVersion,
+			String... expectedActiveProfiles) {
+		assertThat(context.getEnvironment().getActiveProfiles()).isEqualTo(expectedActiveProfiles);
+		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch").isEqualTo(expectedVersion);
 	}
 
 	@Configuration(proxyBeanMethods = false)

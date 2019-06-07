@@ -55,8 +55,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	private static final ExampleObject OBJECT = createExampleObject("Spring", 123);
 
-	private static final ResolvableType TYPE = ResolvableType
-			.forClass(ExampleObject.class);
+	private static final ResolvableType TYPE = ResolvableType.forClass(ExampleObject.class);
 
 	@Test
 	public void writeShouldReturnJsonContent() throws Exception {
@@ -91,15 +90,14 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
 				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
 	public void createWhenTypeIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> createTester(getClass(), null))
+		assertThatIllegalArgumentException().isThrownBy(() -> createTester(getClass(), null))
 				.withMessageContaining("Type must not be null");
 	}
 
@@ -182,8 +180,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 		return createTester(AbstractJsonMarshalTesterTests.class, type);
 	}
 
-	protected abstract AbstractJsonMarshalTester<Object> createTester(
-			Class<?> resourceLoadClass, ResolvableType type);
+	protected abstract AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type);
 
 	/**
 	 * Access to field backed by {@link ResolvableType}.

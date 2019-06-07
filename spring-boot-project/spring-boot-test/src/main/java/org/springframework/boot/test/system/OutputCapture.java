@@ -147,8 +147,7 @@ class OutputCapture implements CapturedOutput {
 
 		private final PrintStreamCapture err;
 
-		private final List<CapturedString> capturedStrings = Collections
-				.synchronizedList(new ArrayList<>());
+		private final List<CapturedString> capturedStrings = Collections.synchronizedList(new ArrayList<>());
 
 		SystemCapture() {
 			this.out = new PrintStreamCapture(System.out, this::captureOut);

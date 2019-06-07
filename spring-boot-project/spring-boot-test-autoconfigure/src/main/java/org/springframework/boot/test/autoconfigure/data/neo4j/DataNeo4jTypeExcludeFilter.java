@@ -24,8 +24,7 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  *
  * @author Eddú Meléndez
  */
-class DataNeo4jTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<DataNeo4jTest> {
+class DataNeo4jTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataNeo4jTest> {
 
 	DataNeo4jTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);

@@ -63,10 +63,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		HttpServer httpServer = createHttpServer();
-		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
-				httpHandler);
-		NettyWebServer webServer = new NettyWebServer(httpServer, handlerAdapter,
-				this.lifecycleTimeout);
+		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(httpHandler);
+		NettyWebServer webServer = new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
 		webServer.setRouteProviders(this.routeProviders);
 		return webServer;
 	}
@@ -85,8 +83,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * builder. Calling this method will replace any existing customizers.
 	 * @param serverCustomizers the customizers to set
 	 */
-	public void setServerCustomizers(
-			Collection<? extends NettyServerCustomizer> serverCustomizers) {
+	public void setServerCustomizers(Collection<? extends NettyServerCustomizer> serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
 		this.serverCustomizers = new ArrayList<>(serverCustomizers);
 	}
@@ -141,23 +138,20 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		HttpServer server = HttpServer.create();
 		if (this.resourceFactory != null) {
 			LoopResources resources = this.resourceFactory.getLoopResources();
-			Assert.notNull(resources,
-					"No LoopResources: is ReactorResourceFactory not initialized yet?");
-			server = server.tcpConfiguration((tcpServer) -> tcpServer.runOn(resources)
-					.addressSupplier(this::getListenAddress));
+			Assert.notNull(resources, "No LoopResources: is ReactorResourceFactory not initialized yet?");
+			server = server.tcpConfiguration(
+					(tcpServer) -> tcpServer.runOn(resources).addressSupplier(this::getListenAddress));
 		}
 		else {
-			server = server.tcpConfiguration(
-					(tcpServer) -> tcpServer.addressSupplier(this::getListenAddress));
+			server = server.tcpConfiguration((tcpServer) -> tcpServer.addressSupplier(this::getListenAddress));
 		}
 		if (getSsl() != null && getSsl().isEnabled()) {
-			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(),
-					getHttp2(), getSslStoreProvider());
+			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getHttp2(),
+					getSslStoreProvider());
 			server = sslServerCustomizer.apply(server);
 		}
 		if (getCompression() != null && getCompression().getEnabled()) {
-			CompressionCustomizer compressionCustomizer = new CompressionCustomizer(
-					getCompression());
+			CompressionCustomizer compressionCustomizer = new CompressionCustomizer(getCompression());
 			server = compressionCustomizer.apply(server);
 		}
 		server = server.protocol(listProtocols()).forwarded(this.useForwardHeaders);

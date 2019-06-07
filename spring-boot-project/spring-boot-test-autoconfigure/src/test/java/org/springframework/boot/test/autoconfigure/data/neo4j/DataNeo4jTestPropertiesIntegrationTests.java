@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artsiom Yudovin
  */
 @Testcontainers
-@ContextConfiguration(
-		initializers = DataNeo4jTestPropertiesIntegrationTests.Initializer.class)
+@ContextConfiguration(initializers = DataNeo4jTestPropertiesIntegrationTests.Initializer.class)
 @DataNeo4jTest(properties = "spring.profiles.active=test")
 public class DataNeo4jTestPropertiesIntegrationTests {
 
@@ -55,14 +54,11 @@ public class DataNeo4jTestPropertiesIntegrationTests {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
 	}
 
-	static class Initializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
-		public void initialize(
-				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
+		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

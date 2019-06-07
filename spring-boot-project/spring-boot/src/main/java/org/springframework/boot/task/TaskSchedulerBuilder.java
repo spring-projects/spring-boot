@@ -59,9 +59,8 @@ public class TaskSchedulerBuilder {
 		this.customizers = null;
 	}
 
-	public TaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination,
-			Duration awaitTerminationPeriod, String threadNamePrefix,
-			Set<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
+	public TaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
+			String threadNamePrefix, Set<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
 		this.poolSize = poolSize;
 		this.awaitTermination = awaitTermination;
 		this.awaitTerminationPeriod = awaitTerminationPeriod;
@@ -75,8 +74,8 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 */
 	public TaskSchedulerBuilder poolSize(int poolSize) {
-		return new TaskSchedulerBuilder(poolSize, this.awaitTermination,
-				this.awaitTerminationPeriod, this.threadNamePrefix, this.customizers);
+		return new TaskSchedulerBuilder(poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -88,8 +87,8 @@ public class TaskSchedulerBuilder {
 	 * @see #awaitTerminationPeriod(Duration)
 	 */
 	public TaskSchedulerBuilder awaitTermination(boolean awaitTermination) {
-		return new TaskSchedulerBuilder(this.poolSize, awaitTermination,
-				this.awaitTerminationPeriod, this.threadNamePrefix, this.customizers);
+		return new TaskSchedulerBuilder(this.poolSize, awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -102,8 +101,8 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 */
 	public TaskSchedulerBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination,
-				awaitTerminationPeriod, this.threadNamePrefix, this.customizers);
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, awaitTerminationPeriod,
+				this.threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -112,8 +111,8 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 */
 	public TaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination,
-				this.awaitTerminationPeriod, threadNamePrefix, this.customizers);
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				threadNamePrefix, this.customizers);
 	}
 
 	/**
@@ -139,12 +138,10 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #additionalCustomizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder customizers(
-			Iterable<TaskSchedulerCustomizer> customizers) {
+	public TaskSchedulerBuilder customizers(Iterable<TaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination,
-				this.awaitTerminationPeriod, this.threadNamePrefix,
-				append(null, customizers));
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, append(null, customizers));
 	}
 
 	/**
@@ -155,8 +152,7 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(
-			TaskSchedulerCustomizer... customizers) {
+	public TaskSchedulerBuilder additionalCustomizers(TaskSchedulerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
@@ -169,12 +165,10 @@ public class TaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @see #customizers(TaskSchedulerCustomizer...)
 	 */
-	public TaskSchedulerBuilder additionalCustomizers(
-			Iterable<TaskSchedulerCustomizer> customizers) {
+	public TaskSchedulerBuilder additionalCustomizers(Iterable<TaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination,
-				this.awaitTerminationPeriod, this.threadNamePrefix,
-				append(this.customizers, customizers));
+		return new TaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, append(this.customizers, customizers));
 	}
 
 	/**
@@ -197,10 +191,8 @@ public class TaskSchedulerBuilder {
 	public <T extends ThreadPoolTaskScheduler> T configure(T taskScheduler) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.poolSize).to(taskScheduler::setPoolSize);
-		map.from(this.awaitTermination)
-				.to(taskScheduler::setWaitForTasksToCompleteOnShutdown);
-		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds)
-				.to(taskScheduler::setAwaitTerminationSeconds);
+		map.from(this.awaitTermination).to(taskScheduler::setWaitForTasksToCompleteOnShutdown);
+		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskScheduler::setAwaitTerminationSeconds);
 		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
 		if (!CollectionUtils.isEmpty(this.customizers)) {
 			this.customizers.forEach((customizer) -> customizer.customize(taskScheduler));

@@ -36,8 +36,8 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 
 	private final AtomicReference<String> messagePayload;
 
-	public SimpleClientWebSocketHandler(GreetingService greetingService,
-			CountDownLatch latch, AtomicReference<String> message) {
+	public SimpleClientWebSocketHandler(GreetingService greetingService, CountDownLatch latch,
+			AtomicReference<String> message) {
 		this.greetingService = greetingService;
 		this.latch = latch;
 		this.messagePayload = message;
@@ -50,8 +50,7 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	@Override
-	public void handleTextMessage(WebSocketSession session, TextMessage message)
-			throws Exception {
+	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		this.logger.info("Received: " + message + " (" + this.latch.getCount() + ")");
 		session.close();
 		this.messagePayload.set(message.getPayload());

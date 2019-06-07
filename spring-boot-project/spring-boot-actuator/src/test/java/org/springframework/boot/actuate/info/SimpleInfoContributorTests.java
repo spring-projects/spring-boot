@@ -30,8 +30,7 @@ public class SimpleInfoContributorTests {
 
 	@Test
 	public void prefixIsMandatory() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new SimpleInfoContributor(null, new Object()));
+		assertThatIllegalArgumentException().isThrownBy(() -> new SimpleInfoContributor(null, new Object()));
 	}
 
 	@Test

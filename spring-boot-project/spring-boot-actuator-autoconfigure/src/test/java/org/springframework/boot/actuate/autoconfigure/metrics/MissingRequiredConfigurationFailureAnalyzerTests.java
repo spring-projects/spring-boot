@@ -41,15 +41,12 @@ public class MissingRequiredConfigurationFailureAnalyzerTests {
 		FailureAnalysis analysis = new MissingRequiredConfigurationFailureAnalyzer()
 				.analyze(createFailure(MissingAccountIdConfiguration.class));
 		assertThat(analysis).isNotNull();
-		assertThat(analysis.getDescription())
-				.isEqualTo("accountId must be set to report metrics to New Relic.");
-		assertThat(analysis.getAction()).isEqualTo(
-				"Update your application to provide the missing configuration.");
+		assertThat(analysis.getDescription()).isEqualTo("accountId must be set to report metrics to New Relic.");
+		assertThat(analysis.getAction()).isEqualTo("Update your application to provide the missing configuration.");
 	}
 
 	private Exception createFailure(Class<?> configuration) {
-		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration)) {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			fail("Expected failure did not occur");
 			return null;
 		}

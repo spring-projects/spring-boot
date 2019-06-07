@@ -30,8 +30,7 @@ public class DeprecatedSingleProperty {
 	private String newName;
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "renamed",
-			replacement = "singledeprecated.new-name")
+	@DeprecatedConfigurationProperty(reason = "renamed", replacement = "singledeprecated.new-name")
 	public String getName() {
 		return getNewName();
 	}

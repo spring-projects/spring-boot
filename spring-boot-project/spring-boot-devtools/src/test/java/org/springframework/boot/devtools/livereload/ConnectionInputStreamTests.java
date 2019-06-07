@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,20 +40,17 @@ public class ConnectionInputStreamTests {
 	public void readHeader() throws Exception {
 		String header = "";
 		for (int i = 0; i < 100; i++) {
-			header += "x-something-" + i
-					+ ": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+			header += "x-something-" + i + ": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 		}
 		String data = header + "\r\n\r\n" + "content\r\n";
-		ConnectionInputStream inputStream = new ConnectionInputStream(
-				new ByteArrayInputStream(data.getBytes()));
+		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(data.getBytes()));
 		assertThat(inputStream.readHeader()).isEqualTo(header);
 	}
 
 	@Test
 	public void readFully() throws Exception {
 		byte[] bytes = "the data that we want to read fully".getBytes();
-		LimitedInputStream source = new LimitedInputStream(
-				new ByteArrayInputStream(bytes), 2);
+		LimitedInputStream source = new LimitedInputStream(new ByteArrayInputStream(bytes), 2);
 		ConnectionInputStream inputStream = new ConnectionInputStream(source);
 		byte[] buffer = new byte[bytes.length];
 		inputStream.readFully(buffer, 0, buffer.length);
@@ -62,19 +59,15 @@ public class ConnectionInputStreamTests {
 
 	@Test
 	public void checkedRead() throws Exception {
-		ConnectionInputStream inputStream = new ConnectionInputStream(
-				new ByteArrayInputStream(NO_BYTES));
-		assertThatIOException().isThrownBy(inputStream::checkedRead)
-				.withMessageContaining("End of stream");
+		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
+		assertThatIOException().isThrownBy(inputStream::checkedRead).withMessageContaining("End of stream");
 	}
 
 	@Test
 	public void checkedReadArray() throws Exception {
 		byte[] buffer = new byte[100];
-		ConnectionInputStream inputStream = new ConnectionInputStream(
-				new ByteArrayInputStream(NO_BYTES));
-		assertThatIOException()
-				.isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
+		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
+		assertThatIOException().isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
 				.withMessageContaining("End of stream");
 	}
 

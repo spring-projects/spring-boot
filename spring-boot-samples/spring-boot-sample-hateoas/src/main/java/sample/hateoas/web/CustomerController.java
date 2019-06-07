@@ -48,8 +48,7 @@ public class CustomerController {
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<CollectionModel<Customer>> showCustomers() {
-		CollectionModel<Customer> resources = new CollectionModel<>(
-				this.repository.findAll());
+		CollectionModel<Customer> resources = new CollectionModel<>(this.repository.findAll());
 		resources.add(this.entityLinks.linkToCollectionResource(Customer.class));
 		return new ResponseEntity<>(resources, HttpStatus.OK);
 	}

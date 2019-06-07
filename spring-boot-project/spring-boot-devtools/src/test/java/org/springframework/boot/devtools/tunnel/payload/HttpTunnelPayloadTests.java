@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,15 +50,13 @@ public class HttpTunnelPayloadTests {
 
 	@Test
 	public void sequenceMustBePositive() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
 				.withMessageContaining("Sequence must be positive");
 	}
 
 	@Test
 	public void dataMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelPayload(1, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(1, null))
 				.withMessageContaining("Data must not be null");
 	}
 
@@ -116,8 +114,7 @@ public class HttpTunnelPayloadTests {
 
 	@Test
 	public void getPayloadData() throws Exception {
-		ReadableByteChannel channel = Channels
-				.newChannel(new ByteArrayInputStream("hello".getBytes()));
+		ReadableByteChannel channel = Channels.newChannel(new ByteArrayInputStream("hello".getBytes()));
 		ByteBuffer payloadData = HttpTunnelPayload.getPayloadData(channel);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		WritableByteChannel writeChannel = Channels.newChannel(out);
@@ -130,8 +127,7 @@ public class HttpTunnelPayloadTests {
 	@Test
 	public void getPayloadDataWithTimeout() throws Exception {
 		ReadableByteChannel channel = mock(ReadableByteChannel.class);
-		given(channel.read(any(ByteBuffer.class)))
-				.willThrow(new SocketTimeoutException());
+		given(channel.read(any(ByteBuffer.class))).willThrow(new SocketTimeoutException());
 		ByteBuffer payload = HttpTunnelPayload.getPayloadData(channel);
 		assertThat(payload).isNull();
 	}

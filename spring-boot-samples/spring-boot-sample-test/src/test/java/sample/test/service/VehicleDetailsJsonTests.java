@@ -41,15 +41,13 @@ class VehicleDetailsJsonTests {
 		assertThat(this.json.write(details)).isEqualTo("vehicledetails.json");
 		assertThat(this.json.write(details)).isEqualToJson("vehicledetails.json");
 		assertThat(this.json.write(details)).hasJsonPathStringValue("@.make");
-		assertThat(this.json.write(details)).extractingJsonPathStringValue("@.make")
-				.isEqualTo("Honda");
+		assertThat(this.json.write(details)).extractingJsonPathStringValue("@.make").isEqualTo("Honda");
 	}
 
 	@Test
 	void deserializeJson() throws Exception {
 		String content = "{\"make\":\"Ford\",\"model\":\"Focus\"}";
-		assertThat(this.json.parse(content))
-				.isEqualTo(new VehicleDetails("Ford", "Focus"));
+		assertThat(this.json.parse(content)).isEqualTo(new VehicleDetails("Ford", "Focus"));
 		assertThat(this.json.parseObject(content).getMake()).isEqualTo("Ford");
 	}
 

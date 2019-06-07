@@ -53,8 +53,8 @@ import org.springframework.boot.loader.tools.FileUtils;
  */
 class BootZipCopyAction implements CopyAction {
 
-	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980,
-			Calendar.FEBRUARY, 1, 0, 0, 0).getTimeInMillis();
+	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
+			.getTimeInMillis();
 
 	private final File output;
 
@@ -72,10 +72,9 @@ class BootZipCopyAction implements CopyAction {
 
 	private final String encoding;
 
-	BootZipCopyAction(File output, boolean preserveFileTimestamps,
-			boolean includeDefaultLoader, Spec<FileTreeElement> requiresUnpack,
-			Spec<FileTreeElement> exclusions, LaunchScriptConfiguration launchScript,
-			Function<FileCopyDetails, ZipCompression> compressionResolver,
+	BootZipCopyAction(File output, boolean preserveFileTimestamps, boolean includeDefaultLoader,
+			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
+			LaunchScriptConfiguration launchScript, Function<FileCopyDetails, ZipCompression> compressionResolver,
 			String encoding) {
 		this.output = output;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -104,8 +103,7 @@ class BootZipCopyAction implements CopyAction {
 			throw new GradleException("Failed to create " + this.output, ex);
 		}
 		try {
-			stream.process(new ZipStreamAction(zipStream, this.output,
-					this.preserveFileTimestamps, this.requiresUnpack,
+			stream.process(new ZipStreamAction(zipStream, this.output, this.preserveFileTimestamps, this.requiresUnpack,
 					createExclusionSpec(loaderEntries), this.compressionResolver));
 		}
 		finally {
@@ -119,13 +117,11 @@ class BootZipCopyAction implements CopyAction {
 		return () -> true;
 	}
 
-	private Spec<FileTreeElement> createExclusionSpec(
-			Spec<FileTreeElement> loaderEntries) {
+	private Spec<FileTreeElement> createExclusionSpec(Spec<FileTreeElement> loaderEntries) {
 		return Specs.union(loaderEntries, this.exclusions);
 	}
 
-	private Spec<FileTreeElement> writeLoaderClassesIfNecessary(
-			ZipArchiveOutputStream out) {
+	private Spec<FileTreeElement> writeLoaderClassesIfNecessary(ZipArchiveOutputStream out) {
 		if (!this.includeDefaultLoader) {
 			return Specs.satisfyNone();
 		}
@@ -133,8 +129,8 @@ class BootZipCopyAction implements CopyAction {
 	}
 
 	private Spec<FileTreeElement> writeLoaderClasses(ZipArchiveOutputStream out) {
-		try (ZipInputStream in = new ZipInputStream(getClass()
-				.getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
+		try (ZipInputStream in = new ZipInputStream(
+				getClass().getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
 			Set<String> entries = new HashSet<>();
 			java.util.zip.ZipEntry entry;
 			while ((entry = in.getNextEntry()) != null) {
@@ -159,15 +155,13 @@ class BootZipCopyAction implements CopyAction {
 		}
 	}
 
-	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out)
-			throws IOException {
+	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out) throws IOException {
 		prepareEntry(entry, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
 		out.putArchiveEntry(entry);
 		out.closeArchiveEntry();
 	}
 
-	private void writeClass(ZipArchiveEntry entry, ZipInputStream in,
-			ZipArchiveOutputStream out) throws IOException {
+	private void writeClass(ZipArchiveEntry entry, ZipInputStream in, ZipArchiveOutputStream out) throws IOException {
 		prepareEntry(entry, UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
 		out.putArchiveEntry(entry);
 		byte[] buffer = new byte[4096];
@@ -188,19 +182,18 @@ class BootZipCopyAction implements CopyAction {
 	private void writeLaunchScriptIfNecessary(FileOutputStream fileStream) {
 		try {
 			if (this.launchScript != null) {
-				fileStream.write(new DefaultLaunchScript(this.launchScript.getScript(),
-						this.launchScript.getProperties()).toByteArray());
+				fileStream
+						.write(new DefaultLaunchScript(this.launchScript.getScript(), this.launchScript.getProperties())
+								.toByteArray());
 				this.output.setExecutable(true);
 			}
 		}
 		catch (IOException ex) {
-			throw new GradleException("Failed to write launch script to " + this.output,
-					ex);
+			throw new GradleException("Failed to write launch script to " + this.output, ex);
 		}
 	}
 
-	private static final class ZipStreamAction
-			implements CopyActionProcessingStreamAction {
+	private static final class ZipStreamAction implements CopyActionProcessingStreamAction {
 
 		private final ZipArchiveOutputStream zipStream;
 
@@ -214,9 +207,8 @@ class BootZipCopyAction implements CopyAction {
 
 		private final Function<FileCopyDetails, ZipCompression> compressionType;
 
-		private ZipStreamAction(ZipArchiveOutputStream zipStream, File output,
-				boolean preserveFileTimestamps, Spec<FileTreeElement> requiresUnpack,
-				Spec<FileTreeElement> exclusions,
+		private ZipStreamAction(ZipArchiveOutputStream zipStream, File output, boolean preserveFileTimestamps,
+				Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 				Function<FileCopyDetails, ZipCompression> compressionType) {
 			this.zipStream = zipStream;
 			this.output = output;
@@ -240,14 +232,12 @@ class BootZipCopyAction implements CopyAction {
 				}
 			}
 			catch (IOException ex) {
-				throw new GradleException(
-						"Failed to add " + details + " to " + this.output, ex);
+				throw new GradleException("Failed to add " + details + " to " + this.output, ex);
 			}
 		}
 
 		private void createDirectory(FileCopyDetailsInternal details) throws IOException {
-			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(
-					details.getRelativePath().getPathString() + '/');
+			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(details.getRelativePath().getPathString() + '/');
 			archiveEntry.setUnixMode(UnixStat.DIR_FLAG | details.getMode());
 			archiveEntry.setTime(getTime(details));
 			this.zipStream.putArchiveEntry(archiveEntry);
@@ -268,8 +258,8 @@ class BootZipCopyAction implements CopyAction {
 			this.zipStream.closeArchiveEntry();
 		}
 
-		private void prepareStoredEntry(FileCopyDetailsInternal details,
-				ZipArchiveEntry archiveEntry) throws IOException {
+		private void prepareStoredEntry(FileCopyDetailsInternal details, ZipArchiveEntry archiveEntry)
+				throws IOException {
 			archiveEntry.setMethod(java.util.zip.ZipEntry.STORED);
 			archiveEntry.setSize(details.getSize());
 			archiveEntry.setCompressedSize(details.getSize());
@@ -277,14 +267,12 @@ class BootZipCopyAction implements CopyAction {
 			details.copyTo(crcStream);
 			archiveEntry.setCrc(crcStream.getCrc());
 			if (this.requiresUnpack.isSatisfiedBy(details)) {
-				archiveEntry
-						.setComment("UNPACK:" + FileUtils.sha1Hash(details.getFile()));
+				archiveEntry.setComment("UNPACK:" + FileUtils.sha1Hash(details.getFile()));
 			}
 		}
 
 		private long getTime(FileCopyDetails details) {
-			return this.preserveFileTimestamps ? details.getLastModified()
-					: CONSTANT_TIME_FOR_ZIP_ENTRIES;
+			return this.preserveFileTimestamps ? details.getLastModified() : CONSTANT_TIME_FOR_ZIP_ENTRIES;
 		}
 
 	}

@@ -37,23 +37,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpTraceEndpointAutoConfigurationTests {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class,
-					HttpTraceEndpointAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(HttpTraceAutoConfiguration.class, HttpTraceEndpointAutoConfiguration.class));
 
 	@Test
 	public void runWhenRepositoryBeanAvailableShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=httptrace")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(HttpTraceEndpoint.class));
+				.run((context) -> assertThat(context).hasSingleBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
 	public void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HttpTraceEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
@@ -61,16 +58,13 @@ public class HttpTraceEndpointAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=httptrace")
 				.withPropertyValues("management.endpoint.httptrace.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HttpTraceEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
 	public void endpointBacksOffWhenRepositoryIsNotAvailable() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=httptrace")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HttpTraceEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=httptrace")
+				.run((context) -> assertThat(context).doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

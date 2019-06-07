@@ -58,8 +58,7 @@ public class JerseyAutoConfigurationDefaultServletPathTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -89,8 +88,8 @@ public class JerseyAutoConfigurationDefaultServletPathTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

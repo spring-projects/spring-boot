@@ -48,13 +48,10 @@ class HotelRepositoryIntegrationTests {
 
 	@Test
 	void executesQueryMethodsCorrectly() {
-		City city = this.cityRepository
-				.findAll(PageRequest.of(0, 1, Direction.ASC, "name")).getContent().get(0);
+		City city = this.cityRepository.findAll(PageRequest.of(0, 1, Direction.ASC, "name")).getContent().get(0);
 		assertThat(city.getName()).isEqualTo("Atlanta");
-		Page<HotelSummary> hotels = this.repository.findByCity(city,
-				PageRequest.of(0, 10, Direction.ASC, "name"));
-		Hotel hotel = this.repository.findByCityAndName(city,
-				hotels.getContent().get(0).getName());
+		Page<HotelSummary> hotels = this.repository.findByCity(city, PageRequest.of(0, 10, Direction.ASC, "name"));
+		Hotel hotel = this.repository.findByCityAndName(city, hotels.getContent().get(0).getName());
 		assertThat(hotel.getName()).isEqualTo("Doubletree");
 		List<RatingCount> counts = this.repository.findRatingCounts(hotel);
 		assertThat(counts).hasSize(1);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ import org.springframework.util.ClassUtils;
 class ServletManagementContextFactory implements ManagementContextFactory {
 
 	@Override
-	public ConfigurableWebServerApplicationContext createManagementContext(
-			ApplicationContext parent, Class<?>... configClasses) {
+	public ConfigurableWebServerApplicationContext createManagementContext(ApplicationContext parent,
+			Class<?>... configClasses) {
 		AnnotationConfigServletWebServerApplicationContext child = new AnnotationConfigServletWebServerApplicationContext();
 		child.setParent(parent);
 		List<Class<?>> combinedClasses = new ArrayList<>(Arrays.asList(configClasses));
@@ -60,8 +60,7 @@ class ServletManagementContextFactory implements ManagementContextFactory {
 			if (beanFactory instanceof BeanDefinitionRegistry) {
 				BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 				registry.registerBeanDefinition("ServletWebServerFactory",
-						new RootBeanDefinition(
-								determineServletWebServerFactoryClass(parent)));
+						new RootBeanDefinition(determineServletWebServerFactoryClass(parent)));
 			}
 		}
 		catch (NoSuchBeanDefinitionException ex) {
@@ -73,9 +72,8 @@ class ServletManagementContextFactory implements ManagementContextFactory {
 			throws NoSuchBeanDefinitionException {
 		Class<?> factoryClass = parent.getBean(ServletWebServerFactory.class).getClass();
 		if (cannotBeInstantiated(factoryClass)) {
-			throw new FatalBeanException("ServletWebServerFactory implementation "
-					+ factoryClass.getName() + " cannot be instantiated. "
-					+ "To allow a separate management port to be used, a top-level class "
+			throw new FatalBeanException("ServletWebServerFactory implementation " + factoryClass.getName()
+					+ " cannot be instantiated. " + "To allow a separate management port to be used, a top-level class "
 					+ "or static inner class should be used instead");
 		}
 		return factoryClass;
@@ -83,8 +81,7 @@ class ServletManagementContextFactory implements ManagementContextFactory {
 
 	private boolean cannotBeInstantiated(Class<?> factoryClass) {
 		return factoryClass.isLocalClass()
-				|| (factoryClass.isMemberClass()
-						&& !Modifier.isStatic(factoryClass.getModifiers()))
+				|| (factoryClass.isMemberClass() && !Modifier.isStatic(factoryClass.getModifiers()))
 				|| factoryClass.isAnonymousClass();
 	}
 

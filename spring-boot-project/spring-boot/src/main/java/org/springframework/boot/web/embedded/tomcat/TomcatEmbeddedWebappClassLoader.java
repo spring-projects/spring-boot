@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
-	private static final Log logger = LogFactory
-			.getLog(TomcatEmbeddedWebappClassLoader.class);
+	private static final Log logger = LogFactory.getLog(TomcatEmbeddedWebappClassLoader.class);
 
 	static {
 		ClassLoader.registerAsParallelCapable();
@@ -61,8 +60,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 	}
 
 	@Override
-	public Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
+	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		synchronized (getClassLoadingLock(name)) {
 			Class<?> result = findExistingLoadedClass(name);
 			result = (result != null) ? result : doLoadClass(name);
@@ -128,12 +126,11 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 	private void checkPackageAccess(String name) throws ClassNotFoundException {
 		if (this.securityManager != null && name.lastIndexOf('.') >= 0) {
 			try {
-				this.securityManager
-						.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
+				this.securityManager.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
 			}
 			catch (SecurityException ex) {
-				throw new ClassNotFoundException("Security Violation, attempt to use "
-						+ "Restricted Class: " + name, ex);
+				throw new ClassNotFoundException("Security Violation, attempt to use " + "Restricted Class: " + name,
+						ex);
 			}
 		}
 	}

@@ -59,31 +59,24 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	private Map<String, Object> getProperties(Class<?> source) {
 		Map<String, Object> properties = new LinkedHashMap<>();
 		MergedAnnotations.from(source, SearchStrategy.SUPERCLASS).stream()
-				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getType))
-				.forEach((annotation) -> {
+				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getType)).forEach((annotation) -> {
 					Class<Annotation> type = annotation.getType();
-					MergedAnnotation<?> typeMapping = MergedAnnotations.from(type).get(
-							PropertyMapping.class, MergedAnnotation::isDirectlyPresent);
-					String prefix = typeMapping
-							.getValue(MergedAnnotation.VALUE, String.class).orElse("");
-					SkipPropertyMapping defaultSkip = typeMapping
-							.getValue("skip", SkipPropertyMapping.class)
+					MergedAnnotation<?> typeMapping = MergedAnnotations.from(type).get(PropertyMapping.class,
+							MergedAnnotation::isDirectlyPresent);
+					String prefix = typeMapping.getValue(MergedAnnotation.VALUE, String.class).orElse("");
+					SkipPropertyMapping defaultSkip = typeMapping.getValue("skip", SkipPropertyMapping.class)
 							.orElse(SkipPropertyMapping.YES);
 					for (Method attribute : type.getDeclaredMethods()) {
-						collectProperties(prefix, defaultSkip, annotation, attribute,
-								properties);
+						collectProperties(prefix, defaultSkip, annotation, attribute, properties);
 					}
 				});
 		return properties;
 	}
 
-	private void collectProperties(String prefix, SkipPropertyMapping defaultSkip,
-			MergedAnnotation<?> annotation, Method attribute,
-			Map<String, Object> properties) {
-		MergedAnnotation<?> attributeMapping = MergedAnnotations.from(attribute)
-				.get(PropertyMapping.class);
-		SkipPropertyMapping skip = attributeMapping
-				.getValue("skip", SkipPropertyMapping.class).orElse(defaultSkip);
+	private void collectProperties(String prefix, SkipPropertyMapping defaultSkip, MergedAnnotation<?> annotation,
+			Method attribute, Map<String, Object> properties) {
+		MergedAnnotation<?> attributeMapping = MergedAnnotations.from(attribute).get(PropertyMapping.class);
+		SkipPropertyMapping skip = attributeMapping.getValue("skip", SkipPropertyMapping.class).orElse(defaultSkip);
 		if (skip == SkipPropertyMapping.YES) {
 			return;
 		}
@@ -92,8 +85,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			return;
 		}
 		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {
-			if (ObjectUtils.nullSafeEquals(value.get(),
-					annotation.getDefaultValue(attribute.getName()).orElse(null))) {
+			if (ObjectUtils.nullSafeEquals(value.get(), annotation.getDefaultValue(attribute.getName()).orElse(null))) {
 				return;
 			}
 		}
@@ -101,10 +93,8 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		putProperties(name, value.get(), properties);
 	}
 
-	private String getName(String prefix, MergedAnnotation<?> attributeMapping,
-			Method attribute) {
-		String name = attributeMapping.getValue(MergedAnnotation.VALUE, String.class)
-				.orElse("");
+	private String getName(String prefix, MergedAnnotation<?> attributeMapping, Method attribute) {
+		String name = attributeMapping.getValue(MergedAnnotation.VALUE, String.class).orElse("");
 		if (!StringUtils.hasText(name)) {
 			name = toKebabCase(attribute.getName());
 		}
@@ -115,8 +105,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
 		StringBuffer result = new StringBuffer();
 		while (matcher.find()) {
-			matcher.appendReplacement(result,
-					matcher.group(1) + '-' + StringUtils.uncapitalize(matcher.group(2)));
+			matcher.appendReplacement(result, matcher.group(1) + '-' + StringUtils.uncapitalize(matcher.group(2)));
 		}
 		matcher.appendTail(result);
 		return result.toString().toLowerCase(Locale.ENGLISH);
@@ -129,8 +118,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return postfix;
 	}
 
-	private void putProperties(String name, Object value,
-			Map<String, Object> properties) {
+	private void putProperties(String name, Object value, Map<String, Object> properties) {
 		if (ObjectUtils.isArray(value)) {
 			Object[] array = ObjectUtils.toObjectArray(value);
 			for (int i = 0; i < array.length; i++) {

@@ -34,8 +34,7 @@ public class MapConfigurationPropertySourceTests {
 
 	@Test
 	public void createWhenMapIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new MapConfigurationPropertySource(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new MapConfigurationPropertySource(null))
 				.withMessageContaining("Map must not be null");
 	}
 
@@ -88,8 +87,7 @@ public class MapConfigurationPropertySourceTests {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.iterator()).toIterable().containsExactly(
-				ConfigurationPropertyName.of("foo.bar"),
+		assertThat(source.iterator()).toIterable().containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.baz"));
 	}
 
@@ -98,15 +96,13 @@ public class MapConfigurationPropertySourceTests {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.stream()).containsExactly(
-				ConfigurationPropertyName.of("foo.bar"),
+		assertThat(source.stream()).containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.baz"));
 
 	}
 
 	private Object getValue(ConfigurationPropertySource source, String name) {
-		ConfigurationProperty property = source
-				.getConfigurationProperty(ConfigurationPropertyName.of(name));
+		ConfigurationProperty property = source.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property != null) ? property.getValue() : null;
 	}
 

@@ -45,8 +45,7 @@ public class SampleController {
 	@GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, String> hello() {
-		return Collections.singletonMap("message",
-				this.helloWorldService.getHelloMessage());
+		return Collections.singletonMap("message", this.helloWorldService.getHelloMessage());
 	}
 
 	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)

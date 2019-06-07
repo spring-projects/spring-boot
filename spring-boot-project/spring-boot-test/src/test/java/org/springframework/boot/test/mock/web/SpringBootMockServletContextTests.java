@@ -64,8 +64,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		testResource("/inpublic", "/public");
 	}
 
-	private void testResource(String path, String expectedLocation)
-			throws MalformedURLException {
+	private void testResource(String path, String expectedLocation) throws MalformedURLException {
 		URL resource = this.servletContext.getResource(path);
 		assertThat(resource).isNotNull();
 		assertThat(resource.getPath()).contains(expectedLocation);
@@ -74,8 +73,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 	// gh-2654
 	@Test
 	public void getRootUrlExistsAndIsEmpty() throws Exception {
-		SpringBootMockServletContext context = new SpringBootMockServletContext(
-				"src/test/doesntexist") {
+		SpringBootMockServletContext context = new SpringBootMockServletContext("src/test/doesntexist") {
 			@Override
 			protected String getResourceLocation(String path) {
 				// Don't include the Spring Boot defaults for this test
@@ -86,8 +84,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		assertThat(resource).isNotEqualTo(nullValue());
 		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
 		assertThat(file).exists().isDirectory();
-		String[] contents = file
-				.list((dir, name) -> !(".".equals(name) || "..".equals(name)));
+		String[] contents = file.list((dir, name) -> !(".".equals(name) || "..".equals(name)));
 		assertThat(contents).isNotEqualTo(nullValue());
 		assertThat(contents.length).isEqualTo(0);
 	}

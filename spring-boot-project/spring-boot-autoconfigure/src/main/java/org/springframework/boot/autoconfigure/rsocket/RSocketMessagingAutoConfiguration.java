@@ -40,8 +40,7 @@ import org.springframework.web.util.pattern.PathPatternRouteMatcher;
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketRequester.class, RSocketFactory.class,
-		TcpServerTransport.class })
+@ConditionalOnClass({ RSocketRequester.class, RSocketFactory.class, TcpServerTransport.class })
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 public class RSocketMessagingAutoConfiguration {
 
@@ -49,8 +48,7 @@ public class RSocketMessagingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MessageHandlerAcceptor messageHandlerAcceptor(
-			RSocketStrategies rSocketStrategies) {
+	public MessageHandlerAcceptor messageHandlerAcceptor(RSocketStrategies rSocketStrategies) {
 		MessageHandlerAcceptor acceptor = new MessageHandlerAcceptor();
 		acceptor.setRSocketStrategies(rSocketStrategies);
 		if (ClassUtils.isPresent(PATHPATTERN_ROUTEMATCHER_CLASS, null)) {

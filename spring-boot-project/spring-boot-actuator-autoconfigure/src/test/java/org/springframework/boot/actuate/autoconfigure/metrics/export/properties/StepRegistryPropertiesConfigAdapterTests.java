@@ -40,8 +40,7 @@ public abstract class StepRegistryPropertiesConfigAdapterTests<P extends StepReg
 	public void whenPropertiesStepIsSetAdapterStepReturnsIt() {
 		P properties = createProperties();
 		properties.setStep(Duration.ofSeconds(42));
-		assertThat(createConfigAdapter(properties).step())
-				.isEqualTo(Duration.ofSeconds(42));
+		assertThat(createConfigAdapter(properties).step()).isEqualTo(Duration.ofSeconds(42));
 	}
 
 	@Test

@@ -43,16 +43,14 @@ public class SkippableContainer<T extends GenericContainer<?>> implements Starta
 
 	public T getContainer() {
 		if (this.container == null) {
-			throw new IllegalStateException(
-					"Container cannot be accessed prior to test invocation");
+			throw new IllegalStateException("Container cannot be accessed prior to test invocation");
 		}
 		return this.container;
 	}
 
 	@Override
 	public void start() {
-		Assumptions.assumeTrue(isDockerRunning(),
-				"Could not find valid docker environment.");
+		Assumptions.assumeTrue(isDockerRunning(), "Could not find valid docker environment.");
 		this.container = this.containerFactory.get();
 		this.container.start();
 	}

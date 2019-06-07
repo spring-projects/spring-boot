@@ -53,8 +53,7 @@ public class WebMvcTestPrintOverrideIntegrationTests {
 
 	@Test
 	public void shouldNotPrint() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(content().string("one"))
-				.andExpect(status().isOk());
+		this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
 		assertThat(this.output.toString()).doesNotContain("Request URI = /one");
 	}
 

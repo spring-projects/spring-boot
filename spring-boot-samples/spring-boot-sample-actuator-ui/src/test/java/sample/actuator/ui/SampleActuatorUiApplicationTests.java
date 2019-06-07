@@ -49,17 +49,15 @@ class SampleActuatorUiApplicationTests {
 	void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate
-				.withBasicAuth("user", getPassword()).exchange("/", HttpMethod.GET,
-						new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword()).exchange("/",
+				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Hello");
 	}
 
 	@Test
 	void testCss() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}
@@ -67,8 +65,7 @@ class SampleActuatorUiApplicationTests {
 	@Test
 	void testMetrics() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/metrics",
-				Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
@@ -76,9 +73,8 @@ class SampleActuatorUiApplicationTests {
 	void testError() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate
-				.withBasicAuth("user", getPassword()).exchange("/error", HttpMethod.GET,
-						new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword()).exchange("/error",
+				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(entity.getBody()).contains("<html>").contains("<body>")
 				.contains("Please contact the operator with the above information");

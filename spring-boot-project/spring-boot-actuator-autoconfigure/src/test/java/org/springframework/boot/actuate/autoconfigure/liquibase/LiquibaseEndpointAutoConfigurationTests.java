@@ -37,57 +37,44 @@ import static org.mockito.Mockito.mock;
 public class LiquibaseEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(LiquibaseEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(LiquibaseEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=liquibase")
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=liquibase")
 				.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(LiquibaseEndpoint.class));
+				.run((context) -> assertThat(context).hasSingleBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
+		this.contextRunner.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
 				.withPropertyValues("management.endpoint.liquibase.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(LiquibaseEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
 	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(LiquibaseEndpoint.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
 	public void disablesCloseOfDataSourceWhenEndpointIsEnabled() {
-		this.contextRunner
-				.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include=liquibase")
-				.run((context) -> {
+		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include=liquibase").run((context) -> {
 					assertThat(context).hasSingleBean(LiquibaseEndpoint.class);
 					assertThat(context.getBean(DataSourceClosingSpringLiquibase.class))
-							.hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated",
-									false);
+							.hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", false);
 				});
 	}
 
 	@Test
 	public void doesNotDisableCloseOfDataSourceWhenEndpointIsDisabled() {
-		this.contextRunner
-				.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
-				.withPropertyValues("management.endpoint.liquibase.enabled:false")
-				.run((context) -> {
+		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
+				.withPropertyValues("management.endpoint.liquibase.enabled:false").run((context) -> {
 					assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class);
-					DataSourceClosingSpringLiquibase bean = context
-							.getBean(DataSourceClosingSpringLiquibase.class);
-					assertThat(bean).hasFieldOrPropertyWithValue(
-							"closeDataSourceOnceMigrated", true);
+					DataSourceClosingSpringLiquibase bean = context.getBean(DataSourceClosingSpringLiquibase.class);
+					assertThat(bean).hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", true);
 				});
 	}
 
@@ -101,11 +88,10 @@ public class LiquibaseEndpointAutoConfigurationTests {
 				private boolean propertiesSet = false;
 
 				@Override
-				public void setCloseDataSourceOnceMigrated(
-						boolean closeDataSourceOnceMigrated) {
+				public void setCloseDataSourceOnceMigrated(boolean closeDataSourceOnceMigrated) {
 					if (this.propertiesSet) {
-						throw new IllegalStateException("setCloseDataSourceOnceMigrated "
-								+ "invoked after afterPropertiesSet");
+						throw new IllegalStateException(
+								"setCloseDataSourceOnceMigrated " + "invoked after afterPropertiesSet");
 					}
 					super.setCloseDataSourceOnceMigrated(closeDataSourceOnceMigrated);
 				}

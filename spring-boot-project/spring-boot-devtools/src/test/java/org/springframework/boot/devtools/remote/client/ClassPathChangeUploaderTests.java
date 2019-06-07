@@ -65,37 +65,32 @@ public class ClassPathChangeUploaderTests {
 	@Before
 	public void setup() {
 		this.requestFactory = new MockClientHttpRequestFactory();
-		this.uploader = new ClassPathChangeUploader("http://localhost/upload",
-				this.requestFactory);
+		this.uploader = new ClassPathChangeUploader("http://localhost/upload", this.requestFactory);
 	}
 
 	@Test
 	public void urlMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new ClassPathChangeUploader("http://localhost:8080", null))
+				.isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest",
-						this.requestFactory))
+				.isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest", this.requestFactory))
 				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
@@ -118,8 +113,7 @@ public class ClassPathChangeUploaderTests {
 		this.requestFactory.willRespond(HttpStatus.OK);
 		this.uploader.onApplicationEvent(event);
 		assertThat(this.requestFactory.getExecutedRequests()).hasSize(2);
-		verifyUploadRequest(sourceFolder,
-				this.requestFactory.getExecutedRequests().get(1));
+		verifyUploadRequest(sourceFolder, this.requestFactory.getExecutedRequests().get(1));
 	}
 
 	private void verifyUploadRequest(File sourceFolder, MockClientHttpRequest request)
@@ -137,13 +131,11 @@ public class ClassPathChangeUploaderTests {
 	}
 
 	private void assertClassFile(ClassLoaderFile file, String content, Kind kind) {
-		assertThat(file.getContents())
-				.isEqualTo((content != null) ? content.getBytes() : null);
+		assertThat(file.getContents()).isEqualTo((content != null) ? content.getBytes() : null);
 		assertThat(file.getKind()).isEqualTo(kind);
 	}
 
-	private ClassPathChangedEvent createClassPathChangedEvent(File sourceFolder)
-			throws IOException {
+	private ClassPathChangedEvent createClassPathChangedEvent(File sourceFolder) throws IOException {
 		Set<ChangedFile> files = new LinkedHashSet<>();
 		File file1 = createFile(sourceFolder, "File1");
 		File file2 = createFile(sourceFolder, "File2");
@@ -163,10 +155,8 @@ public class ClassPathChangeUploaderTests {
 		return file;
 	}
 
-	private ClassLoaderFiles deserialize(byte[] bytes)
-			throws IOException, ClassNotFoundException {
-		ObjectInputStream objectInputStream = new ObjectInputStream(
-				new ByteArrayInputStream(bytes));
+	private ClassLoaderFiles deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+		ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
 		return (ClassLoaderFiles) objectInputStream.readObject();
 	}
 

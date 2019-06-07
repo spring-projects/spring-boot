@@ -41,21 +41,18 @@ import org.springframework.core.io.Resource;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cache.class, EhCacheCacheManager.class })
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
-@Conditional({ CacheCondition.class,
-		EhCacheCacheConfiguration.ConfigAvailableCondition.class })
+@Conditional({ CacheCondition.class, EhCacheCacheConfiguration.ConfigAvailableCondition.class })
 class EhCacheCacheConfiguration {
 
 	@Bean
-	public EhCacheCacheManager cacheManager(CacheManagerCustomizers customizers,
-			CacheManager ehCacheCacheManager) {
+	public EhCacheCacheManager cacheManager(CacheManagerCustomizers customizers, CacheManager ehCacheCacheManager) {
 		return customizers.customize(new EhCacheCacheManager(ehCacheCacheManager));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManager ehCacheCacheManager(CacheProperties cacheProperties) {
-		Resource location = cacheProperties
-				.resolveConfigLocation(cacheProperties.getEhcache().getConfig());
+		Resource location = cacheProperties.resolveConfigLocation(cacheProperties.getEhcache().getConfig());
 		if (location != null) {
 			return EhCacheManagerUtils.buildCacheManager(location);
 		}

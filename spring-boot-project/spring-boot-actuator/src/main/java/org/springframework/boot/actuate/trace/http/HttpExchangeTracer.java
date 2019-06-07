@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,15 +66,13 @@ public class HttpExchangeTracer {
 	 * @param principal a supplier for the exchange's principal
 	 * @param sessionId a supplier for the id of the exchange's session
 	 */
-	public final void sendingResponse(HttpTrace trace, TraceableResponse response,
-			Supplier<Principal> principal, Supplier<String> sessionId) {
-		setIfIncluded(Include.TIME_TAKEN,
-				() -> System.currentTimeMillis() - trace.getTimestamp().toEpochMilli(),
+	public final void sendingResponse(HttpTrace trace, TraceableResponse response, Supplier<Principal> principal,
+			Supplier<String> sessionId) {
+		setIfIncluded(Include.TIME_TAKEN, () -> System.currentTimeMillis() - trace.getTimestamp().toEpochMilli(),
 				trace::setTimeTaken);
 		setIfIncluded(Include.SESSION_ID, sessionId, trace::setSessionId);
 		setIfIncluded(Include.PRINCIPAL, principal, trace::setPrincipal);
-		trace.setResponse(
-				new HttpTrace.Response(new FilteredTraceableResponse(response)));
+		trace.setResponse(new HttpTrace.Response(new FilteredTraceableResponse(response)));
 	}
 
 	/**
@@ -89,21 +87,18 @@ public class HttpExchangeTracer {
 		return this.includes.contains(include) ? valueSupplier.get() : null;
 	}
 
-	private <T> void setIfIncluded(Include include, Supplier<T> supplier,
-			Consumer<T> consumer) {
+	private <T> void setIfIncluded(Include include, Supplier<T> supplier, Consumer<T> consumer) {
 		if (this.includes.contains(include)) {
 			consumer.accept(supplier.get());
 		}
 	}
 
 	private Map<String, List<String>> getHeadersIfIncluded(Include include,
-			Supplier<Map<String, List<String>>> headersSupplier,
-			Predicate<String> headerPredicate) {
+			Supplier<Map<String, List<String>>> headersSupplier, Predicate<String> headerPredicate) {
 		if (!this.includes.contains(include)) {
 			return new LinkedHashMap<>();
 		}
-		return headersSupplier.get().entrySet().stream()
-				.filter((entry) -> headerPredicate.test(entry.getKey()))
+		return headersSupplier.get().entrySet().stream().filter((entry) -> headerPredicate.test(entry.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
@@ -127,8 +122,7 @@ public class HttpExchangeTracer {
 
 		@Override
 		public Map<String, List<String>> getHeaders() {
-			Map<String, List<String>> headers = getHeadersIfIncluded(
-					Include.REQUEST_HEADERS, this.delegate::getHeaders,
+			Map<String, List<String>> headers = getHeadersIfIncluded(Include.REQUEST_HEADERS, this.delegate::getHeaders,
 					this::includedHeader);
 			postProcessRequestHeaders(headers);
 			return headers;
@@ -139,8 +133,7 @@ public class HttpExchangeTracer {
 				return HttpExchangeTracer.this.includes.contains(Include.COOKIE_HEADERS);
 			}
 			if (name.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)) {
-				return HttpExchangeTracer.this.includes
-						.contains(Include.AUTHORIZATION_HEADER);
+				return HttpExchangeTracer.this.includes.contains(Include.AUTHORIZATION_HEADER);
 			}
 			return true;
 		}
@@ -167,8 +160,7 @@ public class HttpExchangeTracer {
 
 		@Override
 		public Map<String, List<String>> getHeaders() {
-			return getHeadersIfIncluded(Include.RESPONSE_HEADERS,
-					this.delegate::getHeaders, this::includedHeader);
+			return getHeadersIfIncluded(Include.RESPONSE_HEADERS, this.delegate::getHeaders, this::includedHeader);
 		}
 
 		private boolean includedHeader(String name) {

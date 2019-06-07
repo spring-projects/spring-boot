@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,19 +51,16 @@ public abstract class ResourceCondition extends SpringBootCondition {
 	 * found if the configuration key is not specified
 	 * @since 2.0.0
 	 */
-	protected ResourceCondition(String name, String property,
-			String... resourceLocations) {
+	protected ResourceCondition(String name, String property, String... resourceLocations) {
 		this.name = name;
 		this.property = property;
 		this.resourceLocations = resourceLocations;
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (context.getEnvironment().containsProperty(this.property)) {
-			return ConditionOutcome.match(
-					startConditionMessage().foundExactly("property " + this.property));
+			return ConditionOutcome.match(startConditionMessage().foundExactly("property " + this.property));
 		}
 		return getResourceOutcome(context, metadata);
 	}
@@ -74,8 +71,7 @@ public abstract class ResourceCondition extends SpringBootCondition {
 	 * @param metadata the annotation metadata
 	 * @return the condition outcome
 	 */
-	protected ConditionOutcome getResourceOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	protected ConditionOutcome getResourceOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		List<String> found = new ArrayList<>();
 		for (String location : this.resourceLocations) {
 			Resource resource = context.getResourceLoader().getResource(location);
@@ -84,13 +80,11 @@ public abstract class ResourceCondition extends SpringBootCondition {
 			}
 		}
 		if (found.isEmpty()) {
-			ConditionMessage message = startConditionMessage()
-					.didNotFind("resource", "resources")
-					.items(Style.QUOTE, Arrays.asList(this.resourceLocations));
+			ConditionMessage message = startConditionMessage().didNotFind("resource", "resources").items(Style.QUOTE,
+					Arrays.asList(this.resourceLocations));
 			return ConditionOutcome.noMatch(message);
 		}
-		ConditionMessage message = startConditionMessage().found("resource", "resources")
-				.items(Style.QUOTE, found);
+		ConditionMessage message = startConditionMessage().found("resource", "resources").items(Style.QUOTE, found);
 		return ConditionOutcome.match(message);
 	}
 

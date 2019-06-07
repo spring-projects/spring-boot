@@ -33,16 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class RedisReactiveAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-					RedisReactiveAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class));
 
 	@Test
 	public void testDefaultRedisConfiguration() {
 		this.contextRunner.run((context) -> {
 			Map<String, ?> beans = context.getBeansOfType(ReactiveRedisTemplate.class);
-			assertThat(beans).containsOnlyKeys("reactiveRedisTemplate",
-					"reactiveStringRedisTemplate");
+			assertThat(beans).containsOnlyKeys("reactiveRedisTemplate", "reactiveStringRedisTemplate");
 		});
 	}
 

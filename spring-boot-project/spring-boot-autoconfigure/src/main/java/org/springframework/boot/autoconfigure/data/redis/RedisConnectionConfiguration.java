@@ -100,8 +100,7 @@ abstract class RedisConnectionConfiguration {
 			return null;
 		}
 		RedisProperties.Cluster clusterProperties = this.properties.getCluster();
-		RedisClusterConfiguration config = new RedisClusterConfiguration(
-				clusterProperties.getNodes());
+		RedisClusterConfiguration config = new RedisClusterConfiguration(clusterProperties.getNodes());
 		if (clusterProperties.getMaxRedirects() != null) {
 			config.setMaxRedirects(clusterProperties.getMaxRedirects());
 		}
@@ -124,8 +123,7 @@ abstract class RedisConnectionConfiguration {
 				nodes.add(new RedisNode(parts[0], Integer.valueOf(parts[1])));
 			}
 			catch (RuntimeException ex) {
-				throw new IllegalStateException(
-						"Invalid redis sentinel " + "property '" + node + "'", ex);
+				throw new IllegalStateException("Invalid redis sentinel " + "property '" + node + "'", ex);
 			}
 		}
 		return nodes;

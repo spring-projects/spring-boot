@@ -71,8 +71,7 @@ public class AutoConfigurationMetadataLoaderTests {
 
 	@Test
 	public void getSetWithDefaultWhenMissingShouldReturnDefault() {
-		assertThat(load().getSet("test", "setx", Collections.singleton("x")))
-				.containsExactly("x");
+		assertThat(load().getSet("test", "setx", Collections.singleton("x"))).containsExactly("x");
 	}
 
 	@Test

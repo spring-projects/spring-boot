@@ -33,29 +33,27 @@ public class JsonContentTests {
 
 	private static final String JSON = "{\"name\":\"spring\", \"age\":100}";
 
-	private static final ResolvableType TYPE = ResolvableType
-			.forClass(ExampleObject.class);
+	private static final ResolvableType TYPE = ResolvableType.forClass(ExampleObject.class);
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON,
-						Configuration.defaultConfiguration()))
+				.isThrownBy(
+						() -> new JsonContent<ExampleObject>(null, TYPE, JSON, Configuration.defaultConfiguration()))
 				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
 	public void createWhenJsonIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, null,
-						Configuration.defaultConfiguration()))
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new JsonContent<ExampleObject>(getClass(), TYPE, null, Configuration.defaultConfiguration()))
 				.withMessageContaining("JSON must not be null");
 	}
 
 	@Test
 	public void createWhenConfigurationIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new JsonContent<ExampleObject>(getClass(), TYPE, JSON, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, JSON, null))
 				.withMessageContaining("Configuration must not be null");
 	}
 
@@ -86,8 +84,7 @@ public class JsonContentTests {
 	public void toStringWhenHasTypeShouldReturnString() {
 		JsonContent<ExampleObject> content = new JsonContent<>(getClass(), TYPE, JSON,
 				Configuration.defaultConfiguration());
-		assertThat(content.toString())
-				.isEqualTo("JsonContent " + JSON + " created from " + TYPE);
+		assertThat(content.toString()).isEqualTo("JsonContent " + JSON + " created from " + TYPE);
 	}
 
 	@Test

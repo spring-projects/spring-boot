@@ -35,41 +35,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CacheMetricsAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withUserConfiguration(CachingConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class,
-					CacheMetricsAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withUserConfiguration(CachingConfiguration.class).withConfiguration(
+					AutoConfigurations.of(CacheAutoConfiguration.class, CacheMetricsAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguredCacheManagerIsInstrumented() {
-		this.contextRunner.withPropertyValues("spring.cache.type=caffeine",
-				"spring.cache.cache-names=cache1,cache2").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2")
+				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("cache.gets").tags("name", "cache1")
-							.tags("cacheManager", "cacheManager").meter();
-					registry.get("cache.gets").tags("name", "cache2")
-							.tags("cacheManager", "cacheManager").meter();
+					registry.get("cache.gets").tags("name", "cache1").tags("cacheManager", "cacheManager").meter();
+					registry.get("cache.gets").tags("name", "cache2").tags("cacheManager", "cacheManager").meter();
 				});
 	}
 
 	@Test
 	public void autoConfiguredNonSupportedCacheManagerIsIgnored() {
-		this.contextRunner.withPropertyValues("spring.cache.type=simple",
-				"spring.cache.cache-names=cache1,cache2").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.cache.type=simple", "spring.cache.cache-names=cache1,cache2")
+				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("cache.gets").tags("name", "cache1")
-							.tags("cacheManager", "cacheManager").meter()).isNull();
-					assertThat(registry.find("cache.gets").tags("name", "cache2")
-							.tags("cacheManager", "cacheManager").meter()).isNull();
+					assertThat(registry.find("cache.gets").tags("name", "cache1").tags("cacheManager", "cacheManager")
+							.meter()).isNull();
+					assertThat(registry.find("cache.gets").tags("name", "cache2").tags("cacheManager", "cacheManager")
+							.meter()).isNull();
 				});
 	}
 
 	@Test
 	public void cacheInstrumentationCanBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.enable.cache=false",
-						"spring.cache.type=caffeine", "spring.cache.cache-names=cache1")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("management.metrics.enable.cache=false", "spring.cache.type=caffeine",
+				"spring.cache.cache-names=cache1").run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("cache.requests").tags("name", "cache1")
 							.tags("cacheManager", "cacheManager").meter()).isNull();

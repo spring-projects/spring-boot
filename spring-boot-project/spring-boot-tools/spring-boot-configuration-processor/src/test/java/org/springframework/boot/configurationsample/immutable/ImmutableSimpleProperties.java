@@ -47,8 +47,8 @@ public class ImmutableSimpleProperties {
 	@SuppressWarnings("unused")
 	private final Long counter;
 
-	public ImmutableSimpleProperties(@DefaultValue("boot") String theName, boolean flag,
-			Comparator<?> comparator, Long counter) {
+	public ImmutableSimpleProperties(@DefaultValue("boot") String theName, boolean flag, Comparator<?> comparator,
+			Long counter) {
 		this.theName = theName;
 		this.flag = flag;
 		this.comparator = comparator;

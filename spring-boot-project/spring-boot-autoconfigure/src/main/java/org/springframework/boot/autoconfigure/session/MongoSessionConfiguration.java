@@ -45,12 +45,10 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
 class MongoSessionConfiguration {
 
 	@Configuration
-	public static class SpringBootMongoHttpSessionConfiguration
-			extends MongoHttpSessionConfiguration {
+	public static class SpringBootMongoHttpSessionConfiguration extends MongoHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties,
-				MongoSessionProperties mongoSessionProperties) {
+		public void customize(SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());

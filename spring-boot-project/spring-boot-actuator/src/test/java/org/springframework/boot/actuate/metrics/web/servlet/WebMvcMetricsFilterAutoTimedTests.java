@@ -69,15 +69,13 @@ public class WebMvcMetricsFilterAutoTimedTests {
 
 	@BeforeEach
 	public void setupMockMvc() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(this.filter).build();
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(this.filter).build();
 	}
 
 	@Test
 	public void metricsCanBeAutoTimed() throws Exception {
 		this.mvc.perform(get("/api/10")).andExpect(status().isOk());
-		Timer timer = this.registry.get("http.server.requests").tags("status", "200")
-				.timer();
+		Timer timer = this.registry.get("http.server.requests").tags("status", "200").timer();
 		assertThat(timer.count()).isEqualTo(1L);
 		HistogramSnapshot snapshot = timer.takeSnapshot();
 		assertThat(snapshot.percentileValues()).hasSize(2);
@@ -101,12 +99,9 @@ public class WebMvcMetricsFilterAutoTimedTests {
 		}
 
 		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context,
-				MeterRegistry registry) {
-			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests",
-					(builder) -> builder.publishPercentiles(0.5, 0.95)
-							.publishPercentileHistogram(true));
+		public WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context, MeterRegistry registry) {
+			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
+					(builder) -> builder.publishPercentiles(0.5, 0.95).publishPercentileHistogram(true));
 		}
 
 	}

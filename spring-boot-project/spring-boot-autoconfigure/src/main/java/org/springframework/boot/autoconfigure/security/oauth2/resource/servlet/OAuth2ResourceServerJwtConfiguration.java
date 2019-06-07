@@ -54,8 +54,7 @@ class OAuth2ResourceServerJwtConfiguration {
 	@ConditionalOnMissingBean
 	public JwtDecoder jwtDecoderByJwkKeySetUri() {
 		return NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-				.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm()))
-				.build();
+				.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
 	}
 
 	@Bean
@@ -63,14 +62,12 @@ class OAuth2ResourceServerJwtConfiguration {
 	@ConditionalOnMissingBean
 	public JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 		RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-				.generatePublic(new X509EncodedKeySpec(
-						getKeySpec(this.properties.readPublicKey())));
+				.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 		return NimbusJwtDecoder.withPublicKey(publicKey).build();
 	}
 
 	private byte[] getKeySpec(String keyValue) {
-		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "")
-				.replace("-----END PUBLIC KEY-----", "");
+		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
 		return Base64.getMimeDecoder().decode(keyValue);
 	}
 

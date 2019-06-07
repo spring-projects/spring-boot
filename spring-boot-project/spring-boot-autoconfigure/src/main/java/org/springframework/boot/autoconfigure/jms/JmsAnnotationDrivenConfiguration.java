@@ -52,10 +52,9 @@ class JmsAnnotationDrivenConfiguration {
 
 	private final JmsProperties properties;
 
-	JmsAnnotationDrivenConfiguration(
-			ObjectProvider<DestinationResolver> destinationResolver,
-			ObjectProvider<JtaTransactionManager> transactionManager,
-			ObjectProvider<MessageConverter> messageConverter, JmsProperties properties) {
+	JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
+			ObjectProvider<JtaTransactionManager> transactionManager, ObjectProvider<MessageConverter> messageConverter,
+			JmsProperties properties) {
 		this.destinationResolver = destinationResolver;
 		this.transactionManager = transactionManager;
 		this.messageConverter = messageConverter;
@@ -77,8 +76,7 @@ class JmsAnnotationDrivenConfiguration {
 	@ConditionalOnSingleCandidate(ConnectionFactory.class)
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
-			DefaultJmsListenerContainerFactoryConfigurer configurer,
-			ConnectionFactory connectionFactory) {
+			DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
 		return factory;
@@ -86,8 +84,7 @@ class JmsAnnotationDrivenConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableJms
-	@ConditionalOnMissingBean(
-			name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableJmsConfiguration {
 
 	}

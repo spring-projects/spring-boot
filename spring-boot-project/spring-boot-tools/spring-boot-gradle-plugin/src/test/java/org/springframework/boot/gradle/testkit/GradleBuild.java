@@ -80,15 +80,11 @@ public class GradleBuild {
 	}
 
 	private List<File> pluginClasspath() {
-		return Arrays.asList(new File("bin"), new File("build/classes/java/main"),
-				new File("build/resources/main"),
-				new File(pathOfJarContaining(LaunchScript.class)),
-				new File(pathOfJarContaining(ClassVisitor.class)),
+		return Arrays.asList(new File("bin"), new File("build/classes/java/main"), new File("build/resources/main"),
+				new File(pathOfJarContaining(LaunchScript.class)), new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
-				new File(pathOfJarContaining(PropertiesKt.class)),
-				new File(pathOfJarContaining(KotlinLogger.class)),
-				new File(pathOfJarContaining(KotlinPlugin.class)),
-				new File(pathOfJarContaining(KotlinProject.class)),
+				new File(pathOfJarContaining(PropertiesKt.class)), new File(pathOfJarContaining(KotlinLogger.class)),
+				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
 				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)));
 	}
@@ -98,8 +94,7 @@ public class GradleBuild {
 	}
 
 	public GradleBuild script(String script) {
-		this.script = script.endsWith(this.dsl.getExtension()) ? script
-				: script + this.dsl.getExtension();
+		this.script = script.endsWith(this.dsl.getExtension()) ? script : script + this.dsl.getExtension();
 		return this;
 	}
 
@@ -124,10 +119,8 @@ public class GradleBuild {
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
 				.replace("{version}", getBootVersion())
-				.replace("{dependency-management-plugin-version}",
-						getDependencyManagementPluginVersion());
-		FileCopyUtils.copy(scriptContent, new FileWriter(
-				new File(this.projectDir, "build" + this.dsl.getExtension())));
+				.replace("{dependency-management-plugin-version}", getDependencyManagementPluginVersion());
+		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
 		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
 				new File(this.projectDir, "repository"));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
@@ -172,16 +165,13 @@ public class GradleBuild {
 
 	private static String getDependencyManagementPluginVersion() {
 		try {
-			URL location = DependencyManagementExtension.class.getProtectionDomain()
-					.getCodeSource().getLocation();
+			URL location = DependencyManagementExtension.class.getProtectionDomain().getCodeSource().getLocation();
 			try (JarFile jar = new JarFile(new File(location.toURI()))) {
-				return jar.getManifest().getMainAttributes()
-						.getValue("Implementation-Version");
+				return jar.getManifest().getMainAttributes().getValue("Implementation-Version");
 			}
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Failed to find dependency management plugin version", ex);
+			throw new IllegalStateException("Failed to find dependency management plugin version", ex);
 		}
 	}
 

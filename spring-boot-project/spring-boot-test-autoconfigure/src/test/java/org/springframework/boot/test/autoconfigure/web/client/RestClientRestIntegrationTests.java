@@ -46,15 +46,13 @@ public class RestClientRestIntegrationTests {
 
 	@Test
 	public void mockServerCall1() {
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("1", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("1", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("1");
 	}
 
 	@Test
 	public void mockServerCall2() {
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("2", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("2", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("2");
 	}
 

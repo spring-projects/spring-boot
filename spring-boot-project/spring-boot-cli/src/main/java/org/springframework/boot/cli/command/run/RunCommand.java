@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ public class RunCommand extends OptionParsingCommand {
 		@Override
 		protected void doOptions() {
 			this.watchOption = option("watch", "Watch the specified file for changes");
-			this.verboseOption = option(Arrays.asList("verbose", "v"),
-					"Verbose logging of dependency resolution");
+			this.verboseOption = option(Arrays.asList("verbose", "v"), "Verbose logging of dependency resolution");
 			this.quietOption = option(Arrays.asList("quiet", "q"), "Quiet logging");
 		}
 
@@ -100,14 +99,14 @@ public class RunCommand extends OptionParsingCommand {
 
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				repositoryConfiguration.add(0, new RepositoryConfiguration("local",
-						new File("repository").toURI(), true));
+				repositoryConfiguration.add(0,
+						new RepositoryConfiguration("local", new File("repository").toURI(), true));
 
 				SpringApplicationRunnerConfiguration configuration = new SpringApplicationRunnerConfigurationAdapter(
 						options, this, repositoryConfiguration);
 
-				this.runner = new SpringApplicationRunner(configuration,
-						sourceOptions.getSourcesArray(), sourceOptions.getArgsArray());
+				this.runner = new SpringApplicationRunner(configuration, sourceOptions.getSourcesArray(),
+						sourceOptions.getArgsArray());
 				this.runner.compileAndRun();
 
 				return ExitStatus.OK;
@@ -118,12 +117,10 @@ public class RunCommand extends OptionParsingCommand {
 		 * Simple adapter class to present the {@link OptionSet} as a
 		 * {@link SpringApplicationRunnerConfiguration}.
 		 */
-		private class SpringApplicationRunnerConfigurationAdapter
-				extends OptionSetGroovyCompilerConfiguration
+		private class SpringApplicationRunnerConfigurationAdapter extends OptionSetGroovyCompilerConfiguration
 				implements SpringApplicationRunnerConfiguration {
 
-			SpringApplicationRunnerConfigurationAdapter(OptionSet options,
-					CompilerOptionHandler optionHandler,
+			SpringApplicationRunnerConfigurationAdapter(OptionSet options, CompilerOptionHandler optionHandler,
 					List<RepositoryConfiguration> repositoryConfiguration) {
 				super(options, optionHandler, repositoryConfiguration);
 			}

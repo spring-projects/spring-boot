@@ -52,8 +52,7 @@ public class ConstructorParametersBinderTests {
 		source.put("foo.string-value", "foo");
 		source.put("foo.enum-value", "foo-bar");
 		this.sources.add(source);
-		ExampleValueBean bean = this.binder
-				.bind("foo", Bindable.of(ExampleValueBean.class)).get();
+		ExampleValueBean bean = this.binder.bind("foo", Bindable.of(ExampleValueBean.class)).get();
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(34);
 		assertThat(bean.isBooleanValue()).isTrue();
@@ -70,8 +69,8 @@ public class ConstructorParametersBinderTests {
 		source.put("string-value", "foo");
 		source.put("enum-value", "foo-bar");
 		this.sources.add(source);
-		ExampleValueBean bean = this.binder.bind(ConfigurationPropertyName.of(""),
-				Bindable.of(ExampleValueBean.class)).get();
+		ExampleValueBean bean = this.binder.bind(ConfigurationPropertyName.of(""), Bindable.of(ExampleValueBean.class))
+				.get();
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(34);
 		assertThat(bean.isBooleanValue()).isTrue();
@@ -84,8 +83,7 @@ public class ConstructorParametersBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.name", "test");
 		this.sources.add(source);
-		boolean bound = this.binder.bind("foo", Bindable.of(ExampleAbstractBean.class))
-				.isBound();
+		boolean bound = this.binder.bind("foo", Bindable.of(ExampleAbstractBean.class)).isBound();
 		assertThat(bound).isFalse();
 	}
 
@@ -94,8 +92,7 @@ public class ConstructorParametersBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		this.sources.add(source);
-		boolean bound = this.binder
-				.bind("foo", Bindable.of(MultipleConstructorsBean.class)).isBound();
+		boolean bound = this.binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)).isBound();
 		assertThat(bound).isFalse();
 	}
 
@@ -104,8 +101,7 @@ public class ConstructorParametersBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		this.sources.add(source);
-		boolean bound = this.binder.bind("foo", Bindable.of(DefaultConstructorBean.class))
-				.isBound();
+		boolean bound = this.binder.bind("foo", Bindable.of(DefaultConstructorBean.class)).isBound();
 		assertThat(bound).isFalse();
 	}
 
@@ -116,8 +112,7 @@ public class ConstructorParametersBinderTests {
 		source.put("foo.value-bean.long-value", "34");
 		source.put("foo.value-bean.string-value", "foo");
 		this.sources.add(source);
-		ExampleNestedBean bean = this.binder
-				.bind("foo", Bindable.of(ExampleNestedBean.class)).get();
+		ExampleNestedBean bean = this.binder.bind("foo", Bindable.of(ExampleNestedBean.class)).get();
 		assertThat(bean.getValueBean().getIntValue()).isEqualTo(123);
 		assertThat(bean.getValueBean().getLongValue()).isEqualTo(34);
 		assertThat(bean.getValueBean().isBooleanValue()).isFalse();
@@ -130,8 +125,7 @@ public class ConstructorParametersBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.string-value", "foo");
 		this.sources.add(source);
-		ExampleValueBean bean = this.binder
-				.bind("foo", Bindable.of(ExampleValueBean.class)).get();
+		ExampleValueBean bean = this.binder.bind("foo", Bindable.of(ExampleValueBean.class)).get();
 		assertThat(bean.getIntValue()).isEqualTo(0);
 		assertThat(bean.getLongValue()).isEqualTo(0);
 		assertThat(bean.isBooleanValue()).isEqualTo(false);
@@ -143,8 +137,7 @@ public class ConstructorParametersBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.string-value", "foo");
 		this.sources.add(source);
-		ExampleDefaultValueBean bean = this.binder
-				.bind("foo", Bindable.of(ExampleDefaultValueBean.class)).get();
+		ExampleDefaultValueBean bean = this.binder.bind("foo", Bindable.of(ExampleDefaultValueBean.class)).get();
 		assertThat(bean.getIntValue()).isEqualTo(5);
 		assertThat(bean.getStringsList()).containsOnly("a", "b", "c");
 		assertThat(bean.getCustomList()).containsOnly("x,y,z");
@@ -162,8 +155,8 @@ public class ConstructorParametersBinderTests {
 
 		private final ExampleEnum enumValue;
 
-		public ExampleValueBean(int intValue, long longValue, boolean booleanValue,
-				String stringValue, ExampleEnum enumValue) {
+		public ExampleValueBean(int intValue, long longValue, boolean booleanValue, String stringValue,
+				ExampleEnum enumValue) {
 			this.intValue = intValue;
 			this.longValue = longValue;
 			this.booleanValue = booleanValue;
@@ -208,8 +201,7 @@ public class ConstructorParametersBinderTests {
 			this(intValue, 23L, "hello");
 		}
 
-		public MultipleConstructorsBean(int intValue, long longValue,
-				String stringValue) {
+		public MultipleConstructorsBean(int intValue, long longValue, String stringValue) {
 		}
 
 	}

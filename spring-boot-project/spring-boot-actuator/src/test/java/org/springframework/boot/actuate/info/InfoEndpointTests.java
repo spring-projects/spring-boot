@@ -36,9 +36,8 @@ public class InfoEndpointTests {
 
 	@Test
 	public void info() {
-		InfoEndpoint endpoint = new InfoEndpoint(
-				Arrays.asList((builder) -> builder.withDetail("key1", "value1"),
-						(builder) -> builder.withDetail("key2", "value2")));
+		InfoEndpoint endpoint = new InfoEndpoint(Arrays.asList((builder) -> builder.withDetail("key1", "value1"),
+				(builder) -> builder.withDetail("key2", "value2")));
 		Map<String, Object> info = endpoint.info();
 		assertThat(info).hasSize(2);
 		assertThat(info).containsEntry("key1", "value1");

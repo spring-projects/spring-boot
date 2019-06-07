@@ -66,8 +66,7 @@ public class CacheManagerCustomizersTests {
 		assertThat(list.get(1).getCount()).isEqualTo(1);
 	}
 
-	static class CacheNamesCacheManagerCustomizer
-			implements CacheManagerCustomizer<ConcurrentMapCacheManager> {
+	static class CacheNamesCacheManagerCustomizer implements CacheManagerCustomizer<ConcurrentMapCacheManager> {
 
 		@Override
 		public void customize(ConcurrentMapCacheManager cacheManager) {
@@ -76,8 +75,7 @@ public class CacheManagerCustomizersTests {
 
 	}
 
-	private static class TestCustomizer<T extends CacheManager>
-			implements CacheManagerCustomizer<T> {
+	private static class TestCustomizer<T extends CacheManager> implements CacheManagerCustomizer<T> {
 
 		private int count;
 
@@ -92,8 +90,7 @@ public class CacheManagerCustomizersTests {
 
 	}
 
-	private static class TestConcurrentMapCacheManagerCustomizer
-			extends TestCustomizer<ConcurrentMapCacheManager> {
+	private static class TestConcurrentMapCacheManagerCustomizer extends TestCustomizer<ConcurrentMapCacheManager> {
 
 	}
 

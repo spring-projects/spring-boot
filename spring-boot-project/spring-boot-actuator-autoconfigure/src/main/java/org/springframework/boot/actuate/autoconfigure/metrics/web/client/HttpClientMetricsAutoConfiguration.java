@@ -43,8 +43,8 @@ import org.springframework.core.annotation.Order;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class, RestTemplateAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
+		RestTemplateAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
 @Import({ RestTemplateMetricsConfiguration.class, WebClientMetricsConfiguration.class })
@@ -54,11 +54,10 @@ public class HttpClientMetricsAutoConfiguration {
 	@Order(0)
 	public MeterFilter metricsHttpClientUriTagFilter(MetricsProperties properties) {
 		String metricName = properties.getWeb().getClient().getRequest().getMetricName();
-		MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String
-				.format("Reached the maximum number of URI tags for '%s'. Are you using "
-						+ "'uriVariables'?", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				properties.getWeb().getClient().getMaxUriTags(), denyFilter);
+		MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String.format(
+				"Reached the maximum number of URI tags for '%s'. Are you using " + "'uriVariables'?", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri", properties.getWeb().getClient().getMaxUriTags(),
+				denyFilter);
 	}
 
 }

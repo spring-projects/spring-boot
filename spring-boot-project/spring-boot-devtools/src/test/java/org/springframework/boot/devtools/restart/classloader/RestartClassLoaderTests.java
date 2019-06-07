@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 @SuppressWarnings("resource")
 public class RestartClassLoaderTests {
 
-	private static final String PACKAGE = RestartClassLoaderTests.class.getPackage()
-			.getName();
+	private static final String PACKAGE = RestartClassLoaderTests.class.getPackage().getName();
 
 	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
 
@@ -74,8 +73,7 @@ public class RestartClassLoaderTests {
 		URL[] urls = new URL[] { url };
 		this.parentClassLoader = new URLClassLoader(urls, classLoader);
 		this.updatedFiles = new ClassLoaderFiles();
-		this.reloadClassLoader = new RestartClassLoader(this.parentClassLoader, urls,
-				this.updatedFiles);
+		this.reloadClassLoader = new RestartClassLoader(this.parentClassLoader, urls, this.updatedFiles);
 	}
 
 	private File createSampleJarFile() throws IOException {
@@ -93,36 +91,32 @@ public class RestartClassLoaderTests {
 
 	@Test
 	public void parentMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
+		assertThatIllegalArgumentException().isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
 				.withMessageContaining("Parent must not be null");
 	}
 
 	@Test
 	public void updatedFilesMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
 				.withMessageContaining("UpdatedFiles must not be null");
 	}
 
 	@Test
 	public void getResourceFromReloadableUrl() throws Exception {
-		String content = readString(
-				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Sample.txt"));
+		String content = readString(this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Sample.txt"));
 		assertThat(content).startsWith("fromchild");
 	}
 
 	@Test
 	public void getResourceFromParent() throws Exception {
-		String content = readString(
-				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Parent.txt"));
+		String content = readString(this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Parent.txt"));
 		assertThat(content).startsWith("fromparent");
 	}
 
 	@Test
 	public void getResourcesFiltersDuplicates() throws Exception {
-		List<URL> resources = toList(
-				this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
+		List<URL> resources = toList(this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
 		assertThat(resources.size()).isEqualTo(1);
 	}
 
@@ -175,8 +169,7 @@ public class RestartClassLoaderTests {
 		byte[] bytes = "abc".getBytes();
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
 		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
-		assertThat(FileCopyUtils.copyToByteArray(resources.get(0).openStream()))
-				.isEqualTo(bytes);
+		assertThat(FileCopyUtils.copyToByteArray(resources.get(0).openStream())).isEqualTo(bytes);
 	}
 
 	@Test
@@ -198,8 +191,7 @@ public class RestartClassLoaderTests {
 	@Test
 	public void getAddedClass() throws Exception {
 		String name = PACKAGE_PATH + "/SampleParent.class";
-		byte[] bytes = FileCopyUtils
-				.copyToByteArray(getClass().getResourceAsStream("SampleParent.class"));
+		byte[] bytes = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream("SampleParent.class"));
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
 		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
@@ -210,8 +202,7 @@ public class RestartClassLoaderTests {
 	}
 
 	private <T> List<T> toList(Enumeration<T> enumeration) {
-		return (enumeration != null) ? Collections.list(enumeration)
-				: Collections.emptyList();
+		return (enumeration != null) ? Collections.list(enumeration) : Collections.emptyList();
 	}
 
 }

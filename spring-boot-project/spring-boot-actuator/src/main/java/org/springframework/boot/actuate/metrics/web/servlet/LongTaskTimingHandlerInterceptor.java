@@ -57,15 +57,14 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	 * @param registry the registry
 	 * @param tagsProvider the tags provider
 	 */
-	public LongTaskTimingHandlerInterceptor(MeterRegistry registry,
-			WebMvcTagsProvider tagsProvider) {
+	public LongTaskTimingHandlerInterceptor(MeterRegistry registry, WebMvcTagsProvider tagsProvider) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
 		LongTaskTimingContext timingContext = LongTaskTimingContext.get(request);
 		if (timingContext == null) {
 			startAndAttachTimingContext(request, handler);
@@ -74,8 +73,8 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-			Object handler, Exception ex) throws Exception {
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
 		if (!request.isAsyncStarted()) {
 			stopLongTaskTimers(LongTaskTimingContext.get(request));
 		}
@@ -83,15 +82,13 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 
 	private void startAndAttachTimingContext(HttpServletRequest request, Object handler) {
 		Set<Timed> annotations = getTimedAnnotations(handler);
-		Collection<LongTaskTimer.Sample> longTaskTimerSamples = getLongTaskTimerSamples(
-				request, handler, annotations);
-		LongTaskTimingContext timingContext = new LongTaskTimingContext(
-				longTaskTimerSamples);
+		Collection<LongTaskTimer.Sample> longTaskTimerSamples = getLongTaskTimerSamples(request, handler, annotations);
+		LongTaskTimingContext timingContext = new LongTaskTimingContext(longTaskTimerSamples);
 		timingContext.attachTo(request);
 	}
 
-	private Collection<LongTaskTimer.Sample> getLongTaskTimerSamples(
-			HttpServletRequest request, Object handler, Set<Timed> annotations) {
+	private Collection<LongTaskTimer.Sample> getLongTaskTimerSamples(HttpServletRequest request, Object handler,
+			Set<Timed> annotations) {
 		List<LongTaskTimer.Sample> samples = new ArrayList<>();
 		annotations.stream().filter(Timed::longTask).forEach((annotation) -> {
 			Iterable<Tag> tags = this.tagsProvider.getLongRequestTags(request, handler);

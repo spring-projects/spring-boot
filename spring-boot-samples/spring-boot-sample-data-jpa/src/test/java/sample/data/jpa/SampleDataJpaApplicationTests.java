@@ -60,15 +60,13 @@ class SampleDataJpaApplicationTests {
 	@Test
 	void testHome() throws Exception {
 
-		this.mvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(content().string("Bath"));
+		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Bath"));
 	}
 
 	@Test
 	void testJmx() throws Exception {
 		assertThat(ManagementFactory.getPlatformMBeanServer()
-				.queryMBeans(new ObjectName("jpa.sample:type=HikariDataSource,*"), null))
-						.hasSize(1);
+				.queryMBeans(new ObjectName("jpa.sample:type=HikariDataSource,*"), null)).hasSize(1);
 	}
 
 }

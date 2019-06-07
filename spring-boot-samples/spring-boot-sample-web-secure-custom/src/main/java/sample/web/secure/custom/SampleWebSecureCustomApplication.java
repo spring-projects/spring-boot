@@ -61,9 +61,8 @@ public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest()
-					.fullyAuthenticated().and().formLogin().loginPage("/login")
-					.failureUrl("/login?error").permitAll().and().logout().permitAll();
+			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest().fullyAuthenticated().and()
+					.formLogin().loginPage("/login").failureUrl("/login?error").permitAll().and().logout().permitAll();
 		}
 
 	}

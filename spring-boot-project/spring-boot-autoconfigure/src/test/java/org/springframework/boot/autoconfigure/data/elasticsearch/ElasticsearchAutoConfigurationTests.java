@@ -59,28 +59,23 @@ public class ElasticsearchAutoConfigurationTests {
 	@Test
 	public void useExistingClient() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
+		this.context.register(CustomConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
-		assertThat(this.context.getBean("myClient"))
-				.isSameAs(this.context.getBean(Client.class));
+		assertThat(this.context.getBean("myClient")).isSameAs(this.context.getBean(Client.class));
 	}
 
 	@Test
 	public void createTransportClient() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.data.elasticsearch.cluster-nodes:localhost:"
-						+ elasticsearch.getMappedTransportPort(),
+				.of("spring.data.elasticsearch.cluster-nodes:localhost:" + elasticsearch.getMappedTransportPort(),
 						"spring.data.elasticsearch.cluster-name:docker-cluster")
 				.applyTo(this.context);
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ElasticsearchAutoConfiguration.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
-		List<DiscoveryNode> connectedNodes = this.context.getBean(TransportClient.class)
-				.connectedNodes();
+		List<DiscoveryNode> connectedNodes = this.context.getBean(TransportClient.class).connectedNodes();
 		assertThat(connectedNodes).hasSize(1);
 	}
 

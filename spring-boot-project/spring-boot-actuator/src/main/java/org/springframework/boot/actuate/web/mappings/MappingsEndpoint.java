@@ -37,8 +37,7 @@ public class MappingsEndpoint {
 
 	private final ApplicationContext context;
 
-	public MappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
-			ApplicationContext context) {
+	public MappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders, ApplicationContext context) {
 		this.descriptionProviders = descriptionProviders;
 		this.context = context;
 	}
@@ -56,11 +55,10 @@ public class MappingsEndpoint {
 
 	private ContextMappings mappingsForContext(ApplicationContext applicationContext) {
 		Map<String, Object> mappings = new HashMap<>();
-		this.descriptionProviders
-				.forEach((provider) -> mappings.put(provider.getMappingName(),
-						provider.describeMappings(applicationContext)));
-		return new ContextMappings(mappings, (applicationContext.getParent() != null)
-				? applicationContext.getId() : null);
+		this.descriptionProviders.forEach(
+				(provider) -> mappings.put(provider.getMappingName(), provider.describeMappings(applicationContext)));
+		return new ContextMappings(mappings,
+				(applicationContext.getParent() != null) ? applicationContext.getId() : null);
 	}
 
 	/**

@@ -33,8 +33,7 @@ class JpaNoteRepository implements NoteRepository {
 
 	@Override
 	public List<Note> findAll() {
-		return this.entityManager.createQuery("SELECT n FROM Note n", Note.class)
-				.getResultList();
+		return this.entityManager.createQuery("SELECT n FROM Note n", Note.class).getResultList();
 	}
 
 }

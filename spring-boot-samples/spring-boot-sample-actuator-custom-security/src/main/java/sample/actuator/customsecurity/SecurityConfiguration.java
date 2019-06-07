@@ -33,10 +33,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 		return new InMemoryUserDetailsManager(
-				User.withDefaultPasswordEncoder().username("user").password("password")
-						.authorities("ROLE_USER").build(),
-				User.withDefaultPasswordEncoder().username("beans").password("beans")
-						.authorities("ROLE_BEANS").build(),
+				User.withDefaultPasswordEncoder().username("user").password("password").authorities("ROLE_USER")
+						.build(),
+				User.withDefaultPasswordEncoder().username("beans").password("beans").authorities("ROLE_BEANS").build(),
 				User.withDefaultPasswordEncoder().username("admin").password("admin")
 						.authorities("ROLE_ACTUATOR", "ROLE_USER").build());
 	}

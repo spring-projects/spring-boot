@@ -68,148 +68,114 @@ public class ThymeleafReactiveAutoConfigurationTests {
 
 	@Test
 	public void createFromConfigClass() {
-		this.contextRunner.withPropertyValues("spring.thymeleaf.suffix:.html")
-				.run((context) -> {
-					TemplateEngine engine = context.getBean(TemplateEngine.class);
-					Context attrs = new Context(Locale.UK,
-							Collections.singletonMap("foo", "bar"));
-					String result = engine.process("template", attrs).trim();
-					assertThat(result).isEqualTo("<html>bar</html>");
-				});
+		this.contextRunner.withPropertyValues("spring.thymeleaf.suffix:.html").run((context) -> {
+			TemplateEngine engine = context.getBean(TemplateEngine.class);
+			Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
+			String result = engine.process("template", attrs).trim();
+			assertThat(result).isEqualTo("<html>bar</html>");
+		});
 	}
 
 	@Test
 	public void overrideCharacterEncoding() {
-		this.contextRunner.withPropertyValues("spring.thymeleaf.encoding:UTF-16")
-				.run((context) -> {
-					ITemplateResolver resolver = context.getBean(ITemplateResolver.class);
-					assertThat(resolver)
-							.isInstanceOf(SpringResourceTemplateResolver.class);
-					assertThat(((SpringResourceTemplateResolver) resolver)
-							.getCharacterEncoding()).isEqualTo("UTF-16");
-					ThymeleafReactiveViewResolver views = context
-							.getBean(ThymeleafReactiveViewResolver.class);
-					assertThat(views.getDefaultCharset().name()).isEqualTo("UTF-16");
-				});
+		this.contextRunner.withPropertyValues("spring.thymeleaf.encoding:UTF-16").run((context) -> {
+			ITemplateResolver resolver = context.getBean(ITemplateResolver.class);
+			assertThat(resolver).isInstanceOf(SpringResourceTemplateResolver.class);
+			assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding()).isEqualTo("UTF-16");
+			ThymeleafReactiveViewResolver views = context.getBean(ThymeleafReactiveViewResolver.class);
+			assertThat(views.getDefaultCharset().name()).isEqualTo("UTF-16");
+		});
 	}
 
 	@Test
 	public void overrideMediaTypes() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.thymeleaf.reactive.media-types:text/html,text/plain")
-				.run((context) -> assertThat(
-						context.getBean(ThymeleafReactiveViewResolver.class)
-								.getSupportedMediaTypes()).contains(MediaType.TEXT_HTML,
-										MediaType.TEXT_PLAIN));
+		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.media-types:text/html,text/plain").run(
+				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
+						.contains(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN));
 	}
 
 	@Test
 	public void overrideTemplateResolverOrder() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.templateResolverOrder:25")
-				.run((context) -> assertThat(
-						context.getBean(ITemplateResolver.class).getOrder())
-								.isEqualTo(Integer.valueOf(25)));
+				.run((context) -> assertThat(context.getBean(ITemplateResolver.class).getOrder())
+						.isEqualTo(Integer.valueOf(25)));
 	}
 
 	@Test
 	public void overrideViewNames() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.viewNames:foo,bar")
-				.run((context) -> assertThat(context
-						.getBean(ThymeleafReactiveViewResolver.class).getViewNames())
-								.isEqualTo(new String[] { "foo", "bar" }));
+				.run((context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getViewNames())
+						.isEqualTo(new String[] { "foo", "bar" }));
 	}
 
 	@Test
 	public void overrideMaxChunkSize() {
-		this.contextRunner
-				.withPropertyValues("spring.thymeleaf.reactive.maxChunkSize:8KB")
+		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.maxChunkSize:8KB")
 				.run((context) -> assertThat(
-						context.getBean(ThymeleafReactiveViewResolver.class)
-								.getResponseMaxChunkSizeBytes())
-										.isEqualTo(Integer.valueOf(8192)));
+						context.getBean(ThymeleafReactiveViewResolver.class).getResponseMaxChunkSizeBytes())
+								.isEqualTo(Integer.valueOf(8192)));
 	}
 
 	@Test
 	public void overrideFullModeViewNames() {
-		this.contextRunner
-				.withPropertyValues("spring.thymeleaf.reactive.fullModeViewNames:foo,bar")
-				.run((context) -> assertThat(
-						context.getBean(ThymeleafReactiveViewResolver.class)
-								.getFullModeViewNames())
-										.isEqualTo(new String[] { "foo", "bar" }));
+		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.fullModeViewNames:foo,bar").run(
+				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getFullModeViewNames())
+						.isEqualTo(new String[] { "foo", "bar" }));
 	}
 
 	@Test
 	public void overrideChunkedModeViewNames() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.thymeleaf.reactive.chunkedModeViewNames:foo,bar")
-				.run((context) -> assertThat(
-						context.getBean(ThymeleafReactiveViewResolver.class)
-								.getChunkedModeViewNames())
-										.isEqualTo(new String[] { "foo", "bar" }));
+		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.chunkedModeViewNames:foo,bar").run(
+				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getChunkedModeViewNames())
+						.isEqualTo(new String[] { "foo", "bar" }));
 	}
 
 	@Test
 	public void overrideEnableSpringElCompiler() {
-		this.contextRunner
-				.withPropertyValues("spring.thymeleaf.enable-spring-el-compiler:true")
-				.run((context) -> assertThat(
-						context.getBean(SpringWebFluxTemplateEngine.class)
-								.getEnableSpringELCompiler()).isTrue());
+		this.contextRunner.withPropertyValues("spring.thymeleaf.enable-spring-el-compiler:true").run(
+				(context) -> assertThat(context.getBean(SpringWebFluxTemplateEngine.class).getEnableSpringELCompiler())
+						.isTrue());
 	}
 
 	@Test
 	public void enableSpringElCompilerIsDisabledByDefault() {
 		this.contextRunner.run(
-				(context) -> assertThat(context.getBean(SpringWebFluxTemplateEngine.class)
-						.getEnableSpringELCompiler()).isFalse());
+				(context) -> assertThat(context.getBean(SpringWebFluxTemplateEngine.class).getEnableSpringELCompiler())
+						.isFalse());
 	}
 
 	@Test
 	public void overrideRenderHiddenMarkersBeforeCheckboxes() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.thymeleaf.render-hidden-markers-before-checkboxes:true")
+		this.contextRunner.withPropertyValues("spring.thymeleaf.render-hidden-markers-before-checkboxes:true")
 				.run((context) -> assertThat(
-						context.getBean(SpringWebFluxTemplateEngine.class)
-								.getRenderHiddenMarkersBeforeCheckboxes()).isTrue());
+						context.getBean(SpringWebFluxTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes())
+								.isTrue());
 	}
 
 	@Test
 	public void enableRenderHiddenMarkersBeforeCheckboxesIsDisabledByDefault() {
-		this.contextRunner.run(
-				(context) -> assertThat(context.getBean(SpringWebFluxTemplateEngine.class)
-						.getRenderHiddenMarkersBeforeCheckboxes()).isFalse());
+		this.contextRunner.run((context) -> assertThat(
+				context.getBean(SpringWebFluxTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes()).isFalse());
 	}
 
 	@Test
 	public void templateLocationDoesNotExist(CapturedOutput capturedOutput) {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.thymeleaf.prefix:classpath:/no-such-directory/")
-				.run((context) -> assertThat(capturedOutput)
-						.contains("Cannot find template location"));
+		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:classpath:/no-such-directory/")
+				.run((context) -> assertThat(capturedOutput).contains("Cannot find template location"));
 	}
 
 	@Test
 	public void templateLocationEmpty(CapturedOutput capturedOutput) {
-		new File(this.buildOutput.getTestResourcesLocation(),
-				"empty-templates/empty-directory").mkdirs();
-		this.contextRunner.withPropertyValues(
-				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/")
-				.run((context) -> assertThat(capturedOutput)
-						.doesNotContain("Cannot find template location"));
+		new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory").mkdirs();
+		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/")
+				.run((context) -> assertThat(capturedOutput).doesNotContain("Cannot find template location"));
 	}
 
 	@Test
 	public void useDataDialect() {
 		this.contextRunner.run((context) -> {
-			ISpringWebFluxTemplateEngine engine = context
-					.getBean(ISpringWebFluxTemplateEngine.class);
-			Context attrs = new Context(Locale.UK,
-					Collections.singletonMap("foo", "bar"));
+			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
+			Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 			String result = engine.process("data-dialect", attrs).trim();
 			assertThat(result).isEqualTo("<html><body data-foo=\"bar\"></body></html>");
 		});
@@ -218,8 +184,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	@Test
 	public void useJava8TimeDialect() {
 		this.contextRunner.run((context) -> {
-			ISpringWebFluxTemplateEngine engine = context
-					.getBean(ISpringWebFluxTemplateEngine.class);
+			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
 			Context attrs = new Context(Locale.UK);
 			String result = engine.process("java8time-dialect", attrs).trim();
 			assertThat(result).isEqualTo("<html><body>2015-11-24</body></html>");
@@ -229,28 +194,21 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	@Test
 	public void useSecurityDialect() {
 		this.contextRunner.run((context) -> {
-			ISpringWebFluxTemplateEngine engine = context
-					.getBean(ISpringWebFluxTemplateEngine.class);
-			MockServerWebExchange exchange = MockServerWebExchange
-					.from(MockServerHttpRequest.get("/test").build());
-			exchange.getAttributes().put(
-					SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME,
-					new SecurityContextImpl(
-							new TestingAuthenticationToken("alice", "admin")));
+			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
+			MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
+			exchange.getAttributes().put(SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME,
+					new SecurityContextImpl(new TestingAuthenticationToken("alice", "admin")));
 			IContext attrs = new SpringWebFluxContext(exchange);
 			String result = engine.process("security-dialect", attrs);
-			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>"
-					+ System.lineSeparator());
+			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
 		});
 	}
 
 	@Test
 	public void renderTemplate() {
 		this.contextRunner.run((context) -> {
-			ISpringWebFluxTemplateEngine engine = context
-					.getBean(ISpringWebFluxTemplateEngine.class);
-			Context attrs = new Context(Locale.UK,
-					Collections.singletonMap("foo", "bar"));
+			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
+			Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 			String result = engine.process("home", attrs).trim();
 			assertThat(result).isEqualTo("<html><body>bar</body></html>");
 		});
@@ -259,8 +217,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	@Test
 	public void layoutDialectCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(LayoutDialectConfiguration.class)
-				.run((context) -> assertThat(ReflectionTestUtils.getField(
-						context.getBean(LayoutDialect.class), "sortingStrategy"))
+				.run((context) -> assertThat(
+						ReflectionTestUtils.getField(context.getBean(LayoutDialect.class), "sortingStrategy"))
 								.isInstanceOf(GroupingRespectLayoutTitleStrategy.class));
 	}
 

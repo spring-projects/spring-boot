@@ -36,31 +36,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MongoReactiveDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-							MongoReactiveAutoConfiguration.class,
-							MongoReactiveDataAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+					MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
 
 	@Test
 	public void templateExists() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveMongoTemplate.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveMongoTemplate.class));
 	}
 
 	@Test
 	public void gridFsTemplateExists() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveGridFsTemplate.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class));
 	}
 
 	@Test
 	public void backsOffIfMongoClientBeanIsNotPresent() {
-		ApplicationContextRunner runner = new ApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-								MongoReactiveDataAutoConfiguration.class));
-		runner.run((context) -> assertThat(context)
-				.doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
+		ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
+				.of(PropertyPlaceholderAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
+		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
 	}
 
 }

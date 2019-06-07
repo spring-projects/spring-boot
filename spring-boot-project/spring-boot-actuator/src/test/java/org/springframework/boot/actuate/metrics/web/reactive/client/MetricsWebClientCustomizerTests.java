@@ -48,8 +48,8 @@ public class MetricsWebClientCustomizerTests {
 	public void customizeShouldAddFilterFunction() {
 		this.clientBuilder.filter(mock(ExchangeFilterFunction.class));
 		this.customizer.customize(this.clientBuilder);
-		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(2).first()
-				.isInstanceOf(MetricsWebClientFilterFunction.class));
+		this.clientBuilder.filters(
+				(filters) -> assertThat(filters).hasSize(2).first().isInstanceOf(MetricsWebClientFilterFunction.class));
 	}
 
 	@Test
@@ -57,8 +57,8 @@ public class MetricsWebClientCustomizerTests {
 		this.customizer.customize(this.clientBuilder);
 		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(1));
 		this.customizer.customize(this.clientBuilder);
-		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(1).first()
-				.isInstanceOf(MetricsWebClientFilterFunction.class));
+		this.clientBuilder.filters(
+				(filters) -> assertThat(filters).hasSize(1).first().isInstanceOf(MetricsWebClientFilterFunction.class));
 	}
 
 }

@@ -47,20 +47,17 @@ public class AnyNestedConditionTests {
 
 	@Test
 	public void propertyA() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a")
-				.run(match(true));
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a").run(match(true));
 	}
 
 	@Test
 	public void propertyB() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("b:b")
-				.run(match(true));
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("b:b").run(match(true));
 	}
 
 	@Test
 	public void both() {
-		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("a:a", "b:b").run(match(true));
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a", "b:b").run(match(true));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {

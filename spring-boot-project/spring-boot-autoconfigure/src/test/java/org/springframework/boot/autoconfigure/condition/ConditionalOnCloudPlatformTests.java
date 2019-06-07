@@ -41,15 +41,13 @@ public class ConditionalOnCloudPlatformTests {
 	@Test
 	public void outcomeWhenCloudfoundryPlatformPresentShouldMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformConfig.class)
-				.withPropertyValues("VCAP_APPLICATION:---")
-				.run((context) -> assertThat(context).hasBean("foo"));
+				.withPropertyValues("VCAP_APPLICATION:---").run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	public void outcomeWhenCloudfoundryPlatformPresentAndMethodTargetShouldMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformOnMethodConfig.class)
-				.withPropertyValues("VCAP_APPLICATION:---")
-				.run((context) -> assertThat(context).hasBean("foo"));
+				.withPropertyValues("VCAP_APPLICATION:---").run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

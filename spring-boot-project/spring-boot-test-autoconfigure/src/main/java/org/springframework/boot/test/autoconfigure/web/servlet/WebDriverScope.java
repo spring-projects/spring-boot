@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,11 +117,9 @@ class WebDriverScope implements Scope {
 		context.addBeanFactoryPostProcessor(WebDriverScope::postProcessBeanFactory);
 	}
 
-	private static void postProcessBeanFactory(
-			ConfigurableListableBeanFactory beanFactory) {
+	private static void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		for (String beanClass : BEAN_CLASSES) {
-			for (String beanName : beanFactory
-					.getBeanNamesForType(ClassUtils.resolveClassName(beanClass, null))) {
+			for (String beanName : beanFactory.getBeanNamesForType(ClassUtils.resolveClassName(beanClass, null))) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
 				if (!StringUtils.hasLength(definition.getScope())) {
 					definition.setScope(NAME);
@@ -137,8 +135,7 @@ class WebDriverScope implements Scope {
 	 */
 	public static WebDriverScope getFrom(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext) {
-			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory()
-					.getRegisteredScope(NAME);
+			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory().getRegisteredScope(NAME);
 			return (scope instanceof WebDriverScope) ? (WebDriverScope) scope : null;
 		}
 		return null;

@@ -40,8 +40,7 @@ class OutputExtensionExtendWithTests {
 	void captureShouldReturnAllCapturedOutput(CapturedOutput output) {
 		System.out.println("Hello World");
 		System.err.println("Error!!!");
-		assertThat(output).contains("Before all").contains("Hello World")
-				.contains("Error!!!");
+		assertThat(output).contains("Before all").contains("Hello World").contains("Error!!!");
 	}
 
 	static class BeforeAllExtension implements BeforeAllCallback {

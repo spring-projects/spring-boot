@@ -51,8 +51,7 @@ public class CompleteTwoDataSourcesExample {
 		@Primary
 		@ConfigurationProperties("app.datasource.first.configuration")
 		public HikariDataSource firstDataSource() {
-			return firstDataSourceProperties().initializeDataSourceBuilder()
-					.type(HikariDataSource.class).build();
+			return firstDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
 		}
 
 		@Bean
@@ -64,8 +63,7 @@ public class CompleteTwoDataSourcesExample {
 		@Bean
 		@ConfigurationProperties("app.datasource.second.configuration")
 		public BasicDataSource secondDataSource() {
-			return secondDataSourceProperties().initializeDataSourceBuilder()
-					.type(BasicDataSource.class).build();
+			return secondDataSourceProperties().initializeDataSourceBuilder().type(BasicDataSource.class).build();
 		}
 		// end::configuration[]
 

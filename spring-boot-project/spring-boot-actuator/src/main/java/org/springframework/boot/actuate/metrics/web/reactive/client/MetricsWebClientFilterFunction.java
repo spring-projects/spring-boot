@@ -39,8 +39,8 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
  */
 public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 
-	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class
-			.getName() + ".START_TIME";
+	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class.getName()
+			+ ".START_TIME";
 
 	private final MeterRegistry meterRegistry;
 
@@ -59,8 +59,8 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	 * {@link #MetricsWebClientFilterFunction(MeterRegistry, WebClientExchangeTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName) {
+	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName) {
 		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
@@ -72,9 +72,8 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	 * @param autoTimer the auto-timer configuration or {@code null} to disable
 	 * @since 2.2.0
 	 */
-	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName,
-			AutoTimer autoTimer) {
+	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName, AutoTimer autoTimer) {
 		this.meterRegistry = meterRegistry;
 		this.tagProvider = tagProvider;
 		this.metricName = metricName;
@@ -92,10 +91,8 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 				ClientResponse response = signal.get();
 				Throwable throwable = signal.getThrowable();
 				Iterable<Tag> tags = this.tagProvider.tags(request, response, throwable);
-				this.autoTimer.builder(this.metricName).tags(tags)
-						.description("Timer of WebClient operation")
-						.register(this.meterRegistry)
-						.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+				this.autoTimer.builder(this.metricName).tags(tags).description("Timer of WebClient operation")
+						.register(this.meterRegistry).record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
 			}
 		}).subscriberContext(this::putStartTime);
 	}

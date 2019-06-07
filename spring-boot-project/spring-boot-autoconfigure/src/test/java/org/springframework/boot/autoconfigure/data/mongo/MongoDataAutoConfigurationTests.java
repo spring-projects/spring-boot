@@ -62,31 +62,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MongoDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					PropertyPlaceholderAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
 					MongoAutoConfiguration.class, MongoDataAutoConfiguration.class));
 
 	@Test
 	public void templateExists() {
-		this.contextRunner
-				.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
 	}
 
 	@Test
 	public void gridFsTemplateExists() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridFsDatabase:grid")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(GridFsTemplate.class));
+				.run((context) -> assertThat(context).hasSingleBean(GridFsTemplate.class));
 	}
 
 	@Test
 	public void customConversions() {
-		this.contextRunner.withUserConfiguration(CustomConversionsConfig.class)
-				.run((context) -> {
-					MongoTemplate template = context.getBean(MongoTemplate.class);
-					assertThat(template.getConverter().getConversionService()
-							.canConvert(MongoClient.class, Boolean.class)).isTrue();
-				});
+		this.contextRunner.withUserConfiguration(CustomConversionsConfig.class).run((context) -> {
+			MongoTemplate template = context.getBean(MongoTemplate.class);
+			assertThat(template.getConverter().getConversionService().canConvert(MongoClient.class, Boolean.class))
+					.isTrue();
+		});
 	}
 
 	@Test
@@ -97,8 +93,7 @@ public class MongoDataAutoConfigurationTests {
 		context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		try {
 			context.refresh();
-			assertDomainTypesDiscovered(context.getBean(MongoMappingContext.class),
-					City.class);
+			assertDomainTypesDiscovered(context.getBean(MongoMappingContext.class), City.class);
 		}
 		finally {
 			context.close();
@@ -108,23 +103,19 @@ public class MongoDataAutoConfigurationTests {
 	@Test
 	public void defaultFieldNamingStrategy() {
 		this.contextRunner.run((context) -> {
-			MongoMappingContext mappingContext = context
-					.getBean(MongoMappingContext.class);
-			FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
-					.getField(mappingContext, "fieldNamingStrategy");
-			assertThat(fieldNamingStrategy.getClass())
-					.isEqualTo(PropertyNameFieldNamingStrategy.class);
+			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
+			FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils.getField(mappingContext,
+					"fieldNamingStrategy");
+			assertThat(fieldNamingStrategy.getClass()).isEqualTo(PropertyNameFieldNamingStrategy.class);
 		});
 	}
 
 	@Test
 	public void customFieldNamingStrategy() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.field-naming-strategy:"
-						+ CamelCaseAbbreviatingFieldNamingStrategy.class.getName())
+		this.contextRunner.withPropertyValues(
+				"spring.data.mongodb.field-naming-strategy:" + CamelCaseAbbreviatingFieldNamingStrategy.class.getName())
 				.run((context) -> {
-					MongoMappingContext mappingContext = context
-							.getBean(MongoMappingContext.class);
+					MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
 					FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
 							.getField(mappingContext, "fieldNamingStrategy");
 					assertThat(fieldNamingStrategy.getClass())
@@ -134,45 +125,36 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	public void customAutoIndexCreation() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.autoIndexCreation:false")
-				.run((context) -> {
-					MongoMappingContext mappingContext = context
-							.getBean(MongoMappingContext.class);
-					assertThat(mappingContext.isAutoIndexCreation()).isFalse();
-				});
+		this.contextRunner.withPropertyValues("spring.data.mongodb.autoIndexCreation:false").run((context) -> {
+			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
+			assertThat(mappingContext.isAutoIndexCreation()).isFalse();
+		});
 	}
 
 	@Test
 	public void interfaceFieldNamingStrategy() {
 		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.field-naming-strategy:"
-						+ FieldNamingStrategy.class.getName())
-				.run((context) -> assertThat(context).getFailure()
-						.isInstanceOf(BeanCreationException.class));
+				.withPropertyValues("spring.data.mongodb.field-naming-strategy:" + FieldNamingStrategy.class.getName())
+				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class));
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() {
-		this.contextRunner.withUserConfiguration(EntityScanConfig.class)
-				.run((context) -> {
-					MongoMappingContext mappingContext = context
-							.getBean(MongoMappingContext.class);
-					Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
-							.getField(mappingContext, "initialEntitySet");
-					assertThat(initialEntitySet).containsOnly(City.class, Country.class);
-				});
+		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
+			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
+			Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+					"initialEntitySet");
+			assertThat(initialEntitySet).containsOnly(City.class, Country.class);
+		});
 
 	}
 
 	@Test
 	public void registersDefaultSimpleTypesWithMappingContext() {
 		this.contextRunner.run((context) -> {
-			MongoMappingContext mappingContext = context
-					.getBean(MongoMappingContext.class);
-			BasicMongoPersistentEntity<?> entity = mappingContext
-					.getPersistentEntity(Sample.class);
+			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
+			BasicMongoPersistentEntity<?> entity = mappingContext.getPersistentEntity(Sample.class);
 			MongoPersistentProperty dateProperty = entity.getPersistentProperty("date");
 			assertThat(dateProperty.isEntity()).isFalse();
 		});
@@ -182,10 +164,8 @@ public class MongoDataAutoConfigurationTests {
 	@Test
 	public void backsOffIfMongoClientBeanIsNotPresent() {
 		ApplicationContextRunner runner = new ApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(MongoDataAutoConfiguration.class));
-		runner.run((context) -> assertThat(context)
-				.doesNotHaveBean(MongoDataAutoConfiguration.class));
+				.withConfiguration(AutoConfigurations.of(MongoDataAutoConfiguration.class));
+		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoDataAutoConfiguration.class));
 	}
 
 	@Test
@@ -198,18 +178,15 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	public void createsMongoDbFactoryForFallbackMongoClient() {
-		this.contextRunner.withUserConfiguration(FallbackMongoClientConfiguration.class)
-				.run((context) -> {
-					MongoDbFactory dbFactory = context.getBean(MongoDbFactory.class);
-					assertThat(dbFactory).isInstanceOf(SimpleMongoClientDbFactory.class);
-				});
+		this.contextRunner.withUserConfiguration(FallbackMongoClientConfiguration.class).run((context) -> {
+			MongoDbFactory dbFactory = context.getBean(MongoDbFactory.class);
+			assertThat(dbFactory).isInstanceOf(SimpleMongoClientDbFactory.class);
+		});
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext,
-			Class<?>... types) {
-		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {
+		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils.getField(mappingContext, "initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(types);
 	}
 

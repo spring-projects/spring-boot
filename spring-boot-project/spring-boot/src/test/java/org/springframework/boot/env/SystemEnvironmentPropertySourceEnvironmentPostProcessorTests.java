@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,18 +49,15 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	public void postProcessShouldReplaceSystemEnvironmentPropertySource() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(this.environment, null);
-		PropertySource<?> replaced = this.environment.getPropertySources()
-				.get("systemEnvironment");
-		assertThat(replaced)
-				.isInstanceOf(OriginAwareSystemEnvironmentPropertySource.class);
+		PropertySource<?> replaced = this.environment.getPropertySources().get("systemEnvironment");
+		assertThat(replaced).isInstanceOf(OriginAwareSystemEnvironmentPropertySource.class);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void replacedPropertySourceShouldBeOriginAware() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
-		PropertySource<?> original = this.environment.getPropertySources()
-				.get("systemEnvironment");
+		PropertySource<?> original = this.environment.getPropertySources().get("systemEnvironment");
 		postProcessor.postProcessEnvironment(this.environment, null);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 				.getPropertySources().get("systemEnvironment");
@@ -69,8 +66,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		originalMap.forEach((key, value) -> {
 			Object actual = replacedMap.get(key);
 			assertThat(actual).isEqualTo(value);
-			assertThat(replaced.getOrigin(key))
-					.isInstanceOf(SystemEnvironmentOrigin.class);
+			assertThat(replaced.getOrigin(key)).isInstanceOf(SystemEnvironmentOrigin.class);
 		});
 	}
 
@@ -92,8 +88,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		postProcessor.postProcessEnvironment(this.environment, null);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 				.getPropertySources().get("systemEnvironment");
-		SystemEnvironmentOrigin origin = (SystemEnvironmentOrigin) replaced
-				.getOrigin("foo.bar.baz");
+		SystemEnvironmentOrigin origin = (SystemEnvironmentOrigin) replaced.getOrigin("foo.bar.baz");
 		assertThat(origin.getProperty()).isEqualTo("FOO_BAR_BAZ");
 		assertThat(replaced.getProperty("foo.bar.baz")).isEqualTo("hello");
 	}

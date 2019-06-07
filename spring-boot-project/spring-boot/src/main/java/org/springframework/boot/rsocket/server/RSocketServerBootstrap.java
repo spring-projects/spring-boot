@@ -29,29 +29,25 @@ import org.springframework.context.SmartLifecycle;
  * @author Brian Clozel
  * @since 2.2.0
  */
-public class RSocketServerBootstrap
-		implements ApplicationEventPublisherAware, SmartLifecycle {
+public class RSocketServerBootstrap implements ApplicationEventPublisherAware, SmartLifecycle {
 
 	private final RSocketServer rSocketServer;
 
 	private ApplicationEventPublisher applicationEventPublisher;
 
-	public RSocketServerBootstrap(RSocketServerFactory serverFactoryProvider,
-			SocketAcceptor socketAcceptor) {
+	public RSocketServerBootstrap(RSocketServerFactory serverFactoryProvider, SocketAcceptor socketAcceptor) {
 		this.rSocketServer = serverFactoryProvider.create(socketAcceptor);
 	}
 
 	@Override
-	public void setApplicationEventPublisher(
-			ApplicationEventPublisher applicationEventPublisher) {
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
 		this.applicationEventPublisher = applicationEventPublisher;
 	}
 
 	@Override
 	public void start() {
 		this.rSocketServer.start();
-		this.applicationEventPublisher
-				.publishEvent(new RSocketServerInitializedEvent(this.rSocketServer));
+		this.applicationEventPublisher.publishEvent(new RSocketServerInitializedEvent(this.rSocketServer));
 	}
 
 	@Override

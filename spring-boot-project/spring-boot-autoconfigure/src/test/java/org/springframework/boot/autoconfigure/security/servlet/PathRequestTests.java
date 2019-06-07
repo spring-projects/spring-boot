@@ -40,8 +40,7 @@ public class PathRequestTests {
 
 	@Test
 	public void toStaticResourcesShouldReturnStaticResourceRequest() {
-		assertThat(PathRequest.toStaticResources())
-				.isInstanceOf(StaticResourceRequest.class);
+		assertThat(PathRequest.toStaticResources()).isInstanceOf(StaticResourceRequest.class);
 	}
 
 	@Test
@@ -75,8 +74,7 @@ public class PathRequestTests {
 		}
 
 		private void matches(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Matches " + getRequestPath(request)).isTrue();
+			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
 		public void doesNotMatch(String path) {
@@ -84,15 +82,12 @@ public class PathRequestTests {
 		}
 
 		private void doesNotMatch(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Does not match " + getRequestPath(request)).isFalse();
+			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
 		private MockHttpServletRequest mockRequest(String path) {
 			MockServletContext servletContext = new MockServletContext();
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-					this.context);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			request.setPathInfo(path);
 			return request;

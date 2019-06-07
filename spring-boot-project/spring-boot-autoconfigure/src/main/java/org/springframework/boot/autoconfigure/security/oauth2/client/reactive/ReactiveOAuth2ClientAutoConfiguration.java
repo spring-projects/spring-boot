@@ -64,8 +64,7 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 	public InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(
 			OAuth2ClientProperties properties) {
 		List<ClientRegistration> registrations = new ArrayList<>(
-				OAuth2ClientPropertiesRegistrationAdapter
-						.getClientRegistrations(properties).values());
+				OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
 		return new InMemoryReactiveClientRegistrationRepository(registrations);
 	}
 
@@ -74,8 +73,7 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ReactiveOAuth2AuthorizedClientService authorizedClientService(
 			ReactiveClientRegistrationRepository clientRegistrationRepository) {
-		return new InMemoryReactiveOAuth2AuthorizedClientService(
-				clientRegistrationRepository);
+		return new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
 	}
 
 	@Bean
@@ -83,8 +81,7 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ServerOAuth2AuthorizedClientRepository authorizedClientRepository(
 			ReactiveOAuth2AuthorizedClientService authorizedClientService) {
-		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(
-				authorizedClientService);
+		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
 	}
 
 	static class NonServletApplicationCondition extends NoneNestedConditions {

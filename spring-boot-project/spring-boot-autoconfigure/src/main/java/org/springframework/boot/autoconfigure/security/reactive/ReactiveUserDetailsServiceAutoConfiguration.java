@@ -47,41 +47,33 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
-@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class,
-		ReactiveUserDetailsService.class })
+@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveUserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
 
-	private static final Pattern PASSWORD_ALGORITHM_PATTERN = Pattern
-			.compile("^\\{.+}.*$");
+	private static final Pattern PASSWORD_ALGORITHM_PATTERN = Pattern.compile("^\\{.+}.*$");
 
-	private static final Log logger = LogFactory
-			.getLog(ReactiveUserDetailsServiceAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(ReactiveUserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	public MapReactiveUserDetailsService reactiveUserDetailsService(
-			SecurityProperties properties,
+	public MapReactiveUserDetailsService reactiveUserDetailsService(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
-		UserDetails userDetails = getUserDetails(user,
-				getOrDeducePassword(user, passwordEncoder.getIfAvailable()));
+		UserDetails userDetails = getUserDetails(user, getOrDeducePassword(user, passwordEncoder.getIfAvailable()));
 		return new MapReactiveUserDetailsService(userDetails);
 	}
 
 	private UserDetails getUserDetails(SecurityProperties.User user, String password) {
 		List<String> roles = user.getRoles();
-		return User.withUsername(user.getName()).password(password)
-				.roles(StringUtils.toStringArray(roles)).build();
+		return User.withUsername(user.getName()).password(password).roles(StringUtils.toStringArray(roles)).build();
 	}
 
-	private String getOrDeducePassword(SecurityProperties.User user,
-			PasswordEncoder encoder) {
+	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing generated security password: %s%n",
-					user.getPassword()));
+			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
 		}
 		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
 			return password;

@@ -27,8 +27,7 @@ import org.springframework.boot.configurationprocessor.test.TestConfigurationMet
  *
  * @author Stephane Nicoll
  */
-class MetadataGenerationEnvironmentFactory
-		implements Function<ProcessingEnvironment, MetadataGenerationEnvironment> {
+class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnvironment, MetadataGenerationEnvironment> {
 
 	@Override
 	public MetadataGenerationEnvironment apply(ProcessingEnvironment environment) {

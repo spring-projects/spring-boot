@@ -58,8 +58,7 @@ public class ResourceConditionTests {
 
 	@Test
 	public void unknownDefaultLocationAndExplicitKeyToResource() {
-		load(UnknownDefaultLocationConfiguration.class,
-				"spring.foo.test.config=logging.properties");
+		load(UnknownDefaultLocationConfiguration.class, "spring.foo.test.config=logging.properties");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
@@ -101,12 +100,10 @@ public class ResourceConditionTests {
 
 	}
 
-	private static class UnknownDefaultLocationResourceCondition
-			extends ResourceCondition {
+	private static class UnknownDefaultLocationResourceCondition extends ResourceCondition {
 
 		UnknownDefaultLocationResourceCondition() {
-			super("test", "spring.foo.test.config",
-					"classpath:/this-file-does-not-exist.xml");
+			super("test", "spring.foo.test.config", "classpath:/this-file-does-not-exist.xml");
 		}
 
 	}

@@ -53,8 +53,7 @@ public class JerseyAutoConfigurationCustomApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test/hello",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -74,8 +73,8 @@ public class JerseyAutoConfigurationCustomApplicationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Configuration(proxyBeanMethods = false)

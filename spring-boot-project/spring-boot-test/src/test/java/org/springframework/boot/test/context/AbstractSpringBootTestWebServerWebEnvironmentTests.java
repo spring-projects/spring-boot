@@ -71,8 +71,7 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	@Test
 	public void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
-		String body = new RestTemplate()
-				.getForObject("http://localhost:" + this.port + "/", String.class);
+		String body = new RestTemplate().getForObject("http://localhost:" + this.port + "/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 
@@ -89,8 +88,7 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test
 	public void validateWebApplicationContextIsSet() {
-		assertThat(this.context).isSameAs(
-				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
+		assertThat(this.context).isSameAs(WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
 	protected abstract static class AbstractConfig {

@@ -60,8 +60,7 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 	}
 
 	@Bean
-	public freemarker.template.Configuration freeMarkerConfiguration(
-			FreeMarkerConfig configurer) {
+	public freemarker.template.Configuration freeMarkerConfiguration(FreeMarkerConfig configurer) {
 		return configurer.getConfiguration();
 	}
 

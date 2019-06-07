@@ -54,10 +54,8 @@ public class AutoConfigureWebClientWithRestTemplateIntegrationTests {
 
 	@Test
 	public void restTemplateTest() {
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test",
-				String.class);
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test", String.class);
 		assertThat(entity.getBody()).isEqualTo("hello");
 	}
 

@@ -39,8 +39,7 @@ public class TestEntityManagerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public TestEntityManager testEntityManager(
-			EntityManagerFactory entityManagerFactory) {
+	public TestEntityManager testEntityManager(EntityManagerFactory entityManagerFactory) {
 		return new TestEntityManager(entityManagerFactory);
 	}
 

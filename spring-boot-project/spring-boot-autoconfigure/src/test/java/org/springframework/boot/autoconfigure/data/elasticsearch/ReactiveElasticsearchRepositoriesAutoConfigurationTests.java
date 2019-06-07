@@ -48,34 +48,27 @@ public class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class,
-							ReactiveElasticsearchRepositoriesAutoConfiguration.class,
-							ElasticsearchDataAutoConfiguration.class))
-			.withPropertyValues(
-					"spring.data.elasticsearch.client.reactive.endpoints=localhost:"
-							+ elasticsearch.getMappedHttpPort());
+			.withConfiguration(AutoConfigurations.of(ReactiveRestClientAutoConfiguration.class,
+					ReactiveElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
+			.withPropertyValues("spring.data.elasticsearch.client.reactive.endpoints=localhost:"
+					+ elasticsearch.getMappedHttpPort());
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ReactiveCityRepository.class)
-						.hasSingleBean(ReactiveElasticsearchTemplate.class));
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(ReactiveCityRepository.class).hasSingleBean(ReactiveElasticsearchTemplate.class));
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ReactiveElasticsearchTemplate.class));
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchTemplate.class));
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(CityReactiveElasticsearchDbRepository.class));
+				.run((context) -> assertThat(context).hasSingleBean(CityReactiveElasticsearchDbRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -92,8 +85,7 @@ public class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(ReactiveElasticsearchRepositoriesAutoConfigurationTests.class)
-	@EnableReactiveElasticsearchRepositories(
-			basePackageClasses = CityReactiveElasticsearchDbRepository.class)
+	@EnableReactiveElasticsearchRepositories(basePackageClasses = CityReactiveElasticsearchDbRepository.class)
 	static class CustomizedConfiguration {
 
 	}

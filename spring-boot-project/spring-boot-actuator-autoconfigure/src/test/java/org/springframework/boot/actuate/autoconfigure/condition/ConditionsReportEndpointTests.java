@@ -47,17 +47,14 @@ public class ConditionsReportEndpointTests {
 
 	@Test
 	public void invoke() {
-		new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.run((context) -> {
-					ContextConditionEvaluation report = context
-							.getBean(ConditionsReportEndpoint.class)
-							.applicationConditionEvaluation().getContexts()
-							.get(context.getId());
-					assertThat(report.getPositiveMatches()).isEmpty();
-					assertThat(report.getNegativeMatches()).containsKey("a");
-					assertThat(report.getUnconditionalClasses()).contains("b");
-					assertThat(report.getExclusions()).contains("com.foo.Bar");
-				});
+		new ApplicationContextRunner().withUserConfiguration(Config.class).run((context) -> {
+			ContextConditionEvaluation report = context.getBean(ConditionsReportEndpoint.class)
+					.applicationConditionEvaluation().getContexts().get(context.getId());
+			assertThat(report.getPositiveMatches()).isEmpty();
+			assertThat(report.getNegativeMatches()).containsKey("a");
+			assertThat(report.getUnconditionalClasses()).contains("b");
+			assertThat(report.getExclusions()).contains("com.foo.Bar");
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -72,11 +69,9 @@ public class ConditionsReportEndpointTests {
 
 		@PostConstruct
 		public void setupAutoConfigurationReport() {
-			ConditionEvaluationReport report = ConditionEvaluationReport
-					.get(this.context.getBeanFactory());
+			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context.getBeanFactory());
 			report.recordEvaluationCandidates(Arrays.asList("a", "b"));
-			report.recordConditionEvaluation("a", mock(Condition.class),
-					mock(ConditionOutcome.class));
+			report.recordConditionEvaluation("a", mock(Condition.class), mock(ConditionOutcome.class));
 			report.recordExclusions(Collections.singletonList("com.foo.Bar"));
 		}
 

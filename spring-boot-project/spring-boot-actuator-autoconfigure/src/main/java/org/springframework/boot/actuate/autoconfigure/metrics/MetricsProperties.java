@@ -116,8 +116,7 @@ public class MetricsProperties {
 			 * @deprecated since 2.2.0 in favor of {@link ClientRequest#getMetricName()}
 			 */
 			@Deprecated
-			@DeprecatedConfigurationProperty(
-					replacement = "management.metrics.web.client.request.metric-name")
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.client.request.metric-name")
 			public String getRequestsMetricName() {
 				return this.request.getMetricName();
 			}
@@ -190,8 +189,7 @@ public class MetricsProperties {
 			 * @return {@code true} if server request should be automatically timed
 			 * @deprecated since 2.2.0 in favor of {@link AutoTimeProperties#isEnabled()}
 			 */
-			@DeprecatedConfigurationProperty(
-					replacement = "management.metrics.web.server.request.autotime.enabled")
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.autotime.enabled")
 			@Deprecated
 			public boolean isAutoTimeRequests() {
 				return this.request.getAutotime().isEnabled();
@@ -213,8 +211,7 @@ public class MetricsProperties {
 			 * @return request metric name
 			 * @deprecated since 2.2.0 in favor of {@link ServerRequest#getMetricName()}
 			 */
-			@DeprecatedConfigurationProperty(
-					replacement = "management.metrics.web.server.request.metric-name")
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.metric-name")
 			@Deprecated
 			public String getRequestsMetricName() {
 				return this.request.getMetricName();

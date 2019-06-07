@@ -41,8 +41,8 @@ public class SpringBootPluginIntegrationTests {
 	@Test
 	public void failFastWithVersionOfGradleLowerThanRequired() {
 		BuildResult result = this.gradleBuild.gradleVersion("4.9").buildAndFail();
-		assertThat(result.getOutput()).contains("Spring Boot plugin requires Gradle 4.10"
-				+ " or later. The current version is Gradle 4.9");
+		assertThat(result.getOutput())
+				.contains("Spring Boot plugin requires Gradle 4.10" + " or later. The current version is Gradle 4.9");
 	}
 
 	@Test
@@ -56,19 +56,17 @@ public class SpringBootPluginIntegrationTests {
 	}
 
 	@Test
-	public void unresolvedDependenciesAreAnalyzedWhenDependencyResolutionFails()
-			throws IOException {
+	public void unresolvedDependenciesAreAnalyzedWhenDependencyResolutionFails() throws IOException {
 		createMinimalMainSource();
 		BuildResult result = this.gradleBuild.buildAndFail("compileJava");
-		assertThat(result.getOutput()).contains(
-				"During the build, one or more dependencies that were declared without a"
+		assertThat(result.getOutput())
+				.contains("During the build, one or more dependencies that were declared without a"
 						+ " version failed to resolve:")
 				.contains("    org.springframework.boot:spring-boot-starter:");
 	}
 
 	private void createMinimalMainSource() throws IOException {
-		File examplePackage = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
+		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();
 		new File(examplePackage, "Application.java").createNewFile();
 	}

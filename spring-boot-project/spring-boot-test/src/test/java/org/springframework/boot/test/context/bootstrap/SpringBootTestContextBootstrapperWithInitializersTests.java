@@ -47,15 +47,13 @@ public class SpringBootTestContextBootstrapperWithInitializersTests {
 
 	@Test
 	public void foundConfiguration() {
-		Object bean = this.context
-				.getBean(SpringBootTestContextBootstrapperExampleConfig.class);
+		Object bean = this.context.getBean(SpringBootTestContextBootstrapperExampleConfig.class);
 		assertThat(bean).isNotNull();
 	}
 
 	// gh-8483
 
-	public static class CustomInitializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	public static class CustomInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {

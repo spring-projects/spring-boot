@@ -53,8 +53,7 @@ public class CloudPlatformTests {
 
 	@Test
 	public void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry() {
-		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION",
-				"---");
+		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
@@ -62,8 +61,7 @@ public class CloudPlatformTests {
 
 	@Test
 	public void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() {
-		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES",
-				"---");
+		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
@@ -79,8 +77,7 @@ public class CloudPlatformTests {
 
 	@Test
 	public void getActiveWhenHasHcLandscapeShouldReturnSap() {
-		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE",
-				"---");
+		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.SAP);
 		assertThat(platform.isActive(environment)).isTrue();

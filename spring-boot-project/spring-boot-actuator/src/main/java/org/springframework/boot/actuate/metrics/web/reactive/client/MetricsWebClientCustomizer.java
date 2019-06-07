@@ -44,8 +44,8 @@ public class MetricsWebClientCustomizer implements WebClientCustomizer {
 	 * {@link #MetricsWebClientCustomizer(MeterRegistry, WebClientExchangeTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	public MetricsWebClientCustomizer(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName) {
+	public MetricsWebClientCustomizer(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName) {
 		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
@@ -59,11 +59,9 @@ public class MetricsWebClientCustomizer implements WebClientCustomizer {
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
-	public MetricsWebClientCustomizer(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName,
-			AutoTimer autoTimer) {
-		this.filterFunction = new MetricsWebClientFilterFunction(meterRegistry,
-				tagProvider, metricName, autoTimer);
+	public MetricsWebClientCustomizer(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName, AutoTimer autoTimer) {
+		this.filterFunction = new MetricsWebClientFilterFunction(meterRegistry, tagProvider, metricName, autoTimer);
 	}
 
 	@Override

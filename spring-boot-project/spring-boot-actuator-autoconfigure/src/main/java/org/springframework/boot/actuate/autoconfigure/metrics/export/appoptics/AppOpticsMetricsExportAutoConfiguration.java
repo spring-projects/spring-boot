@@ -43,13 +43,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(AppOpticsMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.appoptics", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.appoptics", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(AppOpticsProperties.class)
 public class AppOpticsMetricsExportAutoConfiguration {
 
@@ -67,12 +66,9 @@ public class AppOpticsMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AppOpticsMeterRegistry appOpticsMeterRegistry(AppOpticsConfig config,
-			Clock clock) {
-		return AppOpticsMeterRegistry.builder(config).clock(clock)
-				.httpClient(
-						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
-								this.properties.getReadTimeout()))
+	public AppOpticsMeterRegistry appOpticsMeterRegistry(AppOpticsConfig config, Clock clock) {
+		return AppOpticsMeterRegistry.builder(config).clock(clock).httpClient(
+				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
 				.build();
 	}
 

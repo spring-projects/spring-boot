@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,12 @@ public class SpringApplicationRunnerTests {
 
 	@Test
 	public void exceptionMessageWhenSourcesContainsNoClasses() throws Exception {
-		SpringApplicationRunnerConfiguration configuration = mock(
-				SpringApplicationRunnerConfiguration.class);
+		SpringApplicationRunnerConfiguration configuration = mock(SpringApplicationRunnerConfiguration.class);
 		given(configuration.getClasspath()).willReturn(new String[] { "foo", "bar" });
 		given(configuration.getLogLevel()).willReturn(Level.INFO);
 		assertThatExceptionOfType(RuntimeException.class)
-				.isThrownBy(() -> new SpringApplicationRunner(configuration,
-						new String[] { "foo", "bar" }).compileAndRun())
+				.isThrownBy(
+						() -> new SpringApplicationRunner(configuration, new String[] { "foo", "bar" }).compileAndRun())
 				.withMessage("No classes found in '[foo, bar]'");
 	}
 

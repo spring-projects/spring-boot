@@ -55,8 +55,7 @@ public class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 	public void verifyShouldUseProxyTarget() {
 		this.dateService.getDate(false);
 		verify(this.dateService, times(1)).getDate(false);
-		assertThatExceptionOfType(UnfinishedVerificationException.class)
-				.isThrownBy(() -> reset(this.dateService));
+		assertThatExceptionOfType(UnfinishedVerificationException.class).isThrownBy(() -> reset(this.dateService));
 	}
 
 	@Configuration(proxyBeanMethods = false)

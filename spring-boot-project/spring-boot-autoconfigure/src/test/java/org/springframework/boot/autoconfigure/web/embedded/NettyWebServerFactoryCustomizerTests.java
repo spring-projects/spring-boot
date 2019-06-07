@@ -45,8 +45,7 @@ public class NettyWebServerFactoryCustomizerTests {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new NettyWebServerFactoryCustomizer(this.environment,
-				this.serverProperties);
+		this.customizer = new NettyWebServerFactoryCustomizer(this.environment, this.serverProperties);
 	}
 
 	@Test
