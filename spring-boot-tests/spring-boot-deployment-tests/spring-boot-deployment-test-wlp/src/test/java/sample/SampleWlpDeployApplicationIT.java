@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ public class SampleWlpDeployApplicationIT {
 	@Test
 	public void testHome() throws Exception {
 		String url = "http://localhost:" + this.port + "/bootapp/";
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
@@ -44,8 +43,7 @@ public class SampleWlpDeployApplicationIT {
 	public void testHealth() throws Exception {
 		String url = "http://localhost:" + this.port + "/bootapp/actuator/health";
 		System.out.println(url);
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\"}");
 	}
