@@ -539,6 +539,40 @@
 							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>nohttp-checkstyle-validation</id>
+						<phase>validate</phase>
+						<configuration>
+							<skip>${disable.checks}</skip>
+							<configLocation>src/checkstyle/nohttp-checkstyle.xml</configLocation>
+							<suppressionsLocation>src/checkstyle/nohttp-checkstyle-suppressions.xml</suppressionsLocation>
+							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
+							<sourceDirectories>./</sourceDirectories>
+							<includes>**/*</includes>
+							<excludes>.git/**/*,target/**/*</excludes>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>nohttp-checkstyle-validation</id>
+						<phase>validate</phase>
+						<configuration>
+							<skip>${disable.checks}</skip>
+							<configLocation>src/checkstyle/nohttp-checkstyle.xml</configLocation>
+							<suppressionsLocation>src/checkstyle/nohttp-checkstyle-suppressions.xml</suppressionsLocation>
 							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
 							<sourceDirectories>./</sourceDirectories>
 							<includes>**/*</includes>

@@ -64,7 +64,6 @@
 					<artifactId>replacer</artifactId>
 					<version>1.5.3</version>
 				</plugin>
-
 			</plugins>
 		</pluginManagement>
 	</build>
