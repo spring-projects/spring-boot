@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,70 +46,51 @@ public class SampleTomcatDeployApplicationIT {
 	}
 
 	@Test
-	public void errorFromExceptionForRequestAcceptingAnythingProducesAJsonResponse()
-			throws Exception {
-		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.ALL,
-				MediaType.APPLICATION_JSON);
+	public void errorFromExceptionForRequestAcceptingAnythingProducesAJsonResponse() throws Exception {
+		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.ALL, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
-	public void errorFromExceptionForRequestAcceptingJsonProducesAJsonResponse()
-			throws Exception {
-		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.APPLICATION_JSON,
-				MediaType.APPLICATION_JSON);
+	public void errorFromExceptionForRequestAcceptingJsonProducesAJsonResponse() throws Exception {
+		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
-	public void errorFromExceptionForRequestAcceptingHtmlProducesAnHtmlResponse()
-			throws Exception {
-		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.TEXT_HTML,
-				MediaType.TEXT_HTML);
+	public void errorFromExceptionForRequestAcceptingHtmlProducesAnHtmlResponse() throws Exception {
+		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.TEXT_HTML, MediaType.TEXT_HTML);
 	}
 
 	@Test
-	public void sendErrorForRequestAcceptingAnythingProducesAJsonResponse()
-			throws Exception {
-		assertThatSendErrorProducesExpectedResponse(MediaType.ALL,
-				MediaType.APPLICATION_JSON);
+	public void sendErrorForRequestAcceptingAnythingProducesAJsonResponse() throws Exception {
+		assertThatSendErrorProducesExpectedResponse(MediaType.ALL, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void sendErrorForRequestAcceptingJsonProducesAJsonResponse() throws Exception {
-		assertThatSendErrorProducesExpectedResponse(MediaType.APPLICATION_JSON,
-				MediaType.APPLICATION_JSON);
+		assertThatSendErrorProducesExpectedResponse(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
-	public void sendErrorForRequestAcceptingHtmlProducesAnHtmlResponse()
-			throws Exception {
-		assertThatSendErrorProducesExpectedResponse(MediaType.TEXT_HTML,
-				MediaType.TEXT_HTML);
+	public void sendErrorForRequestAcceptingHtmlProducesAnHtmlResponse() throws Exception {
+		assertThatSendErrorProducesExpectedResponse(MediaType.TEXT_HTML, MediaType.TEXT_HTML);
 	}
 
-	private void assertThatSendErrorProducesExpectedResponse(MediaType accept,
-			MediaType contentType) {
+	private void assertThatSendErrorProducesExpectedResponse(MediaType accept, MediaType contentType) {
 		RequestEntity<Void> request = RequestEntity
-				.get(URI.create("http://localhost:" + this.port + "/bootapp/send-error"))
-				.accept(accept).build();
+				.get(URI.create("http://localhost:" + this.port + "/bootapp/send-error")).accept(accept).build();
 		ResponseEntity<String> response = this.rest.exchange(request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(contentType.isCompatibleWith(response.getHeaders().getContentType()))
-				.as("%s is compatible with %s", contentType,
-						response.getHeaders().getContentType())
-				.isTrue();
+				.as("%s is compatible with %s", contentType, response.getHeaders().getContentType()).isTrue();
 	}
 
-	private void assertThatErrorFromExceptionProducesExpectedResponse(MediaType accept,
-			MediaType contentType) {
+	private void assertThatErrorFromExceptionProducesExpectedResponse(MediaType accept, MediaType contentType) {
 		RequestEntity<Void> request = RequestEntity
-				.get(URI.create("http://localhost:" + this.port + "/bootapp/exception"))
-				.accept(accept).build();
+				.get(URI.create("http://localhost:" + this.port + "/bootapp/exception")).accept(accept).build();
 		ResponseEntity<String> response = this.rest.exchange(request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(contentType.isCompatibleWith(response.getHeaders().getContentType()))
-				.as("%s is compatible with %s", contentType,
-						response.getHeaders().getContentType())
-				.isTrue();
+				.as("%s is compatible with %s", contentType, response.getHeaders().getContentType()).isTrue();
 	}
 
 }
