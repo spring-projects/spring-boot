@@ -90,7 +90,7 @@ class ClassPathFileSystemWatcherTests {
 
 		public final Environment environment;
 
-		public Config(Environment environment) {
+		Config(Environment environment) {
 			this.environment = environment;
 		}
 

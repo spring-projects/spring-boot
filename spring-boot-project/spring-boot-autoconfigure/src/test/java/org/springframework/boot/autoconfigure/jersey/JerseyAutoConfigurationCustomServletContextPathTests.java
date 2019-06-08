@@ -76,7 +76,7 @@ class JerseyAutoConfigurationCustomServletContextPathTests {
 			return "Hello " + this.msg;
 		}
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 

@@ -392,7 +392,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		private Foo self;
 
-		public SelfReferential() {
+		SelfReferential() {
 			this.self = this;
 		}
 

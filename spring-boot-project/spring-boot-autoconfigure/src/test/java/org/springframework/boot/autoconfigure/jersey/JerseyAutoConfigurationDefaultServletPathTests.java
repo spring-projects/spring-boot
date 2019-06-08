@@ -69,7 +69,7 @@ class JerseyAutoConfigurationDefaultServletPathTests {
 		@Value("${message:World}")
 		private String msg;
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 

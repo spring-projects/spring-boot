@@ -59,7 +59,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	public InitCommandTests() {
+	InitCommandTests() {
 		InitializrService initializrService = new InitializrService(this.http);
 		this.handler = new TestableInitCommandOptionHandler(initializrService);
 		this.command = new InitCommand(this.handler);

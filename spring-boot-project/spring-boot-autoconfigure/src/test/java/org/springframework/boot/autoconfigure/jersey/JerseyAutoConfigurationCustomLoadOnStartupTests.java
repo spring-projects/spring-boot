@@ -57,7 +57,7 @@ class JerseyAutoConfigurationCustomLoadOnStartupTests {
 	@MinimalWebConfiguration
 	public static class Application extends ResourceConfig {
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 

@@ -75,7 +75,7 @@
 									<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
 									<sourceDirectories>${basedir}</sourceDirectories>
 									<includes>**/*</includes>
-									<excludes>.git/**/*,target/**/,**/.flattened-pom.xml</excludes>
+									<excludes>.git/**/*,target/**/,**/.flattened-pom.xml,**/*.class,**/spring-boot-gradle-plugin/build/**</excludes>
 								</configuration>
 								<goals>
 									<goal>check</goal>

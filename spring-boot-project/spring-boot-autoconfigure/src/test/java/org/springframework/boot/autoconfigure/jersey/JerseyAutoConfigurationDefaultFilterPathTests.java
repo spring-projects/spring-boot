@@ -74,7 +74,7 @@ class JerseyAutoConfigurationDefaultFilterPathTests {
 			return "Hello " + this.msg;
 		}
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 

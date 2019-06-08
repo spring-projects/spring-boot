@@ -167,7 +167,7 @@ class ServletWebServerMvcIntegrationTests {
 
 		private final Environment env;
 
-		public AdvancedConfig(Environment env) {
+		AdvancedConfig(Environment env) {
 			this.env = env;
 		}
 

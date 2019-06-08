@@ -63,7 +63,7 @@ class ConditionsReportEndpointTests {
 
 		private final ConfigurableApplicationContext context;
 
-		public Config(ConfigurableApplicationContext context) {
+		Config(ConfigurableApplicationContext context) {
 			this.context = context;
 		}
 

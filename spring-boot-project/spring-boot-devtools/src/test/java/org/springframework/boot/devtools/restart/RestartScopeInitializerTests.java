@@ -72,7 +72,7 @@ class RestartScopeInitializerTests {
 
 	public static class ScopeTestBean implements ApplicationListener<ContextRefreshedEvent> {
 
-		public ScopeTestBean() {
+		ScopeTestBean() {
 			createCount.incrementAndGet();
 		}
 

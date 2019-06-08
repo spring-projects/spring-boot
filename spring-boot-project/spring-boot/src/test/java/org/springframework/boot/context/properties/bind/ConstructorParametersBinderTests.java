@@ -149,7 +149,7 @@ class ConstructorParametersBinderTests {
 
 		private final ExampleEnum enumValue;
 
-		public ExampleValueBean(int intValue, long longValue, boolean booleanValue, String stringValue,
+		ExampleValueBean(int intValue, long longValue, boolean booleanValue, String stringValue,
 				ExampleEnum enumValue) {
 			this.intValue = intValue;
 			this.longValue = longValue;
@@ -191,11 +191,11 @@ class ConstructorParametersBinderTests {
 	@SuppressWarnings("unused")
 	public static class MultipleConstructorsBean {
 
-		public MultipleConstructorsBean(int intValue) {
+		MultipleConstructorsBean(int intValue) {
 			this(intValue, 23L, "hello");
 		}
 
-		public MultipleConstructorsBean(int intValue, long longValue, String stringValue) {
+		MultipleConstructorsBean(int intValue, long longValue, String stringValue) {
 		}
 
 	}
@@ -204,7 +204,7 @@ class ConstructorParametersBinderTests {
 
 		private final String name;
 
-		public ExampleAbstractBean(String name) {
+		ExampleAbstractBean(String name) {
 			this.name = name;
 		}
 
@@ -216,8 +216,7 @@ class ConstructorParametersBinderTests {
 
 	public static class DefaultConstructorBean {
 
-		public DefaultConstructorBean() {
-
+		DefaultConstructorBean() {
 		}
 
 	}
@@ -226,7 +225,7 @@ class ConstructorParametersBinderTests {
 
 		private final ExampleValueBean valueBean;
 
-		public ExampleNestedBean(ExampleValueBean valueBean) {
+		ExampleNestedBean(ExampleValueBean valueBean) {
 			this.valueBean = valueBean;
 		}
 
@@ -244,7 +243,7 @@ class ConstructorParametersBinderTests {
 
 		private final List<String> customList;
 
-		public ExampleDefaultValueBean(@DefaultValue("5") int intValue,
+		ExampleDefaultValueBean(@DefaultValue("5") int intValue,
 				@DefaultValue({ "a", "b", "c" }) List<String> stringsList,
 				@DefaultValue("x,y,z") List<String> customList) {
 			this.intValue = intValue;

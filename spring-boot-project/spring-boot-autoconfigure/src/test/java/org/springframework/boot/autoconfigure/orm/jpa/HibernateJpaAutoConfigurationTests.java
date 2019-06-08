@@ -87,7 +87,7 @@ import static org.mockito.Mockito.mock;
  */
 class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
-	public HibernateJpaAutoConfigurationTests() {
+	HibernateJpaAutoConfigurationTests() {
 		super(HibernateJpaAutoConfiguration.class);
 	}
 

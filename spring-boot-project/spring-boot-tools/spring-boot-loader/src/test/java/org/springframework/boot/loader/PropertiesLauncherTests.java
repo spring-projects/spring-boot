@@ -360,7 +360,7 @@ class PropertiesLauncherTests {
 
 	public static class TestLoader extends URLClassLoader {
 
-		public TestLoader(ClassLoader parent) {
+		TestLoader(ClassLoader parent) {
 			super(new URL[0], parent);
 		}
 

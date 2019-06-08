@@ -266,7 +266,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private Duration duration = Duration.ofSeconds(10);
 
-		public TestProperties() {
+		TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
 			this.secrets.put("yours", "yourPrivateThing");
 			this.listItems.add(new ListItem());

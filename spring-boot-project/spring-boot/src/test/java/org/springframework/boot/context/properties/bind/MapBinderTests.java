@@ -605,10 +605,10 @@ class MapBinderTests {
 
 		private String pattern;
 
-		public Foo() {
+		Foo() {
 		}
 
-		public Foo(String pattern) {
+		Foo(String pattern) {
 			this.pattern = pattern;
 		}
 
@@ -668,7 +668,7 @@ class MapBinderTests {
 
 	public static class MyCustomNoDefaultConstructorMap extends HashMap<String, String> {
 
-		public MyCustomNoDefaultConstructorMap(Map<String, String> items) {
+		MyCustomNoDefaultConstructorMap(Map<String, String> items) {
 			putAll(items);
 		}
 

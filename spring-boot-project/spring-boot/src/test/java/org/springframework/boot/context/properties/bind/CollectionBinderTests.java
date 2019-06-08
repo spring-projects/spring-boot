@@ -470,7 +470,7 @@ class CollectionBinderTests {
 
 	public static class MyCustomNoDefaultConstructorList extends ArrayList<String> {
 
-		public MyCustomNoDefaultConstructorList(List<String> items) {
+		MyCustomNoDefaultConstructorList(List<String> items) {
 			addAll(items);
 		}
 

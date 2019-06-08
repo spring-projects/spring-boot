@@ -477,7 +477,7 @@ class ConditionalOnBeanTests {
 
 		private String value;
 
-		public ExampleBean(String value) {
+		ExampleBean(String value) {
 			this.value = value;
 		}
 
@@ -490,7 +490,7 @@ class ConditionalOnBeanTests {
 
 	public static class CustomExampleBean extends ExampleBean {
 
-		public CustomExampleBean() {
+		CustomExampleBean() {
 			super("custom subclass");
 		}
 
@@ -498,7 +498,7 @@ class ConditionalOnBeanTests {
 
 	public static class OtherExampleBean extends ExampleBean {
 
-		public OtherExampleBean() {
+		OtherExampleBean() {
 			super("other subclass");
 		}
 

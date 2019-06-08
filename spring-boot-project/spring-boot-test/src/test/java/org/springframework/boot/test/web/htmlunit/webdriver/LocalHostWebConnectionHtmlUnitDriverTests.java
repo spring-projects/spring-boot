@@ -50,7 +50,7 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 	@Mock
 	private WebClient webClient;
 
-	public LocalHostWebConnectionHtmlUnitDriverTests() {
+	LocalHostWebConnectionHtmlUnitDriverTests() {
 		MockitoAnnotations.initMocks(this);
 		given(this.webClient.getOptions()).willReturn(new WebClientOptions());
 		given(this.webClient.getWebConsole()).willReturn(new WebConsole());
@@ -108,7 +108,7 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 
 	public class TestLocalHostWebConnectionHtmlUnitDriver extends LocalHostWebConnectionHtmlUnitDriver {
 
-		public TestLocalHostWebConnectionHtmlUnitDriver(Environment environment) {
+		TestLocalHostWebConnectionHtmlUnitDriver(Environment environment) {
 			super(environment);
 		}
 

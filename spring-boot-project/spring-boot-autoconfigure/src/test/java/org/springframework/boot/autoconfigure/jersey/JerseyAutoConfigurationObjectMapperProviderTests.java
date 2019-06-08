@@ -77,7 +77,7 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 			return new Message("Jersey", null);
 		}
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 
@@ -93,11 +93,10 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 
 		private String body;
 
-		public Message() {
-
+		Message() {
 		}
 
-		public Message(String subject, String body) {
+		Message(String subject, String body) {
 			this.subject = subject;
 			this.body = body;
 		}

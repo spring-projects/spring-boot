@@ -373,7 +373,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 		private final DataSource dataSource;
 
-		public TestConfigurationWithCustomPersistenceUnitManager(DataSource dataSource) {
+		TestConfigurationWithCustomPersistenceUnitManager(DataSource dataSource) {
 			this.dataSource = dataSource;
 		}
 

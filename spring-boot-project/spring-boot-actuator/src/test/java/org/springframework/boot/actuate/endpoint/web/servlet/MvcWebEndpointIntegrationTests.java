@@ -67,7 +67,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MvcWebEndpointIntegrationTests
 		extends AbstractWebEndpointIntegrationTests<AnnotationConfigServletWebServerApplicationContext> {
 
-	public MvcWebEndpointIntegrationTests() {
+	MvcWebEndpointIntegrationTests() {
 		super(MvcWebEndpointIntegrationTests::createApplicationContext,
 				MvcWebEndpointIntegrationTests::applyAuthenticatedConfiguration);
 	}

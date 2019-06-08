@@ -400,7 +400,7 @@ class JacksonAutoConfigurationTests {
 
 	public static class MyDateFormat extends SimpleDateFormat {
 
-		public MyDateFormat() {
+		MyDateFormat() {
 			super("yyyy-MM-dd HH:mm:ss");
 		}
 

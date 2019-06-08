@@ -758,7 +758,7 @@ class JavaBeanBinderTests {
 
 		private String value;
 
-		public ExampleWithNonDefaultConstructor(String value) {
+		ExampleWithNonDefaultConstructor(String value) {
 			this.value = value;
 		}
 

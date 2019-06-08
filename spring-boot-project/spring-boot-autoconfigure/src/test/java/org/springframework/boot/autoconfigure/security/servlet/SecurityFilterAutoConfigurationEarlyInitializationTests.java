@@ -103,7 +103,7 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 		private static final long serialVersionUID = 1L;
 
-		public JacksonModuleBean(DeserializerBean myDeser) {
+		JacksonModuleBean(DeserializerBean myDeser) {
 			addDeserializer(SourceType.class, myDeser);
 		}
 
@@ -115,7 +115,7 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 		@Autowired
 		ConversionService conversionService;
 
-		public DeserializerBean() {
+		DeserializerBean() {
 			super(SourceType.class);
 		}
 

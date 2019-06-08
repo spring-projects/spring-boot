@@ -61,7 +61,7 @@ class EmbeddedServerContainerInvocationContextProvider
 
 	private final Path tempDir;
 
-	public EmbeddedServerContainerInvocationContextProvider() throws IOException {
+	EmbeddedServerContainerInvocationContextProvider() throws IOException {
 		this.tempDir = Files.createTempDirectory("embedded-servlet-container-tests");
 	}
 
@@ -99,7 +99,7 @@ class EmbeddedServerContainerInvocationContextProvider
 
 		private final AbstractApplicationLauncher launcher;
 
-		public EmbeddedServletContainerInvocationContext(String name, AbstractApplicationLauncher launcher) {
+		EmbeddedServletContainerInvocationContext(String name, AbstractApplicationLauncher launcher) {
 			this.name = name;
 			this.launcher = launcher;
 		}

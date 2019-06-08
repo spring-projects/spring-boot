@@ -49,7 +49,7 @@ class LocalHostWebClientTests {
 	@Captor
 	private ArgumentCaptor<WebRequest> requestCaptor;
 
-	public LocalHostWebClientTests() {
+	LocalHostWebClientTests() {
 		MockitoAnnotations.initMocks(this);
 	}
 

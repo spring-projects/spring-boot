@@ -122,7 +122,7 @@ class SpringApplicationLauncherTests {
 
 		private static String[] args;
 
-		public TestSpringApplication(Class<?>[] sources) {
+		TestSpringApplication(Class<?>[] sources) {
 			TestSpringApplication.sources = sources;
 		}
 

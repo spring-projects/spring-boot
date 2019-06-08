@@ -193,7 +193,7 @@ class SpringBootServletInitializerTests {
 	@Configuration(proxyBeanMethods = false)
 	public static class WithErrorPageFilterNotRegistered extends SpringBootServletInitializer {
 
-		public WithErrorPageFilterNotRegistered() {
+		WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);
 		}
 
