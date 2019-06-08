@@ -60,6 +60,7 @@
 									<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 									<includeTestSourceDirectory>true</includeTestSourceDirectory>
 									<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
+									<encoding>UTF-8</encoding>
 								</configuration>
 								<goals>
 									<goal>check</goal>
@@ -73,9 +74,10 @@
 									<configLocation>src/checkstyle/nohttp-checkstyle.xml</configLocation>
 									<suppressionsLocation>src/checkstyle/nohttp-checkstyle-suppressions.xml</suppressionsLocation>
 									<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
+									<encoding>UTF-8</encoding>
 									<sourceDirectories>${basedir}</sourceDirectories>
 									<includes>**/*</includes>
-									<excludes>.git/**/*,target/**/,**/.flattened-pom.xml</excludes>
+									<excludes>**/.git/**/*,**/target/**/,**/.flattened-pom.xml,**/*.class,**/spring-boot-gradle-plugin/build/**</excludes>
 								</configuration>
 								<goals>
 									<goal>check</goal>
