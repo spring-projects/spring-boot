@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,11 +48,11 @@ public class SampleAtmosphereApplication {
 	public ServletRegistrationBean<AtmosphereServlet> atmosphereServlet() {
 		// Dispatcher servlet is mapped to '/home' to allow the AtmosphereServlet
 		// to be mapped to '/chat'
-		ServletRegistrationBean<AtmosphereServlet> registration = new ServletRegistrationBean<>(
-				new AtmosphereServlet(), "/chat/*");
+		ServletRegistrationBean<AtmosphereServlet> registration = new ServletRegistrationBean<>(new AtmosphereServlet(),
+				"/chat/*");
 		registration.addInitParameter("org.atmosphere.cpr.packages", "sample");
-		registration.addInitParameter("org.atmosphere.interceptor.HeartbeatInterceptor"
-				+ ".clientHeartbeatFrequencyInSeconds", "10");
+		registration.addInitParameter(
+				"org.atmosphere.interceptor.HeartbeatInterceptor" + ".clientHeartbeatFrequencyInSeconds", "10");
 		registration.setLoadOnStartup(0);
 		// Need to occur before the EmbeddedAtmosphereInitializer
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);

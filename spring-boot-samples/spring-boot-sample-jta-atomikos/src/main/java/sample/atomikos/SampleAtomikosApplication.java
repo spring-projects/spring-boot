@@ -26,8 +26,7 @@ import org.springframework.context.ApplicationContext;
 public class SampleAtomikosApplication {
 
 	public static void main(String[] args) throws Exception {
-		ApplicationContext context = SpringApplication
-				.run(SampleAtomikosApplication.class, args);
+		ApplicationContext context = SpringApplication.run(SampleAtomikosApplication.class, args);
 		AccountService service = context.getBean(AccountService.class);
 		AccountRepository repository = context.getBean(AccountRepository.class);
 		service.createAccountAndNotify("josh");

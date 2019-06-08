@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,15 +40,12 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @Configuration
 @EnableAutoConfiguration
 @EnableWebSocket
-public class SampleUndertowWebSocketsApplication extends SpringBootServletInitializer
-		implements WebSocketConfigurer {
+public class SampleUndertowWebSocketsApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(echoWebSocketHandler(), "/echo").setAllowedOrigins("*")
-				.withSockJS();
-		registry.addHandler(snakeWebSocketHandler(), "/snake").setAllowedOrigins("*")
-				.withSockJS();
+		registry.addHandler(echoWebSocketHandler(), "/echo").setAllowedOrigins("*").withSockJS();
+		registry.addHandler(snakeWebSocketHandler(), "/snake").setAllowedOrigins("*").withSockJS();
 	}
 
 	@Override

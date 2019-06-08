@@ -33,8 +33,7 @@ public class VehicleDetails {
 	private final String model;
 
 	@JsonCreator
-	public VehicleDetails(@JsonProperty("make") String make,
-			@JsonProperty("model") String model) {
+	public VehicleDetails(@JsonProperty("make") String make, @JsonProperty("model") String model) {
 		Assert.notNull(make, "Make must not be null");
 		Assert.notNull(model, "Model must not be null");
 		this.make = make;

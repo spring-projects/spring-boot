@@ -31,8 +31,7 @@ public class VehicleIdentificationNumberNotFoundException extends RuntimeExcepti
 		this(vin, null);
 	}
 
-	public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin,
-			Throwable cause) {
+	public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin, Throwable cause) {
 		super("Unable to find VehicleIdentificationNumber " + vin, cause);
 		this.vehicleIdentificationNumber = vin;
 	}

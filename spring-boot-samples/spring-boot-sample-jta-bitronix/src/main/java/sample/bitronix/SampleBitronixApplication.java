@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@ import org.springframework.context.ApplicationContext;
 public class SampleBitronixApplication {
 
 	public static void main(String[] args) throws Exception {
-		ApplicationContext context = SpringApplication
-				.run(SampleBitronixApplication.class, args);
+		ApplicationContext context = SpringApplication.run(SampleBitronixApplication.class, args);
 		AccountService service = context.getBean(AccountService.class);
 		AccountRepository repository = context.getBean(AccountRepository.class);
 		service.createAccountAndNotify("josh");

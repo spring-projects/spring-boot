@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserVehicleController.class)
 public class UserVehicleControllerTests {
 
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"00000000000000000");
+	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Autowired
 	private MockMvc mvc;
@@ -61,34 +60,28 @@ public class UserVehicleControllerTests {
 
 	@Test
 	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
-				.andExpect(status().isOk()).andExpect(content().string("Honda Civic"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk())
+				.andExpect(content().string("Honda Civic"));
 	}
 
 	@Test
 	public void getVehicleWhenRequestingJsonShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().json("{'make':'Honda','model':'Civic'}"));
 	}
 
 	@Test
 	public void getVehicleWhenRequestingHtmlShouldReturnMakeAndModel() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle.html").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk())
+		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
+		this.mvc.perform(get("/sboot/vehicle.html").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(content().string(containsString("<h1>Honda Civic</h1>")));
 	}
 
 	@Test
 	public void getVehicleWhenUserNotFoundShouldReturnNotFound() throws Exception {
-		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willThrow(new UserNameNotFoundException("sboot"));
+		given(this.userVehicleService.getVehicleDetails("sboot")).willThrow(new UserNameNotFoundException("sboot"));
 		this.mvc.perform(get("/sboot/vehicle")).andExpect(status().isNotFound());
 	}
 

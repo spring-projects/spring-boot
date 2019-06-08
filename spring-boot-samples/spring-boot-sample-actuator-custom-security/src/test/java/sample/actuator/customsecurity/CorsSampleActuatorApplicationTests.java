@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,37 +55,31 @@ public class CorsSampleActuatorApplicationTests {
 	@Before
 	public void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-				this.applicationContext.getEnvironment(), "http");
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(this.applicationContext.getEnvironment(),
+				"http");
 		builder = builder.uriTemplateHandler(handler);
 		this.testRestTemplate = new TestRestTemplate(builder);
 	}
 
 	@Test
 	public void endpointShouldReturnUnauthorized() {
-		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env",
-				Map.class);
+		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void preflightRequestToEndpointShouldReturnOk() throws Exception {
 		RequestEntity<?> healthRequest = RequestEntity.options(new URI("/actuator/env"))
-				.header("Origin", "http://localhost:8080")
-				.header("Access-Control-Request-Method", "GET").build();
-		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest,
-				Map.class);
+				.header("Origin", "http://localhost:8080").header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<?> exchange = this.testRestTemplate.exchange(healthRequest, Map.class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden()
-			throws Exception {
+	public void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() throws Exception {
 		RequestEntity<?> entity = RequestEntity.options(new URI("/actuator/env"))
-				.header("Origin", "http://localhost:9095")
-				.header("Access-Control-Request-Method", "GET").build();
-		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity,
-				byte[].class);
+				.header("Origin", "http://localhost:9095").header("Access-Control-Request-Method", "GET").build();
+		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity, byte[].class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 

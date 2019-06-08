@@ -38,8 +38,7 @@ import org.springframework.integration.file.FileWritingMessageHandler;
 public class SampleParentContextApplication {
 
 	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(Parent.class)
-				.child(SampleParentContextApplication.class).run(args);
+		new SpringApplicationBuilder(Parent.class).child(SampleParentContextApplication.class).run(args);
 	}
 
 	@Configuration
@@ -65,21 +64,18 @@ public class SampleParentContextApplication {
 
 		@Bean
 		public FileWritingMessageHandler fileWriter() {
-			FileWritingMessageHandler writer = new FileWritingMessageHandler(
-					new File("target/output"));
+			FileWritingMessageHandler writer = new FileWritingMessageHandler(new File("target/output"));
 			writer.setExpectReply(false);
 			return writer;
 		}
 
 		@Bean
 		public IntegrationFlow integrationFlow(SampleEndpoint endpoint) {
-			return IntegrationFlows.from(fileReader(), new FixedRatePoller())
-					.channel(inputChannel()).handle(endpoint).channel(outputChannel())
-					.handle(fileWriter()).get();
+			return IntegrationFlows.from(fileReader(), new FixedRatePoller()).channel(inputChannel()).handle(endpoint)
+					.channel(outputChannel()).handle(fileWriter()).get();
 		}
 
-		private static class FixedRatePoller
-				implements Consumer<SourcePollingChannelAdapterSpec> {
+		private static class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
 
 			@Override
 			public void accept(SourcePollingChannelAdapterSpec spec) {

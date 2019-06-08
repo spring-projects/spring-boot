@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,8 @@ public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest()
-					.fullyAuthenticated().and().formLogin().loginPage("/login")
-					.failureUrl("/login?error").permitAll().and().logout().permitAll();
+			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest().fullyAuthenticated().and()
+					.formLogin().loginPage("/login").failureUrl("/login?error").permitAll().and().logout().permitAll();
 		}
 
 	}

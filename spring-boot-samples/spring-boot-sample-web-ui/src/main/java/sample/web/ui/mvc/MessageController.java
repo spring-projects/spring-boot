@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,7 @@ public class MessageController {
 	}
 
 	@PostMapping
-	public ModelAndView create(@Valid Message message, BindingResult result,
-			RedirectAttributes redirect) {
+	public ModelAndView create(@Valid Message message, BindingResult result, RedirectAttributes redirect) {
 		if (result.hasErrors()) {
 			return new ModelAndView("messages/form", "formErrors", result.getAllErrors());
 		}

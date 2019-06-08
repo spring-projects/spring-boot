@@ -32,8 +32,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret" })
 public class SampleOAuth2ClientApplicationTests {
 
 	@LocalServerPort
@@ -46,14 +46,12 @@ public class SampleOAuth2ClientApplicationTests {
 	public void everythingShouldRedirectToLogin() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation())
-				.isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
+		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
 	}
 
 	@Test
 	public void loginShouldHaveBothOAuthClientsToChooseFrom() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-1");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");

@@ -35,8 +35,7 @@ public class SampleFlywayApplicationTests {
 
 	@Test
 	public void testDefaultSettings() {
-		assertThat(this.template.queryForObject("SELECT COUNT(*) from PERSON",
-				Integer.class)).isEqualTo(1);
+		assertThat(this.template.queryForObject("SELECT COUNT(*) from PERSON", Integer.class)).isEqualTo(1);
 	}
 
 }

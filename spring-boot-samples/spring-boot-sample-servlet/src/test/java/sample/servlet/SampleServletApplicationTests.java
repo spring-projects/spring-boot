@@ -51,15 +51,15 @@ public class SampleServletApplicationTests {
 	public void testHomeIsSecure() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers),
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testHome() {
-		ResponseEntity<String> entity = this.restTemplate
-				.withBasicAuth("user", getPassword()).getForEntity("/", String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}

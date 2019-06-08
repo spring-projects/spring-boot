@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public class SampleWebFreeMarkerApplicationTests {
 
 	@Test
 	public void testFreeMarkerTemplate() {
-		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("/",
-				String.class);
+		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("Hello, Andy");
 	}
@@ -62,12 +61,11 @@ public class SampleWebFreeMarkerApplicationTests {
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-		ResponseEntity<String> responseEntity = this.testRestTemplate
-				.exchange("/does-not-exist", HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> responseEntity = this.testRestTemplate.exchange("/does-not-exist", HttpMethod.GET,
+				requestEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(responseEntity.getBody())
-				.contains("Something went wrong: 404 Not Found");
+		assertThat(responseEntity.getBody()).contains("Something went wrong: 404 Not Found");
 	}
 
 }

@@ -45,8 +45,7 @@ public class SampleAtomikosApplicationTests {
 	}
 
 	private Condition<String> substring(int times, String substring) {
-		return new Condition<String>(
-				"containing '" + substring + "' " + times + " times") {
+		return new Condition<String>("containing '" + substring + "' " + times + " times") {
 
 			@Override
 			public boolean matches(String value) {

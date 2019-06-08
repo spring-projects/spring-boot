@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,7 @@ public class VehicleIdentificationNumberTests {
 	public void equalsAndHashCodeShouldBeBasedOnVin() {
 		VehicleIdentificationNumber vin1 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin2 = new VehicleIdentificationNumber(SAMPLE_VIN);
-		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber(
-				"00000000000000000");
+		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber("00000000000000000");
 		assertThat(vin1.hashCode()).isEqualTo(vin2.hashCode());
 		assertThat(vin1).isEqualTo(vin1).isEqualTo(vin2).isNotEqualTo(vin3);
 	}

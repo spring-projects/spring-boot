@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ public class SampleLogbackApplicationTests {
 
 	@Test
 	public void testProfile() throws Exception {
-		SampleLogbackApplication
-				.main(new String[] { "--spring.profiles.active=staging" });
+		SampleLogbackApplication.main(new String[] { "--spring.profiles.active=staging" });
 		this.outputCapture.expect(containsString("Sample Debug Message"));
 		this.outputCapture.expect(containsString("Sample Trace Message"));
 	}

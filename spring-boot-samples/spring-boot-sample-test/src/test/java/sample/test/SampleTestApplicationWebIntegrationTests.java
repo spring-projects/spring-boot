@@ -43,8 +43,7 @@ import static org.mockito.BDDMockito.given;
 @AutoConfigureTestDatabase
 public class SampleTestApplicationWebIntegrationTests {
 
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"01234567890123456");
+	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("01234567890123456");
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -54,8 +53,7 @@ public class SampleTestApplicationWebIntegrationTests {
 
 	@Before
 	public void setup() {
-		given(this.vehicleDetailsService.getVehicleDetails(VIN))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
+		given(this.vehicleDetailsService.getVehicleDetails(VIN)).willReturn(new VehicleDetails("Honda", "Civic"));
 	}
 
 	@Test

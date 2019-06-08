@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ public class ProducerApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		new File("target/input").mkdirs();
 		if (args.length > 0) {
-			FileOutputStream stream = new FileOutputStream(
-					"target/input/data" + System.currentTimeMillis() + ".txt");
+			FileOutputStream stream = new FileOutputStream("target/input/data" + System.currentTimeMillis() + ".txt");
 			for (String arg : args) {
 				stream.write(arg.getBytes());
 			}

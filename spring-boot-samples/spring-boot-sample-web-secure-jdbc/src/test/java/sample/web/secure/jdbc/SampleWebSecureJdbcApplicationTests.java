@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,19 +59,18 @@ public class SampleWebSecureJdbcApplicationTests {
 	public void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers),
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString())
-				.endsWith(this.port + "/login");
+		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/login");
 	}
 
 	@Test
 	public void testLoginPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
-				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("_csrf");
 	}
@@ -84,18 +83,16 @@ public class SampleWebSecureJdbcApplicationTests {
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "user");
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
-				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
+				new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString())
-				.endsWith(this.port + "/");
+		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
 		assertThat(entity.getHeaders().get("Set-Cookie")).isNotNull();
 	}
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		ResponseEntity<String> page = this.restTemplate.getForEntity("/login",
-				String.class);
+		ResponseEntity<String> page = this.restTemplate.getForEntity("/login", String.class);
 		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
@@ -108,8 +105,7 @@ public class SampleWebSecureJdbcApplicationTests {
 
 	@Test
 	public void testCss() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}

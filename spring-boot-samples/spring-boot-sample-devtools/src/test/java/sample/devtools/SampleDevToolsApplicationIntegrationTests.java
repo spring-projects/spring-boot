@@ -44,24 +44,21 @@ public class SampleDevToolsApplicationIntegrationTests {
 
 	@Test
 	public void testStaticResource() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/css/application.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/css/application.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("color: green;");
 	}
 
 	@Test
 	public void testPublicResource() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/public.txt",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/public.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("public file");
 	}
 
 	@Test
 	public void testClassResource() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/application.properties", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/application.properties", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

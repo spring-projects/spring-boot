@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,12 +71,12 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 	public void testHello() {
 		assertThat(this.ports.getHttpsPort()).isEqualTo(this.port);
 		assertThat(this.ports.getHttpPort()).isNotEqualTo(this.port);
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("hello");
-		ResponseEntity<String> httpsEntity = this.restTemplate
-				.getForEntity("https://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> httpsEntity = this.restTemplate.getForEntity("https://localhost:" + this.port + "/hello",
+				String.class);
 		assertThat(httpsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(httpsEntity.getBody()).isEqualTo("hello");
 	}
@@ -90,8 +90,7 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 
 		@Override
 		public void onApplicationEvent(WebServerInitializedEvent event) {
-			Service service = ((TomcatWebServer) event.getWebServer()).getTomcat()
-					.getService();
+			Service service = ((TomcatWebServer) event.getWebServer()).getTomcat().getService();
 			for (Connector connector : service.findConnectors()) {
 				if (connector.getSecure()) {
 					this.httpsPort = connector.getLocalPort();

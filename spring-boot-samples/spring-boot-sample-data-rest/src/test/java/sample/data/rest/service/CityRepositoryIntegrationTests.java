@@ -49,17 +49,15 @@ public class CityRepositoryIntegrationTests {
 
 	@Test
 	public void findByNameAndCountry() {
-		City city = this.repository.findByNameAndCountryAllIgnoringCase("Melbourne",
-				"Australia");
+		City city = this.repository.findByNameAndCountryAllIgnoringCase("Melbourne", "Australia");
 		assertThat(city).isNotNull();
 		assertThat(city.getName()).isEqualTo("Melbourne");
 	}
 
 	@Test
 	public void findContaining() {
-		Page<City> cities = this.repository
-				.findByNameContainingAndCountryContainingAllIgnoringCase("", "UK",
-						PageRequest.of(0, 10));
+		Page<City> cities = this.repository.findByNameContainingAndCountryContainingAllIgnoringCase("", "UK",
+				PageRequest.of(0, 10));
 		assertThat(cities.getTotalElements()).isEqualTo(3L);
 	}
 

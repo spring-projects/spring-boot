@@ -37,15 +37,13 @@ public class UserVehicleService {
 
 	private final VehicleDetailsService vehicleDetailsService;
 
-	public UserVehicleService(UserRepository userRepository,
-			VehicleDetailsService vehicleDetailsService) {
+	public UserVehicleService(UserRepository userRepository, VehicleDetailsService vehicleDetailsService) {
 		this.userRepository = userRepository;
 		this.vehicleDetailsService = vehicleDetailsService;
 	}
 
 	public VehicleDetails getVehicleDetails(String username)
-			throws UserNameNotFoundException,
-			VehicleIdentificationNumberNotFoundException {
+			throws UserNameNotFoundException, VehicleIdentificationNumberNotFoundException {
 		Assert.notNull(username, "Username must not be null");
 		User user = this.userRepository.findByUsername(username);
 		if (user == null) {

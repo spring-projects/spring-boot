@@ -45,8 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 // Enable JMX so we can test the MBeans (you can't do this in a properties file)
-@SpringBootTest(
-		properties = { "spring.jmx.enabled:true", "spring.datasource.jmx-enabled:true" })
+@SpringBootTest(properties = { "spring.jmx.enabled:true", "spring.datasource.jmx-enabled:true" })
 @ActiveProfiles("scratch")
 // Separate profile for web tests to avoid clashing databases
 public class SampleDataJpaApplicationTests {
@@ -64,15 +63,13 @@ public class SampleDataJpaApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 
-		this.mvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(content().string("Bath"));
+		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Bath"));
 	}
 
 	@Test
 	public void testJmx() throws Exception {
 		assertThat(ManagementFactory.getPlatformMBeanServer()
-				.queryMBeans(new ObjectName("jpa.sample:type=HikariDataSource,*"), null))
-						.hasSize(1);
+				.queryMBeans(new ObjectName("jpa.sample:type=HikariDataSource,*"), null)).hasSize(1);
 	}
 
 }

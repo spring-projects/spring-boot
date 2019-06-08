@@ -35,15 +35,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class RemoteVehicleDetailsService implements VehicleDetailsService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(RemoteVehicleDetailsService.class);
+	private static final Logger logger = LoggerFactory.getLogger(RemoteVehicleDetailsService.class);
 
 	private final RestTemplate restTemplate;
 
-	public RemoteVehicleDetailsService(ServiceProperties properties,
-			RestTemplateBuilder restTemplateBuilder) {
-		this.restTemplate = restTemplateBuilder
-				.rootUri(properties.getVehicleServiceRootUrl()).build();
+	public RemoteVehicleDetailsService(ServiceProperties properties, RestTemplateBuilder restTemplateBuilder) {
+		this.restTemplate = restTemplateBuilder.rootUri(properties.getVehicleServiceRootUrl()).build();
 	}
 
 	@Override
@@ -52,8 +49,7 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 		Assert.notNull(vin, "VIN must not be null");
 		logger.debug("Retrieving vehicle data for: " + vin);
 		try {
-			return this.restTemplate.getForObject("/vehicle/{vin}/details",
-					VehicleDetails.class, vin);
+			return this.restTemplate.getForObject("/vehicle/{vin}/details", VehicleDetails.class, vin);
 		}
 		catch (HttpStatusCodeException ex) {
 			if (HttpStatus.NOT_FOUND.equals(ex.getStatusCode())) {

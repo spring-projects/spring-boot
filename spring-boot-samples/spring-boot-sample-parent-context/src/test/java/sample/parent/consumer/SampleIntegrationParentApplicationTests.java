@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,21 +81,18 @@ public class SampleIntegrationParentApplicationTests {
 				}
 			}
 		}
-		fail("Timed out awaiting output containing '" + requiredContents
-				+ "'. Output was '" + output + "'");
+		fail("Timed out awaiting output containing '" + requiredContents + "'. Output was '" + output + "'");
 	}
 
 	private Resource[] findResources() throws IOException {
-		return ResourcePatternUtils
-				.getResourcePatternResolver(new DefaultResourceLoader())
+		return ResourcePatternUtils.getResourcePatternResolver(new DefaultResourceLoader())
 				.getResources("file:target/output/*.txt");
 	}
 
 	private String readResources(Resource[] resources) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			builder.append(
-					new String(StreamUtils.copyToByteArray(resource.getInputStream())));
+			builder.append(new String(StreamUtils.copyToByteArray(resource.getInputStream())));
 		}
 		return builder.toString();
 	}

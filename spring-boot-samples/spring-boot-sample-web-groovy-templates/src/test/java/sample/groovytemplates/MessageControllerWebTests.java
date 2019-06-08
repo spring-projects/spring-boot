@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,15 +66,13 @@ public class MessageControllerWebTests {
 
 	@Test
 	public void testCreate() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "FOO text").param("summary", "FOO"))
-				.andExpect(status().isFound())
+		this.mockMvc.perform(post("/").param("text", "FOO text").param("summary", "FOO")).andExpect(status().isFound())
 				.andExpect(header().string("location", RegexMatcher.matches("/[0-9]+")));
 	}
 
 	@Test
 	public void testCreateValidation() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "").param("summary", ""))
-				.andExpect(status().isOk())
+		this.mockMvc.perform(post("/").param("text", "").param("summary", "")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("is required")));
 	}
 
@@ -98,8 +96,7 @@ public class MessageControllerWebTests {
 
 		@Override
 		public void describeTo(Description description) {
-			description.appendText("a string that matches regex: ")
-					.appendText(this.regex);
+			description.appendText("a string that matches regex: ").appendText(this.regex);
 		}
 
 		public static org.hamcrest.Matcher<java.lang.String> matches(String regex) {

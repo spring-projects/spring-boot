@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,14 +49,12 @@ public class SampleJersey1Application {
 	public FilterRegistrationBean<ServletContainer> jersey() {
 		FilterRegistrationBean<ServletContainer> bean = new FilterRegistrationBean<>();
 		bean.setFilter(new ServletContainer());
-		bean.addInitParameter("com.sun.jersey.config.property.packages",
-				"com.sun.jersey;sample.jersey1");
+		bean.addInitParameter("com.sun.jersey.config.property.packages", "com.sun.jersey;sample.jersey1");
 		return bean;
 	}
 
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(SampleJersey1Application.class)
-				.web(WebApplicationType.SERVLET).run(args);
+		new SpringApplicationBuilder(SampleJersey1Application.class).web(WebApplicationType.SERVLET).run(args);
 	}
 
 }

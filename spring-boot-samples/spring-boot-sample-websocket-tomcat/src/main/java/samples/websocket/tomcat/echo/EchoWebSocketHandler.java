@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,16 +44,14 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 	}
 
 	@Override
-	public void handleTextMessage(WebSocketSession session, TextMessage message)
-			throws Exception {
+	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String echoMessage = this.echoService.getMessage(message.getPayload());
 		logger.debug(echoMessage);
 		session.sendMessage(new TextMessage(echoMessage));
 	}
 
 	@Override
-	public void handleTransportError(WebSocketSession session, Throwable exception)
-			throws Exception {
+	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		session.close(CloseStatus.SERVER_ERROR);
 	}
 

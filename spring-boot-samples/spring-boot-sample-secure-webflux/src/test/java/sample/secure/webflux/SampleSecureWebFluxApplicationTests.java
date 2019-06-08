@@ -43,28 +43,28 @@ public class SampleSecureWebFluxApplicationTests {
 
 	@Test
 	public void userDefinedMappingsSecureByDefault() {
-		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON).exchange()
-				.expectStatus().isEqualTo(HttpStatus.UNAUTHORIZED);
+		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void actuatorsSecureByDefault() {
-		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isUnauthorized();
+		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isUnauthorized();
 	}
 
 	@Test
 	public void userDefinedMappingsAccessibleOnLogin() {
 		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange()
-				.expectBody(String.class).isEqualTo("Hello user");
+				.header("Authorization", "basic " + getBasicAuth()).exchange().expectBody(String.class)
+				.isEqualTo("Hello user");
 	}
 
 	@Test
 	public void actuatorsAccessibleOnLogin() {
 		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange()
-				.expectBody(String.class).isEqualTo("{\"status\":\"UP\"}");
+				.header("Authorization", "basic " + getBasicAuth()).exchange().expectBody(String.class)
+				.isEqualTo("{\"status\":\"UP\"}");
 	}
 
 	private String getBasicAuth() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,10 @@ public class HotelRepositoryIntegrationTests {
 
 	@Test
 	public void executesQueryMethodsCorrectly() {
-		City city = this.cityRepository
-				.findAll(PageRequest.of(0, 1, Direction.ASC, "name")).getContent().get(0);
+		City city = this.cityRepository.findAll(PageRequest.of(0, 1, Direction.ASC, "name")).getContent().get(0);
 		assertThat(city.getName()).isEqualTo("Atlanta");
-		Page<HotelSummary> hotels = this.repository.findByCity(city,
-				PageRequest.of(0, 10, Direction.ASC, "name"));
-		Hotel hotel = this.repository.findByCityAndName(city,
-				hotels.getContent().get(0).getName());
+		Page<HotelSummary> hotels = this.repository.findByCity(city, PageRequest.of(0, 10, Direction.ASC, "name"));
+		Hotel hotel = this.repository.findByCityAndName(city, hotels.getContent().get(0).getName());
 		assertThat(hotel.getName()).isEqualTo("Doubletree");
 		List<RatingCount> counts = this.repository.findRatingCounts(hotel);
 		assertThat(counts).hasSize(1);
