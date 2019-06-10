@@ -19,17 +19,17 @@ package org.springframework.boot.web.client;
 import java.nio.charset.Charset;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.util.Assert;
 
 /**
- * Basic authentication properties which are used by
- * {@link BasicAuthenticationClientHttpRequestFactory}.
+ * {@link AbstractHttpHeadersDefaultingCustomizer} that applies basic authentication
+ * header unless it was provided in the request.
  *
  * @author Dmytro Nosan
- * @see BasicAuthenticationClientHttpRequestFactory
+ * @author Ilya Lukyanovich
+ * @see HttpHeadersCustomizingClientHttpRequestFactory
  */
-class BasicAuthentication {
+class BasicAuthenticationHeaderDefaultingCustomizer extends AbstractHttpHeadersDefaultingCustomizer {
 
 	private final String username;
 
@@ -37,7 +37,7 @@ class BasicAuthentication {
 
 	private final Charset charset;
 
-	BasicAuthentication(String username, String password, Charset charset) {
+	BasicAuthenticationHeaderDefaultingCustomizer(String username, String password, Charset charset) {
 		Assert.notNull(username, "Username must not be null");
 		Assert.notNull(password, "Password must not be null");
 		this.username = username;
@@ -45,11 +45,11 @@ class BasicAuthentication {
 		this.charset = charset;
 	}
 
-	void applyTo(ClientHttpRequest request) {
-		HttpHeaders headers = request.getHeaders();
-		if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
-			headers.setBasicAuth(this.username, this.password, this.charset);
-		}
+	@Override
+	protected HttpHeaders createHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBasicAuth(this.username, this.password, this.charset);
+		return headers;
 	}
 
 }

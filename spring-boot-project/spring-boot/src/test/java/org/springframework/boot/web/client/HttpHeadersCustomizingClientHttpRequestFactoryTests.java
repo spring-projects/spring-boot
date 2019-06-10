@@ -18,6 +18,8 @@ package org.springframework.boot.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,29 +35,30 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link BasicAuthenticationClientHttpRequestFactory}.
+ * Tests for {@link HttpHeadersCustomizingClientHttpRequestFactory}.
  *
  * @author Dmytro Nosan
+ * @author Ilya Lukyanovich
  */
-class BasicAuthenticationClientHttpRequestFactoryTests {
+public class HttpHeadersCustomizingClientHttpRequestFactoryTests {
 
 	private final HttpHeaders headers = new HttpHeaders();
-
-	private final BasicAuthentication authentication = new BasicAuthentication("spring", "boot", null);
 
 	private ClientHttpRequestFactory requestFactory;
 
 	@BeforeEach
 	public void setUp() throws IOException {
-		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
+		this.requestFactory = mock(ClientHttpRequestFactory.class);
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
-		given(requestFactory.createRequest(any(), any())).willReturn(request);
+		given(this.requestFactory.createRequest(any(), any())).willReturn(request);
 		given(request.getHeaders()).willReturn(this.headers);
-		this.requestFactory = new BasicAuthenticationClientHttpRequestFactory(this.authentication, requestFactory);
 	}
 
 	@Test
 	void shouldAddAuthorizationHeader() throws IOException {
+		this.requestFactory = new HttpHeadersCustomizingClientHttpRequestFactory(
+				Collections.singleton(SimpleHttpHeaderDefaultingCustomizer.basicAuthentication("spring", "boot", null)),
+				this.requestFactory);
 		ClientHttpRequest request = createRequest();
 		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
@@ -63,9 +66,25 @@ class BasicAuthenticationClientHttpRequestFactoryTests {
 	@Test
 	void shouldNotAddAuthorizationHeaderAuthorizationAlreadySet() throws IOException {
 		this.headers.setBasicAuth("boot", "spring");
+		this.requestFactory = new HttpHeadersCustomizingClientHttpRequestFactory(
+				Collections.singleton(SimpleHttpHeaderDefaultingCustomizer.basicAuthentication("spring", "boot", null)),
+				this.requestFactory);
 		ClientHttpRequest request = createRequest();
 		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).doesNotContain("Basic c3ByaW5nOmJvb3Q=");
 
+	}
+
+	@Test
+	void shouldApplyCustomizersInTheProvidedOrder() throws IOException {
+		this.requestFactory = new HttpHeadersCustomizingClientHttpRequestFactory(
+				Arrays.asList((headers) -> headers.add("foo", "bar"),
+						SimpleHttpHeaderDefaultingCustomizer.basicAuthentication("spring", "boot", null),
+						SimpleHttpHeaderDefaultingCustomizer.singleHeader(HttpHeaders.AUTHORIZATION, "won't do")),
+				this.requestFactory);
+		ClientHttpRequest request = createRequest();
+		assertThat(request.getHeaders()).containsOnlyKeys("foo", HttpHeaders.AUTHORIZATION);
+		assertThat(request.getHeaders().get("foo")).containsExactly("bar");
+		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
 
 	private ClientHttpRequest createRequest() throws IOException {
