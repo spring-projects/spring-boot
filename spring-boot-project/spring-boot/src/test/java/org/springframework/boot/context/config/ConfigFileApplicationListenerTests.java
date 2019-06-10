@@ -960,6 +960,29 @@ class ConfigFileApplicationListenerTests {
 		assertThat(this.environment.getProperty("customloader1")).isEqualTo("true");
 	}
 
+	@Test
+	public void customDefaultPropertySourceIsNotReplaced() {
+		// gh-17011
+		Map<String, Object> source = new HashMap<>();
+		source.put("mapkey", "mapvalue");
+		MapPropertySource propertySource = new MapPropertySource("defaultProperties", source) {
+
+			@Override
+			public Object getProperty(String name) {
+				if ("spring.config.name".equals(name)) {
+					return "gh17001";
+				}
+				return super.getProperty(name);
+			}
+
+		};
+		this.environment.getPropertySources().addFirst(propertySource);
+		this.initializer.setSearchNames("testactiveprofiles");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("mapkey")).isEqualTo("mapvalue");
+		assertThat(this.environment.getProperty("gh17001loaded")).isEqualTo("true");
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
 		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
 
