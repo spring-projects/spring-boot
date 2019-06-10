@@ -3801,8 +3801,8 @@ In other words, the two configurations in the following example use the Google p
 [[boot-features-security-oauth2-server]]
 ==== Resource Server
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can
-set up an OAuth2 Resource Server as long as a JWK Set URI or OIDC Issuer URI is specified,
-as shown in the following examples:
+set up an OAuth2 Resource Server. For JWT configuration, a JWK Set URI or OIDC Issuer URI
+needs to be specified, as shown in the following examples:
 
 [source,properties,indent=0]
 ----
@@ -3825,7 +3825,20 @@ The same properties are applicable for both servlet and reactive applications.
 Alternatively, you can define your own `JwtDecoder` bean for servlet applications
 or a `ReactiveJwtDecoder` for reactive applications.
 
+In cases where opaque tokens are used instead of JWTs, you can configure the following properties
+to validate tokens via introspection:
 
+[source,properties,indent=0]
+----
+	spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://example.com/check-token
+	spring.security.oauth2.resourceserver.opaque-token.client-id=my-client-id
+	spring.security.oauth2.resourceserver.opaque-token.client-secret-my-client-secret
+----
+
+Again, the same properties are applicable for both servlet and reactive applications.
+
+Alternatively, you can define your own `OAuth2TokenIntrospectionClient` bean for servlet applications
+or a `ReactiveOAuth2TokenIntrospectionClient` for reactive applications.
 
 ==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0

@@ -46,6 +46,10 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtReactiveAuthenticationManager;
+import org.springframework.security.oauth2.server.resource.authentication.OAuth2IntrospectionAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.OAuth2IntrospectionReactiveAuthenticationManager;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2TokenIntrospectionClient;
+import org.springframework.security.oauth2.server.resource.introspection.ReactiveOAuth2TokenIntrospectionClient;
 import org.springframework.security.web.server.MatcherSecurityWebFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
@@ -204,6 +208,81 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void autoConfigurationWhenIntrospectionUriAvailableShouldConfigureIntrospectionClient() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.opaque-token.client-id=my-client-id",
+						"spring.security.oauth2.resourceserver.opaque-token.client-secret=my-client-secret")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ReactiveOAuth2TokenIntrospectionClient.class);
+					assertFilterConfiguredWithOpaqueTokenAuthenticationManager(context);
+				});
+	}
+
+	@Test
+	void oAuth2TokenIntrospectionClientIsConditionalOnMissingBean() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://check-token.com")
+				.withUserConfiguration(OAuth2TokenIntrospectionClientConfig.class)
+				.run((this::assertFilterConfiguredWithOpaqueTokenAuthenticationManager));
+	}
+
+	@Test
+	void autoConfigurationForOpaqueTokenWhenSecurityWebFilterChainConfigPresentShouldNotAddOne() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.opaque-token.client-id=my-client-id",
+						"spring.security.oauth2.resourceserver.opaque-token.client-secret=my-client-secret")
+				.withUserConfiguration(SecurityWebFilterChainConfig.class).run((context) -> {
+					assertThat(context).hasSingleBean(SecurityWebFilterChain.class);
+					assertThat(context).hasBean("testSpringSecurityFilterChain");
+				});
+	}
+
+	@Test
+	void autoConfigurationWhenIntrospectionUriAvailableShouldBeConditionalOnClass() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(OAuth2IntrospectionAuthenticationToken.class))
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.opaque-token.client-id=my-client-id",
+						"spring.security.oauth2.resourceserver.opaque-token.client-secret=my-client-secret")
+				.run((context) -> assertThat(context).doesNotHaveBean(OAuth2TokenIntrospectionClient.class));
+	}
+
+	@Test
+	void autoConfigurationWhenBothJwkSetUriAndTokenIntrospectionUriSetShouldFail() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+				.run((context) -> assertThat(context).hasFailed().getFailure().hasMessageContaining(
+						"Only one of jwt.jwk-set-uri and opaque-token.introspection-uri should be configured."));
+	}
+
+	@Test
+	void autoConfigurationWhenBothJwtIssuerUriAndTokenIntrospectionUriSetShouldFail() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.jwt.issuer-uri=https://jwk-oidc-issuer-location.com")
+				.run((context) -> assertThat(context).hasFailed().getFailure().hasMessageContaining(
+						"Only one of jwt.issuer-uri and opaque-token.introspection-uri should be configured."));
+	}
+
+	@Test
+	void autoConfigurationWhenBothJwtKeyLocationAndTokenIntrospectionUriSetShouldFail() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
+				.run((context) -> assertThat(context).hasFailed().getFailure().hasMessageContaining(
+						"Only one of jwt.public-key-location and opaque-token.introspection-uri should be configured."));
+	}
+
 	private void assertFilterConfiguredWithJwtAuthenticationManager(AssertableReactiveWebApplicationContext context) {
 		MatcherSecurityWebFilterChain filterChain = (MatcherSecurityWebFilterChain) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
@@ -213,7 +292,18 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		ReactiveAuthenticationManager authenticationManager = (ReactiveAuthenticationManager) ReflectionTestUtils
 				.getField(webFilter, "authenticationManager");
 		assertThat(authenticationManager).isInstanceOf(JwtReactiveAuthenticationManager.class);
+	}
 
+	private void assertFilterConfiguredWithOpaqueTokenAuthenticationManager(
+			AssertableReactiveWebApplicationContext context) {
+		MatcherSecurityWebFilterChain filterChain = (MatcherSecurityWebFilterChain) context
+				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
+		Stream<WebFilter> filters = filterChain.getWebFilters().toStream();
+		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters
+				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
+		ReactiveAuthenticationManager authenticationManager = (ReactiveAuthenticationManager) ReflectionTestUtils
+				.getField(webFilter, "authenticationManager");
+		assertThat(authenticationManager).isInstanceOf(OAuth2IntrospectionReactiveAuthenticationManager.class);
 	}
 
 	private String cleanIssuerPath(String issuer) {
@@ -270,12 +360,22 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class OAuth2TokenIntrospectionClientConfig {
+
+		@Bean
+		public ReactiveOAuth2TokenIntrospectionClient decoder() {
+			return mock(ReactiveOAuth2TokenIntrospectionClient.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class SecurityWebFilterChainConfig {
 
 		@Bean
-		SecurityWebFilterChain testSpringSecurityFilterChain(ServerHttpSecurity http, ReactiveJwtDecoder decoder) {
+		SecurityWebFilterChain testSpringSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange().pathMatchers("/message/**").hasRole("ADMIN").anyExchange().authenticated().and()
-					.oauth2ResourceServer().jwt().jwtDecoder(decoder);
+					.httpBasic();
 			return http.build();
 		}
 
