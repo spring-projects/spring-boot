@@ -37,6 +37,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RestClientTest(ExampleRestClient.class)
 public class RestClientTestWithComponentIntegrationTests {
 
+	// JUnit 4 because RestClientTestWithoutJacksonIntegrationTests uses
+	// ModifiedClassPathRunner
+
 	@Autowired
 	private MockRestServiceServer server;
 

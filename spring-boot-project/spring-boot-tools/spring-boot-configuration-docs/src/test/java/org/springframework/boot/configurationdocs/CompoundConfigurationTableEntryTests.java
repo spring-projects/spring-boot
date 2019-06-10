@@ -27,12 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class CompoundConfigurationTableEntryTests {
+class CompoundConfigurationTableEntryTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	public void simpleProperty() {
+	void simpleProperty() {
 		ConfigurationMetadataProperty firstProp = new ConfigurationMetadataProperty();
 		firstProp.setId("spring.test.first");
 		firstProp.setType("java.lang.String");

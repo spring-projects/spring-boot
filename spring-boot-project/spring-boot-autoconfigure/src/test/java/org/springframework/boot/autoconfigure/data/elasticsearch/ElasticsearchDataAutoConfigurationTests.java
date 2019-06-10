@@ -103,7 +103,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customReactiveRestTemplateShouldBeUsed() {
+	void customReactiveRestTemplateShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomReactiveRestTemplate.class)
 				.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
 						.contains("reactiveElasticsearchTemplate"));

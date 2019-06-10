@@ -58,7 +58,7 @@ class ShutdownSampleActuatorApplicationTests {
 
 	@Test
 	@DirtiesContext
-	public void testShutdown() {
+	void testShutdown() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.withBasicAuth("user", getPassword())
 				.postForEntity("/actuator/shutdown", null, Map.class);

@@ -27,12 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class ConfigurationTableTests {
+class ConfigurationTableTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	public void simpleTable() {
+	void simpleTable() {
 		ConfigurationTable table = new ConfigurationTable("test");
 		ConfigurationMetadataProperty first = new ConfigurationMetadataProperty();
 		first.setId("spring.test.prop");

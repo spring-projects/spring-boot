@@ -961,7 +961,7 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void customDefaultPropertySourceIsNotReplaced() {
+	void customDefaultPropertySourceIsNotReplaced() {
 		// gh-17011
 		Map<String, Object> source = new HashMap<>();
 		source.put("mapkey", "mapvalue");

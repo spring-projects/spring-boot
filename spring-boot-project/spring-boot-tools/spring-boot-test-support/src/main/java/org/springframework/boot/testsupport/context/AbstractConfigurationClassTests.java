@@ -49,7 +49,7 @@ public abstract class AbstractConfigurationClassTests {
 	private ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
 	@Test
-	public void allBeanMethodsArePublic() throws IOException {
+	void allBeanMethodsArePublic() throws IOException {
 		Set<String> nonPublicBeanMethods = new HashSet<>();
 		for (AnnotationMetadata configurationClass : findConfigurationClasses()) {
 			Set<MethodMetadata> beanMethods = configurationClass.getAnnotatedMethods(Bean.class.getName());

@@ -34,29 +34,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleBuildExtension.class)
-public class SpringBootPluginIntegrationTests {
+class SpringBootPluginIntegrationTests {
 
 	final GradleBuild gradleBuild = new GradleBuild();
 
 	@Test
-	public void failFastWithVersionOfGradleLowerThanRequired() {
+	void failFastWithVersionOfGradleLowerThanRequired() {
 		BuildResult result = this.gradleBuild.gradleVersion("4.9").buildAndFail();
 		assertThat(result.getOutput())
 				.contains("Spring Boot plugin requires Gradle 4.10" + " or later. The current version is Gradle 4.9");
 	}
 
 	@Test
-	public void succeedWithVersionOfGradleHigherThanRequired() {
+	void succeedWithVersionOfGradleHigherThanRequired() {
 		this.gradleBuild.gradleVersion("4.10.1").build();
 	}
 
 	@Test
-	public void succeedWithVersionOfGradleMatchingWhatIsRequired() {
+	void succeedWithVersionOfGradleMatchingWhatIsRequired() {
 		this.gradleBuild.gradleVersion("4.10").build();
 	}
 
 	@Test
-	public void unresolvedDependenciesAreAnalyzedWhenDependencyResolutionFails() throws IOException {
+	void unresolvedDependenciesAreAnalyzedWhenDependencyResolutionFails() throws IOException {
 		createMinimalMainSource();
 		BuildResult result = this.gradleBuild.buildAndFail("compileJava");
 		assertThat(result.getOutput())

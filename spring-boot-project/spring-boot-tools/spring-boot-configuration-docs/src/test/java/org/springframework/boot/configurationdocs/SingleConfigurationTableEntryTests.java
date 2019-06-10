@@ -27,12 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class SingleConfigurationTableEntryTests {
+class SingleConfigurationTableEntryTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	public void simpleProperty() {
+	void simpleProperty() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDefaultValue("something");
@@ -46,7 +46,7 @@ public class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	public void noDefaultValue() {
+	void noDefaultValue() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDescription("This is a description.");
@@ -59,7 +59,7 @@ public class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	public void defaultValueWithPipes() {
+	void defaultValueWithPipes() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDefaultValue("first|second");
@@ -73,7 +73,7 @@ public class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	public void defaultValueWithBackslash() {
+	void defaultValueWithBackslash() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDefaultValue("first\\second");
@@ -87,7 +87,7 @@ public class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	public void mapProperty() {
+	void mapProperty() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDescription("This is a description.");
@@ -100,7 +100,7 @@ public class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	public void listProperty() {
+	void listProperty() {
 		String[] defaultValue = new String[] { "first", "second", "third" };
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");

@@ -71,7 +71,6 @@ class CassandraDataAutoConfigurationIntegrationTests {
 		AutoConfigurationPackages.register(this.context, cityPackage);
 		this.context.register(CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
 		this.context.refresh();
-
 		CassandraSessionFactoryBean bean = this.context.getBean(CassandraSessionFactoryBean.class);
 		assertThat(bean.getSchemaAction()).isEqualTo(SchemaAction.NONE);
 	}

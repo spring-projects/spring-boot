@@ -21,11 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class Hibernate52ApplicationTests {
+class Hibernate52ApplicationTests {
 
 	@Test
-	public void contextLoads() {
-
+	void contextLoads() {
 	}
 
 }

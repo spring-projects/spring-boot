@@ -38,12 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ExtendWith(GradleBuildExtension.class)
-public class BuildInfoDslIntegrationTests {
+class BuildInfoDslIntegrationTests {
 
 	final GradleBuild gradleBuild = new GradleBuild();
 
 	@Test
-	public void basicJar() throws IOException {
+	void basicJar() throws IOException {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
@@ -54,7 +54,7 @@ public class BuildInfoDslIntegrationTests {
 	}
 
 	@Test
-	public void jarWithCustomName() throws IOException {
+	void jarWithCustomName() throws IOException {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
@@ -65,7 +65,7 @@ public class BuildInfoDslIntegrationTests {
 	}
 
 	@Test
-	public void basicWar() throws IOException {
+	void basicWar() throws IOException {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
@@ -76,7 +76,7 @@ public class BuildInfoDslIntegrationTests {
 	}
 
 	@Test
-	public void warWithCustomName() throws IOException {
+	void warWithCustomName() throws IOException {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
@@ -87,7 +87,7 @@ public class BuildInfoDslIntegrationTests {
 	}
 
 	@Test
-	public void additionalProperties() throws IOException {
+	void additionalProperties() throws IOException {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
@@ -100,7 +100,7 @@ public class BuildInfoDslIntegrationTests {
 	}
 
 	@Test
-	public void classesDependency() throws IOException {
+	void classesDependency() throws IOException {
 		assertThat(this.gradleBuild.build("classes", "--stacktrace").task(":bootBuildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}

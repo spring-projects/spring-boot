@@ -42,7 +42,7 @@ class RSocketMessagingAutoConfigurationTests {
 			.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
-	public void shouldCreateDefaultBeans() {
+	void shouldCreateDefaultBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(MessageHandlerAcceptor.class).hasSize(1);
 			assertThat(context.getBean(MessageHandlerAcceptor.class).getRouteMatcher())
