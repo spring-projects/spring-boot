@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
@@ -118,8 +119,9 @@ class LogFileWebEndpointAutoConfigurationTests {
 					LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
 					Resource resource = endpoint.logFile();
 					assertThat(resource).isNotNull();
-					assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8))
-							.isEqualTo("--TEST--");
+					try (InputStream input = resource.getInputStream()) {
+						assertThat(StreamUtils.copyToString(input, StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+					}
 				});
 	}
 

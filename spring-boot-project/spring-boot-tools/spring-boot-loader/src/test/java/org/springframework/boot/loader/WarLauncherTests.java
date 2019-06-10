@@ -43,16 +43,25 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		assertThat(archives).hasSize(2);
 		assertThat(getUrls(archives)).containsOnly(new File(explodedRoot, "WEB-INF/classes").toURI().toURL(),
 				new File(explodedRoot, "WEB-INF/lib/foo.jar").toURI().toURL());
+		for (Archive archive : archives) {
+			archive.close();
+		}
 	}
 
 	@Test
 	void archivedWarHasOnlyWebInfClassesAndContentsOWebInfLibOnClasspath() throws Exception {
 		File jarRoot = createJarArchive("archive.war", "WEB-INF");
-		WarLauncher launcher = new WarLauncher(new JarFileArchive(jarRoot));
-		List<Archive> archives = launcher.getClassPathArchives();
-		assertThat(archives).hasSize(2);
-		assertThat(getUrls(archives)).containsOnly(new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/classes!/"),
-				new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/"));
+		try (JarFileArchive archive = new JarFileArchive(jarRoot)) {
+			WarLauncher launcher = new WarLauncher(archive);
+			List<Archive> classPathArchives = launcher.getClassPathArchives();
+			assertThat(classPathArchives).hasSize(2);
+			assertThat(getUrls(classPathArchives)).containsOnly(
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/classes!/"),
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/"));
+			for (Archive classPathArchive : classPathArchives) {
+				classPathArchive.close();
+			}
+		}
 	}
 
 }

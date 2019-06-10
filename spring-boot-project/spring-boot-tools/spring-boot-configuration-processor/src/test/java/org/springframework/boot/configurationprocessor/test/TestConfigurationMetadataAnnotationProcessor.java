@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor.test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -96,7 +97,9 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 		try {
 			File metadataFile = new File(this.outputLocation, "META-INF/spring-configuration-metadata.json");
 			if (metadataFile.isFile()) {
-				this.metadata = new JsonMarshaller().read(new FileInputStream(metadataFile));
+				try (InputStream input = new FileInputStream(metadataFile)) {
+					this.metadata = new JsonMarshaller().read(input);
+				}
 			}
 			else {
 				this.metadata = new ConfigurationMetadata();

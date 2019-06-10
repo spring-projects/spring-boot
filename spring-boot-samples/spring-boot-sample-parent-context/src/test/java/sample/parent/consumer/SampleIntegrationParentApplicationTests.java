@@ -18,6 +18,7 @@ package sample.parent.consumer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -94,7 +95,9 @@ class SampleIntegrationParentApplicationTests {
 	private String readResources(Resource[] resources) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			builder.append(new String(StreamUtils.copyToByteArray(resource.getInputStream())));
+			try (InputStream input = resource.getInputStream()) {
+				builder.append(new String(StreamUtils.copyToByteArray(input)));
+			}
 		}
 		return builder.toString();
 	}

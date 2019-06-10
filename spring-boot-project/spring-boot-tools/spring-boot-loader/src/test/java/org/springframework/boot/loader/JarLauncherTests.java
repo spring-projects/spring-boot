@@ -43,16 +43,25 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		assertThat(archives).hasSize(2);
 		assertThat(getUrls(archives)).containsOnly(new File(explodedRoot, "BOOT-INF/classes").toURI().toURL(),
 				new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL());
+		for (Archive archive : archives) {
+			archive.close();
+		}
 	}
 
 	@Test
 	void archivedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
 		File jarRoot = createJarArchive("archive.jar", "BOOT-INF");
-		JarLauncher launcher = new JarLauncher(new JarFileArchive(jarRoot));
-		List<Archive> archives = launcher.getClassPathArchives();
-		assertThat(archives).hasSize(2);
-		assertThat(getUrls(archives)).containsOnly(new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
-				new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/foo.jar!/"));
+		try (JarFileArchive archive = new JarFileArchive(jarRoot)) {
+			JarLauncher launcher = new JarLauncher(archive);
+			List<Archive> classPathArchives = launcher.getClassPathArchives();
+			assertThat(classPathArchives).hasSize(2);
+			assertThat(getUrls(classPathArchives)).containsOnly(
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/foo.jar!/"));
+			for (Archive classPathArchive : classPathArchives) {
+				classPathArchive.close();
+			}
+		}
 	}
 
 }

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,7 +71,7 @@ class LogFileWebEndpointTests {
 		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource)).isEqualTo("--TEST--");
 	}
 
 	@Test
@@ -79,7 +80,7 @@ class LogFileWebEndpointTests {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource)).isEqualTo("--TEST--");
 	}
 
 	@Test
@@ -87,7 +88,13 @@ class LogFileWebEndpointTests {
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment, this.logFile);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource)).isEqualTo("--TEST--");
+	}
+
+	private String contentOf(Resource resource) throws IOException {
+		try (InputStream input = resource.getInputStream()) {
+			return StreamUtils.copyToString(input, StandardCharsets.UTF_8);
+		}
 	}
 
 }

@@ -17,6 +17,8 @@
 package org.springframework.boot.context;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -127,34 +129,43 @@ class ApplicationPidFileWriterTests {
 
 	@Test
 	void continueWhenPidFileIsReadOnly() throws Exception {
-		File file = new File(this.tempDir, "pid");
-		file.createNewFile();
-		file.setReadOnly();
-		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		listener.onApplicationEvent(EVENT);
-		assertThat(contentOf(file)).isEmpty();
+		withReadOnlyPidFile((file) -> {
+			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+			listener.onApplicationEvent(EVENT);
+			assertThat(contentOf(file)).isEmpty();
+		});
 	}
 
 	@Test
 	void throwWhenPidFileIsReadOnly() throws Exception {
-		File file = new File(this.tempDir, "pid");
-		file.createNewFile();
-		file.setReadOnly();
-		System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
-		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(EVENT))
-				.withMessageContaining("Cannot create pid file");
+		withReadOnlyPidFile((file) -> {
+			System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
+			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+			assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(EVENT))
+					.withMessageContaining("Cannot create pid file");
+		});
 	}
 
 	@Test
 	void throwWhenPidFileIsReadOnlyWithSpring() throws Exception {
+		withReadOnlyPidFile((file) -> {
+			SpringApplicationEvent event = createPreparedEvent("spring.pid.fail-on-write-error", "true");
+			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+			assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(event))
+					.withMessageContaining("Cannot create pid file");
+		});
+	}
+
+	private void withReadOnlyPidFile(Consumer<File> consumer) throws IOException {
 		File file = new File(this.tempDir, "pid");
 		file.createNewFile();
 		file.setReadOnly();
-		SpringApplicationEvent event = createPreparedEvent("spring.pid.fail-on-write-error", "true");
-		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(event))
-				.withMessageContaining("Cannot create pid file");
+		try {
+			consumer.accept(file);
+		}
+		finally {
+			file.setWritable(true);
+		}
 	}
 
 	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName, String propValue) {

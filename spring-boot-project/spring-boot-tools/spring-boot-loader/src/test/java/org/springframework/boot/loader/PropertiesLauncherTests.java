@@ -312,7 +312,9 @@ class PropertiesLauncherTests {
 		manifest.getMainAttributes().putValue("Loader-Path", "/foo.jar, /bar");
 		File manifestFile = new File(this.tempDir, "META-INF/MANIFEST.MF");
 		manifestFile.getParentFile().mkdirs();
-		manifest.write(new FileOutputStream(manifestFile));
+		try (FileOutputStream output = new FileOutputStream(manifestFile)) {
+			manifest.write(output);
+		}
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat((List<String>) ReflectionTestUtils.getField(launcher, "paths")).containsExactly("/foo.jar", "/bar/");
 	}

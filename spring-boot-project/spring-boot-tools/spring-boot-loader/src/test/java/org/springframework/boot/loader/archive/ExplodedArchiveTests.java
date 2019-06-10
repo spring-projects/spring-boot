@@ -18,9 +18,6 @@ package org.springframework.boot.loader.archive;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -36,6 +33,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,20 +79,11 @@ class ExplodedArchiveTests {
 				destination.mkdir();
 			}
 			else {
-				copy(jarFile.getInputStream(entry), new FileOutputStream(destination));
+				FileCopyUtils.copy(jarFile.getInputStream(entry), new FileOutputStream(destination));
 			}
 		}
 		this.archive = new ExplodedArchive(this.rootFolder);
 		jarFile.close();
-	}
-
-	private void copy(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[1024];
-		int len = in.read(buffer);
-		while (len != -1) {
-			out.write(buffer, 0, len);
-			len = in.read(buffer);
-		}
 	}
 
 	@Test
@@ -124,6 +113,7 @@ class ExplodedArchiveTests {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString()).isEqualTo(this.rootFolder.toURI() + "nested.jar");
+		((JarFileArchive) nested).close();
 	}
 
 	@Test

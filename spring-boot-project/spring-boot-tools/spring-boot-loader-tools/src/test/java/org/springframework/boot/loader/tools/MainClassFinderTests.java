@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.JarFile;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,8 +53,10 @@ class MainClassFinderTests {
 	void findMainClassInJar() throws Exception {
 		this.testJarFile.addClass("B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("A.class", ClassWithoutMainMethod.class);
-		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "");
-		assertThat(actual).isEqualTo("B");
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			String actual = MainClassFinder.findMainClass(jarFile, "");
+			assertThat(actual).isEqualTo("B");
+		}
 	}
 
 	@Test
@@ -61,43 +64,52 @@ class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/c/D.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithoutMainMethod.class);
 		this.testJarFile.addClass("a/b/F.class", ClassWithoutMainMethod.class);
-		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "");
-		assertThat(actual).isEqualTo("a.b.c.D");
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			String actual = MainClassFinder.findMainClass(jarFile, "");
+			assertThat(actual).isEqualTo("a.b.c.D");
+		}
 	}
 
 	@Test
 	void usesBreadthFirstJarSearch() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
-		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "");
-		assertThat(actual).isEqualTo("a.B");
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			String actual = MainClassFinder.findMainClass(jarFile, "");
+			assertThat(actual).isEqualTo("a.B");
+		}
 	}
 
 	@Test
 	void findSingleJarSearch() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> MainClassFinder.findSingleMainClass(this.testJarFile.getJarFile(), ""))
-				.withMessageContaining(
-						"Unable to find a single main class " + "from the following candidates [a.B, a.b.c.E]");
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			assertThatIllegalStateException().isThrownBy(() -> MainClassFinder.findSingleMainClass(jarFile, ""))
+					.withMessageContaining(
+							"Unable to find a single main class " + "from the following candidates [a.B, a.b.c.E]");
+		}
 	}
 
 	@Test
 	void findSingleJarSearchPrefersAnnotatedMainClass() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", AnnotatedClassWithMainMethod.class);
-		String mainClass = MainClassFinder.findSingleMainClass(this.testJarFile.getJarFile(), "",
-				"org.springframework.boot.loader.tools.sample.SomeApplication");
-		assertThat(mainClass).isEqualTo("a.b.c.E");
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			String mainClass = MainClassFinder.findSingleMainClass(jarFile, "",
+					"org.springframework.boot.loader.tools.sample.SomeApplication");
+			assertThat(mainClass).isEqualTo("a.b.c.E");
+		}
 	}
 
 	@Test
 	void findMainClassInJarSubLocation() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
-		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "a/");
-		assertThat(actual).isEqualTo("B");
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			String actual = MainClassFinder.findMainClass(jarFile, "a/");
+			assertThat(actual).isEqualTo("B");
+		}
 
 	}
 
@@ -163,8 +175,10 @@ class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/F.class", ClassWithoutMainMethod.class);
 		this.testJarFile.addClass("a/b/G.class", ClassWithMainMethod.class);
 		ClassNameCollector callback = new ClassNameCollector();
-		MainClassFinder.doWithMainClasses(this.testJarFile.getJarFile(), null, callback);
-		assertThat(callback.getClassNames().toString()).isEqualTo("[a.b.G, a.b.c.D]");
+		try (JarFile jarFile = this.testJarFile.getJarFile()) {
+			MainClassFinder.doWithMainClasses(jarFile, null, callback);
+			assertThat(callback.getClassNames().toString()).isEqualTo("[a.b.G, a.b.c.D]");
+		}
 	}
 
 	private static class ClassNameCollector implements MainClassCallback<Object> {

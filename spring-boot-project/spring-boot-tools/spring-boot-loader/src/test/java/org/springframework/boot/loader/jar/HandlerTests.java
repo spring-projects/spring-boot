@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@ExtendWith(JarUrlProtocolHandler.class)
 class HandlerTests {
 
 	private final Handler handler = new Handler();
@@ -157,6 +159,7 @@ class HandlerTests {
 		URLConnection connection = new URL(null, "jar:file:" + testJar.getAbsolutePath() + "!/nested.jar!/",
 				this.handler).openConnection();
 		assertThat(connection).isInstanceOf(JarURLConnection.class);
+		((JarURLConnection) connection).getJarFile().close();
 		URLConnection jdkConnection = new URL(null, "jar:file:file:" + testJar.getAbsolutePath() + "!/nested.jar!/",
 				this.handler).openConnection();
 		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);

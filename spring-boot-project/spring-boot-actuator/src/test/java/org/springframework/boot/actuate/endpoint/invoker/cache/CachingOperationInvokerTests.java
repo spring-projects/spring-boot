@@ -114,7 +114,10 @@ class CachingOperationInvokerTests {
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 50L);
 		invoker.invoke(context);
-		Thread.sleep(55);
+		long expired = System.currentTimeMillis() + 50;
+		while (System.currentTimeMillis() < expired) {
+			Thread.sleep(10);
+		}
 		invoker.invoke(context);
 		verify(target, times(2)).invoke(context);
 	}

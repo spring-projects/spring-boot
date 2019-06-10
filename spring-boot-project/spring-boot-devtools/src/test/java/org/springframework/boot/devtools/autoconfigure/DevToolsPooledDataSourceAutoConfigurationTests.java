@@ -28,6 +28,8 @@ import org.apache.derby.jdbc.EmbeddedDriver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -121,6 +123,7 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	void inMemoryDerbyIsShutdown() throws Exception {
 		ConfigurableApplicationContext context = getContext(
 				() -> createContext("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:test;create=true",
@@ -132,6 +135,9 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 		assertThatExceptionOfType(SQLException.class)
 				.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:memory:test", new Properties()))
 				.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
+		// Shut Derby down fully so that it closes its log file
+		assertThatExceptionOfType(SQLException.class)
+				.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:;shutdown=true", new Properties()));
 	}
 
 }

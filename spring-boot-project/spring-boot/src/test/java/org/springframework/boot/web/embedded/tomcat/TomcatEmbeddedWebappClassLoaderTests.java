@@ -75,8 +75,16 @@ class TomcatEmbeddedWebappClassLoaderTests {
 			resources.start();
 			classLoader.setResources(resources);
 			classLoader.start();
-			consumer.accept(classLoader);
+			try {
+				consumer.accept(classLoader);
+			}
+			finally {
+				classLoader.stop();
+				classLoader.close();
+				resources.stop();
+			}
 		}
+		parent.close();
 	}
 
 	private String webInfClassesUrlString(File war) {
