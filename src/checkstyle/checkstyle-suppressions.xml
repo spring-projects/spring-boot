@@ -44,4 +44,5 @@
 	<suppress files="JavaLoggingSystemTests" checks="SpringJUnit5" />
 	<suppress files="Log4J2LoggingSystemTests" checks="SpringJUnit5" />
 	<suppress files="RestClientTestWithComponentIntegrationTests" checks="SpringJUnit5" />
+	<suppress files="SampleJunitVintageApplicationTests" checks="SpringJUnit5" />
 </suppressions>
