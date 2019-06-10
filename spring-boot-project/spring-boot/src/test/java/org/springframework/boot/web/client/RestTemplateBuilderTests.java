@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.client;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
@@ -29,7 +30,10 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -298,12 +302,12 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void basicAuthenticationShouldApply() {
+	void basicAuthenticationShouldApply() throws Exception {
 		RestTemplate template = this.builder.basicAuthentication("spring", "boot", StandardCharsets.UTF_8).build();
 		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
-		Object authentication = ReflectionTestUtils.getField(requestFactory, "authentication");
-		assertThat(authentication).extracting("username", "password", "charset").containsExactly("spring", "boot",
-				StandardCharsets.UTF_8);
+		ClientHttpRequest request = requestFactory.createRequest(URI.create("http://localhost"), HttpMethod.POST);
+		assertThat(request.getHeaders()).containsOnlyKeys(HttpHeaders.AUTHORIZATION);
+		assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
 
 	@Test
@@ -383,7 +387,7 @@ class RestTemplateBuilderTests {
 					assertThat(actualRequestFactory).isInstanceOf(InterceptingClientHttpRequestFactory.class);
 					ClientHttpRequestFactory authRequestFactory = (ClientHttpRequestFactory) ReflectionTestUtils
 							.getField(actualRequestFactory, "requestFactory");
-					assertThat(authRequestFactory).isInstanceOf(BasicAuthenticationClientHttpRequestFactory.class);
+					assertThat(authRequestFactory).isInstanceOf(HttpHeadersCustomizingClientHttpRequestFactory.class);
 					assertThat(authRequestFactory).hasFieldOrPropertyWithValue("requestFactory", requestFactory);
 				}).build();
 	}

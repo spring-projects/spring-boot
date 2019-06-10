@@ -18,6 +18,9 @@ package org.springframework.boot.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
+
+import org.jetbrains.annotations.NotNull;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
@@ -26,27 +29,29 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
 
 /**
- * {@link ClientHttpRequestFactory} to apply a given HTTP Basic Authentication
- * username/password pair, unless a custom Authorization header has been set before.
+ * {@link ClientHttpRequestFactory} to apply default headers to a request unless header
+ * values were provided.
  *
+ * @author Ilya Lukyanovich
  * @author Dmytro Nosan
  */
-class BasicAuthenticationClientHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
+class HttpHeadersCustomizingClientHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
 
-	private final BasicAuthentication authentication;
+	private final Collection<? extends HttpHeadersCustomizer> customizers;
 
-	BasicAuthenticationClientHttpRequestFactory(BasicAuthentication authentication,
+	HttpHeadersCustomizingClientHttpRequestFactory(Collection<? extends HttpHeadersCustomizer> customizers,
 			ClientHttpRequestFactory clientHttpRequestFactory) {
 		super(clientHttpRequestFactory);
-		Assert.notNull(authentication, "Authentication must not be null");
-		this.authentication = authentication;
+		Assert.notEmpty(customizers, "Customizers must not be empty");
+		this.customizers = customizers;
 	}
 
+	@NotNull
 	@Override
-	protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod, ClientHttpRequestFactory requestFactory)
-			throws IOException {
+	protected ClientHttpRequest createRequest(@NotNull URI uri, @NotNull HttpMethod httpMethod,
+			ClientHttpRequestFactory requestFactory) throws IOException {
 		ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
-		this.authentication.applyTo(request);
+		this.customizers.forEach((customizer) -> customizer.applyTo(request.getHeaders()));
 		return request;
 	}
 
