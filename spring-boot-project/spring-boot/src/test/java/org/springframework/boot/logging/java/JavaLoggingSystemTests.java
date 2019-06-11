@@ -28,15 +28,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.logging.AbstractLoggingSystemJUnit5Tests;
+import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.testsupport.system.CapturedOutput;
-import org.springframework.boot.testsupport.system.LocaleExtension;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -52,10 +50,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Ben Hale
  */
 @ExtendWith(OutputCaptureExtension.class)
-class JavaLoggingSystemTests extends AbstractLoggingSystemJUnit5Tests {
-
-	@RegisterExtension
-	private static final LocaleExtension LOCALE = new LocaleExtension(Locale.ENGLISH);
+class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private static final FileFilter SPRING_LOG_FILTER = (pathname) -> pathname.getName().startsWith("spring.log");
 
@@ -63,14 +58,23 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemJUnit5Tests {
 
 	private Logger logger;
 
+	private Locale defaultLocale;
+
 	@BeforeEach
 	void init() throws SecurityException {
 		this.logger = Logger.getLogger(getClass().getName());
+		this.defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.ENGLISH);
 	}
 
 	@AfterEach
 	void resetLogger() {
 		this.logger.setLevel(Level.OFF);
+	}
+
+	@AfterEach
+	void restoreLocale() {
+		Locale.setDefault(this.defaultLocale);
 	}
 
 	@Test

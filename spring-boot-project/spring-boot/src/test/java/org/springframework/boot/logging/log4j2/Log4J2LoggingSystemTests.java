@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.logging.AbstractLoggingSystemJUnit5Tests;
+import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.verify;
  * @author Ben Hale
  */
 @ExtendWith(OutputCaptureExtension.class)
-class Log4J2LoggingSystemTests extends AbstractLoggingSystemJUnit5Tests {
+class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
 
