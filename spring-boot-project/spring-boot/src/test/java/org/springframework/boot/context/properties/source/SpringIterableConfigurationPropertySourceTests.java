@@ -163,9 +163,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		EnumerablePropertySource<?> source = new MapPropertySource("test", map);
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(source,
 				DefaultPropertyMapper.INSTANCE);
-		assertThat(adapter.stream().count()).isEqualTo(2);
+		assertThat(adapter.stream()).hasSize(2);
 		map.put("key3", "value3");
-		assertThat(adapter.stream().count()).isEqualTo(3);
+		assertThat(adapter.stream()).hasSize(3);
 	}
 
 	@Test
@@ -177,10 +177,10 @@ class SpringIterableConfigurationPropertySourceTests {
 		EnumerablePropertySource<?> source = new MapPropertySource("test", map);
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(source,
 				DefaultPropertyMapper.INSTANCE);
-		assertThat(adapter.stream().count()).isEqualTo(2);
+		assertThat(adapter.stream()).hasSize(2);
 		map.setThrowException(true);
 		map.put("key3", "value3");
-		assertThat(adapter.stream().count()).isEqualTo(3);
+		assertThat(adapter.stream()).hasSize(3);
 	}
 
 	@Test
@@ -192,9 +192,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		EnumerablePropertySource<?> source = new OriginTrackedMapPropertySource("test", map);
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(source,
 				DefaultPropertyMapper.INSTANCE);
-		assertThat(adapter.stream().count()).isEqualTo(2);
+		assertThat(adapter.stream()).hasSize(2);
 		map.put("key3", "value3");
-		assertThat(adapter.stream().count()).isEqualTo(3);
+		assertThat(adapter.stream()).hasSize(3);
 	}
 
 	@Test
@@ -206,9 +206,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		EnumerablePropertySource<?> source = new OriginTrackedMapPropertySource("test", map, true);
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(source,
 				DefaultPropertyMapper.INSTANCE);
-		assertThat(adapter.stream().count()).isEqualTo(2);
+		assertThat(adapter.stream()).hasSize(2);
 		map.put("key3", "value3");
-		assertThat(adapter.stream().count()).isEqualTo(2);
+		assertThat(adapter.stream()).hasSize(2);
 	}
 
 	/**
