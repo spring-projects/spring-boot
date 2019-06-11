@@ -83,7 +83,7 @@ class ConstructorParametersBinder implements BeanBinder {
 	private Object bind(ConstructorParameter parameter, BeanPropertyBinder propertyBinder) {
 		String propertyName = parameter.getName();
 		ResolvableType type = parameter.getType();
-		return propertyBinder.bindProperty(propertyName, Bindable.of(type));
+		return propertyBinder.bindProperty(propertyName, Bindable.of(type).withAnnotations(parameter.getAnnotations()));
 	}
 
 	private static final class Bean {

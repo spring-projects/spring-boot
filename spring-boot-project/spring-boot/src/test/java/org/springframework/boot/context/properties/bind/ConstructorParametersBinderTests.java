@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.context.properties.bind;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -135,6 +137,16 @@ class ConstructorParametersBinderTests {
 		assertThat(bean.getIntValue()).isEqualTo(5);
 		assertThat(bean.getStringsList()).containsOnly("a", "b", "c");
 		assertThat(bean.getCustomList()).containsOnly("x,y,z");
+	}
+
+	@Test
+	void bindWithAnnotations() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.date", "2014-04-01");
+		this.sources.add(source);
+		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
+				.get();
+		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
 	}
 
 	public static class ExampleValueBean {
@@ -261,6 +273,20 @@ class ConstructorParametersBinderTests {
 
 		public List<String> getCustomList() {
 			return this.customList;
+		}
+
+	}
+
+	public static class ConverterAnnotatedExampleBean {
+
+		private final LocalDate date;
+
+		ConverterAnnotatedExampleBean(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+			this.date = date;
+		}
+
+		public LocalDate getDate() {
+			return this.date;
 		}
 
 	}
