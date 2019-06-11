@@ -184,7 +184,7 @@ class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void originTrackedMapPropertySourceKeyAdditionInvalidatesCache() {
+	void originTrackedMapPropertySourceKeyAdditionInvalidatesCache() {
 		// gh-13344
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("key1", "value1");
@@ -198,7 +198,7 @@ class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void readOnlyOriginTrackedMapPropertySourceKeyAdditionDoesNotInvalidateCache() {
+	void readOnlyOriginTrackedMapPropertySourceKeyAdditionDoesNotInvalidateCache() {
 		// gh-16717
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("key1", "value1");
