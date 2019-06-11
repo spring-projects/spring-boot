@@ -779,10 +779,9 @@ class WebMvcAutoConfigurationTests {
 	void customPrinterAndParserShouldBeRegisteredAsConverters() {
 		this.contextRunner.withUserConfiguration(ParserConfiguration.class, PrinterConfiguration.class)
 				.run((context) -> {
-					Foo foo = new Foo("bar");
-					ConversionService conversionService = context.getBean(ConversionService.class);
-					assertThat(conversionService.convert(foo, String.class)).isEqualTo("bar");
-					assertThat(conversionService.convert("bar", Foo.class)).extracting(Foo::toString).isEqualTo("bar");
+					ConversionService service = context.getBean(ConversionService.class);
+					assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
+					assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
 				});
 	}
 
@@ -1110,17 +1109,8 @@ class WebMvcAutoConfigurationTests {
 	static class PrinterConfiguration {
 
 		@Bean
-		public Printer<Foo> fooPrinter() {
-			return new FooPrinter();
-		}
-
-		private static class FooPrinter implements Printer<Foo> {
-
-			@Override
-			public String print(Foo foo, Locale locale) {
-				return foo.toString();
-			}
-
+		public Printer<Example> examplePrinter() {
+			return new ExamplePrinter();
 		}
 
 	}
@@ -1129,32 +1119,40 @@ class WebMvcAutoConfigurationTests {
 	static class ParserConfiguration {
 
 		@Bean
-		public Parser<Foo> fooParser() {
-			return new FooParser();
-		}
-
-		private static class FooParser implements Parser<Foo> {
-
-			@Override
-			public Foo parse(String source, Locale locale) {
-				return new Foo(source);
-			}
-
+		public Parser<Example> exampleParser() {
+			return new ExampleParser();
 		}
 
 	}
 
-	static class Foo {
+	static final class Example {
 
 		private final String name;
 
-		Foo(String name) {
+		private Example(String name, Date date) {
 			this.name = name;
 		}
 
-		@Override
-		public String toString() {
+		public String getName() {
 			return this.name;
+		}
+
+	}
+
+	private static class ExamplePrinter implements Printer<Example> {
+
+		@Override
+		public String print(Example example, Locale locale) {
+			return example.getName();
+		}
+
+	}
+
+	private static class ExampleParser implements Parser<Example> {
+
+		@Override
+		public Example parse(String source, Locale locale) {
+			return new Example(source, new Date());
 		}
 
 	}
