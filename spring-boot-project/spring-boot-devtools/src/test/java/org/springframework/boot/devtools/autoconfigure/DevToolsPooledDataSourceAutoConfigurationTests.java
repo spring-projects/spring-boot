@@ -18,16 +18,21 @@ package org.springframework.boot.devtools.autoconfigure;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.derby.jdbc.EmbeddedDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -115,10 +120,15 @@ public class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevT
 	@Test
 	public void inMemoryDerbyIsShutdown() throws SQLException {
 		ConfigurableApplicationContext context = createContext("org.apache.derby.jdbc.EmbeddedDriver",
-				"jdbc:derby:memory:test", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class);
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+				"jdbc:derby:memory:test;create=true", DataSourceAutoConfiguration.class,
+				DataSourceSpyConfiguration.class);
+		JdbcTemplate jdbc = new JdbcTemplate(context.getBean(DataSource.class));
+		jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
 		context.close();
-		verify(statement, times(1)).execute("SHUTDOWN");
+		// Connect should fail as DB no longer exists
+		assertThatExceptionOfType(SQLException.class)
+				.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:memory:test", new Properties()))
+				.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
 	}
 
 }

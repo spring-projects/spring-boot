@@ -17,12 +17,16 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.sql.DataSource;
+
+import org.apache.derby.jdbc.EmbeddedDriver;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -94,46 +98,70 @@ public class DevToolsDataSourceAutoConfiguration {
 
 		@Override
 		public void destroy() throws Exception {
-			if (dataSourceRequiresShutdown()) {
-				try (Connection connection = this.dataSource.getConnection()) {
-					try (Statement statement = connection.createStatement()) {
-						statement.execute("SHUTDOWN");
-					}
-				}
-			}
-		}
-
-		private boolean dataSourceRequiresShutdown() {
 			for (InMemoryDatabase inMemoryDatabase : InMemoryDatabase.values()) {
 				if (inMemoryDatabase.matches(this.dataSourceProperties)) {
-					return true;
+					inMemoryDatabase.shutdown(this.dataSource);
+					return;
 				}
 			}
-			return false;
 		}
 
 		private enum InMemoryDatabase {
 
-			DERBY(null, "org.apache.derby.jdbc.EmbeddedDriver"),
+			DERBY(null, new HashSet<>(Arrays.asList("org.apache.derby.jdbc.EmbeddedDriver")), (dataSource) -> {
+				String url = dataSource.getConnection().getMetaData().getURL();
+				try {
+					new EmbeddedDriver().connect(url + ";drop=true", new Properties());
+				}
+				catch (SQLException ex) {
+					if (!"08006".equals(ex.getSQLState())) {
+						throw ex;
+					}
+				}
+			}),
 
-			H2("jdbc:h2:mem:", "org.h2.Driver", "org.h2.jdbcx.JdbcDataSource"),
+			H2("jdbc:h2:mem:", new HashSet<>(Arrays.asList("org.h2.Driver", "org.h2.jdbcx.JdbcDataSource"))),
 
-			HSQLDB("jdbc:hsqldb:mem:", "org.hsqldb.jdbcDriver", "org.hsqldb.jdbc.JDBCDriver",
-					"org.hsqldb.jdbc.pool.JDBCXADataSource");
+			HSQLDB("jdbc:hsqldb:mem:", new HashSet<>(Arrays.asList("org.hsqldb.jdbcDriver",
+					"org.hsqldb.jdbc.JDBCDriver", "org.hsqldb.jdbc.pool.JDBCXADataSource")));
 
 			private final String urlPrefix;
 
+			private final ShutdownHandler shutdownHandler;
+
 			private final Set<String> driverClassNames;
 
-			InMemoryDatabase(String urlPrefix, String... driverClassNames) {
+			InMemoryDatabase(String urlPrefix, Set<String> driverClassNames) {
+				this(urlPrefix, driverClassNames, (dataSource) -> {
+					try (Connection connection = dataSource.getConnection()) {
+						try (Statement statement = connection.createStatement()) {
+							statement.execute("SHUTDOWN");
+						}
+					}
+				});
+			}
+
+			InMemoryDatabase(String urlPrefix, Set<String> driverClassNames, ShutdownHandler shutdownHandler) {
 				this.urlPrefix = urlPrefix;
-				this.driverClassNames = new HashSet<>(Arrays.asList(driverClassNames));
+				this.driverClassNames = driverClassNames;
+				this.shutdownHandler = shutdownHandler;
 			}
 
 			boolean matches(DataSourceProperties properties) {
 				String url = properties.getUrl();
 				return (url == null || this.urlPrefix == null || url.startsWith(this.urlPrefix))
 						&& this.driverClassNames.contains(properties.determineDriverClassName());
+			}
+
+			void shutdown(DataSource dataSource) throws SQLException {
+				this.shutdownHandler.shutdown(dataSource);
+			}
+
+			@FunctionalInterface
+			interface ShutdownHandler {
+
+				void shutdown(DataSource dataSource) throws SQLException;
+
 			}
 
 		}
