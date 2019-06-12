@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
@@ -652,9 +653,13 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			try {
 				this.accessLogReceiver.close();
 				this.worker.shutdown();
+				this.worker.awaitTermination(30, TimeUnit.SECONDS);
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 			}
 		}
 

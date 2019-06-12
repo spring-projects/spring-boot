@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -156,9 +157,13 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 				try {
 					accessLogReceiver.close();
 					worker.shutdown();
+					worker.awaitTermination(30, TimeUnit.SECONDS);
 				}
 				catch (IOException ex) {
 					throw new IllegalStateException(ex);
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
 				}
 			};
 		}
