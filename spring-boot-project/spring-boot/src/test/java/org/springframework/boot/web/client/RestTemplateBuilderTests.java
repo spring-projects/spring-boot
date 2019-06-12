@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.client;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -52,6 +53,7 @@ import org.springframework.web.util.UriTemplateHandler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -69,6 +71,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Andy Wilkinson
  * @author Dmytro Nosan
  * @author Kevin Strijbos
+ * @author Ilya Lukyanovich
  */
 class RestTemplateBuilderTests {
 
@@ -311,16 +314,44 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	void defaultHeaderAddsHeader() throws IOException {
+		RestTemplate template = this.builder.defaultHeader("spring", "boot").build();
+		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
+		ClientHttpRequest request = requestFactory.createRequest(URI.create("http://localhost"), HttpMethod.GET);
+		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("boot")));
+	}
+
+	@Test
+	void requestCustomizersAddsCustomizers() throws IOException {
+		RestTemplate template = this.builder
+				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework")).build();
+		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
+		ClientHttpRequest request = requestFactory.createRequest(URI.create("http://localhost"), HttpMethod.GET);
+		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("framework")));
+	}
+
+	@Test
+	void additionalRequestCustomizersAddsCustomizers() throws IOException {
+		RestTemplate template = this.builder
+				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))
+				.additionalRequestCustomizers((request) -> request.getHeaders().add("for", "java")).build();
+		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
+		ClientHttpRequest request = requestFactory.createRequest(URI.create("http://localhost"), HttpMethod.GET);
+		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("framework")))
+				.contains(entry("for", Collections.singletonList("java")));
+	}
+
+	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.customizers((RestTemplateCustomizer[]) null))
-				.withMessageContaining("RestTemplateCustomizers must not be null");
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.customizers((Set<RestTemplateCustomizer>) null))
-				.withMessageContaining("RestTemplateCustomizers must not be null");
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -352,7 +383,7 @@ class RestTemplateBuilderTests {
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.additionalCustomizers((RestTemplateCustomizer[]) null))
-				.withMessageContaining("RestTemplateCustomizers must not be null");
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -387,7 +418,8 @@ class RestTemplateBuilderTests {
 					assertThat(actualRequestFactory).isInstanceOf(InterceptingClientHttpRequestFactory.class);
 					ClientHttpRequestFactory authRequestFactory = (ClientHttpRequestFactory) ReflectionTestUtils
 							.getField(actualRequestFactory, "requestFactory");
-					assertThat(authRequestFactory).isInstanceOf(HttpHeadersCustomizingClientHttpRequestFactory.class);
+					assertThat(authRequestFactory)
+							.isInstanceOf(RestTemplateBuilderClientHttpRequestFactoryWrapper.class);
 					assertThat(authRequestFactory).hasFieldOrPropertyWithValue("requestFactory", requestFactory);
 				}).build();
 	}

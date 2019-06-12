@@ -100,7 +100,7 @@ class TestRestTemplateTests {
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder).withBasicAuth("test", "test");
 		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
 		assertThat(restTemplate.getRequestFactory().getClass().getName())
-				.contains("HttpHeadersCustomizingClientHttpRequestFactory");
+				.contains("RestTemplateBuilderClientHttpRequestFactoryWrapper");
 		Object requestFactory = ReflectionTestUtils.getField(restTemplate.getRequestFactory(), "requestFactory");
 		assertThat(requestFactory).isEqualTo(customFactory).hasSameClassAs(customFactory);
 	}
@@ -208,7 +208,7 @@ class TestRestTemplateTests {
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(getConverterClasses(original)).containsExactlyElementsOf(getConverterClasses(basicAuth));
 		assertThat(basicAuth.getRestTemplate().getRequestFactory().getClass().getName())
-				.contains("HttpHeadersCustomizingClientHttpRequestFactory");
+				.contains("RestTemplateBuilderClientHttpRequestFactoryWrapper");
 		assertThat(ReflectionTestUtils.getField(basicAuth.getRestTemplate().getRequestFactory(), "requestFactory"))
 				.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuth.getRestTemplate().getInterceptors()).isEmpty();
@@ -221,7 +221,7 @@ class TestRestTemplateTests {
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(getConverterClasses(basicAuth)).containsExactlyElementsOf(getConverterClasses(original));
 		assertThat(basicAuth.getRestTemplate().getRequestFactory().getClass().getName())
-				.contains("HttpHeadersCustomizingClientHttpRequestFactory");
+				.contains("RestTemplateBuilderClientHttpRequestFactoryWrapper");
 		assertThat(ReflectionTestUtils.getField(basicAuth.getRestTemplate().getRequestFactory(), "requestFactory"))
 				.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuth.getRestTemplate().getInterceptors()).isEmpty();
