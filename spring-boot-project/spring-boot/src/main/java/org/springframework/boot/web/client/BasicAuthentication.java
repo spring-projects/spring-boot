@@ -19,15 +19,13 @@ package org.springframework.boot.web.client;
 import java.nio.charset.Charset;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.util.Assert;
 
 /**
- * Basic authentication properties which are used by
- * {@link BasicAuthenticationClientHttpRequestFactory}.
+ * Basic authentication details to be applied to {@link HttpHeaders}.
  *
  * @author Dmytro Nosan
- * @see BasicAuthenticationClientHttpRequestFactory
+ * @author Ilya Lukyanovich
  */
 class BasicAuthentication {
 
@@ -45,8 +43,7 @@ class BasicAuthentication {
 		this.charset = charset;
 	}
 
-	void applyTo(ClientHttpRequest request) {
-		HttpHeaders headers = request.getHeaders();
+	public void applyTo(HttpHeaders headers) {
 		if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
 			headers.setBasicAuth(this.username, this.password, this.charset);
 		}
