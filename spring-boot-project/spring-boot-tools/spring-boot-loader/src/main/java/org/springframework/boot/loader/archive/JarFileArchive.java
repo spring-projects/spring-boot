@@ -94,6 +94,11 @@ public class JarFileArchive implements Archive {
 		return new EntryIterator(this.jarFile.entries());
 	}
 
+	@Override
+	public void close() throws IOException {
+		this.jarFile.close();
+	}
+
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
 		if (jarEntry.getComment().startsWith(UNPACK_MARKER)) {
