@@ -26,6 +26,8 @@ import io.undertow.server.handlers.resource.ResourceChangeListener;
 import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.server.handlers.resource.URLResource;
 
+import org.springframework.util.StringUtils;
+
 /**
  * {@link ResourceManager} for JAR resources.
  *
@@ -48,7 +50,7 @@ class JarResourceManager implements ResourceManager {
 	public Resource getResource(String path) throws IOException {
 		URL url = new URL("jar:file:" + this.jarPath + "!" + (path.startsWith("/") ? path : "/" + path));
 		URLResource resource = new URLResource(url, path);
-		if (resource.getContentLength() < 0) {
+		if (StringUtils.hasText(path) && !"/".equals(path) && resource.getContentLength() < 0) {
 			return null;
 		}
 		return resource;
