@@ -117,29 +117,24 @@ final class ChangeableUrls implements Iterable<URL> {
 	}
 
 	private static List<URL> getUrlsFromClassPathOfJarManifestIfPossible(URL url) {
-		JarFile jarFile = getJarFileIfPossible(url);
-		if (jarFile == null) {
-			return Collections.emptyList();
-		}
-		try {
-			return getUrlsFromManifestClassPathAttribute(url, jarFile);
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Failed to read Class-Path attribute from manifest of jar " + url, ex);
-		}
-	}
-
-	private static JarFile getJarFileIfPossible(URL url) {
 		try {
 			File file = new File(url.toURI());
 			if (file.isFile()) {
-				return new JarFile(file);
+				try (JarFile jarFile = new JarFile(file)) {
+					try {
+						return getUrlsFromManifestClassPathAttribute(url, jarFile);
+					}
+					catch (IOException ex) {
+						throw new IllegalStateException(
+								"Failed to read Class-Path attribute from manifest of jar " + url, ex);
+					}
+				}
 			}
 		}
 		catch (Exception ex) {
 			// Assume it's not a jar and continue
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	private static List<URL> getUrlsFromManifestClassPathAttribute(URL jarUrl, JarFile jarFile) throws IOException {
