@@ -108,7 +108,7 @@ class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		this.contextRunner.withPropertyValues().run((context) -> {
 			FreeMarkerConfigurer freemarker = context.getBean(FreeMarkerConfigurer.class);
 			StringWriter writer = new StringWriter();
-			freemarker.getConfiguration().getTemplate("message.ftl").process(new DataModel(), writer);
+			freemarker.getConfiguration().getTemplate("message.ftlh").process(new DataModel(), writer);
 			assertThat(writer.toString()).contains("Hello World");
 		});
 	}

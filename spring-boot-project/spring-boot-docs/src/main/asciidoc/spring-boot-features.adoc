@@ -2702,7 +2702,7 @@ follows:
 	     +- resources/
 	         +- templates/
 	             +- error/
-	             |   +- 5xx.ftl
+	             |   +- 5xx.ftlh
 	             +- <other templates>
 ----
 

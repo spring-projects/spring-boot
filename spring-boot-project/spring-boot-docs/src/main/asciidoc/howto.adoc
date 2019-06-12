@@ -1417,7 +1417,7 @@ externalized to `spring.freemarker.templateLoaderPath` and has a default value o
 '`classpath:/templates/`') by surrounding the view name with a prefix and a suffix. The
 prefix is externalized to `spring.freemarker.prefix`, and the suffix is externalized to
 `spring.freemarker.suffix`. The default values of the prefix and suffix are empty and
-'`.ftl`', respectively. You can override `FreeMarkerViewResolver` by providing a bean
+'`.ftlh`', respectively. You can override `FreeMarkerViewResolver` by providing a bean
 of the same name.
 * If you use Groovy templates (actually, if `groovy-templates` is on your classpath), you
 also have a `GroovyMarkupViewResolver` named '`groovyMarkupViewResolver`'. It looks for
@@ -2522,7 +2522,7 @@ error page rather than disabling it completely.
 
 Overriding the error page with your own depends on the templating technology that you
 use. For example, if you use Thymeleaf, you can add an `error.html` template.
-If you use FreeMarker, you can add an `error.ftl` template. In general, you
+If you use FreeMarker, you can add an `error.ftlh` template. In general, you
 need a `View` that resolves with a name of `error` or a `@Controller` that handles
 the `/error` path. Unless you replaced some of the default configuration, you should find
 a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would

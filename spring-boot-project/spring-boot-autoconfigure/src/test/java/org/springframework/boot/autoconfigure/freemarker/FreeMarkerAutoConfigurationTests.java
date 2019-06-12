@@ -49,7 +49,7 @@ public class FreeMarkerAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			freemarker.template.Configuration freemarker = context.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
-			freemarker.getTemplate("message.ftl").process(new DataModel(), writer);
+			freemarker.getTemplate("message.ftlh").process(new DataModel(), writer);
 			assertThat(writer.toString()).contains("Hello World");
 		});
 	}

@@ -495,7 +495,7 @@
     },
     {
       "name": "spring.freemarker.suffix",
-      "defaultValue": ".ftl"
+      "defaultValue": ".ftlh"
     },
     {
       "name": "spring.groovy.template.prefix",
