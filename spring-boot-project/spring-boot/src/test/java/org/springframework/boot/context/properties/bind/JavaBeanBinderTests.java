@@ -523,6 +523,12 @@ class JavaBeanBinderTests {
 		property.setValue(() -> target, "some string");
 	}
 
+	@Test
+	void bindOrCreateWithNestedShouldReturnCreatedValue() {
+		NestedJavaBean result = this.binder.bindOrCreate("foo", Bindable.of(NestedJavaBean.class));
+		assertThat(result.getNested().getBar()).isEqualTo(456);
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -987,6 +993,20 @@ class JavaBeanBinderTests {
 
 		public String getProperty() {
 			return this.property;
+		}
+
+	}
+
+	public static class NestedJavaBean {
+
+		private ExampleDefaultsBean nested = new ExampleDefaultsBean();
+
+		public ExampleDefaultsBean getNested() {
+			return this.nested;
+		}
+
+		public void setNested(ExampleDefaultsBean nested) {
+			this.nested = nested;
 		}
 
 	}

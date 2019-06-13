@@ -86,11 +86,21 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 	}
 
 	public <T> BindResult<T> bind(Bindable<T> target) {
+		ConfigurationProperties annotation = getAnnotation(target);
+		BindHandler bindHandler = getBindHandler(target, annotation);
+		return getBinder().bind(annotation.prefix(), target, bindHandler);
+	}
+
+	public <T> T bindOrCreate(Bindable<T> target) {
+		ConfigurationProperties annotation = getAnnotation(target);
+		BindHandler bindHandler = getBindHandler(target, annotation);
+		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);
+	}
+
+	private <T> ConfigurationProperties getAnnotation(Bindable<?> target) {
 		ConfigurationProperties annotation = target.getAnnotation(ConfigurationProperties.class);
 		Assert.state(annotation != null, () -> "Missing @ConfigurationProperties on " + target);
-		List<Validator> validators = getValidators(target);
-		BindHandler bindHandler = getBindHandler(annotation, validators);
-		return getBinder().bind(annotation.prefix(), target, bindHandler);
+		return annotation;
 	}
 
 	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext,
@@ -99,6 +109,25 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 			return applicationContext.getBean(validatorBeanName, Validator.class);
 		}
 		return null;
+	}
+
+	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
+		List<Validator> validators = getValidators(target);
+		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
+		if (annotation.ignoreInvalidFields()) {
+			handler = new IgnoreErrorsBindHandler(handler);
+		}
+		if (!annotation.ignoreUnknownFields()) {
+			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
+			handler = new NoUnboundElementsBindHandler(handler, filter);
+		}
+		if (!validators.isEmpty()) {
+			handler = new ValidationBindHandler(handler, validators.toArray(new Validator[0]));
+		}
+		for (ConfigurationPropertiesBindHandlerAdvisor advisor : getBindHandlerAdvisors()) {
+			handler = advisor.apply(handler);
+		}
+		return handler;
 	}
 
 	private List<Validator> getValidators(Bindable<?> target) {
@@ -120,24 +149,6 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
 		}
 		return this.jsr303Validator;
-	}
-
-	private BindHandler getBindHandler(ConfigurationProperties annotation, List<Validator> validators) {
-		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
-		if (annotation.ignoreInvalidFields()) {
-			handler = new IgnoreErrorsBindHandler(handler);
-		}
-		if (!annotation.ignoreUnknownFields()) {
-			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
-			handler = new NoUnboundElementsBindHandler(handler, filter);
-		}
-		if (!validators.isEmpty()) {
-			handler = new ValidationBindHandler(handler, validators.toArray(new Validator[0]));
-		}
-		for (ConfigurationPropertiesBindHandlerAdvisor advisor : getBindHandlerAdvisors()) {
-			handler = advisor.apply(handler);
-		}
-		return handler;
 	}
 
 	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {

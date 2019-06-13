@@ -39,4 +39,13 @@ interface BeanBinder {
 	 */
 	<T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context, BeanPropertyBinder propertyBinder);
 
+	/**
+	 * Return a new instance for the specified type.
+	 * @param type the type used for creating a new instance
+	 * @param context the bind context
+	 * @param <T> the source type
+	 * @return the created instance
+	 */
+	<T> T create(Class<T> type, Context context);
+
 }

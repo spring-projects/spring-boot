@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
@@ -129,14 +130,20 @@ class ConstructorParametersBinderTests {
 	}
 
 	@Test
-	void bindToClassWithNoValueAndDefaultValueShouldUseDefault() {
+	void bindToClassWithNoValueAndDefaultValueShouldNotBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.string-value", "foo");
 		this.sources.add(source);
-		ExampleDefaultValueBean bean = this.binder.bind("foo", Bindable.of(ExampleDefaultValueBean.class)).get();
-		assertThat(bean.getIntValue()).isEqualTo(5);
-		assertThat(bean.getStringsList()).containsOnly("a", "b", "c");
-		assertThat(bean.getCustomList()).containsOnly("x,y,z");
+		assertThat(this.binder.bind("foo", Bindable.of(ExampleDefaultValueBean.class)).isBound()).isFalse();
+	}
+
+	@Test
+	void bindToClassWhenNoParameterBoundShouldReturnNull() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		this.sources.add(source.nonIterable());
+		BindResult<ExampleFailingConstructorBean> result = this.binder.bind("foo",
+				Bindable.of(ExampleFailingConstructorBean.class));
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
@@ -147,6 +154,47 @@ class ConstructorParametersBinderTests {
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
 				.get();
 		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
+	}
+
+	@Test
+	void bindWithAnnotationsAndDefaultValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "hello");
+		this.sources.add(source);
+		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
+				.get();
+		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
+	}
+
+	@Test
+	void createShouldReturnCreatedValue() {
+		ExampleValueBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleValueBean.class));
+		assertThat(value.getIntValue()).isEqualTo(0);
+		assertThat(value.getLongValue()).isEqualTo(0);
+		assertThat(value.isBooleanValue()).isEqualTo(false);
+		assertThat(value.getStringValue()).isNull();
+		assertThat(value.getEnumValue()).isNull();
+	}
+
+	@Test
+	void createWithNestedShouldReturnCreatedValue() {
+		ExampleNestedBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleNestedBean.class));
+		assertThat(value.getValueBean()).isEqualTo(null);
+	}
+
+	@Test
+	void createWithDefaultValuesShouldReturnCreatedWithDefaultValues() {
+		ExampleDefaultValueBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleDefaultValueBean.class));
+		assertThat(value.getIntValue()).isEqualTo(5);
+		assertThat(value.getStringsList()).containsOnly("a", "b", "c");
+		assertThat(value.getCustomList()).containsOnly("x,y,z");
+	}
+
+	@Test
+	void createWithDefaultValuesAndAnnotationsShouldReturnCreatedWithDefaultValues() {
+		ConverterAnnotatedExampleBean bean = this.binder.bindOrCreate("foo",
+				Bindable.of(ConverterAnnotatedExampleBean.class));
+		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
 	}
 
 	public static class ExampleValueBean {
@@ -277,16 +325,47 @@ class ConstructorParametersBinderTests {
 
 	}
 
+	public static class ExampleFailingConstructorBean {
+
+		private final String name;
+
+		private final Object value;
+
+		ExampleFailingConstructorBean(String name, String value) {
+			Objects.requireNonNull(name, "'name' must be not null.");
+			Objects.requireNonNull(value, "'value' must be not null.");
+			this.name = name;
+			this.value = value;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Object getValue() {
+			return this.value;
+		}
+
+	}
+
 	public static class ConverterAnnotatedExampleBean {
 
 		private final LocalDate date;
 
-		ConverterAnnotatedExampleBean(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+		private final String bar;
+
+		ConverterAnnotatedExampleBean(
+				@DefaultValue("2019-05-10") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, String bar) {
 			this.date = date;
+			this.bar = bar;
 		}
 
 		public LocalDate getDate() {
 			return this.date;
+		}
+
+		public String getBar() {
+			return this.bar;
 		}
 
 	}

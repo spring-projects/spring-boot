@@ -151,6 +151,8 @@ class BindResultTests {
 	}
 
 	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	void orElseCreateWhenTypeIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.orElseCreate(null))
@@ -158,12 +160,14 @@ class BindResultTests {
 	}
 
 	@Test
+	@Deprecated
 	void orElseCreateWhenHasValueShouldReturnValue() {
 		BindResult<ExampleBean> result = BindResult.of(new ExampleBean("foo"));
 		assertThat(result.orElseCreate(ExampleBean.class).getValue()).isEqualTo("foo");
 	}
 
 	@Test
+	@Deprecated
 	void orElseCreateWhenHasValueNoShouldReturnCreatedValue() {
 		BindResult<ExampleBean> result = BindResult.of(null);
 		assertThat(result.orElseCreate(ExampleBean.class).getValue()).isEqualTo("new");

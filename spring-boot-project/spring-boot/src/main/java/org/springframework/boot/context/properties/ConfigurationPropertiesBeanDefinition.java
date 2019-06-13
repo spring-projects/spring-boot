@@ -55,7 +55,7 @@ final class ConfigurationPropertiesBeanDefinition extends GenericBeanDefinition 
 			ConfigurationPropertiesBinder binder = beanFactory.getBean(ConfigurationPropertiesBinder.BEAN_NAME,
 					ConfigurationPropertiesBinder.class);
 			try {
-				return binder.bind(bindable).orElseCreate(type);
+				return binder.bindOrCreate(bindable);
 			}
 			catch (Exception ex) {
 				throw new ConfigurationPropertiesBindException(beanName, type, annotation, ex);

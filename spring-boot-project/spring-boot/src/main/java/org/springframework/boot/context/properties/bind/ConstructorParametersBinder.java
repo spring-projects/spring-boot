@@ -57,20 +57,45 @@ class ConstructorParametersBinder implements BeanBinder {
 			return null;
 		}
 		List<Object> bound = bind(propertyBinder, bean, context.getConverter());
-		return (T) BeanUtils.instantiateClass(bean.getConstructor(), bound.toArray());
+		return (bound != null) ? (T) BeanUtils.instantiateClass(bean.getConstructor(), bound.toArray()) : null;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T create(Class<T> type, Binder.Context context) {
+		Bean bean = getBean(type);
+		if (bean == null) {
+			return null;
+		}
+		Collection<ConstructorParameter> parameters = bean.getParameters().values();
+		List<Object> parameterValues = new ArrayList<>(parameters.size());
+		for (ConstructorParameter parameter : parameters) {
+			Object boundParameter = getDefaultValue(parameter, context.getConverter());
+			parameterValues.add(boundParameter);
+		}
+		return (T) BeanUtils.instantiateClass(bean.getConstructor(), parameterValues.toArray());
+	}
+
+	private <T> Bean getBean(Class<T> type) {
+		if (KOTLIN_PRESENT && KotlinDetector.isKotlinType(type)) {
+			return KotlinBeanProvider.get(type);
+		}
+		return SimpleBeanProvider.get(type);
 	}
 
 	private List<Object> bind(BeanPropertyBinder propertyBinder, Bean bean, BindConverter converter) {
 		Collection<ConstructorParameter> parameters = bean.getParameters().values();
 		List<Object> boundParameters = new ArrayList<>(parameters.size());
+		int unboundParameterCount = 0;
 		for (ConstructorParameter parameter : parameters) {
 			Object boundParameter = bind(parameter, propertyBinder);
 			if (boundParameter == null) {
+				unboundParameterCount++;
 				boundParameter = getDefaultValue(parameter, converter);
 			}
 			boundParameters.add(boundParameter);
 		}
-		return boundParameters;
+		return (unboundParameterCount != parameters.size()) ? boundParameters : null;
 	}
 
 	private Object getDefaultValue(ConstructorParameter parameter, BindConverter converter) {

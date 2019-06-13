@@ -55,6 +55,11 @@ class JavaBeanBinder implements BeanBinder {
 		return (bound ? beanSupplier.get() : null);
 	}
 
+	@Override
+	public <T> T create(Class<T> type, Context context) {
+		return BeanUtils.instantiateClass(type);
+	}
+
 	private boolean hasKnownBindableProperties(ConfigurationPropertyName name, Context context) {
 		for (ConfigurationPropertySource source : context.getSources()) {
 			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {

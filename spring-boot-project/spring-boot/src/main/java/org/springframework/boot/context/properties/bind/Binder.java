@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,11 +24,9 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -58,14 +55,7 @@ public class Binder {
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
 			.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
 
-	private static final List<BeanBinder> BEAN_BINDERS;
-
-	static {
-		List<BeanBinder> binders = new ArrayList<>();
-		binders.add(new ConstructorParametersBinder());
-		binders.add(new JavaBeanBinder());
-		BEAN_BINDERS = Collections.unmodifiableList(binders);
-	}
+	private static final BeanBinder[] BEAN_BINDERS = { new ConstructorParametersBinder(), new JavaBeanBinder() };
 
 	private final Iterable<ConfigurationPropertySource> sources;
 
@@ -196,24 +186,89 @@ public class Binder {
 	 * @return the binding result (never {@code null})
 	 */
 	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler) {
+		T bound = bind(name, target, handler, false);
+		return BindResult.of(bound);
+	}
+
+	/**
+	 * Bind the specified target {@link Class} using this binder's
+	 * {@link ConfigurationPropertySource property sources} or create a new instance using
+	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * @param name the configuration property name to bind
+	 * @param target the target class
+	 * @param <T> the bound type
+	 * @return the bound or created object
+	 * @since 2.2.0
+	 * @see #bind(ConfigurationPropertyName, Bindable, BindHandler)
+	 */
+	public <T> T bindOrCreate(String name, Class<T> target) {
+		return bindOrCreate(name, Bindable.of(target));
+	}
+
+	/**
+	 * Bind the specified target {@link Bindable} using this binder's
+	 * {@link ConfigurationPropertySource property sources} or create a new instance using
+	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * @param name the configuration property name to bind
+	 * @param target the target bindable
+	 * @param <T> the bound type
+	 * @return the bound or created object
+	 * @since 2.2.0
+	 * @see #bindOrCreate(ConfigurationPropertyName, Bindable, BindHandler)
+	 */
+	public <T> T bindOrCreate(String name, Bindable<T> target) {
+		return bindOrCreate(ConfigurationPropertyName.of(name), target, null);
+	}
+
+	/**
+	 * Bind the specified target {@link Bindable} using this binder's
+	 * {@link ConfigurationPropertySource property sources} or create a new instance using
+	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * @param name the configuration property name to bind
+	 * @param target the target bindable
+	 * @param handler the bind handler
+	 * @param <T> the bound type
+	 * @return the bound or created object
+	 * @since 2.2.0
+	 * @see #bindOrCreate(ConfigurationPropertyName, Bindable, BindHandler)
+	 */
+	public <T> T bindOrCreate(String name, Bindable<T> target, BindHandler handler) {
+		return bindOrCreate(ConfigurationPropertyName.of(name), target, handler);
+	}
+
+	/**
+	 * Bind the specified target {@link Bindable} using this binder's
+	 * {@link ConfigurationPropertySource property sources} or create a new instance using
+	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * @param name the configuration property name to bind
+	 * @param target the target bindable
+	 * @param handler the bind handler (may be {@code null})
+	 * @param <T> the bound or created type
+	 * @since 2.2.0
+	 * @return the bound or created object
+	 */
+	public <T> T bindOrCreate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler) {
+		return bind(name, target, handler, true);
+	}
+
+	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, boolean create) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
 		handler = (handler != null) ? handler : BindHandler.DEFAULT;
 		Context context = new Context();
-		T bound = bind(name, target, handler, context, false);
-		return BindResult.of(bound);
+		return bind(name, target, handler, context, false, create);
 	}
 
-	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
-			boolean allowRecursiveBinding) {
+	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
+			boolean allowRecursiveBinding, boolean create) {
 		context.clearConfigurationProperty();
 		try {
 			target = handler.onStart(name, target, context);
 			if (target == null) {
-				return null;
+				return handleBindResult(name, target, handler, context, null, create);
 			}
 			Object bound = bindObject(name, target, handler, context, allowRecursiveBinding);
-			return handleBindResult(name, target, handler, context, bound);
+			return handleBindResult(name, target, handler, context, bound, create);
 		}
 		catch (Exception ex) {
 			return handleBindError(name, target, handler, context, ex);
@@ -221,13 +276,30 @@ public class Binder {
 	}
 
 	private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
-			Context context, Object result) throws Exception {
+			Context context, Object result, boolean create) throws Exception {
 		if (result != null) {
 			result = handler.onSuccess(name, target, context, result);
 			result = context.getConverter().convert(result, target);
 		}
+		if (result == null && create) {
+			result = createBean(target, context);
+			result = handler.onCreate(name, target, context, result);
+			result = context.getConverter().convert(result, target);
+			Assert.state(result != null, () -> "Unable to create instance for " + target.getType());
+		}
 		handler.onFinish(name, target, context, result);
 		return context.getConverter().convert(result, target);
+	}
+
+	private Object createBean(Bindable<?> target, Context context) {
+		Class<?> type = target.getType().resolve();
+		for (BeanBinder beanBinder : BEAN_BINDERS) {
+			Object bean = beanBinder.create(type, context);
+			if (bean != null) {
+				return bean;
+			}
+		}
+		return null;
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
@@ -288,7 +360,7 @@ public class Binder {
 			Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
 			boolean allowRecursiveBinding = aggregateBinder.isAllowRecursiveBinding(source);
-			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context, allowRecursiveBinding);
+			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context, allowRecursiveBinding, false);
 			return context.withSource(source, supplier);
 		};
 		return context.withIncreasedDepth(() -> aggregateBinder.bind(name, target, elementBinder));
@@ -325,10 +397,15 @@ public class Binder {
 			return null;
 		}
 		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
-				propertyTarget, handler, context, false);
+				propertyTarget, handler, context, false, false);
 		return context.withBean(type, () -> {
-			Stream<?> boundBeans = BEAN_BINDERS.stream().map((b) -> b.bind(name, target, context, propertyBinder));
-			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
+			for (BeanBinder beanBinder : BEAN_BINDERS) {
+				Object bean = beanBinder.bind(name, target, context, propertyBinder);
+				if (bean != null) {
+					return bean;
+				}
+			}
+			return null;
 		});
 	}
 
