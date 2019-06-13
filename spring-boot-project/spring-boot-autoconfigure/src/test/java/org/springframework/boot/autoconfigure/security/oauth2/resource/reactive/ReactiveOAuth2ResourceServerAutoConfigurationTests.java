@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.ReactiveAuthenticationManagerResolver;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -289,8 +289,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		Stream<WebFilter> filters = filterChain.getWebFilters().toStream();
 		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters
 				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
-		ReactiveAuthenticationManager authenticationManager = (ReactiveAuthenticationManager) ReflectionTestUtils
-				.getField(webFilter, "authenticationManager");
+		ReactiveAuthenticationManagerResolver authenticationManagerResolver = (ReactiveAuthenticationManagerResolver) ReflectionTestUtils
+				.getField(webFilter, "authenticationManagerResolver");
+		Object authenticationManager = authenticationManagerResolver.resolve(null).block();
 		assertThat(authenticationManager).isInstanceOf(JwtReactiveAuthenticationManager.class);
 	}
 
@@ -301,8 +302,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		Stream<WebFilter> filters = filterChain.getWebFilters().toStream();
 		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters
 				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
-		ReactiveAuthenticationManager authenticationManager = (ReactiveAuthenticationManager) ReflectionTestUtils
-				.getField(webFilter, "authenticationManager");
+		ReactiveAuthenticationManagerResolver authenticationManagerResolver = (ReactiveAuthenticationManagerResolver) ReflectionTestUtils
+				.getField(webFilter, "authenticationManagerResolver");
+		Object authenticationManager = authenticationManagerResolver.resolve(null).block();
 		assertThat(authenticationManager).isInstanceOf(OAuth2IntrospectionReactiveAuthenticationManager.class);
 	}
 
