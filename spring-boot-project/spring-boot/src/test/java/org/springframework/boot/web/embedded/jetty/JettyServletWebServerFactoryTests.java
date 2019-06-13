@@ -338,9 +338,14 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Override
-	protected void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort) {
+	protected void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	@Override
+	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
+		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
 }

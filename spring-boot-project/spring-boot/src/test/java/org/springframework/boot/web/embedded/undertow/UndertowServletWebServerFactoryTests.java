@@ -279,11 +279,16 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	}
 
 	@Override
-	protected void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort) {
+	protected void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 		Undertow undertow = (Undertow) ReflectionTestUtils.getField(this.webServer, "undertow");
 		assertThat(undertow.getWorker()).isNull();
+	}
+
+	@Override
+	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
+		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
 }

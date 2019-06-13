@@ -831,7 +831,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				factory.setPort(port);
 				AbstractServletWebServerFactoryTests.this.webServer = factory.getWebServer();
 				AbstractServletWebServerFactoryTests.this.webServer.start();
-			}).satisfies((ex) -> handleExceptionCausedByBlockedPort(ex, port));
+			}).satisfies((ex) -> handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, port));
 		});
 	}
 
@@ -843,7 +843,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				addConnector(port, factory);
 				AbstractServletWebServerFactoryTests.this.webServer = factory.getWebServer();
 				AbstractServletWebServerFactoryTests.this.webServer.start();
-			}).satisfies((ex) -> handleExceptionCausedByBlockedPort(ex, port));
+			}).satisfies((ex) -> handleExceptionCausedByBlockedPortOnSecondaryConnector(ex, port));
 		});
 	}
 
@@ -962,7 +962,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected abstract void addConnector(int port, AbstractServletWebServerFactory factory);
 
-	protected abstract void handleExceptionCausedByBlockedPort(RuntimeException ex, int blockedPort);
+	protected abstract void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort);
+
+	protected abstract void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex,
+			int blockedPort);
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes, String[] excludedUserAgents)
 			throws Exception {
