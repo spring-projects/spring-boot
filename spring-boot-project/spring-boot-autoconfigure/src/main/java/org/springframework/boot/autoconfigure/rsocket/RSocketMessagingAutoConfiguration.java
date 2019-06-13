@@ -44,7 +44,7 @@ import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 public class RSocketMessagingAutoConfiguration {
 
-	private static String PATHPATTERN_ROUTEMATCHER_CLASS = "org.springframework.web.util.pattern.PathPatternRouteMatcher";
+	private static final String PATHPATTERN_ROUTEMATCHER_CLASS = "org.springframework.web.util.pattern.PathPatternRouteMatcher";
 
 	@Bean
 	@ConditionalOnMissingBean

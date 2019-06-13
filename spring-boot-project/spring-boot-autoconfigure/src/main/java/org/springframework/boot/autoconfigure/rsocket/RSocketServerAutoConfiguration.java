@@ -81,7 +81,7 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactorResourceFactory reactorServerResourceFactory() {
+		public ReactorResourceFactory reactorResourceFactory() {
 			return new ReactorResourceFactory();
 		}
 
@@ -109,7 +109,7 @@ public class RSocketServerAutoConfiguration {
 	static class OnRSocketWebServerCondition extends AllNestedConditions {
 
 		OnRSocketWebServerCondition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
 		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)

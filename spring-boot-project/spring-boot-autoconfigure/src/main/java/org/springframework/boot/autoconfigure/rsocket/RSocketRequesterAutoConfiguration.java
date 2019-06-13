@@ -48,7 +48,7 @@ public class RSocketRequesterAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public RSocketRequester.Builder rsocketRequesterBuilder(RSocketStrategies strategies) {
+	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies) {
 		return RSocketRequester.builder().rsocketStrategies(strategies);
 	}
 

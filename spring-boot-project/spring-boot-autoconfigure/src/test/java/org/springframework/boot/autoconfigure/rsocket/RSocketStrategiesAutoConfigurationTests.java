@@ -16,10 +16,10 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +32,6 @@ import org.springframework.http.codec.cbor.Jackson2CborDecoder;
 import org.springframework.http.codec.cbor.Jackson2CborEncoder;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,9 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class RSocketStrategiesAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(BaseConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class));
 
 	@Test
 	void shouldCreateDefaultBeans() {
@@ -82,22 +80,7 @@ class RSocketStrategiesAutoConfigurationTests {
 		});
 	}
 
-	@Configuration
-	static class BaseConfiguration {
-
-		@Bean
-		public ObjectMapper objectMapper() {
-			return new ObjectMapper();
-		}
-
-		@Bean
-		public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-			return new Jackson2ObjectMapperBuilder();
-		}
-
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class UserStrategies {
 
 		@Bean
@@ -108,7 +91,7 @@ class RSocketStrategiesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class StrategiesCustomizer {
 
 		@Bean

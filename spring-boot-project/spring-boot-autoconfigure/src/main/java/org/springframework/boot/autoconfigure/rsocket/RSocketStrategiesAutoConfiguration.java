@@ -76,7 +76,7 @@ public class RSocketStrategiesAutoConfiguration {
 		@Bean
 		@Order(0)
 		@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
-		public RSocketStrategiesCustomizer jacksonCborStrategyCustomizer(Jackson2ObjectMapperBuilder builder) {
+		public RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(Jackson2ObjectMapperBuilder builder) {
 			return (strategy) -> {
 				ObjectMapper objectMapper = builder.factory(new CBORFactory()).build();
 				strategy.decoder(new Jackson2CborDecoder(objectMapper, SUPPORTED_TYPES));
@@ -96,7 +96,7 @@ public class RSocketStrategiesAutoConfiguration {
 		@Bean
 		@Order(1)
 		@ConditionalOnBean(ObjectMapper.class)
-		public RSocketStrategiesCustomizer jacksonJsonStrategyCustomizer(ObjectMapper objectMapper) {
+		public RSocketStrategiesCustomizer jacksonJsonRSocketStrategyCustomizer(ObjectMapper objectMapper) {
 			return (strategy) -> {
 				strategy.decoder(new Jackson2JsonDecoder(objectMapper, SUPPORTED_TYPES));
 				strategy.encoder(new Jackson2JsonEncoder(objectMapper, SUPPORTED_TYPES));

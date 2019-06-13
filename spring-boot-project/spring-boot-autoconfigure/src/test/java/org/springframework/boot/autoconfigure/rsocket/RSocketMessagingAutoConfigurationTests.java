@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class RSocketMessagingAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class);
 
@@ -67,7 +67,7 @@ class RSocketMessagingAutoConfigurationTests {
 						.containsOnly("customMessageHandlerAcceptor"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
@@ -78,7 +78,7 @@ class RSocketMessagingAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomMessageHandlerAcceptor {
 
 		@Bean
