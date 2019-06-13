@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.session.RedisSessionProperties.ConfigurationStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -52,6 +51,19 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisSessionConfiguration {
 
+	@Bean
+	@ConditionalOnMissingBean
+	public ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
+		switch (redisSessionProperties.getConfigurationStrategy()) {
+		case NOTIFY_KEYSPACE_EVENTS:
+			return new ConfigureNotifyKeyspaceEventsAction();
+		case NONE:
+			return ConfigureRedisAction.NO_OP;
+		}
+		throw new IllegalStateException("Unsupported redis configuration strategy '"
+				+ redisSessionProperties.getConfigurationStrategy() + "'.");
+	}
+
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
 
@@ -64,19 +76,6 @@ class RedisSessionConfiguration {
 			setRedisNamespace(redisSessionProperties.getNamespace());
 			setRedisFlushMode(redisSessionProperties.getFlushMode());
 			setCleanupCron(redisSessionProperties.getCleanupCron());
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
-			ConfigurationStrategy strategy = redisSessionProperties.getConfigurationStrategy();
-			if (strategy == ConfigurationStrategy.NOTIFY_KEYSPACE_EVENTS) {
-				return new ConfigureNotifyKeyspaceEventsAction();
-			}
-			if (strategy == ConfigurationStrategy.NO_OP) {
-				return ConfigureRedisAction.NO_OP;
-			}
-			throw new IllegalStateException("Strategy '" + strategy + "' is not supported.");
 		}
 
 	}

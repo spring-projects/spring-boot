@@ -41,9 +41,10 @@ public class RedisSessionProperties {
 	private RedisFlushMode flushMode = RedisFlushMode.ON_SAVE;
 
 	/**
-	 * Allows specifying a strategy for configuring and validating Redis.
+	 * The configure action to apply when no user defined ConfigureRedisAction bean is
+	 * present.
 	 */
-	private ConfigurationStrategy configurationStrategy = ConfigurationStrategy.NOTIFY_KEYSPACE_EVENTS;
+	private ConfigureAction configureAction = ConfigureAction.NOTIFY_KEYSPACE_EVENTS;
 
 	/**
 	 * Cron expression for expired session cleanup job.
@@ -74,28 +75,29 @@ public class RedisSessionProperties {
 		this.cleanupCron = cleanupCron;
 	}
 
-	public ConfigurationStrategy getConfigurationStrategy() {
-		return this.configurationStrategy;
+	public ConfigureAction getConfigurationStrategy() {
+		return this.configureAction;
 	}
 
-	public void setConfigurationStrategy(ConfigurationStrategy configurationStrategy) {
-		this.configurationStrategy = configurationStrategy;
+	public void setConfigurationStrategy(ConfigureAction configurationStrategy) {
+		this.configureAction = configurationStrategy;
 	}
 
 	/**
-	 * Allows specifying a strategy for configuring and validating Redis.
+	 * Strategies for configuring and validating Redis.
 	 */
-	public enum ConfigurationStrategy {
+	public enum ConfigureAction {
 
 		/**
-		 * Do nothing.
-		 */
-		NO_OP,
-		/**
-		 * Ensures that Redis Keyspace events for Generic commands and Expired events are
+		 * Ensure that Redis Keyspace events for Generic commands and Expired events are
 		 * enabled.
 		 */
-		NOTIFY_KEYSPACE_EVENTS
+		NOTIFY_KEYSPACE_EVENTS,
+
+		/**
+		 * No not attempt to apply any custom Redis configuration.
+		 */
+		NONE
 
 	}
 
