@@ -109,31 +109,31 @@ class ElasticsearchDataAutoConfigurationTests {
 						.contains("reactiveElasticsearchTemplate"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTransportTemplate {
 
 		@Bean
-		ElasticsearchTemplate elasticsearchTemplate() {
+		public ElasticsearchTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchTemplate.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomRestTemplate {
 
 		@Bean
-		ElasticsearchRestTemplate elasticsearchTemplate() {
+		public ElasticsearchRestTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchRestTemplate.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomReactiveRestTemplate {
 
 		@Bean
-		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
+		public ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
 			return mock(ReactiveElasticsearchTemplate.class);
 		}
 

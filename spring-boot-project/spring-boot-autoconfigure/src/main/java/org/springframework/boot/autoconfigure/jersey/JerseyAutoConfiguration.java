@@ -207,7 +207,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			};
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass({ JaxbAnnotationIntrospector.class, XmlElement.class })
 		static class JaxbObjectMapperCustomizer {
 
