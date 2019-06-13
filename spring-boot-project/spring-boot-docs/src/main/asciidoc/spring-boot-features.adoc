@@ -7129,7 +7129,6 @@ that class explicitly where it is required, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@SpringBootTest
 	@Import(MyTestsConfiguration.class)
 	public class MyTests {
@@ -7978,7 +7977,6 @@ The specific beans that you want to test should be specified by using the `value
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@RestClientTest(RemoteVehicleDetailsService.class)
 	public class ExampleRestClientTest {
 
@@ -8300,27 +8298,26 @@ which auto-configures one for you.
 [[boot-features-output-capture-test-utility]]
 ==== OutputCapture
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and
-`System.err` output. You can declare the capture as a `@RegisterExtension` and then use
-`toString()` for assertions, as follows:
+`System.err` output. To use with {@link ExtendWith @ExtendWith}, you can inject
+`CapturedOutput` as an argument to your test class constructor or test method as follows:
 
 [source,java,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
-    import org.junit.jupiter.api.extension.RegisterExtension;
+    import org.junit.jupiter.api.extension.ExtendWith;
 
-	import org.springframework.boot.test.extension.OutputCapture;
+    import org.springframework.boot.test.system.CapturedOutput;
+    import org.springframework.boot.test.system.OutputCaptureExtension;
 
 	import static org.assertj.core.api.Assertions.assertThat;
 
+	@ExtendWith(OutputCaptureExtension.class)
 	class MyTest {
 
-		@RegisterExtension
-		public OutputCapture output = new OutputCapture();
-
 		@Test
-		void testName() {
+		void testName(CapturedOutput output) {
 			System.out.println("Hello World!");
-			assertThat(this.output.toString()).contains("World"));
+			assertThat(output).contains("World"));
 		}
 
 	}
