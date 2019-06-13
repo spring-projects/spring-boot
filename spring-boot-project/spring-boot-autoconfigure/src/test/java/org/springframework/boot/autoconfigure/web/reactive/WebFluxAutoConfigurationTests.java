@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.format.Parser;
+import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -373,6 +377,16 @@ class WebFluxAutoConfigurationTests {
 		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
+	@Test
+	void customPrinterAndParserShouldBeRegisteredAsConverters() {
+		this.contextRunner.withUserConfiguration(ParserConfiguration.class, PrinterConfiguration.class)
+				.run((context) -> {
+					ConversionService service = context.getBean(ConversionService.class);
+					assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
+					assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
+				});
+	}
+
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
 		HandlerMapping mapping = context.getBean("resourceHandlerMapping", HandlerMapping.class);
 		if (mapping instanceof SimpleUrlHandlerMapping) {
@@ -542,6 +556,58 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	private static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrinterConfiguration {
+
+		@Bean
+		public Printer<Example> examplePrinter() {
+			return new ExamplePrinter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ParserConfiguration {
+
+		@Bean
+		public Parser<Example> exampleParser() {
+			return new ExampleParser();
+		}
+
+	}
+
+	static final class Example {
+
+		private final String name;
+
+		private Example(String name, Date date) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+	}
+
+	private static class ExamplePrinter implements Printer<Example> {
+
+		@Override
+		public String print(Example example, Locale locale) {
+			return example.getName();
+		}
+
+	}
+
+	private static class ExampleParser implements Parser<Example> {
+
+		@Override
+		public Example parse(String source, Locale locale) {
+			return new Example(source, new Date());
+		}
 
 	}
 

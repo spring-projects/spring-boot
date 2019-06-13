@@ -56,6 +56,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.format.Parser;
+import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -773,6 +775,16 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void customPrinterAndParserShouldBeRegisteredAsConverters() {
+		this.contextRunner.withUserConfiguration(ParserConfiguration.class, PrinterConfiguration.class)
+				.run((context) -> {
+					ConversionService service = context.getBean(ConversionService.class);
+					assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
+					assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
+				});
+	}
+
 	private void assertCacheControl(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
@@ -1089,6 +1101,58 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		public FilterRegistrationBean<RequestContextFilter> customRequestContextFilterRegistration() {
 			return new FilterRegistrationBean<>(new RequestContextFilter());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrinterConfiguration {
+
+		@Bean
+		public Printer<Example> examplePrinter() {
+			return new ExamplePrinter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ParserConfiguration {
+
+		@Bean
+		public Parser<Example> exampleParser() {
+			return new ExampleParser();
+		}
+
+	}
+
+	static final class Example {
+
+		private final String name;
+
+		private Example(String name, Date date) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+	}
+
+	private static class ExamplePrinter implements Printer<Example> {
+
+		@Override
+		public String print(Example example, Locale locale) {
+			return example.getName();
+		}
+
+	}
+
+	private static class ExampleParser implements Parser<Example> {
+
+		@Override
+		public Example parse(String source, Locale locale) {
+			return new Example(source, new Date());
 		}
 
 	}

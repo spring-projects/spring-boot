@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -55,6 +54,7 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
@@ -66,13 +66,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
@@ -298,19 +295,7 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addFormatters(FormatterRegistry registry) {
-			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
-				registry.addConverter(converter);
-			}
-			for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
-				registry.addConverter(converter);
-			}
-			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
-				registry.addFormatter(formatter);
-			}
-		}
-
-		private <T> Collection<T> getBeansOfType(Class<T> type) {
-			return this.beanFactory.getBeansOfType(type).values();
+			ApplicationConversionService.addBeans(registry, this.beanFactory);
 		}
 
 		@Override

@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
-import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,15 +37,13 @@ import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceCh
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -176,26 +173,13 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		public void addFormatters(FormatterRegistry registry) {
-			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
-				registry.addConverter(converter);
-			}
-			for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
-				registry.addConverter(converter);
-			}
-			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
-				registry.addFormatter(formatter);
-			}
-		}
-
-		private <T> Collection<T> getBeansOfType(Class<T> type) {
-			return this.beanFactory.getBeansOfType(type).values();
+			ApplicationConversionService.addBeans(registry, this.beanFactory);
 		}
 
 		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
-
 		}
 
 	}
