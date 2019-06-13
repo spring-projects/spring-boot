@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,26 +37,13 @@ public class HibernateSettings {
 		return this;
 	}
 
-	/**
-	 * Specify the default ddl auto value to use.
-	 * @param ddlAuto the default ddl auto if none is provided
-	 * @return this instance
-	 * @see #ddlAuto(Supplier)
-	 * @deprecated as of 2.0.1 in favour of {@link #ddlAuto(Supplier)}
-	 */
-	@Deprecated
-	public HibernateSettings ddlAuto(String ddlAuto) {
-		return ddlAuto(() -> ddlAuto);
-	}
-
 	public String getDdlAuto() {
-		return (this.ddlAuto != null ? this.ddlAuto.get() : null);
+		return (this.ddlAuto != null) ? this.ddlAuto.get() : null;
 	}
 
 	public HibernateSettings hibernatePropertiesCustomizers(
 			Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
-		this.hibernatePropertiesCustomizers = new ArrayList<>(
-				hibernatePropertiesCustomizers);
+		this.hibernatePropertiesCustomizers = new ArrayList<>(hibernatePropertiesCustomizers);
 		return this;
 	}
 

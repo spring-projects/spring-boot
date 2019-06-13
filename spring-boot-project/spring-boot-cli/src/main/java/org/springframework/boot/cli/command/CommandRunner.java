@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,7 +54,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param name the name of the runner or {@code null}
 	 */
 	public CommandRunner(String name) {
-		this.name = (StringUtils.hasLength(name) ? name + " " : "");
+		this.name = StringUtils.hasLength(name) ? name + " " : "";
 	}
 
 	/**
@@ -148,8 +148,7 @@ public class CommandRunner implements Iterable<Command> {
 	public Command findCommand(String name) {
 		for (Command candidate : this.commands) {
 			String candidateName = candidate.getName();
-			if (candidateName.equals(name) || (isOptionCommand(candidate)
-					&& ("--" + candidateName).equals(name))) {
+			if (candidateName.equals(name) || (isOptionCommand(candidate) && ("--" + candidateName).equals(name))) {
 				return candidate;
 			}
 		}
@@ -171,7 +170,7 @@ public class CommandRunner implements Iterable<Command> {
 			ExitStatus result = run(argsWithoutDebugFlags);
 			// The caller will hang up if it gets a non-zero status
 			if (result != null && result.isHangup()) {
-				return (result.getCode() > 0 ? result.getCode() : 0);
+				return (result.getCode() > 0) ? result.getCode() : 0;
 			}
 			return 0;
 		}
@@ -252,15 +251,14 @@ public class CommandRunner implements Iterable<Command> {
 		if (options.contains(CommandException.Option.SHOW_USAGE)) {
 			showUsage();
 		}
-		if (debug || couldNotShowMessage
-				|| options.contains(CommandException.Option.STACK_TRACE)) {
+		if (debug || couldNotShowMessage || options.contains(CommandException.Option.STACK_TRACE)) {
 			printStackTrace(ex);
 		}
 		return 1;
 	}
 
 	protected boolean errorMessage(String message) {
-		Log.error(message != null ? message : "Unexpected error");
+		Log.error((message != null) ? message : "Unexpected error");
 		return message != null;
 	}
 
@@ -280,19 +278,16 @@ public class CommandRunner implements Iterable<Command> {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", command.getName(),
-						(usageHelp != null ? usageHelp : ""),
-						(description != null ? description : "")));
+						(usageHelp != null) ? usageHelp : "", (description != null) ? description : ""));
 			}
 		}
 		Log.info("");
 		Log.info("Common options:");
-		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "-d, --debug",
-				"Verbose mode",
+		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "-d, --debug", "Verbose mode",
 				"Print additional status information for the command you are running"));
 		Log.info("");
 		Log.info("");
-		Log.info("See '" + this.name
-				+ "help <command>' for more information on a specific command.");
+		Log.info("See '" + this.name + "help <command>' for more information on a specific command.");
 	}
 
 	protected void printStackTrace(Exception ex) {

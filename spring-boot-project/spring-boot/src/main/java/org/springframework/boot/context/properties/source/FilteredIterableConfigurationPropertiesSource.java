@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * A filtered {@link IterableConfigurationPropertySource}.
@@ -26,19 +25,17 @@ import java.util.stream.StreamSupport;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class FilteredIterableConfigurationPropertiesSource
-		extends FilteredConfigurationPropertiesSource
+class FilteredIterableConfigurationPropertiesSource extends FilteredConfigurationPropertiesSource
 		implements IterableConfigurationPropertySource {
 
-	FilteredIterableConfigurationPropertiesSource(
-			IterableConfigurationPropertySource source,
+	FilteredIterableConfigurationPropertiesSource(IterableConfigurationPropertySource source,
 			Predicate<ConfigurationPropertyName> filter) {
 		super(source, filter);
 	}
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		return StreamSupport.stream(getSource().spliterator(), false).filter(getFilter());
+		return getSource().stream().filter(getFilter());
 	}
 
 	@Override
@@ -47,8 +44,7 @@ class FilteredIterableConfigurationPropertiesSource
 	}
 
 	@Override
-	public ConfigurationPropertyState containsDescendantOf(
-			ConfigurationPropertyName name) {
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 

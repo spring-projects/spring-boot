@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -13,6 +14,7 @@
 	<description>Spring Boot Actuator AutoConfigure</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
@@ -64,7 +66,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
+			<artifactId>jakarta.mail</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -79,7 +81,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
+			<artifactId>metrics-jmx</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -94,12 +96,32 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-jersey2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-appoptics</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-atlas</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-datadog</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-dynatrace</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-elastic</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -114,6 +136,11 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-humio</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-influx</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -124,12 +151,22 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-kairos</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-new-relic</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient_pushgateway</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -148,7 +185,7 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.ipc</groupId>
+			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -158,18 +195,28 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.jms</groupId>
+			<artifactId>jakarta.jms-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -194,6 +241,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<optional>true</optional>
@@ -214,8 +266,24 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -227,6 +295,12 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -237,11 +311,31 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.persistence</groupId>
+					<artifactId>javax.persistence-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.validation</groupId>
+					<artifactId>validation-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.influxdb</groupId>
@@ -276,6 +370,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -398,6 +497,12 @@
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>mockwebserver</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
@@ -421,8 +526,28 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-to-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -469,6 +594,12 @@
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
@@ -478,6 +609,16 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-resource-server</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-jose</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -501,6 +642,24 @@
 			</activation>
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-doc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${spring-doc-resources.version}/spring-doc-resources-${spring-doc-resources.version}.zip</url>
+									<unpack>true</unpack>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
@@ -537,20 +696,27 @@
 								<configuration>
 									<exportAntProperties>true</exportAntProperties>
 									<target>
-										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+										<taskdef
+											resource="net/sf/antcontrib/antcontrib.properties" />
+										<taskdef name="stringutil"
+											classname="ise.antelope.tasks.StringUtilTask" />
 										<var name="version-type" value="${project.version}" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp=".*\.(.*)" replace="\1" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true"
-											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp=".*\.(.*)"
+											replace="\1" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp="(M)\d+"
+											replace="MILESTONE" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp="(RC)\d+"
+											replace="MILESTONE" />
+										<propertyregex property="version-type"
+											override="true" input="${version-type}" regexp="BUILD-(.*)"
+											replace="SNAPSHOT" />
 										<var name="github-tag" value="v${project.version}" />
-										<propertyregex property="github-tag" override="true"
-											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+										<propertyregex property="github-tag"
+											override="true" input="${github-tag}" regexp=".*SNAPSHOT"
+											replace="master" />
 									</target>
 								</configuration>
 							</execution>
@@ -564,13 +730,15 @@
 									<target>
 										<zip
 											destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
-											<zipfileset dir="${project.build.directory}/generated-docs"
-												includes="index.html" prefix="html" />
+											<zipfileset
+													dir="${project.build.directory}/generated-docs/reference/html"
+													prefix="html" />
 											<mappedresources>
-												<fileset dir="${project.build.directory}/generated-docs"
-													includes="index.pdf" />
+												<fileset
+														dir="${project.build.directory}/generated-docs/reference/pdf"
+														includes="index.pdf" />
 												<globmapper from="index.pdf"
-													to="pdf/spring-boot-actuator-web-api.pdf" />
+															to="pdf/spring-boot-actuator-web-api.pdf" />
 											</mappedresources>
 										</zip>
 									</target>
@@ -589,7 +757,19 @@
 									<goal>process-asciidoc</goal>
 								</goals>
 								<configuration>
-									<backend>html</backend>
+									<backend>html5</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/html</outputDirectory>
+									<sourceHighlighter>highlight.js</sourceHighlighter>
+									<doctype>book</doctype>
+									<attributes>
+										<highlightjsdir>js/highlight</highlightjsdir>
+										<highlightjs-theme>atom-one-dark-reasonable</highlightjs-theme>
+										<linkcss>true</linkcss>
+										<imagesdir>./images</imagesdir>
+										<icons>font</icons>
+										<stylesdir>css/</stylesdir>
+										<stylesheet>spring.css</stylesheet>
+									</attributes>
 								</configuration>
 							</execution>
 							<execution>
@@ -600,10 +780,12 @@
 								</goals>
 								<configuration>
 									<backend>pdf</backend>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/pdf</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
 						<configuration>
+							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
 							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<attributes>
 								<version-type>${version-type}</version-type>
@@ -618,6 +800,28 @@
 								<version>1.5.0-alpha.11</version>
 							</dependency>
 						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-asciidoc-resources</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/asciidoc</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -84,7 +84,7 @@ public class WebMvcProperties {
 
 	/**
 	 * Whether to enable warn logging of exceptions resolved by a
-	 * "HandlerExceptionResolver".
+	 * "HandlerExceptionResolver", except for "DefaultHandlerExceptionResolver".
 	 */
 	private boolean logResolvedException = false;
 
@@ -107,8 +107,7 @@ public class WebMvcProperties {
 		return this.messageCodesResolverFormat;
 	}
 
-	public void setMessageCodesResolverFormat(
-			DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
+	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
@@ -148,8 +147,7 @@ public class WebMvcProperties {
 		return this.throwExceptionIfNoHandlerFound;
 	}
 
-	public void setThrowExceptionIfNoHandlerFound(
-			boolean throwExceptionIfNoHandlerFound) {
+	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
@@ -242,6 +240,7 @@ public class WebMvcProperties {
 
 		public void setPath(String path) {
 			Assert.notNull(path, "Path must not be null");
+			Assert.isTrue(!path.contains("*"), "Path must not contain wildcards");
 			this.path = path;
 		}
 
@@ -256,9 +255,6 @@ public class WebMvcProperties {
 		public String getServletMapping() {
 			if (this.path.equals("") || this.path.equals("/")) {
 				return "/";
-			}
-			if (this.path.contains("*")) {
-				return this.path;
 			}
 			if (this.path.endsWith("/")) {
 				return this.path + "*";

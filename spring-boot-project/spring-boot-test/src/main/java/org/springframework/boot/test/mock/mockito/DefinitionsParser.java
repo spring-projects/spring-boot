@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -63,28 +65,22 @@ class DefinitionsParser {
 	}
 
 	private void parseElement(AnnotatedElement element) {
-		for (MockBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
-				MockBean.class, MockBeans.class)) {
-			parseMockBeanAnnotation(annotation, element);
-		}
-		for (SpyBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
-				SpyBean.class, SpyBeans.class)) {
-			parseSpyBeanAnnotation(annotation, element);
-		}
+		MergedAnnotations annotations = MergedAnnotations.from(element, SearchStrategy.SUPERCLASS);
+		annotations.stream(MockBean.class).map(MergedAnnotation::synthesize)
+				.forEach((annotation) -> parseMockBeanAnnotation(annotation, element));
+		annotations.stream(SpyBean.class).map(MergedAnnotation::synthesize)
+				.forEach((annotation) -> parseSpyBeanAnnotation(annotation, element));
 	}
 
 	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element) {
 		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value());
-		Assert.state(!typesToMock.isEmpty(),
-				() -> "Unable to deduce type to mock from " + element);
+		Assert.state(!typesToMock.isEmpty(), () -> "Unable to deduce type to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
-			Assert.state(typesToMock.size() == 1,
-					"The name attribute can only be used when mocking a single class");
+			Assert.state(typesToMock.size() == 1, "The name attribute can only be used when mocking a single class");
 		}
 		for (ResolvableType typeToMock : typesToMock) {
-			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock,
-					annotation.extraInterfaces(), annotation.answer(),
-					annotation.serializable(), annotation.reset(),
+			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock, annotation.extraInterfaces(),
+					annotation.answer(), annotation.serializable(), annotation.reset(),
 					QualifierDefinition.forElement(element));
 			addDefinition(element, definition, "mock");
 		}
@@ -92,33 +88,27 @@ class DefinitionsParser {
 
 	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element) {
 		Set<ResolvableType> typesToSpy = getOrDeduceTypes(element, annotation.value());
-		Assert.state(!typesToSpy.isEmpty(),
-				() -> "Unable to deduce type to spy from " + element);
+		Assert.state(!typesToSpy.isEmpty(), () -> "Unable to deduce type to spy from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
-			Assert.state(typesToSpy.size() == 1,
-					"The name attribute can only be used when spying a single class");
+			Assert.state(typesToSpy.size() == 1, "The name attribute can only be used when spying a single class");
 		}
 		for (ResolvableType typeToSpy : typesToSpy) {
-			SpyDefinition definition = new SpyDefinition(annotation.name(), typeToSpy,
-					annotation.reset(), annotation.proxyTargetAware(),
-					QualifierDefinition.forElement(element));
+			SpyDefinition definition = new SpyDefinition(annotation.name(), typeToSpy, annotation.reset(),
+					annotation.proxyTargetAware(), QualifierDefinition.forElement(element));
 			addDefinition(element, definition, "spy");
 		}
 	}
 
-	private void addDefinition(AnnotatedElement element, Definition definition,
-			String type) {
+	private void addDefinition(AnnotatedElement element, Definition definition, String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
-		Assert.state(isNewDefinition,
-				() -> "Duplicate " + type + " definition " + definition);
+		Assert.state(isNewDefinition, () -> "Duplicate " + type + " definition " + definition);
 		if (element instanceof Field) {
 			Field field = (Field) element;
 			this.definitionFields.put(definition, field);
 		}
 	}
 
-	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element,
-			Class<?>[] value) {
+	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element, Class<?>[] value) {
 		Set<ResolvableType> types = new LinkedHashSet<>();
 		for (Class<?> clazz : value) {
 			types.add(ResolvableType.forClass(clazz));

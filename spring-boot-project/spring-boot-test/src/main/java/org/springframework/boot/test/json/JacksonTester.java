@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -56,6 +59,7 @@ import org.springframework.util.Assert;
  * @param <T> the type under test
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Diego Berrueta
  * @since 1.4.0
  */
 public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
@@ -79,13 +83,11 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @param type the type under test
 	 * @param objectMapper the Jackson object mapper
 	 */
-	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type,
-			ObjectMapper objectMapper) {
+	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, ObjectMapper objectMapper) {
 		this(resourceLoadClass, type, objectMapper, null);
 	}
 
-	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type,
-			ObjectMapper objectMapper, Class<?> view) {
+	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, ObjectMapper objectMapper, Class<?> view) {
 		super(resourceLoadClass, type);
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.objectMapper = objectMapper;
@@ -93,8 +95,14 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	}
 
 	@Override
-	protected T readObject(InputStream inputStream, ResolvableType type)
-			throws IOException {
+	protected JsonContent<T> getJsonContent(String json) {
+		Configuration configuration = Configuration.builder().jsonProvider(new JacksonJsonProvider(this.objectMapper))
+				.mappingProvider(new JacksonMappingProvider(this.objectMapper)).build();
+		return new JsonContent<>(getResourceLoadClass(), getType(), json, configuration);
+	}
+
+	@Override
+	protected T readObject(InputStream inputStream, ResolvableType type) throws IOException {
 		return getObjectReader(type).readValue(inputStream);
 	}
 
@@ -146,8 +154,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @param objectMapperFactory a factory to create the object mapper
 	 * @see #initFields(Object, ObjectMapper)
 	 */
-	public static void initFields(Object testInstance,
-			ObjectFactory<ObjectMapper> objectMapperFactory) {
+	public static void initFields(Object testInstance, ObjectFactory<ObjectMapper> objectMapperFactory) {
 		new JacksonFieldInitializer().initFields(testInstance, objectMapperFactory);
 	}
 
@@ -158,8 +165,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @return the new instance
 	 */
 	public JacksonTester<T> forView(Class<?> view) {
-		return new JacksonTester<>(this.getResourceLoadClass(), this.getType(),
-				this.objectMapper, view);
+		return new JacksonTester<>(this.getResourceLoadClass(), this.getType(), this.objectMapper, view);
 	}
 
 	/**
@@ -172,8 +178,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		}
 
 		@Override
-		protected AbstractJsonMarshalTester<Object> createTester(
-				Class<?> resourceLoadClass, ResolvableType type,
+		protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type,
 				ObjectMapper marshaller) {
 			return new JacksonTester<>(resourceLoadClass, type, marshaller);
 		}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -163,81 +163,45 @@ public class BuildInfoProperties implements Serializable {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		BuildInfoProperties other = (BuildInfoProperties) obj;
+		boolean result = true;
+		result = result && nullSafeEquals(this.additionalProperties, other.additionalProperties);
+		result = result && nullSafeEquals(this.artifact, other.artifact);
+		result = result && nullSafeEquals(this.group, other.group);
+		result = result && nullSafeEquals(this.name, other.name);
+		result = result && nullSafeEquals(this.version, other.version);
+		result = result && nullSafeEquals(this.time, other.time);
+		return result;
+	}
+
+	private boolean nullSafeEquals(Object o1, Object o2) {
+		if (o1 == o2) {
+			return true;
+		}
+		if (o1 == null || o2 == null) {
+			return false;
+		}
+		return (o1.equals(o2));
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.additionalProperties == null) ? 0
-				: this.additionalProperties.hashCode());
-		result = prime * result
-				+ ((this.artifact == null) ? 0 : this.artifact.hashCode());
+		result = prime * result + ((this.additionalProperties == null) ? 0 : this.additionalProperties.hashCode());
+		result = prime * result + ((this.artifact == null) ? 0 : this.artifact.hashCode());
 		result = prime * result + ((this.group == null) ? 0 : this.group.hashCode());
 		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
 		result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
 		result = prime * result + ((this.time == null) ? 0 : this.time.hashCode());
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		BuildInfoProperties other = (BuildInfoProperties) obj;
-		if (this.additionalProperties == null) {
-			if (other.additionalProperties != null) {
-				return false;
-			}
-		}
-		else if (!this.additionalProperties.equals(other.additionalProperties)) {
-			return false;
-		}
-		if (this.artifact == null) {
-			if (other.artifact != null) {
-				return false;
-			}
-		}
-		else if (!this.artifact.equals(other.artifact)) {
-			return false;
-		}
-		if (this.group == null) {
-			if (other.group != null) {
-				return false;
-			}
-		}
-		else if (!this.group.equals(other.group)) {
-			return false;
-		}
-		if (this.name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		}
-		else if (!this.name.equals(other.name)) {
-			return false;
-		}
-		if (this.version == null) {
-			if (other.version != null) {
-				return false;
-			}
-		}
-		else if (!this.version.equals(other.version)) {
-			return false;
-		}
-		if (this.time == null) {
-			if (other.time != null) {
-				return false;
-			}
-		}
-		else if (!this.time.equals(other.time)) {
-			return false;
-		}
-		return true;
 	}
 
 }

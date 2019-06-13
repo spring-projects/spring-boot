@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,7 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
 public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
-	private WhitespaceThrowablePatternConverter(Configuration configuration,
-			String[] options) {
+	private WhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
 		super("WhitespaceThrowable", "throwable", options, configuration);
 	}
 
@@ -55,8 +54,7 @@ public final class WhitespaceThrowablePatternConverter extends ThrowablePatternC
 	 * first line of the throwable will be formatted.
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
-	public static WhitespaceThrowablePatternConverter newInstance(
-			Configuration configuration, String[] options) {
+	public static WhitespaceThrowablePatternConverter newInstance(Configuration configuration, String[] options) {
 		return new WhitespaceThrowablePatternConverter(configuration, options);
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,10 +81,8 @@ public class MongoClientFactory {
 		if (options == null) {
 			options = MongoClientOptions.builder().build();
 		}
-		String host = (this.properties.getHost() != null ? this.properties.getHost()
-				: "localhost");
-		return new MongoClient(Collections.singletonList(new ServerAddress(host, port)),
-				options);
+		String host = (this.properties.getHost() != null) ? this.properties.getHost() : "localhost";
+		return new MongoClient(Collections.singletonList(new ServerAddress(host, port)), options);
 	}
 
 	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
@@ -99,10 +97,9 @@ public class MongoClientFactory {
 			MongoCredential credentials = getCredentials(properties);
 			String host = getValue(properties.getHost(), "localhost");
 			int port = getValue(properties.getPort(), MongoProperties.DEFAULT_PORT);
-			List<ServerAddress> seeds = Collections
-					.singletonList(new ServerAddress(host, port));
-			return (credentials != null ? new MongoClient(seeds, credentials, options)
-					: new MongoClient(seeds, options));
+			List<ServerAddress> seeds = Collections.singletonList(new ServerAddress(host, port));
+			return (credentials != null) ? new MongoClient(seeds, credentials, options)
+					: new MongoClient(seeds, options);
 		}
 		return createMongoClient(MongoProperties.DEFAULT_URI, options);
 	}
@@ -112,7 +109,7 @@ public class MongoClientFactory {
 	}
 
 	private <T> T getValue(T value, T fallback) {
-		return (value != null ? value : fallback);
+		return (value != null) ? value : fallback;
 	}
 
 	private boolean hasCustomAddress() {
@@ -124,15 +121,13 @@ public class MongoClientFactory {
 			return null;
 		}
 		String username = properties.getUsername();
-		String database = getValue(properties.getAuthenticationDatabase(),
-				properties.getMongoClientDatabase());
+		String database = getValue(properties.getAuthenticationDatabase(), properties.getMongoClientDatabase());
 		char[] password = properties.getPassword();
 		return MongoCredential.createCredential(username, database, password);
 	}
 
 	private boolean hasCustomCredentials() {
-		return this.properties.getUsername() != null
-				&& this.properties.getPassword() != null;
+		return this.properties.getUsername() != null && this.properties.getPassword() != null;
 	}
 
 	private Builder builder(MongoClientOptions options) {

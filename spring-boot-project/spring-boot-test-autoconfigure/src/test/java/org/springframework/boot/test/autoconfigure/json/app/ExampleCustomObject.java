@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,16 +30,16 @@ public class ExampleCustomObject {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj.getClass() == getClass()) {
 			return this.value.equals(((ExampleCustomObject) obj).value);
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@Override

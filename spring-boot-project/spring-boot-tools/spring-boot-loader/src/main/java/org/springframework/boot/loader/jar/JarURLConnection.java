@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package org.springframework.boot.loader.jar;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FilePermission;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -66,13 +67,11 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 	}
 
-	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName(
-			new StringSequence(""));
+	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName(new StringSequence(""));
 
 	private static final String READ_ACTION = "read";
 
-	private static final JarURLConnection NOT_FOUND_CONNECTION = JarURLConnection
-			.notFound();
+	private static final JarURLConnection NOT_FOUND_CONNECTION = JarURLConnection.notFound();
 
 	private final JarFile jarFile;
 
@@ -82,15 +81,18 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private final JarEntryName jarEntryName;
 
+	private final CloseAction closeAction;
+
 	private JarEntry jarEntry;
 
-	private JarURLConnection(URL url, JarFile jarFile, JarEntryName jarEntryName)
+	private JarURLConnection(URL url, JarFile jarFile, JarEntryName jarEntryName, CloseAction closeAction)
 			throws IOException {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
 		this.jarFile = jarFile;
 		this.jarEntryName = jarEntryName;
+		this.closeAction = closeAction;
 	}
 
 	@Override
@@ -130,7 +132,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			if (spec.endsWith(SEPARATOR)) {
 				spec = spec.substring(0, spec.length() - SEPARATOR.length());
 			}
-			if (spec.indexOf(SEPARATOR) == -1) {
+			if (!spec.contains(SEPARATOR)) {
 				return new URL(spec);
 			}
 			return new URL("jar:" + spec);
@@ -162,27 +164,33 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		if (this.jarEntryName.isEmpty()
-				&& this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
+		if (this.jarEntryName.isEmpty() && this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
 			throw new IOException("no entry name specified");
 		}
 		connect();
-		InputStream inputStream = (this.jarEntryName.isEmpty()
-				? this.jarFile.getData().getInputStream()
+		InputStream inputStream = (this.jarEntryName.isEmpty() ? this.jarFile.getData().getInputStream()
 				: this.jarFile.getInputStream(this.jarEntry));
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
 		}
-		return inputStream;
+		return new FilterInputStream(inputStream) {
+
+			@Override
+			public void close() throws IOException {
+				super.close();
+				if (JarURLConnection.this.closeAction != null) {
+					JarURLConnection.this.closeAction.perform();
+				}
+			}
+
+		};
 	}
 
-	private void throwFileNotFound(Object entry, JarFile jarFile)
-			throws FileNotFoundException {
+	private void throwFileNotFound(Object entry, JarFile jarFile) throws FileNotFoundException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		throw new FileNotFoundException(
-				"JAR entry " + entry + " not found in " + jarFile.getName());
+		throw new FileNotFoundException("JAR entry " + entry + " not found in " + jarFile.getName());
 	}
 
 	@Override
@@ -204,7 +212,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				return this.jarFile.size();
 			}
 			JarEntry entry = getJarEntry();
-			return (entry != null ? (int) entry.getSize() : -1);
+			return (entry != null) ? (int) entry.getSize() : -1;
 		}
 		catch (IOException ex) {
 			return -1;
@@ -214,12 +222,12 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public Object getContent() throws IOException {
 		connect();
-		return (this.jarEntryName.isEmpty() ? this.jarFile : super.getContent());
+		return this.jarEntryName.isEmpty() ? this.jarFile : super.getContent();
 	}
 
 	@Override
 	public String getContentType() {
-		return (this.jarEntryName != null ? this.jarEntryName.getContentType() : null);
+		return (this.jarEntryName != null) ? this.jarEntryName.getContentType() : null;
 	}
 
 	@Override
@@ -228,8 +236,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		if (this.permission == null) {
-			this.permission = new FilePermission(
-					this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
+			this.permission = new FilePermission(this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
 		}
 		return this.permission;
 	}
@@ -241,7 +248,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 		try {
 			JarEntry entry = getJarEntry();
-			return (entry != null ? entry.getTime() : 0);
+			return (entry != null) ? entry.getTime() : 0;
 		}
 		catch (IOException ex) {
 			return 0;
@@ -255,27 +262,37 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
 		StringSequence spec = new StringSequence(url.getFile());
 		int index = indexOfRootSpec(spec, jarFile.getPathFromRoot());
+		if (index == -1) {
+			return (Boolean.TRUE.equals(useFastExceptions.get()) ? NOT_FOUND_CONNECTION
+					: new JarURLConnection(url, null, EMPTY_JAR_ENTRY_NAME, null));
+		}
 		int separator;
+		JarFile connectionJarFile = jarFile;
 		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
 			JarEntryName entryName = JarEntryName.get(spec.subSequence(index, separator));
 			JarEntry jarEntry = jarFile.getJarEntry(entryName.toCharSequence());
 			if (jarEntry == null) {
-				return JarURLConnection.notFound(jarFile, entryName);
+				return JarURLConnection.notFound(connectionJarFile, entryName,
+						(connectionJarFile != jarFile) ? connectionJarFile::close : null);
 			}
-			jarFile = jarFile.getNestedJarFile(jarEntry);
+			connectionJarFile = connectionJarFile.getNestedJarFile(jarEntry);
 			index = separator + SEPARATOR.length();
 		}
 		JarEntryName jarEntryName = JarEntryName.get(spec, index);
 		if (Boolean.TRUE.equals(useFastExceptions.get()) && !jarEntryName.isEmpty()
-				&& !jarFile.containsEntry(jarEntryName.toString())) {
+				&& !connectionJarFile.containsEntry(jarEntryName.toString())) {
+			if (connectionJarFile != jarFile) {
+				connectionJarFile.close();
+			}
 			return NOT_FOUND_CONNECTION;
 		}
-		return new JarURLConnection(url, jarFile, jarEntryName);
+		return new JarURLConnection(url, connectionJarFile, jarEntryName,
+				(connectionJarFile != jarFile) ? connectionJarFile::close : null);
 	}
 
 	private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
 		int separatorIndex = file.indexOf(SEPARATOR);
-		if (separatorIndex < 0) {
+		if (separatorIndex < 0 || !file.startsWith(pathFromRoot, separatorIndex)) {
 			return -1;
 		}
 		return separatorIndex + SEPARATOR.length() + pathFromRoot.length();
@@ -283,19 +300,22 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private static JarURLConnection notFound() {
 		try {
-			return notFound(null, null);
+			return notFound(null, null, null);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName)
+	private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName, CloseAction closeAction)
 			throws IOException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+			if (closeAction != null) {
+				closeAction.perform();
+			}
 			return NOT_FOUND_CONNECTION;
 		}
-		return new JarURLConnection(null, jarFile, jarEntryName);
+		return new JarURLConnection(null, jarFile, jarEntryName, closeAction);
 	}
 
 	/**
@@ -327,8 +347,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				int c = source.charAt(i);
 				if (c > 127) {
 					try {
-						String encoded = URLEncoder.encode(String.valueOf((char) c),
-								"UTF-8");
+						String encoded = URLEncoder.encode(String.valueOf((char) c), "UTF-8");
 						write(encoded, outputStream);
 					}
 					catch (UnsupportedEncodingException ex) {
@@ -339,8 +358,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 					if (c == '%') {
 						if ((i + 2) >= length) {
 							throw new IllegalArgumentException(
-									"Invalid encoded sequence \"" + source.substring(i)
-											+ "\"");
+									"Invalid encoded sequence \"" + source.substring(i) + "\"");
 						}
 						c = decodeEscapeSequence(source, i);
 						i += 2;
@@ -354,8 +372,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			int hi = Character.digit(source.charAt(i + 1), 16);
 			int lo = Character.digit(source.charAt(i + 2), 16);
 			if (hi == -1 || lo == -1) {
-				throw new IllegalArgumentException(
-						"Invalid encoded sequence \"" + source.substring(i) + "\"");
+				throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
 			}
 			return ((char) ((hi << 4) + lo));
 		}
@@ -382,9 +399,9 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 		private String deduceContentType() {
 			// Guess the content type, don't bother with streams as mark is not supported
-			String type = (isEmpty() ? "x-java/jar" : null);
-			type = (type != null ? type : guessContentTypeFromName(toString()));
-			type = (type != null ? type : "content/unknown");
+			String type = isEmpty() ? "x-java/jar" : null;
+			type = (type != null) ? type : guessContentTypeFromName(toString());
+			type = (type != null) ? type : "content/unknown";
 			return type;
 		}
 
@@ -398,6 +415,17 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			}
 			return new JarEntryName(spec.subSequence(beginIndex));
 		}
+
+	}
+
+	/**
+	 * An action to be taken when the connection is being "closed" and its underlying
+	 * resources are no longer needed.
+	 */
+	@FunctionalInterface
+	private interface CloseAction {
+
+		void perform() throws IOException;
 
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,11 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link InMemoryAuditEventRepository}.
@@ -35,13 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Vedran Pavic
  */
-public class InMemoryAuditEventRepositoryTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class InMemoryAuditEventRepositoryTests {
 
 	@Test
-	public void lessThanCapacity() {
+	void lessThanCapacity() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("dave", "b"));
@@ -52,7 +48,7 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void capacity() {
+	void capacity() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository(2);
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("dave", "b"));
@@ -64,15 +60,14 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void addNullAuditEvent() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("AuditEvent must not be null");
+	void addNullAuditEvent() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
-		repository.add(null);
+		assertThatIllegalArgumentException().isThrownBy(() -> repository.add(null))
+				.withMessageContaining("AuditEvent must not be null");
 	}
 
 	@Test
-	public void findByPrincipal() {
+	void findByPrincipal() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("phil", "b"));
@@ -85,7 +80,7 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void findByPrincipalAndType() {
+	void findByPrincipalAndType() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("phil", "b"));
@@ -98,17 +93,14 @@ public class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
-	public void findByDate() {
+	void findByDate() {
 		Instant instant = Instant.now();
 		Map<String, Object> data = new HashMap<>();
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent(instant, "dave", "a", data));
-		repository
-				.add(new AuditEvent(instant.plus(1, ChronoUnit.DAYS), "phil", "b", data));
-		repository
-				.add(new AuditEvent(instant.plus(2, ChronoUnit.DAYS), "dave", "c", data));
-		repository
-				.add(new AuditEvent(instant.plus(3, ChronoUnit.DAYS), "phil", "d", data));
+		repository.add(new AuditEvent(instant.plus(1, ChronoUnit.DAYS), "phil", "b", data));
+		repository.add(new AuditEvent(instant.plus(2, ChronoUnit.DAYS), "dave", "c", data));
+		repository.add(new AuditEvent(instant.plus(3, ChronoUnit.DAYS), "phil", "d", data));
 		Instant after = instant.plus(1, ChronoUnit.DAYS);
 		List<AuditEvent> events = repository.find(null, after, null);
 		assertThat(events.size()).isEqualTo(2);

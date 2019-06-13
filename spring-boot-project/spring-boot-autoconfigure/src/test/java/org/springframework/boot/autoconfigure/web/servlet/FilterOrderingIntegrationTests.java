@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Filter;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -54,11 +54,11 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  */
-public class FilterOrderingIntegrationTests {
+class FilterOrderingIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		if (this.context != null) {
 			this.context.close();
@@ -66,11 +66,10 @@ public class FilterOrderingIntegrationTests {
 	}
 
 	@Test
-	public void testFilterOrdering() {
+	void testFilterOrdering() {
 		load();
-		List<RegisteredFilter> registeredFilters = this.context
-				.getBean(MockServletWebServerFactory.class).getWebServer()
-				.getRegisteredFilters();
+		List<RegisteredFilter> registeredFilters = this.context.getBean(MockServletWebServerFactory.class)
+				.getWebServer().getRegisteredFilters();
 		List<Filter> filters = new ArrayList<>(registeredFilters.size());
 		for (RegisteredFilter registeredFilter : registeredFilters) {
 			filters.add(registeredFilter.getFilter());
@@ -86,17 +85,14 @@ public class FilterOrderingIntegrationTests {
 
 	private void load() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(MockWebServerConfiguration.class,
-				TestSessionConfiguration.class, TestRedisConfiguration.class,
-				WebMvcAutoConfiguration.class, SecurityAutoConfiguration.class,
-				SessionAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				HttpEncodingAutoConfiguration.class);
+		this.context.register(MockWebServerConfiguration.class, TestSessionConfiguration.class,
+				TestRedisConfiguration.class, WebMvcAutoConfiguration.class, SecurityAutoConfiguration.class,
+				SessionAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, HttpEncodingAutoConfiguration.class);
 		this.context.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MockWebServerConfiguration {
 
 		@Bean
@@ -111,7 +107,7 @@ public class FilterOrderingIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
 	static class TestSessionConfiguration {
 
@@ -122,7 +118,7 @@ public class FilterOrderingIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestRedisConfiguration {
 
 		@Bean

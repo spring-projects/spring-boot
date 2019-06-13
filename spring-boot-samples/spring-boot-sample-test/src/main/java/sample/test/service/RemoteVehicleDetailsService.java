@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 
 package sample.test.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import sample.test.domain.VehicleIdentificationNumber;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -35,15 +35,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class RemoteVehicleDetailsService implements VehicleDetailsService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(RemoteVehicleDetailsService.class);
+	private static final Log logger = LogFactory.getLog(RemoteVehicleDetailsService.class);
 
 	private final RestTemplate restTemplate;
 
-	public RemoteVehicleDetailsService(ServiceProperties properties,
-			RestTemplateBuilder restTemplateBuilder) {
-		this.restTemplate = restTemplateBuilder
-				.rootUri(properties.getVehicleServiceRootUrl()).build();
+	public RemoteVehicleDetailsService(ServiceProperties properties, RestTemplateBuilder restTemplateBuilder) {
+		this.restTemplate = restTemplateBuilder.rootUri(properties.getVehicleServiceRootUrl()).build();
 	}
 
 	@Override
@@ -52,8 +49,7 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 		Assert.notNull(vin, "VIN must not be null");
 		logger.debug("Retrieving vehicle data for: " + vin);
 		try {
-			return this.restTemplate.getForObject("/vehicle/{vin}/details",
-					VehicleDetails.class, vin);
+			return this.restTemplate.getForObject("/vehicle/{vin}/details", VehicleDetails.class, vin);
 		}
 		catch (HttpStatusCodeException ex) {
 			if (HttpStatus.NOT_FOUND.equals(ex.getStatusCode())) {

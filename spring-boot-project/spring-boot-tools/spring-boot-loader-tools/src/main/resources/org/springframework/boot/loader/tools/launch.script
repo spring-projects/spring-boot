@@ -57,13 +57,18 @@ configfile="$(basename "${jarfile%.*}.conf")"
 # shellcheck source=/dev/null
 [[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
 
+# ANSI Colors
+echoRed() { echo $'\e[0;31m'"$1"$'\e[0m'; }
+echoGreen() { echo $'\e[0;32m'"$1"$'\e[0m'; }
+echoYellow() { echo $'\e[0;33m'"$1"$'\e[0m'; }
+
 # Initialize PID/LOG locations if they weren't provided by the config file
 [[ -z "$PID_FOLDER" ]] && PID_FOLDER="{{pidFolder:/var/run}}"
 [[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="{{logFolder:/var/log}}"
 ! [[ "$PID_FOLDER" == /* ]] && PID_FOLDER="$(dirname "$jarfile")"/"$PID_FOLDER"
 ! [[ "$LOG_FOLDER" == /* ]] && LOG_FOLDER="$(dirname "$jarfile")"/"$LOG_FOLDER"
-! [[ -x "$PID_FOLDER" ]] && PID_FOLDER="/tmp"
-! [[ -x "$LOG_FOLDER" ]] && LOG_FOLDER="/tmp"
+! [[ -x "$PID_FOLDER" ]] && echoYellow "PID_FOLDER $PID_FOLDER does not exist. Falling back to /tmp" && PID_FOLDER="/tmp"
+! [[ -x "$LOG_FOLDER" ]] && echoYellow "LOG_FOLDER $LOG_FOLDER does not exist. Falling back to /tmp" && LOG_FOLDER="/tmp"
 
 # Set up defaults
 [[ -z "$MODE" ]] && MODE="{{mode:auto}}" # modes are "auto", "service" or "run"
@@ -83,11 +88,6 @@ fi
 
 # Initialize stop wait time if not provided by the config file
 [[ -z "$STOP_WAIT_TIME" ]] && STOP_WAIT_TIME="{{stopWaitTime:60}}"
-
-# ANSI Colors
-echoRed() { echo $'\e[0;31m'"$1"$'\e[0m'; }
-echoGreen() { echo $'\e[0;32m'"$1"$'\e[0m'; }
-echoYellow() { echo $'\e[0;33m'"$1"$'\e[0m'; }
 
 # Utility functions
 checkPermissions() {
@@ -127,6 +127,9 @@ log_file="$LOG_FOLDER/$LOG_FILENAME"
 # Determine the user to run as if we are root
 # shellcheck disable=SC2012
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
+
+# Issue a warning if the application will run as root
+[[ $(id -u ${run_user}) == "0" ]] && { echoYellow "Application is running as root (UID 0). This is considered insecure."; }
 
 # Find Java
 if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then

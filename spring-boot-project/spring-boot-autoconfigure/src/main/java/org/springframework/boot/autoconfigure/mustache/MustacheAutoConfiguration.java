@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Mustache.class)
 @EnableConfigurationProperties(MustacheProperties.class)
 @Import({ MustacheServletWebConfiguration.class, MustacheReactiveWebConfiguration.class })
@@ -52,14 +52,10 @@ public class MustacheAutoConfiguration {
 
 	private final MustacheProperties mustache;
 
-	private final Environment environment;
-
 	private final ApplicationContext applicationContext;
 
-	public MustacheAutoConfiguration(MustacheProperties mustache, Environment environment,
-			ApplicationContext applicationContext) {
+	public MustacheAutoConfiguration(MustacheProperties mustache, ApplicationContext applicationContext) {
 		this.mustache = mustache;
-		this.environment = environment;
 		this.applicationContext = applicationContext;
 	}
 
@@ -69,8 +65,7 @@ public class MustacheAutoConfiguration {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
 			if (!location.exists(this.applicationContext)) {
 				logger.warn("Cannot find template location: " + location
-						+ " (please add some templates, check your Mustache "
-						+ "configuration, or set spring.mustache."
+						+ " (please add some templates, check your Mustache " + "configuration, or set spring.mustache."
 						+ "check-template-location=false)");
 			}
 		}
@@ -78,22 +73,21 @@ public class MustacheAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
-		return Mustache.compiler().withLoader(mustacheTemplateLoader)
-				.withCollector(collector());
+	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader, Environment environment) {
+		return Mustache.compiler().withLoader(mustacheTemplateLoader).withCollector(collector(environment));
 	}
 
-	private Collector collector() {
+	private Collector collector(Environment environment) {
 		MustacheEnvironmentCollector collector = new MustacheEnvironmentCollector();
-		collector.setEnvironment(this.environment);
+		collector.setEnvironment(environment);
 		return collector;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(TemplateLoader.class)
 	public MustacheResourceTemplateLoader mustacheTemplateLoader() {
-		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(
-				this.mustache.getPrefix(), this.mustache.getSuffix());
+		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(this.mustache.getPrefix(),
+				this.mustache.getSuffix());
 		loader.setCharset(this.mustache.getCharsetName());
 		return loader;
 	}

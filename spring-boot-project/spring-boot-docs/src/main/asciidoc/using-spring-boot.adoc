@@ -1,5 +1,6 @@
 [[using-boot]]
 = Using Spring Boot
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -58,10 +59,12 @@ defaults. The parent project provides the following features:
 the spring-boot-dependencies pom, that manages the versions of common dependencies. This
 dependency management lets you omit <version> tags for those dependencies when used in
 your own pom.
+* An execution of the {spring-boot-maven-plugin-site}/repackage-mojo.html[`repackage`
+goal] with a `repackage` execution id.
 * Sensible
 https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource
 filtering].
-* Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
+* Sensible plugin configuration (https://www.mojohaus.org/exec-maven-plugin/[exec plugin],
 https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and
 https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml`
@@ -122,7 +125,7 @@ benefit of the dependency management (but not the plugin management) by using a
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<dependencyManagement>
- 		<dependencies>
+		<dependencies>
 			<dependency>
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
@@ -301,19 +304,19 @@ The following application starters are provided by Spring Boot under the
 `org.springframework.boot` group:
 
 .Spring Boot application starters
-include::../../../target/generated-resources/application-starters.adoc[]
+include::{generated-resources-root}/application-starters.adoc[]
 
 In addition to the application starters, the following starters can be used to add
 _<<production-ready-features.adoc#production-ready, production ready>>_ features:
 
 .Spring Boot production starters
-include::../../../target/generated-resources/production-starters.adoc[]
+include::{generated-resources-root}/production-starters.adoc[]
 
 Finally, Spring Boot also includes the following starters that can be used if you want to
 exclude or swap specific technical facets:
 
 .Spring Boot technical starters
-include::../../../target/generated-resources/technical-starters.adoc[]
+include::{generated-resources-root}/technical-starters.adoc[]
 
 TIP: For a list of additional community contributed starters, see the
 {github-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in
@@ -333,8 +336,8 @@ best practices that help.
 When a class does not include a `package` declaration, it is considered to be in the
 "`default package`". The use of the "`default package`" is generally discouraged and
 should be avoided. It can cause particular problems for Spring Boot applications that use
-the `@ComponentScan`, `@EntityScan`, or `@SpringBootApplication` annotations, since every
-class from every jar is read.
+the `@ComponentScan`, `@ConfigurationPropertiesScan`, `@EntityScan`, or `@SpringBootApplication`
+annotations, since every class from every jar is read.
 
 TIP: We recommend that you follow Java's recommended package naming conventions and use a
 reversed domain name (for example, `com.example.project`).
@@ -352,8 +355,8 @@ is used to search for `@Entity` items. Using a root package also allows componen
 scan to apply only on your project.
 
 TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration`
-and `@ComponentScan` annotations that it imports defines that behaviour so you can also
-use that instead.
+`@ComponentScan`, and `@ConfigurationPropertiesScan` annotations that it imports defines
+that behaviour so you can also use those instead.
 
 The following listing shows a typical layout:
 
@@ -469,7 +472,7 @@ as shown in the following example:
 	import org.springframework.boot.autoconfigure.jdbc.*;
 	import org.springframework.context.annotation.*;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 	public class MyConfiguration {
 	}
@@ -553,12 +556,10 @@ be able to define extra configuration on their "application class". A single
 auto-configuration mechanism>>
 * `@ComponentScan`: enable `@Component` scan on the package where the application is
 located (see <<using-boot-structuring-your-code,the best practices>>)
+* `@ConfigurationPropertiesScan`: enable `@ConfigurationProperties` scan on the package
+where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
 * `@Configuration`: allow to register extra beans in the context or import additional
 configuration classes
-
-The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
-`@EnableAutoConfiguration`, and `@ComponentScan` with their default attributes, as shown
-in the following example:
 
 
 [source,java,indent=0]
@@ -568,7 +569,7 @@ in the following example:
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan @ConfigurationPropertiesScan
 	public class Application {
 
 		public static void main(String[] args) {
@@ -583,9 +584,9 @@ NOTE: `@SpringBootApplication` also provides aliases to customize the attributes
 
 [NOTE]
 ====
-None of these features are mandatory and you may chose to replace this single annotation
+None of these features are mandatory and you may choose to replace this single annotation
 by any of the features that it enables. For instance, you may not want to use component
-scan in your application:
+scan or configuration properties scan in your application:
 
 [source,java,indent=0]
 ----
@@ -596,7 +597,7 @@ scan in your application:
 	import org.springframework.context.annotation.Configuration;
 	import org.springframework.context.annotation.Import;
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	@Import({ MyConfig.class, MyAnotherConfig.class })
 	public class Application {
@@ -609,8 +610,8 @@ scan in your application:
 ----
 
 In this example, `Application` is just like any other Spring Boot application except that
-`@Component`-annotated classes are not detected automatically and the user-defined beans
-are imported explicitly (see `@Import`).
+`@Component`-annotated classes and `@ConfigurationProperties`-annotated classes are not detected
+automatically and the user-defined beans are imported explicitly (see `@Import`).
 ====
 
 
@@ -747,16 +748,26 @@ listings for Maven and Gradle:
 .Gradle
 [source,groovy,indent=0,subs="attributes"]
 ----
+	configurations {
+		developmentOnly
+		runtimeClasspath {
+			extendsFrom developmentOnly
+		}
+	}
 	dependencies {
-		compile("org.springframework.boot:spring-boot-devtools")
+		developmentOnly("org.springframework.boot:spring-boot-devtools")
 	}
 ----
 
 NOTE: Developer tools are automatically disabled when running a fully packaged
 application. If your application is launched from `java -jar` or if it is started from a
-special classloader, then it is considered a "`production application`". Flagging the
-dependency as optional in Maven or using `compileOnly` in Gradle is a best practice that
-prevents devtools from being transitively applied to other modules that use your project.
+special classloader, then it is considered a "`production application`". If that does not
+apply to you (i.e. if you run your application from a container), consider excluding
+devtools or set the `-Dspring.devtools.restart.enabled=false` system property.
+
+TIP: Flagging the dependency as optional in Maven or using a custom `developmentOnly`
+configuration in Gradle (as shown above) is a best practice that prevents devtools from
+being transitively applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default. If you want to use a
 <<using-boot-devtools-remote,certain remote devtools feature>>, you need to disable the
@@ -780,6 +791,16 @@ Cache options are usually configured by settings in your `application.properties
 For example, Thymeleaf offers the `spring.thymeleaf.cache` property. Rather than needing
 to set these properties manually, the `spring-boot-devtools` module automatically applies
 sensible development-time configuration.
+
+Because you need more information about web requests while developing Spring MVC and
+Spring WebFlux applications, developer tools will enable `DEBUG` logging for the `web`
+logging group. This will give you information about the incoming request, which handler is
+processing it, the response outcome, etc. If you wish to log all request details
+(including potentially sensitive information), you can turn on the
+`spring.http.log-request-details` configuration property.
+
+NOTE: If you don't want property defaults to be applied you can set
+`spring.devtools.add-properties` to `false` in your `application.properties`.
 
 TIP: For a complete list of the properties that are applied by the devtools, see
 {sc-spring-boot-devtools}/env/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
@@ -808,8 +829,8 @@ and triggers a restart. In IntelliJ IDEA, building the project
 ====
 As long as forking is enabled, you can also start your application by using the supported
 build plugins (Maven and Gradle), since DevTools needs an isolated application
-classloader to operate properly. By default, Gradle and Maven do that when they detect
-DevTools on the classpath.
+classloader to operate properly. By default, the Gradle and Maven plugins fork the
+application process.
 
 ====
 
@@ -952,8 +973,8 @@ pattern that is applied to the classpath, as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	restart.exclude.companycommonlibs=/mycorp-common-[\\w-]+\.jar
-	restart.include.projectcommon=/mycorp-myproj-[\\w-]+\.jar
+	restart.exclude.companycommonlibs=/mycorp-common-[\\w\\d-\.]+\.jar
+	restart.include.projectcommon=/mycorp-myproj-[\\w\\d-\.]+\.jar
 ----
 
 NOTE: All property keys must be unique. As long as a property starts with
@@ -982,7 +1003,7 @@ authors.
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used
 to trigger a browser refresh when a resource is changed. LiveReload browser extensions
 are freely available for Chrome, Firefox and Safari from
-https://livereload.com/extensions/[livereload.com].
+http://livereload.com/extensions/[livereload.com].
 
 If you do not want to start the LiveReload server when your application runs, you can set
 the `spring.devtools.livereload.enabled` property to `false`.
@@ -1007,6 +1028,10 @@ property:
 ----
 	spring.devtools.reload.trigger-file=.reloadtrigger
 ----
+
+NOTE: Profiles activated in `.spring-boot-devtools.properties` will not affect the
+loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties,
+profile-specific configuration files>>.
 
 
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.List;
+
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -24,6 +26,7 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ListenerRetry;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -39,6 +42,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	private MessageConverter messageConverter;
 
 	private MessageRecoverer messageRecoverer;
+
+	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
 	private RabbitProperties rabbitProperties;
 
@@ -57,6 +62,14 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 */
 	protected void setMessageRecoverer(MessageRecoverer messageRecoverer) {
 		this.messageRecoverer = messageRecoverer;
+	}
+
+	/**
+	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
+	 * @param retryTemplateCustomizers the retry template customizers
+	 */
+	protected void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+		this.retryTemplateCustomizers = retryTemplateCustomizers;
 	}
 
 	/**
@@ -102,16 +115,16 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		if (configuration.getIdleEventInterval() != null) {
 			factory.setIdleEventInterval(configuration.getIdleEventInterval().toMillis());
 		}
+		factory.setMissingQueuesFatal(configuration.isMissingQueuesFatal());
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
-			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
-					? RetryInterceptorBuilder.stateless()
-					: RetryInterceptorBuilder.stateful());
-			builder.maxAttempts(retryConfig.getMaxAttempts());
-			builder.backOffOptions(retryConfig.getInitialInterval().toMillis(),
-					retryConfig.getMultiplier(), retryConfig.getMaxInterval().toMillis());
-			MessageRecoverer recoverer = (this.messageRecoverer != null
-					? this.messageRecoverer : new RejectAndDontRequeueRecoverer());
+			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()
+					: RetryInterceptorBuilder.stateful();
+			RetryTemplate retryTemplate = new RetryTemplateFactory(this.retryTemplateCustomizers)
+					.createRetryTemplate(retryConfig, RabbitRetryTemplateCustomizer.Target.LISTENER);
+			builder.retryOperations(retryTemplate);
+			MessageRecoverer recoverer = (this.messageRecoverer != null) ? this.messageRecoverer
+					: new RejectAndDontRequeueRecoverer();
 			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
 		}

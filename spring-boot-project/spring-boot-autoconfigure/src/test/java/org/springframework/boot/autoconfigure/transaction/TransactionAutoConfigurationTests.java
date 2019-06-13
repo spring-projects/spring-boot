@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -49,11 +49,11 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class TransactionAutoConfigurationTests {
+class TransactionAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.context != null) {
 			this.context.close();
@@ -61,86 +61,70 @@ public class TransactionAutoConfigurationTests {
 	}
 
 	@Test
-	public void noTransactionManager() {
+	void noTransactionManager() {
 		load(EmptyConfiguration.class);
 		assertThat(this.context.getBeansOfType(TransactionTemplate.class)).isEmpty();
 	}
 
 	@Test
-	public void singleTransactionManager() {
-		load(new Class<?>[] { DataSourceAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class },
+	void singleTransactionManager() {
+		load(new Class<?>[] { DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class },
 				"spring.datasource.initialization-mode:never");
-		PlatformTransactionManager transactionManager = this.context
-				.getBean(PlatformTransactionManager.class);
-		TransactionTemplate transactionTemplate = this.context
-				.getBean(TransactionTemplate.class);
-		assertThat(transactionTemplate.getTransactionManager())
-				.isSameAs(transactionManager);
+		PlatformTransactionManager transactionManager = this.context.getBean(PlatformTransactionManager.class);
+		TransactionTemplate transactionTemplate = this.context.getBean(TransactionTemplate.class);
+		assertThat(transactionTemplate.getTransactionManager()).isSameAs(transactionManager);
 	}
 
 	@Test
-	public void severalTransactionManagers() {
+	void severalTransactionManagers() {
 		load(SeveralTransactionManagersConfiguration.class);
 		assertThat(this.context.getBeansOfType(TransactionTemplate.class)).isEmpty();
 	}
 
 	@Test
-	public void customTransactionManager() {
+	void customTransactionManager() {
 		load(CustomTransactionManagerConfiguration.class);
-		Map<String, TransactionTemplate> beans = this.context
-				.getBeansOfType(TransactionTemplate.class);
+		Map<String, TransactionTemplate> beans = this.context.getBeansOfType(TransactionTemplate.class);
 		assertThat(beans).hasSize(1);
 		assertThat(beans.containsKey("transactionTemplateFoo")).isTrue();
 	}
 
 	@Test
-	public void platformTransactionManagerCustomizers() {
+	void platformTransactionManagerCustomizers() {
 		load(SeveralTransactionManagersConfiguration.class);
-		TransactionManagerCustomizers customizers = this.context
-				.getBean(TransactionManagerCustomizers.class);
-		List<?> field = (List<?>) ReflectionTestUtils.getField(customizers,
-				"customizers");
+		TransactionManagerCustomizers customizers = this.context.getBean(TransactionManagerCustomizers.class);
+		List<?> field = (List<?>) ReflectionTestUtils.getField(customizers, "customizers");
 		assertThat(field).hasSize(1).first().isInstanceOf(TransactionProperties.class);
 	}
 
 	@Test
-	public void transactionNotManagedWithNoTransactionManager() {
+	void transactionNotManagedWithNoTransactionManager() {
 		load(BaseConfiguration.class);
-		assertThat(this.context.getBean(TransactionalService.class).isTransactionActive())
-				.isFalse();
+		assertThat(this.context.getBean(TransactionalService.class).isTransactionActive()).isFalse();
 	}
 
 	@Test
-	public void transactionManagerUsesCglibByDefault() {
+	void transactionManagerUsesCglibByDefault() {
 		load(TransactionManagersConfiguration.class);
-		assertThat(this.context.getBean(AnotherServiceImpl.class).isTransactionActive())
-				.isTrue();
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
-				.hasSize(1);
+		assertThat(this.context.getBean(AnotherServiceImpl.class).isTransactionActive()).isTrue();
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(1);
 	}
 
 	@Test
-	public void transactionManagerCanBeConfiguredToJdkProxy() {
-		load(TransactionManagersConfiguration.class,
-				"spring.aop.proxy-target-class=false");
-		assertThat(this.context.getBean(AnotherService.class).isTransactionActive())
-				.isTrue();
+	void transactionManagerCanBeConfiguredToJdkProxy() {
+		load(TransactionManagersConfiguration.class, "spring.aop.proxy-target-class=false");
+		assertThat(this.context.getBean(AnotherService.class).isTransactionActive()).isTrue();
 		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
-				.hasSize(0);
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(0);
 	}
 
 	@Test
-	public void customEnableTransactionManagementTakesPrecedence() {
-		load(new Class<?>[] { CustomTransactionManagementConfiguration.class,
-				TransactionManagersConfiguration.class },
+	void customEnableTransactionManagementTakesPrecedence() {
+		load(new Class<?>[] { CustomTransactionManagementConfiguration.class, TransactionManagersConfiguration.class },
 				"spring.aop.proxy-target-class=true");
-		assertThat(this.context.getBean(AnotherService.class).isTransactionActive())
-				.isTrue();
+		assertThat(this.context.getBean(AnotherService.class).isTransactionActive()).isTrue();
 		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
-				.hasSize(0);
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(0);
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -156,12 +140,12 @@ public class TransactionAutoConfigurationTests {
 		this.context = applicationContext;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SeveralTransactionManagersConfiguration {
 
 		@Bean
@@ -176,12 +160,12 @@ public class TransactionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTransactionManagerConfiguration {
 
 		@Bean
-		public TransactionTemplate transactionTemplateFoo() {
-			return new TransactionTemplate(transactionManagerFoo());
+		public TransactionTemplate transactionTemplateFoo(PlatformTransactionManager transactionManager) {
+			return new TransactionTemplate(transactionManager);
 		}
 
 		@Bean
@@ -191,7 +175,7 @@ public class TransactionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
@@ -206,25 +190,24 @@ public class TransactionAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class TransactionManagersConfiguration {
 
 		@Bean
-		public DataSourceTransactionManager transactionManager() {
-			return new DataSourceTransactionManager(dataSource());
+		public DataSourceTransactionManager transactionManager(DataSource dataSource) {
+			return new DataSourceTransactionManager(dataSource);
 		}
 
 		@Bean
 		public DataSource dataSource() {
-			return DataSourceBuilder.create()
-					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
-					.url("jdbc:hsqldb:mem:tx").username("sa").build();
+			return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver").url("jdbc:hsqldb:mem:tx")
+					.username("sa").build();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableTransactionManagement(proxyTargetClass = false)
 	static class CustomTransactionManagementConfiguration {
 

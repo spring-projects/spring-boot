@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,7 @@ import java.util.jar.Manifest;
  */
 public class ExplodedArchive implements Archive {
 
-	private static final Set<String> SKIPPED_NAMES = new HashSet<>(
-			Arrays.asList(".", ".."));
+	private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
 
 	private final File root;
 
@@ -116,8 +115,7 @@ public class ExplodedArchive implements Archive {
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		File file = ((FileEntry) entry).getFile();
-		return (file.isDirectory() ? new ExplodedArchive(file)
-				: new JarFileArchive(file));
+		return (file.isDirectory() ? new ExplodedArchive(file) : new JarFileArchive(file));
 	}
 
 	@Override
@@ -163,13 +161,11 @@ public class ExplodedArchive implements Archive {
 				throw new NoSuchElementException();
 			}
 			File file = this.current;
-			if (file.isDirectory()
-					&& (this.recursive || file.getParentFile().equals(this.root))) {
+			if (file.isDirectory() && (this.recursive || file.getParentFile().equals(this.root))) {
 				this.stack.addFirst(listFiles(file));
 			}
 			this.current = poll();
-			String name = file.toURI().getPath()
-					.substring(this.root.toURI().getPath().length());
+			String name = file.toURI().getPath().substring(this.root.toURI().getPath().length());
 			return new FileEntry(name, file);
 		}
 

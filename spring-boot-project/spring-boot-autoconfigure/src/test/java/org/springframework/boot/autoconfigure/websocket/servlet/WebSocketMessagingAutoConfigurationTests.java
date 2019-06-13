@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.websocket.WsWebSocketContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -69,57 +69,54 @@ import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link WebSocketMessagingAutoConfiguration}.
  *
  * @author Andy Wilkinson
  */
-public class WebSocketMessagingAutoConfigurationTests {
+class WebSocketMessagingAutoConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 
 	private SockJsClient sockJsClient;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		List<Transport> transports = Arrays.asList(
-				new WebSocketTransport(
-						new StandardWebSocketClient(new WsWebSocketContainer())),
+				new WebSocketTransport(new StandardWebSocketClient(new WsWebSocketContainer())),
 				new RestTemplateXhrTransport(new RestTemplate()));
 		this.sockJsClient = new SockJsClient(transports);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		this.context.close();
 		this.sockJsClient.stop();
 	}
 
 	@Test
-	public void basicMessagingWithJsonResponse() throws Throwable {
+	void basicMessagingWithJsonResponse() throws Throwable {
 		Object result = performStompSubscription("/app/json");
-		assertThat(new String((byte[]) result))
-				.isEqualTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"));
+		assertThat(new String((byte[]) result)).isEqualTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"));
 	}
 
 	@Test
-	public void basicMessagingWithStringResponse() throws Throwable {
+	void basicMessagingWithStringResponse() throws Throwable {
 		Object result = performStompSubscription("/app/string");
 		assertThat(new String((byte[]) result)).isEqualTo("string data");
 	}
 
 	@Test
-	public void customizedConverterTypesMatchDefaultConverterTypes() {
+	void customizedConverterTypesMatchDefaultConverterTypes() {
 		List<MessageConverter> customizedConverters = getCustomizedConverters();
 		List<MessageConverter> defaultConverters = getDefaultConverters();
 		assertThat(customizedConverters.size()).isEqualTo(defaultConverters.size());
 		Iterator<MessageConverter> customizedIterator = customizedConverters.iterator();
 		Iterator<MessageConverter> defaultIterator = defaultConverters.iterator();
 		while (customizedIterator.hasNext()) {
-			assertThat(customizedIterator.next())
-					.isInstanceOf(defaultIterator.next().getClass());
+			assertThat(customizedIterator.next()).isInstanceOf(defaultIterator.next().getClass());
 		}
 	}
 
@@ -133,16 +130,15 @@ public class WebSocketMessagingAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private List<MessageConverter> getDefaultConverters() {
-		CompositeMessageConverter compositeDefaultConverter = new DelegatingWebSocketMessageBrokerConfiguration()
-				.brokerMessageConverter();
-		return (List<MessageConverter>) ReflectionTestUtils
-				.getField(compositeDefaultConverter, "converters");
+		DelegatingWebSocketMessageBrokerConfiguration configuration = new DelegatingWebSocketMessageBrokerConfiguration();
+		// We shouldn't usually call this method directly since it's on a non-proxy config
+		CompositeMessageConverter compositeDefaultConverter = ReflectionTestUtils.invokeMethod(configuration,
+				"brokerMessageConverter");
+		return (List<MessageConverter>) ReflectionTestUtils.getField(compositeDefaultConverter, "converters");
 	}
 
 	private Object performStompSubscription(String topic) throws Throwable {
-		TestPropertyValues
-				.of("server.port:0", "spring.jackson.serialization.indent-output:true")
-				.applyTo(this.context);
+		TestPropertyValues.of("server.port:0", "spring.jackson.serialization.indent-output:true").applyTo(this.context);
 		this.context.register(WebSocketMessagingConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
@@ -153,8 +149,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 		StompSessionHandler handler = new StompSessionHandlerAdapter() {
 
 			@Override
-			public void afterConnected(StompSession session,
-					StompHeaders connectedHeaders) {
+			public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
 				session.subscribe(topic, new StompFrameHandler() {
 
 					@Override
@@ -177,8 +172,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 			}
 
 			@Override
-			public void handleException(StompSession session, StompCommand command,
-					StompHeaders headers, byte[] payload, Throwable exception) {
+			public void handleException(StompSession session, StompCommand command, StompHeaders headers,
+					byte[] payload, Throwable exception) {
 				failure.set(exception);
 				latch.countDown();
 			}
@@ -204,16 +199,13 @@ public class WebSocketMessagingAutoConfigurationTests {
 		return result.get();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebSocket
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			ServletWebServerFactoryAutoConfiguration.class,
-			WebSocketMessagingAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class })
-	static class WebSocketMessagingConfiguration
-			implements WebSocketMessageBrokerConfigurer {
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
+			WebSocketMessagingAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
+	static class WebSocketMessagingConfiguration implements WebSocketMessageBrokerConfigurer {
 
 		@Override
 		public void registerStompEndpoints(StompEndpointRegistry registry) {

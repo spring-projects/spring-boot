@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -37,10 +37,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class XADataSourceAutoConfigurationTests {
+class XADataSourceAutoConfigurationTests {
 
 	@Test
-	public void wrapExistingXaDataSource() {
+	void wrapExistingXaDataSource() {
 		ApplicationContext context = createContext(WrapExisting.class);
 		context.getBean(DataSource.class);
 		XADataSource source = context.getBean(XADataSource.class);
@@ -49,9 +49,8 @@ public class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromUrl() {
-		ApplicationContext context = createContext(FromProperties.class,
-				"spring.datasource.url:jdbc:hsqldb:mem:test",
+	void createFromUrl() {
+		ApplicationContext context = createContext(FromProperties.class, "spring.datasource.url:jdbc:hsqldb:mem:test",
 				"spring.datasource.username:un");
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
@@ -62,7 +61,7 @@ public class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromClass() throws Exception {
+	void createFromClass() throws Exception {
 		ApplicationContext context = createContext(FromProperties.class,
 				"spring.datasource.xa.data-source-class-name:org.hsqldb.jdbc.pool.JDBCXADataSource",
 				"spring.datasource.xa.properties.login-timeout:123");
@@ -81,7 +80,7 @@ public class XADataSourceAutoConfigurationTests {
 		return context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WrapExisting {
 
 		@Bean
@@ -96,7 +95,7 @@ public class XADataSourceAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FromProperties {
 
 		@Bean

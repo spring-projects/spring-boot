@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,14 @@
 
 package sample.data.mongo;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class SampleMongoApplication implements CommandLineRunner {
@@ -53,6 +57,12 @@ public class SampleMongoApplication implements CommandLineRunner {
 		for (Customer customer : this.repository.findByLastName("Smith")) {
 			System.out.println(customer);
 		}
+	}
+
+	@Bean
+	public MongoClientSettingsBuilderCustomizer customizer() {
+		return (builder) -> builder.applyToConnectionPoolSettings(
+				(connectionPool) -> connectionPool.maxConnectionIdleTime(5, TimeUnit.MINUTES));
 	}
 
 	public static void main(String[] args) {

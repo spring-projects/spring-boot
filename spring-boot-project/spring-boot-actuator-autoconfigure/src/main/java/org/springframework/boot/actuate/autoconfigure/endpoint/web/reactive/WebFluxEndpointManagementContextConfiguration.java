@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,13 +44,14 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.DispatcherHandler;
 
 /**
- * {@link ManagementContextConfiguration} for Reactive {@link Endpoint} concerns.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Reactive
+ * {@link Endpoint @Endpoint} concerns.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
  */
-@ManagementContextConfiguration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnBean(WebEndpointsSupplier.class)
@@ -59,33 +60,26 @@ public class WebFluxEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier,
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
-			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
-			WebEndpointProperties webEndpointProperties) {
-		EndpointMapping endpointMapping = new EndpointMapping(
-				webEndpointProperties.getBasePath());
+	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
+			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
+			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties) {
+		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		Collection<ExposableWebEndpoint> endpoints = webEndpointsSupplier.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(endpoints);
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints,
-				endpointMediaTypes, corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints,
-						webEndpointProperties.getBasePath()));
+		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints, endpointMediaTypes,
+				corsProperties.toCorsConfiguration(),
+				new EndpointLinksResolver(allEndpoints, webEndpointProperties.getBasePath()));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
-			CorsEndpointProperties corsProperties,
+			ControllerEndpointsSupplier controllerEndpointsSupplier, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
-		EndpointMapping endpointMapping = new EndpointMapping(
-				webEndpointProperties.getBasePath());
-		return new ControllerEndpointHandlerMapping(endpointMapping,
-				controllerEndpointsSupplier.getEndpoints(),
+		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
+		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
 	}
 

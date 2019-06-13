@@ -11,7 +11,7 @@ JNDI machinery.
 
 ### Postgres
 We will use postgres as the underlying database, v9.3.5 or above is recommend. Follow
-the installation instructions from http://www.postgresql.org/[postgresql.org] or use
+the installation instructions from https://www.postgresql.org/[postgresql.org] or use
 a package manager to install the appropriate binaries.
 
 Once installed you will need to initialize and start the server.
@@ -40,7 +40,7 @@ Finally you can type `psql bootdemo` to configure a password:
 
 
 ### WildFly 8.1
-Download an install WildFly 8.1 from http://wildfly.org/downloads/[wildfly.org]. Once
+Download an install WildFly 8.1 from https://wildfly.org/downloads/[wildfly.org]. Once
 installed you will need to add a management user by running `$JBOSS_HOME/bin/add-user.sh`
 (see the WildFly documentation for details).
 
@@ -51,7 +51,7 @@ structure:
 ----
 	$ cd $JBOSS_HOME
 	mkdir -p modules/org/postgresql/main
-	wget http://jdbc.postgresql.org/download/postgresql-9.3-1102.jdbc41.jar
+	wget https://jdbc.postgresql.org/download/postgresql-9.3-1102.jdbc41.jar
 	mv postgresql-9.3-1102.jdbc41.jar modules/org/postgresql/main
 ----
 

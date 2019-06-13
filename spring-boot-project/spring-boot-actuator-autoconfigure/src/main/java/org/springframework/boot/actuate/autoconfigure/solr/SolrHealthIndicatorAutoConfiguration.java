@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SolrClient.class)
 @ConditionalOnBean(SolrClient.class)
 @ConditionalOnEnabledHealthIndicator("solr")
@@ -51,16 +51,10 @@ import org.springframework.context.annotation.Configuration;
 public class SolrHealthIndicatorAutoConfiguration
 		extends CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrClient> {
 
-	private final Map<String, SolrClient> solrClients;
-
-	public SolrHealthIndicatorAutoConfiguration(Map<String, SolrClient> solrClients) {
-		this.solrClients = solrClients;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(name = "solrHealthIndicator")
-	public HealthIndicator solrHealthIndicator() {
-		return createHealthIndicator(this.solrClients);
+	public HealthIndicator solrHealthIndicator(Map<String, SolrClient> solrClients) {
+		return createHealthIndicator(solrClients);
 	}
 
 }

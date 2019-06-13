@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,16 +34,13 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
  */
 @Plugin(name = "ExtendedWhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "xwEx", "xwThrowable", "xwException" })
-public final class ExtendedWhitespaceThrowablePatternConverter
-		extends ThrowablePatternConverter {
+public final class ExtendedWhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
 	private final ExtendedThrowablePatternConverter delegate;
 
-	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration,
-			String[] options) {
+	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
 		super("WhitespaceExtendedThrowable", "throwable", options, configuration);
-		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration,
-				options);
+		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
 	}
 
 	@Override
@@ -62,8 +59,8 @@ public final class ExtendedWhitespaceThrowablePatternConverter
 	 * first line of the throwable will be formatted.
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
-	public static ExtendedWhitespaceThrowablePatternConverter newInstance(
-			Configuration configuration, String[] options) {
+	public static ExtendedWhitespaceThrowablePatternConverter newInstance(Configuration configuration,
+			String[] options) {
 		return new ExtendedWhitespaceThrowablePatternConverter(configuration, options);
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint} to expose a collection of {@link LoggerConfiguration}s.
+ * {@link Endpoint @Endpoint} to expose a collection of {@link LoggerConfiguration}s.
  *
  * @author Ben Hale
  * @author Phillip Webb
@@ -57,8 +57,7 @@ public class LoggersEndpoint {
 
 	@ReadOperation
 	public Map<String, Object> loggers() {
-		Collection<LoggerConfiguration> configurations = this.loggingSystem
-				.getLoggerConfigurations();
+		Collection<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		if (configurations == null) {
 			return Collections.emptyMap();
 		}
@@ -71,14 +70,12 @@ public class LoggersEndpoint {
 	@ReadOperation
 	public LoggerLevels loggerLevels(@Selector String name) {
 		Assert.notNull(name, "Name must not be null");
-		LoggerConfiguration configuration = this.loggingSystem
-				.getLoggerConfiguration(name);
-		return (configuration != null ? new LoggerLevels(configuration) : null);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(name);
+		return (configuration != null) ? new LoggerLevels(configuration) : null;
 	}
 
 	@WriteOperation
-	public void configureLogLevel(@Selector String name,
-			@Nullable LogLevel configuredLevel) {
+	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "Name must not be empty");
 		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}
@@ -88,8 +85,7 @@ public class LoggersEndpoint {
 		return new TreeSet<>(levels).descendingSet();
 	}
 
-	private Map<String, LoggerLevels> getLoggers(
-			Collection<LoggerConfiguration> configurations) {
+	private Map<String, LoggerLevels> getLoggers(Collection<LoggerConfiguration> configurations) {
 		Map<String, LoggerLevels> loggers = new LinkedHashMap<>(configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
 			loggers.put(configuration.getName(), new LoggerLevels(configuration));
@@ -112,7 +108,7 @@ public class LoggersEndpoint {
 		}
 
 		private String getName(LogLevel level) {
-			return (level != null ? level.name() : null);
+			return (level != null) ? level.name() : null;
 		}
 
 		public String getConfiguredLevel() {

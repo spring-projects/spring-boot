@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot.launcher.it</groupId>
 	<artifactId>executable-jar</artifactId>
@@ -91,15 +91,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>javax.annotation-api</artifactId>
-				<version>@javax-annotation.version@</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -114,7 +105,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>@spring.version@</version>
+			<version>@spring-framework.version@</version>
 		</dependency>
 	</dependencies>
 </project>

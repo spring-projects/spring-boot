@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,21 +27,22 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
+import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link ManagementContextConfiguration} for servlet endpoints.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for servlet
+ * endpoints.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@Configuration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletEndpointManagementContextConfiguration {
 
@@ -49,42 +50,32 @@ public class ServletEndpointManagementContextConfiguration {
 	public ExposeExcludePropertyEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
 			WebEndpointProperties properties) {
 		WebEndpointProperties.Exposure exposure = properties.getExposure();
-		return new ExposeExcludePropertyEndpointFilter<>(ExposableServletEndpoint.class,
-				exposure.getInclude(), exposure.getExclude());
+		return new ExposeExcludePropertyEndpointFilter<>(ExposableServletEndpoint.class, exposure.getInclude(),
+				exposure.getExclude());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DispatcherServlet.class)
-	public class WebMvcServletEndpointManagementContextConfiguration {
-
-		private final ApplicationContext context;
-
-		public WebMvcServletEndpointManagementContextConfiguration(ApplicationContext context) {
-			this.context = context;
-		}
+	public static class WebMvcServletEndpointManagementContextConfiguration {
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(
-				WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier) {
-			DispatcherServletPathProvider servletPathProvider = this.context.getBean(DispatcherServletPathProvider.class);
-			String servletPath = (servletPathProvider.getServletPath().equals("/") ? "" : servletPathProvider.getServletPath());
-			return new ServletEndpointRegistrar(servletPath + properties.getBasePath(),
+		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
+				ServletEndpointsSupplier servletEndpointsSupplier, DispatcherServletPath dispatcherServletPath) {
+			return new ServletEndpointRegistrar(dispatcherServletPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-	public class JerseyServletEndpointManagementContextConfiguration {
+	public static class JerseyServletEndpointManagementContextConfiguration {
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(
-				WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier) {
-			return new ServletEndpointRegistrar(properties.getBasePath(),
+		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
+				ServletEndpointsSupplier servletEndpointsSupplier, JerseyApplicationPath jerseyApplicationPath) {
+			return new ServletEndpointRegistrar(jerseyApplicationPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.xnio.channels.UnsupportedOptionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -63,10 +63,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
-@ContextConfiguration(classes = ErrorPageFilterIntegrationTests.TomcatConfig.class, loader = EmbeddedWebContextLoader.class)
-public class ErrorPageFilterIntegrationTests {
+@ContextConfiguration(classes = ErrorPageFilterIntegrationTests.TomcatConfig.class,
+		loader = EmbeddedWebContextLoader.class)
+class ErrorPageFilterIntegrationTests {
 
 	@Autowired
 	private HelloWorldController controller;
@@ -74,34 +75,34 @@ public class ErrorPageFilterIntegrationTests {
 	@Autowired
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void init() {
 		this.controller.reset();
 	}
 
 	@Test
-	public void created() throws Exception {
+	void created() throws Exception {
 		doTest(this.context, "/create", HttpStatus.CREATED);
 		assertThat(this.controller.getStatus()).isEqualTo(201);
 	}
 
 	@Test
-	public void ok() throws Exception {
+	void ok() throws Exception {
 		doTest(this.context, "/hello", HttpStatus.OK);
 		assertThat(this.controller.getStatus()).isEqualTo(200);
 	}
 
-	private void doTest(AnnotationConfigServletWebServerApplicationContext context,
-			String resourcePath, HttpStatus status) throws Exception {
+	private void doTest(AnnotationConfigServletWebServerApplicationContext context, String resourcePath,
+			HttpStatus status) throws Exception {
 		int port = context.getWebServer().getPort();
 		RestTemplate template = new RestTemplate();
-		ResponseEntity<String> entity = template.getForEntity(
-				new URI("http://localhost:" + port + resourcePath), String.class);
+		ResponseEntity<String> entity = template.getForEntity(new URI("http://localhost:" + port + resourcePath),
+				String.class);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 		assertThat(entity.getStatusCode()).isEqualTo(status);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	public static class TomcatConfig {
 
@@ -135,8 +136,7 @@ public class ErrorPageFilterIntegrationTests {
 		private CountDownLatch latch = new CountDownLatch(1);
 
 		public int getStatus() throws InterruptedException {
-			assertThat(this.latch.await(1, TimeUnit.SECONDS))
-					.as("Timed out waiting for latch").isTrue();
+			assertThat(this.latch.await(1, TimeUnit.SECONDS)).as("Timed out waiting for latch").isTrue();
 			return this.status;
 		}
 
@@ -153,8 +153,7 @@ public class ErrorPageFilterIntegrationTests {
 		public void addInterceptors(InterceptorRegistry registry) {
 			registry.addInterceptor(new HandlerInterceptorAdapter() {
 				@Override
-				public void postHandle(HttpServletRequest request,
-						HttpServletResponse response, Object handler,
+				public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 						ModelAndView modelAndView) {
 					HelloWorldController.this.setStatus(response.getStatus());
 					HelloWorldController.this.latch.countDown();

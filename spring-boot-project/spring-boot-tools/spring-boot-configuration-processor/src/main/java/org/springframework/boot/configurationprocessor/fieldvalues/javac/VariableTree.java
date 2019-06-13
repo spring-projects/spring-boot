@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ class VariableTree extends ReflectionWrapper {
 
 	public ExpressionTree getInitializer() throws Exception {
 		Object instance = findMethod("getInitializer").invoke(getInstance());
-		return (instance != null ? new ExpressionTree(instance) : null);
+		return (instance != null) ? new ExpressionTree(instance) : null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,8 +52,7 @@ class VariableTree extends ReflectionWrapper {
 		if (modifiers == null) {
 			return Collections.emptySet();
 		}
-		return (Set<Modifier>) findMethod(findClass("com.sun.source.tree.ModifiersTree"),
-				"getFlags").invoke(modifiers);
+		return (Set<Modifier>) findMethod(findClass("com.sun.source.tree.ModifiersTree"), "getFlags").invoke(modifiers);
 	}
 
 }

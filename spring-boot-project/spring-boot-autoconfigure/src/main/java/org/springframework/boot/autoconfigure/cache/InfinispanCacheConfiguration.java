@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,49 +43,34 @@ import org.springframework.util.CollectionUtils;
  * @author Raja Kolli
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SpringEmbeddedCacheManager.class)
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
 public class InfinispanCacheConfiguration {
 
-	private final CacheProperties cacheProperties;
-
-	private final CacheManagerCustomizers customizers;
-
-	private final ConfigurationBuilder defaultConfigurationBuilder;
-
-	public InfinispanCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers,
-			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilder) {
-		this.cacheProperties = cacheProperties;
-		this.customizers = customizers;
-		this.defaultConfigurationBuilder = defaultConfigurationBuilder.getIfAvailable();
-	}
-
 	@Bean
-	public SpringEmbeddedCacheManager cacheManager(
+	public SpringEmbeddedCacheManager cacheManager(CacheManagerCustomizers customizers,
 			EmbeddedCacheManager embeddedCacheManager) {
-		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(
-				embeddedCacheManager);
-		return this.customizers.customize(cacheManager);
+		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(embeddedCacheManager);
+		return customizers.customize(cacheManager);
 	}
 
 	@Bean(destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public EmbeddedCacheManager infinispanCacheManager() throws IOException {
-		EmbeddedCacheManager cacheManager = createEmbeddedCacheManager();
-		List<String> cacheNames = this.cacheProperties.getCacheNames();
+	public EmbeddedCacheManager infinispanCacheManager(CacheProperties cacheProperties,
+			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilder) throws IOException {
+		EmbeddedCacheManager cacheManager = createEmbeddedCacheManager(cacheProperties);
+		List<String> cacheNames = cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			cacheNames.forEach((cacheName) -> cacheManager.defineConfiguration(cacheName,
-					getDefaultCacheConfiguration()));
+					getDefaultCacheConfiguration(defaultConfigurationBuilder.getIfAvailable())));
 		}
 		return cacheManager;
 	}
 
-	private EmbeddedCacheManager createEmbeddedCacheManager() throws IOException {
-		Resource location = this.cacheProperties
-				.resolveConfigLocation(this.cacheProperties.getInfinispan().getConfig());
+	private EmbeddedCacheManager createEmbeddedCacheManager(CacheProperties cacheProperties) throws IOException {
+		Resource location = cacheProperties.resolveConfigLocation(cacheProperties.getInfinispan().getConfig());
 		if (location != null) {
 			try (InputStream in = location.getInputStream()) {
 				return new DefaultCacheManager(in);
@@ -94,9 +79,10 @@ public class InfinispanCacheConfiguration {
 		return new DefaultCacheManager();
 	}
 
-	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration() {
-		if (this.defaultConfigurationBuilder != null) {
-			return this.defaultConfigurationBuilder.build();
+	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration(
+			ConfigurationBuilder defaultConfigurationBuilder) {
+		if (defaultConfigurationBuilder != null) {
+			return defaultConfigurationBuilder.build();
 		}
 		return new ConfigurationBuilder().build();
 	}

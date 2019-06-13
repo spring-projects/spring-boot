@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,48 +31,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringApplicationLauncherTests {
+class SpringApplicationLauncherTests {
 
 	private Map<String, String> env = new HashMap<>();
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		System.clearProperty("spring.application.class.name");
 	}
 
 	@Test
-	public void defaultLaunch() {
+	void defaultLaunch() {
 		assertThat(launch()).contains("org.springframework.boot.SpringApplication");
 	}
 
 	@Test
-	public void launchWithClassConfiguredBySystemProperty() {
-		System.setProperty("spring.application.class.name",
-				"system.property.SpringApplication");
+	void launchWithClassConfiguredBySystemProperty() {
+		System.setProperty("spring.application.class.name", "system.property.SpringApplication");
 		assertThat(launch()).contains("system.property.SpringApplication");
 	}
 
 	@Test
-	public void launchWithClassConfiguredByEnvironmentVariable() {
-		this.env.put("SPRING_APPLICATION_CLASS_NAME",
-				"environment.variable.SpringApplication");
+	void launchWithClassConfiguredByEnvironmentVariable() {
+		this.env.put("SPRING_APPLICATION_CLASS_NAME", "environment.variable.SpringApplication");
 		assertThat(launch()).contains("environment.variable.SpringApplication");
 	}
 
 	@Test
-	public void systemPropertyOverridesEnvironmentVariable() {
-		System.setProperty("spring.application.class.name",
-				"system.property.SpringApplication");
-		this.env.put("SPRING_APPLICATION_CLASS_NAME",
-				"environment.variable.SpringApplication");
+	void systemPropertyOverridesEnvironmentVariable() {
+		System.setProperty("spring.application.class.name", "system.property.SpringApplication");
+		this.env.put("SPRING_APPLICATION_CLASS_NAME", "environment.variable.SpringApplication");
 		assertThat(launch()).contains("system.property.SpringApplication");
 
 	}
 
 	@Test
-	public void sourcesDefaultPropertiesAndArgsAreUsedToLaunch() throws Exception {
-		System.setProperty("spring.application.class.name",
-				TestSpringApplication.class.getName());
+	void sourcesDefaultPropertiesAndArgsAreUsedToLaunch() throws Exception {
+		System.setProperty("spring.application.class.name", TestSpringApplication.class.getName());
 		Class<?>[] sources = new Class<?>[0];
 		String[] args = new String[0];
 		new SpringApplicationLauncher(getClass().getClassLoader()).launch(sources, args);
@@ -81,15 +76,14 @@ public class SpringApplicationLauncherTests {
 		assertThat(args == TestSpringApplication.args).isTrue();
 
 		Map<String, String> defaultProperties = TestSpringApplication.defaultProperties;
-		assertThat(defaultProperties).hasSize(1)
-				.containsEntry("spring.groovy.template.check-template-location", "false");
+		assertThat(defaultProperties).hasSize(1).containsEntry("spring.groovy.template.check-template-location",
+				"false");
 	}
 
 	private Set<String> launch() {
 		TestClassLoader classLoader = new TestClassLoader(getClass().getClassLoader());
 		try {
-			new TestSpringApplicationLauncher(classLoader).launch(new Class<?>[0],
-					new String[0]);
+			new TestSpringApplicationLauncher(classLoader).launch(new Class<?>[0], new String[0]);
 		}
 		catch (Exception ex) {
 			// Launch will fail, but we can still check that the launcher tried to use
@@ -107,8 +101,7 @@ public class SpringApplicationLauncherTests {
 		}
 
 		@Override
-		protected Class<?> loadClass(String name, boolean resolve)
-				throws ClassNotFoundException {
+		protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 			this.classes.add(name);
 			return super.loadClass(name, resolve);
 		}
@@ -129,7 +122,7 @@ public class SpringApplicationLauncherTests {
 
 		private static String[] args;
 
-		public TestSpringApplication(Class<?>[] sources) {
+		TestSpringApplication(Class<?>[] sources) {
 			TestSpringApplication.sources = sources;
 		}
 

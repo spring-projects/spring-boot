@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,8 +65,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 		this.expectationManager = SimpleRequestExpectationManager.class;
 	}
 
-	public MockServerRestTemplateCustomizer(
-			Class<? extends RequestExpectationManager> expectationManager) {
+	public MockServerRestTemplateCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
 		Assert.notNull(expectationManager, "ExpectationManager must not be null");
 		this.expectationManager = expectationManager;
 	}
@@ -84,11 +83,9 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	public void customize(RestTemplate restTemplate) {
 		RequestExpectationManager expectationManager = createExpectationManager();
 		if (this.detectRootUri) {
-			expectationManager = RootUriRequestExpectationManager
-					.forRestTemplate(restTemplate, expectationManager);
+			expectationManager = RootUriRequestExpectationManager.forRestTemplate(restTemplate, expectationManager);
 		}
-		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate)
-				.build(expectationManager);
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build(expectationManager);
 		this.expectationManagers.put(restTemplate, expectationManager);
 		this.servers.put(restTemplate, server);
 	}
@@ -98,14 +95,10 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	public MockRestServiceServer getServer() {
-		Assert.state(!this.servers.isEmpty(),
-				"Unable to return a single MockRestServiceServer since "
-						+ "MockServerRestTemplateCustomizer has not been bound to "
-						+ "a RestTemplate");
-		Assert.state(this.servers.size() == 1,
-				"Unable to return a single MockRestServiceServer since "
-						+ "MockServerRestTemplateCustomizer has been bound to "
-						+ "more than one RestTemplate");
+		Assert.state(!this.servers.isEmpty(), "Unable to return a single MockRestServiceServer since "
+				+ "MockServerRestTemplateCustomizer has not been bound to " + "a RestTemplate");
+		Assert.state(this.servers.size() == 1, "Unable to return a single MockRestServiceServer since "
+				+ "MockServerRestTemplateCustomizer has been bound to " + "more than one RestTemplate");
 		return this.servers.values().iterator().next();
 	}
 

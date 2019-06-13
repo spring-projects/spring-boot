@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.metrics.web.reactive.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,34 +31,34 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class MetricsWebClientCustomizerTests {
+class MetricsWebClientCustomizerTests {
 
 	private MetricsWebClientCustomizer customizer;
 
 	private WebClient.Builder clientBuilder;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.customizer = new MetricsWebClientCustomizer(mock(MeterRegistry.class),
-				mock(WebClientExchangeTagsProvider.class), "test");
+				mock(WebClientExchangeTagsProvider.class), "test", null);
 		this.clientBuilder = WebClient.builder();
 	}
 
 	@Test
-	public void customizeShouldAddFilterFunction() {
+	void customizeShouldAddFilterFunction() {
 		this.clientBuilder.filter(mock(ExchangeFilterFunction.class));
 		this.customizer.customize(this.clientBuilder);
-		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(2).first()
-				.isInstanceOf(MetricsWebClientFilterFunction.class));
+		this.clientBuilder.filters(
+				(filters) -> assertThat(filters).hasSize(2).first().isInstanceOf(MetricsWebClientFilterFunction.class));
 	}
 
 	@Test
-	public void customizeShouldNotAddDuplicateFilterFunction() {
+	void customizeShouldNotAddDuplicateFilterFunction() {
 		this.customizer.customize(this.clientBuilder);
 		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(1));
 		this.customizer.customize(this.clientBuilder);
-		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(1).first()
-				.isInstanceOf(MetricsWebClientFilterFunction.class));
+		this.clientBuilder.filters(
+				(filters) -> assertThat(filters).hasSize(1).first().isInstanceOf(MetricsWebClientFilterFunction.class));
 	}
 
 }

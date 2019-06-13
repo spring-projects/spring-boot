@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,20 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * @since 1.4.1
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme) {
-		super(new DefaultUriBuilderFactory());
+		this(environment, scheme, new DefaultUriBuilderFactory());
+	}
+
+	/**
+	 * Create a new {@code LocalHostUriTemplateHandler} that will generate URIs with the
+	 * given {@code scheme}, use the given {@code environment} to determine the
+	 * context-path and port and delegate to the given template {@code handler}.
+	 * @param environment the environment used to determine the port
+	 * @param scheme the scheme of the root uri
+	 * @param handler the delegate handler
+	 * @since 2.0.3
+	 */
+	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler handler) {
+		super(handler);
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;

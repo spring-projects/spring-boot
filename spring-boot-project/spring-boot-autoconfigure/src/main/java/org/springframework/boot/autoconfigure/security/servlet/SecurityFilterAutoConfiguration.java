@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,11 +47,10 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  * @author Andy Wilkinson
  * @since 1.3
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(SecurityProperties.class)
-@ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class,
-		SessionCreationPolicy.class })
+@ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class, SessionCreationPolicy.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class SecurityFilterAutoConfiguration {
 
@@ -68,14 +67,13 @@ public class SecurityFilterAutoConfiguration {
 		return registration;
 	}
 
-	private EnumSet<DispatcherType> getDispatcherTypes(
-			SecurityProperties securityProperties) {
+	private EnumSet<DispatcherType> getDispatcherTypes(SecurityProperties securityProperties) {
 		if (securityProperties.getFilter().getDispatcherTypes() == null) {
 			return null;
 		}
 		return securityProperties.getFilter().getDispatcherTypes().stream()
-				.map((type) -> DispatcherType.valueOf(type.name())).collect(Collectors
-						.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
+				.map((type) -> DispatcherType.valueOf(type.name()))
+				.collect(Collectors.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
 	}
 
 }

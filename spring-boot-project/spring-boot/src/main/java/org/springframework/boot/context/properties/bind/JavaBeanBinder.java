@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
@@ -44,8 +45,7 @@ class JavaBeanBinder implements BeanBinder {
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			BeanPropertyBinder propertyBinder) {
-		boolean hasKnownBindableProperties = context.streamSources().anyMatch((
-				s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT);
+		boolean hasKnownBindableProperties = hasKnownBindableProperties(name, context);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
 			return null;
@@ -55,17 +55,24 @@ class JavaBeanBinder implements BeanBinder {
 		return (bound ? beanSupplier.get() : null);
 	}
 
-	private <T> boolean bind(BeanPropertyBinder propertyBinder, Bean<T> bean,
-			BeanSupplier<T> beanSupplier) {
+	private boolean hasKnownBindableProperties(ConfigurationPropertyName name, Context context) {
+		for (ConfigurationPropertySource source : context.getSources()) {
+			if (source.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private <T> boolean bind(BeanPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier) {
 		boolean bound = false;
-		for (Map.Entry<String, BeanProperty> entry : bean.getProperties().entrySet()) {
-			bound |= bind(beanSupplier, propertyBinder, entry.getValue());
+		for (BeanProperty beanProperty : bean.getProperties().values()) {
+			bound |= bind(beanSupplier, propertyBinder, beanProperty);
 		}
 		return bound;
 	}
 
-	private <T> boolean bind(BeanSupplier<T> beanSupplier,
-			BeanPropertyBinder propertyBinder, BeanProperty property) {
+	private <T> boolean bind(BeanSupplier<T> beanSupplier, BeanPropertyBinder propertyBinder, BeanProperty property) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
 		Supplier<Object> value = property.getValue(beanSupplier);
@@ -79,73 +86,77 @@ class JavaBeanBinder implements BeanBinder {
 			property.setValue(beanSupplier, bound);
 		}
 		else if (value == null || !bound.equals(value.get())) {
-			throw new IllegalStateException(
-					"No setter found for property: " + property.getName());
+			throw new IllegalStateException("No setter found for property: " + property.getName());
 		}
 		return true;
 	}
 
 	/**
 	 * The bean being bound.
+	 *
+	 * @param <T> the bean type
 	 */
-	private static class Bean<T> {
+	static class Bean<T> {
 
 		private static Bean<?> cached;
 
-		private final Class<?> type;
+		private final ResolvableType type;
 
-		private final ResolvableType resolvableType;
+		private final Class<?> resolvedType;
 
 		private final Map<String, BeanProperty> properties = new LinkedHashMap<>();
 
-		Bean(ResolvableType resolvableType, Class<?> type) {
-			this.resolvableType = resolvableType;
+		Bean(ResolvableType type, Class<?> resolvedType) {
 			this.type = type;
-			putProperties(type);
+			this.resolvedType = resolvedType;
+			addProperties(resolvedType);
 		}
 
-		private void putProperties(Class<?> type) {
+		private void addProperties(Class<?> type) {
 			while (type != null && !Object.class.equals(type)) {
-				for (Method method : type.getDeclaredMethods()) {
-					if (isCandidate(method)) {
-						addMethod(method);
-					}
-				}
-				for (Field field : type.getDeclaredFields()) {
-					addField(field);
-				}
+				Method[] declaredMethods = type.getDeclaredMethods();
+				Field[] declaredFields = type.getDeclaredFields();
+				addProperties(declaredMethods, declaredFields);
 				type = type.getSuperclass();
+			}
+		}
+
+		protected void addProperties(Method[] declaredMethods, Field[] declaredFields) {
+			for (int i = 0; i < declaredMethods.length; i++) {
+				if (!isCandidate(declaredMethods[i])) {
+					declaredMethods[i] = null;
+				}
+			}
+			for (Method method : declaredMethods) {
+				addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
+				addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
+			}
+			for (Method method : declaredMethods) {
+				addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
+			}
+			for (Field field : declaredFields) {
+				addField(field);
 			}
 		}
 
 		private boolean isCandidate(Method method) {
 			int modifiers = method.getModifiers();
-			return Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers)
-					&& !Modifier.isStatic(modifiers)
+			return Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers) && !Modifier.isStatic(modifiers)
 					&& !Object.class.equals(method.getDeclaringClass())
 					&& !Class.class.equals(method.getDeclaringClass());
 		}
 
-		private void addMethod(Method method) {
-			addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
-			addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
-			addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
-		}
-
 		private void addMethodIfPossible(Method method, String prefix, int parameterCount,
 				BiConsumer<BeanProperty, Method> consumer) {
-			if (method.getParameterCount() == parameterCount
-					&& method.getName().startsWith(prefix)
+			if (method != null && method.getParameterCount() == parameterCount && method.getName().startsWith(prefix)
 					&& method.getName().length() > prefix.length()) {
-				String propertyName = Introspector
-						.decapitalize(method.getName().substring(prefix.length()));
-				consumer.accept(this.properties.computeIfAbsent(propertyName,
-						this::getBeanProperty), method);
+				String propertyName = Introspector.decapitalize(method.getName().substring(prefix.length()));
+				consumer.accept(this.properties.computeIfAbsent(propertyName, this::getBeanProperty), method);
 			}
 		}
 
 		private BeanProperty getBeanProperty(String name) {
-			return new BeanProperty(name, this.resolvableType);
+			return new BeanProperty(name, this.type);
 		}
 
 		private void addField(Field field) {
@@ -153,10 +164,6 @@ class JavaBeanBinder implements BeanBinder {
 			if (property != null) {
 				property.addField(field);
 			}
-		}
-
-		public Class<?> getType() {
-			return this.type;
 		}
 
 		public Map<String, BeanProperty> getProperties() {
@@ -171,7 +178,7 @@ class JavaBeanBinder implements BeanBinder {
 					instance = target.getValue().get();
 				}
 				if (instance == null) {
-					instance = (T) BeanUtils.instantiateClass(this.type);
+					instance = (T) BeanUtils.instantiateClass(this.resolvedType);
 				}
 				return instance;
 			});
@@ -179,19 +186,20 @@ class JavaBeanBinder implements BeanBinder {
 
 		@SuppressWarnings("unchecked")
 		public static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
-			Class<?> type = bindable.getType().resolve(Object.class);
+			ResolvableType type = bindable.getType();
+			Class<?> resolvedType = type.resolve(Object.class);
 			Supplier<T> value = bindable.getValue();
 			T instance = null;
 			if (canCallGetValue && value != null) {
 				instance = value.get();
-				type = (instance != null ? instance.getClass() : type);
+				resolvedType = (instance != null) ? instance.getClass() : resolvedType;
 			}
-			if (instance == null && !isInstantiable(type)) {
+			if (instance == null && !isInstantiable(resolvedType)) {
 				return null;
 			}
 			Bean<?> bean = Bean.cached;
-			if (bean == null || !type.equals(bean.getType())) {
-				bean = new Bean<>(bindable.getType(), type);
+			if (bean == null || !bean.isOfType(type, resolvedType)) {
+				bean = new Bean<>(type, resolvedType);
 				cached = bean;
 			}
 			return (Bean<T>) bean;
@@ -208,6 +216,13 @@ class JavaBeanBinder implements BeanBinder {
 			catch (Exception ex) {
 				return false;
 			}
+		}
+
+		private boolean isOfType(ResolvableType type, Class<?> resolvedType) {
+			if (this.type.hasGenerics() || type.hasGenerics()) {
+				return this.type.equals(type);
+			}
+			return this.resolvedType != null && this.resolvedType.equals(resolvedType);
 		}
 
 	}
@@ -235,7 +250,7 @@ class JavaBeanBinder implements BeanBinder {
 	/**
 	 * A bean property being bound.
 	 */
-	private static class BeanProperty {
+	static class BeanProperty {
 
 		private final String name;
 
@@ -259,9 +274,13 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		public void addSetter(Method setter) {
-			if (this.setter == null) {
+			if (this.setter == null || isBetterSetter(setter)) {
 				this.setter = setter;
 			}
+		}
+
+		private boolean isBetterSetter(Method setter) {
+			return this.getter != null && this.getter.getReturnType().equals(setter.getParameterTypes()[0]);
 		}
 
 		public void addField(Field field) {
@@ -277,17 +296,15 @@ class JavaBeanBinder implements BeanBinder {
 		public ResolvableType getType() {
 			if (this.setter != null) {
 				MethodParameter methodParameter = new MethodParameter(this.setter, 0);
-				return ResolvableType.forMethodParameter(methodParameter,
-						this.declaringClassType);
+				return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
 			}
 			MethodParameter methodParameter = new MethodParameter(this.getter, -1);
-			return ResolvableType.forMethodParameter(methodParameter,
-					this.declaringClassType);
+			return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
 		}
 
 		public Annotation[] getAnnotations() {
 			try {
-				return (this.field != null ? this.field.getDeclaredAnnotations() : null);
+				return (this.field != null) ? this.field.getDeclaredAnnotations() : null;
 			}
 			catch (Exception ex) {
 				return null;
@@ -304,8 +321,7 @@ class JavaBeanBinder implements BeanBinder {
 					return this.getter.invoke(instance.get());
 				}
 				catch (Exception ex) {
-					throw new IllegalStateException(
-							"Unable to get value for property " + this.name, ex);
+					throw new IllegalStateException("Unable to get value for property " + this.name, ex);
 				}
 			};
 		}
@@ -320,8 +336,7 @@ class JavaBeanBinder implements BeanBinder {
 				this.setter.invoke(instance.get(), value);
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException(
-						"Unable to set value for property " + this.name, ex);
+				throw new IllegalStateException("Unable to set value for property " + this.name, ex);
 			}
 		}
 

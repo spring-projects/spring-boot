@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,26 +39,21 @@ import org.springframework.core.type.ClassMetadata;
 class CacheCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String sourceClass = "";
 		if (metadata instanceof ClassMetadata) {
 			sourceClass = ((ClassMetadata) metadata).getClassName();
 		}
-		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache",
-				sourceClass);
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache", sourceClass);
 		Environment environment = context.getEnvironment();
 		try {
-			BindResult<CacheType> specified = Binder.get(environment)
-					.bind("spring.cache.type", CacheType.class);
+			BindResult<CacheType> specified = Binder.get(environment).bind("spring.cache.type", CacheType.class);
 			if (!specified.isBound()) {
 				return ConditionOutcome.match(message.because("automatic cache type"));
 			}
-			CacheType required = CacheConfigurations
-					.getType(((AnnotationMetadata) metadata).getClassName());
+			CacheType required = CacheConfigurations.getType(((AnnotationMetadata) metadata).getClassName());
 			if (specified.get() == required) {
-				return ConditionOutcome
-						.match(message.because(specified.get() + " cache type"));
+				return ConditionOutcome.match(message.because(specified.get() + " cache type"));
 			}
 		}
 		catch (BindException ex) {

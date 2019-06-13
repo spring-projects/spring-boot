@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,14 +49,13 @@ class MockDefinition extends Definition {
 
 	private final boolean serializable;
 
-	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces,
-			Answers answer, boolean serializable, MockReset reset,
-			QualifierDefinition qualifier) {
+	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces, Answers answer,
+			boolean serializable, MockReset reset, QualifierDefinition qualifier) {
 		super(name, reset, false, qualifier);
 		Assert.notNull(typeToMock, "TypeToMock must not be null");
 		this.typeToMock = typeToMock;
 		this.extraInterfaces = asClassSet(extraInterfaces);
-		this.answer = (answer != null ? answer : Answers.RETURNS_DEFAULTS);
+		this.answer = (answer != null) ? answer : Answers.RETURNS_DEFAULTS;
 		this.serializable = serializable;
 	}
 
@@ -101,16 +100,6 @@ class MockDefinition extends Definition {
 	}
 
 	@Override
-	public int hashCode() {
-		int result = super.hashCode();
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.typeToMock);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.extraInterfaces);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.answer);
-		result = MULTIPLIER * result + Boolean.hashCode(this.serializable);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -121,20 +110,27 @@ class MockDefinition extends Definition {
 		MockDefinition other = (MockDefinition) obj;
 		boolean result = super.equals(obj);
 		result = result && ObjectUtils.nullSafeEquals(this.typeToMock, other.typeToMock);
-		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces,
-				other.extraInterfaces);
+		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces, other.extraInterfaces);
 		result = result && ObjectUtils.nullSafeEquals(this.answer, other.answer);
 		result = result && this.serializable == other.serializable;
 		return result;
 	}
 
 	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.typeToMock);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.extraInterfaces);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.answer);
+		result = MULTIPLIER * result + Boolean.hashCode(this.serializable);
+		return result;
+	}
+
+	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", getName())
-				.append("typeToMock", this.typeToMock)
-				.append("extraInterfaces", this.extraInterfaces)
-				.append("answer", this.answer).append("serializable", this.serializable)
-				.append("reset", getReset()).toString();
+		return new ToStringCreator(this).append("name", getName()).append("typeToMock", this.typeToMock)
+				.append("extraInterfaces", this.extraInterfaces).append("answer", this.answer)
+				.append("serializable", this.serializable).append("reset", getReset()).toString();
 	}
 
 	public <T> T createMock() {

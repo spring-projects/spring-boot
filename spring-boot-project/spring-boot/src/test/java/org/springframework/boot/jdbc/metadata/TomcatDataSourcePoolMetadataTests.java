@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
 package org.springframework.boot.jdbc.metadata;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.junit.Before;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,13 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TomcatDataSourcePoolMetadataTests
 		extends AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
 
-	private TomcatDataSourcePoolMetadata dataSourceMetadata;
-
-	@Before
-	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(
-				createDataSource(0, 2));
-	}
+	private final TomcatDataSourcePoolMetadata dataSourceMetadata = new TomcatDataSourcePoolMetadata(
+			createDataSource(0, 2));
 
 	@Override
 	protected TomcatDataSourcePoolMetadata getDataSourceMetadata() {
@@ -46,16 +40,14 @@ public class TomcatDataSourcePoolMetadataTests
 	public void getValidationQuery() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery())
-				.isEqualTo("SELECT FROM FOO");
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery()).isEqualTo("SELECT FROM FOO");
 	}
 
 	@Override
 	public void getDefaultAutoCommit() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setDefaultAutoCommit(false);
-		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
-				.isFalse();
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getDefaultAutoCommit()).isFalse();
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {

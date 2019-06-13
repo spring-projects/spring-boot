@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Influx metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Influx metrics
+ * export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
@@ -56,6 +57,25 @@ public class InfluxProperties extends StepRegistryProperties {
 	 * not specified).
 	 */
 	private String retentionPolicy;
+
+	/**
+	 * Time period for which Influx should retain data in the current database. For
+	 * instance 7d, check the influx documentation for more details on the duration
+	 * format.
+	 */
+	private String retentionDuration;
+
+	/**
+	 * How many copies of the data are stored in the cluster. Must be 1 for a single node
+	 * instance.
+	 */
+	private Integer retentionReplicationFactor;
+
+	/**
+	 * Time range covered by a shard group. For instance 2w, check the influx
+	 * documentation for more details on the duration format.
+	 */
+	private String retentionShardDuration;
 
 	/**
 	 * URI of the Influx server.
@@ -111,6 +131,30 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	public void setRetentionPolicy(String retentionPolicy) {
 		this.retentionPolicy = retentionPolicy;
+	}
+
+	public String getRetentionDuration() {
+		return this.retentionDuration;
+	}
+
+	public void setRetentionDuration(String retentionDuration) {
+		this.retentionDuration = retentionDuration;
+	}
+
+	public Integer getRetentionReplicationFactor() {
+		return this.retentionReplicationFactor;
+	}
+
+	public void setRetentionReplicationFactor(Integer retentionReplicationFactor) {
+		this.retentionReplicationFactor = retentionReplicationFactor;
+	}
+
+	public String getRetentionShardDuration() {
+		return this.retentionShardDuration;
+	}
+
+	public void setRetentionShardDuration(String retentionShardDuration) {
+		this.retentionShardDuration = retentionShardDuration;
 	}
 
 	public String getUri() {

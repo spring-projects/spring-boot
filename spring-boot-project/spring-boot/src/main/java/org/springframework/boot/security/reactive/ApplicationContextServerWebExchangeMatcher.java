@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,14 +32,13 @@ import org.springframework.web.server.ServerWebExchange;
  * {@link AutowireCapableBeanFactory#createBean(Class, int, boolean) create a new bean}
  * that is autowired in the usual way.
  *
- * @param <C> The type of the context that the match method actually needs to use. Can be
+ * @param <C> the type of the context that the match method actually needs to use. Can be
  * an {@link ApplicationContext} or a class of an {@link ApplicationContext#getBean(Class)
  * existing bean}.
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public abstract class ApplicationContextServerWebExchangeMatcher<C>
-		implements ServerWebExchangeMatcher {
+public abstract class ApplicationContextServerWebExchangeMatcher<C> implements ServerWebExchangeMatcher {
 
 	private final Class<? extends C> contextClass;
 
@@ -63,15 +62,15 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 	 * @param context a supplier for the initialized context (may throw an exception)
 	 * @return if the exchange matches
 	 */
-	protected abstract Mono<MatchResult> matches(ServerWebExchange exchange,
-			Supplier<C> context);
+	protected abstract Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<C> context);
 
 	protected Supplier<C> getContext(ServerWebExchange exchange) {
 		if (this.context == null) {
 			synchronized (this.contextLock) {
 				if (this.context == null) {
-					this.context = createContext(exchange);
-					initialized(this.context);
+					Supplier<C> createdContext = createContext(exchange);
+					initialized(createdContext);
+					this.context = createdContext;
 				}
 			}
 		}
@@ -88,7 +87,7 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 	@SuppressWarnings("unchecked")
 	private Supplier<C> createContext(ServerWebExchange exchange) {
 		ApplicationContext context = exchange.getApplicationContext();
-		Assert.state(context != null, "No WebApplicationContext found.");
+		Assert.state(context != null, "No ApplicationContext found on ServerWebExchange.");
 		if (this.contextClass.isInstance(context)) {
 			return () -> (C) context;
 		}

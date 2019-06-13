@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,7 @@ package sample.tomcat.multiconnector;
 
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import sample.tomcat.multiconnector.SampleTomcatTwoConnectorsApplicationTests.Ports;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,10 +43,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brock Mills
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Import(Ports.class)
-public class SampleTomcatTwoConnectorsApplicationTests {
+class SampleTomcatTwoConnectorsApplicationTests {
 
 	@LocalServerPort
 	private int port;
@@ -63,20 +60,20 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 	private AbstractConfigurableWebServerFactory webServerFactory;
 
 	@Test
-	public void testSsl() {
+	void testSsl() {
 		assertThat(this.webServerFactory.getSsl().isEnabled()).isTrue();
 	}
 
 	@Test
-	public void testHello() {
+	void testHello() {
 		assertThat(this.ports.getHttpsPort()).isEqualTo(this.port);
 		assertThat(this.ports.getHttpPort()).isNotEqualTo(this.port);
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("hello");
-		ResponseEntity<String> httpsEntity = this.restTemplate
-				.getForEntity("https://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> httpsEntity = this.restTemplate.getForEntity("https://localhost:" + this.port + "/hello",
+				String.class);
 		assertThat(httpsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(httpsEntity.getBody()).isEqualTo("hello");
 	}
@@ -90,8 +87,7 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 
 		@Override
 		public void onApplicationEvent(WebServerInitializedEvent event) {
-			Service service = ((TomcatWebServer) event.getWebServer()).getTomcat()
-					.getService();
+			Service service = ((TomcatWebServer) event.getWebServer()).getTomcat().getService();
 			for (Connector connector : service.findConnectors()) {
 				if (connector.getSecure()) {
 					this.httpsPort = connector.getLocalPort();

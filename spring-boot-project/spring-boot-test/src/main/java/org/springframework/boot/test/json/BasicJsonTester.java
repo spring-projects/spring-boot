@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,7 +101,7 @@ public class BasicJsonTester {
 	 * Create JSON content from the specified String source. The source can contain the
 	 * JSON itself or, if it ends with {@code .json}, the name of a resource to be loaded
 	 * using {@code resourceLoadClass}.
-	 * @param source JSON content or a {@code .json} resource name
+	 * @param source the JSON content or a {@code .json} resource name
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(CharSequence source) {

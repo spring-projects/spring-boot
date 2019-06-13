@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 @Endpoint
 public class HolidayEndpoint {
 
-	private static final String NAMESPACE_URI = "http://mycompany.com/hr/schemas";
+	private static final String NAMESPACE_URI = "https://company.example.com/hr/schemas";
 
 	private XPathExpression<Element> startDateExpression;
 
@@ -48,28 +48,21 @@ public class HolidayEndpoint {
 	private HumanResourceService humanResourceService;
 
 	public HolidayEndpoint(HumanResourceService humanResourceService)
-			throws JDOMException, XPathFactoryConfigurationException,
-			XPathExpressionException {
+			throws JDOMException, XPathFactoryConfigurationException, XPathExpressionException {
 		this.humanResourceService = humanResourceService;
 		Namespace namespace = Namespace.getNamespace("hr", NAMESPACE_URI);
 		XPathFactory xPathFactory = XPathFactory.instance();
-		this.startDateExpression = xPathFactory.compile("//hr:StartDate",
-				Filters.element(), null, namespace);
-		this.endDateExpression = xPathFactory.compile("//hr:EndDate", Filters.element(),
-				null, namespace);
-		this.nameExpression = xPathFactory.compile(
-				"concat(//hr:FirstName,' ',//hr:LastName)", Filters.fstring(), null,
+		this.startDateExpression = xPathFactory.compile("//hr:StartDate", Filters.element(), null, namespace);
+		this.endDateExpression = xPathFactory.compile("//hr:EndDate", Filters.element(), null, namespace);
+		this.nameExpression = xPathFactory.compile("concat(//hr:FirstName,' ',//hr:LastName)", Filters.fstring(), null,
 				namespace);
 	}
 
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "HolidayRequest")
-	public void handleHolidayRequest(@RequestPayload Element holidayRequest)
-			throws Exception {
+	public void handleHolidayRequest(@RequestPayload Element holidayRequest) throws Exception {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = dateFormat
-				.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());
-		Date endDate = dateFormat
-				.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());
+		Date startDate = dateFormat.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());
+		Date endDate = dateFormat.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());
 		String name = this.nameExpression.evaluateFirst(holidayRequest);
 		this.humanResourceService.bookHoliday(startDate, endDate, name);
 	}

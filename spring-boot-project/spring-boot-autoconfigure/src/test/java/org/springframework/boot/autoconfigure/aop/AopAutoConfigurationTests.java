@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.aop;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -37,15 +37,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eberhard Wolff
  * @author Stephane Nicoll
  */
-public class AopAutoConfigurationTests {
+class AopAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class));
 
 	@Test
-	public void aopDisabled() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.aop.auto:false").run((context) -> {
+	void aopDisabled() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues("spring.aop.auto:false")
+				.run((context) -> {
 					TestAspect aspect = context.getBean(TestAspect.class);
 					assertThat(aspect.isCalled()).isFalse();
 					TestBean bean = context.getBean(TestBean.class);
@@ -55,29 +55,25 @@ public class AopAutoConfigurationTests {
 	}
 
 	@Test
-	public void aopWithDefaultSettings() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run(proxyTargetClassEnabled());
+	void aopWithDefaultSettings() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run(proxyTargetClassEnabled());
 	}
 
 	@Test
-	public void aopWithEnabledProxyTargetClass() {
+	void aopWithEnabledProxyTargetClass() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class:true")
-				.run(proxyTargetClassEnabled());
+				.withPropertyValues("spring.aop.proxy-target-class:true").run(proxyTargetClassEnabled());
 	}
 
 	@Test
-	public void aopWithDisabledProxyTargetClass() {
+	void aopWithDisabledProxyTargetClass() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class:false")
-				.run(proxyTargetClassDisabled());
+				.withPropertyValues("spring.aop.proxy-target-class:false").run(proxyTargetClassDisabled());
 	}
 
 	@Test
-	public void customConfigurationWithProxyTargetClassDefaultDoesNotDisableProxying() {
-		this.contextRunner.withUserConfiguration(CustomTestConfiguration.class)
-				.run(proxyTargetClassEnabled());
+	void customConfigurationWithProxyTargetClassDefaultDoesNotDisableProxying() {
+		this.contextRunner.withUserConfiguration(CustomTestConfiguration.class).run(proxyTargetClassEnabled());
 	}
 
 	private ContextConsumer<AssertableApplicationContext> proxyTargetClassEnabled() {
@@ -102,13 +98,13 @@ public class AopAutoConfigurationTests {
 	}
 
 	@EnableAspectJAutoProxy
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestConfiguration.class)
 	protected static class CustomTestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration {
 
 		@Bean

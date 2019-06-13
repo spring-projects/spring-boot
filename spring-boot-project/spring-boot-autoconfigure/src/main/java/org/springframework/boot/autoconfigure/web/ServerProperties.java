@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,16 +19,18 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
+
+import io.undertow.UndertowOptions;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
@@ -37,9 +39,11 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
- * {@link ConfigurationProperties} for a web server (e.g. port and path settings).
+ * {@link ConfigurationProperties @ConfigurationProperties} for a web server (e.g. port
+ * and path settings).
  *
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -52,6 +56,11 @@ import org.springframework.util.StringUtils;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Chentao Qu
+ * @author Artsiom Yudovin
+ * @author Andrew McGhie
+ * @author Rafiullah Hamedy
+ *
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -70,9 +79,9 @@ public class ServerProperties {
 	private final ErrorProperties error = new ErrorProperties();
 
 	/**
-	 * Whether X-Forwarded-* headers should be applied to the HttpRequest.
+	 * Strategy for handling X-Forwarded-* headers.
 	 */
-	private Boolean useForwardHeaders;
+	private ForwardHeadersStrategy forwardHeadersStrategy = ForwardHeadersStrategy.NONE;
 
 	/**
 	 * Value to use for the Server response header (if empty, no header is sent).
@@ -80,9 +89,9 @@ public class ServerProperties {
 	private String serverHeader;
 
 	/**
-	 * Maximum size, in bytes, of the HTTP message header.
+	 * Maximum size of the HTTP message header.
 	 */
-	private int maxHttpHeaderSize = 0; // bytes
+	private DataSize maxHttpHeaderSize = DataSize.ofKilobytes(8);
 
 	/**
 	 * Time that connectors wait for another HTTP request before closing the connection.
@@ -124,12 +133,15 @@ public class ServerProperties {
 		this.address = address;
 	}
 
+	@DeprecatedConfigurationProperty(reason = "replaced to support additional strategies",
+			replacement = "server.forward-headers-strategy")
 	public Boolean isUseForwardHeaders() {
-		return this.useForwardHeaders;
+		return ForwardHeadersStrategy.NATIVE.equals(this.forwardHeadersStrategy);
 	}
 
 	public void setUseForwardHeaders(Boolean useForwardHeaders) {
-		this.useForwardHeaders = useForwardHeaders;
+		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders) ? ForwardHeadersStrategy.NATIVE
+				: ForwardHeadersStrategy.NONE;
 	}
 
 	public String getServerHeader() {
@@ -140,11 +152,11 @@ public class ServerProperties {
 		this.serverHeader = serverHeader;
 	}
 
-	public int getMaxHttpHeaderSize() {
+	public DataSize getMaxHttpHeaderSize() {
 		return this.maxHttpHeaderSize;
 	}
 
-	public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+	public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
@@ -192,6 +204,14 @@ public class ServerProperties {
 		return this.undertow;
 	}
 
+	public ForwardHeadersStrategy getForwardHeadersStrategy() {
+		return this.forwardHeadersStrategy;
+	}
+
+	public void setForwardHeadersStrategy(ForwardHeadersStrategy forwardHeadersStrategy) {
+		this.forwardHeadersStrategy = forwardHeadersStrategy;
+	}
+
 	/**
 	 * Servlet properties.
 	 */
@@ -227,10 +247,11 @@ public class ServerProperties {
 		}
 
 		private String cleanContextPath(String contextPath) {
-			if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-				return contextPath.substring(0, contextPath.length() - 1);
+			String candidate = StringUtils.trimWhitespace(contextPath);
+			if (StringUtils.hasText(candidate) && candidate.endsWith("/")) {
+				return candidate.substring(0, candidate.length() - 1);
 			}
-			return contextPath;
+			return candidate;
 		}
 
 		public String getApplicationDisplayName() {
@@ -266,15 +287,15 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Regular expression matching trusted IP addresses.
+		 * Regular expression that matches proxies that are to be trusted.
 		 */
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "0:0:0:0:0:0:0:1|::1";
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
@@ -307,33 +328,33 @@ public class ServerProperties {
 		 * is not specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration backgroundProcessorDelay = Duration.ofSeconds(30);
+		private Duration backgroundProcessorDelay = Duration.ofSeconds(10);
 
 		/**
-		 * Maximum number of worker threads.
+		 * Maximum amount of worker threads.
 		 */
-		private int maxThreads = 0;
+		private int maxThreads = 200;
 
 		/**
-		 * Minimum number of worker threads.
+		 * Minimum amount of worker threads.
 		 */
-		private int minSpareThreads = 0;
+		private int minSpareThreads = 10;
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post content.
+		 * Maximum size of the HTTP post content.
 		 */
-		private int maxHttpPostSize = 0;
+		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
 		/**
-		 * Maximum size, in bytes, of the HTTP message header.
+		 * Maximum amount of request body to swallow.
 		 */
-		private int maxHttpHeaderSize = 0;
+		private DataSize maxSwallowSize = DataSize.ofMegabytes(2);
 
 		/**
 		 * Whether requests to the context root should be redirected by appending a / to
 		 * the path.
 		 */
-		private Boolean redirectContextRoot;
+		private Boolean redirectContextRoot = true;
 
 		/**
 		 * Whether HTTP 1.1 and later location headers generated by a call to sendRedirect
@@ -344,20 +365,27 @@ public class ServerProperties {
 		/**
 		 * Character encoding to use to decode the URI.
 		 */
-		private Charset uriEncoding;
+		private Charset uriEncoding = StandardCharsets.UTF_8;
 
 		/**
 		 * Maximum number of connections that the server accepts and processes at any
 		 * given time. Once the limit has been reached, the operating system may still
 		 * accept connections based on the "acceptCount" property.
 		 */
-		private int maxConnections = 0;
+		private int maxConnections = 10000;
 
 		/**
 		 * Maximum queue length for incoming connection requests when all possible request
 		 * processing threads are in use.
 		 */
-		private int acceptCount = 0;
+		private int acceptCount = 100;
+
+		/**
+		 * Maximum number of idle processors that will be retained in the cache and reused
+		 * with a subsequent request. When set to -1 the cache will be unlimited with a
+		 * theoretical maximum size equal to the maximum number of connections.
+		 */
+		private int processorCache = 200;
 
 		/**
 		 * Comma-separated list of additional patterns that match jars to ignore for TLD
@@ -370,6 +398,11 @@ public class ServerProperties {
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
+
+		/**
+		 * Modeler MBean Registry configuration.
+		 */
+		private final Mbeanregistry mbeanregistry = new Mbeanregistry();
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -387,11 +420,11 @@ public class ServerProperties {
 			this.minSpareThreads = minSpareThreads;
 		}
 
-		public int getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(int maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
@@ -487,12 +520,12 @@ public class ServerProperties {
 			this.maxConnections = maxConnections;
 		}
 
-		public int getMaxHttpHeaderSize() {
-			return this.maxHttpHeaderSize;
+		public DataSize getMaxSwallowSize() {
+			return this.maxSwallowSize;
 		}
 
-		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
-			this.maxHttpHeaderSize = maxHttpHeaderSize;
+		public void setMaxSwallowSize(DataSize maxSwallowSize) {
+			this.maxSwallowSize = maxSwallowSize;
 		}
 
 		public int getAcceptCount() {
@@ -501,6 +534,14 @@ public class ServerProperties {
 
 		public void setAcceptCount(int acceptCount) {
 			this.acceptCount = acceptCount;
+		}
+
+		public int getProcessorCache() {
+			return this.processorCache;
+		}
+
+		public void setProcessorCache(int processorCache) {
+			this.processorCache = processorCache;
 		}
 
 		public List<String> getAdditionalTldSkipPatterns() {
@@ -515,6 +556,10 @@ public class ServerProperties {
 			return this.resource;
 		}
 
+		public Mbeanregistry getMbeanregistry() {
+			return this.mbeanregistry;
+		}
+
 		/**
 		 * Tomcat access log properties.
 		 */
@@ -524,6 +569,18 @@ public class ServerProperties {
 			 * Enable access log.
 			 */
 			private boolean enabled = false;
+
+			/**
+			 * Whether logging of the request will only be enabled if
+			 * "ServletRequest.getAttribute(conditionIf)" does not yield null.
+			 */
+			private String conditionIf;
+
+			/**
+			 * Whether logging of the request will only be enabled if
+			 * "ServletRequest.getAttribute(conditionUnless)" yield null.
+			 */
+			private String conditionUnless;
 
 			/**
 			 * Format pattern for access logs.
@@ -547,6 +604,24 @@ public class ServerProperties {
 			private String suffix = ".log";
 
 			/**
+			 * Character set used by the log file. Default to the system default character
+			 * set.
+			 */
+			private String encoding;
+
+			/**
+			 * Locale used to format timestamps in log entries and in log file name
+			 * suffix. Default to the default locale of the Java process.
+			 */
+			private String locale;
+
+			/**
+			 * Whether to check for log file existence so it can be recreated it if an
+			 * external process has renamed it.
+			 */
+			private boolean checkExists = false;
+
+			/**
 			 * Whether to enable access log rotation.
 			 */
 			private boolean rotate = true;
@@ -555,7 +630,12 @@ public class ServerProperties {
 			 * Whether to defer inclusion of the date stamp in the file name until rotate
 			 * time.
 			 */
-			private boolean renameOnRotate;
+			private boolean renameOnRotate = false;
+
+			/**
+			 * Number of days to retain the access log files before they are removed.
+			 */
+			private int maxDays = -1;
 
 			/**
 			 * Date format to place in the log file name.
@@ -563,10 +643,15 @@ public class ServerProperties {
 			private String fileDateFormat = ".yyyy-MM-dd";
 
 			/**
+			 * Whether to use IPv6 canonical representation format as defined by RFC 5952.
+			 */
+			private boolean ipv6Canonical = false;
+
+			/**
 			 * Set request attributes for the IP address, Hostname, protocol, and port
 			 * used for the request.
 			 */
-			private boolean requestAttributesEnabled;
+			private boolean requestAttributesEnabled = false;
 
 			/**
 			 * Whether to buffer output such that it is flushed only periodically.
@@ -579,6 +664,22 @@ public class ServerProperties {
 
 			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
+			}
+
+			public String getConditionIf() {
+				return this.conditionIf;
+			}
+
+			public void setConditionIf(String conditionIf) {
+				this.conditionIf = conditionIf;
+			}
+
+			public String getConditionUnless() {
+				return this.conditionUnless;
+			}
+
+			public void setConditionUnless(String conditionUnless) {
+				this.conditionUnless = conditionUnless;
 			}
 
 			public String getPattern() {
@@ -613,6 +714,30 @@ public class ServerProperties {
 				this.suffix = suffix;
 			}
 
+			public String getEncoding() {
+				return this.encoding;
+			}
+
+			public void setEncoding(String encoding) {
+				this.encoding = encoding;
+			}
+
+			public String getLocale() {
+				return this.locale;
+			}
+
+			public void setLocale(String locale) {
+				this.locale = locale;
+			}
+
+			public boolean isCheckExists() {
+				return this.checkExists;
+			}
+
+			public void setCheckExists(boolean checkExists) {
+				this.checkExists = checkExists;
+			}
+
 			public boolean isRotate() {
 				return this.rotate;
 			}
@@ -629,12 +754,28 @@ public class ServerProperties {
 				this.renameOnRotate = renameOnRotate;
 			}
 
+			public int getMaxDays() {
+				return this.maxDays;
+			}
+
+			public void setMaxDays(int maxDays) {
+				this.maxDays = maxDays;
+			}
+
 			public String getFileDateFormat() {
 				return this.fileDateFormat;
 			}
 
 			public void setFileDateFormat(String fileDateFormat) {
 				this.fileDateFormat = fileDateFormat;
+			}
+
+			public boolean isIpv6Canonical() {
+				return this.ipv6Canonical;
+			}
+
+			public void setIpv6Canonical(boolean ipv6Canonical) {
+				this.ipv6Canonical = ipv6Canonical;
 			}
 
 			public boolean isRequestAttributesEnabled() {
@@ -661,9 +802,22 @@ public class ServerProperties {
 		public static class Resource {
 
 			/**
+			 * Whether static resource caching is permitted for this web application.
+			 */
+			private boolean allowCaching = true;
+
+			/**
 			 * Time-to-live of the static resource cache.
 			 */
 			private Duration cacheTtl;
+
+			public boolean isAllowCaching() {
+				return this.allowCaching;
+			}
+
+			public void setAllowCaching(boolean allowCaching) {
+				this.allowCaching = allowCaching;
+			}
 
 			public Duration getCacheTtl() {
 				return this.cacheTtl;
@@ -671,6 +825,23 @@ public class ServerProperties {
 
 			public void setCacheTtl(Duration cacheTtl) {
 				this.cacheTtl = cacheTtl;
+			}
+
+		}
+
+		public static class Mbeanregistry {
+
+			/**
+			 * Whether Tomcat's MBean Registry should be enabled.
+			 */
+			private boolean enabled;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
 			}
 
 		}
@@ -688,29 +859,31 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post or put content.
+		 * Maximum size of the HTTP post or put content.
 		 */
-		private int maxHttpPostSize = 0; // bytes
+		private DataSize maxHttpPostSize = DataSize.ofBytes(200000);
 
 		/**
-		 * Number of acceptor threads to use.
+		 * Number of acceptor threads to use. When the value is -1, the default, the
+		 * number of acceptors is derived from the operating environment.
 		 */
-		private Integer acceptors;
+		private Integer acceptors = -1;
 
 		/**
-		 * Number of selector threads to use.
+		 * Number of selector threads to use. When the value is -1, the default, the
+		 * number of selectors is derived from the operating environment.
 		 */
-		private Integer selectors;
+		private Integer selectors = -1;
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
 
-		public int getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(int maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
@@ -741,6 +914,17 @@ public class ServerProperties {
 			private boolean enabled = false;
 
 			/**
+			 * Log format.
+			 */
+			private FORMAT format = FORMAT.NCSA;
+
+			/**
+			 * Custom log format, see org.eclipse.jetty.server.CustomRequestLog. If
+			 * defined, overrides the "format" configuration key.
+			 */
+			private String customFormat;
+
+			/**
 			 * Log filename. If not specified, logs redirect to "System.err".
 			 */
 			private String filename;
@@ -761,39 +945,9 @@ public class ServerProperties {
 			private boolean append;
 
 			/**
-			 * Enable extended NCSA format.
+			 * Request paths that should not be logged.
 			 */
-			private boolean extendedFormat;
-
-			/**
-			 * Timestamp format of the request log.
-			 */
-			private String dateFormat = "dd/MMM/yyyy:HH:mm:ss Z";
-
-			/**
-			 * Locale of the request log.
-			 */
-			private Locale locale;
-
-			/**
-			 * Timezone of the request log.
-			 */
-			private TimeZone timeZone = TimeZone.getTimeZone("GMT");
-
-			/**
-			 * Enable logging of the request cookies.
-			 */
-			private boolean logCookies;
-
-			/**
-			 * Enable logging of the request hostname.
-			 */
-			private boolean logServer;
-
-			/**
-			 * Enable logging of request processing time.
-			 */
-			private boolean logLatency;
+			private List<String> ignorePaths;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -801,6 +955,22 @@ public class ServerProperties {
 
 			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
+			}
+
+			public FORMAT getFormat() {
+				return this.format;
+			}
+
+			public void setFormat(FORMAT format) {
+				this.format = format;
+			}
+
+			public String getCustomFormat() {
+				return this.customFormat;
+			}
+
+			public void setCustomFormat(String customFormat) {
+				this.customFormat = customFormat;
 			}
 
 			public String getFilename() {
@@ -835,60 +1005,30 @@ public class ServerProperties {
 				this.append = append;
 			}
 
-			public boolean isExtendedFormat() {
-				return this.extendedFormat;
+			public List<String> getIgnorePaths() {
+				return this.ignorePaths;
 			}
 
-			public void setExtendedFormat(boolean extendedFormat) {
-				this.extendedFormat = extendedFormat;
+			public void setIgnorePaths(List<String> ignorePaths) {
+				this.ignorePaths = ignorePaths;
 			}
 
-			public String getDateFormat() {
-				return this.dateFormat;
-			}
+			/**
+			 * Log format for Jetty access logs.
+			 */
+			public enum FORMAT {
 
-			public void setDateFormat(String dateFormat) {
-				this.dateFormat = dateFormat;
-			}
+				/**
+				 * NCSA format, as defined in CustomRequestLog#NCSA_FORMAT.
+				 */
+				NCSA,
 
-			public Locale getLocale() {
-				return this.locale;
-			}
+				/**
+				 * Extended NCSA format, as defined in
+				 * CustomRequestLog#EXTENDED_NCSA_FORMAT.
+				 */
+				EXTENDED_NCSA
 
-			public void setLocale(Locale locale) {
-				this.locale = locale;
-			}
-
-			public TimeZone getTimeZone() {
-				return this.timeZone;
-			}
-
-			public void setTimeZone(TimeZone timeZone) {
-				this.timeZone = timeZone;
-			}
-
-			public boolean isLogCookies() {
-				return this.logCookies;
-			}
-
-			public void setLogCookies(boolean logCookies) {
-				this.logCookies = logCookies;
-			}
-
-			public boolean isLogServer() {
-				return this.logServer;
-			}
-
-			public void setLogServer(boolean logServer) {
-				this.logServer = logServer;
-			}
-
-			public boolean isLogLatency() {
-				return this.logLatency;
-			}
-
-			public void setLogLatency(boolean logLatency) {
-				this.logLatency = logLatency;
 			}
 
 		}
@@ -901,27 +1041,31 @@ public class ServerProperties {
 	public static class Undertow {
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post content.
+		 * Maximum size of the HTTP post content. When the value is -1, the default, the
+		 * size is unlimited.
 		 */
-		private long maxHttpPostSize = 0; // bytes
+		private DataSize maxHttpPostSize = DataSize.ofBytes(-1);
 
 		/**
-		 * Size of each buffer, in bytes.
+		 * Size of each buffer. The default is derived from the maximum amount of memory
+		 * that is available to the JVM.
 		 */
-		private Integer bufferSize;
+		private DataSize bufferSize;
 
 		/**
-		 * Number of I/O threads to create for the worker.
+		 * Number of I/O threads to create for the worker. The default is derived from the
+		 * number of available processors.
 		 */
 		private Integer ioThreads;
 
 		/**
-		 * Number of worker threads.
+		 * Number of worker threads. The default is 8 times the number of I/O threads.
 		 */
 		private Integer workerThreads;
 
 		/**
-		 * Whether to allocate buffers outside the Java heap.
+		 * Whether to allocate buffers outside the Java heap. The default is derived from
+		 * the maximum amount of memory that is available to the JVM.
 		 */
 		private Boolean directBuffers;
 
@@ -930,21 +1074,64 @@ public class ServerProperties {
 		 */
 		private boolean eagerFilterInit = true;
 
+		/**
+		 * Maximum number of query or path parameters that are allowed. This limit exists
+		 * to prevent hash collision based DOS attacks.
+		 */
+		private int maxParameters = UndertowOptions.DEFAULT_MAX_PARAMETERS;
+
+		/**
+		 * Maximum number of headers that are allowed. This limit exists to prevent hash
+		 * collision based DOS attacks.
+		 */
+		private int maxHeaders = UndertowOptions.DEFAULT_MAX_HEADERS;
+
+		/**
+		 * Maximum number of cookies that are allowed. This limit exists to prevent hash
+		 * collision based DOS attacks.
+		 */
+		private int maxCookies = 200;
+
+		/**
+		 * Whether the server should decode percent encoded slash characters. Enabling
+		 * encoded slashes can have security implications due to different servers
+		 * interpreting the slash differently. Only enable this if you have a legacy
+		 * application that requires it.
+		 */
+		private boolean allowEncodedSlash = false;
+
+		/**
+		 * Whether the URL should be decoded. When disabled, percent-encoded characters in
+		 * the URL will be left as-is.
+		 */
+		private boolean decodeUrl = true;
+
+		/**
+		 * Charset used to decode URLs.
+		 */
+		private Charset urlCharset = StandardCharsets.UTF_8;
+
+		/**
+		 * Whether the 'Connection: keep-alive' header should be added to all responses,
+		 * even if not required by the HTTP specification.
+		 */
+		private boolean alwaysSetKeepAlive = true;
+
 		private final Accesslog accesslog = new Accesslog();
 
-		public long getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(long maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
-		public Integer getBufferSize() {
+		public DataSize getBufferSize() {
 			return this.bufferSize;
 		}
 
-		public void setBufferSize(Integer bufferSize) {
+		public void setBufferSize(DataSize bufferSize) {
 			this.bufferSize = bufferSize;
 		}
 
@@ -978,6 +1165,62 @@ public class ServerProperties {
 
 		public void setEagerFilterInit(boolean eagerFilterInit) {
 			this.eagerFilterInit = eagerFilterInit;
+		}
+
+		public int getMaxParameters() {
+			return this.maxParameters;
+		}
+
+		public void setMaxParameters(Integer maxParameters) {
+			this.maxParameters = maxParameters;
+		}
+
+		public int getMaxHeaders() {
+			return this.maxHeaders;
+		}
+
+		public void setMaxHeaders(int maxHeaders) {
+			this.maxHeaders = maxHeaders;
+		}
+
+		public Integer getMaxCookies() {
+			return this.maxCookies;
+		}
+
+		public void setMaxCookies(Integer maxCookies) {
+			this.maxCookies = maxCookies;
+		}
+
+		public boolean isAllowEncodedSlash() {
+			return this.allowEncodedSlash;
+		}
+
+		public void setAllowEncodedSlash(boolean allowEncodedSlash) {
+			this.allowEncodedSlash = allowEncodedSlash;
+		}
+
+		public boolean isDecodeUrl() {
+			return this.decodeUrl;
+		}
+
+		public void setDecodeUrl(Boolean decodeUrl) {
+			this.decodeUrl = decodeUrl;
+		}
+
+		public Charset getUrlCharset() {
+			return this.urlCharset;
+		}
+
+		public void setUrlCharset(Charset urlCharset) {
+			this.urlCharset = urlCharset;
+		}
+
+		public boolean isAlwaysSetKeepAlive() {
+			return this.alwaysSetKeepAlive;
+		}
+
+		public void setAlwaysSetKeepAlive(boolean alwaysSetKeepAlive) {
+			this.alwaysSetKeepAlive = alwaysSetKeepAlive;
 		}
 
 		public Accesslog getAccesslog() {
@@ -1068,6 +1311,28 @@ public class ServerProperties {
 			}
 
 		}
+
+	}
+
+	/**
+	 * Strategies for supporting forward headers.
+	 */
+	public enum ForwardHeadersStrategy {
+
+		/**
+		 * Use the underlying container's native support for forwarded headers.
+		 */
+		NATIVE,
+
+		/**
+		 * Use Spring's support for handling forwarded headers.
+		 */
+		FRAMEWORK,
+
+		/**
+		 * Ignore X-Forwarded-* headers.
+		 */
+		NONE
 
 	}
 

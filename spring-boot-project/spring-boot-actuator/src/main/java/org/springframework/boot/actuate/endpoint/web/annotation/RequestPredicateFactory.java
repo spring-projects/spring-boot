@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -50,20 +51,19 @@ class RequestPredicateFactory {
 		this.endpointMediaTypes = endpointMediaTypes;
 	}
 
-	public WebOperationRequestPredicate getRequestPredicate(String endpointId,
-			String rootPath, DiscoveredOperationMethod operationMethod) {
+	public WebOperationRequestPredicate getRequestPredicate(EndpointId endpointId, String rootPath,
+			DiscoveredOperationMethod operationMethod) {
 		Method method = operationMethod.getMethod();
 		String path = getPath(rootPath, method);
-		WebEndpointHttpMethod httpMethod = determineHttpMethod(
-				operationMethod.getOperationType());
+		WebEndpointHttpMethod httpMethod = determineHttpMethod(operationMethod.getOperationType());
 		Collection<String> consumes = getConsumes(httpMethod, method);
 		Collection<String> produces = getProduces(operationMethod, method);
 		return new WebOperationRequestPredicate(path, httpMethod, consumes, produces);
 	}
 
 	private String getPath(String rootPath, Method method) {
-		return rootPath + Stream.of(method.getParameters()).filter(this::hasSelector)
-				.map(this::slashName).collect(Collectors.joining());
+		return rootPath + Stream.of(method.getParameters()).filter(this::hasSelector).map(this::slashName)
+				.collect(Collectors.joining());
 	}
 
 	private boolean hasSelector(Parameter parameter) {
@@ -74,21 +74,18 @@ class RequestPredicateFactory {
 		return "/{" + parameter.getName() + "}";
 	}
 
-	private Collection<String> getConsumes(WebEndpointHttpMethod httpMethod,
-			Method method) {
+	private Collection<String> getConsumes(WebEndpointHttpMethod httpMethod, Method method) {
 		if (WebEndpointHttpMethod.POST == httpMethod && consumesRequestBody(method)) {
 			return this.endpointMediaTypes.getConsumed();
 		}
 		return Collections.emptyList();
 	}
 
-	private Collection<String> getProduces(DiscoveredOperationMethod operationMethod,
-			Method method) {
+	private Collection<String> getProduces(DiscoveredOperationMethod operationMethod, Method method) {
 		if (!operationMethod.getProducesMediaTypes().isEmpty()) {
 			return operationMethod.getProducesMediaTypes();
 		}
-		if (Void.class.equals(method.getReturnType())
-				|| void.class.equals(method.getReturnType())) {
+		if (Void.class.equals(method.getReturnType()) || void.class.equals(method.getReturnType())) {
 			return Collections.emptyList();
 		}
 		if (producesResource(method)) {
@@ -103,8 +100,7 @@ class RequestPredicateFactory {
 		}
 		if (WebEndpointResponse.class.isAssignableFrom(method.getReturnType())) {
 			ResolvableType returnType = ResolvableType.forMethodReturnType(method);
-			if (ResolvableType.forClass(Resource.class)
-					.isAssignableFrom(returnType.getGeneric(0))) {
+			if (ResolvableType.forClass(Resource.class).isAssignableFrom(returnType.getGeneric(0))) {
 				return true;
 			}
 		}

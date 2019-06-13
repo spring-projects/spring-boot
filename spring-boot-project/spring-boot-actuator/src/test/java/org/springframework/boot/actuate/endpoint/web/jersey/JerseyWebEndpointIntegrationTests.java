@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,8 +60,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Andy Wilkinson
  * @see JerseyEndpointResourceFactory
  */
-public class JerseyWebEndpointIntegrationTests extends
-		AbstractWebEndpointIntegrationTests<AnnotationConfigServletWebServerApplicationContext> {
+public class JerseyWebEndpointIntegrationTests
+		extends AbstractWebEndpointIntegrationTests<AnnotationConfigServletWebServerApplicationContext> {
 
 	public JerseyWebEndpointIntegrationTests() {
 		super(JerseyWebEndpointIntegrationTests::createApplicationContext,
@@ -74,8 +74,7 @@ public class JerseyWebEndpointIntegrationTests extends
 		return context;
 	}
 
-	private static void applyAuthenticatedConfiguration(
-			AnnotationConfigServletWebServerApplicationContext context) {
+	private static void applyAuthenticatedConfiguration(AnnotationConfigServletWebServerApplicationContext context) {
 		context.register(AuthenticatedConfiguration.class);
 	}
 
@@ -85,12 +84,12 @@ public class JerseyWebEndpointIntegrationTests extends
 	}
 
 	@Override
-	protected void validateErrorBody(WebTestClient.BodyContentSpec body,
-			HttpStatus status, String path, String message) {
+	protected void validateErrorBody(WebTestClient.BodyContentSpec body, HttpStatus status, String path,
+			String message) {
 		// Jersey doesn't support the general error page handling
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class JerseyConfiguration {
 
 		@Bean
@@ -99,32 +98,26 @@ public class JerseyWebEndpointIntegrationTests extends
 		}
 
 		@Bean
-		public ServletRegistrationBean<ServletContainer> servletContainer(
-				ResourceConfig resourceConfig) {
-			return new ServletRegistrationBean<>(new ServletContainer(resourceConfig),
-					"/*");
+		public ServletRegistrationBean<ServletContainer> servletContainer(ResourceConfig resourceConfig) {
+			return new ServletRegistrationBean<>(new ServletContainer(resourceConfig), "/*");
 		}
 
 		@Bean
-		public ResourceConfig resourceConfig(Environment environment,
-				WebEndpointDiscoverer endpointDiscoverer,
+		public ResourceConfig resourceConfig(Environment environment, WebEndpointDiscoverer endpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes) {
 			ResourceConfig resourceConfig = new ResourceConfig();
-			Collection<Resource> resources = new JerseyEndpointResourceFactory()
-					.createEndpointResources(
-							new EndpointMapping(environment.getProperty("endpointPath")),
-							endpointDiscoverer.getEndpoints(), endpointMediaTypes,
-							new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
+			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
+					new EndpointMapping(environment.getProperty("endpointPath")), endpointDiscoverer.getEndpoints(),
+					endpointMediaTypes, new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
 			resourceConfig.registerResources(new HashSet<>(resources));
 			resourceConfig.register(JacksonFeature.class);
-			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()),
-					ContextResolver.class);
+			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()), ContextResolver.class);
 			return resourceConfig;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AuthenticatedConfiguration {
 
 		@Bean
@@ -132,17 +125,14 @@ public class JerseyWebEndpointIntegrationTests extends
 			return new OncePerRequestFilter() {
 
 				@Override
-				protected void doFilterInternal(HttpServletRequest request,
-						HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
+				protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+						FilterChain filterChain) throws ServletException, IOException {
 					SecurityContext context = SecurityContextHolder.createEmptyContext();
-					context.setAuthentication(new UsernamePasswordAuthenticationToken(
-							"Alice", "secret",
+					context.setAuthentication(new UsernamePasswordAuthenticationToken("Alice", "secret",
 							Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR"))));
 					SecurityContextHolder.setContext(context);
 					try {
-						filterChain.doFilter(new SecurityContextHolderAwareRequestWrapper(
-								request, "ROLE_"), response);
+						filterChain.doFilter(new SecurityContextHolderAwareRequestWrapper(request, "ROLE_"), response);
 					}
 					finally {
 						SecurityContextHolder.clearContext();
@@ -154,8 +144,7 @@ public class JerseyWebEndpointIntegrationTests extends
 
 	}
 
-	private static final class ObjectMapperContextResolver
-			implements ContextResolver<ObjectMapper> {
+	private static final class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
 		private final ObjectMapper objectMapper;
 

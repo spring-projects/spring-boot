@@ -12,6 +12,7 @@ spring:
     include:
       - C
       - E
+version: A
 
 ---
 spring.profiles: B
@@ -21,6 +22,19 @@ spring:
     include:
       - D
       - E
+version: B
+
+---
+spring.profiles: C
+
+version: C
+
+
+---
+spring.profiles: D
+
+version: D
+
 
 ---
 spring.profiles: E

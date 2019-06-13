@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,8 @@ package org.springframework.boot.env;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
@@ -35,27 +35,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class OriginTrackedYamlLoaderTests {
+class OriginTrackedYamlLoaderTests {
 
 	private OriginTrackedYamlLoader loader;
 
 	private List<Map<String, Object>> result;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
 		this.loader = new OriginTrackedYamlLoader(resource);
 	}
 
 	@Test
-	public void processSimpleKey() {
+	void processSimpleKey() {
 		OriginTrackedValue value = getValue("name");
 		assertThat(value.toString()).isEqualTo("Martin D'vloper");
 		assertThat(getLocation(value)).isEqualTo("3:7");
 	}
 
 	@Test
-	public void processMap() {
+	void processMap() {
 		OriginTrackedValue perl = getValue("languages.perl");
 		OriginTrackedValue python = getValue("languages.python");
 		OriginTrackedValue pascal = getValue("languages.pascal");
@@ -68,7 +68,7 @@ public class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
-	public void processCollection() {
+	void processCollection() {
 		OriginTrackedValue apple = getValue("foods[0]");
 		OriginTrackedValue orange = getValue("foods[1]");
 		OriginTrackedValue strawberry = getValue("foods[2]");
@@ -84,22 +84,21 @@ public class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
-	public void processMultiline() {
+	void processMultiline() {
 		OriginTrackedValue education = getValue("education");
-		assertThat(education.toString())
-				.isEqualTo("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
+		assertThat(education.toString()).isEqualTo("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
 		assertThat(getLocation(education)).isEqualTo("16:12");
 	}
 
 	@Test
-	public void processListOfMaps() {
+	void processListOfMaps() {
 		OriginTrackedValue name = getValue("example.foo[0].name");
 		OriginTrackedValue url = getValue("example.foo[0].url");
 		OriginTrackedValue bar1 = getValue("example.foo[0].bar[0].bar1");
 		OriginTrackedValue bar2 = getValue("example.foo[0].bar[1].bar2");
 		assertThat(name.toString()).isEqualTo("springboot");
 		assertThat(getLocation(name)).isEqualTo("22:15");
-		assertThat(url.toString()).isEqualTo("http://springboot.com");
+		assertThat(url.toString()).isEqualTo("https://springboot.example.com/");
 		assertThat(getLocation(url)).isEqualTo("23:14");
 		assertThat(bar1.toString()).isEqualTo("baz");
 		assertThat(getLocation(bar1)).isEqualTo("25:19");
@@ -108,7 +107,7 @@ public class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
-	public void processEmptyAndNullValues() {
+	void processEmptyAndNullValues() {
 		OriginTrackedValue empty = getValue("empty");
 		OriginTrackedValue nullValue = getValue("null-value");
 		assertThat(empty.getValue()).isEqualTo("");

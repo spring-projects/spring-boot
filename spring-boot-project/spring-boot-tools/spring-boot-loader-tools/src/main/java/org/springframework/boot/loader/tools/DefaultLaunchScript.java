@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -44,11 +42,10 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final int BUFFER_SIZE = 4096;
 
-	private static final Pattern PLACEHOLDER_PATTERN = Pattern
-			.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
+	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
 	private static final Set<String> FILE_PATH_KEYS = Collections
-			.unmodifiableSet(new HashSet<>(Arrays.asList("inlinedConfScript")));
+			.unmodifiableSet(Collections.singleton("inlinedConfScript"));
 
 	private final String content;
 
@@ -81,8 +78,7 @@ public class DefaultLaunchScript implements LaunchScript {
 		}
 	}
 
-	private void copy(InputStream inputStream, OutputStream outputStream)
-			throws IOException {
+	private void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
 		int bytesRead;
 		while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -91,8 +87,7 @@ public class DefaultLaunchScript implements LaunchScript {
 		outputStream.flush();
 	}
 
-	private String expandPlaceholders(String content, Map<?, ?> properties)
-			throws IOException {
+	private String expandPlaceholders(String content, Map<?, ?> properties) throws IOException {
 		StringBuffer expanded = new StringBuffer();
 		Matcher matcher = PLACEHOLDER_PATTERN.matcher(content);
 		while (matcher.find()) {
@@ -109,8 +104,7 @@ public class DefaultLaunchScript implements LaunchScript {
 				}
 			}
 			else {
-				value = (defaultValue != null ? defaultValue.substring(1)
-						: matcher.group(0));
+				value = (defaultValue != null) ? defaultValue.substring(1) : matcher.group(0);
 			}
 			matcher.appendReplacement(expanded, value.replace("$", "\\$"));
 		}

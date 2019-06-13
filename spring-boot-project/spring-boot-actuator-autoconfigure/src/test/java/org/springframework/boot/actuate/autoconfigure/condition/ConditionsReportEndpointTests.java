@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import java.util.Collections;
 
 import javax.annotation.PostConstruct;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ContextConditionEvaluation;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -43,40 +43,35 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConditionsReportEndpointTests {
+class ConditionsReportEndpointTests {
 
 	@Test
-	public void invoke() {
-		new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.run((context) -> {
-					ContextConditionEvaluation report = context
-							.getBean(ConditionsReportEndpoint.class)
-							.applicationConditionEvaluation().getContexts()
-							.get(context.getId());
-					assertThat(report.getPositiveMatches()).isEmpty();
-					assertThat(report.getNegativeMatches()).containsKey("a");
-					assertThat(report.getUnconditionalClasses()).contains("b");
-					assertThat(report.getExclusions()).contains("com.foo.Bar");
-				});
+	void invoke() {
+		new ApplicationContextRunner().withUserConfiguration(Config.class).run((context) -> {
+			ContextConditionEvaluation report = context.getBean(ConditionsReportEndpoint.class)
+					.applicationConditionEvaluation().getContexts().get(context.getId());
+			assertThat(report.getPositiveMatches()).isEmpty();
+			assertThat(report.getNegativeMatches()).containsKey("a");
+			assertThat(report.getUnconditionalClasses()).contains("b");
+			assertThat(report.getExclusions()).contains("com.foo.Bar");
+		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	public static class Config {
 
 		private final ConfigurableApplicationContext context;
 
-		public Config(ConfigurableApplicationContext context) {
+		Config(ConfigurableApplicationContext context) {
 			this.context = context;
 		}
 
 		@PostConstruct
 		public void setupAutoConfigurationReport() {
-			ConditionEvaluationReport report = ConditionEvaluationReport
-					.get(this.context.getBeanFactory());
+			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context.getBeanFactory());
 			report.recordEvaluationCandidates(Arrays.asList("a", "b"));
-			report.recordConditionEvaluation("a", mock(Condition.class),
-					mock(ConditionOutcome.class));
+			report.recordConditionEvaluation("a", mock(Condition.class), mock(ConditionOutcome.class));
 			report.recordExclusions(Collections.singletonList("com.foo.Bar"));
 		}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ import org.springframework.util.ClassUtils;
  * @author Manuel Doninger
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class })
 @Conditional(HibernateEntityManagerCondition.class)
 @EnableConfigurationProperties(JpaProperties.class)
@@ -59,23 +59,19 @@ public class HibernateJpaAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
 
-		private static final String[] CLASS_NAMES = {
-				"org.hibernate.ejb.HibernateEntityManager",
+		private static final String[] CLASS_NAMES = { "org.hibernate.ejb.HibernateEntityManager",
 				"org.hibernate.jpa.HibernateEntityManager" };
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("HibernateEntityManager");
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage.forCondition("HibernateEntityManager");
 			for (String className : CLASS_NAMES) {
 				if (ClassUtils.isPresent(className, context.getClassLoader())) {
-					return ConditionOutcome
-							.match(message.found("class").items(Style.QUOTE, className));
+					return ConditionOutcome.match(message.found("class").items(Style.QUOTE, className));
 				}
 			}
-			return ConditionOutcome.noMatch(message.didNotFind("class", "classes")
-					.items(Style.QUOTE, Arrays.asList(CLASS_NAMES)));
+			return ConditionOutcome
+					.noMatch(message.didNotFind("class", "classes").items(Style.QUOTE, Arrays.asList(CLASS_NAMES)));
 		}
 
 	}

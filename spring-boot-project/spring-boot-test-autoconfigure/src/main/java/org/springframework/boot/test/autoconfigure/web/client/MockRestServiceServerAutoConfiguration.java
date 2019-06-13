@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
  * @since 1.4.0
  * @see AutoConfigureMockRestServiceServer
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver", name = "enabled")
 public class MockRestServiceServerAutoConfiguration {
 
@@ -51,8 +51,7 @@ public class MockRestServiceServerAutoConfiguration {
 	}
 
 	@Bean
-	public MockRestServiceServer mockRestServiceServer(
-			MockServerRestTemplateCustomizer customizer) {
+	public MockRestServiceServer mockRestServiceServer(MockServerRestTemplateCustomizer customizer) {
 		try {
 			return createDeferredMockRestServiceServer(customizer);
 		}
@@ -61,8 +60,8 @@ public class MockRestServiceServerAutoConfiguration {
 		}
 	}
 
-	private MockRestServiceServer createDeferredMockRestServiceServer(
-			MockServerRestTemplateCustomizer customizer) throws Exception {
+	private MockRestServiceServer createDeferredMockRestServiceServer(MockServerRestTemplateCustomizer customizer)
+			throws Exception {
 		Constructor<MockRestServiceServer> constructor = MockRestServiceServer.class
 				.getDeclaredConstructor(RequestExpectationManager.class);
 		constructor.setAccessible(true);
@@ -75,8 +74,7 @@ public class MockRestServiceServerAutoConfiguration {
 	 * {@link MockServerRestTemplateCustomizer#customize(RestTemplate)
 	 * MockServerRestTemplateCustomizer} has been called.
 	 */
-	private static class DeferredRequestExpectationManager
-			implements RequestExpectationManager {
+	private static class DeferredRequestExpectationManager implements RequestExpectationManager {
 
 		private MockServerRestTemplateCustomizer customizer;
 
@@ -85,14 +83,12 @@ public class MockRestServiceServerAutoConfiguration {
 		}
 
 		@Override
-		public ResponseActions expectRequest(ExpectedCount count,
-				RequestMatcher requestMatcher) {
+		public ResponseActions expectRequest(ExpectedCount count, RequestMatcher requestMatcher) {
 			return getDelegate().expectRequest(count, requestMatcher);
 		}
 
 		@Override
-		public ClientHttpResponse validateRequest(ClientHttpRequest request)
-				throws IOException {
+		public ClientHttpResponse validateRequest(ClientHttpRequest request) throws IOException {
 			return getDelegate().validateRequest(request);
 		}
 
@@ -103,24 +99,18 @@ public class MockRestServiceServerAutoConfiguration {
 
 		@Override
 		public void reset() {
-			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer
-					.getExpectationManagers();
+			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer.getExpectationManagers();
 			if (expectationManagers.size() == 1) {
 				getDelegate().reset();
 			}
 		}
 
 		private RequestExpectationManager getDelegate() {
-			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer
-					.getExpectationManagers();
-			Assert.state(!expectationManagers.isEmpty(),
-					"Unable to use auto-configured MockRestServiceServer since "
-							+ "MockServerRestTemplateCustomizer has not been bound to "
-							+ "a RestTemplate");
-			Assert.state(expectationManagers.size() == 1,
-					"Unable to use auto-configured MockRestServiceServer since "
-							+ "MockServerRestTemplateCustomizer has been bound to "
-							+ "more than one RestTemplate");
+			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer.getExpectationManagers();
+			Assert.state(!expectationManagers.isEmpty(), "Unable to use auto-configured MockRestServiceServer since "
+					+ "MockServerRestTemplateCustomizer has not been bound to " + "a RestTemplate");
+			Assert.state(expectationManagers.size() == 1, "Unable to use auto-configured MockRestServiceServer since "
+					+ "MockServerRestTemplateCustomizer has been bound to " + "more than one RestTemplate");
 			return expectationManagers.values().iterator().next();
 		}
 

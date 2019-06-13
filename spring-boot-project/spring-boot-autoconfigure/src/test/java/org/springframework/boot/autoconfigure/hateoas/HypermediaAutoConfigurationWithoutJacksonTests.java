@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * Tests for {@link HypermediaAutoConfiguration} when Jackson is not on the classpath.
@@ -36,18 +36,18 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 @ClassPathExclusions("jackson-*.jar")
 public class HypermediaAutoConfigurationWithoutJacksonTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigServletWebApplicationContext context;
 
 	@Test
 	public void jacksonRelatedConfigurationBacksOff() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(BaseConfig.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 	}
 
-	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, HypermediaAutoConfiguration.class })
+	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HypermediaAutoConfiguration.class })
 	static class BaseConfig {
 
 	}

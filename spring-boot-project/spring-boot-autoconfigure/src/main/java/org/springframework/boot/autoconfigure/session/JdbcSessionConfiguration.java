@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JdbcTemplate.class, JdbcOperationsSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(DataSource.class)
@@ -51,20 +51,16 @@ class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(
-			DataSource dataSource, ResourceLoader resourceLoader,
-			JdbcSessionProperties properties) {
-		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader,
-				properties);
+	public JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
+		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
 	}
 
 	@Configuration
-	public static class SpringBootJdbcHttpSessionConfiguration
-			extends JdbcHttpSessionConfiguration {
+	public static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties,
-				JdbcSessionProperties jdbcSessionProperties) {
+		public void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());

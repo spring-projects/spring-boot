@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,8 @@ package org.springframework.boot.configurationprocessor.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 // Note: this class was written without inspecting the non-free org.json source code.
@@ -41,7 +41,7 @@ import java.util.Map;
  * <li>When the requested type is an int, other {@link Number} types will be coerced using
  * {@link Number#intValue() intValue}. Strings that can be coerced using
  * {@link Double#valueOf(String)} will be, and then cast to int.
- * <li><a name="lossy">When the requested type is a long, other {@link Number} types will
+ * <li><a id="lossy">When the requested type is a long, other {@link Number} types will
  * be coerced using {@link Number#longValue() longValue}. Strings that can be coerced
  * using {@link Double#valueOf(String)} will be, and then cast to long. This two-step
  * conversion is lossy for very large values. For example, the string
@@ -111,7 +111,7 @@ public class JSONObject {
 	 * Creates a {@code JSONObject} with no name/value mappings.
 	 */
 	public JSONObject() {
-		this.nameValuePairs = new HashMap<>();
+		this.nameValuePairs = new LinkedHashMap<>();
 	}
 
 	/**

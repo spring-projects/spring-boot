@@ -1,4 +1,4 @@
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class App {
 
 	@Bean

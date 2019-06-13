@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,8 +40,7 @@ public abstract class SpringBootCondition implements Condition {
 	private final Log logger = LogFactory.getLog(getClass());
 
 	@Override
-	public final boolean matches(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String classOrMethodName = getClassOrMethodName(metadata);
 		try {
 			ConditionOutcome outcome = getMatchOutcome(context, metadata);
@@ -50,18 +49,14 @@ public abstract class SpringBootCondition implements Condition {
 			return outcome.isMatch();
 		}
 		catch (NoClassDefFoundError ex) {
-			throw new IllegalStateException(
-					"Could not evaluate condition on " + classOrMethodName + " due to "
-							+ ex.getMessage() + " not "
-							+ "found. Make sure your own configuration does not rely on "
-							+ "that class. This can also happen if you are "
-							+ "@ComponentScanning a springframework package (e.g. if you "
-							+ "put a @ComponentScan in the default package by mistake)",
-					ex);
+			throw new IllegalStateException("Could not evaluate condition on " + classOrMethodName + " due to "
+					+ ex.getMessage() + " not " + "found. Make sure your own configuration does not rely on "
+					+ "that class. This can also happen if you are "
+					+ "@ComponentScanning a springframework package (e.g. if you "
+					+ "put a @ComponentScan in the default package by mistake)", ex);
 		}
 		catch (RuntimeException ex) {
-			throw new IllegalStateException(
-					"Error processing condition on " + getName(metadata), ex);
+			throw new IllegalStateException("Error processing condition on " + getName(metadata), ex);
 		}
 	}
 
@@ -71,8 +66,7 @@ public abstract class SpringBootCondition implements Condition {
 		}
 		if (metadata instanceof MethodMetadata) {
 			MethodMetadata methodMetadata = (MethodMetadata) metadata;
-			return methodMetadata.getDeclaringClassName() + "."
-					+ methodMetadata.getMethodName();
+			return methodMetadata.getDeclaringClassName() + "." + methodMetadata.getMethodName();
 		}
 		return metadata.toString();
 	}
@@ -83,8 +77,7 @@ public abstract class SpringBootCondition implements Condition {
 			return classMetadata.getClassName();
 		}
 		MethodMetadata methodMetadata = (MethodMetadata) metadata;
-		return methodMetadata.getDeclaringClassName() + "#"
-				+ methodMetadata.getMethodName();
+		return methodMetadata.getDeclaringClassName() + "#" + methodMetadata.getMethodName();
 	}
 
 	protected final void logOutcome(String classOrMethodName, ConditionOutcome outcome) {
@@ -93,8 +86,7 @@ public abstract class SpringBootCondition implements Condition {
 		}
 	}
 
-	private StringBuilder getLogMessage(String classOrMethodName,
-			ConditionOutcome outcome) {
+	private StringBuilder getLogMessage(String classOrMethodName, ConditionOutcome outcome) {
 		StringBuilder message = new StringBuilder();
 		message.append("Condition ");
 		message.append(ClassUtils.getShortName(getClass()));
@@ -108,11 +100,10 @@ public abstract class SpringBootCondition implements Condition {
 		return message;
 	}
 
-	private void recordEvaluation(ConditionContext context, String classOrMethodName,
-			ConditionOutcome outcome) {
+	private void recordEvaluation(ConditionContext context, String classOrMethodName, ConditionOutcome outcome) {
 		if (context.getBeanFactory() != null) {
-			ConditionEvaluationReport.get(context.getBeanFactory())
-					.recordConditionEvaluation(classOrMethodName, this, outcome);
+			ConditionEvaluationReport.get(context.getBeanFactory()).recordConditionEvaluation(classOrMethodName, this,
+					outcome);
 		}
 	}
 
@@ -122,8 +113,7 @@ public abstract class SpringBootCondition implements Condition {
 	 * @param metadata the annotation metadata
 	 * @return the condition outcome
 	 */
-	public abstract ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata);
+	public abstract ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata);
 
 	/**
 	 * Return true if any of the specified conditions match.
@@ -132,8 +122,8 @@ public abstract class SpringBootCondition implements Condition {
 	 * @param conditions conditions to test
 	 * @return {@code true} if any condition matches.
 	 */
-	protected final boolean anyMatches(ConditionContext context,
-			AnnotatedTypeMetadata metadata, Condition... conditions) {
+	protected final boolean anyMatches(ConditionContext context, AnnotatedTypeMetadata metadata,
+			Condition... conditions) {
 		for (Condition condition : conditions) {
 			if (matches(context, metadata, condition)) {
 				return true;
@@ -149,11 +139,9 @@ public abstract class SpringBootCondition implements Condition {
 	 * @param condition condition to test
 	 * @return {@code true} if the condition matches.
 	 */
-	protected final boolean matches(ConditionContext context,
-			AnnotatedTypeMetadata metadata, Condition condition) {
+	protected final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata, Condition condition) {
 		if (condition instanceof SpringBootCondition) {
-			return ((SpringBootCondition) condition).getMatchOutcome(context, metadata)
-					.isMatch();
+			return ((SpringBootCondition) condition).getMatchOutcome(context, metadata).isMatch();
 		}
 		return condition.matches(context, metadata);
 	}

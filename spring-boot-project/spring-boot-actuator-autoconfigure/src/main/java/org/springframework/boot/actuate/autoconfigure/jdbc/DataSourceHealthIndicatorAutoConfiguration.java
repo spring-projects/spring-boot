@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.jdbc;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -55,31 +56,36 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
  * @author Arthur Kalimullin
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class DataSourceHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource>
-		implements InitializingBean {
-
-	private final Map<String, DataSource> dataSources;
+		CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource> implements InitializingBean {
 
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	public DataSourceHealthIndicatorAutoConfiguration(
-			ObjectProvider<Map<String, DataSource>> dataSources,
-			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders) {
-		this.dataSources = filterDataSources(dataSources.getIfAvailable());
-		this.metadataProviders = metadataProviders.getIfAvailable();
+	public DataSourceHealthIndicatorAutoConfiguration(Map<String, DataSource> dataSources,
+			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
+		this.metadataProviders = metadataProviders.orderedStream().collect(Collectors.toList());
 	}
 
-	private Map<String, DataSource> filterDataSources(
-			Map<String, DataSource> candidates) {
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(this.metadataProviders);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "dbHealthIndicator")
+	public HealthIndicator dbHealthIndicator(Map<String, DataSource> dataSources) {
+		return createHealthIndicator(filterDataSources(dataSources));
+	}
+
+	private Map<String, DataSource> filterDataSources(Map<String, DataSource> candidates) {
 		if (candidates == null) {
 			return null;
 		}
@@ -93,26 +99,13 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
-				this.metadataProviders);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(name = "dbHealthIndicator")
-	public HealthIndicator dbHealthIndicator() {
-		return createHealthIndicator(this.dataSources);
-	}
-
-	@Override
 	protected DataSourceHealthIndicator createHealthIndicator(DataSource source) {
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
 
 	private String getValidationQuery(DataSource source) {
-		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
-				.getDataSourcePoolMetadata(source);
-		return (poolMetadata != null ? poolMetadata.getValidationQuery() : null);
+		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
+		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 	}
 
 }

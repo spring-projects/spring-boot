@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,8 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -44,52 +44,45 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
+class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 
-	private DefaultRepositorySystemSession session = MavenRepositorySystemUtils
-			.newSession();
+	private DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
 	@Mock
 	private RepositorySystem repositorySystem;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void noLocalRepositoryWhenNoGrapeRoot() {
-		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session),
-				any(LocalRepository.class))).willAnswer((invocation) -> {
+	void noLocalRepositoryWhenNoGrapeRoot() {
+		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class)))
+				.willAnswer((invocation) -> {
 					LocalRepository localRepository = invocation.getArgument(1);
 					return new SimpleLocalRepositoryManagerFactory().newInstance(
-							GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session,
-							localRepository);
+							GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session, localRepository);
 				});
-		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session,
-				this.repositorySystem);
-		verify(this.repositorySystem, never()).newLocalRepositoryManager(eq(this.session),
-				any(LocalRepository.class));
+		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session, this.repositorySystem);
+		verify(this.repositorySystem, never()).newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 		assertThat(this.session.getLocalRepository()).isNull();
 	}
 
 	@Test
-	public void grapeRootConfiguresLocalRepositoryLocation() {
-		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session),
-				any(LocalRepository.class)))
-						.willAnswer(new LocalRepositoryManagerAnswer());
+	void grapeRootConfiguresLocalRepositoryLocation() {
+		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class)))
+				.willAnswer(new LocalRepositoryManagerAnswer());
 
 		System.setProperty("grape.root", "foo");
 		try {
-			new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session,
-					this.repositorySystem);
+			new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session, this.repositorySystem);
 		}
 		finally {
 			System.clearProperty("grape.root");
 		}
 
-		verify(this.repositorySystem, times(1))
-				.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
+		verify(this.repositorySystem, times(1)).newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 
 		assertThat(this.session.getLocalRepository()).isNotNull();
 		assertThat(this.session.getLocalRepository().getBasedir().getAbsolutePath())
@@ -99,12 +92,10 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 	private class LocalRepositoryManagerAnswer implements Answer<LocalRepositoryManager> {
 
 		@Override
-		public LocalRepositoryManager answer(InvocationOnMock invocation)
-				throws Throwable {
+		public LocalRepositoryManager answer(InvocationOnMock invocation) throws Throwable {
 			LocalRepository localRepository = invocation.getArgument(1);
-			return new SimpleLocalRepositoryManagerFactory().newInstance(
-					GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session,
-					localRepository);
+			return new SimpleLocalRepositoryManagerFactory()
+					.newInstance(GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session, localRepository);
 		}
 
 	}

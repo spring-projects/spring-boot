@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,8 +54,7 @@ class TomcatErrorPage {
 	private Object createNativePage() {
 		try {
 			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
-				return BeanUtils
-						.instantiateClass(ClassUtils.forName(ERROR_PAGE_CLASS, null));
+				return BeanUtils.instantiateClass(ClassUtils.forName(ERROR_PAGE_CLASS, null));
 			}
 		}
 		catch (ClassNotFoundException | LinkageError ex) {
@@ -65,8 +64,7 @@ class TomcatErrorPage {
 	}
 
 	public void addToContext(Context context) {
-		Assert.state(this.nativePage != null,
-				"No Tomcat 8 detected so no native error page exists");
+		Assert.state(this.nativePage != null, "No Tomcat 8 detected so no native error page exists");
 		if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
 			org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
 			errorPage.setLocation(this.location);
@@ -77,10 +75,8 @@ class TomcatErrorPage {
 		else {
 			callMethod(this.nativePage, "setLocation", this.location, String.class);
 			callMethod(this.nativePage, "setErrorCode", this.errorCode, int.class);
-			callMethod(this.nativePage, "setExceptionType", this.exceptionType,
-					String.class);
-			callMethod(context, "addErrorPage", this.nativePage,
-					this.nativePage.getClass());
+			callMethod(this.nativePage, "setExceptionType", this.exceptionType, String.class);
+			callMethod(context, "addErrorPage", this.nativePage, this.nativePage.getClass());
 		}
 	}
 

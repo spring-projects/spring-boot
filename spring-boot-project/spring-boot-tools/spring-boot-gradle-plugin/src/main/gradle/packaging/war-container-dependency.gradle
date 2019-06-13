@@ -1,19 +1,13 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
-}
-
 plugins {
 	id 'war'
+	id 'org.springframework.boot' version '{version}'
 }
 
-apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 // tag::dependencies[]
 dependencies {
-	compile 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }
 // end::dependencies[]

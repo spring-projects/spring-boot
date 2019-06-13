@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,13 +44,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link ManagementContextConfiguration} for Spring MVC {@link Endpoint} concerns.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Spring MVC
+ * {@link Endpoint @Endpoint} concerns.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
  */
-@ManagementContextConfiguration
+@ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean({ DispatcherServlet.class, WebEndpointsSupplier.class })
@@ -59,36 +60,28 @@ public class WebMvcEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier,
-			ServletEndpointsSupplier servletEndpointsSupplier,
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
+	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
+			ServletEndpointsSupplier servletEndpointsSupplier, ControllerEndpointsSupplier controllerEndpointsSupplier,
 			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
-		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier
-				.getEndpoints();
+		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		allEndpoints.addAll(webEndpoints);
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		EndpointMapping endpointMapping = new EndpointMapping(
-				webEndpointProperties.getBasePath());
-		return new WebMvcEndpointHandlerMapping(endpointMapping, webEndpoints,
-				endpointMediaTypes, corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints,
-						webEndpointProperties.getBasePath()));
+		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
+		return new WebMvcEndpointHandlerMapping(endpointMapping, webEndpoints, endpointMediaTypes,
+				corsProperties.toCorsConfiguration(),
+				new EndpointLinksResolver(allEndpoints, webEndpointProperties.getBasePath()));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
-			CorsEndpointProperties corsProperties,
+			ControllerEndpointsSupplier controllerEndpointsSupplier, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
-		EndpointMapping endpointMapping = new EndpointMapping(
-				webEndpointProperties.getBasePath());
-		return new ControllerEndpointHandlerMapping(endpointMapping,
-				controllerEndpointsSupplier.getEndpoints(),
+		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
+		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
 	}
 

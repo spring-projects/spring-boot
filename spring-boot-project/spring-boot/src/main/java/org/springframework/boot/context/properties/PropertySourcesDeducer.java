@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
-import org.springframework.util.Assert;
 
 /**
  * Utility to deduce the {@link PropertySources} to use for configuration binding.
@@ -45,20 +44,16 @@ class PropertySourcesDeducer {
 	}
 
 	public PropertySources getPropertySources() {
-		MutablePropertySources environmentPropertySources = extractEnvironmentPropertySources();
-		PropertySourcesPlaceholderConfigurer placeholderConfigurer = getSinglePropertySourcesPlaceholderConfigurer();
-		if (placeholderConfigurer == null) {
-			Assert.state(environmentPropertySources != null,
-					"Unable to obtain PropertySources from "
-							+ "PropertySourcesPlaceholderConfigurer or Environment");
-			return environmentPropertySources;
+		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
+		if (configurer != null) {
+			return configurer.getAppliedPropertySources();
 		}
-		PropertySources appliedPropertySources = placeholderConfigurer
-				.getAppliedPropertySources();
-		if (environmentPropertySources == null) {
-			return appliedPropertySources;
+		MutablePropertySources sources = extractEnvironmentPropertySources();
+		if (sources != null) {
+			return sources;
 		}
-		return merge(environmentPropertySources, appliedPropertySources);
+		throw new IllegalStateException(
+				"Unable to obtain PropertySources from " + "PropertySourcesPlaceholderConfigurer or Environment");
 	}
 
 	private MutablePropertySources extractEnvironmentPropertySources() {
@@ -77,19 +72,10 @@ class PropertySourcesDeducer {
 			return beans.values().iterator().next();
 		}
 		if (beans.size() > 1 && logger.isWarnEnabled()) {
-			logger.warn(
-					"Multiple PropertySourcesPlaceholderConfigurer " + "beans registered "
-							+ beans.keySet() + ", falling back to Environment");
+			logger.warn("Multiple PropertySourcesPlaceholderConfigurer " + "beans registered " + beans.keySet()
+					+ ", falling back to Environment");
 		}
 		return null;
-	}
-
-	private PropertySources merge(PropertySources environmentPropertySources,
-			PropertySources appliedPropertySources) {
-		FilteredPropertySources filtered = new FilteredPropertySources(
-				appliedPropertySources,
-				PropertySourcesPlaceholderConfigurer.ENVIRONMENT_PROPERTIES_PROPERTY_SOURCE_NAME);
-		return new CompositePropertySources(filtered, environmentPropertySources);
 	}
 
 }

@@ -1,5 +1,6 @@
 [[boot-documentation]]
 = Spring Boot Documentation
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -12,13 +13,10 @@ as a map for the rest of the document.
 [[boot-documentation-about]]
 == About the Documentation
 The Spring Boot reference guide is available as
-
-* {spring-boot-docs}/html[HTML]
-* {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
-* {spring-boot-docs}/epub/spring-boot-reference.epub[EPUB]
-
+<<single-index.adoc#spring-boot-reference-documentation, single page>> or
+<<index.adoc#spring-boot-reference-documentation, multi-page>> documentation.
 The latest copy
-is available at {spring-boot-docs-current}.
+of the reference documentation is available at {spring-boot-docs-current}.
 
 Copies of this document may be made for your own use and for distribution to others,
 provided that you do not charge any fee for such copies and further provided that each
@@ -78,7 +76,7 @@ you covered>>:
 <<using-spring-boot.adoc#using-boot-auto-configuration, @EnableAutoConfiguration>> |
 <<using-spring-boot.adoc#using-boot-spring-beans-and-dependency-injection, Beans and
 Dependency Injection>>
-* *Running your code*
+* *Running your code:*
 <<using-spring-boot.adoc#using-boot-running-from-an-ide, IDE>> |
 <<using-spring-boot.adoc#using-boot-running-as-a-packaged-application, Packaged>> |
 <<using-spring-boot.adoc#using-boot-running-with-the-maven-plugin, Maven>> |
@@ -147,9 +145,7 @@ Finally, we have a few topics for more advanced users:
 <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven>> |
 <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle>>
 * *Appendix:*
-<<appendix-application-properties.adoc#common-application-properties, Application
-Properties>> |
-<<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration
-classes>> |
-<<appendix-executable-jar-format.adoc#executable-jar, Executable Jars>>
+<<appendix.adoc#common-application-properties, Application Properties>> |
+<<appendix.adoc#auto-configuration-classes, Auto-configuration classes>> |
+<<appendix.adoc#executable-jar, Executable Jars>>
 

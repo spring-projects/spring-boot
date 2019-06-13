@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -45,37 +45,33 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Phillip Webb
  */
-public class ControllerEndpointWebFluxIntegrationTests {
+class ControllerEndpointWebFluxIntegrationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}
 
 	@Test
-	public void endpointsCanBeAccessed() throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+	void endpointsCanBeAccessed() throws Exception {
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, ExampleController.class);
-		TestPropertyValues.of("management.endpoints.web.exposure.include=*")
-				.applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
 		this.context.refresh();
-		WebTestClient webClient = WebTestClient.bindToApplicationContext(this.context)
-				.build();
+		WebTestClient webClient = WebTestClient.bindToApplicationContext(this.context).build();
 		webClient.get().uri("/actuator/example").exchange().expectStatus().isOk();
 	}
 
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			WebEndpointAutoConfiguration.class,
-			ReactiveManagementContextAutoConfiguration.class,
-			AuditAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-			WebFluxAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-			BeansEndpointAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+			ReactiveManagementContextAutoConfiguration.class, AuditAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, WebFluxAutoConfiguration.class,
+			ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class })
 	static class DefaultConfiguration {
 
 	}

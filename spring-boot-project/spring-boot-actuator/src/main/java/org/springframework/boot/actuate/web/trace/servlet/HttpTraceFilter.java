@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.web.trace.servlet;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -73,11 +75,13 @@ public class HttpTraceFilter extends OncePerRequestFilter implements Ordered {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		TraceableHttpServletRequest traceableRequest = new TraceableHttpServletRequest(
-				request);
+		if (!isRequestValid(request)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		TraceableHttpServletRequest traceableRequest = new TraceableHttpServletRequest(request);
 		HttpTrace trace = this.tracer.receivedRequest(traceableRequest);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
@@ -86,22 +90,29 @@ public class HttpTraceFilter extends OncePerRequestFilter implements Ordered {
 		}
 		finally {
 			TraceableHttpServletResponse traceableResponse = new TraceableHttpServletResponse(
-					status != response.getStatus()
-							? new CustomStatusResponseWrapper(response, status)
-							: response);
-			this.tracer.sendingResponse(trace, traceableResponse,
-					request::getUserPrincipal, () -> getSessionId(request));
+					(status != response.getStatus()) ? new CustomStatusResponseWrapper(response, status) : response);
+			this.tracer.sendingResponse(trace, traceableResponse, request::getUserPrincipal,
+					() -> getSessionId(request));
 			this.repository.add(trace);
+		}
+	}
+
+	private boolean isRequestValid(HttpServletRequest request) {
+		try {
+			new URI(request.getRequestURL().toString());
+			return true;
+		}
+		catch (URISyntaxException ex) {
+			return false;
 		}
 	}
 
 	private String getSessionId(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
-		return (session != null ? session.getId() : null);
+		return (session != null) ? session.getId() : null;
 	}
 
-	private static final class CustomStatusResponseWrapper
-			extends HttpServletResponseWrapper {
+	private static final class CustomStatusResponseWrapper extends HttpServletResponseWrapper {
 
 		private final int status;
 

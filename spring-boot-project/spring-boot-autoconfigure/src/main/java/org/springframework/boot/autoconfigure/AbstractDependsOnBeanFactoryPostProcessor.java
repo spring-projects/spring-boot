@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  * @see BeanDefinition#setDependsOn(String[])
  */
-public abstract class AbstractDependsOnBeanFactoryPostProcessor
-		implements BeanFactoryPostProcessor {
+public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	private final Class<?> beanClass;
 
@@ -56,6 +55,16 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
 		this.dependsOn = dependsOn;
+	}
+
+	/**
+	 * Create an instance with target bean class and dependencies.
+	 * @param beanClass target bean class
+	 * @param dependsOn dependencies
+	 * @since 2.0.4
+	 */
+	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass, String... dependsOn) {
+		this(beanClass, null, dependsOn);
 	}
 
 	@Override
@@ -72,25 +81,25 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 
 	private Iterable<String> getBeanNames(ListableBeanFactory beanFactory) {
 		Set<String> names = new HashSet<>();
-		names.addAll(Arrays.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				beanFactory, this.beanClass, true, false)));
-		for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				beanFactory, this.factoryBeanClass, true, false)) {
-			names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
+		names.addAll(Arrays
+				.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, this.beanClass, true, false)));
+		if (this.factoryBeanClass != null) {
+			for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
+					this.factoryBeanClass, true, false)) {
+				names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
+			}
 		}
 		return names;
 	}
 
-	private static BeanDefinition getBeanDefinition(String beanName,
-			ConfigurableListableBeanFactory beanFactory) {
+	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
 			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName,
-						(ConfigurableListableBeanFactory) parentBeanFactory);
+				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
 			}
 			throw ex;
 		}

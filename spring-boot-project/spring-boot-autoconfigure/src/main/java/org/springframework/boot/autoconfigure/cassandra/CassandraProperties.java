@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,9 +26,6 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
-import com.datastax.driver.core.policies.LoadBalancingPolicy;
-import com.datastax.driver.core.policies.ReconnectionPolicy;
-import com.datastax.driver.core.policies.RetryPolicy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
@@ -58,8 +55,7 @@ public class CassandraProperties {
 	/**
 	 * Cluster node addresses.
 	 */
-	private final List<String> contactPoints = new ArrayList<>(
-			Collections.singleton("localhost"));
+	private final List<String> contactPoints = new ArrayList<>(Collections.singleton("localhost"));
 
 	/**
 	 * Port of the Cassandra server.
@@ -82,11 +78,6 @@ public class CassandraProperties {
 	private Compression compression = Compression.NONE;
 
 	/**
-	 * Class name of the load balancing policy.
-	 */
-	private Class<? extends LoadBalancingPolicy> loadBalancingPolicy;
-
-	/**
 	 * Queries consistency level.
 	 */
 	private ConsistencyLevel consistencyLevel;
@@ -100,16 +91,6 @@ public class CassandraProperties {
 	 * Queries default fetch size.
 	 */
 	private int fetchSize = QueryOptions.DEFAULT_FETCH_SIZE;
-
-	/**
-	 * Reconnection policy class.
-	 */
-	private Class<? extends ReconnectionPolicy> reconnectionPolicy;
-
-	/**
-	 * Class name of the retry policy.
-	 */
-	private Class<? extends RetryPolicy> retryPolicy;
 
 	/**
 	 * Socket option: connection time out.
@@ -130,6 +111,12 @@ public class CassandraProperties {
 	 * Enable SSL support.
 	 */
 	private boolean ssl = false;
+
+	/**
+	 * Whether to enable JMX reporting. Default to false as Cassandra JMX reporting is not
+	 * compatible with Dropwizard Metrics.
+	 */
+	private boolean jmxEnabled;
 
 	/**
 	 * Pool configuration.
@@ -188,15 +175,6 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	public Class<? extends LoadBalancingPolicy> getLoadBalancingPolicy() {
-		return this.loadBalancingPolicy;
-	}
-
-	public void setLoadBalancingPolicy(
-			Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
-		this.loadBalancingPolicy = loadBalancingPolicy;
-	}
-
 	public ConsistencyLevel getConsistencyLevel() {
 		return this.consistencyLevel;
 	}
@@ -221,23 +199,6 @@ public class CassandraProperties {
 		this.fetchSize = fetchSize;
 	}
 
-	public Class<? extends ReconnectionPolicy> getReconnectionPolicy() {
-		return this.reconnectionPolicy;
-	}
-
-	public void setReconnectionPolicy(
-			Class<? extends ReconnectionPolicy> reconnectionPolicy) {
-		this.reconnectionPolicy = reconnectionPolicy;
-	}
-
-	public Class<? extends RetryPolicy> getRetryPolicy() {
-		return this.retryPolicy;
-	}
-
-	public void setRetryPolicy(Class<? extends RetryPolicy> retryPolicy) {
-		this.retryPolicy = retryPolicy;
-	}
-
 	public Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
@@ -260,6 +221,14 @@ public class CassandraProperties {
 
 	public void setSsl(boolean ssl) {
 		this.ssl = ssl;
+	}
+
+	public boolean isJmxEnabled() {
+		return this.jmxEnabled;
+	}
+
+	public void setJmxEnabled(boolean jmxEnabled) {
+		this.jmxEnabled = jmxEnabled;
 	}
 
 	public String getSchemaAction() {

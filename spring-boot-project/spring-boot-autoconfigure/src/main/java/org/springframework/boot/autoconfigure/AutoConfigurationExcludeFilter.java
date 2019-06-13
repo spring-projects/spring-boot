@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,25 +44,23 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 	}
 
 	@Override
-	public boolean match(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
 		return isConfiguration(metadataReader) && isAutoConfiguration(metadataReader);
 	}
 
 	private boolean isConfiguration(MetadataReader metadataReader) {
-		return metadataReader.getAnnotationMetadata()
-				.isAnnotated(Configuration.class.getName());
+		return metadataReader.getAnnotationMetadata().isAnnotated(Configuration.class.getName());
 	}
 
 	private boolean isAutoConfiguration(MetadataReader metadataReader) {
-		return getAutoConfigurations()
-				.contains(metadataReader.getClassMetadata().getClassName());
+		return getAutoConfigurations().contains(metadataReader.getClassMetadata().getClassName());
 	}
 
 	protected List<String> getAutoConfigurations() {
 		if (this.autoConfigurations == null) {
-			this.autoConfigurations = SpringFactoriesLoader.loadFactoryNames(
-					EnableAutoConfiguration.class, this.beanClassLoader);
+			this.autoConfigurations = SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
+					this.beanClassLoader);
 		}
 		return this.autoConfigurations;
 	}

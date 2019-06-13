@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,14 +44,12 @@ public class UndertowWebSocketServletWebServerCustomizer
 		return 0;
 	}
 
-	private static class WebsocketDeploymentInfoCustomizer
-			implements UndertowDeploymentInfoCustomizer {
+	private static class WebsocketDeploymentInfoCustomizer implements UndertowDeploymentInfoCustomizer {
 
 		@Override
 		public void customize(DeploymentInfo deploymentInfo) {
 			WebSocketDeploymentInfo info = new WebSocketDeploymentInfo();
-			deploymentInfo.addServletContextAttribute(
-					WebSocketDeploymentInfo.ATTRIBUTE_NAME, info);
+			deploymentInfo.addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, info);
 		}
 
 	}

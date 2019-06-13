@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +33,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -45,9 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleWebSecureCustomApplicationTests {
+class SampleWebSecureCustomApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -56,46 +53,43 @@ public class SampleWebSecureCustomApplicationTests {
 	private int port;
 
 	@Test
-	public void testHome() {
+	void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers),
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString())
-				.endsWith(this.port + "/login");
+		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/login");
 	}
 
 	@Test
-	public void testLoginPage() {
+	void testLoginPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
-				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("_csrf");
 	}
 
 	@Test
-	public void testLogin() {
+	void testLogin() {
 		HttpHeaders headers = getHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "password");
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
-				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
+				new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString())
-				.endsWith(this.port + "/");
+		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
 		assertThat(entity.getHeaders().get("Set-Cookie")).isNotNull();
 	}
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		ResponseEntity<String> page = this.restTemplate.getForEntity("/login",
-				String.class);
+		ResponseEntity<String> page = this.restTemplate.getForEntity("/login", String.class);
 		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
@@ -107,9 +101,8 @@ public class SampleWebSecureCustomApplicationTests {
 	}
 
 	@Test
-	public void testCss() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("/css/bootstrap.min.css", String.class);
+	void testCss() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,32 +40,24 @@ import org.springframework.jmx.support.JmxUtils;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-@Configuration
-@AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
-		DataSourceAutoConfiguration.class })
+@Configuration(proxyBeanMethods = false)
+@AutoConfigureBefore({ XADataSourceAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @ConditionalOnProperty(prefix = "spring.datasource", name = "jndi-name")
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class JndiDataSourceAutoConfiguration {
 
-	private final ApplicationContext context;
-
-	public JndiDataSourceAutoConfiguration(ApplicationContext context) {
-		this.context = context;
-	}
-
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
-	public DataSource dataSource(DataSourceProperties properties) {
+	public DataSource dataSource(DataSourceProperties properties, ApplicationContext context) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
 		DataSource dataSource = dataSourceLookup.getDataSource(properties.getJndiName());
-		excludeMBeanIfNecessary(dataSource, "dataSource");
+		excludeMBeanIfNecessary(dataSource, "dataSource", context);
 		return dataSource;
 	}
 
-	private void excludeMBeanIfNecessary(Object candidate, String beanName) {
-		for (MBeanExporter mbeanExporter : this.context
-				.getBeansOfType(MBeanExporter.class).values()) {
+	private void excludeMBeanIfNecessary(Object candidate, String beanName, ApplicationContext context) {
+		for (MBeanExporter mbeanExporter : context.getBeansOfType(MBeanExporter.class).values()) {
 			if (JmxUtils.isMBean(candidate.getClass())) {
 				mbeanExporter.addExcludedBean(beanName);
 			}

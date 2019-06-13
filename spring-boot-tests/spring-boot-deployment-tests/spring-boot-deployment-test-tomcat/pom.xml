@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -12,7 +12,7 @@
 	<description>Spring Boot Tomcat Deployment Test</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
-		<cargo.container.id>tomcat8x</cargo.container.id>
+		<cargo.container.id>tomcat9x</cargo.container.id>
 		<cargo.container.url>
 			https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/${tomcat.version}/tomcat-${tomcat.version}.zip
 		</cargo.container.url>
@@ -33,8 +33,8 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

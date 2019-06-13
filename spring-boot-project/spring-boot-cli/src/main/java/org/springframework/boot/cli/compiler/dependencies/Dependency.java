@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,8 +54,7 @@ public final class Dependency {
 	 * @param version the version
 	 * @param exclusions the exclusions
 	 */
-	public Dependency(String groupId, String artifactId, String version,
-			List<Exclusion> exclusions) {
+	public Dependency(String groupId, String artifactId, String version, List<Exclusion> exclusions) {
 		Assert.notNull(groupId, "GroupId must not be null");
 		Assert.notNull(artifactId, "ArtifactId must not be null");
 		Assert.notNull(version, "Version must not be null");
@@ -99,22 +98,6 @@ public final class Dependency {
 	}
 
 	@Override
-	public String toString() {
-		return this.groupId + ":" + this.artifactId + ":" + this.version;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + this.groupId.hashCode();
-		result = prime * result + this.artifactId.hashCode();
-		result = prime * result + this.version.hashCode();
-		result = prime * result + this.exclusions.hashCode();
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -134,6 +117,22 @@ public final class Dependency {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + this.groupId.hashCode();
+		result = prime * result + this.artifactId.hashCode();
+		result = prime * result + this.version.hashCode();
+		result = prime * result + this.exclusions.hashCode();
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return this.groupId + ":" + this.artifactId + ":" + this.version;
+	}
+
 	/**
 	 * A dependency exclusion.
 	 */
@@ -145,7 +144,7 @@ public final class Dependency {
 
 		Exclusion(String groupId, String artifactId) {
 			Assert.notNull(groupId, "GroupId must not be null");
-			Assert.notNull(groupId, "ArtifactId must not be null");
+			Assert.notNull(artifactId, "ArtifactId must not be null");
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 		}
@@ -167,16 +166,6 @@ public final class Dependency {
 		}
 
 		@Override
-		public String toString() {
-			return this.groupId + ":" + this.artifactId;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.groupId.hashCode() * 31 + this.artifactId.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -192,6 +181,16 @@ public final class Dependency {
 				return result;
 			}
 			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.groupId.hashCode() * 31 + this.artifactId.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return this.groupId + ":" + this.artifactId;
 		}
 
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,17 +65,14 @@ public class SpringApplicationRunner {
 	 * @param sources the files to compile/watch
 	 * @param args input arguments
 	 */
-	SpringApplicationRunner(SpringApplicationRunnerConfiguration configuration,
-			String[] sources, String... args) {
+	SpringApplicationRunner(SpringApplicationRunnerConfiguration configuration, String[] sources, String... args) {
 		this.configuration = configuration;
 		this.sources = sources.clone();
 		this.args = args.clone();
 		this.compiler = new GroovyCompiler(configuration);
 		int level = configuration.getLogLevel().intValue();
 		if (level <= Level.FINER.intValue()) {
-			System.setProperty(
-					"org.springframework.boot.cli.compiler.grape.ProgressReporter",
-					"detail");
+			System.setProperty("org.springframework.boot.cli.compiler.grape.ProgressReporter", "detail");
 			System.setProperty("trace", "true");
 		}
 		else if (level <= Level.FINE.intValue()) {
@@ -84,9 +81,7 @@ public class SpringApplicationRunner {
 		else if (level == Level.OFF.intValue()) {
 			System.setProperty("spring.main.banner-mode", "OFF");
 			System.setProperty("logging.level.ROOT", "OFF");
-			System.setProperty(
-					"org.springframework.boot.cli.compiler.grape.ProgressReporter",
-					"none");
+			System.setProperty("org.springframework.boot.cli.compiler.grape.ProgressReporter", "none");
 		}
 	}
 
@@ -128,8 +123,7 @@ public class SpringApplicationRunner {
 	private Class<?>[] compile() throws IOException {
 		Class<?>[] compiledSources = this.compiler.compile(this.sources);
 		if (compiledSources.length == 0) {
-			throw new RuntimeException(
-					"No classes found in '" + Arrays.toString(this.sources) + "'");
+			throw new RuntimeException("No classes found in '" + Arrays.toString(this.sources) + "'");
 		}
 		return compiledSources;
 	}
@@ -169,9 +163,8 @@ public class SpringApplicationRunner {
 		public void run() {
 			synchronized (this.monitor) {
 				try {
-					this.applicationContext = new SpringApplicationLauncher(
-							getContextClassLoader()).launch(this.compiledSources,
-									SpringApplicationRunner.this.args);
+					this.applicationContext = new SpringApplicationLauncher(getContextClassLoader())
+							.launch(this.compiledSources, SpringApplicationRunner.this.args);
 				}
 				catch (Exception ex) {
 					ex.printStackTrace();
@@ -186,8 +179,7 @@ public class SpringApplicationRunner {
 			synchronized (this.monitor) {
 				if (this.applicationContext != null) {
 					try {
-						Method method = this.applicationContext.getClass()
-								.getMethod("close");
+						Method method = this.applicationContext.getClass().getMethod("close");
 						method.invoke(this.applicationContext);
 					}
 					catch (NoSuchMethodException ex) {
@@ -232,8 +224,7 @@ public class SpringApplicationRunner {
 		private List<File> getSourceFiles() {
 			List<File> sources = new ArrayList<>();
 			for (String source : SpringApplicationRunner.this.sources) {
-				List<String> paths = ResourceUtils.getUrls(source,
-						SpringApplicationRunner.this.compiler.getLoader());
+				List<String> paths = ResourceUtils.getUrls(source, SpringApplicationRunner.this.compiler.getLoader());
 				for (String path : paths) {
 					try {
 						URL url = new URL(path);

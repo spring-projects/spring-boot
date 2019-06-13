@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
@@ -13,7 +13,6 @@
 	<description>Spring Boot JUnit Jupiter Sample</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -26,20 +25,14 @@
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>junit</groupId>
 					<artifactId>junit</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -51,13 +44,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.platform</groupId>
-						<artifactId>junit-platform-surefire-provider</artifactId>
-						<version>${junit-platform.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

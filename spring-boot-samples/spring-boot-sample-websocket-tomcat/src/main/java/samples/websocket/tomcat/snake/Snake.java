@@ -1,12 +1,11 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2012-2019 the original author or authors.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,8 +104,7 @@ public class Snake {
 
 	private void handleCollisions(Collection<Snake> snakes) throws Exception {
 		for (Snake snake : snakes) {
-			boolean headCollision = this.id != snake.id
-					&& snake.getHead().equals(this.head);
+			boolean headCollision = this.id != snake.id && snake.getHead().equals(this.head);
 			boolean tailCollision = snake.getTail().contains(this.head);
 			if (headCollision || tailCollision) {
 				kill();
@@ -138,15 +136,12 @@ public class Snake {
 	public String getLocationsJson() {
 		synchronized (this.monitor) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x),
-					Integer.valueOf(this.head.y)));
+			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x), Integer.valueOf(this.head.y)));
 			for (Location location : this.tail) {
 				sb.append(',');
-				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x),
-						Integer.valueOf(location.y)));
+				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x), Integer.valueOf(location.y)));
 			}
-			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id),
-					sb.toString());
+			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id), sb.toString());
 		}
 	}
 
@@ -157,4 +152,5 @@ public class Snake {
 	public String getHexColor() {
 		return this.hexColor;
 	}
+
 }

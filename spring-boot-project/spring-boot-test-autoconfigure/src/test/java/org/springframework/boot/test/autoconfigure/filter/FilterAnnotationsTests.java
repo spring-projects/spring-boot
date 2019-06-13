@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
@@ -41,38 +41,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class FilterAnnotationsTests {
+class FilterAnnotationsTests {
 
 	@Test
-	public void filterAnnotation() throws Exception {
+	void filterAnnotation() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByAnnotation.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isTrue();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isFalse();
 	}
 
 	@Test
-	public void filterAssignableType() throws Exception {
+	void filterAssignableType() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByType.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
 	}
 
 	@Test
-	public void filterCustom() throws Exception {
+	void filterCustom() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByCustom.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
 	}
 
 	@Test
-	public void filterAspectJ() throws Exception {
+	void filterAspectJ() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByAspectJ.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
 	}
 
 	@Test
-	public void filterRegex() throws Exception {
+	void filterRegex() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByRegex.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
@@ -83,11 +83,9 @@ public class FilterAnnotationsTests {
 		return new FilterAnnotations(getClass().getClassLoader(), filters.value());
 	}
 
-	private boolean match(FilterAnnotations filterAnnotations, Class<?> type)
-			throws IOException {
+	private boolean match(FilterAnnotations filterAnnotations, Class<?> type) throws IOException {
 		MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
-		MetadataReader metadataReader = metadataReaderFactory
-				.getMetadataReader(type.getName());
+		MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(type.getName());
 		return filterAnnotations.anyMatches(metadataReader, metadataReaderFactory);
 	}
 
@@ -119,7 +117,7 @@ public class FilterAnnotationsTests {
 	@Target({ ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	static @interface Filters {
+	@interface Filters {
 
 		Filter[] value();
 
@@ -128,10 +126,8 @@ public class FilterAnnotationsTests {
 	static class ExampleCustomFilter implements TypeFilter {
 
 		@Override
-		public boolean match(MetadataReader metadataReader,
-				MetadataReaderFactory metadataReaderFactory) {
-			return metadataReader.getClassMetadata().getClassName()
-					.equals(ExampleWithoutAnnotation.class.getName());
+		public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) {
+			return metadataReader.getClassMetadata().getClassName().equals(ExampleWithoutAnnotation.class.getName());
 		}
 
 	}

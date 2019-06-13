@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,11 +37,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  * @author Eddú Meléndez
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Gson.class)
 class GsonHttpMessageConvertersConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Gson.class)
 	@Conditional(PreferGsonOrJacksonAndJsonbUnavailableCondition.class)
 	protected static class GsonHttpMessageConverterConfiguration {
@@ -56,14 +56,14 @@ class GsonHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class PreferGsonOrJacksonAndJsonbUnavailableCondition
-			extends AnyNestedCondition {
+	private static class PreferGsonOrJacksonAndJsonbUnavailableCondition extends AnyNestedCondition {
 
 		PreferGsonOrJacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "gson")
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+				havingValue = "gson")
 		static class GsonPreferred {
 
 		}
@@ -75,8 +75,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class JacksonAndJsonbUnavailableCondition
-			extends NoneNestedConditions {
+	private static class JacksonAndJsonbUnavailableCondition extends NoneNestedConditions {
 
 		JacksonAndJsonbUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
@@ -87,7 +86,8 @@ class GsonHttpMessageConvertersConfiguration {
 
 		}
 
-		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jsonb")
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+				havingValue = "jsonb")
 		static class JsonbPreferred {
 
 		}

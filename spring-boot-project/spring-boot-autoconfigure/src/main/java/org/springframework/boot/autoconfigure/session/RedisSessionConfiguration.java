@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,12 +23,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 
 /**
@@ -40,7 +43,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ RedisTemplate.class, RedisOperationsSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(RedisConnectionFactory.class)
@@ -48,13 +51,24 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisSessionConfiguration {
 
+	@Bean
+	@ConditionalOnMissingBean
+	public ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
+		switch (redisSessionProperties.getConfigureAction()) {
+		case NOTIFY_KEYSPACE_EVENTS:
+			return new ConfigureNotifyKeyspaceEventsAction();
+		case NONE:
+			return ConfigureRedisAction.NO_OP;
+		}
+		throw new IllegalStateException(
+				"Unsupported redis configure action '" + redisSessionProperties.getConfigureAction() + "'.");
+	}
+
 	@Configuration
-	public static class SpringBootRedisHttpSessionConfiguration
-			extends RedisHttpSessionConfiguration {
+	public static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties,
-				RedisSessionProperties redisSessionProperties) {
+		public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());

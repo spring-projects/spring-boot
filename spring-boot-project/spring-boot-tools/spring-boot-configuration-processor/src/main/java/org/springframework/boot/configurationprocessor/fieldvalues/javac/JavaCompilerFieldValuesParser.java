@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -116,6 +116,20 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			DURATION_SUFFIX = Collections.unmodifiableMap(values);
 		}
 
+		private static final String DATA_SIZE_OF = "DataSize.of";
+
+		private static final Map<String, String> DATA_SIZE_SUFFIX;
+
+		static {
+			Map<String, String> values = new HashMap<>();
+			values.put("Bytes", "B");
+			values.put("Kilobytes", "KB");
+			values.put("Megabytes", "MB");
+			values.put("Gigabytes", "GB");
+			values.put("Terabytes", "TB");
+			DATA_SIZE_SUFFIX = Collections.unmodifiableMap(values);
+		}
+
 		private final Map<String, Object> fieldValues = new HashMap<>();
 
 		private final Map<String, Object> staticFinals = new HashMap<>();
@@ -141,8 +155,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			return defaultValue;
 		}
 
-		private Object getValue(ExpressionTree expression, Object defaultValue)
-				throws Exception {
+		private Object getValue(ExpressionTree expression, Object defaultValue) throws Exception {
 			Object literalValue = expression.getLiteralValue();
 			if (literalValue != null) {
 				return literalValue;
@@ -173,14 +186,27 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		}
 
 		private Object getFactoryValue(ExpressionTree expression, Object factoryValue) {
-			Object instance = expression.getInstance();
-			if (instance != null && instance.toString().startsWith(DURATION_OF)) {
-				String type = instance.toString();
-				type = type.substring(DURATION_OF.length(), type.indexOf('('));
-				String suffix = DURATION_SUFFIX.get(type);
-				return (suffix != null ? factoryValue + suffix : null);
+			Object durationValue = getFactoryValue(expression, factoryValue, DURATION_OF, DURATION_SUFFIX);
+			if (durationValue != null) {
+				return durationValue;
+			}
+			Object dataSizeValue = getFactoryValue(expression, factoryValue, DATA_SIZE_OF, DATA_SIZE_SUFFIX);
+			if (dataSizeValue != null) {
+				return dataSizeValue;
 			}
 			return factoryValue;
+		}
+
+		private Object getFactoryValue(ExpressionTree expression, Object factoryValue, String prefix,
+				Map<String, String> suffixMapping) {
+			Object instance = expression.getInstance();
+			if (instance != null && instance.toString().startsWith(prefix)) {
+				String type = instance.toString();
+				type = type.substring(prefix.length(), type.indexOf('('));
+				String suffix = suffixMapping.get(type);
+				return (suffix != null) ? factoryValue + suffix : null;
+			}
+			return null;
 		}
 
 		public Map<String, Object> getFieldValues() {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,40 +16,43 @@
 
 package org.springframework.boot.logging;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystem.NoOpLoggingSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link LoggingSystem}.
  *
  * @author Andy Wilkinson
  */
-public class LoggingSystemTests {
+class LoggingSystemTests {
 
-	@After
+	@AfterEach
 	public void clearSystemProperty() {
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 	}
 
 	@Test
-	public void loggingSystemCanBeDisabled() {
+	void loggingSystemCanBeDisabled() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, LoggingSystem.NONE);
 		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
 		assertThat(loggingSystem).isInstanceOf(NoOpLoggingSystem.class);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void getLoggerConfigurationIsUnsupported() {
-		new StubLoggingSystem().getLoggerConfiguration("test-logger-name");
+	@Test
+	void getLoggerConfigurationIsUnsupported() {
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void listLoggerConfigurationsIsUnsupported() {
-		new StubLoggingSystem().getLoggerConfigurations();
+	@Test
+	void listLoggerConfigurationsIsUnsupported() {
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfigurations());
 	}
 
 	private static final class StubLoggingSystem extends LoggingSystem {

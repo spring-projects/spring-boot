@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,20 +51,18 @@ class ReactiveTokenValidator {
 	}
 
 	public Mono<Void> validate(Token token) {
-		return validateAlgorithm(token).then(validateKeyIdAndSignature(token))
-				.then(validateExpiry(token)).then(validateIssuer(token))
-				.then(validateAudience(token));
+		return validateAlgorithm(token).then(validateKeyIdAndSignature(token)).then(validateExpiry(token))
+				.then(validateIssuer(token)).then(validateAudience(token));
 	}
 
 	private Mono<Void> validateAlgorithm(Token token) {
 		String algorithm = token.getSignatureAlgorithm();
 		if (algorithm == null) {
-			return Mono.error(new CloudFoundryAuthorizationException(
-					Reason.INVALID_SIGNATURE, "Signing algorithm cannot be null"));
+			return Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
+					"Signing algorithm cannot be null"));
 		}
 		if (!algorithm.equals("RS256")) {
-			return Mono.error(new CloudFoundryAuthorizationException(
-					Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM,
+			return Mono.error(new CloudFoundryAuthorizationException(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM,
 					"Signing algorithm " + algorithm + " not supported"));
 		}
 		return Mono.empty();
@@ -72,8 +70,8 @@ class ReactiveTokenValidator {
 
 	private Mono<Void> validateKeyIdAndSignature(Token token) {
 		return getTokenKey(token).filter((tokenKey) -> hasValidSignature(token, tokenKey))
-				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
-						Reason.INVALID_SIGNATURE, "RSA Signature did not match content")))
+				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
+						"RSA Signature did not match content")))
 				.then();
 	}
 
@@ -84,11 +82,9 @@ class ReactiveTokenValidator {
 			return Mono.just(cached);
 		}
 		return this.securityService.fetchTokenKeys().doOnSuccess(this::cacheTokenKeys)
-				.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
-				.map((tokenKeys) -> tokenKeys.get(keyId))
-				.switchIfEmpty(Mono.error(
-						new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
-								"Key Id present in token header does not match")));
+				.filter((tokenKeys) -> tokenKeys.containsKey(keyId)).map((tokenKeys) -> tokenKeys.get(keyId))
+				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
+						"Key Id present in token header does not match")));
 	}
 
 	private void cacheTokenKeys(Map<String, String> tokenKeys) {
@@ -108,8 +104,7 @@ class ReactiveTokenValidator {
 		}
 	}
 
-	private PublicKey getPublicKey(String key)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
+	private PublicKey getPublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		key = key.replace("-----BEGIN PUBLIC KEY-----\n", "");
 		key = key.replace("-----END PUBLIC KEY-----", "");
 		key = key.trim().replace("\n", "");
@@ -121,25 +116,23 @@ class ReactiveTokenValidator {
 	private Mono<Void> validateExpiry(Token token) {
 		long currentTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
 		if (currentTime > token.getExpiry()) {
-			return Mono.error(new CloudFoundryAuthorizationException(Reason.TOKEN_EXPIRED,
-					"Token expired"));
+			return Mono.error(new CloudFoundryAuthorizationException(Reason.TOKEN_EXPIRED, "Token expired"));
 		}
 		return Mono.empty();
 	}
 
 	private Mono<Void> validateIssuer(Token token) {
-		return this.securityService.getUaaUrl()
-				.map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
+		return this.securityService.getUaaUrl().map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
 				.filter((issuerUri) -> issuerUri.equals(token.getIssuer()))
-				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(
-						Reason.INVALID_ISSUER, "Token issuer does not match")))
+				.switchIfEmpty(Mono.error(
+						new CloudFoundryAuthorizationException(Reason.INVALID_ISSUER, "Token issuer does not match")))
 				.then();
 	}
 
 	private Mono<Void> validateAudience(Token token) {
 		if (!token.getScope().contains("actuator.read")) {
-			return Mono.error(new CloudFoundryAuthorizationException(
-					Reason.INVALID_AUDIENCE, "Token does not have audience actuator"));
+			return Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_AUDIENCE,
+					"Token does not have audience actuator"));
 		}
 		return Mono.empty();
 	}

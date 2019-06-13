@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,21 +43,18 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
  * configured {@link org.springframework.data.mongodb.repository.MongoRepository}.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling Mongo repositories
- * using the
- * {@link org.springframework.data.mongodb.repository.config.EnableMongoRepositories}
- * annotation.
+ * using the {@link EnableMongoRepositories @EnableMongoRepositories} annotation.
  *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long
  * @see EnableMongoRepositories
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoClient.class, MongoRepository.class })
-@ConditionalOnMissingBean({ MongoRepositoryFactoryBean.class,
-		MongoRepositoryConfigurationExtension.class })
+@ConditionalOnMissingBean({ MongoRepositoryFactoryBean.class, MongoRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "mongodb", type = RepositoryType.IMPERATIVE)
-@Import(MongoRepositoriesAutoConfigureRegistrar.class)
+@Import(MongoRepositoriesRegistrar.class)
 @AutoConfigureAfter(MongoDataAutoConfiguration.class)
 public class MongoRepositoriesAutoConfiguration {
 

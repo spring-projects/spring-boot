@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,10 +20,8 @@ import java.time.Instant;
 import java.util.Collections;
 
 import net.minidev.json.JSONArray;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -35,52 +33,39 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Vedran Pavic
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
-public class AuditEventsEndpointWebIntegrationTests {
+class AuditEventsEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void allEvents() {
-		client.get().uri((builder) -> builder.path("/actuator/auditevents").build())
-				.exchange().expectStatus().isOk().expectBody()
-				.jsonPath("events.[*].principal")
-				.isEqualTo(new JSONArray().appendElement("admin").appendElement("admin")
-						.appendElement("user"));
+	@WebEndpointTest
+	void allEvents(WebTestClient client) {
+		client.get().uri((builder) -> builder.path("/actuator/auditevents").build()).exchange().expectStatus().isOk()
+				.expectBody().jsonPath("events.[*].principal")
+				.isEqualTo(new JSONArray().appendElement("admin").appendElement("admin").appendElement("user"));
 	}
 
-	@Test
-	public void eventsAfter() {
+	@WebEndpointTest
+	void eventsAfter(WebTestClient client) {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
-				.exchange().expectStatus().isOk().expectBody().jsonPath("events")
-				.isEmpty();
+				.exchange().expectStatus().isOk().expectBody().jsonPath("events").isEmpty();
 	}
 
-	@Test
-	public void eventsWithPrincipal() {
-		client.get()
-				.uri((builder) -> builder.path("/actuator/auditevents")
-						.queryParam("principal", "user").build())
-				.exchange().expectStatus().isOk().expectBody()
-				.jsonPath("events.[*].principal")
+	@WebEndpointTest
+	void eventsWithPrincipal(WebTestClient client) {
+		client.get().uri((builder) -> builder.path("/actuator/auditevents").queryParam("principal", "user").build())
+				.exchange().expectStatus().isOk().expectBody().jsonPath("events.[*].principal")
 				.isEqualTo(new JSONArray().appendElement("user"));
 	}
 
-	@Test
-	public void eventsWithType() {
-		client.get()
-				.uri((builder) -> builder.path("/actuator/auditevents")
-						.queryParam("type", "logout").build())
-				.exchange().expectStatus().isOk().expectBody()
-				.jsonPath("events.[*].principal")
-				.isEqualTo(new JSONArray().appendElement("admin"))
-				.jsonPath("events.[*].type")
+	@WebEndpointTest
+	void eventsWithType(WebTestClient client) {
+		client.get().uri((builder) -> builder.path("/actuator/auditevents").queryParam("type", "logout").build())
+				.exchange().expectStatus().isOk().expectBody().jsonPath("events.[*].principal")
+				.isEqualTo(new JSONArray().appendElement("admin")).jsonPath("events.[*].type")
 				.isEqualTo(new JSONArray().appendElement("logout"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class TestConfiguration {
 
 		@Bean
@@ -93,13 +78,12 @@ public class AuditEventsEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public AuditEventsEndpoint auditEventsEndpoint() {
-			return new AuditEventsEndpoint(auditEventsRepository());
+		public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {
+			return new AuditEventsEndpoint(auditEventRepository);
 		}
 
 		private AuditEvent createEvent(String instant, String principal, String type) {
-			return new AuditEvent(Instant.parse(instant), principal, type,
-					Collections.emptyMap());
+			return new AuditEvent(Instant.parse(instant), principal, type, Collections.emptyMap());
 		}
 
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
@@ -44,44 +44,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void info() throws Exception {
+	void info() throws Exception {
 		this.mockMvc.perform(get("/actuator/info")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("info",
 						responseFields(beneathPath("git"),
-								fieldWithPath("branch")
-										.description("Name of the Git branch, if any."),
-								fieldWithPath("commit").description(
-										"Details of the Git commit, if any."),
-								fieldWithPath("commit.time")
-										.description("Timestamp of the commit, if any.")
+								fieldWithPath("branch").description("Name of the Git branch, if any."),
+								fieldWithPath("commit").description("Details of the Git commit, if any."),
+								fieldWithPath("commit.time").description("Timestamp of the commit, if any.")
 										.type(JsonFieldType.VARIES),
-								fieldWithPath("commit.id")
-										.description("ID of the commit, if any.")),
+								fieldWithPath("commit.id").description("ID of the commit, if any.")),
 						responseFields(beneathPath("build"),
-								fieldWithPath("artifact")
-										.description(
-												"Artifact ID of the application, if any.")
+								fieldWithPath("artifact").description("Artifact ID of the application, if any.")
 										.optional(),
-								fieldWithPath("group")
-										.description(
-												"Group ID of the application, if any.")
-										.optional(),
-								fieldWithPath("name")
-										.description("Name of the application, if any.")
+								fieldWithPath("group").description("Group ID of the application, if any.").optional(),
+								fieldWithPath("name").description("Name of the application, if any.")
 										.type(JsonFieldType.STRING).optional(),
-								fieldWithPath("version")
-										.description(
-												"Version of the application, if any.")
-										.optional(),
-								fieldWithPath("time").description(
-										"Timestamp of when the application was built, if any.")
+								fieldWithPath("version").description("Version of the application, if any.").optional(),
+								fieldWithPath("time")
+										.description("Timestamp of when the application was built, if any.")
 										.type(JsonFieldType.VARIES).optional())));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 

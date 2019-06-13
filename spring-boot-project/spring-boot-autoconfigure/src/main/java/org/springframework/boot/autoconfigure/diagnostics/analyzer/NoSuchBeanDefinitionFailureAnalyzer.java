@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,17 +16,24 @@
 
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
@@ -50,8 +57,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-class NoSuchBeanDefinitionFailureAnalyzer
-		extends AbstractInjectionFailureAnalyzer<NoSuchBeanDefinitionException>
+class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyzer<NoSuchBeanDefinitionException>
 		implements BeanFactoryAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
@@ -64,32 +70,40 @@ class NoSuchBeanDefinitionFailureAnalyzer
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory);
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
-		this.metadataReaderFactory = new CachingMetadataReaderFactory(
-				this.beanFactory.getBeanClassLoader());
+		this.metadataReaderFactory = new CachingMetadataReaderFactory(this.beanFactory.getBeanClassLoader());
 		// Get early as won't be accessible once context has failed to start
 		this.report = ConditionEvaluationReport.get(this.beanFactory);
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			NoSuchBeanDefinitionException cause, String description) {
+	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause, String description) {
 		if (cause.getNumberOfBeansFound() != 0) {
 			return null;
 		}
-		List<AutoConfigurationResult> autoConfigurationResults = getAutoConfigurationResults(
-				cause);
+		List<AutoConfigurationResult> autoConfigurationResults = getAutoConfigurationResults(cause);
+		List<UserConfigurationResult> userConfigurationResults = getUserConfigurationResults(cause);
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%s required %s that could not be found.%n",
-				(description != null ? description : "A component"),
-				getBeanDescription(cause)));
-		if (!autoConfigurationResults.isEmpty()) {
-			for (AutoConfigurationResult provider : autoConfigurationResults) {
-				message.append(String.format("\t- %s%n", provider));
+				(description != null) ? description : "A component", getBeanDescription(cause)));
+		List<Annotation> injectionAnnotations = findInjectionAnnotations(rootFailure);
+		if (!injectionAnnotations.isEmpty()) {
+			message.append(String.format("%nThe injection point has the following annotations:%n"));
+			for (Annotation injectionAnnotation : injectionAnnotations) {
+				message.append(String.format("\t- %s%n", injectionAnnotation));
+			}
+		}
+		if (!autoConfigurationResults.isEmpty() || !userConfigurationResults.isEmpty()) {
+			message.append(String.format("%nThe following candidates were found but could not be injected:%n"));
+			for (AutoConfigurationResult result : autoConfigurationResults) {
+				message.append(String.format("\t- %s%n", result));
+			}
+			for (UserConfigurationResult result : userConfigurationResults) {
+				message.append(String.format("\t- %s%n", result));
 			}
 		}
 		String action = String.format("Consider %s %s in your configuration.",
-				(!autoConfigurationResults.isEmpty()
-						? "revisiting the conditions above or defining" : "defining"),
+				(!autoConfigurationResults.isEmpty() || !userConfigurationResults.isEmpty())
+						? "revisiting the entries above or defining" : "defining",
 				getBeanDescription(cause));
 		return new FailureAnalysis(message.toString(), action, cause);
 	}
@@ -103,35 +117,45 @@ class NoSuchBeanDefinitionFailureAnalyzer
 	}
 
 	private Class<?> extractBeanType(ResolvableType resolvableType) {
-		ResolvableType collectionType = resolvableType.asCollection();
-		if (!collectionType.equals(ResolvableType.NONE)) {
-			return collectionType.getGeneric(0).getRawClass();
-		}
-		ResolvableType mapType = resolvableType.asMap();
-		if (!mapType.equals(ResolvableType.NONE)) {
-			return mapType.getGeneric(1).getRawClass();
-		}
 		return resolvableType.getRawClass();
 	}
 
-	private List<AutoConfigurationResult> getAutoConfigurationResults(
-			NoSuchBeanDefinitionException cause) {
+	private List<AutoConfigurationResult> getAutoConfigurationResults(NoSuchBeanDefinitionException cause) {
 		List<AutoConfigurationResult> results = new ArrayList<>();
 		collectReportedConditionOutcomes(cause, results);
 		collectExcludedAutoConfiguration(cause, results);
 		return results;
 	}
 
-	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause,
-			List<AutoConfigurationResult> results) {
-		this.report.getConditionAndOutcomesBySource().forEach(
-				(source, sourceOutcomes) -> collectReportedConditionOutcomes(cause,
-						new Source(source), sourceOutcomes, results));
+	private List<UserConfigurationResult> getUserConfigurationResults(NoSuchBeanDefinitionException cause) {
+		ResolvableType type = cause.getResolvableType();
+		if (type == null) {
+			return Collections.emptyList();
+		}
+		String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type);
+		return Arrays.stream(beanNames)
+				.map((beanName) -> new UserConfigurationResult(getFactoryMethodMetadata(beanName),
+						this.beanFactory.getBean(beanName).equals(null)))
+				.collect(Collectors.toList());
+	}
+
+	private MethodMetadata getFactoryMethodMetadata(String beanName) {
+		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
+		if (beanDefinition instanceof AnnotatedBeanDefinition) {
+			return ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
+		}
+		return null;
 	}
 
 	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause,
-			Source source, ConditionAndOutcomes sourceOutcomes,
 			List<AutoConfigurationResult> results) {
+		this.report.getConditionAndOutcomesBySource()
+				.forEach((source, sourceOutcomes) -> collectReportedConditionOutcomes(cause, new Source(source),
+						sourceOutcomes, results));
+	}
+
+	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause, Source source,
+			ConditionAndOutcomes sourceOutcomes, List<AutoConfigurationResult> results) {
 		if (sourceOutcomes.isFullMatch()) {
 			return;
 		}
@@ -139,8 +163,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 		for (ConditionAndOutcome conditionAndOutcome : sourceOutcomes) {
 			if (!conditionAndOutcome.getOutcome().isMatch()) {
 				for (MethodMetadata method : methods) {
-					results.add(new AutoConfigurationResult(method,
-							conditionAndOutcome.getOutcome(), source.isMethod()));
+					results.add(new AutoConfigurationResult(method, conditionAndOutcome.getOutcome()));
 				}
 			}
 		}
@@ -154,10 +177,18 @@ class NoSuchBeanDefinitionFailureAnalyzer
 			for (MethodMetadata method : methods) {
 				String message = String.format("auto-configuration '%s' was excluded",
 						ClassUtils.getShortName(excludedClass));
-				results.add(new AutoConfigurationResult(method,
-						new ConditionOutcome(false, message), false));
+				results.add(new AutoConfigurationResult(method, new ConditionOutcome(false, message)));
 			}
 		}
+	}
+
+	private List<Annotation> findInjectionAnnotations(Throwable failure) {
+		UnsatisfiedDependencyException unsatisfiedDependencyException = findCause(failure,
+				UnsatisfiedDependencyException.class);
+		if (unsatisfiedDependencyException == null) {
+			return Collections.emptyList();
+		}
+		return Arrays.asList(unsatisfiedDependencyException.getInjectionPoint().getAnnotations());
 	}
 
 	private class Source {
@@ -168,8 +199,8 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 		Source(String source) {
 			String[] tokens = source.split("#");
-			this.className = (tokens.length > 1 ? tokens[0] : source);
-			this.methodName = (tokens.length != 2 ? null : tokens[1]);
+			this.className = (tokens.length > 1) ? tokens[0] : source;
+			this.methodName = (tokens.length != 2) ? null : tokens[1];
 		}
 
 		public String getClassName() {
@@ -178,10 +209,6 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 		public String getMethodName() {
 			return this.methodName;
-		}
-
-		public boolean isMethod() {
-			return this.methodName != null;
 		}
 
 	}
@@ -194,8 +221,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 			this.methods = findBeanMethods(source, cause);
 		}
 
-		private List<MethodMetadata> findBeanMethods(Source source,
-				NoSuchBeanDefinitionException cause) {
+		private List<MethodMetadata> findBeanMethods(Source source, NoSuchBeanDefinitionException cause) {
 			try {
 				MetadataReader classMetadata = NoSuchBeanDefinitionFailureAnalyzer.this.metadataReaderFactory
 						.getMetadataReader(source.getClassName());
@@ -214,23 +240,19 @@ class NoSuchBeanDefinitionFailureAnalyzer
 			}
 		}
 
-		private boolean isMatch(MethodMetadata candidate, Source source,
-				NoSuchBeanDefinitionException cause) {
-			if (source.getMethodName() != null
-					&& !source.getMethodName().equals(candidate.getMethodName())) {
+		private boolean isMatch(MethodMetadata candidate, Source source, NoSuchBeanDefinitionException cause) {
+			if (source.getMethodName() != null && !source.getMethodName().equals(candidate.getMethodName())) {
 				return false;
 			}
 			String name = cause.getBeanName();
 			ResolvableType resolvableType = cause.getResolvableType();
-			return ((name != null && hasName(candidate, name)) || (resolvableType != null
-					&& hasType(candidate, extractBeanType(resolvableType))));
+			return ((name != null && hasName(candidate, name))
+					|| (resolvableType != null && hasType(candidate, extractBeanType(resolvableType))));
 		}
 
 		private boolean hasName(MethodMetadata methodMetadata, String name) {
-			Map<String, Object> attributes = methodMetadata
-					.getAnnotationAttributes(Bean.class.getName());
-			String[] candidates = (attributes != null ? (String[]) attributes.get("name")
-					: null);
+			Map<String, Object> attributes = methodMetadata.getAnnotationAttributes(Bean.class.getName());
+			String[] candidates = (attributes != null) ? (String[]) attributes.get("name") : null;
 			if (candidates != null) {
 				for (String candidate : candidates) {
 					if (candidate.equals(name)) {
@@ -249,8 +271,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 			}
 			try {
 				Class<?> returnType = ClassUtils.forName(returnTypeName,
-						NoSuchBeanDefinitionFailureAnalyzer.this.beanFactory
-								.getBeanClassLoader());
+						NoSuchBeanDefinitionFailureAnalyzer.this.beanFactory.getBeanClassLoader());
 				return type.isAssignableFrom(returnType);
 			}
 			catch (Throwable ex) {
@@ -271,27 +292,42 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 		private final ConditionOutcome conditionOutcome;
 
-		private final boolean methodEvaluated;
-
-		AutoConfigurationResult(MethodMetadata methodMetadata,
-				ConditionOutcome conditionOutcome, boolean methodEvaluated) {
+		AutoConfigurationResult(MethodMetadata methodMetadata, ConditionOutcome conditionOutcome) {
 			this.methodMetadata = methodMetadata;
 			this.conditionOutcome = conditionOutcome;
-			this.methodEvaluated = methodEvaluated;
 		}
 
 		@Override
 		public String toString() {
-			if (this.methodEvaluated) {
-				return String.format("Bean method '%s' in '%s' not loaded because %s",
-						this.methodMetadata.getMethodName(),
-						ClassUtils.getShortName(
-								this.methodMetadata.getDeclaringClassName()),
-						this.conditionOutcome.getMessage());
-			}
-			return String.format("Bean method '%s' not loaded because %s",
-					this.methodMetadata.getMethodName(),
+			return String.format("Bean method '%s' in '%s' not loaded because %s", this.methodMetadata.getMethodName(),
+					ClassUtils.getShortName(this.methodMetadata.getDeclaringClassName()),
 					this.conditionOutcome.getMessage());
+		}
+
+	}
+
+	private static class UserConfigurationResult {
+
+		private final MethodMetadata methodMetadata;
+
+		private final boolean nullBean;
+
+		UserConfigurationResult(MethodMetadata methodMetadata, boolean nullBean) {
+			this.methodMetadata = methodMetadata;
+			this.nullBean = nullBean;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("User-defined bean");
+			if (this.methodMetadata != null) {
+				sb.append(String.format(" method '%s' in '%s'", this.methodMetadata.getMethodName(),
+						ClassUtils.getShortName(this.methodMetadata.getDeclaringClassName())));
+			}
+			if (this.nullBean) {
+				sb.append(" ignored as the bean value is null");
+			}
+			return sb.toString();
 		}
 
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,8 +47,8 @@ public class ValidationErrors implements Iterable<ObjectError> {
 
 	private final List<ObjectError> errors;
 
-	ValidationErrors(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, List<ObjectError> errors) {
+	ValidationErrors(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+			List<ObjectError> errors) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(boundProperties, "BoundProperties must not be null");
 		Assert.notNull(errors, "Errors must not be null");
@@ -57,8 +57,8 @@ public class ValidationErrors implements Iterable<ObjectError> {
 		this.errors = convertErrors(name, boundProperties, errors);
 	}
 
-	private List<ObjectError> convertErrors(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, List<ObjectError> errors) {
+	private List<ObjectError> convertErrors(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+			List<ObjectError> errors) {
 		List<ObjectError> converted = new ArrayList<>(errors.size());
 		for (ObjectError error : errors) {
 			converted.add(convertError(name, boundProperties, error));
@@ -66,25 +66,24 @@ public class ValidationErrors implements Iterable<ObjectError> {
 		return Collections.unmodifiableList(converted);
 	}
 
-	private ObjectError convertError(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, ObjectError error) {
+	private ObjectError convertError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+			ObjectError error) {
 		if (error instanceof FieldError) {
 			return convertFieldError(name, boundProperties, (FieldError) error);
 		}
 		return error;
 	}
 
-	private FieldError convertFieldError(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, FieldError error) {
+	private FieldError convertFieldError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+			FieldError error) {
 		if (error instanceof OriginProvider) {
 			return error;
 		}
-		return OriginTrackedFieldError.of(error,
-				findFieldErrorOrigin(name, boundProperties, error));
+		return OriginTrackedFieldError.of(error, findFieldErrorOrigin(name, boundProperties, error));
 	}
 
-	private Origin findFieldErrorOrigin(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, FieldError error) {
+	private Origin findFieldErrorOrigin(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+			FieldError error) {
 		for (ConfigurationProperty boundProperty : boundProperties) {
 			if (isForError(name, boundProperty.getName(), error)) {
 				return Origin.from(boundProperty);
@@ -93,10 +92,10 @@ public class ValidationErrors implements Iterable<ObjectError> {
 		return null;
 	}
 
-	private boolean isForError(ConfigurationPropertyName name,
-			ConfigurationPropertyName boundPropertyName, FieldError error) {
-		return name.isParentOf(boundPropertyName) && boundPropertyName
-				.getLastElement(Form.UNIFORM).equalsIgnoreCase(error.getField());
+	private boolean isForError(ConfigurationPropertyName name, ConfigurationPropertyName boundPropertyName,
+			FieldError error) {
+		return name.isParentOf(boundPropertyName)
+				&& boundPropertyName.getLastElement(Form.UNIFORM).equalsIgnoreCase(error.getField());
 	}
 
 	/**

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
@@ -59,59 +58,51 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ControllerEndpointHandlerMappingIntegrationTests {
+class ControllerEndpointHandlerMappingIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
-			AnnotationConfigReactiveWebServerApplicationContext::new)
-					.withUserConfiguration(EndpointConfiguration.class,
-							ExampleWebFluxEndpoint.class);
+			AnnotationConfigReactiveWebServerApplicationContext::new).withUserConfiguration(EndpointConfiguration.class,
+					ExampleWebFluxEndpoint.class);
 
 	@Test
-	public void get() {
-		this.contextRunner.run(withWebTestClient(
-				(webTestClient) -> webTestClient.get().uri("/actuator/example/one")
-						.accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk()
-						.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
-						.expectBody(String.class).isEqualTo("One")));
+	void get() {
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
+				.accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk().expectHeader()
+				.contentTypeCompatibleWith(MediaType.TEXT_PLAIN).expectBody(String.class).isEqualTo("One")));
 	}
 
 	@Test
-	public void getWithUnacceptableContentType() {
-		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get()
-				.uri("/actuator/example/one").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
+	void getWithUnacceptableContentType() {
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
 	}
 
 	@Test
-	public void post() {
-		this.contextRunner.run(withWebTestClient(
-				(webTestClient) -> webTestClient.post().uri("/actuator/example/two")
-						.syncBody(Collections.singletonMap("id", "test")).exchange()
-						.expectStatus().isCreated().expectHeader()
-						.valueEquals(HttpHeaders.LOCATION, "/example/test")));
+	void post() {
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.post().uri("/actuator/example/two")
+				.syncBody(Collections.singletonMap("id", "test")).exchange().expectStatus().isCreated().expectHeader()
+				.valueEquals(HttpHeaders.LOCATION, "/example/test")));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
 			Consumer<WebTestClient> webClient) {
 		return (context) -> {
-			int port = ((AnnotationConfigReactiveWebServerApplicationContext) context
-					.getSourceApplicationContext()).getWebServer().getPort();
+			int port = ((AnnotationConfigReactiveWebServerApplicationContext) context.getSourceApplicationContext())
+					.getWebServer().getPort();
 			WebTestClient webTestClient = createWebTestClient(port);
 			webClient.accept(webTestClient);
 		};
 	}
 
 	private WebTestClient createWebTestClient(int port) {
-		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(
-				"http://localhost:" + port);
+		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://localhost:" + port);
 		uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
-		return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory)
-				.responseTimeout(Duration.ofMinutes(2)).build();
+		return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory).responseTimeout(Duration.ofMinutes(2))
+				.build();
 	}
 
-	@Configuration
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			WebFluxAutoConfiguration.class })
 	static class EndpointConfiguration {
 
@@ -126,10 +117,8 @@ public class ControllerEndpointHandlerMappingIntegrationTests {
 		}
 
 		@Bean
-		public ControllerEndpointDiscoverer webEndpointDiscoverer(
-				ApplicationContext applicationContext) {
-			return new ControllerEndpointDiscoverer(applicationContext,
-					PathMapper.useEndpointId(), Collections.emptyList());
+		public ControllerEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext) {
+			return new ControllerEndpointDiscoverer(applicationContext, null, Collections.emptyList());
 		}
 
 		@Bean
@@ -151,8 +140,7 @@ public class ControllerEndpointHandlerMappingIntegrationTests {
 
 		@PostMapping("/two")
 		public ResponseEntity<String> two(@RequestBody Map<String, Object> content) {
-			return ResponseEntity.created(URI.create("/example/" + content.get("id")))
-					.build();
+			return ResponseEntity.created(URI.create("/example/" + content.get("id"))).build();
 		}
 
 	}

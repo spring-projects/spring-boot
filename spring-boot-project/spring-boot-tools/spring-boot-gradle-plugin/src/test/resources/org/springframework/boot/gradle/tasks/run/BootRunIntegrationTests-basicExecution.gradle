@@ -1,8 +1,4 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
 }
-
-apply plugin: 'java'
-apply plugin: 'org.springframework.boot'

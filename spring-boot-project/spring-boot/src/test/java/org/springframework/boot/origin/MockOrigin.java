@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,11 +33,6 @@ public final class MockOrigin implements Origin {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -49,12 +44,17 @@ public final class MockOrigin implements Origin {
 	}
 
 	@Override
+	public int hashCode() {
+		return this.value.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		return this.value;
 	}
 
 	public static Origin of(String value) {
-		return (value != null ? new MockOrigin(value) : null);
+		return (value != null) ? new MockOrigin(value) : null;
 	}
 
 }

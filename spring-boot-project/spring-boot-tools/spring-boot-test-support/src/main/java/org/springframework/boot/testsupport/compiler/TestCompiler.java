@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,8 +29,6 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import org.junit.rules.TemporaryFolder;
-
 /**
  * Wrapper to make the {@link JavaCompiler} easier to use in tests.
  *
@@ -51,23 +49,22 @@ public class TestCompiler {
 
 	private final File outputLocation;
 
-	public TestCompiler(TemporaryFolder temporaryFolder) throws IOException {
-		this(ToolProvider.getSystemJavaCompiler(), temporaryFolder);
+	public TestCompiler(File outputLocation) throws IOException {
+		this(ToolProvider.getSystemJavaCompiler(), outputLocation);
 	}
 
-	public TestCompiler(JavaCompiler compiler, TemporaryFolder temporaryFolder)
-			throws IOException {
+	public TestCompiler(JavaCompiler compiler, File outputLocation) throws IOException {
 		this.compiler = compiler;
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
-		this.outputLocation = temporaryFolder.newFolder();
+		this.outputLocation = outputLocation;
+		this.outputLocation.mkdirs();
 		Iterable<? extends File> temp = Arrays.asList(this.outputLocation);
 		this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, temp);
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);
 	}
 
 	public TestCompilationTask getTask(Collection<File> sourceFiles) {
-		Iterable<? extends JavaFileObject> javaFileObjects = this.fileManager
-				.getJavaFileObjectsFromFiles(sourceFiles);
+		Iterable<? extends JavaFileObject> javaFileObjects = this.fileManager.getJavaFileObjectsFromFiles(sourceFiles);
 		return getTask(javaFileObjects);
 	}
 
@@ -76,10 +73,9 @@ public class TestCompiler {
 		return getTask(javaFileObjects);
 	}
 
-	private TestCompilationTask getTask(
-			Iterable<? extends JavaFileObject> javaFileObjects) {
-		return new TestCompilationTask(this.compiler.getTask(null, this.fileManager, null,
-				null, null, javaFileObjects));
+	private TestCompilationTask getTask(Iterable<? extends JavaFileObject> javaFileObjects) {
+		return new TestCompilationTask(
+				this.compiler.getTask(null, this.fileManager, null, null, null, javaFileObjects));
 	}
 
 	public File getOutputLocation() {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@
 import java.io.*;
 import org.springframework.boot.maven.*;
 
-File f = new File( basedir, "target/jar-with-unpack-0.0.1.BUILD-SNAPSHOT.jar");
+File f = new File(basedir, "target/jar-with-unpack-0.0.1.BUILD-SNAPSHOT.jar")
 new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
 	@Override
 	protected void verifyZipEntries(Verify.ArchiveVerifier verifier) throws Exception {
@@ -25,4 +25,4 @@ new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
 		verifier.assertHasUnpackEntry("BOOT-INF/lib/spring-core-")
 		verifier.assertHasNonUnpackEntry("BOOT-INF/lib/spring-context-")
 	}
-}.verify();
+}.verify()

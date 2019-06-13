@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * It might be safer to lookup dependencies lazily in the enclosing BeanFactory rather
  * than injecting them with {@code @Autowired}.
  *
- * @param <T> The configurable web server factory
+ * @param <T> the configurable web server factory
  * @author Phillip Webb
  * @author Dave Syer
  * @author Brian Clozel

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,25 +26,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 class MustacheReactiveWebConfiguration {
 
-	private final MustacheProperties mustache;
-
-	protected MustacheReactiveWebConfiguration(MustacheProperties mustache) {
-		this.mustache = mustache;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
+	public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
-		resolver.setPrefix(this.mustache.getPrefix());
-		resolver.setSuffix(this.mustache.getSuffix());
-		resolver.setViewNames(this.mustache.getViewNames());
-		resolver.setRequestContextAttribute(this.mustache.getRequestContextAttribute());
-		resolver.setCharset(this.mustache.getCharsetName());
+		resolver.setPrefix(mustache.getPrefix());
+		resolver.setSuffix(mustache.getSuffix());
+		resolver.setViewNames(mustache.getViewNames());
+		resolver.setRequestContextAttribute(mustache.getRequestContextAttribute());
+		resolver.setCharset(mustache.getCharsetName());
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 		return resolver;
 	}

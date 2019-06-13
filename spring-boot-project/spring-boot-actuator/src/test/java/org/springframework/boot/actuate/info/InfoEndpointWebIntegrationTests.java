@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,14 +16,12 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -37,27 +35,23 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
 @TestPropertySource(properties = { "info.app.name=MyService" })
-public class InfoEndpointWebIntegrationTests {
+class InfoEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void info() {
-		client.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange()
-				.expectStatus().isOk().expectBody().jsonPath("beanName1.key11")
-				.isEqualTo("value11").jsonPath("beanName1.key12").isEqualTo("value12")
-				.jsonPath("beanName2.key21").isEqualTo("value21")
-				.jsonPath("beanName2.key22").isEqualTo("value22");
+	@WebEndpointTest
+	void info(WebTestClient client) {
+		client.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+				.expectBody().jsonPath("beanName1.key11").isEqualTo("value11").jsonPath("beanName1.key12")
+				.isEqualTo("value12").jsonPath("beanName2.key21").isEqualTo("value21").jsonPath("beanName2.key22")
+				.isEqualTo("value22");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class TestConfiguration {
 
 		@Bean
-		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(Arrays.asList(beanName1(), beanName2()));
+		public InfoEndpoint endpoint(ObjectProvider<InfoContributor> infoContributors) {
+			return new InfoEndpoint(infoContributors.orderedStream().collect(Collectors.toList()));
 		}
 
 		@Bean

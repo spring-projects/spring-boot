@@ -10,11 +10,17 @@ Maven users. For example, it allows you to omit version numbers when declaring
 dependencies that are managed in the bom. To make use of this functionality, simply
 declare dependencies in the usual way but omit the version number:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim",role="primary"]
+.Groovy
 ----
 include::../gradle/managing-dependencies/dependencies.gradle[tags=dependencies]
 ----
 
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/dependencies.gradle.kts[tags=dependencies]
+----
 
 
 [[managing-dependencies-customizing]]
@@ -28,10 +34,18 @@ for a complete list of these properties.
 To customize a managed version you set its corresponding property. For example, to
 customize the version of SLF4J which is controlled by the `slf4j.version` property:
 
-[source,groovy,indent=0,subs="verbatim"]
+[source,groovy,indent=0,subs="verbatim",role="primary"]
+.Groovy
 ----
 include::../gradle/managing-dependencies/custom-version.gradle[tags=custom-version]
 ----
+
+[source,kotlin,indent=0,subs="verbatim",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/custom-version.gradle.kts[tags=custom-version]
+----
+
 
 WARNING: Each Spring Boot release is designed and tested against a specific set of
 third-party dependencies. Overriding versions may cause compatibility issues and should
@@ -50,20 +64,40 @@ artifact ID, or version.
 First, configure the project to depend on the Spring Boot plugin but do not apply it:
 
 ifeval::["{version-type}" == "RELEASE"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/managing-dependencies/depend-on-plugin-release.gradle[]
 ----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
 endif::[]
 ifeval::["{version-type}" == "MILESTONE"]
-[source,groovy,indent=0,subs="verbatim,attributes"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/managing-dependencies/depend-on-plugin-milestone.gradle[]
 ----
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
 endif::[]
 ifeval::["{version-type}" == "SNAPSHOT"]
-[source,groovy,indent=0,subs="verbatim,attributes"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/managing-dependencies/depend-on-plugin-snapshot.gradle[]
+----
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ----
 endif::[]
 
@@ -74,11 +108,30 @@ management plugin as Spring Boot uses.
 
 Apply the dependency management plugin and then configure it to import Spring Boot's bom:
 
-[source,groovy,indent=0,subs="verbatim,attributes"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
 ----
 include::../gradle/managing-dependencies/configure-bom.gradle[tags=configure-bom]
 ----
 
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/configure-bom.gradle.kts[tags=configure-bom]
+----
+
+
+The Kotlin code above is a bit awkward. That's because we're using the imperative way of
+applying the dependency management plugin.
+
+We can make the code less awkward by applying the plugin from the root parent project, or
+by using the `plugins` block as we're doing for the Spring Boot plugin. A downside of this
+method is that it forces us to specify the version of the dependency management plugin:
+
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/managing-dependencies/configure-bom-with-plugins.gradle.kts[tags=configure-bom]
+----
 
 
 [[managing-dependencies-learning-more]]

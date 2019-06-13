@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import ch.qos.logback.core.util.OptionHelper;
 import org.xml.sax.Attributes;
 
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -54,8 +55,7 @@ class SpringProfileAction extends Action implements InPlayListener {
 	}
 
 	@Override
-	public void begin(InterpretationContext ic, String name, Attributes attributes)
-			throws ActionException {
+	public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
 		this.depth++;
 		if (this.depth != 1) {
 			return;
@@ -67,16 +67,18 @@ class SpringProfileAction extends Action implements InPlayListener {
 	}
 
 	private boolean acceptsProfiles(InterpretationContext ic, Attributes attributes) {
-		String[] profileNames = StringUtils.trimArrayElements(StringUtils
-				.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE)));
-		if (profileNames.length != 0) {
-			for (String profileName : profileNames) {
-				OptionHelper.substVars(profileName, ic, this.context);
-			}
-			return this.environment != null
-					&& this.environment.acceptsProfiles(profileNames);
+		if (this.environment == null) {
+			return false;
 		}
-		return false;
+		String[] profileNames = StringUtils
+				.trimArrayElements(StringUtils.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE)));
+		if (profileNames.length == 0) {
+			return false;
+		}
+		for (int i = 0; i < profileNames.length; i++) {
+			profileNames[i] = OptionHelper.substVars(profileNames[i], ic, this.context);
+		}
+		return this.environment.acceptsProfiles(Profiles.of(profileNames));
 	}
 
 	@Override

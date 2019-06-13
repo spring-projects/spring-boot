@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
@@ -38,42 +37,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class DevToolsHomePropertiesPostProcessorTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class DevToolsHomePropertiesPostProcessorTests {
 
 	private File home;
 
-	@Before
-	public void setup() throws IOException {
-		this.home = this.temp.newFolder();
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws IOException {
+		this.home = tempDir;
 	}
 
 	@Test
-	public void loadsHomeProperties() throws Exception {
+	void loadsHomeProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(
-				new File(this.home, ".spring-boot-devtools.properties"));
+		OutputStream out = new FileOutputStream(new File(this.home, ".spring-boot-devtools.properties"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.postProcessEnvironment(environment, null);
+		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
 		assertThat(environment.getProperty("abc")).isEqualTo("def");
 	}
 
 	@Test
-	public void ignoresMissingHomeProperties() {
+	void ignoresMissingHomeProperties() throws Exception {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.postProcessEnvironment(environment, null);
+		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
 		assertThat(environment.getProperty("abc")).isNull();
 	}
 
-	private class MockDevToolHomePropertiesPostProcessor
-			extends DevToolsHomePropertiesPostProcessor {
+	protected void runPostProcessor(Runnable runnable) throws Exception {
+		Thread thread = new Thread(runnable);
+		thread.start();
+		thread.join();
+	}
+
+	private class MockDevToolHomePropertiesPostProcessor extends DevToolsHomePropertiesPostProcessor {
 
 		@Override
 		protected File getHomeFolder() {

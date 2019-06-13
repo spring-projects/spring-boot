@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,38 +16,39 @@
 
 package org.springframework.boot.cli.command;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Integration tests for {@link CommandRunner}.
+ *
  * @author Dave Syer
  */
-public class CommandRunnerIntegrationTests {
-
-	@Rule
-	public OutputCapture output = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class CommandRunnerIntegrationTests {
 
 	@Test
-	public void debugAddsAutoconfigReport() {
+	void debugAddsAutoconfigReport(CapturedOutput capturedOutput) {
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new RunCommand());
 		// -d counts as "debug" for the spring command, but not for the
 		// LoggingApplicationListener
 		runner.runAndHandleErrors("run", "samples/app.groovy", "-d");
-		assertThat(this.output.toString()).contains("Negative matches:");
+		assertThat(capturedOutput).contains("Negative matches:");
 	}
 
 	@Test
-	public void debugSwitchedOffForAppArgs() {
+	void debugSwitchedOffForAppArgs(CapturedOutput capturedOutput) {
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new RunCommand());
 		runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
-		assertThat(this.output.toString()).doesNotContain("Negative matches:");
+		assertThat(capturedOutput).doesNotContain("Negative matches:");
 	}
 
 }

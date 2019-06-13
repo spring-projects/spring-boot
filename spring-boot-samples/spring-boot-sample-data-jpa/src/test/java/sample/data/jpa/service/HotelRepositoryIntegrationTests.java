@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,7 @@ package sample.data.jpa.service;
 
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import sample.data.jpa.domain.City;
 import sample.data.jpa.domain.Hotel;
 import sample.data.jpa.domain.HotelSummary;
@@ -30,7 +29,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,9 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Oliver Gierke
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
-public class HotelRepositoryIntegrationTests {
+class HotelRepositoryIntegrationTests {
 
 	@Autowired
 	CityRepository cityRepository;
@@ -50,14 +47,11 @@ public class HotelRepositoryIntegrationTests {
 	HotelRepository repository;
 
 	@Test
-	public void executesQueryMethodsCorrectly() {
-		City city = this.cityRepository
-				.findAll(PageRequest.of(0, 1, Direction.ASC, "name")).getContent().get(0);
+	void executesQueryMethodsCorrectly() {
+		City city = this.cityRepository.findAll(PageRequest.of(0, 1, Direction.ASC, "name")).getContent().get(0);
 		assertThat(city.getName()).isEqualTo("Atlanta");
-		Page<HotelSummary> hotels = this.repository.findByCity(city,
-				PageRequest.of(0, 10, Direction.ASC, "name"));
-		Hotel hotel = this.repository.findByCityAndName(city,
-				hotels.getContent().get(0).getName());
+		Page<HotelSummary> hotels = this.repository.findByCity(city, PageRequest.of(0, 10, Direction.ASC, "name"));
+		Hotel hotel = this.repository.findByCityAndName(city, hotels.getContent().get(0).getName());
 		assertThat(hotel.getName()).isEqualTo("Doubletree");
 		List<RatingCount> counts = this.repository.findRatingCounts(hotel);
 		assertThat(counts).hasSize(1);

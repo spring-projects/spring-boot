@@ -1,5 +1,6 @@
 [[getting-started]]
 = Getting Started
+include::attributes.adoc[]
 
 [partintro]
 --
@@ -38,9 +39,21 @@ configuration).
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8 or 9] and
-{spring-reference}[Spring Framework {spring-version}] or above. Explicit build support is
-provided for Maven 3.2+ and Gradle 4.
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible
+up to Java 11 (included). {spring-reference}[Spring Framework {spring-framework-version}]
+or above is also required.
+
+Explicit build support is provided for the following build tools:
+
+|===
+|Build Tool |Version
+
+|Maven
+|3.3+
+
+|Gradle
+|5.x (4.10 is also supported but in a deprecated form)
+|===
 
 
 
@@ -51,14 +64,14 @@ Spring Boot supports the following embedded servlet containers:
 |===
 |Name |Servlet Version
 
-|Tomcat 8.5
-|3.1
+|Tomcat 9.0
+|4.0
 
 |Jetty 9.4
 |3.1
 
-|Undertow 1.4
-|3.1
+|Undertow 2.0
+|4.0
 |===
 
 You can also deploy Spring Boot applications to any Servlet 3.1+ compatible container.
@@ -97,7 +110,7 @@ tool that supports dependency management (such as Maven or Gradle).
 
 [[getting-started-maven-installation]]
 ==== Maven Installation
-Spring Boot is compatible with Apache Maven 3.2 or above. If you do not already have
+Spring Boot is compatible with Apache Maven 3.3 or above. If you do not already have
 Maven installed, you can follow the instructions at https://maven.apache.org.
 
 TIP: On many operating systems, Maven can be installed with a package manager. If you use
@@ -118,7 +131,7 @@ The following listing shows a typical `pom.xml` file:
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>
@@ -188,7 +201,8 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4. If you do not already have Gradle installed, you
+Spring Boot is compatible with 5.x. 4.10 is also supported but this support is deprecated
+and will be removed in a future release. If you do not already have Gradle installed, you
 can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
@@ -205,51 +219,9 @@ project. It is a small script and library that you commit alongside your code to
 bootstrap the build process. See {gradle-user-guide}/gradle_wrapper.html for details.
 ****
 
-The following example shows a typical `build.gradle` file:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-ifeval::["{spring-boot-repo}" == "release"]
-	plugins {
-		id 'org.springframework.boot' version '{spring-boot-version}'
-		id 'java'
-	}
-endif::[]
-ifeval::["{spring-boot-repo}" != "release"]
-	buildscript {
-		repositories {
-			jcenter()
-			maven { url 'https://repo.spring.io/snapshot' }
-			maven { url 'https://repo.spring.io/milestone' }
-		}
-		dependencies {
-			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
-		}
-	}
-
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-	apply plugin: 'io.spring.dependency-management'
-
-endif::[]
-	jar {
-		baseName = 'myproject'
-		version =  '0.0.1-SNAPSHOT'
-	}
-
-	repositories {
-		jcenter()
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "https://repo.spring.io/snapshot" }
-		maven { url "https://repo.spring.io/milestone" }
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("org.springframework.boot:spring-boot-starter-test")
-	}
-----
+More details on getting started with Spring Boot and Gradle can be found in the
+{spring-boot-gradle-plugin-reference}/#getting-started[Getting Started section] of the
+Gradle plugin's reference guide.
 
 
 
@@ -288,7 +260,7 @@ classpath is set correctly).
 ==== Installation with SDKMAN!
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions
 of various binary SDKs, including Groovy and the Spring Boot CLI.
-Get SDKMAN! from http://sdkman.io and install Spring Boot by using the following
+Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following
 commands:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -336,7 +308,7 @@ You can see it by running the following command:
 
 [[getting-started-homebrew-cli-installation]]
 ==== OSX Homebrew Installation
-If you are on a Mac and use http://brew.sh/[Homebrew], you can install the Spring Boot
+If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spring Boot
 CLI by using the following commands:
 
 [indent=0]
@@ -354,7 +326,7 @@ that case, run `brew update` and try again.
 
 [[getting-started-macports-cli-installation]]
 ==== MacPorts Installation
-If you are on a Mac and use http://www.macports.org/[MacPorts], you can install the
+If you are on a Mac and use https://www.macports.org/[MacPorts], you can install the
 Spring Boot CLI by using the following command:
 
 [indent=0]
@@ -389,7 +361,7 @@ completion scripts are automatically registered with your shell.
 
 [[getting-started-scoop-cli-installation]]
 ==== Windows Scoop Installation
-If you are on a Windows and use http://scoop.sh/[Scoop], you can install the Spring Boot
+If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot
 CLI by using the following commands:
 
 [indent=0]
@@ -451,6 +423,26 @@ that provides detailed upgrade instructions. Check also the
 {github-wiki}["`release notes`"] for a list of "`new and noteworthy`" features for each
 release.
 
+When upgrading to a new feature release, some properties may have been renamed or removed.
+Spring Boot provides a way to analyze your application's environment and print diagnostics
+at startup, but also temporarily migrate properties at runtime for you. To enable that
+feature, add the following dependency to your project:
+
+[source,xml,indent=0]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-properties-migrator</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+----
+
+WARNING: Properties that are added late to the environment, such as when using
+`@PropertySource`, will not be taken into account.
+
+NOTE: Once you're done with the migration, please make sure to remove this module from
+your project's dependencies.
+
 To upgrade an existing CLI installation, use the appropriate package manager command (for
 example, `brew upgrade`) or, if you manually installed the CLI, follow the
 <<getting-started-manual-cli-installation, standard instructions>>, remembering to update
@@ -473,7 +465,7 @@ problem, check there first.
 You can shortcut the steps below by going to https://start.spring.io and choosing the
 "Web" starter from the dependencies searcher. Doing so generates a new project structure
 so that you can <<getting-started-first-application-code,start coding right away>>. Check
-the https://github.com/spring-io/initializr[Spring Initializr documentation] for more
+the {spring-initializr-reference}/#user-guide[Spring Initializr documentation] for more
 details.
 ====
 
@@ -491,7 +483,7 @@ valid versions of Java and Maven installed:
 [indent=0]
 ----
 	$ mvn -v
-	Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T16:41:47+00:00)
+	Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
 	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
 	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
@@ -510,7 +502,7 @@ used to build your project. Open your favorite text editor and add the following
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<modelVersion>4.0.0</modelVersion>
 
 		<groupId>com.example</groupId>
@@ -624,7 +616,7 @@ then add a file named `src/main/java/Example.java` to contain the following code
 			return "Hello World!";
 		}
 
-		public static void main(String[] args) throws Exception {
+		public static void main(String[] args) {
 			SpringApplication.run(Example.class, args);
 		}
 
@@ -637,7 +629,7 @@ important parts in the next few sections.
 
 
 [[getting-started-first-application-annotations]]
-==== The @RestController and @RequestMapping Annotations
+==== The `@RestController` and `@RequestMapping` Annotations
 The first annotation on our `Example` class is `@RestController`. This is known as a
 _stereotype_ annotation. It provides hints for people reading the code and for Spring
 that the class plays a specific role. In this case, our class is a web `@Controller`, so
@@ -662,7 +654,7 @@ that you have added. Since `spring-boot-starter-web` added Tomcat and Spring MVC
 auto-configuration assumes that you are developing a web application and sets up Spring
 accordingly.
 
-.Starters and Auto-Configuration
+.Starters and Auto-configuration
 ****
 Auto-configuration is designed to work well with "`Starters`", but the two concepts are
 not directly tied. You are free to pick and choose jar dependencies outside of the
@@ -737,8 +729,8 @@ this approach is that it becomes hard to see which libraries are in your applica
 can also be problematic if the same filename is used (but with different content) in
 multiple jars.
 
-Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different
-approach>> and lets you actually nest jars directly.
+Spring Boot takes a <<appendix.adoc#executable-jar, different approach>> and lets you
+actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our

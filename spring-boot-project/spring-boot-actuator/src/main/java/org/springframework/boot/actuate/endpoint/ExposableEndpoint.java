@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,10 +29,10 @@ import java.util.Collection;
 public interface ExposableEndpoint<O extends Operation> {
 
 	/**
-	 * Returns the id of the endpoint.
-	 * @return the id
+	 * Return the endpoint ID.
+	 * @return the endpoint ID
 	 */
-	String getId();
+	EndpointId getEndpointId();
 
 	/**
 	 * Returns if the endpoint is enabled by default.

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,18 +52,15 @@ abstract class ServletComponentHandler {
 		String[] value = (String[]) attributes.get("value");
 		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
 		if (urlPatterns.length > 0) {
-			Assert.state(value.length == 0,
-					"The urlPatterns and value attributes are mutually exclusive.");
+			Assert.state(value.length == 0, "The urlPatterns and value attributes are mutually exclusive.");
 			return urlPatterns;
 		}
 		return value;
 	}
 
-	protected final Map<String, String> extractInitParameters(
-			Map<String, Object> attributes) {
+	protected final Map<String, String> extractInitParameters(Map<String, Object> attributes) {
 		Map<String, String> initParameters = new HashMap<>();
-		for (AnnotationAttributes initParam : (AnnotationAttributes[]) attributes
-				.get("initParams")) {
+		for (AnnotationAttributes initParam : (AnnotationAttributes[]) attributes.get("initParams")) {
 			String name = (String) initParam.get("name");
 			String value = (String) initParam.get("value");
 			initParameters.put(name, value);
@@ -71,8 +68,7 @@ abstract class ServletComponentHandler {
 		return initParameters;
 	}
 
-	void handle(ScannedGenericBeanDefinition beanDefinition,
-			BeanDefinitionRegistry registry) {
+	void handle(ScannedGenericBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 				.getAnnotationAttributes(this.annotationType.getName());
 		if (attributes != null) {
@@ -80,7 +76,7 @@ abstract class ServletComponentHandler {
 		}
 	}
 
-	protected abstract void doHandle(Map<String, Object> attributes,
-			ScannedGenericBeanDefinition beanDefinition, BeanDefinitionRegistry registry);
+	protected abstract void doHandle(Map<String, Object> attributes, ScannedGenericBeanDefinition beanDefinition,
+			BeanDefinitionRegistry registry);
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,28 +16,30 @@
 
 package org.springframework.boot.actuate.elasticsearch;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.util.Map;
+
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
-import io.searchbox.indices.Stats;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.boot.json.JsonParserFactory;
 
 /**
  * {@link HealthIndicator} for Elasticsearch using a {@link JestClient}.
  *
  * @author Stephane Nicoll
+ * @author Julian Devia Serna
+ * @author Brian Clozel
  * @since 2.0.0
  */
 public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 
 	private final JestClient jestClient;
 
-	private final JsonParser jsonParser = new JsonParser();
+	private final JsonParser jsonParser = JsonParserFactory.getJsonParser();
 
 	public ElasticsearchJestHealthIndicator(JestClient jestClient) {
 		super("Elasticsearch health check failed");
@@ -46,15 +48,21 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		JestResult aliases = this.jestClient.execute(new Stats.Builder().build());
-		JsonElement root = this.jsonParser.parse(aliases.getJsonString());
-		JsonObject shards = root.getAsJsonObject().get("_shards").getAsJsonObject();
-		int failedShards = shards.get("failed").getAsInt();
-		if (failedShards != 0) {
-			builder.outOfService();
+		JestResult healthResult = this.jestClient.execute(new io.searchbox.cluster.Health.Builder().build());
+		if (healthResult.getResponseCode() != 200 || !healthResult.isSucceeded()) {
+			builder.down();
+			builder.withDetail("statusCode", healthResult.getResponseCode());
 		}
 		else {
-			builder.up();
+			Map<String, Object> response = this.jsonParser.parseMap(healthResult.getJsonString());
+			String status = (String) response.get("status");
+			if (status.equals(io.searchbox.cluster.Health.Status.RED.getKey())) {
+				builder.outOfService();
+			}
+			else {
+				builder.up();
+			}
+			builder.withDetails(response);
 		}
 	}
 

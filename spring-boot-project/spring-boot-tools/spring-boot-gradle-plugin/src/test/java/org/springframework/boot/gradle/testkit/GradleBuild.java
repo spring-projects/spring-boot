@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,36 +21,36 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
+import java.util.jar.JarFile;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-import org.xml.sax.InputSource;
+import org.jetbrains.kotlin.cli.common.PropertiesKt;
+import org.jetbrains.kotlin.compilerRunner.KotlinLogger;
+import org.jetbrains.kotlin.gradle.model.KotlinProject;
+import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 
 /**
- * A {@link TestRule} for running a Gradle build using {@link GradleRunner}.
+ * A {@code GradleBuild} is used to run a Gradle build using {@link GradleRunner}.
  *
  * @author Andy Wilkinson
  */
-public class GradleBuild implements TestRule {
+public class GradleBuild {
 
-	private final TemporaryFolder temp = new TemporaryFolder();
+	private final Dsl dsl;
 
 	private File projectDir;
 
@@ -58,69 +58,35 @@ public class GradleBuild implements TestRule {
 
 	private String gradleVersion;
 
-	@Override
-	public Statement apply(Statement base, Description description) {
-		URL scriptUrl = findDefaultScript(description);
-		if (scriptUrl != null) {
-			script(scriptUrl.getFile());
-		}
-		return this.temp.apply(new Statement() {
-
-			@Override
-			public void evaluate() throws Throwable {
-				before();
-				try {
-					base.evaluate();
-				}
-				finally {
-					after();
-				}
-			}
-
-		}, description);
+	public GradleBuild() {
+		this(Dsl.GROOVY);
 	}
 
-	private URL findDefaultScript(Description description) {
-		URL scriptUrl = getScriptForTestMethod(description);
-		if (scriptUrl != null) {
-			return scriptUrl;
-		}
-		return getScriptForTestClass(description.getTestClass());
+	public GradleBuild(Dsl dsl) {
+		this.dsl = dsl;
 	}
 
-	private URL getScriptForTestMethod(Description description) {
-		String name = description.getTestClass().getSimpleName() + "-"
-				+ removeGradleVersion(description.getMethodName()) + ".gradle";
-		return description.getTestClass().getResource(name);
+	public Dsl getDsl() {
+		return this.dsl;
 	}
 
-	private String removeGradleVersion(String methodName) {
-		return methodName.replaceAll("\\[Gradle .+\\]", "").trim();
+	void before() throws IOException {
+		this.projectDir = Files.createTempDirectory("gradle-").toFile();
 	}
 
-	private URL getScriptForTestClass(Class<?> testClass) {
-		return testClass.getResource(testClass.getSimpleName() + ".gradle");
-	}
-
-	private void before() throws IOException {
-		this.projectDir = this.temp.newFolder();
-	}
-
-	private void after() {
+	void after() {
 		GradleBuild.this.script = null;
+		FileSystemUtils.deleteRecursively(this.projectDir);
 	}
 
-	private String pluginClasspath() {
-		return absolutePath("bin") + "," + absolutePath("build/classes/java/main") + ","
-				+ absolutePath("build/resources/main") + ","
-				+ pathOfJarContaining(LaunchScript.class) + ","
-				+ pathOfJarContaining(ClassVisitor.class) + ","
-				+ pathOfJarContaining(DependencyManagementPlugin.class) + ","
-				+ pathOfJarContaining(ArchiveEntry.class);
-	}
-
-	private String absolutePath(String path) {
-		return new File(path).getAbsolutePath();
+	private List<File> pluginClasspath() {
+		return Arrays.asList(new File("bin"), new File("build/classes/java/main"), new File("build/resources/main"),
+				new File(pathOfJarContaining(LaunchScript.class)), new File(pathOfJarContaining(ClassVisitor.class)),
+				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
+				new File(pathOfJarContaining(PropertiesKt.class)), new File(pathOfJarContaining(KotlinLogger.class)),
+				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
+				new File(pathOfJarContaining(KotlinGradleSubplugin.class)),
+				new File(pathOfJarContaining(ArchiveEntry.class)));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {
@@ -128,7 +94,7 @@ public class GradleBuild implements TestRule {
 	}
 
 	public GradleBuild script(String script) {
-		this.script = script;
+		this.script = script.endsWith(this.dsl.getExtension()) ? script : script + this.dsl.getExtension();
 		return this;
 	}
 
@@ -152,16 +118,24 @@ public class GradleBuild implements TestRule {
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
-				.replace("{version}", getBootVersion());
-		FileCopyUtils.copy(scriptContent,
-				new FileWriter(new File(this.projectDir, "build.gradle")));
+				.replace("{version}", getBootVersion())
+				.replace("{dependency-management-plugin-version}", getDependencyManagementPluginVersion());
+		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
+		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
+				new File(this.projectDir, "repository"));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withDebug(true);
+				.withPluginClasspath(pluginClasspath());
+		if (this.dsl != Dsl.KOTLIN) {
+			// see https://github.com/gradle/gradle/issues/6862
+			gradleRunner.withDebug(true);
+		}
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
+		else if (this.dsl == Dsl.KOTLIN) {
+			gradleRunner.withGradleVersion("4.10.3");
+		}
 		List<String> allArguments = new ArrayList<>();
-		allArguments.add("-PpluginClasspath=" + pluginClasspath());
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
 		allArguments.addAll(Arrays.asList(arguments));
@@ -186,22 +160,18 @@ public class GradleBuild implements TestRule {
 	}
 
 	private static String getBootVersion() {
-		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
-						+ "/text()");
+		return "TEST-SNAPSHOT";
 	}
 
-	private static String evaluateExpression(String expression) {
+	private static String getDependencyManagementPluginVersion() {
 		try {
-			XPathFactory xPathFactory = XPathFactory.newInstance();
-			XPath xpath = xPathFactory.newXPath();
-			XPathExpression expr = xpath.compile(expression);
-			String version = expr
-					.evaluate(new InputSource(new FileReader(".flattened-pom.xml")));
-			return version;
+			URL location = DependencyManagementExtension.class.getProtectionDomain().getCodeSource().getLocation();
+			try (JarFile jar = new JarFile(new File(location.toURI()))) {
+				return jar.getManifest().getMainAttributes().getValue("Implementation-Version");
+			}
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Failed to evaluate expression", ex);
+			throw new IllegalStateException("Failed to find dependency management plugin version", ex);
 		}
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.servlet.view;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockServletContext;
@@ -31,14 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class MustacheViewResolverTests {
+class MustacheViewResolverTests {
 
-	private final String prefix = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/";
+	private final String prefix = "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/";
 
 	private MustacheViewResolver resolver = new MustacheViewResolver();
 
-	@Before
+	@BeforeEach
 	public void init() {
 		GenericApplicationContext applicationContext = new GenericApplicationContext();
 		applicationContext.refresh();
@@ -49,17 +48,17 @@ public class MustacheViewResolverTests {
 	}
 
 	@Test
-	public void resolveNonExistent() throws Exception {
+	void resolveNonExistent() throws Exception {
 		assertThat(this.resolver.resolveViewName("bar", null)).isNull();
 	}
 
 	@Test
-	public void resolveExisting() throws Exception {
+	void resolveExisting() throws Exception {
 		assertThat(this.resolver.resolveViewName("template", null)).isNotNull();
 	}
 
 	@Test
-	public void setsContentType() throws Exception {
+	void setsContentType() throws Exception {
 		this.resolver.setContentType("application/octet-stream");
 		View view = this.resolver.resolveViewName("template", null);
 		assertThat(view.getContentType()).isEqualTo("application/octet-stream");

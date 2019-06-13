@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,8 +32,10 @@ import org.assertj.core.error.BasicErrorMessageFactory;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * AssertJ {@link org.assertj.core.api.Assert assertions} that can be applied to an
  * {@link ApplicationContext}.
  *
- * @param <C> The application context type
+ * @param <C> the application context type
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 2.0.0
@@ -78,13 +80,12 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> hasBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"to have bean named:%n <%s>", name));
+			throwAssertionError(contextFailedToStartWhenExpecting("to have bean named:%n <%s>", name));
 		}
 		if (findBean(name) == null) {
 			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto have bean named:%n <%s>%nbut found no such bean",
-					getApplicationContext(), name));
+					"%nExpecting:%n <%s>%nto have bean named:%n <%s>%nbut found no such bean", getApplicationContext(),
+					name));
 		}
 		return this;
 	}
@@ -122,8 +123,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public ApplicationContextAssert<C> hasSingleBean(Class<?> type, Scope scope) {
 		Assert.notNull(scope, "Scope must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"to have a single bean of type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting("to have a single bean of type:%n <%s>", type));
 		}
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
 		if (names.length == 0) {
@@ -170,8 +170,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public ApplicationContextAssert<C> doesNotHaveBean(Class<?> type, Scope scope) {
 		Assert.notNull(scope, "Scope must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"not to have any beans of type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting("not to have any beans of type:%n <%s>", type));
 		}
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
 		if (names.length > 0) {
@@ -195,8 +194,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> doesNotHaveBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"not to have any beans of name:%n <%s>", name));
+			throwAssertionError(contextFailedToStartWhenExpecting("not to have any beans of name:%n <%s>", name));
 		}
 		try {
 			Object bean = getApplicationContext().getBean(name);
@@ -222,8 +220,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public <T> AbstractObjectArrayAssert<?, String> getBeanNames(Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"to get beans names with type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting("to get beans names with type:%n <%s>", type));
 		}
 		return Assertions.assertThat(getApplicationContext().getBeanNamesForType(type))
 				.as("Bean names of type <%s> from <%s>", type, getApplicationContext());
@@ -269,19 +266,47 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type, Scope scope) {
 		Assert.notNull(scope, "Scope must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"to contain bean of type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting("to contain bean of type:%n <%s>", type));
 		}
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
-		if (names.length > 1) {
-			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nsingle bean of type:%n <%s>%nbut found:%n <%s>",
-					getApplicationContext(), type, names));
+		String name = (names.length > 0) ? getPrimary(names, scope) : null;
+		if (names.length > 1 && name == null) {
+			throwAssertionError(
+					new BasicErrorMessageFactory("%nExpecting:%n <%s>%nsingle bean of type:%n <%s>%nbut found:%n <%s>",
+							getApplicationContext(), type, names));
 		}
-		T bean = (names.length != 0 ? getApplicationContext().getBean(names[0], type)
-				: null);
-		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type,
-				getApplicationContext());
+		T bean = (name != null) ? getApplicationContext().getBean(name, type) : null;
+		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type, getApplicationContext());
+	}
+
+	private String getPrimary(String[] names, Scope scope) {
+		if (names.length == 1) {
+			return names[0];
+		}
+		String primary = null;
+		for (String name : names) {
+			if (isPrimary(name, scope)) {
+				if (primary != null) {
+					return null;
+				}
+				primary = name;
+			}
+		}
+		return primary;
+	}
+
+	private boolean isPrimary(String name, Scope scope) {
+		ApplicationContext context = getApplicationContext();
+		while (context != null) {
+			if (context instanceof ConfigurableApplicationContext) {
+				ConfigurableListableBeanFactory factory = ((ConfigurableApplicationContext) context).getBeanFactory();
+				if (factory.containsBean(name) && factory.getMergedBeanDefinition(name).isPrimary()) {
+					return true;
+				}
+			}
+			context = (scope != Scope.NO_ANCESTORS) ? context.getParent() : null;
+		}
+		return false;
 	}
 
 	/**
@@ -299,12 +324,10 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public AbstractObjectAssert<?, Object> getBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"to contain a bean of name:%n <%s>", name));
+			throwAssertionError(contextFailedToStartWhenExpecting("to contain a bean of name:%n <%s>", name));
 		}
 		Object bean = findBean(name);
-		return Assertions.assertThat(bean).as("Bean of name <%s> from <%s>", name,
-				getApplicationContext());
+		return Assertions.assertThat(bean).as("Bean of name <%s> from <%s>", name, getApplicationContext());
 	}
 
 	/**
@@ -327,8 +350,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	@SuppressWarnings("unchecked")
 	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"to contain a bean of name:%n <%s> (%s)", name, type));
+			throwAssertionError(
+					contextFailedToStartWhenExpecting("to contain a bean of name:%n <%s> (%s)", name, type));
 		}
 		Object bean = findBean(name);
 		if (bean != null && type != null && !type.isInstance(bean)) {
@@ -336,8 +359,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					"%nExpecting:%n <%s>%nto contain a bean of name:%n <%s> (%s)%nbut found:%n <%s> of type <%s>",
 					getApplicationContext(), name, type, bean, bean.getClass()));
 		}
-		return Assertions.assertThat((T) bean).as(
-				"Bean of name <%s> and type <%s> from <%s>", name, type,
+		return Assertions.assertThat((T) bean).as("Bean of name <%s> and type <%s> from <%s>", name, type,
 				getApplicationContext());
 	}
 
@@ -386,8 +408,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public <T> MapAssert<String, T> getBeans(Class<T> type, Scope scope) {
 		Assert.notNull(scope, "Scope must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting(
-					"to get beans of type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting("to get beans of type:%n <%s>", type));
 		}
 		return Assertions.assertThat(scope.getBeansOfType(getApplicationContext(), type))
 				.as("Beans of type <%s> from <%s>", type, getApplicationContext());
@@ -419,8 +440,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public ApplicationContextAssert<C> hasFailed() {
 		if (this.startupFailure == null) {
 			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nto have failed%nbut context started successfully",
-					getApplicationContext()));
+					"%nExpecting:%n <%s>%nto have failed%nbut context started successfully", getApplicationContext()));
 		}
 		return this;
 	}
@@ -448,10 +468,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		return this.startupFailure;
 	}
 
-	private ContextFailedToStart<C> contextFailedToStartWhenExpecting(
-			String expectationFormat, Object... arguments) {
-		return new ContextFailedToStart<>(getApplicationContext(), this.startupFailure,
-				expectationFormat, arguments);
+	private ContextFailedToStart<C> contextFailedToStartWhenExpecting(String expectationFormat, Object... arguments) {
+		return new ContextFailedToStart<>(getApplicationContext(), this.startupFailure, expectationFormat, arguments);
 	}
 
 	/**
@@ -465,14 +483,12 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		NO_ANCESTORS {
 
 			@Override
-			String[] getBeanNamesForType(ApplicationContext applicationContext,
-					Class<?> type) {
+			String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type) {
 				return applicationContext.getBeanNamesForType(type);
 			}
 
 			@Override
-			<T> Map<String, T> getBeansOfType(ApplicationContext applicationContext,
-					Class<T> type) {
+			<T> Map<String, T> getBeansOfType(ApplicationContext applicationContext, Class<T> type) {
 				return applicationContext.getBeansOfType(type);
 			}
 
@@ -484,46 +500,35 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		INCLUDE_ANCESTORS {
 
 			@Override
-			String[] getBeanNamesForType(ApplicationContext applicationContext,
-					Class<?> type) {
-				return BeanFactoryUtils
-						.beanNamesForTypeIncludingAncestors(applicationContext, type);
+			String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type) {
+				return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, type);
 			}
 
 			@Override
-			<T> Map<String, T> getBeansOfType(ApplicationContext applicationContext,
-					Class<T> type) {
-				return BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext,
-						type);
+			<T> Map<String, T> getBeansOfType(ApplicationContext applicationContext, Class<T> type) {
+				return BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, type);
 			}
 
 		};
 
-		abstract String[] getBeanNamesForType(ApplicationContext applicationContext,
-				Class<?> type);
+		abstract String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type);
 
-		abstract <T> Map<String, T> getBeansOfType(ApplicationContext applicationContext,
-				Class<T> type);
+		abstract <T> Map<String, T> getBeansOfType(ApplicationContext applicationContext, Class<T> type);
 
 	}
 
-	private static final class ContextFailedToStart<C extends ApplicationContext>
-			extends BasicErrorMessageFactory {
+	private static final class ContextFailedToStart<C extends ApplicationContext> extends BasicErrorMessageFactory {
 
-		private ContextFailedToStart(C context, Throwable ex, String expectationFormat,
-				Object... arguments) {
-			super("%nExpecting:%n <%s>%n" + expectationFormat
-					+ ":%nbut context failed to start:%n%s",
+		private ContextFailedToStart(C context, Throwable ex, String expectationFormat, Object... arguments) {
+			super("%nExpecting:%n <%s>%n" + expectationFormat + ":%nbut context failed to start:%n%s",
 					combineArguments(context.toString(), ex, arguments));
 		}
 
-		private static Object[] combineArguments(String context, Throwable ex,
-				Object[] arguments) {
+		private static Object[] combineArguments(String context, Throwable ex, Object[] arguments) {
 			Object[] combinedArguments = new Object[arguments.length + 2];
 			combinedArguments[0] = unquotedString(context);
 			System.arraycopy(arguments, 0, combinedArguments, 1, arguments.length);
-			combinedArguments[combinedArguments.length - 1] = unquotedString(
-					getIndentedStackTraceAsString(ex));
+			combinedArguments[combinedArguments.length - 1] = unquotedString(getIndentedStackTraceAsString(ex));
 			return combinedArguments;
 		}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 /**
- * Example repository used with {@link JdbcTest} tests.
+ * Example repository used with {@link JdbcTest @JdbcTest} tests.
  *
  * @author Stephane Nicoll
  */
@@ -44,13 +44,11 @@ public class ExampleRepository {
 
 	@Transactional
 	public void save(ExampleEntity entity) {
-		this.jdbcTemplate.update("insert into example (id, name) values (?, ?)",
-				entity.getId(), entity.getName());
+		this.jdbcTemplate.update("insert into example (id, name) values (?, ?)", entity.getId(), entity.getName());
 	}
 
 	public ExampleEntity findById(int id) {
-		return this.jdbcTemplate.queryForObject(
-				"select id, name from example where id =?", new Object[] { id },
+		return this.jdbcTemplate.queryForObject("select id, name from example where id =?", new Object[] { id },
 				ROW_MAPPER);
 	}
 

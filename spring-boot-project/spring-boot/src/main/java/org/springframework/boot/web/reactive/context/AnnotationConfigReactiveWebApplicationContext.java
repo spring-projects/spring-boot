@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,73 +16,87 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
-import org.springframework.context.annotation.AnnotationConfigRegistry;
-import org.springframework.context.annotation.AnnotationConfigUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.ScopeMetadataResolver;
-import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ConfigurableReactiveWebApplicationContext} that accepts annotated classes as
- * input - in particular
- * {@link org.springframework.context.annotation.Configuration @Configuration}-annotated
- * classes, but also plain {@link Component @Component} classes and JSR-330 compliant
- * classes using {@code javax.inject} annotations. Allows for registering classes one by
- * one (specifying class names as config location) as well as for classpath scanning
- * (specifying base packages as config location).
+ * input - in particular {@link Configuration @Configuration}-annotated classes, but also
+ * plain {@link Component @Component} classes and JSR-330 compliant classes using
+ * {@code javax.inject} annotations. Allows for registering classes one by one (specifying
+ * class names as config location) as well as for classpath scanning (specifying base
+ * packages as config location).
  * <p>
  * Note: In case of multiple {@code @Configuration} classes, later {@code @Bean}
  * definitions will override ones defined in earlier loaded files. This can be leveraged
  * to deliberately override certain bean definitions via an extra Configuration class.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 2.0.0
- * @see #register(Class...)
- * @see #scan(String...)
+ * @see AnnotationConfigApplicationContext
  */
-public class AnnotationConfigReactiveWebApplicationContext
-		extends AbstractRefreshableConfigApplicationContext
-		implements ConfigurableReactiveWebApplicationContext, AnnotationConfigRegistry {
+public class AnnotationConfigReactiveWebApplicationContext extends AnnotationConfigApplicationContext
+		implements ConfigurableReactiveWebApplicationContext {
 
-	private BeanNameGenerator beanNameGenerator;
+	/**
+	 * Create a new AnnotationConfigReactiveWebApplicationContext that needs to be
+	 * populated through {@link #register} calls and then manually {@linkplain #refresh
+	 * refreshed}.
+	 */
+	public AnnotationConfigReactiveWebApplicationContext() {
+	}
 
-	private ScopeMetadataResolver scopeMetadataResolver;
+	/**
+	 * Create a new AnnotationConfigApplicationContext with the given
+	 * DefaultListableBeanFactory.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 * @since 2.2.0
+	 */
+	public AnnotationConfigReactiveWebApplicationContext(DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
+	}
 
-	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
+	/**
+	 * Create a new AnnotationConfigApplicationContext, deriving bean definitions from the
+	 * given annotated classes and automatically refreshing the context.
+	 * @param annotatedClasses one or more annotated classes, e.g.
+	 * {@link Configuration @Configuration} classes
+	 * @since 2.2.0
+	 */
+	public AnnotationConfigReactiveWebApplicationContext(Class<?>... annotatedClasses) {
+		super(annotatedClasses);
+	}
 
-	private final Set<String> basePackages = new LinkedHashSet<>();
+	/**
+	 * Create a new AnnotationConfigApplicationContext, scanning for bean definitions in
+	 * the given packages and automatically refreshing the context.
+	 * @param basePackages the packages to check for annotated classes
+	 * @since 2.2.0
+	 */
+	public AnnotationConfigReactiveWebApplicationContext(String... basePackages) {
+		super(basePackages);
+	}
 
 	@Override
 	protected ConfigurableEnvironment createEnvironment() {
 		return new StandardReactiveWebEnvironment();
 	}
 
-	/**
-	 * Set a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or
-	 * {@link ClassPathBeanDefinitionScanner}.
-	 * <p>
-	 * Default is
-	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
-	 * @param beanNameGenerator the bean name generator
-	 * @see AnnotatedBeanDefinitionReader#setBeanNameGenerator
-	 * @see ClassPathBeanDefinitionScanner#setBeanNameGenerator
-	 */
-	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
-		this.beanNameGenerator = beanNameGenerator;
+	@Override
+	protected Resource getResourceByPath(String path) {
+		// We must be careful not to expose classpath resources
+		return new FilteredReactiveWebContextResource(path);
 	}
 
 	/**
@@ -90,24 +104,12 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * {@link AnnotatedBeanDefinitionReader} and/or
 	 * {@link ClassPathBeanDefinitionScanner}, if any.
 	 * @return the bean name generator
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}
 	 */
-	protected BeanNameGenerator getBeanNameGenerator() {
-		return this.beanNameGenerator;
-	}
-
-	/**
-	 * Set a custom {@link ScopeMetadataResolver} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or
-	 * {@link ClassPathBeanDefinitionScanner}.
-	 * <p>
-	 * Default is an
-	 * {@link org.springframework.context.annotation.AnnotationScopeMetadataResolver}.
-	 * @param scopeMetadataResolver the scope metadata resolver
-	 * @see AnnotatedBeanDefinitionReader#setScopeMetadataResolver
-	 * @see ClassPathBeanDefinitionScanner#setScopeMetadataResolver
-	 */
-	public void setScopeMetadataResolver(ScopeMetadataResolver scopeMetadataResolver) {
-		this.scopeMetadataResolver = scopeMetadataResolver;
+	@Deprecated
+	protected final BeanNameGenerator getBeanNameGenerator() {
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -115,45 +117,12 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * {@link AnnotatedBeanDefinitionReader} and/or
 	 * {@link ClassPathBeanDefinitionScanner}, if any.
 	 * @return the scope metadata resolver
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}
 	 */
+	@Deprecated
 	protected ScopeMetadataResolver getScopeMetadataResolver() {
-		return this.scopeMetadataResolver;
-	}
-
-	/**
-	 * Register one or more annotated classes to be processed.
-	 * <p>
-	 * Note that {@link #refresh()} must be called in order for the context to fully
-	 * process the new classes.
-	 * @param annotatedClasses one or more annotated classes, e.g.
-	 * {@link org.springframework.context.annotation.Configuration @Configuration} classes
-	 * @see #scan(String...)
-	 * @see #loadBeanDefinitions(DefaultListableBeanFactory)
-	 * @see #setConfigLocation(String)
-	 * @see #refresh()
-	 */
-	@Override
-	public void register(Class<?>... annotatedClasses) {
-		Assert.notEmpty(annotatedClasses,
-				"At least one annotated class must be specified");
-		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
-	}
-
-	/**
-	 * Perform a scan within the specified base packages.
-	 * <p>
-	 * Note that {@link #refresh()} must be called in order for the context to fully
-	 * process the new classes.
-	 * @param basePackages the packages to check for annotated classes
-	 * @see #loadBeanDefinitions(DefaultListableBeanFactory)
-	 * @see #register(Class...)
-	 * @see #setConfigLocation(String)
-	 * @see #refresh()
-	 */
-	@Override
-	public void scan(String... basePackages) {
-		Assert.notEmpty(basePackages, "At least one base package must be specified");
-		this.basePackages.addAll(Arrays.asList(basePackages));
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -179,110 +148,12 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * @see #setConfigLocations(String[])
 	 * @see AnnotatedBeanDefinitionReader
 	 * @see ClassPathBeanDefinitionScanner
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}
 	 */
-	@Override
+	@Deprecated
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
-		AnnotatedBeanDefinitionReader reader = getAnnotatedBeanDefinitionReader(
-				beanFactory);
-		ClassPathBeanDefinitionScanner scanner = getClassPathBeanDefinitionScanner(
-				beanFactory);
-		applyBeanNameGenerator(beanFactory, reader, scanner);
-		applyScopeMetadataResolver(reader, scanner);
-		loadBeanDefinitions(reader, scanner);
-	}
-
-	private void applyBeanNameGenerator(DefaultListableBeanFactory beanFactory,
-			AnnotatedBeanDefinitionReader reader,
-			ClassPathBeanDefinitionScanner scanner) {
-		BeanNameGenerator beanNameGenerator = getBeanNameGenerator();
-		if (beanNameGenerator != null) {
-			reader.setBeanNameGenerator(beanNameGenerator);
-			scanner.setBeanNameGenerator(beanNameGenerator);
-			beanFactory.registerSingleton(
-					AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-					beanNameGenerator);
-		}
-	}
-
-	private void applyScopeMetadataResolver(AnnotatedBeanDefinitionReader reader,
-			ClassPathBeanDefinitionScanner scanner) {
-		ScopeMetadataResolver scopeMetadataResolver = getScopeMetadataResolver();
-		if (scopeMetadataResolver != null) {
-			reader.setScopeMetadataResolver(scopeMetadataResolver);
-			scanner.setScopeMetadataResolver(scopeMetadataResolver);
-		}
-	}
-
-	private void loadBeanDefinitions(AnnotatedBeanDefinitionReader reader,
-			ClassPathBeanDefinitionScanner scanner) throws LinkageError {
-		if (!this.annotatedClasses.isEmpty()) {
-			registerAnnotatedClasses(reader);
-		}
-		if (!this.basePackages.isEmpty()) {
-			scanBasePackages(scanner);
-		}
-		String[] configLocations = getConfigLocations();
-		if (configLocations != null) {
-			registerConfigLocations(reader, scanner, configLocations);
-		}
-	}
-
-	private void registerAnnotatedClasses(AnnotatedBeanDefinitionReader reader) {
-		if (this.logger.isInfoEnabled()) {
-			this.logger.info("Registering annotated classes: ["
-					+ StringUtils.collectionToCommaDelimitedString(this.annotatedClasses)
-					+ "]");
-		}
-		reader.register(ClassUtils.toClassArray(this.annotatedClasses));
-	}
-
-	private void scanBasePackages(ClassPathBeanDefinitionScanner scanner) {
-		if (this.logger.isInfoEnabled()) {
-			this.logger.info("Scanning base packages: ["
-					+ StringUtils.collectionToCommaDelimitedString(this.basePackages)
-					+ "]");
-		}
-		scanner.scan(StringUtils.toStringArray(this.basePackages));
-	}
-
-	private void registerConfigLocations(AnnotatedBeanDefinitionReader reader,
-			ClassPathBeanDefinitionScanner scanner, String[] configLocations)
-			throws LinkageError {
-		for (String configLocation : configLocations) {
-			try {
-				register(reader, configLocation);
-			}
-			catch (ClassNotFoundException ex) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug("Could not load class for config location ["
-							+ configLocation + "] - trying package scan. " + ex);
-				}
-				int count = scanner.scan(configLocation);
-				if (this.logger.isInfoEnabled()) {
-					logScanResult(configLocation, count);
-				}
-			}
-		}
-	}
-
-	private void register(AnnotatedBeanDefinitionReader reader, String configLocation)
-			throws ClassNotFoundException, LinkageError {
-		Class<?> clazz = ClassUtils.forName(configLocation, getClassLoader());
-		if (this.logger.isInfoEnabled()) {
-			this.logger.info("Successfully resolved class for [" + configLocation + "]");
-		}
-		reader.register(clazz);
-	}
-
-	private void logScanResult(String configLocation, int count) {
-		if (count == 0) {
-			this.logger.info("No annotated classes found for specified class/package ["
-					+ configLocation + "]");
-		}
-		else {
-			this.logger.info("Found " + count + " annotated classes in package ["
-					+ configLocation + "]");
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -295,10 +166,12 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * @see #getEnvironment()
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}
 	 */
-	protected AnnotatedBeanDefinitionReader getAnnotatedBeanDefinitionReader(
-			DefaultListableBeanFactory beanFactory) {
-		return new AnnotatedBeanDefinitionReader(beanFactory, getEnvironment());
+	@Deprecated
+	protected AnnotatedBeanDefinitionReader getAnnotatedBeanDefinitionReader(DefaultListableBeanFactory beanFactory) {
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -311,16 +184,145 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * @see #getEnvironment()
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}
 	 */
-	protected ClassPathBeanDefinitionScanner getClassPathBeanDefinitionScanner(
-			DefaultListableBeanFactory beanFactory) {
-		return new ClassPathBeanDefinitionScanner(beanFactory, true, getEnvironment());
+	@Deprecated
+	protected ClassPathBeanDefinitionScanner getClassPathBeanDefinitionScanner(DefaultListableBeanFactory beanFactory) {
+		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	protected Resource getResourceByPath(String path) {
-		// We must be careful not to expose classpath resources
-		return new FilteredReactiveWebContextResource(path);
+	/**
+	 * Set the config locations for this application context in init-param style, i.e.
+	 * with distinct locations separated by commas, semicolons or whitespace.
+	 * <p>
+	 * If not set, the implementation may use a default as appropriate.
+	 * @param location the config location
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}. Use {@link ImportResource}
+	 * instead.
+	 */
+	@Deprecated
+	public void setConfigLocation(String location) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Set the config locations for this application context.
+	 * <p>
+	 * If not set, the implementation may use a default as appropriate.
+	 * @param locations the config locations
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}. Use {@link ImportResource}
+	 * instead.
+	 */
+	@Deprecated
+	public void setConfigLocations(@Nullable String... locations) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Return an array of resource locations, referring to the XML bean definition files
+	 * that this context should be built with. Can also include location patterns, which
+	 * will get resolved via a ResourcePatternResolver.
+	 * <p>
+	 * The default implementation returns {@code null}. Subclasses can override this to
+	 * provide a set of resource locations to load bean definitions from.
+	 * @return an array of resource locations, or {@code null} if none
+	 * @see #getResources
+	 * @see #getResourcePatternResolver
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}.
+	 */
+	@Deprecated
+	protected String[] getConfigLocations() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Return the default config locations to use, for the case where no explicit config
+	 * locations have been specified.
+	 * <p>
+	 * The default implementation returns {@code null}, requiring explicit config
+	 * locations.
+	 * @return an array of default config locations, if any
+	 * @see #setConfigLocations
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}.
+	 */
+	@Deprecated
+	protected String[] getDefaultConfigLocations() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Resolve the given path, replacing placeholders with corresponding environment
+	 * property values if necessary. Applied to config locations.
+	 * @param path the original file path
+	 * @return the resolved file path
+	 * @see org.springframework.core.env.Environment#resolveRequiredPlaceholders(String)
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}.
+	 */
+	@Deprecated
+	protected String resolvePath(String path) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Determine whether this context currently holds a bean factory, i.e. has been
+	 * refreshed at least once and not been closed yet.
+	 * @return {@code true} if the context holds a bean factory
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}.
+	 */
+	@Deprecated
+	protected final boolean hasBeanFactory() {
+		return true;
+	}
+
+	/**
+	 * Create an internal bean factory for this context. Called for each
+	 * {@link #refresh()} attempt.
+	 * <p>
+	 * The default implementation creates a
+	 * {@link org.springframework.beans.factory.support.DefaultListableBeanFactory} with
+	 * the {@linkplain #getInternalParentBeanFactory() internal bean factory} of this
+	 * context's parent as parent bean factory. Can be overridden in subclasses, for
+	 * example to customize DefaultListableBeanFactory's settings.
+	 * @return the bean factory for this context
+	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowBeanDefinitionOverriding
+	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowEagerClassLoading
+	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowCircularReferences
+	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}.
+	 */
+	@Deprecated
+	protected DefaultListableBeanFactory createBeanFactory() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Customize the internal bean factory used by this context. Called for each
+	 * {@link #refresh()} attempt.
+	 * <p>
+	 * The default implementation applies this context's
+	 * {@linkplain #setAllowBeanDefinitionOverriding "allowBeanDefinitionOverriding"} and
+	 * {@linkplain #setAllowCircularReferences "allowCircularReferences"} settings, if
+	 * specified. Can be overridden in subclasses to customize any of
+	 * {@link DefaultListableBeanFactory}'s settings.
+	 * @param beanFactory the newly created bean factory for this context
+	 * @see DefaultListableBeanFactory#setAllowBeanDefinitionOverriding
+	 * @see DefaultListableBeanFactory#setAllowCircularReferences
+	 * @see DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
+	 * @see DefaultListableBeanFactory#setAllowEagerClassLoading
+	 * @deprecated since 2.2.0 since this class no longer extends
+	 * {@code AbstractRefreshableConfigApplicationContext}.
+	 */
+	@Deprecated
+	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+		throw new UnsupportedOperationException();
 	}
 
 }

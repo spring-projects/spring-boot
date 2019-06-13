@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.info;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -28,21 +27,16 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Stephane Nicoll
  */
-public class InfoTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class InfoTests {
 
 	@Test
-	public void infoIsImmutable() {
+	void infoIsImmutable() {
 		Info info = new Info.Builder().withDetail("foo", "bar").build();
-
-		this.thrown.expect(UnsupportedOperationException.class);
-		info.getDetails().clear();
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(info.getDetails()::clear);
 	}
 
 	@Test
-	public void infoTakesCopyOfMap() {
+	void infoTakesCopyOfMap() {
 		Info.Builder builder = new Info.Builder();
 		builder.withDetail("foo", "bar");
 		Info build = builder.build();

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ public class OptionHandler {
 		return getParser().accepts(name, description);
 	}
 
-	public OptionSpecBuilder option(Collection<String> aliases, String description) {
+	public OptionSpecBuilder option(List<String> aliases, String description) {
 		return getParser().acceptsAll(aliases, description);
 	}
 
@@ -130,8 +130,8 @@ public class OptionHandler {
 
 		@Override
 		public String format(Map<String, ? extends OptionDescriptor> options) {
-			Comparator<OptionDescriptor> comparator = Comparator.comparing(
-					(optionDescriptor) -> optionDescriptor.options().iterator().next());
+			Comparator<OptionDescriptor> comparator = Comparator
+					.comparing((optionDescriptor) -> optionDescriptor.options().iterator().next());
 			Set<OptionDescriptor> sorted = new TreeSet<>(comparator);
 			sorted.addAll(options.values());
 			for (OptionDescriptor descriptor : sorted) {
@@ -157,7 +157,8 @@ public class OptionHandler {
 		OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<>();
 			for (String option : descriptor.options()) {
-				this.options.add((option.length() != 1 ? "--" : "-") + option);
+				String prefix = (option.length() != 1) ? "--" : "-";
+				this.options.add(prefix + option);
 			}
 			if (this.options.contains("--cp")) {
 				this.options.remove("--cp");

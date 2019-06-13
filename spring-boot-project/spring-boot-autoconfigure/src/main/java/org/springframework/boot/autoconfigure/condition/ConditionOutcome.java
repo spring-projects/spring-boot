@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -111,7 +111,7 @@ public class ConditionOutcome {
 	 * @return the message or {@code null}
 	 */
 	public String getMessage() {
-		return (this.message.isEmpty() ? null : this.message.toString());
+		return this.message.isEmpty() ? null : this.message.toString();
 	}
 
 	/**
@@ -120,12 +120,6 @@ public class ConditionOutcome {
 	 */
 	public ConditionMessage getConditionMessage() {
 		return this.message;
-	}
-
-	@Override
-	public int hashCode() {
-		return Boolean.hashCode(this.match) * 31
-				+ ObjectUtils.nullSafeHashCode(this.message);
 	}
 
 	@Override
@@ -138,15 +132,19 @@ public class ConditionOutcome {
 		}
 		if (getClass() == obj.getClass()) {
 			ConditionOutcome other = (ConditionOutcome) obj;
-			return (this.match == other.match
-					&& ObjectUtils.nullSafeEquals(this.message, other.message));
+			return (this.match == other.match && ObjectUtils.nullSafeEquals(this.message, other.message));
 		}
 		return super.equals(obj);
 	}
 
 	@Override
+	public int hashCode() {
+		return Boolean.hashCode(this.match) * 31 + ObjectUtils.nullSafeHashCode(this.message);
+	}
+
+	@Override
 	public String toString() {
-		return (this.message != null ? this.message.toString() : "");
+		return (this.message != null) ? this.message.toString() : "";
 	}
 
 	/**

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,9 +66,9 @@ class ServiceCapabilitiesReportGenerator {
 	private String generateHelp(String url, InitializrServiceMetadata metadata) {
 		String header = "Capabilities of " + url;
 		StringBuilder report = new StringBuilder();
-		report.append(repeat("=", header.length()) + NEW_LINE);
-		report.append(header + NEW_LINE);
-		report.append(repeat("=", header.length()) + NEW_LINE);
+		report.append(repeat("=", header.length())).append(NEW_LINE);
+		report.append(header).append(NEW_LINE);
+		report.append(repeat("=", header.length())).append(NEW_LINE);
 		report.append(NEW_LINE);
 		reportAvailableDependencies(metadata, report);
 		report.append(NEW_LINE);
@@ -78,15 +78,14 @@ class ServiceCapabilitiesReportGenerator {
 		return report.toString();
 	}
 
-	private void reportAvailableDependencies(InitializrServiceMetadata metadata,
-			StringBuilder report) {
-		report.append("Available dependencies:" + NEW_LINE);
-		report.append("-----------------------" + NEW_LINE);
+	private void reportAvailableDependencies(InitializrServiceMetadata metadata, StringBuilder report) {
+		report.append("Available dependencies:").append(NEW_LINE);
+		report.append("-----------------------").append(NEW_LINE);
 		List<Dependency> dependencies = getSortedDependencies(metadata);
 		for (Dependency dependency : dependencies) {
-			report.append(dependency.getId() + " - " + dependency.getName());
+			report.append(dependency.getId()).append(" - ").append(dependency.getName());
 			if (dependency.getDescription() != null) {
-				report.append(": " + dependency.getDescription());
+				report.append(": ").append(dependency.getDescription());
 			}
 			report.append(NEW_LINE);
 		}
@@ -98,16 +97,14 @@ class ServiceCapabilitiesReportGenerator {
 		return dependencies;
 	}
 
-	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata,
-			StringBuilder report) {
-		report.append("Available project types:" + NEW_LINE);
-		report.append("------------------------" + NEW_LINE);
-		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(
-				Comparator.comparing(Entry::getKey));
+	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata, StringBuilder report) {
+		report.append("Available project types:").append(NEW_LINE);
+		report.append("------------------------").append(NEW_LINE);
+		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(Comparator.comparing(Entry::getKey));
 		entries.addAll(metadata.getProjectTypes().entrySet());
 		for (Entry<String, ProjectType> entry : entries) {
 			ProjectType type = entry.getValue();
-			report.append(entry.getKey() + " -  " + type.getName());
+			report.append(entry.getKey()).append(" -  ").append(type.getName());
 			if (!type.getTags().isEmpty()) {
 				reportTags(report, type);
 			}
@@ -124,7 +121,7 @@ class ServiceCapabilitiesReportGenerator {
 		report.append(" [");
 		while (iterator.hasNext()) {
 			Map.Entry<String, String> entry = iterator.next();
-			report.append(entry.getKey() + ":" + entry.getValue());
+			report.append(entry.getKey()).append(":").append(entry.getValue());
 			if (iterator.hasNext()) {
 				report.append(", ");
 			}
@@ -132,15 +129,14 @@ class ServiceCapabilitiesReportGenerator {
 		report.append("]");
 	}
 
-	private void reportDefaults(StringBuilder report,
-			InitializrServiceMetadata metadata) {
-		report.append("Defaults:" + NEW_LINE);
-		report.append("---------" + NEW_LINE);
+	private void reportDefaults(StringBuilder report, InitializrServiceMetadata metadata) {
+		report.append("Defaults:").append(NEW_LINE);
+		report.append("---------").append(NEW_LINE);
 		List<String> defaultsKeys = new ArrayList<>(metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {
 			String defaultsValue = metadata.getDefaults().get(defaultsKey);
-			report.append(defaultsKey + ": " + defaultsValue + NEW_LINE);
+			report.append(defaultsKey).append(": ").append(defaultsValue).append(NEW_LINE);
 		}
 	}
 

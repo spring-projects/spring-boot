@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,32 +39,22 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
-				.add("spring-boot-starter");
+		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication").add("spring-boot-starter");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("javax.annotation.PostConstruct",
-				"javax.annotation.PreDestroy", "groovy.util.logging.Log",
-				"org.springframework.stereotype.Controller",
-				"org.springframework.stereotype.Service",
-				"org.springframework.stereotype.Component",
-				"org.springframework.beans.factory.annotation.Autowired",
-				"org.springframework.beans.factory.annotation.Value",
-				"org.springframework.context.annotation.Import",
+		imports.addImports("javax.annotation.PostConstruct", "javax.annotation.PreDestroy", "groovy.util.logging.Log",
+				"org.springframework.stereotype.Controller", "org.springframework.stereotype.Service",
+				"org.springframework.stereotype.Component", "org.springframework.beans.factory.annotation.Autowired",
+				"org.springframework.beans.factory.annotation.Value", "org.springframework.context.annotation.Import",
 				"org.springframework.context.annotation.ImportResource",
-				"org.springframework.context.annotation.Profile",
-				"org.springframework.context.annotation.Scope",
+				"org.springframework.context.annotation.Profile", "org.springframework.context.annotation.Scope",
 				"org.springframework.context.annotation.Configuration",
-				"org.springframework.context.annotation.ComponentScan",
-				"org.springframework.context.annotation.Bean",
-				"org.springframework.context.ApplicationContext",
-				"org.springframework.context.MessageSource",
-				"org.springframework.core.annotation.Order",
-				"org.springframework.core.io.ResourceLoader",
-				"org.springframework.boot.ApplicationRunner",
-				"org.springframework.boot.ApplicationArguments",
+				"org.springframework.context.annotation.ComponentScan", "org.springframework.context.annotation.Bean",
+				"org.springframework.context.ApplicationContext", "org.springframework.context.MessageSource",
+				"org.springframework.core.annotation.Order", "org.springframework.core.io.ResourceLoader",
+				"org.springframework.boot.ApplicationRunner", "org.springframework.boot.ApplicationArguments",
 				"org.springframework.boot.CommandLineRunner",
 				"org.springframework.boot.context.properties.ConfigurationProperties",
 				"org.springframework.boot.context.properties.EnableConfigurationProperties",
@@ -72,21 +62,19 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 				"org.springframework.boot.autoconfigure.SpringBootApplication",
 				"org.springframework.boot.context.properties.ConfigurationProperties",
 				"org.springframework.boot.context.properties.EnableConfigurationProperties");
-		imports.addStarImports("org.springframework.stereotype",
-				"org.springframework.scheduling.annotation");
+		imports.addStarImports("org.springframework.stereotype", "org.springframework.scheduling.annotation");
 	}
 
 	@Override
-	public void applyToMainClass(GroovyClassLoader loader,
-			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
-			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
+	public void applyToMainClass(GroovyClassLoader loader, GroovyCompilerConfiguration configuration,
+			GeneratorContext generatorContext, SourceUnit source, ClassNode classNode)
+			throws CompilationFailedException {
 		addEnableAutoConfigurationAnnotation(classNode);
 	}
 
 	private void addEnableAutoConfigurationAnnotation(ClassNode classNode) {
 		if (!hasEnableAutoConfigureAnnotation(classNode)) {
-			AnnotationNode annotationNode = new AnnotationNode(
-					ClassHelper.make("EnableAutoConfiguration"));
+			AnnotationNode annotationNode = new AnnotationNode(ClassHelper.make("EnableAutoConfiguration"));
 			classNode.addAnnotation(annotationNode);
 		}
 	}
@@ -94,8 +82,7 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 	private boolean hasEnableAutoConfigureAnnotation(ClassNode classNode) {
 		for (AnnotationNode node : classNode.getAnnotations()) {
 			String name = node.getClassNode().getNameWithoutPackage();
-			if ("EnableAutoConfiguration".equals(name)
-					|| "SpringBootApplication".equals(name)) {
+			if ("EnableAutoConfiguration".equals(name) || "SpringBootApplication".equals(name)) {
 				return true;
 			}
 		}

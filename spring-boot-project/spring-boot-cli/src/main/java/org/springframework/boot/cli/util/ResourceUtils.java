@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,13 +74,11 @@ public abstract class ResourceUtils {
 			return getUrlsFromWildcardPath(path, classLoader);
 		}
 		catch (Exception ex) {
-			throw new IllegalArgumentException(
-					"Cannot create URL from path [" + path + "]", ex);
+			throw new IllegalArgumentException("Cannot create URL from path [" + path + "]", ex);
 		}
 	}
 
-	private static List<String> getUrlsFromWildcardPath(String path,
-			ClassLoader classLoader) throws IOException {
+	private static List<String> getUrlsFromWildcardPath(String path, ClassLoader classLoader) throws IOException {
 		if (path.contains(":")) {
 			return getUrlsFromPrefixedWildcardPath(path, classLoader);
 		}
@@ -96,15 +94,14 @@ public abstract class ResourceUtils {
 		return new ArrayList<>(result);
 	}
 
-	private static List<String> getUrlsFromPrefixedWildcardPath(String path,
-			ClassLoader classLoader) throws IOException {
-		Resource[] resources = new PathMatchingResourcePatternResolver(
-				new FileSearchResourceLoader(classLoader)).getResources(path);
+	private static List<String> getUrlsFromPrefixedWildcardPath(String path, ClassLoader classLoader)
+			throws IOException {
+		Resource[] resources = new PathMatchingResourcePatternResolver(new FileSearchResourceLoader(classLoader))
+				.getResources(path);
 		List<String> result = new ArrayList<>();
 		for (Resource resource : resources) {
 			if (resource.exists()) {
-				if (resource.getURI().getScheme().equals("file")
-						&& resource.getFile().isDirectory()) {
+				if (resource.getURI().getScheme().equals("file") && resource.getFile().isDirectory()) {
 					result.addAll(getChildFiles(resource));
 					continue;
 				}
@@ -115,8 +112,7 @@ public abstract class ResourceUtils {
 	}
 
 	private static List<String> getChildFiles(Resource resource) throws IOException {
-		Resource[] children = new PathMatchingResourcePatternResolver()
-				.getResources(resource.getURL() + "/**");
+		Resource[] children = new PathMatchingResourcePatternResolver().getResources(resource.getURL() + "/**");
 		List<String> childFiles = new ArrayList<>();
 		for (Resource child : children) {
 			if (!child.getFile().isDirectory()) {
@@ -153,9 +149,7 @@ public abstract class ResourceUtils {
 		public Resource getResource(String location) {
 			Assert.notNull(location, "Location must not be null");
 			if (location.startsWith(CLASSPATH_URL_PREFIX)) {
-				return new ClassPathResource(
-						location.substring(CLASSPATH_URL_PREFIX.length()),
-						getClassLoader());
+				return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 			}
 			else {
 				if (location.startsWith(FILE_URL_PREFIX)) {

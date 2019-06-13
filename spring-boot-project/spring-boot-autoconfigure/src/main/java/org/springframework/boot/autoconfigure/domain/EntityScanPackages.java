@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,16 +105,13 @@ public class EntityScanPackages {
 	 * @param registry the source registry
 	 * @param packageNames the package names to register
 	 */
-	public static void register(BeanDefinitionRegistry registry,
-			Collection<String> packageNames) {
+	public static void register(BeanDefinitionRegistry registry, Collection<String> packageNames) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notNull(packageNames, "PackageNames must not be null");
 		if (registry.containsBeanDefinition(BEAN)) {
 			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
-			ConstructorArgumentValues constructorArguments = beanDefinition
-					.getConstructorArgumentValues();
-			constructorArguments.addIndexedArgumentValue(0,
-					addPackageNames(constructorArguments, packageNames));
+			ConstructorArgumentValues constructorArguments = beanDefinition.getConstructorArgumentValues();
+			constructorArguments.addIndexedArgumentValue(0, addPackageNames(constructorArguments, packageNames));
 		}
 		else {
 			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
@@ -126,11 +123,9 @@ public class EntityScanPackages {
 		}
 	}
 
-	private static String[] addPackageNames(
-			ConstructorArgumentValues constructorArguments,
+	private static String[] addPackageNames(ConstructorArgumentValues constructorArguments,
 			Collection<String> packageNames) {
-		String[] existing = (String[]) constructorArguments
-				.getIndexedArgumentValue(0, String[].class).getValue();
+		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0, String[].class).getValue();
 		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(packageNames);
@@ -144,26 +139,22 @@ public class EntityScanPackages {
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata metadata,
-				BeanDefinitionRegistry registry) {
+		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 			register(registry, getPackagesToScan(metadata));
 		}
 
 		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
-			AnnotationAttributes attributes = AnnotationAttributes.fromMap(
-					metadata.getAnnotationAttributes(EntityScan.class.getName()));
+			AnnotationAttributes attributes = AnnotationAttributes
+					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 			String[] basePackages = attributes.getStringArray("basePackages");
-			Class<?>[] basePackageClasses = attributes
-					.getClassArray("basePackageClasses");
-			Set<String> packagesToScan = new LinkedHashSet<>();
-			packagesToScan.addAll(Arrays.asList(basePackages));
+			Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
+			Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));
 			for (Class<?> basePackageClass : basePackageClasses) {
 				packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 			}
 			if (packagesToScan.isEmpty()) {
 				String packageName = ClassUtils.getPackageName(metadata.getClassName());
-				Assert.state(!StringUtils.isEmpty(packageName),
-						"@EntityScan cannot be used with the default package");
+				Assert.state(!StringUtils.isEmpty(packageName), "@EntityScan cannot be used with the default package");
 				return Collections.singleton(packageName);
 			}
 			return packagesToScan;

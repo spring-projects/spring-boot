@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.HealthEndpointCloudFoundryExtension;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.EndpointCloudFoundryExtension;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -28,19 +28,18 @@ import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtensio
 import org.springframework.boot.actuate.health.ShowDetails;
 
 /**
- * Reactive {@link EndpointExtension} for the {@link HealthEndpoint} that always exposes
- * full health details.
+ * Reactive {@link EndpointExtension @EndpointExtension} for the {@link HealthEndpoint}
+ * that always exposes full health details.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@HealthEndpointCloudFoundryExtension
+@EndpointCloudFoundryExtension(endpoint = HealthEndpoint.class)
 public class CloudFoundryReactiveHealthEndpointWebExtension {
 
 	private final ReactiveHealthEndpointWebExtension delegate;
 
-	public CloudFoundryReactiveHealthEndpointWebExtension(
-			ReactiveHealthEndpointWebExtension delegate) {
+	public CloudFoundryReactiveHealthEndpointWebExtension(ReactiveHealthEndpointWebExtension delegate) {
 		this.delegate = delegate;
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,12 @@
 
 package org.springframework.boot;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Profiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,11 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class ReproTests {
+class ReproTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
@@ -42,20 +43,19 @@ public class ReproTests {
 	}
 
 	@Test
-	public void enableProfileViaApplicationProperties() {
+	void enableProfileViaApplicationProperties() {
 		// gh-308
 		SpringApplication application = new SpringApplication(Config.class);
 
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run(
-				"--spring.config.name=enableprofileviaapplicationproperties",
+		this.context = application.run("--spring.config.name=enableprofileviaapplicationproperties",
 				"--spring.profiles.active=dev");
-		assertThat(this.context.getEnvironment().acceptsProfiles("dev")).isTrue();
-		assertThat(this.context.getEnvironment().acceptsProfiles("a")).isTrue();
+		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("dev"))).isTrue();
+		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("a"))).isTrue();
 	}
 
 	@Test
-	public void activeProfilesWithYamlAndCommandLine() {
+	void activeProfilesWithYamlAndCommandLine() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -65,7 +65,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYamlOnly() {
+	void activeProfilesWithYamlOnly() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -75,7 +75,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void orderActiveProfilesWithYamlOnly() {
+	void orderActiveProfilesWithYamlOnly() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -85,7 +85,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void commandLineBeatsProfilesWithYaml() {
+	void commandLineBeatsProfilesWithYaml() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -95,7 +95,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void orderProfilesWithYaml() {
+	void orderProfilesWithYaml() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -105,7 +105,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void reverseOrderOfProfilesWithYaml() {
+	void reverseOrderOfProfilesWithYaml() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -115,7 +115,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYamlAndCommandLineAndNoOverride() {
+	void activeProfilesWithYamlAndCommandLineAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -125,7 +125,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYamlOnlyAndNoOverride() {
+	void activeProfilesWithYamlOnlyAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -135,7 +135,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void commandLineBeatsProfilesWithYamlAndNoOverride() {
+	void commandLineBeatsProfilesWithYamlAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -145,7 +145,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void orderProfilesWithYamlAndNoOverride() {
+	void orderProfilesWithYamlAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -155,7 +155,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void reverseOrderOfProfilesWithYamlAndNoOverride() {
+	void reverseOrderOfProfilesWithYamlAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -164,15 +164,13 @@ public class ReproTests {
 		assertVersionProperty(this.context, "A", "C", "A");
 	}
 
-	private void assertVersionProperty(ConfigurableApplicationContext context,
-			String expectedVersion, String... expectedActiveProfiles) {
-		assertThat(context.getEnvironment().getActiveProfiles())
-				.isEqualTo(expectedActiveProfiles);
-		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
-				.isEqualTo(expectedVersion);
+	private void assertVersionProperty(ConfigurableApplicationContext context, String expectedVersion,
+			String... expectedActiveProfiles) {
+		assertThat(context.getEnvironment().getActiveProfiles()).isEqualTo(expectedActiveProfiles);
+		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch").isEqualTo(expectedVersion);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class Config {
 
 	}

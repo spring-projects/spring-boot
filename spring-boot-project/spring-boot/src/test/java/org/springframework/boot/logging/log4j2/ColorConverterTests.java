@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,10 +18,10 @@ package org.springframework.boot.logging.log4j2;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.AbstractLogEvent;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiOutput;
 
@@ -32,24 +32,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Vladimir Tsanev
  */
-public class ColorConverterTests {
+class ColorConverterTests {
 
 	private final String in = "in";
 
 	private TestLogEvent event;
 
-	@BeforeClass
-	public static void setupAnsi() {
+	@BeforeAll
+	static void setupAnsi() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 	}
 
-	@AfterClass
-	public static void resetAnsi() {
+	@AfterAll
+	static void resetAnsi() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.DETECT);
 	}
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		this.event = new TestLogEvent();
 	}
 
@@ -58,56 +58,56 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void faint() {
+	void faint() {
 		StringBuilder output = new StringBuilder();
 		newConverter("faint").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[2min\033[0;39m");
 	}
 
 	@Test
-	public void red() {
+	void red() {
 		StringBuilder output = new StringBuilder();
 		newConverter("red").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[31min\033[0;39m");
 	}
 
 	@Test
-	public void green() {
+	void green() {
 		StringBuilder output = new StringBuilder();
 		newConverter("green").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[32min\033[0;39m");
 	}
 
 	@Test
-	public void yellow() {
+	void yellow() {
 		StringBuilder output = new StringBuilder();
 		newConverter("yellow").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[33min\033[0;39m");
 	}
 
 	@Test
-	public void blue() {
+	void blue() {
 		StringBuilder output = new StringBuilder();
 		newConverter("blue").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[34min\033[0;39m");
 	}
 
 	@Test
-	public void magenta() {
+	void magenta() {
 		StringBuilder output = new StringBuilder();
 		newConverter("magenta").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[35min\033[0;39m");
 	}
 
 	@Test
-	public void cyan() {
+	void cyan() {
 		StringBuilder output = new StringBuilder();
 		newConverter("cyan").format(this.event, output);
 		assertThat(output.toString()).isEqualTo("\033[36min\033[0;39m");
 	}
 
 	@Test
-	public void highlightFatal() {
+	void highlightFatal() {
 		this.event.setLevel(Level.FATAL);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -115,7 +115,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightError() {
+	void highlightError() {
 		this.event.setLevel(Level.ERROR);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -123,7 +123,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightWarn() {
+	void highlightWarn() {
 		this.event.setLevel(Level.WARN);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -131,7 +131,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightDebug() {
+	void highlightDebug() {
 		this.event.setLevel(Level.DEBUG);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
@@ -139,7 +139,7 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void highlightTrace() {
+	void highlightTrace() {
 		this.event.setLevel(Level.TRACE);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);

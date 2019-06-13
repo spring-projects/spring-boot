@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,7 @@ package org.springframework.boot.autoconfigure.mustache;
 import java.util.Date;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -37,7 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,31 +48,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
-public class MustacheAutoConfigurationReactiveIntegrationTests {
+class MustacheAutoConfigurationReactiveIntegrationTests {
 
 	@Autowired
 	private WebTestClient client;
 
 	@Test
-	public void testHomePage() {
-		String result = this.client.get().uri("/").exchange().expectStatus().isOk()
-				.expectBody(String.class).returnResult().getResponseBody();
+	void testHomePage() {
+		String result = this.client.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class)
+				.returnResult().getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
 	@Test
-	public void testPartialPage() {
-		String result = this.client.get().uri("/partial").exchange().expectStatus().isOk()
-				.expectBody(String.class).returnResult().getResponseBody();
+	void testPartialPage() {
+		String result = this.client.get().uri("/partial").exchange().expectStatus().isOk().expectBody(String.class)
+				.returnResult().getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
-	@Configuration
-	@Import({ ReactiveWebServerFactoryAutoConfiguration.class,
-			WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Configuration(proxyBeanMethods = false)
+	@Import({ ReactiveWebServerFactoryAutoConfiguration.class, WebFluxAutoConfiguration.class,
+			HttpHandlerAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	@Controller
 	public static class Application {
 
@@ -96,9 +92,8 @@ public class MustacheAutoConfigurationReactiveIntegrationTests {
 
 		@Bean
 		public MustacheViewResolver viewResolver() {
-			Mustache.Compiler compiler = Mustache.compiler().withLoader(
-					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
-							".html"));
+			Mustache.Compiler compiler = Mustache.compiler()
+					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -50,39 +51,35 @@ import org.springframework.util.StringUtils;
  * @author Rob Winch
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(AuthenticationManager.class)
 @ConditionalOnBean(ObjectPostProcessor.class)
-@ConditionalOnMissingBean({ AuthenticationManager.class, AuthenticationProvider.class,
-		UserDetailsService.class })
+@ConditionalOnMissingBean({ AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class })
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
 
-	private static final Pattern PASSWORD_ALGORITHM_PATTERN = Pattern
-			.compile("^\\{.+}.*$");
+	private static final Pattern PASSWORD_ALGORITHM_PATTERN = Pattern.compile("^\\{.+}.*$");
 
-	private static final Log logger = LogFactory
-			.getLog(UserDetailsServiceAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	@ConditionalOnMissingBean(type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
-			SecurityProperties properties,
+	@ConditionalOnMissingBean(
+			type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
+	@Lazy
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		List<String> roles = user.getRoles();
-		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
-				.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
-				.roles(StringUtils.toStringArray(roles)).build());
+		return new InMemoryUserDetailsManager(
+				User.withUsername(user.getName()).password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
+						.roles(StringUtils.toStringArray(roles)).build());
 	}
 
-	private String getOrDeducePassword(SecurityProperties.User user,
-			PasswordEncoder encoder) {
+	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing generated security password: %s%n",
-					user.getPassword()));
+			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
 		}
 		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
 			return password;

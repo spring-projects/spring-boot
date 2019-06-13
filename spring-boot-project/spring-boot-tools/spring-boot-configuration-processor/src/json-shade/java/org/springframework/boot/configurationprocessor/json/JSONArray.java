@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -405,7 +405,7 @@ public class JSONArray {
 	 * @param index the index to get the value from
 	 * @return the {@code value}
 	 * @throws JSONException if the value at {@code index} doesn't exist or cannot be
-	 * coerced to a int.
+	 * coerced to an int.
 	 */
 	public int getInt(int index) throws JSONException {
 		Object object = get(index);

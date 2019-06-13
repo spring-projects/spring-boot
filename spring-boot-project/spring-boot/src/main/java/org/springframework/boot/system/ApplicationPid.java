@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,9 +36,8 @@ import org.springframework.util.ObjectUtils;
  */
 public class ApplicationPid {
 
-	private static final PosixFilePermission[] WRITE_PERMISSIONS = {
-			PosixFilePermission.OWNER_WRITE, PosixFilePermission.GROUP_WRITE,
-			PosixFilePermission.OTHERS_WRITE };
+	private static final PosixFilePermission[] WRITE_PERMISSIONS = { PosixFilePermission.OWNER_WRITE,
+			PosixFilePermission.GROUP_WRITE, PosixFilePermission.OTHERS_WRITE };
 
 	private final String pid;
 
@@ -61,16 +60,6 @@ public class ApplicationPid {
 	}
 
 	@Override
-	public String toString() {
-		return (this.pid != null ? this.pid : "???");
-	}
-
-	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.pid);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -79,6 +68,16 @@ public class ApplicationPid {
 			return ObjectUtils.nullSafeEquals(this.pid, ((ApplicationPid) obj).pid);
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.pid);
+	}
+
+	@Override
+	public String toString() {
+		return (this.pid != null) ? this.pid : "???";
 	}
 
 	/**
@@ -113,8 +112,7 @@ public class ApplicationPid {
 
 	private boolean canWritePosixFile(File file) throws IOException {
 		try {
-			Set<PosixFilePermission> permissions = Files
-					.getPosixFilePermissions(file.toPath());
+			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(file.toPath());
 			for (PosixFilePermission permission : WRITE_PERMISSIONS) {
 				if (permissions.contains(permission)) {
 					return true;
