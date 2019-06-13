@@ -75,12 +75,12 @@ public class RedisSessionProperties {
 		this.cleanupCron = cleanupCron;
 	}
 
-	public ConfigureAction getConfigurationStrategy() {
+	public ConfigureAction getConfigureAction() {
 		return this.configureAction;
 	}
 
-	public void setConfigurationStrategy(ConfigureAction configurationStrategy) {
-		this.configureAction = configurationStrategy;
+	public void setConfigureAction(ConfigureAction configureAction) {
+		this.configureAction = configureAction;
 	}
 
 	/**

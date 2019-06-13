@@ -89,7 +89,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	}
 
 	@Test
-	void redisSessionConfigureNoStrategy() {
+	void redisSessionWithConfigureActionNone() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.configure-action=none",
 						"spring.redis.port=" + redis.getFirstMappedPort())
@@ -97,7 +97,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	}
 
 	@Test
-	void redisSessionConfigureDefaultStrategy() {
+	void redisSessionWithDefaultConfigureActionNone() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis",
 						"spring.redis.port=" + redis.getFirstMappedPort())
@@ -106,7 +106,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	}
 
 	@Test
-	void redisSessionConfigureCustomStrategy() {
+	void redisSessionWithCustomConfigureRedisActionBean() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withUserConfiguration(MaxEntriesRedisAction.class)
 				.withPropertyValues("spring.session.store-type=redis",
