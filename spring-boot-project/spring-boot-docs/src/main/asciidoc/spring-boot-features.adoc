@@ -4303,7 +4303,7 @@ path by using the `spring.h2.console.path` property.
 
 [[boot-features-jooq]]
 === Using jOOQ
-Java Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from
+jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from
 https://www.datageekery.com/[Data Geekery] which generates Java code from your
 database and lets you build type-safe SQL queries through its fluent API. Both the
 commercial and open source editions can be used with Spring Boot.
