@@ -27,7 +27,7 @@
 		<maven-resolver.version>1.1.1</maven-resolver.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<testcontainers.version>1.10.6</testcontainers.version>
-		<dependency-management-plugin.version>1.0.6.RELEASE</dependency-management-plugin.version>
+		<dependency-management-plugin.version>1.0.8.RELEASE</dependency-management-plugin.version>
 	</properties>
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
