@@ -28,7 +28,6 @@ import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.pattern.Converter;
 import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.LifeCycle;
-import ch.qos.logback.core.spi.PropertyContainer;
 
 import org.springframework.util.Assert;
 
@@ -47,7 +46,7 @@ class LogbackConfigurator {
 		this.context = context;
 	}
 
-	public PropertyContainer getContext() {
+	public LoggerContext getContext() {
 		return this.context;
 	}
 

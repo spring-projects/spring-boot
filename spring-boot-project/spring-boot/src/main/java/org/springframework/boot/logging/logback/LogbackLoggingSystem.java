@@ -33,7 +33,9 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
+import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.util.StatusListenerConfigHelper;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -125,7 +127,12 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		LoggerContext context = getLoggerContext();
 		stopAndReset(context);
-		LogbackConfigurator configurator = new LogbackConfigurator(context);
+		boolean debug = Boolean.getBoolean("logback.debug");
+		if (debug) {
+			StatusListenerConfigHelper.addOnConsoleListenerInstance(context, new OnConsoleStatusListener());
+		}
+		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
+				: new LogbackConfigurator(context);
 		Environment environment = initializationContext.getEnvironment();
 		context.putProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN,
 				environment.resolvePlaceholders("${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
