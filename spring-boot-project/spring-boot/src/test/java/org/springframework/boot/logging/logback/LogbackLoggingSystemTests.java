@@ -538,6 +538,35 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 	}
 
+	@Test
+	public void noDebugOutputIsProducedByDefault() {
+		System.clearProperty("logback.debug");
+		this.loggingSystem.beforeInitialize();
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		String output = this.output.toString().trim();
+		System.out.println(output);
+		assertThat(output).doesNotContain("LevelChangePropagator").doesNotContain("SizeAndTimeBasedFNATP");
+	}
+
+	@Test
+	public void logbackDebugPropertyIsHonored() {
+		System.setProperty("logback.debug", "true");
+		try {
+			this.loggingSystem.beforeInitialize();
+			File file = new File(tmpDir(), "logback-test.log");
+			LogFile logFile = getLogFile(file.getPath(), null);
+			this.loggingSystem.initialize(this.initializationContext, null, logFile);
+			String output = this.output.toString().trim();
+			assertThat(output).contains("LevelChangePropagator").contains("SizeAndTimeBasedFNATP")
+					.contains("DebugLogbackConfigurator");
+		}
+		finally {
+			System.clearProperty("logback.debug");
+		}
+	}
+
 	private static Logger getRootLogger() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		LoggerContext context = (LoggerContext) factory;
