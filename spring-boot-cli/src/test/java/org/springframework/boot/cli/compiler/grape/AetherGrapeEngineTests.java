@@ -156,10 +156,13 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void resolutionWithCustomResolver() {
-		Map<String, Object> args = new HashMap<String, Object>();
-		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
-		grapeEngine.addResolver(createResolver("restlet.org", "https://maven.restlet.org"));
-		grapeEngine.grab(args, createDependency("org.restlet", "org.restlet", "1.1.6"));
+		Map<String, Object> args = new HashMap<>();
+		AetherGrapeEngine grapeEngine = createGrapeEngine();
+		grapeEngine.addResolver(createResolver("spring-releases", "https://repo.spring.io/release"));
+		Map<String, Object> dependency = createDependency("io.spring.docresources", "spring-doc-resources",
+				"0.1.1.RELEASE");
+		dependency.put("ext", "zip");
+		grapeEngine.grab(args, dependency);
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
 	}
 
