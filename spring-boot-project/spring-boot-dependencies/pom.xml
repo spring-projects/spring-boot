@@ -139,7 +139,7 @@
 		<junit-jupiter.version>5.4.2</junit-jupiter.version>
 		<kafka.version>2.2.0</kafka.version>
 		<kotlin.version>1.3.31</kotlin.version>
-		<lettuce.version>5.1.6.RELEASE</lettuce.version>
+		<lettuce.version>5.1.7.RELEASE</lettuce.version>
 		<liquibase.version>3.6.3</liquibase.version>
 		<log4j2.version>2.11.2</log4j2.version>
 		<logback.version>1.2.3</logback.version>
