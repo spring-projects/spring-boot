@@ -39,6 +39,9 @@ import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.config.store.IDownloadPath;
+import de.flapdoodle.embed.process.distribution.Distribution;
+import de.flapdoodle.embed.process.distribution.Platform;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
 import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
@@ -190,8 +193,9 @@ public class EmbeddedMongoAutoConfiguration {
 		}
 
 		private ArtifactStoreBuilder getArtifactStore(Logger logger) {
-			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(new DownloadConfigBuilder()
-					.defaultsForCommand(Command.MongoD).progressListener(new Slf4jProgressListener(logger)).build());
+			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
+					.download(new HttpsDownloadConfigBuilder().defaultsForCommand(Command.MongoD)
+							.progressListener(new Slf4jProgressListener(logger)).build());
 		}
 
 	}
@@ -266,6 +270,29 @@ public class EmbeddedMongoAutoConfiguration {
 		@Override
 		public String toString() {
 			return this.version;
+		}
+
+	}
+
+	private static class HttpsDownloadConfigBuilder extends DownloadConfigBuilder {
+
+		@Override
+		public DownloadConfigBuilder defaultsForCommand(Command command) {
+			super.defaultsForCommand(command);
+			downloadPath().setDefault(new PlatformDependentHttpsDownloadPath());
+			return this;
+		}
+
+		private static class PlatformDependentHttpsDownloadPath implements IDownloadPath {
+
+			@Override
+			public String getPath(Distribution distribution) {
+				if (distribution.getPlatform() == Platform.Windows) {
+					return "https://downloads.mongodb.org/";
+				}
+				return "https://fastdl.mongodb.org/";
+			}
+
 		}
 
 	}
