@@ -16,11 +16,21 @@
 
 package org.springframework.boot.autoconfigure.h2;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
@@ -111,6 +121,17 @@ class H2ConsoleAutoConfigurationTests {
 		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
 		assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");
 		assertThat(registrationBean.getInitParameters()).containsEntry("webAllowOthers", "");
+	}
+
+	@Test
+	@ExtendWith(OutputCaptureExtension.class)
+	void dataSourceUrlIsLoggedWhenAvailable(CapturedOutput capturedOutput) throws BeansException, SQLException {
+		this.context.register(DataSourceAutoConfiguration.class, H2ConsoleAutoConfiguration.class);
+		TestPropertyValues.of("spring.h2.console.enabled:true").applyTo(this.context);
+		this.context.refresh();
+		try (Connection connection = this.context.getBean(DataSource.class).getConnection()) {
+			assertThat(capturedOutput).contains("Database available at '" + connection.getMetaData().getURL() + "'");
+		}
 	}
 
 }
