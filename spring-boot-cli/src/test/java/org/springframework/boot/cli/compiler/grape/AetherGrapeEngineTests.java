@@ -156,7 +156,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void resolutionWithCustomResolver() {
-		Map<String, Object> args = new HashMap<>();
+		Map<String, Object> args = new HashMap<String, Object>();
 		AetherGrapeEngine grapeEngine = createGrapeEngine();
 		grapeEngine.addResolver(createResolver("spring-releases", "https://repo.spring.io/release"));
 		Map<String, Object> dependency = createDependency("io.spring.docresources", "spring-doc-resources",
