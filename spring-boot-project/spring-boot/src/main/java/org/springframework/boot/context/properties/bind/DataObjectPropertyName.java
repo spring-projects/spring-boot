@@ -17,14 +17,15 @@
 package org.springframework.boot.context.properties.bind;
 
 /**
- * Internal utility to help when dealing with Java Bean property names.
+ * Internal utility to help when dealing with data object property names.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @see DataObjectBinder
  */
-abstract class BeanPropertyName {
+abstract class DataObjectPropertyName {
 
-	private BeanPropertyName() {
+	private DataObjectPropertyName() {
 	}
 
 	/**
@@ -33,19 +34,9 @@ abstract class BeanPropertyName {
 	 * @return the dashed from
 	 */
 	public static String toDashedForm(String name) {
-		return toDashedForm(name, 0);
-	}
-
-	/**
-	 * Return the specified Java Bean property name in dashed form.
-	 * @param name the source name
-	 * @param start the starting char
-	 * @return the dashed from
-	 */
-	public static String toDashedForm(String name, int start) {
 		StringBuilder result = new StringBuilder();
 		String replaced = name.replace('_', '-');
-		for (int i = start; i < replaced.length(); i++) {
+		for (int i = 0; i < replaced.length(); i++) {
 			char ch = replaced.charAt(i);
 			if (Character.isUpperCase(ch) && result.length() > 0 && result.charAt(result.length() - 1) != '-') {
 				result.append('-');

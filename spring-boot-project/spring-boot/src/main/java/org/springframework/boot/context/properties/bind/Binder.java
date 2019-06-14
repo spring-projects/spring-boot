@@ -55,7 +55,7 @@ public class Binder {
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
 			.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
 
-	private static final BeanBinder[] BEAN_BINDERS = { new ConstructorParametersBinder(), new JavaBeanBinder() };
+	private static final DataObjectBinder[] DATA_OBJECT_BINDERS = { new ValueObjectBinder(), new JavaBeanBinder() };
 
 	private final Iterable<ConfigurationPropertySource> sources;
 
@@ -282,7 +282,7 @@ public class Binder {
 			result = context.getConverter().convert(result, target);
 		}
 		if (result == null && create) {
-			result = createBean(target, context);
+			result = create(target, context);
 			result = handler.onCreate(name, target, context, result);
 			result = context.getConverter().convert(result, target);
 			Assert.state(result != null, () -> "Unable to create instance for " + target.getType());
@@ -291,12 +291,11 @@ public class Binder {
 		return context.getConverter().convert(result, target);
 	}
 
-	private Object createBean(Bindable<?> target, Context context) {
-		Class<?> type = target.getType().resolve();
-		for (BeanBinder beanBinder : BEAN_BINDERS) {
-			Object bean = beanBinder.create(type, context);
-			if (bean != null) {
-				return bean;
+	private Object create(Bindable<?> target, Context context) {
+		for (DataObjectBinder dataObjectBinder : DATA_OBJECT_BINDERS) {
+			Object instance = dataObjectBinder.create(target, context);
+			if (instance != null) {
+				return instance;
 			}
 		}
 		return null;
@@ -331,15 +330,15 @@ public class Binder {
 				return bindProperty(target, context, property);
 			}
 			catch (ConverterNotFoundException ex) {
-				// We might still be able to bind it as a bean
-				Object bean = bindBean(name, target, handler, context, allowRecursiveBinding);
-				if (bean != null) {
-					return bean;
+				// We might still be able to bind it using the recursive binders
+				Object instance = bindDataObject(name, target, handler, context, allowRecursiveBinding);
+				if (instance != null) {
+					return instance;
 				}
 				throw ex;
 			}
 		}
-		return bindBean(name, target, handler, context, allowRecursiveBinding);
+		return bindDataObject(name, target, handler, context, allowRecursiveBinding);
 	}
 
 	private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
@@ -387,22 +386,22 @@ public class Binder {
 		return result;
 	}
 
-	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler, Context context,
-			boolean allowRecursiveBinding) {
+	private Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
+			Context context, boolean allowRecursiveBinding) {
 		if (isUnbindableBean(name, target, context)) {
 			return null;
 		}
 		Class<?> type = target.getType().resolve(Object.class);
-		if (!allowRecursiveBinding && context.hasBoundBean(type)) {
+		if (!allowRecursiveBinding && context.isBindingDataObject(type)) {
 			return null;
 		}
-		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
+		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
-		return context.withBean(type, () -> {
-			for (BeanBinder beanBinder : BEAN_BINDERS) {
-				Object bean = beanBinder.bind(name, target, context, propertyBinder);
-				if (bean != null) {
-					return bean;
+		return context.withDataObject(type, () -> {
+			for (DataObjectBinder dataObjectBinder : DATA_OBJECT_BINDERS) {
+				Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
+				if (instance != null) {
+					return instance;
 				}
 			}
 			return null;
@@ -457,7 +456,7 @@ public class Binder {
 
 		private int sourcePushCount;
 
-		private final Deque<Class<?>> beans = new ArrayDeque<>();
+		private final Deque<Class<?>> dataObjectBindings = new ArrayDeque<>();
 
 		private ConfigurationProperty configurationProperty;
 
@@ -487,18 +486,18 @@ public class Binder {
 			}
 		}
 
-		private <T> T withBean(Class<?> bean, Supplier<T> supplier) {
-			this.beans.push(bean);
+		private <T> T withDataObject(Class<?> type, Supplier<T> supplier) {
+			this.dataObjectBindings.push(type);
 			try {
 				return withIncreasedDepth(supplier);
 			}
 			finally {
-				this.beans.pop();
+				this.dataObjectBindings.pop();
 			}
 		}
 
-		private boolean hasBoundBean(Class<?> bean) {
-			return this.beans.contains(bean);
+		private boolean isBindingDataObject(Class<?> type) {
+			return this.dataObjectBindings.contains(type);
 		}
 
 		private <T> T withIncreasedDepth(Supplier<T> supplier) {

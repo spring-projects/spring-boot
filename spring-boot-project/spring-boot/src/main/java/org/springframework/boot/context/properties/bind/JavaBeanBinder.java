@@ -35,16 +35,16 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 
 /**
- * {@link BeanBinder} for mutable Java Beans.
+ * {@link DataObjectBinder} for mutable Java Beans.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class JavaBeanBinder implements BeanBinder {
+class JavaBeanBinder implements DataObjectBinder {
 
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
-			BeanPropertyBinder propertyBinder) {
+			DataObjectPropertyBinder propertyBinder) {
 		boolean hasKnownBindableProperties = hasKnownBindableProperties(name, context);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
@@ -56,8 +56,10 @@ class JavaBeanBinder implements BeanBinder {
 	}
 
 	@Override
-	public <T> T create(Class<T> type, Context context) {
-		return BeanUtils.instantiateClass(type);
+	@SuppressWarnings("unchecked")
+	public <T> T create(Bindable<T> target, Context context) {
+		Class<T> type = (Class<T>) target.getType().resolve();
+		return (type != null) ? BeanUtils.instantiateClass(type) : null;
 	}
 
 	private boolean hasKnownBindableProperties(ConfigurationPropertyName name, Context context) {
@@ -69,7 +71,7 @@ class JavaBeanBinder implements BeanBinder {
 		return false;
 	}
 
-	private <T> boolean bind(BeanPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier) {
+	private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier) {
 		boolean bound = false;
 		for (BeanProperty beanProperty : bean.getProperties().values()) {
 			bound |= bind(beanSupplier, propertyBinder, beanProperty);
@@ -77,7 +79,8 @@ class JavaBeanBinder implements BeanBinder {
 		return bound;
 	}
 
-	private <T> boolean bind(BeanSupplier<T> beanSupplier, BeanPropertyBinder propertyBinder, BeanProperty property) {
+	private <T> boolean bind(BeanSupplier<T> beanSupplier, DataObjectPropertyBinder propertyBinder,
+			BeanProperty property) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
 		Supplier<Object> value = property.getValue(beanSupplier);
@@ -268,7 +271,7 @@ class JavaBeanBinder implements BeanBinder {
 		private Field field;
 
 		BeanProperty(String name, ResolvableType declaringClassType) {
-			this.name = BeanPropertyName.toDashedForm(name);
+			this.name = DataObjectPropertyName.toDashedForm(name);
 			this.declaringClassType = declaringClassType;
 		}
 

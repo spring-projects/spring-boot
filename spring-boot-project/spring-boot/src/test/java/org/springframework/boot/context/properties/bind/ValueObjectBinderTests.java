@@ -30,11 +30,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConstructorParametersBinder}.
+ * Tests for {@link ValueObjectBinder}.
  *
  * @author Madhura Bhave
  */
-class ConstructorParametersBinderTests {
+class ValueObjectBinderTests {
 
 	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 

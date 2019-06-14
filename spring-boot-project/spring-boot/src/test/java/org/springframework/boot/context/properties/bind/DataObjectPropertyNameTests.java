@@ -21,21 +21,21 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BeanPropertyName}.
+ * Tests for {@link DataObjectPropertyName}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class BeanPropertyNameTests {
+class DataObjectPropertyNameTests {
 
 	@Test
 	void toDashedCaseShouldConvertValue() {
-		assertThat(BeanPropertyName.toDashedForm("Foo")).isEqualTo("foo");
-		assertThat(BeanPropertyName.toDashedForm("foo")).isEqualTo("foo");
-		assertThat(BeanPropertyName.toDashedForm("fooBar")).isEqualTo("foo-bar");
-		assertThat(BeanPropertyName.toDashedForm("foo_bar")).isEqualTo("foo-bar");
-		assertThat(BeanPropertyName.toDashedForm("_foo_bar")).isEqualTo("-foo-bar");
-		assertThat(BeanPropertyName.toDashedForm("foo_Bar")).isEqualTo("foo-bar");
+		assertThat(DataObjectPropertyName.toDashedForm("Foo")).isEqualTo("foo");
+		assertThat(DataObjectPropertyName.toDashedForm("foo")).isEqualTo("foo");
+		assertThat(DataObjectPropertyName.toDashedForm("fooBar")).isEqualTo("foo-bar");
+		assertThat(DataObjectPropertyName.toDashedForm("foo_bar")).isEqualTo("foo-bar");
+		assertThat(DataObjectPropertyName.toDashedForm("_foo_bar")).isEqualTo("-foo-bar");
+		assertThat(DataObjectPropertyName.toDashedForm("foo_Bar")).isEqualTo("foo-bar");
 	}
 
 }

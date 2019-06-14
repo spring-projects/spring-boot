@@ -17,13 +17,13 @@
 package org.springframework.boot.context.properties.bind;
 
 /**
- * Binder that can be used by {@link BeanBinder} implementations to recursively bind bean
- * properties.
+ * Binder that can be used by {@link DataObjectBinder} implementations to bind the data
+ * object properties.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-interface BeanPropertyBinder {
+interface DataObjectPropertyBinder {
 
 	/**
 	 * Bind the given property.
