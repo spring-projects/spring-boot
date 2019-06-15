@@ -1,10 +1,10 @@
 == Concourse pipeline
 
-Ensure that you've have a spring-boot target logged in
+Ensure that you've setup the spring-boot target and can login
 
 [source]
 ----
-$ fly -t spring-boot login -n spring-boot -c https://ci.spring-io
+$ fly -t spring-boot login -n spring-boot -c https://ci.spring.io
 ----
 
 The pipeline can be deployed using the following command:
