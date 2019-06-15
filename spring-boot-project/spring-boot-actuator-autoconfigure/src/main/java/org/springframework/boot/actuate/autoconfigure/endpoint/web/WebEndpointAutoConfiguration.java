@@ -52,6 +52,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for web {@link Endpoint @Endpoint}
@@ -67,7 +68,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(WebEndpointProperties.class)
 public class WebEndpointAutoConfiguration {
 
-	private static final List<String> MEDIA_TYPES = Arrays.asList(ActuatorMediaType.V2_JSON, "application/json");
+	private static final List<String> MEDIA_TYPES = Arrays.asList(ActuatorMediaType.V2_JSON,
+			MediaType.APPLICATION_JSON_VALUE);
 
 	private final ApplicationContext applicationContext;
 
