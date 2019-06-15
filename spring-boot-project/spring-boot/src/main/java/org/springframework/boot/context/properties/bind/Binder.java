@@ -244,8 +244,8 @@ public class Binder {
 	 * @param target the target bindable
 	 * @param handler the bind handler (may be {@code null})
 	 * @param <T> the bound or created type
-	 * @since 2.2.0
 	 * @return the bound or created object
+	 * @since 2.2.0
 	 */
 	public <T> T bindOrCreate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler) {
 		return bind(name, target, handler, true);
