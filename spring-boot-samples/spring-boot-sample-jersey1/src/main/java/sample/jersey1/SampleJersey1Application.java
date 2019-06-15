@@ -16,28 +16,25 @@
 
 package sample.jersey1;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.util.Collections;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication
-@Path("/")
+/**
+ * Sample spring boot application with jersey 1.x.
+ *
+ * @author Yiang Guo
+ */
+@SpringBootApplication(scanBasePackageClasses = SampleJersey1Application.class)
 public class SampleJersey1Application {
-
-	@GET
-	@Produces("text/plain")
-	public String hello() {
-		return "Hello World";
-	}
 
 	@Bean
 	// Not needed if Spring Web MVC is also present on classpath
@@ -46,9 +43,13 @@ public class SampleJersey1Application {
 	}
 
 	@Bean
-	public FilterRegistrationBean<ServletContainer> jersey() {
-		FilterRegistrationBean<ServletContainer> bean = new FilterRegistrationBean<>();
-		bean.setFilter(new ServletContainer());
+	public ServletRegistrationBean<ServletContainer> jersey() {
+		ServletRegistrationBean<ServletContainer> bean = new ServletRegistrationBean<>();
+		// Use SpringServlet to enable jersey spring integration
+		bean.setServlet(new SpringServlet());
+		bean.setUrlMappings(Collections.singletonList("/"));
+		bean.setLoadOnStartup(1);
+		// Jersey resource packages
 		bean.addInitParameter("com.sun.jersey.config.property.packages", "com.sun.jersey;sample.jersey1");
 		return bean;
 	}

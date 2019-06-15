@@ -36,7 +36,8 @@ public class SampleJersey1ApplicationTests {
 
 	@Test
 	public void rootReturnsHelloWorld() {
-		assertThat(this.restTemplate.getForObject("/", String.class)).isEqualTo("Hello World");
+		assertThat(this.restTemplate.getForObject("/", String.class)).isEqualTo("Hello World! Count: 1");
+		assertThat(this.restTemplate.getForObject("/", String.class)).isEqualTo("Hello World! Count: 2");
 	}
 
 }
