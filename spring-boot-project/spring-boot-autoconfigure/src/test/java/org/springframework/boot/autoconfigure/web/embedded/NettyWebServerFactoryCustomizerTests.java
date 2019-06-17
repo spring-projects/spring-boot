@@ -16,21 +16,27 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.time.Duration;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.mock.env.MockEnvironment;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link NettyWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
+ * @author Artsiom Yudovin
  */
 public class NettyWebServerFactoryCustomizerTests {
 
@@ -46,6 +52,12 @@ public class NettyWebServerFactoryCustomizerTests {
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
 		this.customizer = new NettyWebServerFactoryCustomizer(this.environment, this.serverProperties);
+	}
+
+	private void clear() {
+		this.serverProperties.setUseForwardHeaders(null);
+		this.serverProperties.setMaxHttpHeaderSize(null);
+		this.serverProperties.setConnectionTimeout(null);
 	}
 
 	@Test
@@ -69,6 +81,26 @@ public class NettyWebServerFactoryCustomizerTests {
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void setConnectionTimeoutAsZero() {
+		clear();
+		this.serverProperties.setConnectionTimeout(Duration.ZERO);
+
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory, times(0)).addServerCustomizers(any(NettyServerCustomizer.class));
+	}
+
+	@Test
+	public void setConnectionTimeoutAsMinusOne() {
+		clear();
+		this.serverProperties.setConnectionTimeout(Duration.ofNanos(-1));
+
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory, times(1)).addServerCustomizers(any(NettyServerCustomizer.class));
 	}
 
 }

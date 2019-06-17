@@ -58,10 +58,12 @@ public class NettyWebServerFactoryCustomizer
 	@Override
 	public void customize(NettyReactiveWebServerFactory factory) {
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders(this.serverProperties, this.environment));
-		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(this.serverProperties::getMaxHttpHeaderSize).whenNonNull().asInt(DataSize::toBytes)
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		propertyMapper.from(this.serverProperties::getMaxHttpHeaderSize).asInt(DataSize::toBytes)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpRequestHeaderSize));
-		propertyMapper.from(this.serverProperties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
+		propertyMapper.from(this.serverProperties::getConnectionTimeout).asInt(Duration::toMillis)
+				.whenNot((connectionTimout) -> connectionTimout.equals(0))
+				.as((connectionTimeout) -> connectionTimeout.equals(-1) ? 0 : connectionTimeout)
 				.to((duration) -> factory.addServerCustomizers(getConnectionTimeOutCustomizer(duration)));
 	}
 
