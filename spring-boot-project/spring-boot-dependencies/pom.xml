@@ -820,6 +820,11 @@
 				<version>${okhttp3.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.sun.activation</groupId>
+				<artifactId>jakarta.activation</artifactId>
+				<version>${jakarta-activation.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.sun.mail</groupId>
 				<artifactId>jakarta.mail</artifactId>
 				<version>${sun-mail.version}</version>
