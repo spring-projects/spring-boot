@@ -64,6 +64,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Dominic Gunn
+ * @author András Deák
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LiquibaseAutoConfigurationTests {
@@ -206,6 +207,28 @@ class LiquibaseAutoConfigurationTests {
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).isEqualTo(jdbcUrl);
 					assertThat(((HikariDataSource) dataSource).getUsername()).isEqualTo("sa");
+				}));
+	}
+
+	@Test
+	void overrideDataSourceAndFallbackToEmbeddedProperties() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getUsername()).isEqualTo("sa");
+					assertThat(((HikariDataSource) dataSource).getPassword()).isEqualTo("");
+				}));
+	}
+
+	@Test
+	void overrideUserAndFallbackToEmbeddedProperties() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.user:sa").run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).startsWith("jdbc:h2:mem:");
 				}));
 	}
 

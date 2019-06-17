@@ -80,6 +80,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Dominic Gunn
  * @author Dan Zheng
+ * @author András Deák
  * @since 1.1.0
  */
 @SuppressWarnings("deprecation")
@@ -130,9 +131,9 @@ public class FlywayAutoConfiguration {
 		private DataSource configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
 				DataSourceProperties dataSourceProperties, DataSource flywayDataSource, DataSource dataSource) {
 			if (properties.isCreateDataSource()) {
-				String url = getProperty(properties::getUrl, dataSourceProperties::getUrl);
-				String user = getProperty(properties::getUser, dataSourceProperties::getUsername);
-				String password = getProperty(properties::getPassword, dataSourceProperties::getPassword);
+				String url = getProperty(properties::getUrl, dataSourceProperties::determineUrl);
+				String user = getProperty(properties::getUser, dataSourceProperties::determineUsername);
+				String password = getProperty(properties::getPassword, dataSourceProperties::determinePassword);
 				configuration.dataSource(url, user, password);
 				if (!CollectionUtils.isEmpty(properties.getInitSqls())) {
 					String initSql = StringUtils.collectionToDelimitedString(properties.getInitSqls(), "\n");
