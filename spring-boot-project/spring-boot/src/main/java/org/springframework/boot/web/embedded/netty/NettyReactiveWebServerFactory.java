@@ -34,6 +34,7 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.util.Assert;
+import reactor.netty.tcp.TcpServer;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link NettyWebServer}s.
@@ -52,6 +53,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	private boolean useForwardHeaders;
 
 	private ReactorResourceFactory resourceFactory;
+
+	private TcpServer tcpServer;
 
 	public NettyReactiveWebServerFactory() {
 	}
@@ -134,8 +137,17 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		this.resourceFactory = resourceFactory;
 	}
 
+	/**
+	 * Set custom tcp server for creation http server
+	 * @param tcpServer Custom tcp server
+	 * @since 2.1.5
+	 */
+	public void setTcpServer(TcpServer tcpServer) {
+		this.tcpServer = tcpServer;
+	}
+
 	private HttpServer createHttpServer() {
-		HttpServer server = HttpServer.create();
+		HttpServer server = tcpServer != null ? HttpServer.from(tcpServer) : HttpServer.create();
 		if (this.resourceFactory != null) {
 			LoopResources resources = this.resourceFactory.getLoopResources();
 			Assert.notNull(resources, "No LoopResources: is ReactorResourceFactory not initialized yet?");

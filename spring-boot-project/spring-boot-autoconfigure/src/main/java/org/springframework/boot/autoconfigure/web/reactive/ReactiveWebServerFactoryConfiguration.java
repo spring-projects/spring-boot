@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import java.util.stream.Collectors;
-
 import io.undertow.Undertow;
-import reactor.netty.http.server.HttpServer;
-
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
@@ -40,6 +38,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.TcpServer;
 
 /**
  * Configuration classes for reactive web servers
@@ -66,10 +66,12 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 		@Bean
 		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(ReactorResourceFactory resourceFactory,
-				ObjectProvider<NettyRouteProvider> routes) {
+				ObjectProvider<NettyRouteProvider> routes,
+				@Autowired(required = false) TcpServer tcpServer) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory();
 			serverFactory.setResourceFactory(resourceFactory);
 			routes.orderedStream().forEach((route) -> serverFactory.addRouteProviders(route));
+			serverFactory.setTcpServer(tcpServer);
 			return serverFactory;
 		}
 
