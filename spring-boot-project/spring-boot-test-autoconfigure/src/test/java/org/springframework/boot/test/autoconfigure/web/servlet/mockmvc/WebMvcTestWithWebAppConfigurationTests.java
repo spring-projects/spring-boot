@@ -32,8 +32,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcTest} when loading resources via {@link ServletContext} with
- * {@link WebAppConfiguration}.
+ * Tests for {@link WebMvcTest @WebMvcTest} when loading resources via the
+ * {@link ServletContext} with {@link WebAppConfiguration @WebAppConfiguration}.
  *
  * @author Lorenzo Dee
  */
@@ -46,7 +46,7 @@ public class WebMvcTestWithWebAppConfigurationTests {
 	private ServletContext servletContext;
 
 	@Test
-	public void getResourceLocation() throws Exception {
+	public void whenBasePathIsCustomizedResourcesCanBeLoadedFromThatLocation() throws Exception {
 		testResource("/inwebapp", "src/test/webapp");
 		testResource("/inmetainfresources", "/META-INF/resources");
 		testResource("/inresources", "/resources");

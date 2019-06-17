@@ -154,8 +154,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
 			if (webApplicationType == WebApplicationType.SERVLET
 					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
-				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
-						getServletResourceBasePath(mergedConfig));
+				mergedConfig = new WebMergedContextConfiguration(mergedConfig, determineResourceBasePath(mergedConfig));
 			}
 			else if (webApplicationType == WebApplicationType.REACTIVE
 					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
@@ -187,7 +186,15 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		return WebApplicationType.SERVLET;
 	}
 
-	protected String getServletResourceBasePath(MergedContextConfiguration configuration) {
+	/**
+	 * Determines the resource base path for web applications using the value of
+	 * {@link WebAppConfiguration @WebAppConfiguration}, if any, on the test class of the
+	 * given {@code configuration}. Defaults to {@code src/main/webapp} in its absence.
+	 * @param configuration the configure to examine
+	 * @return the resource base path
+	 * @since 2.1.6
+	 */
+	protected String determineResourceBasePath(MergedContextConfiguration configuration) {
 		WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
 				.findMergedAnnotation(configuration.getTestClass(), WebAppConfiguration.class);
 		return (webAppConfiguration != null) ? webAppConfiguration.value() : "src/main/webapp";
