@@ -71,6 +71,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Lorenzo Dee
  * @since 1.4.0
  * @see SpringBootTest
  * @see TestConfiguration
@@ -153,11 +154,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
 			if (webApplicationType == WebApplicationType.SERVLET
 					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
-				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
-						.findMergedAnnotation(mergedConfig.getTestClass(), WebAppConfiguration.class);
-				String resourceBasePath = (webAppConfiguration != null) ? webAppConfiguration.value()
-						: "src/main/webapp";
-				mergedConfig = new WebMergedContextConfiguration(mergedConfig, resourceBasePath);
+				mergedConfig = new WebMergedContextConfiguration(mergedConfig, determineResourceBasePath(mergedConfig));
 			}
 			else if (webApplicationType == WebApplicationType.REACTIVE
 					&& (webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
@@ -187,6 +184,20 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			}
 		}
 		return WebApplicationType.SERVLET;
+	}
+
+	/**
+	 * Determines the resource base path for web applications using the value of
+	 * {@link WebAppConfiguration @WebAppConfiguration}, if any, on the test class of the
+	 * given {@code configuration}. Defaults to {@code src/main/webapp} in its absence.
+	 * @param configuration the configure to examine
+	 * @return the resource base path
+	 * @since 2.1.6
+	 */
+	protected String determineResourceBasePath(MergedContextConfiguration configuration) {
+		WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
+				.findMergedAnnotation(configuration.getTestClass(), WebAppConfiguration.class);
+		return (webAppConfiguration != null) ? webAppConfiguration.value() : "src/main/webapp";
 	}
 
 	private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
