@@ -30,7 +30,6 @@ import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.callback.FlywayCallback;
-import org.flywaydb.core.internal.jdbc.DriverDataSource;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -105,11 +104,10 @@ public class FlywayAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
-					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
-					assertThat(((DriverDataSource) context.getBean(Flyway.class).getDataSource()).getUser())
-							.isEqualTo("sa");
-					assertThat(((DriverDataSource) context.getBean(Flyway.class).getDataSource()).getPassword())
-							.isEqualTo("");
+					DataSource dataSource = context.getBean(Flyway.class).getDataSource();
+					assertThat(dataSource).isNotNull();
+					assertThat(dataSource).hasFieldOrPropertyWithValue("user", "sa");
+					assertThat(dataSource).hasFieldOrPropertyWithValue("password", "");
 				});
 	}
 
@@ -118,9 +116,9 @@ public class FlywayAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.user:sa").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
-					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
-					assertThat(((DriverDataSource) context.getBean(Flyway.class).getDataSource()).getUrl())
-							.startsWith("jdbc:h2:mem:");
+					DataSource dataSource = context.getBean(Flyway.class).getDataSource();
+					assertThat(dataSource).isNotNull();
+					assertThat(dataSource).extracting("url").hasSize(1).first().asString().startsWith("jdbc:h2:mem:");
 				});
 	}
 
