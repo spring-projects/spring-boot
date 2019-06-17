@@ -28,12 +28,14 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Lorenzo Dee
  */
 class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
-		return new WebMergedContextConfiguration(super.processMergedContextConfiguration(mergedConfig), "");
+		MergedContextConfiguration processedMergedConfiguration = super.processMergedContextConfiguration(mergedConfig);
+		return new WebMergedContextConfiguration(processedMergedConfiguration, determineResourceBasePath(mergedConfig));
 	}
 
 	@Override
