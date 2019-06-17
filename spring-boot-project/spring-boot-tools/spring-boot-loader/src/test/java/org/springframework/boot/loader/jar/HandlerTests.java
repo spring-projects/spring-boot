@@ -165,6 +165,34 @@ class HandlerTests {
 		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);
 	}
 
+	@Test
+	public void whenJarHasAPlusInItsPathConnectionJarFileMatchesOriginalJarFile() throws Exception {
+		File testJar = this.temporaryFolder.newFile("t+e+s+t.jar");
+		TestJarCreator.createTestJar(testJar);
+		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
+		JarURLConnection connection = (JarURLConnection) url.openConnection();
+		try {
+			assertThat(connection.getJarFile().getRootJarFile().getFile()).isEqualTo(testJar);
+		}
+		finally {
+			connection.getJarFile().close();
+		}
+	}
+
+	@Test
+	public void whenJarHasASpaceInItsPathConnectionJarFileMatchesOriginalJarFile() throws Exception {
+		File testJar = this.temporaryFolder.newFile("t e s t.jar");
+		TestJarCreator.createTestJar(testJar);
+		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
+		JarURLConnection connection = (JarURLConnection) url.openConnection();
+		try {
+			assertThat(connection.getJarFile().getRootJarFile().getFile()).isEqualTo(testJar);
+		}
+		finally {
+			connection.getJarFile().close();
+		}
+	}
+
 	private void assertStandardAndCustomHandlerUrlsAreEqual(String context, String spec) throws MalformedURLException {
 		URL standardUrl = new URL(new URL("jar:" + context), spec);
 		URL customHandlerUrl = new URL(new URL("jar", null, -1, context, this.handler), spec);
