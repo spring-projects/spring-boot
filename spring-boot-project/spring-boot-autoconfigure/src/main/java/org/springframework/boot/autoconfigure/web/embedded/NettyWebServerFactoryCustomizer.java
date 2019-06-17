@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
-import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -58,11 +57,11 @@ public class NettyWebServerFactoryCustomizer
 	@Override
 	public void customize(NettyReactiveWebServerFactory factory) {
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
-		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(this.serverProperties::getMaxHttpHeaderSize).whenNonNull().asInt(DataSize::toBytes)
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		propertyMapper.from(this.serverProperties::getMaxHttpHeaderSize)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpRequestHeaderSize));
-		propertyMapper.from(this.serverProperties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
-				.to((duration) -> factory.addServerCustomizers(getConnectionTimeOutCustomizer(duration)));
+		propertyMapper.from(this.serverProperties::getConnectionTimeout)
+				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {
@@ -73,14 +72,17 @@ public class NettyWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
-	private void customizeMaxHttpHeaderSize(NettyReactiveWebServerFactory factory, Integer maxHttpHeaderSize) {
-		factory.addServerCustomizers((NettyServerCustomizer) (httpServer) -> httpServer.httpRequestDecoder(
-				(httpRequestDecoderSpec) -> httpRequestDecoderSpec.maxHeaderSize(maxHttpHeaderSize)));
+	private void customizeMaxHttpHeaderSize(NettyReactiveWebServerFactory factory, DataSize maxHttpHeaderSize) {
+		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
+				(httpRequestDecoderSpec) -> httpRequestDecoderSpec.maxHeaderSize((int) maxHttpHeaderSize.toBytes())));
 	}
 
-	private NettyServerCustomizer getConnectionTimeOutCustomizer(int duration) {
-		return (httpServer) -> httpServer.tcpConfiguration(
-				(tcpServer) -> tcpServer.selectorOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, duration));
+	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
+		if (!connectionTimeout.isZero()) {
+			long timeoutMillis = connectionTimeout.isNegative() ? 0 : connectionTimeout.toMillis();
+			factory.addServerCustomizers((httpServer) -> httpServer.tcpConfiguration((tcpServer) -> tcpServer
+					.selectorOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) timeoutMillis)));
+		}
 	}
 
 }
