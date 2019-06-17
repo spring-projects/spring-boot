@@ -83,8 +83,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		HttpStatus errorStatus = determineHttpStatus(error);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
-		String message = determineMessage(error);
-		errorAttributes.put("message", (message != null) ? message : "");
+		errorAttributes.put("message", determineMessage(error));
 		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
 	}
