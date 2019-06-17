@@ -19,7 +19,10 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,6 +33,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
@@ -42,6 +48,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Tadaya Tsuyukubo
  */
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -58,16 +65,21 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-		public ReactiveJwtDecoder jwtDecoder() {
-			return new NimbusReactiveJwtDecoder(this.properties.getJwkSetUri());
+		public ReactiveJwtDecoder jwtDecoder(ObjectProvider<OAuth2TokenValidator<Jwt>> jwtValidators) {
+			NimbusReactiveJwtDecoder jwtDecoder = new NimbusReactiveJwtDecoder(this.properties.getJwkSetUri());
+			setJwtValidatorsIfAvailable(jwtDecoder, jwtValidators);
+			return jwtDecoder;
 		}
 
 		@Bean
 		@Conditional(KeyValueCondition.class)
-		public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
+		public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue(
+				ObjectProvider<OAuth2TokenValidator<Jwt>> jwtValidators) throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
-			return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
+			NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
+			setJwtValidatorsIfAvailable(jwtDecoder, jwtValidators);
+			return jwtDecoder;
 		}
 
 		private byte[] getKeySpec(String keyValue) {
@@ -77,8 +89,19 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		@Bean
 		@Conditional(IssuerUriCondition.class)
-		public ReactiveJwtDecoder jwtDecoderByIssuerUri() {
-			return ReactiveJwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
+		public ReactiveJwtDecoder jwtDecoderByIssuerUri(ObjectProvider<OAuth2TokenValidator<Jwt>> jwtValidators) {
+			NimbusReactiveJwtDecoder jwtDecoder = (NimbusReactiveJwtDecoder) ReactiveJwtDecoders
+					.fromOidcIssuerLocation(this.properties.getIssuerUri());
+			setJwtValidatorsIfAvailable(jwtDecoder, jwtValidators);
+			return jwtDecoder;
+		}
+
+		private void setJwtValidatorsIfAvailable(NimbusReactiveJwtDecoder jwtDecoder,
+				ObjectProvider<OAuth2TokenValidator<Jwt>> jwtValidator) {
+			List<OAuth2TokenValidator<Jwt>> validators = jwtValidator.orderedStream().collect(Collectors.toList());
+			if (!validators.isEmpty()) {
+				jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(validators));
+			}
 		}
 
 	}

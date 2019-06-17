@@ -39,9 +39,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.ReactiveAuthenticationManagerResolver;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
@@ -64,6 +69,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Tadaya Tsuyukubo
  */
 class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
@@ -283,6 +289,38 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 						"Only one of jwt.public-key-location and opaque-token.introspection-uri should be configured."));
 	}
 
+	@Test
+	void jwtDecoderByJwkSetUriWithJwtValidator() {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+				.withUserConfiguration(JwtValidatorConfig.class).run((context) -> verifyJwtValidatorSetup(
+						getJwtValidator(context.getBean(NimbusReactiveJwtDecoder.class))));
+	}
+
+	@Test
+	void jwtDecoderByOidcIssuerUriWithJwtValidator() throws IOException {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
+						+ this.server.getHostName() + ":" + this.server.getPort())
+				.withUserConfiguration(JwtValidatorConfig.class).run((context) -> verifyJwtValidatorSetup(
+						getJwtValidator(context.getBean(NimbusReactiveJwtDecoder.class))));
+
+	}
+
+	@Test
+	void jwtDecoderByPublicKeyWithJwtValidator() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location")
+				.withUserConfiguration(JwtValidatorConfig.class).run((context) -> verifyJwtValidatorSetup(
+						getJwtValidator(context.getBean(NimbusReactiveJwtDecoder.class))));
+	}
+
 	private void assertFilterConfiguredWithJwtAuthenticationManager(AssertableReactiveWebApplicationContext context) {
 		MatcherSecurityWebFilterChain filterChain = (MatcherSecurityWebFilterChain) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
@@ -341,6 +379,17 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
+	private OAuth2TokenValidator<Jwt> getJwtValidator(NimbusReactiveJwtDecoder decoder) {
+		return (OAuth2TokenValidator<Jwt>) ReflectionTestUtils.getField(decoder, NimbusReactiveJwtDecoder.class,
+				"jwtValidator");
+	}
+
+	private void verifyJwtValidatorSetup(OAuth2TokenValidator<Jwt> validator) {
+		assertThat(validator).isInstanceOf(DelegatingOAuth2TokenValidator.class).extracting("tokenValidators")
+				.hasSize(1).first().asList().hasSize(2);
+	}
+
 	@EnableWebFluxSecurity
 	static class TestConfig {
 
@@ -379,6 +428,22 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			http.authorizeExchange().pathMatchers("/message/**").hasRole("ADMIN").anyExchange().authenticated().and()
 					.httpBasic();
 			return http.build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableWebSecurity
+	static class JwtValidatorConfig {
+
+		@Bean
+		public OAuth2TokenValidator<Jwt> validator1() {
+			return jwt -> OAuth2TokenValidatorResult.success();
+		}
+
+		@Bean
+		public OAuth2TokenValidator<Jwt> validator2() {
+			return jwt -> OAuth2TokenValidatorResult.success();
 		}
 
 	}
