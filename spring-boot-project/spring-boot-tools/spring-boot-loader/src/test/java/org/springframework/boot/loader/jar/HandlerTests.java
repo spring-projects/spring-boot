@@ -166,8 +166,8 @@ class HandlerTests {
 	}
 
 	@Test
-	public void whenJarHasAPlusInItsPathConnectionJarFileMatchesOriginalJarFile() throws Exception {
-		File testJar = this.temporaryFolder.newFile("t+e+s+t.jar");
+	void whenJarHasAPlusInItsPathConnectionJarFileMatchesOriginalJarFile(@TempDir File tempDir) throws Exception {
+		File testJar = new File(tempDir, "t+e+s+t.jar");
 		TestJarCreator.createTestJar(testJar);
 		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
@@ -180,8 +180,8 @@ class HandlerTests {
 	}
 
 	@Test
-	public void whenJarHasASpaceInItsPathConnectionJarFileMatchesOriginalJarFile() throws Exception {
-		File testJar = this.temporaryFolder.newFile("t e s t.jar");
+	void whenJarHasASpaceInItsPathConnectionJarFileMatchesOriginalJarFile(@TempDir File tempDir) throws Exception {
+		File testJar = new File(tempDir, "t e s t.jar");
 		TestJarCreator.createTestJar(testJar);
 		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
