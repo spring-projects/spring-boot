@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +35,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -188,12 +190,17 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void loaderIsWrittenToTheRootOfTheJar() throws IOException {
+	void loaderIsWrittenToTheRootOfTheJarAfterManifest() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
+		}
+		// gh-16698
+		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(this.task.getArchivePath()))) {
+			assertThat(zipInputStream.getNextEntry().getName()).isEqualTo("META-INF/");
+			assertThat(zipInputStream.getNextEntry().getName()).isEqualTo("META-INF/MANIFEST.MF");
 		}
 	}
 
