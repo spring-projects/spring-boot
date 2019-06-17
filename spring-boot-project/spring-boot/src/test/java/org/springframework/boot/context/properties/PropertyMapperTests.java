@@ -197,12 +197,12 @@ class PropertyMapperTests {
 	}
 
 	@Test
-	public void whenWhenValueNotMatchesShouldSupportChainedCalls() {
+	void whenWhenValueNotMatchesShouldSupportChainedCalls() {
 		this.map.from("123").when("456"::equals).when("123"::equals).toCall(Assertions::fail);
 	}
 
 	@Test
-	public void whenWhenValueMatchesShouldSupportChainedCalls() {
+	void whenWhenValueMatchesShouldSupportChainedCalls() {
 		String result = this.map.from("123").when((s) -> s.contains("2")).when("123"::equals).toInstance(String::new);
 		assertThat(result).isEqualTo("123");
 	}
