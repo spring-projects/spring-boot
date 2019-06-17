@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.ExampleComponent;
@@ -77,6 +78,11 @@ class JooqTestIntegrationTests {
 	@Test
 	void liquibaseAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+	}
+
+	@Test
+	void cacheAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(CacheAutoConfiguration.class));
 	}
 
 }
