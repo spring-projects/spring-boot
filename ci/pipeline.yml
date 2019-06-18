@@ -27,7 +27,6 @@ resources:
     username: ((github-username))
     password: ((github-password))
     branch: ((branch))
-    ignore_paths: ["ci/images/*"]
 - name: git-pull-request
   type: pull-request
   icon: source-pull
