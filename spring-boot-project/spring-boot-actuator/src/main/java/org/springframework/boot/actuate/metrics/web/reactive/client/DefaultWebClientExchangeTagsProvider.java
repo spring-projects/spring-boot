@@ -37,13 +37,9 @@ public class DefaultWebClientExchangeTagsProvider implements WebClientExchangeTa
 		Tag method = WebClientExchangeTags.method(request);
 		Tag uri = WebClientExchangeTags.uri(request);
 		Tag clientName = WebClientExchangeTags.clientName(request);
-		if (response != null) {
-			return Arrays.asList(method, uri, clientName, WebClientExchangeTags.status(response),
-					WebClientExchangeTags.outcome(response));
-		}
-		else {
-			return Arrays.asList(method, uri, clientName, WebClientExchangeTags.status(throwable));
-		}
+		return Arrays.asList(method, uri, clientName,
+				(response != null) ? WebClientExchangeTags.status(response) : WebClientExchangeTags.status(throwable),
+				WebClientExchangeTags.outcome(response));
 	}
 
 }

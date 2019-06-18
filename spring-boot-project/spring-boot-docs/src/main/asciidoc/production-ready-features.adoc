@@ -1981,10 +1981,11 @@ following information:
 |`outcome`
 |Request's outcome based on the status code of the response. 1xx is
 `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is
-`SERVER_ERROR`
+`SERVER_ERROR`, `UNKNOWN` otherwise
 
 |`status`
-|Response's HTTP status code (for example, `200` or `500`)
+|Response's HTTP status code if available (for example, `200` or `500`),
+or `IO_ERROR` in case or I/O issues, `CLIENT_ERROR` otherwise
 
 |`uri`
 |Request's URI template prior to variable substitution, if possible (for example,

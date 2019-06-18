@@ -77,14 +77,14 @@ class DefaultWebClientExchangeTagsProviderTests {
 	void tagsWhenIoExceptionShouldReturnIoErrorStatus() {
 		Iterable<Tag> tags = this.tagsProvider.tags(this.request, null, new IOException());
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"), Tag.of("uri", "/projects/{project}"),
-				Tag.of("clientName", "example.org"), Tag.of("status", "IO_ERROR"));
+				Tag.of("clientName", "example.org"), Tag.of("status", "IO_ERROR"), Tag.of("outcome", "UNKNOWN"));
 	}
 
 	@Test
 	void tagsWhenExceptionShouldReturnClientErrorStatus() {
 		Iterable<Tag> tags = this.tagsProvider.tags(this.request, null, new IllegalArgumentException());
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"), Tag.of("uri", "/projects/{project}"),
-				Tag.of("clientName", "example.org"), Tag.of("status", "CLIENT_ERROR"));
+				Tag.of("clientName", "example.org"), Tag.of("status", "CLIENT_ERROR"), Tag.of("outcome", "UNKNOWN"));
 	}
 
 }
