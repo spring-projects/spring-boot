@@ -306,6 +306,11 @@
 							<artifactId>asciidoctorj</artifactId>
 							<version>1.5.8</version>
 						</dependency>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctorj-pdf</artifactId>
+							<version>1.5.0-alpha.11</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>

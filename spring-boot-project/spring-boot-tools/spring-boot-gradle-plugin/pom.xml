@@ -357,11 +357,6 @@
 						</configuration>
 						<dependencies>
 							<dependency>
-								<groupId>org.asciidoctor</groupId>
-								<artifactId>asciidoctorj-pdf</artifactId>
-								<version>1.5.0-alpha.11</version>
-							</dependency>
-							<dependency>
 								<groupId>io.spring.asciidoctor</groupId>
 								<artifactId>spring-asciidoctor-extensions</artifactId>
 								<version>0.1.3.RELEASE</version>
