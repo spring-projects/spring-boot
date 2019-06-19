@@ -66,7 +66,8 @@ public class ManagementServerProperties {
 
 	/**
 	 * Sets the port of the management server, use {@code null} if the
-	 * {@link ServerProperties#getPort() server port} should be used. To disable use 0.
+	 * {@link ServerProperties#getPort() server port} should be used. Set to 0 to use a
+	 * random port or set to -1 to disable.
 	 * @param port the port
 	 */
 	public void setPort(Integer port) {
