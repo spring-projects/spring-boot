@@ -21,7 +21,11 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
+import reactor.netty.http.HttpResources;
+import reactor.netty.tcp.TcpServer;
+
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
@@ -49,8 +53,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import reactor.netty.http.HttpResources;
-import reactor.netty.tcp.TcpServer;
 
 /**
  * Integration tests for {@link ControllerEndpointHandlerMapping}.

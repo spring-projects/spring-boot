@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
+
+import reactor.netty.http.HttpResources;
+import reactor.netty.tcp.TcpServer;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -45,8 +47,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
-import reactor.netty.http.HttpResources;
-import reactor.netty.tcp.TcpServer;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for web endpoints exposed using WebFlux.
