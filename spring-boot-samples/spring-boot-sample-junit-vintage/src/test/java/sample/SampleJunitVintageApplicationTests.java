@@ -20,24 +20,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@WebMvcTest
 public class SampleJunitVintageApplicationTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private MockMvc mockMvc;
 
 	@Test
-	public void testMessage() {
-		String message = this.restTemplate.getForObject("/hi", String.class);
-		assertThat(message).isEqualTo("Hello World");
+	public void testMessage() throws Exception {
+		this.mockMvc.perform(get("/hi")).andExpect(content().string("Hello World"));
 	}
 
 }
