@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -37,7 +36,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -76,6 +74,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
+import reactor.netty.http.HttpResources;
+import reactor.netty.tcp.TcpServer;
 
 /**
  * {@link TestTemplateInvocationContextProvider} for
@@ -261,8 +261,13 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory netty() {
-			return new NettyReactiveWebServerFactory(0);
+		public TcpServer tcpServer() {
+			return TcpServer.create().runOn(HttpResources.get()).port(0);
+		}
+
+		@Bean
+		public NettyReactiveWebServerFactory netty(TcpServer tcpServer) {
+			return new NettyReactiveWebServerFactory(tcpServer);
 		}
 
 		@Bean

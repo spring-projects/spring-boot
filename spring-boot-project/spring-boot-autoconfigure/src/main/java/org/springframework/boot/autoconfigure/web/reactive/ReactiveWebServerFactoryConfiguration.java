@@ -17,15 +17,18 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import io.undertow.Undertow;
+import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
+import org.springframework.boot.web.embedded.netty.TcpNettyServerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
@@ -44,8 +47,8 @@ import reactor.netty.tcp.TcpServer;
 /**
  * Configuration classes for reactive web servers
  * <p>
- * Those should be {@code @Import} in a regular auto-configuration class to guarantee
- * their order of execution.
+ * Those should be {@code @Import} in a regular auto-configuration class to guarantee their order of
+ * execution.
  *
  * @author Brian Clozel
  * @author Raheela Aslam
@@ -55,7 +58,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({ HttpServer.class })
+	@ConditionalOnClass({HttpServer.class})
 	static class EmbeddedNetty {
 
 		@Bean
@@ -65,13 +68,28 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(ReactorResourceFactory resourceFactory,
+		@ConditionalOnBean(ReactorResourceFactory.class)
+		public TcpNettyServerCustomizer defaultTcpServerCustomizer(
+				ReactorResourceFactory resourceFactory) {
+			return tcpServer -> tcpServer.runOn(resourceFactory.getLoopResources());
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public TcpServer tcpServer(List<Function<TcpServer, TcpServer>> customizers) {
+			TcpServer tcpServer = TcpServer.create();
+			return customizers.stream()
+					.reduce(Function.identity(), Function::andThen)
+					.apply(tcpServer);
+		}
+
+		@Bean
+		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(
 				ObjectProvider<NettyRouteProvider> routes,
-				@Autowired(required = false) TcpServer tcpServer) {
-			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory();
-			serverFactory.setResourceFactory(resourceFactory);
-			routes.orderedStream().forEach((route) -> serverFactory.addRouteProviders(route));
-			serverFactory.setTcpServer(tcpServer);
+				TcpServer tcpServer) {
+			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(
+					tcpServer);
+			routes.orderedStream().forEach(serverFactory::addRouteProviders);
 			return serverFactory;
 		}
 
@@ -79,7 +97,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({ org.apache.catalina.startup.Tomcat.class })
+	@ConditionalOnClass({org.apache.catalina.startup.Tomcat.class})
 	static class EmbeddedTomcat {
 
 		@Bean
@@ -93,7 +111,8 @@ abstract class ReactiveWebServerFactoryConfiguration {
 			factory.getTomcatContextCustomizers()
 					.addAll(contextCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getTomcatProtocolHandlerCustomizers()
-					.addAll(protocolHandlerCustomizers.orderedStream().collect(Collectors.toList()));
+					.addAll(protocolHandlerCustomizers.orderedStream()
+							.collect(Collectors.toList()));
 			return factory;
 		}
 
@@ -101,7 +120,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({ org.eclipse.jetty.server.Server.class })
+	@ConditionalOnClass({org.eclipse.jetty.server.Server.class})
 	static class EmbeddedJetty {
 
 		@Bean
@@ -111,10 +130,12 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		}
 
 		@Bean
-		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory,
+		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory(
+				JettyResourceFactory resourceFactory,
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyReactiveWebServerFactory serverFactory = new JettyReactiveWebServerFactory();
-			serverFactory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
+			serverFactory.getServerCustomizers()
+					.addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
 			serverFactory.setResourceFactory(resourceFactory);
 			return serverFactory;
 		}
@@ -123,7 +144,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({ Undertow.class })
+	@ConditionalOnClass({Undertow.class})
 	static class EmbeddedUndertow {
 
 		@Bean
@@ -133,7 +154,8 @@ abstract class ReactiveWebServerFactoryConfiguration {
 			UndertowReactiveWebServerFactory factory = new UndertowReactiveWebServerFactory();
 			factory.getDeploymentInfoCustomizers()
 					.addAll(deploymentInfoCustomizers.orderedStream().collect(Collectors.toList()));
-			factory.getBuilderCustomizers().addAll(builderCustomizers.orderedStream().collect(Collectors.toList()));
+			factory.getBuilderCustomizers()
+					.addAll(builderCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}
 

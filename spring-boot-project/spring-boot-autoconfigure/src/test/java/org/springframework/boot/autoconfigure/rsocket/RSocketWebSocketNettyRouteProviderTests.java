@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.URI;
 import java.time.Duration;
-
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
@@ -43,8 +43,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import reactor.netty.http.HttpResources;
+import reactor.netty.tcp.TcpServer;
 
 /**
  * Tests for {@link RSocketWebSocketNettyRouteProvider}.
@@ -98,8 +98,15 @@ class RSocketWebSocketNettyRouteProviderTests {
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory customServerFactory(RSocketWebSocketNettyRouteProvider routeProvider) {
-			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(0);
+		public TcpServer tcpServer() {
+			return TcpServer.create().runOn(HttpResources.get()).port(0);
+		}
+
+		@Bean
+		public NettyReactiveWebServerFactory customServerFactory(
+				TcpServer tcpServer,
+				RSocketWebSocketNettyRouteProvider routeProvider) {
+			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(tcpServer);
 			serverFactory.addRouteProviders(routeProvider);
 			return serverFactory;
 		}

@@ -65,6 +65,11 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	}
 
 	@Bean
+	public ReactiveTcpServerCustomizer reactiveTcpServerCustomizer(ServerProperties serverProperties) {
+		return new ReactiveTcpServerCustomizer(serverProperties);
+	}
+
+	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
 	public TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {

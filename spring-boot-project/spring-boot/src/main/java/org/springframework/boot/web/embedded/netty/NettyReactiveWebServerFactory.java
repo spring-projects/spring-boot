@@ -16,28 +16,25 @@
 
 package org.springframework.boot.web.embedded.netty;
 
-import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import reactor.netty.http.HttpProtocol;
-import reactor.netty.http.server.HttpServer;
-import reactor.netty.resources.LoopResources;
-
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.util.Assert;
+import reactor.netty.http.HttpProtocol;
+import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.TcpServer;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link NettyWebServer}s.
+ *
+ * If the factory port is not 0, it will override the tcp server's port
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -52,15 +49,11 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private boolean useForwardHeaders;
 
-	private ReactorResourceFactory resourceFactory;
+	private final TcpServer tcpServer;
 
-	private TcpServer tcpServer;
-
-	public NettyReactiveWebServerFactory() {
-	}
-
-	public NettyReactiveWebServerFactory(int port) {
-		super(port);
+	public NettyReactiveWebServerFactory(TcpServer tcpServer) {
+		super(0);
+		this.tcpServer = tcpServer;
 	}
 
 	@Override
@@ -128,34 +121,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		this.useForwardHeaders = useForwardHeaders;
 	}
 
-	/**
-	 * Set the {@link ReactorResourceFactory} to get the shared resources from.
-	 * @param resourceFactory the server resources
-	 * @since 2.1.0
-	 */
-	public void setResourceFactory(ReactorResourceFactory resourceFactory) {
-		this.resourceFactory = resourceFactory;
-	}
-
-	/**
-	 * Set custom tcp server for creation http server
-	 * @param tcpServer Custom tcp server
-	 * @since 2.1.5
-	 */
-	public void setTcpServer(TcpServer tcpServer) {
-		this.tcpServer = tcpServer;
-	}
-
 	private HttpServer createHttpServer() {
-		HttpServer server = tcpServer != null ? HttpServer.from(tcpServer) : HttpServer.create();
-		if (this.resourceFactory != null) {
-			LoopResources resources = this.resourceFactory.getLoopResources();
-			Assert.notNull(resources, "No LoopResources: is ReactorResourceFactory not initialized yet?");
-			server = server.tcpConfiguration(
-					(tcpServer) -> tcpServer.runOn(resources).addressSupplier(this::getListenAddress));
-		}
-		else {
-			server = server.tcpConfiguration((tcpServer) -> tcpServer.addressSupplier(this::getListenAddress));
+		HttpServer server = HttpServer.from(tcpServer);
+		if (getPort() != 0) {
+			server = server.tcpConfiguration(tcp -> tcp.port(getPort()));
 		}
 		if (getSsl() != null && getSsl().isEnabled()) {
 			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getHttp2(),
@@ -180,13 +149,6 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			}
 		}
 		return new HttpProtocol[] { HttpProtocol.HTTP11 };
-	}
-
-	private InetSocketAddress getListenAddress() {
-		if (getAddress() != null) {
-			return new InetSocketAddress(getAddress().getHostAddress(), getPort());
-		}
-		return new InetSocketAddress(getPort());
 	}
 
 	private HttpServer applyCustomizers(HttpServer server) {
