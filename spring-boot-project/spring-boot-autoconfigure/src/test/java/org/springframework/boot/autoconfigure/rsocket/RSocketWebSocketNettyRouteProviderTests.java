@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URI;
 import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
+import reactor.netty.http.HttpResources;
+import reactor.netty.tcp.TcpServer;
+
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
@@ -43,8 +45,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import reactor.netty.http.HttpResources;
-import reactor.netty.tcp.TcpServer;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RSocketWebSocketNettyRouteProvider}.

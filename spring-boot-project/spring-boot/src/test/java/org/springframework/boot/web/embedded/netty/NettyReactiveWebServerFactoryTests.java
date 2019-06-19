@@ -16,22 +16,24 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import reactor.netty.http.HttpResources;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.TcpServer;
+
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.PortInUseException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-
-import java.util.Arrays;
-import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
-import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
-import org.springframework.boot.web.server.PortInUseException;
-import reactor.netty.http.HttpResources;
-import reactor.netty.http.server.HttpServer;
-import reactor.netty.tcp.TcpServer;
 
 /**
  * Tests for {@link NettyReactiveWebServerFactory}.

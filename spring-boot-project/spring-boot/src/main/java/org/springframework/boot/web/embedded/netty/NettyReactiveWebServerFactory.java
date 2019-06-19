@@ -44,9 +44,13 @@ import org.springframework.util.Assert;
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
 
 	private final TcpServer tcpServer;
+
 	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
+
 	private List<NettyRouteProvider> routeProviders = new ArrayList<>();
+
 	private Duration lifecycleTimeout;
+
 	private boolean useForwardHeaders;
 
 	public NettyReactiveWebServerFactory(TcpServer tcpServer) {

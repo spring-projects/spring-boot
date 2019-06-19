@@ -16,10 +16,14 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import io.undertow.Undertow;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import io.undertow.Undertow;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.TcpServer;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -41,8 +45,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
-import reactor.netty.http.server.HttpServer;
-import reactor.netty.tcp.TcpServer;
 
 /**
  * Configuration classes for reactive web servers
@@ -70,7 +72,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 		@Bean
 		@ConditionalOnBean(ReactorResourceFactory.class)
 		public TcpNettyServerCustomizer defaultTcpServerCustomizer(ReactorResourceFactory resourceFactory) {
-			return tcpServer -> tcpServer.runOn(resourceFactory.getLoopResources());
+			return (TcpServer tcpServer) -> tcpServer.runOn(resourceFactory.getLoopResources());
 		}
 
 		@Bean
