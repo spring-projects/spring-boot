@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 case "$JDK_VERSION" in
 	java8)
