@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -37,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ExtendWith(OutputCaptureExtension.class)
 class ReproIntegrationTests {
 
-	private final CliTester cli;
+	@RegisterExtension
+	CliTester cli;
 
 	ReproIntegrationTests(CapturedOutput capturedOutput) {
 		this.cli = new CliTester("src/test/resources/repro-samples/", capturedOutput);

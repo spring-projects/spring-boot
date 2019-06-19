@@ -22,6 +22,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -37,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(OutputCaptureExtension.class)
 class RunCommandIntegrationTests {
 
-	private final CliTester cli;
+	@RegisterExtension
+	CliTester cli;
 
 	RunCommandIntegrationTests(CapturedOutput capturedOutput) {
 		this.cli = new CliTester("src/it/resources/run-command/", capturedOutput);
