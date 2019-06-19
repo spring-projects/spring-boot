@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpResources;
 import reactor.netty.tcp.TcpServer;
-import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -110,7 +110,7 @@ class WebFluxEndpointIntegrationTests
 
 		@Bean
 		public TcpServer tcpServer() {
-			return TcpServer.create().runOn(HttpResources.get()).port(port);
+			return TcpServer.create().runOn(HttpResources.get()).port(this.port);
 		}
 
 		@Bean
