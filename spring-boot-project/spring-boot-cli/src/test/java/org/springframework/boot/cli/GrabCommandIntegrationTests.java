@@ -22,7 +22,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -41,8 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ExtendWith(OutputCaptureExtension.class)
 class GrabCommandIntegrationTests {
 
-	@RegisterExtension
-	private CliTester cli;
+	private final CliTester cli;
 
 	GrabCommandIntegrationTests(CapturedOutput capturedOutput) {
 		this.cli = new CliTester("src/test/resources/grab-samples/", capturedOutput);
