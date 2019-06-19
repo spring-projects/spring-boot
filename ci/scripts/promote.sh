@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 source $(dirname $0)/common.sh
 
@@ -31,7 +30,7 @@ curl \
 	-f \
 	-X \
 	POST "${ARTIFACTORY_SERVER}/api/build/promote/${buildName}/${buildNumber}" > /dev/null || {
-		result=$( curl -s -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}  -f  "${ARTIFACTORY_SERVER}/api/build/${buildName}/${buildNumber}" )
+		result=$( curl -s -f -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} "${ARTIFACTORY_SERVER}/api/build/${buildName}/${buildNumber}" )
 		resultRepo=$( echo $result | jq -r '.buildInfo.statuses[0].repository' )
 		if [[ $resultRepo = "libs-release-local" ]]; then
 			echo "Already promoted"

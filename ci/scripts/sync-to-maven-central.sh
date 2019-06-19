@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 buildName=$( cat artifactory-repo/build-info.json | jq -r '.buildInfo.name' )
 buildNumber=$( cat artifactory-repo/build-info.json | jq -r '.buildInfo.number' )
