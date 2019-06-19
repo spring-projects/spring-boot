@@ -11,10 +11,10 @@ echo "Syncing ${buildName}/${buildNumber} to Maven Central"
 			-s \
 			-o /dev/null \
 			-I \
-			-w "%{http_code}"
+			-w "%{http_code}" \
 			"https://oss.sonatype.org/service/local/repositories/releases/content/org/springframework/boot/spring-boot/${version}/spring-boot-${version}.jar.sha1")
 
-	if [ ${publishStatus} == "200" ]; then
+	if [[ ${publishStatus} == "200" ]]; then
 		echo "Already published to Sonatype"
 	else
 		echo "Calling Bintray to sync to Sonatype"
