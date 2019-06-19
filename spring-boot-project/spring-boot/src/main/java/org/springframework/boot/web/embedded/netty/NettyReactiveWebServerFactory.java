@@ -21,19 +21,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import reactor.netty.http.HttpProtocol;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.TcpServer;
+
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.util.Assert;
-import reactor.netty.http.HttpProtocol;
-import reactor.netty.http.server.HttpServer;
-import reactor.netty.tcp.TcpServer;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link NettyWebServer}s.
- *
+ * <p>
  * If the factory port is not 0, it will override the tcp server's port
  *
  * @author Brian Clozel
@@ -41,15 +43,11 @@ import reactor.netty.tcp.TcpServer;
  */
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
 
-	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
-
-	private List<NettyRouteProvider> routeProviders = new ArrayList<>();
-
-	private Duration lifecycleTimeout;
-
-	private boolean useForwardHeaders;
-
 	private final TcpServer tcpServer;
+	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
+	private List<NettyRouteProvider> routeProviders = new ArrayList<>();
+	private Duration lifecycleTimeout;
+	private boolean useForwardHeaders;
 
 	public NettyReactiveWebServerFactory(TcpServer tcpServer) {
 		super(0);
@@ -122,9 +120,9 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpServer createHttpServer() {
-		HttpServer server = HttpServer.from(tcpServer);
+		HttpServer server = HttpServer.from(this.tcpServer);
 		if (getPort() != 0) {
-			server = server.tcpConfiguration(tcp -> tcp.port(getPort()));
+			server = server.tcpConfiguration((TcpServer tcp) -> tcp.port(getPort()));
 		}
 		if (getSsl() != null && getSsl().isEnabled()) {
 			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getHttp2(),

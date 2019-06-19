@@ -53,8 +53,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
-		assertThatExceptionOfType(PortInUseException.class)
-				.isThrownBy(factory.getWebServer(new EchoHandler())::start)
+		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
 				.satisfies(this::portMatchesRequirement);
 	}
 
@@ -68,8 +67,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		NettyServerCustomizer[] customizers = new NettyServerCustomizer[2];
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(NettyServerCustomizer.class);
-			given(customizers[i].apply(any(HttpServer.class)))
-					.will((invocation) -> invocation.getArgument(0));
+			given(customizers[i].apply(any(HttpServer.class))).will((invocation) -> invocation.getArgument(0));
 		}
 		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		this.webServer = factory.getWebServer(new EchoHandler());

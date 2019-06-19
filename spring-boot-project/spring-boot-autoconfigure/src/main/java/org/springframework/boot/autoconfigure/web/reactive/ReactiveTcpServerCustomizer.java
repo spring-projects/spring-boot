@@ -10,8 +10,7 @@ public class ReactiveTcpServerCustomizer implements TcpNettyServerCustomizer {
 
 	private final ServerProperties serverProperties;
 
-	public ReactiveTcpServerCustomizer(
-			ServerProperties serverProperties) {
+	public ReactiveTcpServerCustomizer(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
@@ -20,9 +19,9 @@ public class ReactiveTcpServerCustomizer implements TcpNettyServerCustomizer {
 		InetAddress address = serverProperties.getAddress();
 		Integer port = serverProperties.getPort();
 		if (address != null) {
-			return tcpServer
-					.addressSupplier(() -> new InetSocketAddress(address.getHostAddress(), port));
+			return tcpServer.addressSupplier(() -> new InetSocketAddress(address.getHostAddress(), port));
 		}
 		return tcpServer.port(port);
 	}
+
 }

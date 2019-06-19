@@ -763,7 +763,7 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context).isNotNull();
-		assertThat(SpringApplication.exit(this.context, (ExitCodeGenerator) () -> 2)).isEqualTo(2);
+		assertThat(SpringApplication.exit(this.context, () -> 2)).isEqualTo(2);
 		assertThat(listener.getExitCode()).isEqualTo(2);
 	}
 
@@ -860,7 +860,7 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class, ListenerConfig.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
-		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
+		application.addListeners(events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
@@ -873,7 +873,7 @@ class SpringApplicationTests {
 				Multicaster.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
-		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
+		application.addListeners(events::add);
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
@@ -1176,14 +1176,14 @@ class SpringApplicationTests {
 			return this.loader;
 		}
 
+		public Banner.Mode getBannerMode() {
+			return this.bannerMode;
+		}
+
 		@Override
 		public void setBannerMode(Banner.Mode bannerMode) {
 			super.setBannerMode(bannerMode);
 			this.bannerMode = bannerMode;
-		}
-
-		public Banner.Mode getBannerMode() {
-			return this.bannerMode;
 		}
 
 	}
@@ -1415,9 +1415,9 @@ class SpringApplicationTests {
 
 		private final String[] expectedBefore;
 
-		private ApplicationContext applicationContext;
-
 		private final int order;
+
+		private ApplicationContext applicationContext;
 
 		private boolean run;
 

@@ -103,8 +103,7 @@ class RSocketWebSocketNettyRouteProviderTests {
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory customServerFactory(
-				TcpServer tcpServer,
+		public NettyReactiveWebServerFactory customServerFactory(TcpServer tcpServer,
 				RSocketWebSocketNettyRouteProvider routeProvider) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(tcpServer);
 			serverFactory.addRouteProviders(routeProvider);
