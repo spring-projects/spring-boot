@@ -168,6 +168,15 @@ org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 
+# AutoConfigureWebServiceClient
+org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureWebServiceClient=\
+org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTemplateAutoConfiguration,\
+org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAutoConfiguration
+
+# AutoConfigureMockWebServiceServer
+org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureMockWebServiceServer=\
+org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerAutoConfiguration
+
 # DefaultTestExecutionListenersPostProcessors
 org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\
 org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener$PostProcessor
@@ -184,4 +193,5 @@ org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
-org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener
+org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener,\
+org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener

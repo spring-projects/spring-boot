@@ -45,6 +45,8 @@ dependencies {
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-test")
+	optional("org.springframework.ws:spring-ws-core")
+	optional("org.springframework.ws:spring-ws-test")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
