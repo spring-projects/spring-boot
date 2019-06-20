@@ -26,7 +26,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class SampleJunitJupiterApplicationTests {
+class SampleJUnitJupiterApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
