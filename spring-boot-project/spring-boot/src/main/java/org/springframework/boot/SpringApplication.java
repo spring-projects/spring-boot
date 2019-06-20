@@ -518,10 +518,11 @@ public class SpringApplication {
 	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
-		environment.getActiveProfiles(); // ensure they are initialized
+		// Ensure they are initialized
+		String[] evnActiveProfiles = environment.getActiveProfiles();
 		// But these ones should go first (last wins in a property key clash)
 		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
-		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
+		profiles.addAll(Arrays.asList(evnActiveProfiles));
 		environment.setActiveProfiles(StringUtils.toStringArray(profiles));
 	}
 
