@@ -6934,7 +6934,7 @@ useful libraries.
 
 [TIP]
 ====
-The starter also brings the vintage engine so that you can run both JUnit 4 and Junit 5
+The starter also brings the vintage engine so that you can run both JUnit 4 and JUnit 5
 tests. If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, as
 shown in the following example:
 
