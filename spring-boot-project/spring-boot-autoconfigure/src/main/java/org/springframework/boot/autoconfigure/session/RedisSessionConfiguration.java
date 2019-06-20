@@ -74,7 +74,7 @@ class RedisSessionConfiguration {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setRedisNamespace(redisSessionProperties.getNamespace());
-			setRedisFlushMode(redisSessionProperties.getFlushMode());
+			setFlushMode(redisSessionProperties.getFlushMode());
 			setCleanupCron(redisSessionProperties.getCleanupCron());
 		}
 
