@@ -27,7 +27,6 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
-import org.springframework.session.data.redis.RedisFlushMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +47,7 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:"));
 	}
 
 	@Test
@@ -56,7 +55,7 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveMongoOperationsSessionRepository.class))
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:", RedisFlushMode.ON_SAVE));
+				.run(validateSpringSessionUsesRedis("spring:session:"));
 	}
 
 	@Test
@@ -64,18 +63,15 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
-						"spring.session.redis.flush-mode=immediate")
-				.run(validateSpringSessionUsesRedis("foo:", RedisFlushMode.IMMEDIATE));
+				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo")
+				.run(validateSpringSessionUsesRedis("foo:"));
 	}
 
-	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace,
-			RedisFlushMode flushMode) {
+	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace) {
 		return (context) -> {
 			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(context,
 					ReactiveRedisOperationsSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", namespace);
-			assertThat(repository).hasFieldOrPropertyWithValue("redisFlushMode", flushMode);
 		};
 	}
 
