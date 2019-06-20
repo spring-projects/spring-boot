@@ -754,7 +754,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		@Override
 		public Set<String> listWebAppPaths(String path) {
 			return this.delegate.listWebAppPaths(path).stream()
-					.filter((p) -> !p.startsWith("org/springframework/boot/loader")).collect(Collectors.toSet());
+					.filter((webAppPath) -> !webAppPath.startsWith("/org/springframework/boot"))
+					.collect(Collectors.toSet());
 		}
 
 		@Override
