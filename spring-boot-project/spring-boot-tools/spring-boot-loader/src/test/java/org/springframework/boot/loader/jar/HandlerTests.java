@@ -156,11 +156,11 @@ class HandlerTests {
 	void fallbackToJdksJarUrlStreamHandler(@TempDir File tempDir) throws Exception {
 		File testJar = new File(tempDir, "test.jar");
 		TestJarCreator.createTestJar(testJar);
-		URLConnection connection = new URL(null, "jar:file:" + testJar.getAbsolutePath() + "!/nested.jar!/",
-				this.handler).openConnection();
+		URLConnection connection = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/", this.handler)
+				.openConnection();
 		assertThat(connection).isInstanceOf(JarURLConnection.class);
 		((JarURLConnection) connection).getJarFile().close();
-		URLConnection jdkConnection = new URL(null, "jar:file:file:" + testJar.getAbsolutePath() + "!/nested.jar!/",
+		URLConnection jdkConnection = new URL(null, "jar:file:" + testJar.toURI().toURL() + "!/nested.jar!/",
 				this.handler).openConnection();
 		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);
 	}
