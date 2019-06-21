@@ -121,7 +121,7 @@ class WebMvcMetricsFilterTests {
 	private CyclicBarrier completableFutureBarrier;
 
 	@BeforeEach
-	public void setupMockMvc() {
+	void setupMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.addFilters(this.filter, new RedirectAndNotFoundFilter()).build();
 	}

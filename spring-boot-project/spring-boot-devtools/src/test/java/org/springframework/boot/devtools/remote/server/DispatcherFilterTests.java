@@ -66,7 +66,7 @@ class DispatcherFilterTests {
 	private DispatcherFilter filter;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.filter = new DispatcherFilter(this.dispatcher);
 	}

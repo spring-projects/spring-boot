@@ -50,7 +50,7 @@ class CassandraDataAutoConfigurationIntegrationTests {
 	private AnnotationConfigApplicationContext context;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.data.cassandra.port=" + cassandra.getFirstMappedPort(),
@@ -59,7 +59,7 @@ class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}

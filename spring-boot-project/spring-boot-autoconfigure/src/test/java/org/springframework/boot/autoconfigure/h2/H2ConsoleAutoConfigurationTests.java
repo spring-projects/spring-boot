@@ -51,12 +51,12 @@ class H2ConsoleAutoConfigurationTests {
 	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
 	@BeforeEach
-	public void setupContext() {
+	void setupContext() {
 		this.context.setServletContext(new MockServletContext());
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}

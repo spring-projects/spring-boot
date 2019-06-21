@@ -42,7 +42,7 @@ class WarCommandIT {
 	private File tempDir;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) {
+	void setup(@TempDir File tempDir) {
 		this.cli = new CommandLineInvoker(new File("src/it/resources/war-command"),
 				tempDir);
 		this.tempDir = tempDir;

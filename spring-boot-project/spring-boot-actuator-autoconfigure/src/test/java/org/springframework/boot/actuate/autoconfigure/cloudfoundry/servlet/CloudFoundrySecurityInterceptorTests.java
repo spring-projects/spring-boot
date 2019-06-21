@@ -54,7 +54,7 @@ class CloudFoundrySecurityInterceptorTests {
 	private MockHttpServletRequest request;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 		this.request = new MockHttpServletRequest();

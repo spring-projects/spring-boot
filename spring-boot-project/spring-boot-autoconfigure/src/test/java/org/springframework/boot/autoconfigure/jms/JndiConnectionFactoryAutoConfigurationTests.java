@@ -50,7 +50,7 @@ class JndiConnectionFactoryAutoConfigurationTests {
 	private String initialContextFactory;
 
 	@BeforeEach
-	public void setupJndi() {
+	void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestableInitialContextFactory.class.getName());
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -58,7 +58,7 @@ class JndiConnectionFactoryAutoConfigurationTests {
 	}
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
 			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);

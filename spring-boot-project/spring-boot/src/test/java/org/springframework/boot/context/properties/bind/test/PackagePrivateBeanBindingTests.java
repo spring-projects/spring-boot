@@ -44,7 +44,7 @@ class PackagePrivateBeanBindingTests {
 	private ConfigurationPropertyName name;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.binder = new Binder(this.sources);
 		this.name = ConfigurationPropertyName.of("foo");
 	}

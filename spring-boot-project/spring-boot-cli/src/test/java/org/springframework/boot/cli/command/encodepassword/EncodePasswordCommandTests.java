@@ -45,13 +45,13 @@ class EncodePasswordCommandTests {
 	private ArgumentCaptor<String> message;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.log = MockLog.attach();
 	}
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		MockLog.clear();
 	}
 

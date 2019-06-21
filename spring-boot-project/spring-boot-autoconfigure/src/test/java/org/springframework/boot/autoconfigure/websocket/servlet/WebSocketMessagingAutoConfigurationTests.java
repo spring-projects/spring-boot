@@ -83,7 +83,7 @@ class WebSocketMessagingAutoConfigurationTests {
 	private SockJsClient sockJsClient;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		List<Transport> transports = Arrays.asList(
 				new WebSocketTransport(new StandardWebSocketClient(new WsWebSocketContainer())),
 				new RestTemplateXhrTransport(new RestTemplate()));
@@ -91,7 +91,7 @@ class WebSocketMessagingAutoConfigurationTests {
 	}
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		this.context.close();
 		this.sockJsClient.stop();
 	}

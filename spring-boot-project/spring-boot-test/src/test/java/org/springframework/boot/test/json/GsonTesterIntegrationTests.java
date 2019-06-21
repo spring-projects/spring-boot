@@ -47,7 +47,7 @@ class GsonTesterIntegrationTests {
 	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.gson = new Gson();
 		GsonTester.initFields(this, this.gson);
 	}

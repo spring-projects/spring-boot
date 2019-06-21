@@ -56,7 +56,7 @@ class HttpRestartServerTests {
 	private ArgumentCaptor<ClassLoaderFiles> filesCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.server = new HttpRestartServer(this.delegate);
 	}

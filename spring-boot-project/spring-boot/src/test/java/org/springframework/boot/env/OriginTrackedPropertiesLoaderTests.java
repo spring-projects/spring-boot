@@ -43,7 +43,7 @@ class OriginTrackedPropertiesLoaderTests {
 	private Map<String, OriginTrackedValue> properties;
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	void setUp() throws Exception {
 		String path = "test-properties.properties";
 		this.resource = new ClassPathResource(path, getClass());
 		this.properties = new OriginTrackedPropertiesLoader(this.resource).load();

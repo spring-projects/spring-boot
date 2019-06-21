@@ -47,7 +47,7 @@ class MustacheViewTests {
 	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.context.refresh();
 		MockServletContext servletContext = new MockServletContext();
 		this.context.setServletContext(servletContext);

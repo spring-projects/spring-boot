@@ -58,7 +58,7 @@ class MailSenderAutoConfigurationTests {
 	private String initialContextFactory;
 
 	@BeforeEach
-	public void setupJndi() {
+	void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestableInitialContextFactory.class.getName());
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -66,7 +66,7 @@ class MailSenderAutoConfigurationTests {
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
 			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);

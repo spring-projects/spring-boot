@@ -45,14 +45,14 @@ class CentralDirectoryParserTests {
 	private RandomAccessDataFile jarData;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) throws Exception {
+	void setup(@TempDir File tempDir) throws Exception {
 		this.jarFile = new File(tempDir, "test.jar");
 		TestJarCreator.createTestJar(this.jarFile);
 		this.jarData = new RandomAccessDataFile(this.jarFile);
 	}
 
 	@AfterEach
-	public void tearDown() throws IOException {
+	void tearDown() throws IOException {
 		this.jarData.close();
 	}
 

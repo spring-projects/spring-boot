@@ -44,7 +44,7 @@ class IgnoreErrorsBindHandlerTests {
 	private Binder binder;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		this.sources.add(source);

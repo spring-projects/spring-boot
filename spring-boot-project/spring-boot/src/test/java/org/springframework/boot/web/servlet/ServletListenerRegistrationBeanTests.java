@@ -45,7 +45,7 @@ class ServletListenerRegistrationBeanTests {
 	private ServletContext servletContext;
 
 	@BeforeEach
-	public void setupMocks() {
+	void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 	}
 

@@ -46,7 +46,7 @@ class AuthorizationAuditListenerTests {
 	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.listener.setApplicationEventPublisher(this.publisher);
 	}
 

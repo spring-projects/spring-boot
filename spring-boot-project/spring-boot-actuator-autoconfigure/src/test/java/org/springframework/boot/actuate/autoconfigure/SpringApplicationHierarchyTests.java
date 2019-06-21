@@ -46,7 +46,7 @@ class SpringApplicationHierarchyTests {
 	private ConfigurableApplicationContext context;
 
 	@AfterEach
-	public void after() {
+	void after() {
 		ApplicationContextTestUtils.closeAll(this.context);
 	}
 

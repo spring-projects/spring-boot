@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class RemoteUrlPropertyExtractorTests {
 
 	@AfterEach
-	public void preventRunFailuresFromPollutingLoggerContext() {
+	void preventRunFailuresFromPollutingLoggerContext() {
 		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class)).getLoggerContext()
 				.getTurboFilterList().clear();
 	}

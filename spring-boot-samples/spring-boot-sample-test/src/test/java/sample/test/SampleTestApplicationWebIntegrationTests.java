@@ -49,7 +49,7 @@ class SampleTestApplicationWebIntegrationTests {
 	private VehicleDetailsService vehicleDetailsService;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		given(this.vehicleDetailsService.getVehicleDetails(VIN)).willReturn(new VehicleDetails("Honda", "Civic"));
 	}
 

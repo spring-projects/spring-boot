@@ -52,7 +52,7 @@ class DiscoveredOperationsFactoryTests {
 	private List<OperationInvokerAdvisor> invokerAdvisors;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.parameterValueMapper = (parameter, value) -> value.toString();
 		this.invokerAdvisors = new ArrayList<>();
 		this.factory = new TestDiscoveredOperationsFactory(this.parameterValueMapper, this.invokerAdvisors);

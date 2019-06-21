@@ -60,7 +60,7 @@ class ClassPathFileChangeListenerTests {
 	private ArgumentCaptor<ApplicationEvent> eventCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

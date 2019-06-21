@@ -52,7 +52,7 @@ class ConditionalOnPropertyTests {
 	private ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		if (this.context != null) {
 			this.context.close();
 		}

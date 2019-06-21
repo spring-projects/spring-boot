@@ -40,7 +40,7 @@ class CompositeDependencyManagementTests {
 	private DependencyManagement dependencyManagement2;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

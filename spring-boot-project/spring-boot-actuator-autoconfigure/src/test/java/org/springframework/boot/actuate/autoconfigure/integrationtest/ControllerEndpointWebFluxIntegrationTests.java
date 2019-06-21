@@ -50,7 +50,7 @@ class ControllerEndpointWebFluxIntegrationTests {
 	private AnnotationConfigReactiveWebApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}

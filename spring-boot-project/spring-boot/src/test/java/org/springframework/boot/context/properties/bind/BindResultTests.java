@@ -53,7 +53,7 @@ class BindResultTests {
 	private Supplier<String> supplier;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

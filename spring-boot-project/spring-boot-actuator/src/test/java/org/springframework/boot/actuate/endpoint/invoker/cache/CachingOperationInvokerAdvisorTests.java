@@ -55,7 +55,7 @@ class CachingOperationInvokerAdvisorTests {
 	private CachingOperationInvokerAdvisor advisor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.advisor = new CachingOperationInvokerAdvisor(this.timeToLive);
 	}

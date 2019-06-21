@@ -71,7 +71,7 @@ class JarFileTests {
 	private JarFile jarFile;
 
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		this.rootJarFile = new File(this.tempDir, "root.jar");
 		TestJarCreator.createTestJar(this.rootJarFile);
 		this.jarFile = new JarFile(this.rootJarFile);

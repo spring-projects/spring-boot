@@ -59,7 +59,7 @@ class LoggersEndpointWebIntegrationTests {
 
 	@BeforeEach
 	@AfterEach
-	public void resetMocks(ConfigurableApplicationContext context, WebTestClient client) {
+	void resetMocks(ConfigurableApplicationContext context, WebTestClient client) {
 		this.client = client;
 		this.loggingSystem = context.getBean(LoggingSystem.class);
 		Mockito.reset(this.loggingSystem);

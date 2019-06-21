@@ -73,7 +73,7 @@ class JobLauncherCommandLineRunnerTests {
 	private Step step;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.context.register(BatchConfiguration.class);
 		this.context.refresh();
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);
@@ -90,7 +90,7 @@ class JobLauncherCommandLineRunnerTests {
 	}
 
 	@AfterEach
-	public void closeContext() {
+	void closeContext() {
 		this.context.close();
 	}
 

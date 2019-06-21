@@ -37,7 +37,7 @@ class EnvironmentEndpointWebIntegrationTests {
 	private WebTestClient client;
 
 	@BeforeEach
-	public void prepareEnvironment(ConfigurableApplicationContext context, WebTestClient client) {
+	void prepareEnvironment(ConfigurableApplicationContext context, WebTestClient client) {
 		TestPropertyValues.of("foo:bar", "fool:baz").applyTo(context);
 		this.client = client;
 		this.context = context;

@@ -57,7 +57,7 @@ class TemplateAvailabilityProvidersTests {
 	private ResourceLoader resourceLoader;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.providers = new TemplateAvailabilityProviders(Collections.singleton(this.provider));
 	}

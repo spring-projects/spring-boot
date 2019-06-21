@@ -50,7 +50,7 @@ class CorsSampleActuatorApplicationTests {
 	private ApplicationContext applicationContext;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(this.applicationContext.getEnvironment(),
 				"http");

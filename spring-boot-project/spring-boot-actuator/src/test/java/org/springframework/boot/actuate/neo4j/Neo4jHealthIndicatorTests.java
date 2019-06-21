@@ -50,7 +50,7 @@ class Neo4jHealthIndicatorTests {
 	private Neo4jHealthIndicator neo4jHealthIndicator;
 
 	@BeforeEach
-	public void before() {
+	void before() {
 		this.session = mock(Session.class);
 		SessionFactory sessionFactory = mock(SessionFactory.class);
 		given(sessionFactory.openSession()).willReturn(this.session);

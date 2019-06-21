@@ -39,7 +39,7 @@ class PropertiesMigrationListenerTests {
 	private ConfigurableApplicationContext context;
 
 	@AfterEach
-	public void closeContext() {
+	void closeContext() {
 		if (this.context != null) {
 			this.context.close();
 		}

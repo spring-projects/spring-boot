@@ -55,7 +55,7 @@ class FileSystemWatcherTests {
 	File tempDir;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		setupWatcher(20, 10);
 	}
 

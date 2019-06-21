@@ -58,7 +58,7 @@ class RepositoryRestMvcAutoConfigurationTests {
 	private AnnotationConfigServletWebApplicationContext context;
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		if (this.context != null) {
 			this.context.close();
 		}

@@ -48,7 +48,7 @@ class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 	private File generatedSnippets;
 
 	@BeforeEach
-	public void deleteSnippets() {
+	void deleteSnippets() {
 		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
 		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}

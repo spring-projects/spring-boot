@@ -82,7 +82,7 @@ final class ResolveDependencyCoordinatesTransformationTests {
 			this.resolutionContext);
 
 	@BeforeEach
-	public void setUpExpectations() {
+	void setUpExpectations() {
 		given(this.coordinatesResolver.getGroupId("spring-core")).willReturn("org.springframework");
 	}
 

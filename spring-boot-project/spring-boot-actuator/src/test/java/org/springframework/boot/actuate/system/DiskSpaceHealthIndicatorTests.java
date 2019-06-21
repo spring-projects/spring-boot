@@ -49,7 +49,7 @@ class DiskSpaceHealthIndicatorTests {
 	private HealthIndicator healthIndicator;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.fileMock.exists()).willReturn(true);
 		given(this.fileMock.canRead()).willReturn(true);

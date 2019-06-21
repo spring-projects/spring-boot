@@ -37,7 +37,7 @@ class ServletComponentScanRegistrarTests {
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void after() {
+	void after() {
 		if (this.context != null) {
 			this.context.close();
 		}

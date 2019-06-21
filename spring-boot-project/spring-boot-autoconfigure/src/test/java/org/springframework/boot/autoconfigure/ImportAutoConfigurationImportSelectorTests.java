@@ -58,7 +58,7 @@ class ImportAutoConfigurationImportSelectorTests {
 	private Environment environment;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);

@@ -54,13 +54,13 @@ class ConditionalOnJndiTests {
 	private MockableOnJndi condition = new MockableOnJndi();
 
 	@BeforeEach
-	public void setupThreadContextClassLoader() {
+	void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
 			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);

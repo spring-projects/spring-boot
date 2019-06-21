@@ -63,7 +63,7 @@ class ValidationBindHandlerTests {
 	private LocalValidatorFactoryBean validator;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.binder = new Binder(this.sources);
 		this.validator = new LocalValidatorFactoryBean();
 		this.validator.afterPropertiesSet();

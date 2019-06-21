@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EnvironmentEndpointTests {
 
 	@AfterEach
-	public void close() {
+	void close() {
 		System.clearProperty("VCAP_SERVICES");
 	}
 

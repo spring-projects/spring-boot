@@ -59,12 +59,12 @@ class GroovyTemplateAutoConfigurationTests {
 	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
 	@BeforeEach
-	public void setupContext() {
+	void setupContext() {
 		this.context.setServletContext(new MockServletContext());
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		LocaleContextHolder.resetLocaleContext();
 		if (this.context != null) {
 			this.context.close();

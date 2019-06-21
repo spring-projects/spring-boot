@@ -43,7 +43,7 @@ class ServletComponentScanIntegrationTests {
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}

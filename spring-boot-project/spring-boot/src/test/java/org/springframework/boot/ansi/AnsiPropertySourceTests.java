@@ -33,7 +33,7 @@ class AnsiPropertySourceTests {
 	private AnsiPropertySource source = new AnsiPropertySource("ansi", false);
 
 	@AfterEach
-	public void reset() {
+	void reset() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 

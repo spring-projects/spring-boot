@@ -78,7 +78,7 @@ class ConditionEvaluationReportTests {
 	private ConditionOutcome outcome3;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.beanFactory = new DefaultListableBeanFactory();
 		this.report = ConditionEvaluationReport.get(this.beanFactory);

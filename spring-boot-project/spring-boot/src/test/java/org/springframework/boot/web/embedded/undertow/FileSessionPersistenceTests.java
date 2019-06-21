@@ -45,7 +45,7 @@ class FileSessionPersistenceTests {
 	private Date expiration = new Date(System.currentTimeMillis() + 10000);
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) throws IOException {
+	void setup(@TempDir File tempDir) throws IOException {
 		this.dir = tempDir;
 		this.dir.mkdir();
 		this.persistence = new FileSessionPersistence(this.dir);

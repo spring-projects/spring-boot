@@ -41,7 +41,7 @@ class MockServerRestTemplateCustomizerTests {
 	private MockServerRestTemplateCustomizer customizer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.customizer = new MockServerRestTemplateCustomizer();
 	}
 

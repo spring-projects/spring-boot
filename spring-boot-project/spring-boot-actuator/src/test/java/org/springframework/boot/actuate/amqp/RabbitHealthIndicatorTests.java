@@ -50,7 +50,7 @@ class RabbitHealthIndicatorTests {
 	private Channel channel;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.rabbitTemplate.execute(any())).willAnswer((invocation) -> {
 			ChannelCallback<?> callback = invocation.getArgument(0);

@@ -37,7 +37,7 @@ class LaunchScriptConfigurationTests {
 	private final Project project = mock(Project.class);
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		given(this.task.getProject()).willReturn(this.project);
 	}
 

@@ -47,7 +47,7 @@ class CompositeHealthIndicatorTests {
 	private HealthIndicator two;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.one.health()).willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
 		given(this.two.health()).willReturn(new Health.Builder().unknown().withDetail("2", "2").build());

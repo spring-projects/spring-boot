@@ -59,7 +59,7 @@ class ClassPathChangeUploaderTests {
 	private ClassPathChangeUploader uploader;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.requestFactory = new MockClientHttpRequestFactory();
 		this.uploader = new ClassPathChangeUploader("http://localhost/upload", this.requestFactory);
 	}

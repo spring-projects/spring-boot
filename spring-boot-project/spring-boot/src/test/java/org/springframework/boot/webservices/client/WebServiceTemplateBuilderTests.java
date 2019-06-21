@@ -67,7 +67,7 @@ class WebServiceTemplateBuilderTests {
 	private ClientInterceptor interceptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

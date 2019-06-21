@@ -63,7 +63,7 @@ class ControllerEndpointWebMvcIntegrationTests {
 	private AnnotationConfigServletWebApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}

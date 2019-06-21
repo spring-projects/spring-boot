@@ -54,7 +54,7 @@ class MetricsRestTemplateCustomizerTests {
 	private MetricsRestTemplateCustomizer customizer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		this.restTemplate = new RestTemplate();
 		this.mockServer = MockRestServiceServer.createServer(this.restTemplate);

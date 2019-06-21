@@ -84,7 +84,7 @@ class RestTemplateBuilderTests {
 	private ClientHttpRequestInterceptor interceptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

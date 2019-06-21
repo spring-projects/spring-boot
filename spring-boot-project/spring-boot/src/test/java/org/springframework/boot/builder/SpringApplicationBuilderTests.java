@@ -52,7 +52,7 @@ class SpringApplicationBuilderTests {
 	private ConfigurableApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		close(this.context);
 	}
 

@@ -55,7 +55,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	private ArgumentCaptor<HttpUriRequest> requestCaptor;
 
 	@BeforeEach
-	public void setupMocks() {
+	void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 	}
 

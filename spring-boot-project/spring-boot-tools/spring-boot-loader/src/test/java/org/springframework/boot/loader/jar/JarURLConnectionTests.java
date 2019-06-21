@@ -47,14 +47,14 @@ class JarURLConnectionTests {
 	private JarFile jarFile;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) throws Exception {
+	void setup(@TempDir File tempDir) throws Exception {
 		this.rootJarFile = new File(tempDir, "root.jar");
 		TestJarCreator.createTestJar(this.rootJarFile);
 		this.jarFile = new JarFile(this.rootJarFile);
 	}
 
 	@AfterEach
-	public void tearDown() throws Exception {
+	void tearDown() throws Exception {
 		this.jarFile.close();
 	}
 

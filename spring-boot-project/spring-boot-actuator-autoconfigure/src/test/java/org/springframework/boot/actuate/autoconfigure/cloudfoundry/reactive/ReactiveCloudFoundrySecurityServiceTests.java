@@ -54,14 +54,14 @@ class ReactiveCloudFoundrySecurityServiceTests {
 	private WebClient.Builder builder;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.server = new MockWebServer();
 		this.builder = WebClient.builder().baseUrl(this.server.url("/").toString());
 		this.securityService = new ReactiveCloudFoundrySecurityService(this.builder, CLOUD_CONTROLLER, false);
 	}
 
 	@AfterEach
-	public void shutdown() throws Exception {
+	void shutdown() throws Exception {
 		this.server.shutdown();
 	}
 

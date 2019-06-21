@@ -39,7 +39,7 @@ public abstract class AbstractMetadataGenerationTests {
 	private TestCompiler compiler;
 
 	@BeforeEach
-	public void createCompiler() throws IOException {
+	void createCompiler() throws IOException {
 		this.compiler = new TestCompiler(this.tempDir);
 	}
 

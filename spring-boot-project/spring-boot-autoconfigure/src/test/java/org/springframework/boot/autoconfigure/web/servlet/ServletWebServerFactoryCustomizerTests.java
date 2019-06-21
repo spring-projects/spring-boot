@@ -54,7 +54,7 @@ class ServletWebServerFactoryCustomizerTests {
 	private ServletWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.customizer = new ServletWebServerFactoryCustomizer(this.properties);
 	}
 

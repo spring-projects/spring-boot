@@ -77,7 +77,7 @@ class LocalDevToolsAutoConfigurationTests {
 	private ConfigurableApplicationContext context;
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		if (this.context != null) {
 			this.context.close();
 		}

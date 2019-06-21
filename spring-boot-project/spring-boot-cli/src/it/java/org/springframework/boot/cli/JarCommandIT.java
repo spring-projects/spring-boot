@@ -45,7 +45,7 @@ class JarCommandIT {
 	private File tempDir;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) {
+	void setup(@TempDir File tempDir) {
 		this.cli = new CommandLineInvoker(new File("src/it/resources/jar-command"),
 				tempDir);
 		this.tempDir = tempDir;

@@ -45,7 +45,7 @@ class TomcatServletWebServerFactoryCustomizerTests {
 	private ServerProperties serverProperties;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);

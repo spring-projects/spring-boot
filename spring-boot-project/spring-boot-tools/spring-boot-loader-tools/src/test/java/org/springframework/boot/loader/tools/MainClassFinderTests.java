@@ -45,7 +45,7 @@ class MainClassFinderTests {
 	private TestJarFile testJarFile;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) throws IOException {
+	void setup(@TempDir File tempDir) throws IOException {
 		this.testJarFile = new TestJarFile(tempDir);
 	}
 

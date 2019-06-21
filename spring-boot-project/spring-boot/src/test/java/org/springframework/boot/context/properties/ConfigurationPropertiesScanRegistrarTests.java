@@ -45,7 +45,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.registrar.setEnvironment(new MockEnvironment());
 	}
 

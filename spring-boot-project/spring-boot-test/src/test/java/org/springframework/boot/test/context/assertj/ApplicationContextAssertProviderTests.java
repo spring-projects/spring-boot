@@ -50,7 +50,7 @@ class ApplicationContextAssertProviderTests {
 	private Supplier<ApplicationContext> startupFailureSupplier;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.startupFailure = new RuntimeException();
 		this.mockContextSupplier = () -> this.mockContext;

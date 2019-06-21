@@ -45,7 +45,7 @@ class WebFluxTagsTests {
 	private PathPatternParser parser = new PathPatternParser();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.exchange = MockServerWebExchange.from(MockServerHttpRequest.get(""));
 	}
 

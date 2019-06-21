@@ -50,7 +50,7 @@ class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	private RepositorySystem repositorySystem;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

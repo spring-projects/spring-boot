@@ -52,7 +52,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 	private CloudFoundrySecurityInterceptor interceptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 	}

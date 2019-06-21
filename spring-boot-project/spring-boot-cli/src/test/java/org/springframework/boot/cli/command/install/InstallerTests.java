@@ -46,13 +46,13 @@ class InstallerTests {
 	private Installer installer;
 
 	@BeforeEach
-	public void setUp() throws IOException {
+	void setUp() throws IOException {
 		System.setProperty("spring.home", this.tempDir.getAbsolutePath());
 		this.installer = new Installer(this.resolver);
 	}
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		System.clearProperty("spring.home");
 	}
 

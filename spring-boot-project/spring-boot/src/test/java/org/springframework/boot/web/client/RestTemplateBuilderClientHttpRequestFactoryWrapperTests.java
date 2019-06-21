@@ -53,7 +53,7 @@ public class RestTemplateBuilderClientHttpRequestFactoryWrapperTests {
 	private final HttpHeaders headers = new HttpHeaders();
 
 	@BeforeEach
-	public void setUp() throws IOException {
+	void setUp() throws IOException {
 		this.requestFactory = mock(ClientHttpRequestFactory.class);
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
 		given(this.requestFactory.createRequest(any(), any())).willReturn(request);

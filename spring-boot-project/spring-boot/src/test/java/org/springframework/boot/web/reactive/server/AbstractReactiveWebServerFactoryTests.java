@@ -76,7 +76,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	protected WebServer webServer;
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		if (this.webServer != null) {
 			try {
 				this.webServer.stop();

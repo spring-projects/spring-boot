@@ -50,7 +50,7 @@ class LogFileWebEndpointTests {
 	private File logFile;
 
 	@BeforeEach
-	public void before(@TempDir Path temp) throws IOException {
+	void before(@TempDir Path temp) throws IOException {
 		this.logFile = Files.createTempFile(temp, "junit", null).toFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), this.logFile);
 	}

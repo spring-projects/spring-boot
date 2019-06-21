@@ -44,7 +44,7 @@ class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 	private Binder binder;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example", "bar");
 		this.sources.add(source);

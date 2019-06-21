@@ -47,8 +47,7 @@ class LogFileWebEndpointWebIntegrationTests {
 	private File logFile;
 
 	@BeforeEach
-	public void setUp(@TempDir File temp, WebTestClient client, ConfigurableApplicationContext context)
-			throws IOException {
+	void setUp(@TempDir File temp, WebTestClient client, ConfigurableApplicationContext context) throws IOException {
 		this.logFile = new File(temp, "test.log");
 		this.client = client;
 		this.context = context;

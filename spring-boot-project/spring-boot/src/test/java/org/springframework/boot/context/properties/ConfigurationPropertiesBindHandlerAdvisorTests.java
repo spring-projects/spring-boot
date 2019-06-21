@@ -46,7 +46,7 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		this.context.close();
 	}
 

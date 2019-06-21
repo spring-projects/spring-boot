@@ -71,7 +71,7 @@ class JmxEndpointExporterTests {
 	private JmxEndpointExporter exporter;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.exporter = new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, this.responseMapper,
 				this.endpoints);

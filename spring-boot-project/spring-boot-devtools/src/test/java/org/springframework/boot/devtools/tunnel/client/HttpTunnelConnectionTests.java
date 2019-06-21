@@ -65,7 +65,7 @@ class HttpTunnelConnectionTests {
 	private MockClientHttpRequestFactory requestFactory = new MockClientHttpRequestFactory();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.url = "http://localhost:12345";
 		this.incomingData = new ByteArrayOutputStream();

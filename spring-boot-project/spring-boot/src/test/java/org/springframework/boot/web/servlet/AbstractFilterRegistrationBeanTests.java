@@ -55,7 +55,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	FilterRegistration.Dynamic registration;
 
 	@BeforeEach
-	public void setupMocks() {
+	void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 	}

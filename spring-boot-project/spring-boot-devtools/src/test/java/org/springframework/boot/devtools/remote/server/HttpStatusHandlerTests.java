@@ -46,7 +46,7 @@ class HttpStatusHandlerTests {
 	private ServerHttpRequest request;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.servletRequest = new MockHttpServletRequest();
 		this.servletResponse = new MockHttpServletResponse();
 		this.request = new ServletServerHttpRequest(this.servletRequest);

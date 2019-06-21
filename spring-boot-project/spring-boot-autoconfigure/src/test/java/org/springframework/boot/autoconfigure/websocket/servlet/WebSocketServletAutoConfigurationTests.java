@@ -42,12 +42,12 @@ class WebSocketServletAutoConfigurationTests {
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@BeforeEach
-	public void createContext() {
+	void createContext() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}

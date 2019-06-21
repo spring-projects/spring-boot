@@ -84,7 +84,7 @@ class RepackagerTests {
 	private TestJarFile testJarFile;
 
 	@BeforeEach
-	public void setup() throws IOException {
+	void setup() throws IOException {
 		this.testJarFile = new TestJarFile(this.tempDir);
 	}
 

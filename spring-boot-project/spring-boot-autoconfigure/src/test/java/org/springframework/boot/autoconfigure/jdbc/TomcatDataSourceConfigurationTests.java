@@ -49,7 +49,7 @@ class TomcatDataSourceConfigurationTests {
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		TestPropertyValues.of(PREFIX + "initialize:false").applyTo(this.context);
 	}
 

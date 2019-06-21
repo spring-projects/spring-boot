@@ -45,7 +45,7 @@ class SpringBootTestRandomPortEnvironmentPostProcessorTests {
 	private MutablePropertySources propertySources;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.environment = new MockEnvironment();
 		this.propertySources = this.environment.getPropertySources();
 	}

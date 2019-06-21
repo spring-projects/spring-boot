@@ -63,7 +63,7 @@ class DispatcherTests {
 	private ServerHttpResponse serverResponse;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.request = new MockHttpServletRequest();
 		this.response = new MockHttpServletResponse();

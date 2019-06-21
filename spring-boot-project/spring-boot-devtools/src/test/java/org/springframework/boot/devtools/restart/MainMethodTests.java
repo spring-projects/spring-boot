@@ -39,7 +39,7 @@ class MainMethodTests {
 	private Method actualMain;
 
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		this.actualMain = Valid.class.getMethod("main", String[].class);
 	}
 

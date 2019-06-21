@@ -47,14 +47,14 @@ class ApplicationContextAssertTests {
 	private RuntimeException failure = new RuntimeException();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.parent = new StaticApplicationContext();
 		this.context = new StaticApplicationContext();
 		this.context.setParent(this.parent);
 	}
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		this.context.close();
 		this.parent.close();
 	}

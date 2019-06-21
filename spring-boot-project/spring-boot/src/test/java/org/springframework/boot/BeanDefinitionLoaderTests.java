@@ -37,12 +37,12 @@ class BeanDefinitionLoaderTests {
 	private StaticApplicationContext registry;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.registry = new StaticApplicationContext();
 	}
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		this.registry.close();
 	}
 

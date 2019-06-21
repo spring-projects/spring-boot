@@ -38,7 +38,7 @@ class OverrideSourcesTests {
 	private ConfigurableApplicationContext context;
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}

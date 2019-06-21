@@ -51,12 +51,12 @@ class ElasticsearchAutoConfigurationTests {
 	private AnnotationConfigApplicationContext context;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		System.setProperty("es.set.netty.runtime.available.processors", "false");
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}

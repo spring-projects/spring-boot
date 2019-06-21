@@ -41,12 +41,12 @@ class LoggingSystemPropertiesTests {
 	private Set<Object> systemPropertyNames;
 
 	@BeforeEach
-	public void captureSystemPropertyNames() {
+	void captureSystemPropertyNames() {
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
 	@AfterEach
-	public void restoreSystemProperties() {
+	void restoreSystemProperties() {
 		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 	}
 

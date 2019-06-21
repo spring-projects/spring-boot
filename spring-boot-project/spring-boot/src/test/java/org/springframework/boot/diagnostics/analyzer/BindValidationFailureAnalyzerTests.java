@@ -52,12 +52,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BindValidationFailureAnalyzerTests {
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		LocaleContextHolder.setLocale(Locale.US);
 	}
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		LocaleContextHolder.resetLocaleContext();
 	}
 

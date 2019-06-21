@@ -47,7 +47,7 @@ class GroovyGrabDependencyResolverTests {
 	private DependencyResolver resolver;
 
 	@BeforeEach
-	public void setupResolver() {
+	void setupResolver() {
 		GroovyCompilerConfiguration configuration = new GroovyCompilerConfiguration() {
 
 			@Override

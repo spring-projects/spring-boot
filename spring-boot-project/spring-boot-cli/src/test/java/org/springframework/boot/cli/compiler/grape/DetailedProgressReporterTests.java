@@ -48,7 +48,7 @@ final class DetailedProgressReporterTests {
 	private final DefaultRepositorySystemSession session = new DefaultRepositorySystemSession();
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		new DetailedProgressReporter(this.session, this.out);
 	}
 

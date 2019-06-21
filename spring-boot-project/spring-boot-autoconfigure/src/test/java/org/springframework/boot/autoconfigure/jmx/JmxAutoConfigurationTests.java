@@ -49,7 +49,7 @@ class JmxAutoConfigurationTests {
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		if (this.context != null) {
 			this.context.close();
 			if (this.context.getParent() != null) {

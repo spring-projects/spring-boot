@@ -46,7 +46,7 @@ class FailureAnalyzersTests {
 	private static AwareFailureAnalyzer failureAnalyzer;
 
 	@BeforeEach
-	public void configureMock() {
+	void configureMock() {
 		failureAnalyzer = mock(AwareFailureAnalyzer.class);
 	}
 

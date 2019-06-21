@@ -39,7 +39,7 @@ class CommandLineIT {
 	private CommandLineInvoker cli;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) {
+	void setup(@TempDir File tempDir) {
 		this.cli = new CommandLineInvoker(tempDir);
 	}
 

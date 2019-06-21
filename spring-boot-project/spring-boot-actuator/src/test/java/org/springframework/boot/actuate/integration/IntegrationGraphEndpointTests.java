@@ -44,7 +44,7 @@ class IntegrationGraphEndpointTests {
 	private IntegrationGraphEndpoint integrationGraphEndpoint;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		MockitoAnnotations.initMocks(this);
 	}
 

@@ -46,12 +46,12 @@ class AnsiOutputApplicationListenerTests {
 	private ConfigurableApplicationContext context;
 
 	@BeforeEach
-	public void resetAnsi() {
+	void resetAnsi() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		resetAnsi();
 		if (this.context != null) {
 			this.context.close();

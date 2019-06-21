@@ -41,7 +41,7 @@ class ExposeExcludePropertyEndpointFilterTests {
 	private ExposeExcludePropertyEndpointFilter<?> filter;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

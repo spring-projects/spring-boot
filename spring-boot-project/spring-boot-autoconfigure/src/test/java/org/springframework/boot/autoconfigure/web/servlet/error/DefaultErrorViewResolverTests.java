@@ -70,7 +70,7 @@ class DefaultErrorViewResolverTests {
 	private HttpServletRequest request = new MockHttpServletRequest();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.refresh();

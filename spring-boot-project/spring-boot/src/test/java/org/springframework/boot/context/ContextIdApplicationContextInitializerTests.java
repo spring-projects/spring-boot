@@ -41,7 +41,7 @@ class ContextIdApplicationContextInitializerTests {
 	private List<ConfigurableApplicationContext> contexts = new ArrayList<>();
 
 	@AfterEach
-	public void closeContexts() {
+	void closeContexts() {
 		Collections.reverse(this.contexts);
 		this.contexts.forEach(ConfigurableApplicationContext::close);
 	}

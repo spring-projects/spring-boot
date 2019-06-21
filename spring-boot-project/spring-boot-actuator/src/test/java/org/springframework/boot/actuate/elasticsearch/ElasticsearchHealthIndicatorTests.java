@@ -64,7 +64,7 @@ class ElasticsearchHealthIndicatorTests {
 	private ElasticsearchHealthIndicator indicator;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.client.admin()).willReturn(this.admin);
 		given(this.admin.cluster()).willReturn(this.cluster);

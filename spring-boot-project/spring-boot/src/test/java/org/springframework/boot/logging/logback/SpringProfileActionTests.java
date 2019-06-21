@@ -55,7 +55,7 @@ class SpringProfileActionTests {
 	private final Attributes attributes = mock(Attributes.class);
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.action.setContext(this.context);
 	}
 

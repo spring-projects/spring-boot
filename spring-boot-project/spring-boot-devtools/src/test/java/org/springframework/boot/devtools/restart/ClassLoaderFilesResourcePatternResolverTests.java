@@ -58,7 +58,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 	private ClassLoaderFilesResourcePatternResolver resolver;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.files = new ClassLoaderFiles();
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(new GenericApplicationContext(), this.files);
 	}

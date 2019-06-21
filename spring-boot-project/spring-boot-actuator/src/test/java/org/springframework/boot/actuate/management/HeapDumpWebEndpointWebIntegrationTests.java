@@ -45,7 +45,7 @@ class HeapDumpWebEndpointWebIntegrationTests {
 	private TestHeapDumpWebEndpoint endpoint;
 
 	@BeforeEach
-	public void configureEndpoint(ApplicationContext context) {
+	void configureEndpoint(ApplicationContext context) {
 		this.endpoint = context.getBean(TestHeapDumpWebEndpoint.class);
 		this.endpoint.setAvailable(true);
 	}

@@ -72,7 +72,7 @@ class WebMvcMetricsIntegrationTests {
 	private MockMvc mvc;
 
 	@BeforeEach
-	public void setupMockMvc() {
+	void setupMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(this.filter).build();
 	}
 

@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class LoggingSystemTests {
 
 	@AfterEach
-	public void clearSystemProperty() {
+	void clearSystemProperty() {
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 	}
 

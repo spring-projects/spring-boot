@@ -60,7 +60,7 @@ class SpringBootJoranConfiguratorTests {
 	private CapturedOutput capturedOutput;
 
 	@BeforeEach
-	public void setup(CapturedOutput capturedOutput) {
+	void setup(CapturedOutput capturedOutput) {
 		this.capturedOutput = capturedOutput;
 		this.environment = new MockEnvironment();
 		this.initializationContext = new LoggingInitializationContext(this.environment);
@@ -71,7 +71,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@AfterEach
-	public void reset() {
+	void reset() {
 		this.context.stop();
 		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
 	}

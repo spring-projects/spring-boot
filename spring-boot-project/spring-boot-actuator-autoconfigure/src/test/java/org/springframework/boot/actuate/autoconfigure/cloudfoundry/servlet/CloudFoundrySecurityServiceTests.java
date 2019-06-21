@@ -60,7 +60,7 @@ class CloudFoundrySecurityServiceTests {
 	private MockRestServiceServer server;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockServerRestTemplateCustomizer mockServerCustomizer = new MockServerRestTemplateCustomizer();
 		RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
 		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER, false);

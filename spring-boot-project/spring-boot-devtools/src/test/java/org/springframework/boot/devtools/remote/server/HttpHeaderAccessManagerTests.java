@@ -45,7 +45,7 @@ class HttpHeaderAccessManagerTests {
 	private HttpHeaderAccessManager manager;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.request = new MockHttpServletRequest("GET", "/");
 		this.serverRequest = new ServletServerHttpRequest(this.request);
 		this.manager = new HttpHeaderAccessManager(HEADER, SECRET);

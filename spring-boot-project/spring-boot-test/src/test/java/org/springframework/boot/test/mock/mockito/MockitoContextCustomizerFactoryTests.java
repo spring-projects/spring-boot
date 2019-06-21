@@ -34,7 +34,7 @@ class MockitoContextCustomizerFactoryTests {
 	private final MockitoContextCustomizerFactory factory = new MockitoContextCustomizerFactory();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

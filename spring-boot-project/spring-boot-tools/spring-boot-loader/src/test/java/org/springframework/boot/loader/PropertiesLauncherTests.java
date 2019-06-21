@@ -62,14 +62,14 @@ class PropertiesLauncherTests {
 	private CapturedOutput capturedOutput;
 
 	@BeforeEach
-	public void setup(CapturedOutput capturedOutput) {
+	void setup(CapturedOutput capturedOutput) {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		System.setProperty("loader.home", new File("src/test/resources").getAbsolutePath());
 		this.capturedOutput = capturedOutput;
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		Thread.currentThread().setContextClassLoader(this.contextClassLoader);
 		System.clearProperty("loader.home");
 		System.clearProperty("loader.path");

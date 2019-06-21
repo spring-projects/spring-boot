@@ -42,7 +42,7 @@ class OriginTrackedYamlLoaderTests {
 	private List<Map<String, Object>> result;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
 		this.loader = new OriginTrackedYamlLoader(resource);
 	}

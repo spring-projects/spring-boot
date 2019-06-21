@@ -78,7 +78,7 @@ class AutoConfigurationSorterTests {
 	private AutoConfigurationMetadata autoConfigurationMetadata = mock(AutoConfigurationMetadata.class);
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.sorter = new AutoConfigurationSorter(new SkipCycleMetadataReaderFactory(), this.autoConfigurationMetadata);
 	}
 

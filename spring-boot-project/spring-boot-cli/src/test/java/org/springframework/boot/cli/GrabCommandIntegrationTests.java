@@ -50,7 +50,7 @@ class GrabCommandIntegrationTests {
 
 	@BeforeEach
 	@AfterEach
-	public void deleteLocalRepository() {
+	void deleteLocalRepository() {
 		System.clearProperty("grape.root");
 		System.clearProperty("groovy.grape.report.downloads");
 	}

@@ -61,7 +61,7 @@ class UndertowWebServerFactoryCustomizerTests {
 	private UndertowWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);

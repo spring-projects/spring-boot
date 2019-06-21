@@ -79,7 +79,7 @@ class LongTaskTimingHandlerInterceptorTests {
 	private MockMvc mvc;
 
 	@BeforeEach
-	public void setUpMockMvc() {
+	void setUpMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
 

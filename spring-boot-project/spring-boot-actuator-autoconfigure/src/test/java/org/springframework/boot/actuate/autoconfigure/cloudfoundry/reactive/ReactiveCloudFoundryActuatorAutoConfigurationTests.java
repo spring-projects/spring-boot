@@ -92,7 +92,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
 	@AfterEach
-	public void close() {
+	void close() {
 		HttpResources.reset();
 	}
 

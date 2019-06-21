@@ -49,12 +49,12 @@ class ImageBannerTests {
 	private static final String INVERT_TRUE = "spring.banner.image.invert=true";
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 	}
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 

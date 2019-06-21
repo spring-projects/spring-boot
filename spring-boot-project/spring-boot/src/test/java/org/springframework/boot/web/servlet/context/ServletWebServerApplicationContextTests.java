@@ -95,13 +95,13 @@ class ServletWebServerApplicationContextTests {
 	private ArgumentCaptor<Filter> filterCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.context = new ServletWebServerApplicationContext();
 	}
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		this.context.close();
 	}
 

@@ -45,7 +45,7 @@ class AutoConfigurationExcludeFilterTests {
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}

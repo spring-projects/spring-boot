@@ -38,7 +38,7 @@ class MustacheViewResolverTests {
 	private MustacheViewResolver resolver = new MustacheViewResolver();
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		GenericApplicationContext applicationContext = new GenericApplicationContext();
 		applicationContext.refresh();
 		this.resolver.setApplicationContext(applicationContext);

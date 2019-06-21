@@ -66,7 +66,7 @@ class JsonContentAssertTests {
 	private File temp;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.temp = new File(this.tempDir.toFile(), "file.json");
 	}
 

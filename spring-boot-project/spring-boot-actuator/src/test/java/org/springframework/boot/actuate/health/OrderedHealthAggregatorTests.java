@@ -35,7 +35,7 @@ class OrderedHealthAggregatorTests {
 	private OrderedHealthAggregator healthAggregator;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
 

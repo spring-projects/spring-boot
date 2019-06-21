@@ -48,7 +48,7 @@ class ReflectiveOperationInvokerTests {
 	private ParameterValueMapper parameterValueMapper;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.target = new Example();
 		this.operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class, "reverse", String.class),
 				OperationType.READ);

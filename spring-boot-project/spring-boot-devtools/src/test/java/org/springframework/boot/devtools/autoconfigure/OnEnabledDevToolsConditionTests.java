@@ -38,7 +38,7 @@ class OnEnabledDevToolsConditionTests {
 	private AnnotationConfigApplicationContext context;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class);
 	}

@@ -61,7 +61,7 @@ class ServletEndpointRegistrarTests {
 	private ArgumentCaptor<Servlet> servlet;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
 	}

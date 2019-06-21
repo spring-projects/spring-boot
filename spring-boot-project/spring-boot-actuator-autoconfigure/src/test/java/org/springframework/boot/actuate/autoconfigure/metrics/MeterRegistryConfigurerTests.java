@@ -70,7 +70,7 @@ class MeterRegistryConfigurerTests {
 	private Config mockConfig;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 	}

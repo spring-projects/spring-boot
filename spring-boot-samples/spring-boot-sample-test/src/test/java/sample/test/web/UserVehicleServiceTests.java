@@ -50,7 +50,7 @@ class UserVehicleServiceTests {
 	private UserVehicleService service;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.service = new UserVehicleService(this.userRepository, this.vehicleDetailsService);
 	}

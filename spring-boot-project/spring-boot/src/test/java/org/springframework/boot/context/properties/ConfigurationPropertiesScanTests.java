@@ -41,12 +41,12 @@ class ConfigurationPropertiesScanTests {
 	private AnnotationConfigApplicationContext context;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.context = new AnnotationConfigApplicationContext();
 	}
 
 	@AfterEach
-	public void teardown() {
+	void teardown() {
 		if (this.context != null) {
 			this.context.close();
 		}

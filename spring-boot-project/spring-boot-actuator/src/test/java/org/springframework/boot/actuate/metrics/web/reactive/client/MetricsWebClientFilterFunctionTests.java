@@ -60,7 +60,7 @@ class MetricsWebClientFilterFunctionTests {
 	private ExchangeFunction exchange;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		this.filterFunction = new MetricsWebClientFilterFunction(this.registry,
 				new DefaultWebClientExchangeTagsProvider(), "http.client.requests", AutoTimer.ENABLED);

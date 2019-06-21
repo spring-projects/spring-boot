@@ -61,7 +61,7 @@ class SpringBootServletInitializerTests {
 	private SpringApplication application;
 
 	@AfterEach
-	public void verifyLoggingOutput(CapturedOutput capturedOutput) {
+	void verifyLoggingOutput(CapturedOutput capturedOutput) {
 		assertThat(capturedOutput).doesNotContain(StandardServletEnvironment.class.getSimpleName());
 	}
 

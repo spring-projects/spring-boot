@@ -38,12 +38,12 @@ class SampleSimpleApplicationTests {
 	private String profiles;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.profiles = System.getProperty("spring.profiles.active");
 	}
 
 	@AfterEach
-	public void after() {
+	void after() {
 		if (this.profiles != null) {
 			System.setProperty("spring.profiles.active", this.profiles);
 		}

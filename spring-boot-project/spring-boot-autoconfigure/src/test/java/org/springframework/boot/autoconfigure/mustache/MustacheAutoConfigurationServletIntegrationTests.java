@@ -66,7 +66,7 @@ class MustacheAutoConfigurationServletIntegrationTests {
 	private int port;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.port = this.context.getWebServer().getPort();
 	}
 

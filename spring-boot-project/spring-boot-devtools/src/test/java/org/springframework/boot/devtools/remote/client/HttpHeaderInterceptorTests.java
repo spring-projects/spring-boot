@@ -60,7 +60,7 @@ class HttpHeaderInterceptorTests {
 	private MockHttpServletRequest httpRequest;
 
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();

@@ -61,7 +61,7 @@ class ServletRegistrationBeanTests {
 	private FilterRegistration.Dynamic filterRegistration;
 
 	@BeforeEach
-	public void setupMocks() {
+	void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(this.registration);
 		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.filterRegistration);

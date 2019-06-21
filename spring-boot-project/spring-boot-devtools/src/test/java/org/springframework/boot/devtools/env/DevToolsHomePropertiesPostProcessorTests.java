@@ -42,7 +42,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	private File home;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) throws IOException {
+	void setup(@TempDir File tempDir) throws IOException {
 		this.home = tempDir;
 	}
 

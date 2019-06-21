@@ -45,7 +45,7 @@ class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.listener = new ConditionEvaluationReportAutoConfigurationImportListener();
 		this.listener.setBeanFactory(this.beanFactory);
 	}

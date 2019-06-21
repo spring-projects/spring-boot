@@ -76,7 +76,7 @@ class ErrorPageFilterIntegrationTests {
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@AfterEach
-	public void init() {
+	void init() {
 		this.controller.reset();
 	}
 

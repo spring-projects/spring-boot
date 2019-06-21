@@ -44,7 +44,7 @@ class SocketTargetServerConnectionTests {
 	private SocketTargetServerConnection connection;
 
 	@BeforeEach
-	public void setup() throws IOException {
+	void setup() throws IOException {
 		this.server = new MockServer();
 		this.connection = new SocketTargetServerConnection(() -> this.server.getPort());
 	}

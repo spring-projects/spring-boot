@@ -57,7 +57,7 @@ class MockitoTestExecutionListenerTests {
 	private ArgumentCaptor<Field> fieldCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.applicationContext.getBean(MockitoPostProcessor.class)).willReturn(this.postProcessor);
 	}

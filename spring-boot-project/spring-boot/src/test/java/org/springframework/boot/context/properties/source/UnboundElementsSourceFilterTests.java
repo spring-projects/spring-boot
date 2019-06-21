@@ -38,7 +38,7 @@ class UnboundElementsSourceFilterTests {
 	private ConfigurationPropertySource source;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.filter = new UnboundElementsSourceFilter();
 		this.source = mock(ConfigurationPropertySource.class);
 	}

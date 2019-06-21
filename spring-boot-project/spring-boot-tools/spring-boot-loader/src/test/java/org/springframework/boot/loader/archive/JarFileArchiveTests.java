@@ -58,12 +58,12 @@ class JarFileArchiveTests {
 	private String rootJarFileUrl;
 
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		setup(false);
 	}
 
 	@AfterEach
-	public void tearDown() throws Exception {
+	void tearDown() throws Exception {
 		this.archive.close();
 	}
 

@@ -32,7 +32,7 @@ class TraceableHttpServletRequestTests {
 	private MockHttpServletRequest request;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.request = new MockHttpServletRequest("GET", "/script");
 	}
 

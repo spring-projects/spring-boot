@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SystemPropertyUtilsTests {
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		System.setProperty("foo", "bar");
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		System.clearProperty("foo");
 	}
 

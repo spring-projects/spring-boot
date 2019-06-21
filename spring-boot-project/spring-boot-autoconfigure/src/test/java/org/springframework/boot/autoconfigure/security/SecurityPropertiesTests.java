@@ -40,7 +40,7 @@ class SecurityPropertiesTests {
 	private MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.binder = new Binder(this.source);
 	}
 

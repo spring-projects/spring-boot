@@ -63,7 +63,7 @@ class RestartClassLoaderTests {
 	private RestartClassLoader reloadClassLoader;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) throws Exception {
+	void setup(@TempDir File tempDir) throws Exception {
 		this.sampleJarFile = createSampleJarFile(tempDir);
 		URL url = this.sampleJarFile.toURI().toURL();
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -74,7 +74,7 @@ class RestartClassLoaderTests {
 	}
 
 	@AfterEach
-	public void tearDown() throws Exception {
+	void tearDown() throws Exception {
 		this.reloadClassLoader.close();
 		this.parentClassLoader.close();
 	}

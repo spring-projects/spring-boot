@@ -70,7 +70,7 @@ import static org.assertj.core.api.Assertions.contentOf;
 class LiquibaseAutoConfigurationTests {
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		new LiquibaseServiceLocatorApplicationListener()
 				.onApplicationEvent(new ApplicationStartingEvent(new SpringApplication(Object.class), new String[0]));
 	}

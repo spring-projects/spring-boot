@@ -64,7 +64,7 @@ class NettyRSocketServerFactoryTests {
 	private static final Duration TIMEOUT = Duration.ofSeconds(3);
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		if (this.rSocketServer != null) {
 			try {
 				this.rSocketServer.stop();

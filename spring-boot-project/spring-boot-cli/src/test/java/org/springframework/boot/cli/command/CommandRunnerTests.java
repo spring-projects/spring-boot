@@ -55,13 +55,13 @@ class CommandRunnerTests {
 	private ClassLoader loader;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		Thread.currentThread().setContextClassLoader(this.loader);
 		System.clearProperty("debug");
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.loader = Thread.currentThread().getContextClassLoader();
 		MockitoAnnotations.initMocks(this);
 		this.commandRunner = new CommandRunner("spring") {

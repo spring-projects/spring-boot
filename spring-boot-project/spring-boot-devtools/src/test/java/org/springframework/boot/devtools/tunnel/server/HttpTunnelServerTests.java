@@ -81,7 +81,7 @@ class HttpTunnelServerTests {
 	private MockServerChannel serverChannel;
 
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.server = new HttpTunnelServer(this.serverConnection);
 		given(this.serverConnection.open(anyInt())).willAnswer((invocation) -> {

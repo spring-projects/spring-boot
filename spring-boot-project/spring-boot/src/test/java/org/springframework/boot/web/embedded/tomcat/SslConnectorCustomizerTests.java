@@ -61,7 +61,7 @@ class SslConnectorCustomizerTests {
 	private Connector connector;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.tomcat = new Tomcat();
 		this.connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		this.connector.setPort(0);
@@ -69,7 +69,7 @@ class SslConnectorCustomizerTests {
 	}
 
 	@AfterEach
-	public void stop() throws Exception {
+	void stop() throws Exception {
 		System.clearProperty("javax.net.ssl.trustStorePassword");
 		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
 		ReflectionTestUtils.setField(URL.class, "factory", null);

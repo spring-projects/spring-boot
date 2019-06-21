@@ -43,7 +43,7 @@ class CompressionConnectorCustomizerTests {
 	private Compression compression;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.compression = new Compression();
 		this.compression.setEnabled(true);
 		this.compression.setMinResponseSize(DataSize.ofBytes(MIN_SIZE));

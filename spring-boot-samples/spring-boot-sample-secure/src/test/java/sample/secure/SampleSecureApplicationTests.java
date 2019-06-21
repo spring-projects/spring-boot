@@ -45,12 +45,12 @@ class SampleSecureApplicationTests {
 	private Authentication authentication;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.authentication = new UsernamePasswordAuthenticationToken("user", "password");
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		SecurityContextHolder.clearContext();
 	}
 

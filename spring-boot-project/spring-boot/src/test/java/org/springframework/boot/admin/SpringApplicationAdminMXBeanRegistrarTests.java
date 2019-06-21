@@ -55,12 +55,12 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 	private ConfigurableApplicationContext context;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
 	}
 
 	@AfterEach
-	public void closeContext() {
+	void closeContext() {
 		if (this.context != null) {
 			this.context.close();
 		}

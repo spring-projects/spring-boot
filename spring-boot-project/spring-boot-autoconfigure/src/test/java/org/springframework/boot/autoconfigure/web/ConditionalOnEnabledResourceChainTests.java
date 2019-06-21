@@ -36,7 +36,7 @@ class ConditionalOnEnabledResourceChainTests {
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@AfterEach
-	public void closeContext() {
+	void closeContext() {
 		this.context.close();
 	}
 

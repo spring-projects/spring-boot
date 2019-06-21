@@ -58,7 +58,7 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 
 	@Override
 	@BeforeEach
-	public void setup(RestDocumentationContextProvider restDocumentation) {
+	void setup(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
 				.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris()).build();
 	}

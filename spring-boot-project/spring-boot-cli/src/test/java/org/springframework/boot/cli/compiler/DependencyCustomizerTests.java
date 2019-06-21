@@ -53,7 +53,7 @@ class DependencyCustomizerTests {
 	private DependencyCustomizer dependencyCustomizer;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn("org.springframework.boot");
 		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn("spring-boot-starter-logging");

@@ -44,7 +44,7 @@ class JsonComponentModuleTests {
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void closeContext() {
+	void closeContext() {
 		if (this.context != null) {
 			this.context.close();
 		}

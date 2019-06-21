@@ -59,12 +59,12 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 class RestarterTests {
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		RestarterInitializer.setRestarterInstance();
 	}
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		Restarter.clearInstance();
 	}
 

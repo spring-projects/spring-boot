@@ -110,7 +110,7 @@ class ConfigurationPropertiesTests {
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		this.context.close();
 		System.clearProperty("name");
 		System.clearProperty("nested.name");

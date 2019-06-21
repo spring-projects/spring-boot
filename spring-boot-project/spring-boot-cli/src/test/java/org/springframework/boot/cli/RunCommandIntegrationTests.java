@@ -48,12 +48,12 @@ class RunCommandIntegrationTests {
 	private Properties systemProperties = new Properties();
 
 	@BeforeEach
-	public void captureSystemProperties() {
+	void captureSystemProperties() {
 		this.systemProperties.putAll(System.getProperties());
 	}
 
 	@AfterEach
-	public void restoreSystemProperties() {
+	void restoreSystemProperties() {
 		System.setProperties(this.systemProperties);
 	}
 

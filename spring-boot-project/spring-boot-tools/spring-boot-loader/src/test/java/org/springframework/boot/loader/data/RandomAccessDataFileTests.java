@@ -61,7 +61,7 @@ class RandomAccessDataFileTests {
 	private InputStream inputStream;
 
 	@BeforeEach
-	public void setup(@TempDir File tempDir) throws Exception {
+	void setup(@TempDir File tempDir) throws Exception {
 		this.tempFile = new File(tempDir, "tempFile");
 		FileOutputStream outputStream = new FileOutputStream(this.tempFile);
 		outputStream.write(BYTES);
@@ -71,7 +71,7 @@ class RandomAccessDataFileTests {
 	}
 
 	@AfterEach
-	public void cleanup() throws Exception {
+	void cleanup() throws Exception {
 		this.inputStream.close();
 		this.file.close();
 	}

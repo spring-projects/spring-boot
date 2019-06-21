@@ -144,13 +144,13 @@ class SpringApplicationTests {
 	}
 
 	@BeforeEach
-	public void storeAndClearHeadlessProperty() {
+	void storeAndClearHeadlessProperty() {
 		this.headlessProperty = System.getProperty("java.awt.headless");
 		System.clearProperty("java.awt.headless");
 	}
 
 	@AfterEach
-	public void reinstateHeadlessProperty() {
+	void reinstateHeadlessProperty() {
 		if (this.headlessProperty == null) {
 			System.clearProperty("java.awt.headless");
 		}
@@ -160,7 +160,7 @@ class SpringApplicationTests {
 	}
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}

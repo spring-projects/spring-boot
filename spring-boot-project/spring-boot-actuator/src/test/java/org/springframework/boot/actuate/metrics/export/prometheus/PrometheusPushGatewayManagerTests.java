@@ -72,7 +72,7 @@ class PrometheusPushGatewayManagerTests {
 	private ScheduledFuture<Object> future;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.scheduler = mockScheduler(TaskScheduler.class);
 	}

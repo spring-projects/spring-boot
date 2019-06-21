@@ -62,7 +62,7 @@ class RootUriRequestExpectationManagerTests {
 	private ArgumentCaptor<ClientHttpRequest> requestCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.manager = new RootUriRequestExpectationManager(this.uri, this.delegate);
 	}

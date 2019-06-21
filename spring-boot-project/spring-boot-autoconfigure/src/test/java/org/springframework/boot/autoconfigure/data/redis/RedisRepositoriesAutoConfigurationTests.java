@@ -50,12 +50,12 @@ class RedisRepositoriesAutoConfigurationTests {
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		TestPropertyValues.of("spring.redis.port=" + redis.getFirstMappedPort()).applyTo(this.context.getEnvironment());
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		this.context.close();
 	}
 

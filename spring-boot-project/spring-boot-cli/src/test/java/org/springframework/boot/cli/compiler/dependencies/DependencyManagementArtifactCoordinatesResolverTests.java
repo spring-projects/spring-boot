@@ -39,7 +39,7 @@ class DependencyManagementArtifactCoordinatesResolverTests {
 	private DependencyManagementArtifactCoordinatesResolver resolver;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.dependencyManagement = mock(DependencyManagement.class);
 		given(this.dependencyManagement.find("a1")).willReturn(new Dependency("g1", "a1", "0"));
 		given(this.dependencyManagement.getSpringBootVersion()).willReturn("1");

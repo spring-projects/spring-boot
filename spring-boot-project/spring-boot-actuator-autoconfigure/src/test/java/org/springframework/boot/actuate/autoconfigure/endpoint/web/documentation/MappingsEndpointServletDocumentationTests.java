@@ -70,7 +70,7 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 	private WebTestClient client;
 
 	@BeforeEach
-	public void webTestClient(RestDocumentationContextProvider restDocumentation) {
+	void webTestClient(RestDocumentationContextProvider restDocumentation) {
 		this.client = WebTestClient.bindToServer().filter(documentationConfiguration(restDocumentation))
 				.baseUrl("http://localhost:" + this.port).build();
 	}

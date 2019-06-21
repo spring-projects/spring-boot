@@ -48,7 +48,7 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 	private ListableBeanFactory beanFactory;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.processor.setBeanFactory(this.beanFactory);
 	}

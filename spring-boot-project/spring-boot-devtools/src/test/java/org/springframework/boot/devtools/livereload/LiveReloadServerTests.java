@@ -60,13 +60,13 @@ class LiveReloadServerTests {
 	private MonitoredLiveReloadServer server;
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	void setUp() throws Exception {
 		this.server = new MonitoredLiveReloadServer(0);
 		this.port = this.server.start();
 	}
 
 	@AfterEach
-	public void tearDown() throws Exception {
+	void tearDown() throws Exception {
 		this.server.stop();
 	}
 

@@ -40,7 +40,7 @@ class OnClassConditionAutoConfigurationImportFilterTests {
 	private DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.filter.setBeanClassLoader(getClass().getClassLoader());
 		this.filter.setBeanFactory(this.beanFactory);
 	}

@@ -68,7 +68,7 @@ public class DevToolsIntegrationTests {
 	}
 
 	@AfterEach
-	public void stopApplication() throws InterruptedException {
+	void stopApplication() throws InterruptedException {
 		this.launchedApplication.stop();
 	}
 

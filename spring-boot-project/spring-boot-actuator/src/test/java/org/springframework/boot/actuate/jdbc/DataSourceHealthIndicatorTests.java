@@ -51,14 +51,14 @@ class DataSourceHealthIndicatorTests {
 	private SingleConnectionDataSource dataSource;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
 		this.dataSource = new SingleConnectionDataSource(db.getUrl("testdb") + ";shutdown=true", "sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.dataSource != null) {
 			this.dataSource.destroy();
 		}

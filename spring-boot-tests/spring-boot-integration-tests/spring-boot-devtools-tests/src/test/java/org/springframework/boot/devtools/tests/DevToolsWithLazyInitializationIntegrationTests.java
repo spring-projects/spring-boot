@@ -69,7 +69,7 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 	}
 
 	@AfterEach
-	public void stopApplication() throws InterruptedException {
+	void stopApplication() throws InterruptedException {
 		this.launchedApplication.stop();
 	}
 

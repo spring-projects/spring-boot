@@ -69,7 +69,7 @@ class ArtifactsLibrariesTests {
 	private ArgumentCaptor<Library> libraryCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.artifacts = Collections.singleton(this.artifact);
 		this.libs = new ArtifactsLibraries(this.artifacts, null, mock(Log.class));

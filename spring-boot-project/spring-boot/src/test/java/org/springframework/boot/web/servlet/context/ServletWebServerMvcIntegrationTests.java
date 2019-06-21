@@ -58,7 +58,7 @@ class ServletWebServerMvcIntegrationTests {
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@AfterEach
-	public void closeContext() {
+	void closeContext() {
 		try {
 			this.context.close();
 		}

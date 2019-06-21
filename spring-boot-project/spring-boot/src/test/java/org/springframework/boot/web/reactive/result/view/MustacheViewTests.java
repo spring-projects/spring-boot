@@ -46,7 +46,7 @@ class MustacheViewTests {
 	private MockServerWebExchange exchange;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		this.context.refresh();
 	}
 

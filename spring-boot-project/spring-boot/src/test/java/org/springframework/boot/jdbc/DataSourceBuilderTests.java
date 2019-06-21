@@ -41,7 +41,7 @@ class DataSourceBuilderTests {
 	private DataSource dataSource;
 
 	@AfterEach
-	public void shutdownDataSource() throws IOException {
+	void shutdownDataSource() throws IOException {
 		if (this.dataSource instanceof Closeable) {
 			((Closeable) this.dataSource).close();
 		}

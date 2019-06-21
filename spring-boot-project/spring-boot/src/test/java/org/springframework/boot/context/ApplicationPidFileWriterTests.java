@@ -60,7 +60,7 @@ class ApplicationPidFileWriterTests {
 
 	@BeforeEach
 	@AfterEach
-	public void resetListener() {
+	void resetListener() {
 		System.clearProperty("PIDFILE");
 		System.clearProperty("PID_FAIL_ON_WRITE_ERROR");
 		ApplicationPidFileWriter.reset();

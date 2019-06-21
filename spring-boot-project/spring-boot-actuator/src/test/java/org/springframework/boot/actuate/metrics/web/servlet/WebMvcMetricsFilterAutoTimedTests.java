@@ -68,7 +68,7 @@ class WebMvcMetricsFilterAutoTimedTests {
 	private WebMvcMetricsFilter filter;
 
 	@BeforeEach
-	public void setupMockMvc() {
+	void setupMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).addFilters(this.filter).build();
 	}
 

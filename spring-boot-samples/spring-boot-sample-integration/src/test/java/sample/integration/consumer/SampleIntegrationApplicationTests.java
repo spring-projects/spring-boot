@@ -52,7 +52,7 @@ class SampleIntegrationApplicationTests {
 	private ConfigurableApplicationContext context;
 
 	@AfterEach
-	public void stop() {
+	void stop() {
 		if (this.context != null) {
 			this.context.close();
 		}

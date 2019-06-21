@@ -55,7 +55,7 @@ class ExplodedArchiveTests {
 	private ExplodedArchive archive;
 
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		createArchive();
 	}
 

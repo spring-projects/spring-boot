@@ -56,12 +56,12 @@ class ElasticsearchDataAutoConfigurationTests {
 					ReactiveRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class));
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		System.setProperty("es.set.netty.runtime.available.processors", "false");
 	}
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		System.clearProperty("es.set.netty.runtime.available.processors");
 	}
 

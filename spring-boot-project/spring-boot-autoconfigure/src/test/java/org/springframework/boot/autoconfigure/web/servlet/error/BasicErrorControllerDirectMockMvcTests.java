@@ -68,7 +68,7 @@ class BasicErrorControllerDirectMockMvcTests {
 	private MockMvc mockMvc;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		ApplicationContextTestUtils.closeAll(this.wac);
 	}
 

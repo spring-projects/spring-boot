@@ -67,7 +67,7 @@ class DelayedLiveReloadTriggerTests {
 	private DelayedLiveReloadTrigger trigger;
 
 	@BeforeEach
-	public void setup() throws IOException {
+	void setup() throws IOException {
 		MockitoAnnotations.initMocks(this);
 		given(this.errorRequest.execute()).willReturn(this.errorResponse);
 		given(this.okRequest.execute()).willReturn(this.okResponse);

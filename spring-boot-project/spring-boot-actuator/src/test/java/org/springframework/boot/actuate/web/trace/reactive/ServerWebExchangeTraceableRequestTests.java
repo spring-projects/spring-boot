@@ -43,7 +43,7 @@ class ServerWebExchangeTraceableRequestTests {
 	private ServerHttpRequest request;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.exchange = mock(ServerWebExchange.class);
 		this.request = mock(ServerHttpRequest.class);
 		given(this.exchange.getRequest()).willReturn(this.request);

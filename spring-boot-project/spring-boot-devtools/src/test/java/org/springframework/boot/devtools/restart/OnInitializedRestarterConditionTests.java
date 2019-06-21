@@ -43,7 +43,7 @@ class OnInitializedRestarterConditionTests {
 
 	@BeforeEach
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		Restarter.clearInstance();
 	}
 

@@ -61,7 +61,7 @@ class AutoConfigurationImportSelectorTests {
 	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);

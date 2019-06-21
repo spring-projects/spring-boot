@@ -46,7 +46,7 @@ class JpaWebAutoConfigurationTests {
 	private AnnotationConfigServletWebApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		this.context.close();
 	}
 

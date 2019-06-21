@@ -42,7 +42,7 @@ class SkipSslVerificationHttpRequestFactoryTests {
 	private WebServer webServer;
 
 	@AfterEach
-	public void shutdownContainer() {
+	void shutdownContainer() {
 		if (this.webServer != null) {
 			this.webServer.stop();
 		}

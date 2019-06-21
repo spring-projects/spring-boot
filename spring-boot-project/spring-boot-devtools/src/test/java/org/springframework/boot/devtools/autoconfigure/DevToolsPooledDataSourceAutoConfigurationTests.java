@@ -50,12 +50,12 @@ import static org.mockito.Mockito.verify;
 class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@BeforeEach
-	public void before(@TempDir File tempDir) throws IOException {
+	void before(@TempDir File tempDir) throws IOException {
 		System.setProperty("derby.stream.error.file", new File(tempDir, "derby.log").getAbsolutePath());
 	}
 
 	@AfterEach
-	public void after() {
+	void after() {
 		System.clearProperty("derby.stream.error.file");
 	}
 

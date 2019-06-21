@@ -42,7 +42,7 @@ class DefaultHealthIndicatorRegistryTests {
 	private DefaultHealthIndicatorRegistry registry;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		given(this.one.health()).willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
 		given(this.two.health()).willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
 		this.registry = new DefaultHealthIndicatorRegistry();

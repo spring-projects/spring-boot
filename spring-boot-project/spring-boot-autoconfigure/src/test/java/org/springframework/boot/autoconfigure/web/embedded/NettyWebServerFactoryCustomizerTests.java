@@ -61,7 +61,7 @@ class NettyWebServerFactoryCustomizerTests {
 	private ArgumentCaptor<NettyServerCustomizer> customizerCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();

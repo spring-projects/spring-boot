@@ -45,7 +45,7 @@ class FolderSnapshotTests {
 	private FolderSnapshot initialSnapshot;
 
 	@BeforeEach
-	public void setup() throws Exception {
+	void setup() throws Exception {
 		this.folder = createTestFolderStructure();
 		this.initialSnapshot = new FolderSnapshot(this.folder);
 	}

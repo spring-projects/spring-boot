@@ -66,7 +66,7 @@ class MultipartAutoConfigurationTests {
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}

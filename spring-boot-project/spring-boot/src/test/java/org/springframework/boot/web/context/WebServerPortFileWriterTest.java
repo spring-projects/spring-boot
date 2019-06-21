@@ -48,7 +48,7 @@ class WebServerPortFileWriterTest {
 
 	@BeforeEach
 	@AfterEach
-	public void reset() {
+	void reset() {
 		System.clearProperty("PORTFILE");
 	}
 

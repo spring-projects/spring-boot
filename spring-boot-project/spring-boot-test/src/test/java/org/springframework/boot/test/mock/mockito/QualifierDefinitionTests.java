@@ -52,7 +52,7 @@ class QualifierDefinitionTests {
 	private ArgumentCaptor<DependencyDescriptor> descriptorCaptor;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

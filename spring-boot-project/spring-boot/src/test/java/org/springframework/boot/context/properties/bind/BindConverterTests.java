@@ -54,7 +54,7 @@ class BindConverterTests {
 	private Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 

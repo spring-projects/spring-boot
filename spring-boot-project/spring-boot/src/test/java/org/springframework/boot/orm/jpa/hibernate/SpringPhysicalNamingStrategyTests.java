@@ -42,7 +42,7 @@ class SpringPhysicalNamingStrategyTests {
 	private MetadataSources metadataSources;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.metadataSources = new MetadataSources(createServiceRegistry());
 		this.metadataSources.addAnnotatedClass(TelephoneNumber.class);
 		this.metadata = this.metadataSources.getMetadataBuilder()

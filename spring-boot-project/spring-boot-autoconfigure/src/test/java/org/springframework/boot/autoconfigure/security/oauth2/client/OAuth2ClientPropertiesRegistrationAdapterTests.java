@@ -54,7 +54,7 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 	private MockWebServer server;
 
 	@AfterEach
-	public void cleanup() throws Exception {
+	void cleanup() throws Exception {
 		if (this.server != null) {
 			this.server.shutdown();
 		}

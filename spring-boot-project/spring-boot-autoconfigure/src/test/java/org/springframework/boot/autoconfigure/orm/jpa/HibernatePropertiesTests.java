@@ -54,7 +54,7 @@ class HibernatePropertiesTests {
 	private Supplier<String> ddlAutoSupplier;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
