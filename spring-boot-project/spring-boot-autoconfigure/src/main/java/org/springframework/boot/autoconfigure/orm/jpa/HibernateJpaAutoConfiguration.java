@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.util.Arrays;
-
 import javax.persistence.EntityManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -59,19 +57,15 @@ public class HibernateJpaAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
 
-		private static final String[] CLASS_NAMES = { "org.hibernate.ejb.HibernateEntityManager",
-				"org.hibernate.jpa.HibernateEntityManager" };
+		private static final String SESSION_IMPLEMENTOR_CLASS = "org.hibernate.engine.spi.SessionImplementor";
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("HibernateEntityManager");
-			for (String className : CLASS_NAMES) {
-				if (ClassUtils.isPresent(className, context.getClassLoader())) {
-					return ConditionOutcome.match(message.found("class").items(Style.QUOTE, className));
-				}
+			if (ClassUtils.isPresent(SESSION_IMPLEMENTOR_CLASS, context.getClassLoader())) {
+				return ConditionOutcome.match(message.found("class").items(SESSION_IMPLEMENTOR_CLASS));
 			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("class", "classes").items(Style.QUOTE, Arrays.asList(CLASS_NAMES)));
+			return ConditionOutcome.noMatch(message.didNotFind("class").items(Style.QUOTE, SESSION_IMPLEMENTOR_CLASS));
 		}
 
 	}

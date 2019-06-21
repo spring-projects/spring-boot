@@ -27,16 +27,19 @@ import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -102,6 +105,17 @@ class CustomHibernateJpaAutoConfigurationTests {
 					Database database = (Database) ReflectionTestUtils.getField(bean, "database");
 					assertThat(database).isEqualTo(Database.DEFAULT);
 				});
+	}
+
+	@Test
+	void hibernateConditionDoesNotMatch() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(SessionImplementor.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(JpaVendorAdapter.class));
+	}
+
+	@Test
+	void hibernateConditionMatches() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JpaVendorAdapter.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
