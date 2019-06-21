@@ -17,12 +17,12 @@
 package org.springframework.boot.autoconfigure.rsocket;
 
 import io.rsocket.RSocketFactory;
+import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.WebsocketRouteTransport;
 import reactor.netty.http.server.HttpServerRoutes;
 
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
-import org.springframework.messaging.rsocket.MessageHandlerAcceptor;
 
 /**
  * {@link NettyRouteProvider} that configures an RSocket Websocket endpoint.
@@ -33,16 +33,16 @@ class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
 	private final String mappingPath;
 
-	private final MessageHandlerAcceptor messageHandlerAcceptor;
+	private final SocketAcceptor socketAcceptor;
 
-	RSocketWebSocketNettyRouteProvider(String mappingPath, MessageHandlerAcceptor messageHandlerAcceptor) {
+	RSocketWebSocketNettyRouteProvider(String mappingPath, SocketAcceptor socketAcceptor) {
 		this.mappingPath = mappingPath;
-		this.messageHandlerAcceptor = messageHandlerAcceptor;
+		this.socketAcceptor = socketAcceptor;
 	}
 
 	@Override
 	public HttpServerRoutes apply(HttpServerRoutes httpServerRoutes) {
-		ServerTransport.ConnectionAcceptor acceptor = RSocketFactory.receive().acceptor(this.messageHandlerAcceptor)
+		ServerTransport.ConnectionAcceptor acceptor = RSocketFactory.receive().acceptor(this.socketAcceptor)
 				.toConnectionAcceptor();
 		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(acceptor));
 	}

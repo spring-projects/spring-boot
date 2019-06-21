@@ -25,9 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.rsocket.MessageHandlerAcceptor;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.util.pattern.PathPatternParser;
 import org.springframework.web.util.pattern.PathPatternRouteMatcher;
@@ -48,15 +48,15 @@ public class RSocketMessagingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MessageHandlerAcceptor messageHandlerAcceptor(RSocketStrategies rSocketStrategies) {
-		MessageHandlerAcceptor acceptor = new MessageHandlerAcceptor();
-		acceptor.setRSocketStrategies(rSocketStrategies);
+	public RSocketMessageHandler messageHandler(RSocketStrategies rSocketStrategies) {
+		RSocketMessageHandler messageHandler = new RSocketMessageHandler();
+		messageHandler.setRSocketStrategies(rSocketStrategies);
 		if (ClassUtils.isPresent(PATHPATTERN_ROUTEMATCHER_CLASS, null)) {
 			PathPatternParser parser = new PathPatternParser();
 			parser.setSeparator('.');
-			acceptor.setRouteMatcher(new PathPatternRouteMatcher(parser));
+			messageHandler.setRouteMatcher(new PathPatternRouteMatcher(parser));
 		}
-		return acceptor;
+		return messageHandler;
 	}
 
 }

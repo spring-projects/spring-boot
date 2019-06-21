@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.rsocket;
 import java.util.stream.Collectors;
 
 import io.rsocket.RSocketFactory;
-import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
 
@@ -42,8 +41,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
-import org.springframework.messaging.rsocket.MessageHandlerAcceptor;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for RSocket servers. In the case of
@@ -57,7 +56,7 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ RSocketFactory.class, RSocketStrategies.class, HttpServer.class, TcpServerTransport.class })
-@ConditionalOnBean(MessageHandlerAcceptor.class)
+@ConditionalOnBean(RSocketMessageHandler.class)
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 @EnableConfigurationProperties(RSocketProperties.class)
 public class RSocketServerAutoConfiguration {
@@ -68,9 +67,9 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		public RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
-				MessageHandlerAcceptor messageHandlerAcceptor) {
+				RSocketMessageHandler messageHandler) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandlerAcceptor);
+					messageHandler.serverAcceptor());
 		}
 
 	}
@@ -100,8 +99,8 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		public RSocketServerBootstrap rSocketServerBootstrap(RSocketServerFactory rSocketServerFactory,
-				SocketAcceptor socketAcceptor) {
-			return new RSocketServerBootstrap(rSocketServerFactory, socketAcceptor);
+				RSocketMessageHandler rSocketMessageHandler) {
+			return new RSocketServerBootstrap(rSocketServerFactory, rSocketMessageHandler.serverAcceptor());
 		}
 
 	}

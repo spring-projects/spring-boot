@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
-import org.springframework.messaging.rsocket.MessageHandlerAcceptor;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -91,11 +91,11 @@ class RSocketServerAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public MessageHandlerAcceptor messageHandlerAcceptor() {
-			MessageHandlerAcceptor messageHandlerAcceptor = new MessageHandlerAcceptor();
-			messageHandlerAcceptor.setRSocketStrategies(RSocketStrategies.builder()
-					.encoder(CharSequenceEncoder.textPlainOnly()).decoder(StringDecoder.textPlainOnly()).build());
-			return messageHandlerAcceptor;
+		public RSocketMessageHandler messageHandler() {
+			RSocketMessageHandler messageHandler = new RSocketMessageHandler();
+			messageHandler.setRSocketStrategies(RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
+					.decoder(StringDecoder.textPlainOnly()).build());
+			return messageHandler;
 		}
 
 	}
