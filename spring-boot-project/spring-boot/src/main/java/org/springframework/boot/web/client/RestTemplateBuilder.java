@@ -91,7 +91,7 @@ public class RestTemplateBuilder {
 
 	private final BasicAuthentication basicAuthentication;
 
-	private final Map<String, String> defaultHeaders;
+	private final Map<String, List<String>> defaultHeaders;
 
 	private final Set<RestTemplateCustomizer> customizers;
 
@@ -122,7 +122,7 @@ public class RestTemplateBuilder {
 			String rootUri, Set<HttpMessageConverter<?>> messageConverters,
 			Set<ClientHttpRequestInterceptor> interceptors, Supplier<ClientHttpRequestFactory> requestFactorySupplier,
 			UriTemplateHandler uriTemplateHandler, ResponseErrorHandler errorHandler,
-			BasicAuthentication basicAuthentication, Map<String, String> defaultHeaders,
+			BasicAuthentication basicAuthentication, Map<String, List<String>> defaultHeaders,
 			Set<RestTemplateCustomizer> customizers, Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		this.requestFactoryCustomizer = requestFactoryCustomizer;
 		this.detectRequestFactory = detectRequestFactory;
@@ -395,15 +395,17 @@ public class RestTemplateBuilder {
 	 * Add a default header that will be set if not already present on the outgoing
 	 * {@link HttpClientRequest}.
 	 * @param name the name of the header
-	 * @param value the header value
+	 * @param values the header values
 	 * @return a new builder instance
 	 * @since 2.2.0
 	 */
-	public RestTemplateBuilder defaultHeader(String name, String value) {
+	public RestTemplateBuilder defaultHeader(String name, String... values) {
+		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(values, "Values must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthentication, append(this.defaultHeaders, name, value), this.customizers,
-				this.requestCustomizers);
+				this.errorHandler, this.basicAuthentication, append(this.defaultHeaders, name, values),
+				this.customizers, this.requestCustomizers);
 	}
 
 	/**
@@ -683,6 +685,10 @@ public class RestTemplateBuilder {
 		return Collections.unmodifiableSet(new LinkedHashSet<>(collection));
 	}
 
+	private static <T> List<T> listOf(T[] items) {
+		return Collections.unmodifiableList(new ArrayList<>(Arrays.asList(items)));
+	}
+
 	private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((collection != null) ? collection : Collections.emptySet());
 		if (additions != null) {
@@ -691,9 +697,11 @@ public class RestTemplateBuilder {
 		return Collections.unmodifiableSet(result);
 	}
 
-	private static <K, V> Map<K, V> append(Map<K, V> map, K key, V value) {
-		Map<K, V> result = new LinkedHashMap<>((map != null) ? map : Collections.emptyMap());
-		result.put(key, value);
+	private static <K, V> Map<K, List<V>> append(Map<K, List<V>> map, K key, V[] values) {
+		Map<K, List<V>> result = new LinkedHashMap<>((map != null) ? map : Collections.emptyMap());
+		if (values != null) {
+			result.put(key, listOf(values));
+		}
 		return Collections.unmodifiableMap(result);
 	}
 
