@@ -100,7 +100,7 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		public ApplicationListener<ClassPathChangedEvent> restartingClassPathChangedEventListener(
+		public ClassPathChangedEventListener restartingClassPathChangedEventListener(
 				FileSystemWatcherFactory fileSystemWatcherFactory) {
 			return (event) -> {
 				if (event.isRestartRequired()) {
@@ -151,6 +151,10 @@ public class LocalDevToolsAutoConfiguration {
 				watcher.addSourceFolder(path.getAbsoluteFile());
 			}
 			return watcher;
+		}
+
+		interface ClassPathChangedEventListener extends ApplicationListener<ClassPathChangedEvent> {
+
 		}
 
 	}
