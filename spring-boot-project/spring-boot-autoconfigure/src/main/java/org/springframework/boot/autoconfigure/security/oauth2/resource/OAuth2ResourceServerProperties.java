@@ -66,7 +66,7 @@ public class OAuth2ResourceServerProperties {
 
 	private void handleError(String property) {
 		throw new IllegalStateException(
-				"Only one of " + property + " and opaque-token.introspection-uri should be configured.");
+				"Only one of " + property + " and opaquetoken.introspection-uri should be configured.");
 	}
 
 	public static class Jwt {
