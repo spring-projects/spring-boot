@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
@@ -46,6 +48,10 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ReactiveWebServerFactoryAutoConfiguration}.
@@ -108,36 +114,100 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	@Test
 	void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebApplicationContext::new)
+				AnnotationConfigReactiveWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class);
+						.withUserConfiguration(HttpHandlerConfiguration.class,
+								TomcatConnectorCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
-			assertThat(factory.getTomcatConnectorCustomizers()).hasSize(1);
+			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
+					TomcatConnectorCustomizer.class);
+			assertThat(factory.getTomcatConnectorCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Connector.class));
+		});
+	}
+
+	@Test
+	void tomcatConnectorCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(HttpHandlerConfiguration.class,
+								DoubleRegistrationTomcatConnectorCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
+		runner.run((context) -> {
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
+			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
+					TomcatConnectorCustomizer.class);
+			assertThat(factory.getTomcatConnectorCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Connector.class));
 		});
 	}
 
 	@Test
 	void tomcatContextCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebApplicationContext::new)
+				AnnotationConfigReactiveWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatContextCustomizerConfiguration.class);
+						.withUserConfiguration(HttpHandlerConfiguration.class,
+								TomcatContextCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
-			assertThat(factory.getTomcatContextCustomizers()).hasSize(1);
+			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
+			assertThat(factory.getTomcatContextCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Context.class));
+		});
+	}
+
+	@Test
+	void tomcatContextCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(HttpHandlerConfiguration.class,
+								DoubleRegistrationTomcatContextCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
+		runner.run((context) -> {
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
+			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
+			assertThat(factory.getTomcatContextCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Context.class));
 		});
 	}
 
 	@Test
 	void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebApplicationContext::new)
+				AnnotationConfigReactiveWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class);
+						.withUserConfiguration(HttpHandlerConfiguration.class,
+								TomcatProtocolHandlerCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
-			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
+			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
+					TomcatProtocolHandlerCustomizer.class);
+			assertThat(factory.getTomcatProtocolHandlerCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any());
+		});
+	}
+
+	@Test
+	void tomcatProtocolHandlerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
+		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
+				AnnotationConfigReactiveWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(HttpHandlerConfiguration.class,
+								DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
+		runner.run((context) -> {
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
+			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
+					TomcatProtocolHandlerCustomizer.class);
+			assertThat(factory.getTomcatProtocolHandlerCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any());
 		});
 	}
 
@@ -245,8 +315,24 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatConnectorCustomizer connectorCustomizer() {
-			return (connector) -> {
-			};
+			return mock(TomcatConnectorCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DoubleRegistrationTomcatConnectorCustomizerConfiguration {
+
+		private final TomcatConnectorCustomizer customizer = mock(TomcatConnectorCustomizer.class);
+
+		@Bean
+		public TomcatConnectorCustomizer connectorCustomizer() {
+			return this.customizer;
+		}
+
+		@Bean
+		public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
+			return (tomcat) -> tomcat.addConnectorCustomizers(this.customizer);
 		}
 
 	}
@@ -256,8 +342,24 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatContextCustomizer contextCustomizer() {
-			return (context) -> {
-			};
+			return mock(TomcatContextCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DoubleRegistrationTomcatContextCustomizerConfiguration {
+
+		private final TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
+
+		@Bean
+		public TomcatContextCustomizer contextCustomizer() {
+			return this.customizer;
+		}
+
+		@Bean
+		public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
+			return (tomcat) -> tomcat.addContextCustomizers(this.customizer);
 		}
 
 	}
@@ -267,8 +369,24 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
-			return (protocolHandler) -> {
-			};
+			return mock(TomcatProtocolHandlerCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration {
+
+		private final TomcatProtocolHandlerCustomizer<?> customizer = mock(TomcatProtocolHandlerCustomizer.class);
+
+		@Bean
+		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
+			return this.customizer;
+		}
+
+		@Bean
+		public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
+			return (tomcat) -> tomcat.addProtocolHandlerCustomizers(this.customizer);
 		}
 
 	}

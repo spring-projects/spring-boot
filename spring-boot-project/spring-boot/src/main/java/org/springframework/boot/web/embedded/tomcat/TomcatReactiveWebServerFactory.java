@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.catalina.Context;
@@ -71,11 +72,11 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
 
-	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
+	private Collection<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
-	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<>();
+	private Collection<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
 
-	private List<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new ArrayList<>();
+	private Collection<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new LinkedHashSet<>();
 
 	private String protocol = DEFAULT_PROTOCOL;
 

@@ -22,6 +22,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
@@ -59,6 +61,9 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FrameworkServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -188,10 +193,30 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class);
+						.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
-			assertThat(factory.getTomcatConnectorCustomizers()).hasSize(1);
+			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
+					TomcatConnectorCustomizer.class);
+			assertThat(factory.getTomcatConnectorCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Connector.class));
+		});
+	}
+
+	@Test
+	void tomcatConnectorCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(DoubleRegistrationTomcatConnectorCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
+		runner.run((context) -> {
+			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
+					TomcatConnectorCustomizer.class);
+			assertThat(factory.getTomcatConnectorCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Connector.class));
 		});
 	}
 
@@ -199,10 +224,29 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void tomcatContextCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class));
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(TomcatContextCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
-			assertThat(factory.getTomcatContextCustomizers()).hasSize(1);
+			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
+			assertThat(factory.getTomcatContextCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Context.class));
+		});
+	}
+
+	@Test
+	void tomcatContextCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(DoubleRegistrationTomcatContextCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
+		runner.run((context) -> {
+			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
+			assertThat(factory.getTomcatContextCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any(Context.class));
 		});
 	}
 
@@ -211,10 +255,30 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class);
+						.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
-			assertThat(factory.getTomcatProtocolHandlerCustomizers()).hasSize(1);
+			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
+					TomcatProtocolHandlerCustomizer.class);
+			assertThat(factory.getTomcatProtocolHandlerCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any());
+		});
+	}
+
+	@Test
+	void tomcatProtocolHandlerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration.class)
+						.withPropertyValues("server.port: 0");
+		runner.run((context) -> {
+			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
+					TomcatProtocolHandlerCustomizer.class);
+			assertThat(factory.getTomcatProtocolHandlerCustomizers()).contains(customizer);
+			verify(customizer, times(1)).customize(any());
 		});
 	}
 
@@ -356,8 +420,24 @@ class ServletWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatConnectorCustomizer connectorCustomizer() {
-			return (connector) -> {
-			};
+			return mock(TomcatConnectorCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DoubleRegistrationTomcatConnectorCustomizerConfiguration {
+
+		private final TomcatConnectorCustomizer customizer = mock(TomcatConnectorCustomizer.class);
+
+		@Bean
+		public TomcatConnectorCustomizer connectorCustomizer() {
+			return this.customizer;
+		}
+
+		@Bean
+		public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
+			return (tomcat) -> tomcat.addConnectorCustomizers(this.customizer);
 		}
 
 	}
@@ -367,8 +447,24 @@ class ServletWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatContextCustomizer contextCustomizer() {
-			return (context) -> {
-			};
+			return mock(TomcatContextCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DoubleRegistrationTomcatContextCustomizerConfiguration {
+
+		private final TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
+
+		@Bean
+		public TomcatContextCustomizer contextCustomizer() {
+			return this.customizer;
+		}
+
+		@Bean
+		public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
+			return (tomcat) -> tomcat.addContextCustomizers(this.customizer);
 		}
 
 	}
@@ -378,8 +474,24 @@ class ServletWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
-			return (protocolHandler) -> {
-			};
+			return mock(TomcatProtocolHandlerCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration {
+
+		private final TomcatProtocolHandlerCustomizer<?> customizer = mock(TomcatProtocolHandlerCustomizer.class);
+
+		@Bean
+		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
+			return this.customizer;
+		}
+
+		@Bean
+		public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
+			return (tomcat) -> tomcat.addProtocolHandlerCustomizers(this.customizer);
 		}
 
 	}
