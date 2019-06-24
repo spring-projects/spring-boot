@@ -98,6 +98,7 @@ public class RSocketServerAutoConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean
 		public RSocketServerBootstrap rSocketServerBootstrap(RSocketServerFactory rSocketServerFactory,
 				RSocketMessageHandler rSocketMessageHandler) {
 			return new RSocketServerBootstrap(rSocketServerFactory, rSocketMessageHandler.serverAcceptor());
