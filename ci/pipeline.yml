@@ -27,6 +27,17 @@ resources:
     username: ((github-username))
     password: ((github-password))
     branch: ((branch))
+- name: git-repo-windows
+  type: git
+  source:
+    uri: ((github-repo))
+    username: ((github-username))
+    password: ((github-password))
+    branch: ((branch))
+    git_config:
+    - name: core.autocrlf
+      value: true
+  icon: github-circle
 - name: git-pull-request
   type: pull-request
   icon: source-pull
@@ -125,6 +136,9 @@ resources:
     start: 8:00 PM
     stop: 9:00 PM
     days: [Wednesday]
+- name: daily
+  type: time
+  source: { interval: "24h" }
 jobs:
 - name: build-spring-boot-ci-images
   plan:
@@ -378,6 +392,34 @@ jobs:
         silent: true
         icon_emoji: ":concourse:"
         username: concourse-ci
+- name: windows-build
+  serial: true
+  plan:
+    - get: git-repo
+      resource: git-repo-windows
+    - get: daily
+      trigger: true
+    - do:
+      - task: build-project
+        privileged: true
+        file: git-repo/ci/tasks/build-project-windows.yml
+        tags:
+        - WIN64
+        timeout: 1h30m
+      on_failure:
+        do:
+          - put: slack-alert
+            params:
+              text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+              silent: true
+              icon_emoji: ":concourse:"
+              username: concourse-ci
+    - put: slack-alert
+      params:
+        text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+        silent: true
+        icon_emoji: ":concourse:"
+        username: concourse-ci
 - name: stage-milestone
   serial: true
   plan:
@@ -552,7 +594,7 @@ jobs:
       body: generated-release-notes/release-notes.md
 groups:
 - name: "Build"
-  jobs: ["build", "jdk11-build", "jdk12-build"]
+  jobs: ["build", "jdk11-build", "jdk12-build", "windows-build"]
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
