@@ -32,6 +32,7 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link RSocketServerAutoConfiguration}.
@@ -77,6 +78,12 @@ class RSocketServerAutoConfigurationTests {
 						.hasSingleBean(RSocketServerBootstrap.class));
 	}
 
+	@Test
+	void shoudUseCustomServerBootstrap() {
+		contextRunner().withUserConfiguration(CustomServerBootstrapConfig.class).run((context) -> assertThat(context)
+				.getBeanNames(RSocketServerBootstrap.class).containsExactly("customServerBootstrap"));
+	}
+
 	private ApplicationContextRunner contextRunner() {
 		return new ApplicationContextRunner().withUserConfiguration(BaseConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class));
@@ -96,6 +103,16 @@ class RSocketServerAutoConfigurationTests {
 			messageHandler.setRSocketStrategies(RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
 					.decoder(StringDecoder.textPlainOnly()).build());
 			return messageHandler;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomServerBootstrapConfig {
+
+		@Bean
+		public RSocketServerBootstrap customServerBootstrap() {
+			return mock(RSocketServerBootstrap.class);
 		}
 
 	}
