@@ -7,4 +7,4 @@ caches:
 - path: maven
 - path: gradle
 run:
-  path: git-repo/ci/scripts/build-samples.sh
+  path: git-repo/ci/scripts/build-smoke-tests.sh
