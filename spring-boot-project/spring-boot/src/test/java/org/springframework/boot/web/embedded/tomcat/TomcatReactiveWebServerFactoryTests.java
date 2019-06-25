@@ -20,10 +20,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
@@ -173,6 +175,24 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		for (TomcatProtocolHandlerCustomizer customizer : customizers) {
 			ordered.verify(customizer).customize(any(ProtocolHandler.class));
 		}
+	}
+
+	@Test
+	void tomcatAdditionalConnectors() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		Connector[] connectors = new Connector[4];
+		Arrays.setAll(connectors, (i) -> new Connector());
+		factory.addAdditionalTomcatConnectors(connectors);
+		this.webServer = factory.getWebServer(mock(HttpHandler.class));
+		Map<Service, Connector[]> connectorsByService = ((TomcatWebServer) this.webServer).getServiceConnectors();
+		assertThat(connectorsByService.values().iterator().next().length).isEqualTo(connectors.length + 1);
+	}
+
+	@Test
+	void addNullAdditionalConnectorsThrows() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalTomcatConnectors((Connector[]) null))
+				.withMessageContaining("Connectors must not be null");
 	}
 
 	@Test
