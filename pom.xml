@@ -106,8 +106,8 @@
 			</build>
 			<modules>
 				<module>spring-boot-project</module>
-				<!-- Samples are built via the invoker plugin -->
-				<module>spring-boot-samples-invoker</module>
+				<!-- Smoke tests are built via the invoker plugin -->
+				<module>spring-boot-smoke-tests-invoker</module>
 				<module>spring-boot-tests</module>
 			</modules>
 		</profile>
@@ -121,7 +121,7 @@
 			</activation>
 			<modules>
 				<module>spring-boot-project</module>
-				<module>spring-boot-samples</module>
+				<module>spring-boot-smoke-tests</module>
 				<module>spring-boot-tests</module>
 			</modules>
 		</profile>

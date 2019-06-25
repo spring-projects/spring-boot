@@ -557,7 +557,7 @@ editor for this example.
 [[getting-started-first-application-dependencies]]
 === Adding Classpath Dependencies
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
-Our sample application has already used `spring-boot-starter-parent` in the `parent`
+Our applications for smoke tests use the `spring-boot-starter-parent` in the `parent`
 section of the POM. The `spring-boot-starter-parent` is a special starter that provides
 useful Maven defaults. It also provides a
 <<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`>>
@@ -818,11 +818,6 @@ want to jump over to https://spring.io and check out some of the
 https://spring.io/guides/[getting started] guides that solve specific "`How do I do that
 with Spring?`" problems. We also have Spring Boot-specific
 "`<<howto.adoc#howto, How-to>>`" reference documentation.
-
-The https://github.com/{github-repo}[Spring Boot repository] also has a
-{github-code}/spring-boot-samples[bunch of samples] you can run. The samples are
-independent of the rest of the code (that is, you do not need to build the rest to run or
-use the samples).
 
 Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_. If
 you are really impatient, you could also jump ahead and read about

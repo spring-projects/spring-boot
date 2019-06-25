@@ -17,8 +17,8 @@
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]spring-boot-samples[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]spring-boot-samples[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
 	<suppress files="Ansi.*\.java" checks="JavadocVariable" />

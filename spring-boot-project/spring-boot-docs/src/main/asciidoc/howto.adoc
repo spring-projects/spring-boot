@@ -699,9 +699,7 @@ a plain HTTP connector at port 8080. Spring Boot does not support the configurat
 both an HTTP connector and an HTTPS connector through `application.properties`. If you
 want to have both, you need to configure one of them programmatically. We recommend using
 `application.properties` to configure HTTPS, as the HTTP connector is the easier of the
-two to configure programmatically. See the
-{github-code}/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors[`spring-boot-sample-tomcat-multi-connectors`]
-sample project for an example.
+two to configure programmatically.
 
 
 
@@ -1668,9 +1666,7 @@ And the following example shows one way to set up the starters in Gradle:
 
 NOTE: The Log4j starters gather together the dependencies for common logging
 requirements (such as having Tomcat use `java.util.logging` but configuring the
-output using Log4j 2). See the
-{github-code}/spring-boot-samples/spring-boot-sample-actuator-log4j2[Actuator Log4j 2]
-samples for more detail and to see it in action.
+output using Log4j 2).
 
 NOTE: To ensure that debug logging performed using `java.util.logging` is routed into
 Log4j 2, configure its https://logging.apache.org/log4j/2.0/log4j-jul/index.html[JDK
@@ -1895,9 +1891,7 @@ the same package (or a sub-package) of your `@EnableAutoConfiguration` class.
 For many applications, all you need is to put the right Spring Data dependencies on
 your classpath (there is a `spring-boot-starter-data-jpa` for JPA and a
 `spring-boot-starter-data-mongodb` for Mongodb) and create some repository interfaces to
-handle your `@Entity` objects. Examples are in the
-{github-code}/spring-boot-samples/spring-boot-sample-data-jpa[JPA sample] and the
-{github-code}/spring-boot-samples/spring-boot-sample-data-mongodb[Mongodb sample].
+handle your `@Entity` objects.
 
 Spring Boot tries to guess the location of your `@Repository` definitions, based on the
 `@EnableAutoConfiguration` it finds. To get more control, use the `@EnableJpaRepositories`
@@ -2356,8 +2350,6 @@ is sufficient to cause Flyway to use its own `DataSource`. If any of the three
 properties has not be set, the value of its equivalent `spring.datasource` property will
 be used.
 
-There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
-that you can see how to set things up.
 
 You can also use Flyway to provide data for specific scenarios. For example, you can
 place test-specific migrations in `src/test/resources` and they are run only when your
@@ -2398,9 +2390,6 @@ be used.
 See
 {sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[`LiquibaseProperties`]
 for details about available settings such as contexts, the default schema, and others.
-
-There is a {github-code}/spring-boot-samples/spring-boot-sample-liquibase[Liquibase
-sample] so that you can see how to set things up.
 
 
 
@@ -3049,22 +3038,6 @@ The following example shows how to build an executable archive with Ant:
 	</target>
 ----
 
-The {github-code}/spring-boot-samples/spring-boot-sample-ant[Ant Sample] has a
-`build.xml` file with a `manual` task that should work if you run it with the following
-command:
-
-[indent=0,subs="verbatim,quotes,attributes"]
-----
-	$ ant -lib <folder containing ivy-2.2.jar> clean manual
-----
-
-Then you can run the application with the following command:
-
-[indent=0,subs="verbatim,quotes,attributes"]
-----
-	$ java -jar target/*.jar
-----
-
 
 
 [[howto-traditional-deployment]]
@@ -3165,11 +3138,6 @@ marking the embedded servlet container dependency as provided produces an execut
 file with the provided dependencies packaged in a `lib-provided` directory. This means
 that, in addition to being deployable to a servlet container, you can also run your
 application by using `java -jar` on the command line.
-
-TIP: Take a look at Spring Boot's sample applications for a
-{github-code}/spring-boot-samples/spring-boot-sample-traditional/pom.xml[Maven-based
-example] of the previously described configuration.
-
 
 
 

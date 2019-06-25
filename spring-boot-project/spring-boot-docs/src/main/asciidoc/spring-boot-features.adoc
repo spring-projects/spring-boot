@@ -1586,9 +1586,7 @@ You can also add a custom Spring `Validator` by creating a bean definition calle
 configuration properties validator is created very early in the application's lifecycle,
 and declaring the `@Bean` method as static lets the bean be created without having to
 instantiate the `@Configuration` class. Doing so avoids any problems that may be caused
-by early instantiation. There is a
-{github-code}/spring-boot-samples/spring-boot-sample-property-validation[property
-validation sample] that shows how to set things up.
+by early instantiation.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
 `@ConfigurationProperties` beans. Point your web browser to
@@ -3212,9 +3210,6 @@ an `@Order`, which you can set with `spring.jersey.filter.order`. Both the servl
 the filter registrations can be given init parameters by using `spring.jersey.init.*` to
 specify a map of properties.
 
-There is a {github-code}/spring-boot-samples/spring-boot-sample-jersey[Jersey sample] so
-that you can see how to set things up.
-
 
 
 [[boot-features-embedded-container]]
@@ -3421,9 +3416,6 @@ packaged as an executable archive), there are some limitations in the JSP suppor
 <<boot-features-error-handling,error handling>>.
 <<boot-features-error-handling-custom-error-pages,Custom error pages>> should be used
 instead.
-
-There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so
-that you can see how to set things up.
 
 
 
@@ -3646,8 +3638,6 @@ so does not disable the `UserDetailsService` configuration or Actuator's securit
 
 To also switch off the `UserDetailsService` configuration, you can add a bean of type
 `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
-There are several secure applications in the {github-code}/spring-boot-samples/[Spring
-Boot samples] to get you started with common use cases.
 
 Access rules can be overridden by adding a custom `WebSecurityConfigurerAdapter`. Spring
 Boot provides convenience methods that can be used to override access rules for actuator

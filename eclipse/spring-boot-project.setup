@@ -127,10 +127,10 @@
           pattern="spring-boot-starter(s|-.*)"/>
     </workingSet>
     <workingSet
-        name="spring-boot-samples">
+        name="spring-boot-smoke-tests">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-sample(s|-.*)"/>
+          pattern="spring-boot-smoke-test(s|-.*)"/>
     </workingSet>
     <workingSet
         name="spring-boot-tests">
