@@ -6,3 +6,4 @@
 ^http://www.jdotsoft.com.*
 ^http://spockframework.org.*
 ^http://ganglia.sourceforge.net.*
+^http://schemas.xmlsoap.org.*
