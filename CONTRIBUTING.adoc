@@ -138,8 +138,8 @@ can run this from the top-level directory:
 
 
 === Importing into Eclipse
-You can import the Spring Boot code into any Eclipse Oxygen based distribution. The easiest
-way to setup a new environment is to use the Eclipse Installer with the provided
+You can import the Spring Boot code into any Eclipse 2019-06 based distribution. The
+easiest way to setup a new environment is to use the Eclipse Installer with the provided
 `.setup` file (in the `/eclipse` folder).
 
 
@@ -147,8 +147,8 @@ way to setup a new environment is to use the Eclipse Installer with the provided
 Spring Boot includes a `.setup` files which can be used with the Eclipse Installer to
 provision a new environment. To use the installer:
 
-* Download and run the latest Eclipse Installer from
-  https://www.eclipse.org/downloads/[eclipse.org/downloads/] (under "Get Eclipse").
+* Download and run the latest
+  https://www.eclipse.org/downloads/packages/installer[Eclipse Installer].
 * Switch to "Advanced Mode" using the drop down menu on the right.
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
   install and click "`next`".
