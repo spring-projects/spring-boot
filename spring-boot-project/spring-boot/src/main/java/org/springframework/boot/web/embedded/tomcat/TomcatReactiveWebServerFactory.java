@@ -78,6 +78,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private Collection<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new LinkedHashSet<>();
 
+	private final List<Connector> additionalTomcatConnectors = new ArrayList<>();
+
 	private String protocol = DEFAULT_PROTOCOL;
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
@@ -122,6 +124,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		tomcat.setConnector(connector);
 		tomcat.getHost().setAutoDeploy(false);
 		configureEngine(tomcat.getEngine());
+		for (Connector additionalConnector : this.additionalTomcatConnectors) {
+			tomcat.getService().addConnector(additionalConnector);
+		}
 		TomcatHttpHandlerAdapter servlet = new TomcatHttpHandlerAdapter(httpHandler);
 		prepareContext(tomcat.getHost(), servlet);
 		return new TomcatWebServer(tomcat, getPort() >= 0);
@@ -315,6 +320,24 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public Collection<TomcatProtocolHandlerCustomizer<?>> getTomcatProtocolHandlerCustomizers() {
 		return this.tomcatProtocolHandlerCustomizers;
+	}
+
+	/**
+	 * Add {@link Connector}s in addition to the default connector, e.g. for SSL or AJP
+	 * @param connectors the connectors to add
+	 */
+	public void addAdditionalTomcatConnectors(Connector... connectors) {
+		Assert.notNull(connectors, "Connectors must not be null");
+		this.additionalTomcatConnectors.addAll(Arrays.asList(connectors));
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link Connector}s that will be added to the
+	 * Tomcat.
+	 * @return the additionalTomcatConnectors
+	 */
+	public List<Connector> getAdditionalTomcatConnectors() {
+		return this.additionalTomcatConnectors;
 	}
 
 	@Override
