@@ -43,10 +43,10 @@ public class OAuth2ResourceServerProperties {
 		return this.jwt;
 	}
 
-	private final Opaquetoken Opaquetoken = new Opaquetoken();
+	private final Opaquetoken opaqueToken = new Opaquetoken();
 
 	public Opaquetoken getOpaquetoken() {
-		return this.Opaquetoken;
+		return this.opaqueToken;
 	}
 
 	@PostConstruct
@@ -66,7 +66,7 @@ public class OAuth2ResourceServerProperties {
 
 	private void handleError(String property) {
 		throw new IllegalStateException(
-				"Only one of " + property + " and Opaquetoken.introspection-uri should be configured.");
+				"Only one of " + property + " and opaquetoken.introspection-uri should be configured.");
 	}
 
 	public static class Jwt {
