@@ -287,6 +287,9 @@
 								</reports>
 							</reportSet>
 						</reportSets>
+						<configuration>
+							<linkOnly>true</linkOnly>
+						</configuration>
 					</plugin>
 				</plugins>
 			</reporting>
