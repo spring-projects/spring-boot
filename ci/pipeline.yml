@@ -148,7 +148,7 @@ jobs:
   - get: every-wednesday
     trigger: true
   - get: spring-boot-ci-image
-  - aggregate:
+  - in_parallel:
     - task: detect-jdk8-update
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
@@ -191,7 +191,7 @@ jobs:
       timeout: 1h30m
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
-    - aggregate:
+    - in_parallel:
       - task: build-samples
         timeout: 1h30m
         image: spring-boot-ci-image
@@ -255,7 +255,7 @@ jobs:
       timeout: 1h30m
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-pr-project.yml
-    - aggregate:
+    - in_parallel:
       - task: build-samples
         timeout: 1h30m
         image: spring-boot-ci-image
@@ -293,7 +293,7 @@ jobs:
       timeout: 1h30m
       image: spring-boot-jdk11-ci-image
       file: git-repo/ci/tasks/build-project.yml
-    - aggregate:
+    - in_parallel:
       - task: build-samples
         timeout: 1h30m
         image: spring-boot-jdk11-ci-image
@@ -339,7 +339,7 @@ jobs:
           timeout: 1h30m
           image: spring-boot-jdk12-ci-image
           file: git-repo/ci/tasks/build-project.yml
-        - aggregate:
+        - in_parallel:
             - task: build-samples
               timeout: 1h30m
               image: spring-boot-jdk12-ci-image
