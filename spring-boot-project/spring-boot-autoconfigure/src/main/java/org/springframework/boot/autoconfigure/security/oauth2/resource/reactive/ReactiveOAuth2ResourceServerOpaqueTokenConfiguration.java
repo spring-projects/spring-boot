@@ -44,7 +44,7 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
 		public NimbusReactiveOAuth2TokenIntrospectionClient oAuth2TokenIntrospectionClient(
 				OAuth2ResourceServerProperties properties) {
-			OAuth2ResourceServerProperties.OpaqueToken opaqueToken = properties.getOpaquetoken();
+			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
 			return new NimbusReactiveOAuth2TokenIntrospectionClient(opaqueToken.getIntrospectionUri(),
 					opaqueToken.getClientId(), opaqueToken.getClientSecret());
 		}
