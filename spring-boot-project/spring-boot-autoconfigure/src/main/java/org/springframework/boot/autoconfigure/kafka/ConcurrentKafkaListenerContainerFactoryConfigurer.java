@@ -28,6 +28,7 @@ import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
+import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.support.converter.MessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
@@ -55,6 +56,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private BatchErrorHandler batchErrorHandler;
 
 	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
+
+	private RecordInterceptor<Object, Object> recordInterceptor;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -122,6 +125,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link RecordInterceptor} to use.
+	 * @param recordInterceptor the record interceptor.
+	 */
+	void setRecordInterceptor(RecordInterceptor<Object, Object> recordInterceptor) {
+		this.recordInterceptor = recordInterceptor;
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerFactory the {@link ConcurrentKafkaListenerContainerFactory} instance
@@ -149,6 +160,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 			factory.setErrorHandler(this.errorHandler);
 		}
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
+		map.from(this.recordInterceptor).to(factory::setRecordInterceptor);
 	}
 
 	private void configureContainer(ContainerProperties container) {
