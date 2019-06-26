@@ -116,6 +116,7 @@
 							<webAccessUrl>https://github.com/spring-projects/spring-boot/</webAccessUrl>
 							<anonymousConnection>scm:git:git://github.com/spring-projects/spring-boot.git</anonymousConnection>
 							<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
+							<linkOnly>true</linkOnly>
 						</configuration>
 					</plugin>
 				</plugins>
