@@ -150,6 +150,8 @@ jobs:
     trigger: true
   - get: spring-boot-ci-image
   - in_parallel:
+    fail_fast: true
+    steps:
     - task: detect-jdk8-update
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
@@ -193,6 +195,8 @@ jobs:
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
     - in_parallel:
+      fail_fast: true
+      steps:
       - task: build-smoke-tests
         timeout: 1h30m
         image: spring-boot-ci-image
@@ -259,6 +263,8 @@ jobs:
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-pr-project.yml
     - in_parallel:
+      fail_fast: true
+      steps:
       - task: build-smoke-tests
         timeout: 1h30m
         image: spring-boot-ci-image
@@ -297,6 +303,8 @@ jobs:
       image: spring-boot-jdk11-ci-image
       file: git-repo/ci/tasks/build-project.yml
     - in_parallel:
+      fail_fast: true
+      steps:
       - task: build-smoke-tests
         timeout: 1h30m
         image: spring-boot-jdk11-ci-image
@@ -343,6 +351,8 @@ jobs:
           image: spring-boot-jdk12-ci-image
           file: git-repo/ci/tasks/build-project.yml
         - in_parallel:
+            fail_fast: true
+            steps:
             - task: build-smoke-tests
               timeout: 1h30m
               image: spring-boot-jdk12-ci-image
