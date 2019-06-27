@@ -58,7 +58,7 @@ class KafkaAutoConfigurationIntegrationTests {
 	private AnnotationConfigApplicationContext context;
 
 	@BeforeAll
-	public static void setUp() {
+	static void setUp() {
 		embeddedKafka.afterPropertiesSet();
 	}
 
@@ -70,7 +70,7 @@ class KafkaAutoConfigurationIntegrationTests {
 	}
 
 	@AfterAll
-	public static void tearDown() {
+	static void tearDown() {
 		embeddedKafka.destroy();
 	}
 

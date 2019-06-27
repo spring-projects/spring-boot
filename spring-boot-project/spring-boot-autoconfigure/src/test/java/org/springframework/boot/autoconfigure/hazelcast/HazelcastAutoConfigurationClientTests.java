@@ -50,12 +50,12 @@ class HazelcastAutoConfigurationClientTests {
 	private static HazelcastInstance hazelcastServer;
 
 	@BeforeAll
-	public static void init() {
+	static void init() {
 		hazelcastServer = Hazelcast.newHazelcastInstance();
 	}
 
 	@AfterAll
-	public static void close() {
+	static void close() {
 		if (hazelcastServer != null) {
 			hazelcastServer.shutdown();
 		}

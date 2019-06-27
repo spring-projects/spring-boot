@@ -52,7 +52,7 @@ class RootUriTemplateHandlerTests {
 
 	@BeforeEach
 	@SuppressWarnings("unchecked")
-	public void setup() throws URISyntaxException {
+	void setup() throws URISyntaxException {
 		MockitoAnnotations.initMocks(this);
 		this.uri = new URI("https://example.com/hello");
 		this.handler = new RootUriTemplateHandler("https://example.com", this.delegate);

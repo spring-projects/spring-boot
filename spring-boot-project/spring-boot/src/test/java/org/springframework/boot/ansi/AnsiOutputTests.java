@@ -32,12 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AnsiOutputTests {
 
 	@BeforeAll
-	public static void enable() {
+	static void enable() {
 		AnsiOutput.setEnabled(Enabled.ALWAYS);
 	}
 
 	@AfterAll
-	public static void reset() {
+	static void reset() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 

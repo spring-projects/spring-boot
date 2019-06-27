@@ -42,12 +42,12 @@ class ColorConverterTests {
 	private final String in = "in";
 
 	@BeforeAll
-	public static void setupAnsi() {
+	static void setupAnsi() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 	}
 
 	@AfterAll
-	public static void resetAnsi() {
+	static void resetAnsi() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.DETECT);
 	}
 

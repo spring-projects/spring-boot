@@ -39,7 +39,7 @@ class ConfigurationProcessorIntegrationTests {
 	private static ConfigurationMetadataRepository repository;
 
 	@BeforeAll
-	public static void readMetadata() throws IOException {
+	static void readMetadata() throws IOException {
 		Resource resource = new ClassPathResource("META-INF/spring-configuration-metadata.json");
 		assertThat(resource.exists()).isTrue();
 		// Make sure the right file is detected
