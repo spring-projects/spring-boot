@@ -155,6 +155,14 @@ public class JmsProperties {
 		 */
 		private Integer maxConcurrency;
 
+		/**
+		 * Timeout to use for receive calls. By default, the listener uses a 1s timeout on
+		 * its polling loop. See
+		 * @see org.springframework.jms.listener.AbstractPollingMessageListenerContainer#setReceiveTimeout
+		 * for more details on this value and the meaning of special values 0 and -1.
+		 */
+		private Duration receiveTimeout;
+
 		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
@@ -193,6 +201,14 @@ public class JmsProperties {
 			}
 			return ((this.maxConcurrency != null) ? this.concurrency + "-" + this.maxConcurrency
 					: String.valueOf(this.concurrency));
+		}
+
+		public Duration getReceiveTimeout() {
+			return this.receiveTimeout;
+		}
+
+		public void setReceiveTimeout(Duration receiveTimeout) {
+			this.receiveTimeout = receiveTimeout;
 		}
 
 	}
