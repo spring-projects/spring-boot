@@ -50,7 +50,7 @@ class SampleOauth2ResourceServerApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@BeforeAll
-	public static void setup() throws Exception {
+	static void setup() throws Exception {
 		server.start();
 		String url = server.url("/.well-known/jwks.json").toString();
 		server.enqueue(mockResponse());
@@ -58,7 +58,7 @@ class SampleOauth2ResourceServerApplicationTests {
 	}
 
 	@AfterAll
-	public static void shutdown() throws IOException {
+	static void shutdown() throws IOException {
 		server.shutdown();
 		System.clearProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
 	}
