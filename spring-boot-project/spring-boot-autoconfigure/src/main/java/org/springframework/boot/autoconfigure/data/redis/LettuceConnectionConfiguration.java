@@ -114,6 +114,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
 		}
+		if (StringUtils.hasText(getProperties().getClientName())) {
+			builder.clientName(getProperties().getClientName());
+		}
 		return builder;
 	}
 

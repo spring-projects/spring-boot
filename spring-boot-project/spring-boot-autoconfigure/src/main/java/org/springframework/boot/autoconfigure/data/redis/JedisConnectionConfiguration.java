@@ -94,6 +94,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			Duration timeout = getProperties().getTimeout();
 			builder.readTimeout(timeout).connectTimeout(timeout);
 		}
+		if (StringUtils.hasText(getProperties().getClientName())) {
+			builder.clientName(getProperties().getClientName());
+		}
 		return builder;
 	}
 
