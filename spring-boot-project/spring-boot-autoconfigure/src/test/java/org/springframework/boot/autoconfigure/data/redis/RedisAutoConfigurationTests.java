@@ -161,6 +161,16 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithClientName() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.client-name:spring-boot")
+				.run((context) -> {
+					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getClientName()).isEqualTo("spring-boot");
+				});
+	}
+
+	@Test
 	void testRedisConfigurationWithSentinel() {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
 		this.contextRunner
