@@ -359,12 +359,14 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	private byte[] createFakeZipArchive(String fileName, String content) throws IOException {
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ZipOutputStream zos = new ZipOutputStream(bos)) {
-			ZipEntry entry = new ZipEntry(fileName);
-			zos.putNextEntry(entry);
-			zos.write(content.getBytes());
-			zos.closeEntry();
-			return bos.toByteArray();
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			try (ZipOutputStream zos = new ZipOutputStream(bos)) {
+				ZipEntry entry = new ZipEntry(fileName);
+				zos.putNextEntry(entry);
+				zos.write(content.getBytes());
+				zos.closeEntry();
+				return bos.toByteArray();
+			}
 		}
 	}
 
