@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.context.annotation;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,14 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class UserConfigurationsTests {
+class UserConfigurationsTests {
 
 	@Test
-	public void ofShouldCreateUnorderedConfigurations() {
-		UserConfigurations configurations = UserConfigurations.of(OutputStream.class,
-				InputStream.class);
-		assertThat(Configurations.getClasses(configurations))
-				.containsExactly(OutputStream.class, InputStream.class);
+	void ofShouldCreateUnorderedConfigurations() {
+		UserConfigurations configurations = UserConfigurations.of(OutputStream.class, InputStream.class);
+		assertThat(Configurations.getClasses(configurations)).containsExactly(OutputStream.class, InputStream.class);
 	}
 
 }

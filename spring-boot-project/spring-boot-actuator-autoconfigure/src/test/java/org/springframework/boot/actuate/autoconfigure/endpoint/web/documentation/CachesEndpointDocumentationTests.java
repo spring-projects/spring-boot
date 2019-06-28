@@ -48,55 +48,46 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Stephane Nicoll
  */
-public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final List<FieldDescriptor> levelFields = Arrays.asList(
 			fieldWithPath("name").description("Cache name."),
 			fieldWithPath("cacheManager").description("Cache manager name."),
-			fieldWithPath("target")
-					.description("Fully qualified name of the native cache."));
+			fieldWithPath("target").description("Fully qualified name of the native cache."));
 
 	private static final List<ParameterDescriptor> requestParameters = Collections
-			.singletonList(parameterWithName("cacheManager")
-					.description("Name of the cacheManager to qualify the cache. May be "
-							+ "omitted if the cache name is unique.")
+			.singletonList(parameterWithName("cacheManager").description(
+					"Name of the cacheManager to qualify the cache. May be " + "omitted if the cache name is unique.")
 					.optional());
 
 	@Test
-	public void allCaches() throws Exception {
+	void allCaches() throws Exception {
 		this.mockMvc.perform(get("/actuator/caches")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("caches/all", responseFields(
-						fieldWithPath("cacheManagers")
-								.description("Cache managers keyed by id."),
-						fieldWithPath("cacheManagers.*.caches").description(
-								"Caches in the application context keyed by " + "name."))
-										.andWithPrefix("cacheManagers.*.caches.*.",
-												fieldWithPath("target").description(
-														"Fully qualified name of the native cache."))));
+				.andDo(MockMvcRestDocumentation.document("caches/all",
+						responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
+								fieldWithPath("cacheManagers.*.caches")
+										.description("Caches in the application context keyed by " + "name."))
+												.andWithPrefix("cacheManagers.*.caches.*.", fieldWithPath("target")
+														.description("Fully qualified name of the native cache."))));
 	}
 
 	@Test
-	public void namedCache() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("caches/named",
-						requestParameters(requestParameters),
-						responseFields(levelFields)));
+	void namedCache() throws Exception {
+		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk()).andDo(MockMvcRestDocumentation
+				.document("caches/named", requestParameters(requestParameters), responseFields(levelFields)));
 	}
 
 	@Test
-	public void evictAllCaches() throws Exception {
+	void evictAllCaches() throws Exception {
 		this.mockMvc.perform(delete("/actuator/caches")).andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("caches/evict-all"));
 	}
 
 	@Test
-	public void evictNamedCache() throws Exception {
-		this.mockMvc
-				.perform(delete(
-						"/actuator/caches/countries?cacheManager=anotherCacheManager"))
+	void evictNamedCache() throws Exception {
+		this.mockMvc.perform(delete("/actuator/caches/countries?cacheManager=anotherCacheManager"))
 				.andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("caches/evict-named",
-						requestParameters(requestParameters)));
+				.andDo(MockMvcRestDocumentation.document("caches/evict-named", requestParameters(requestParameters)));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -106,10 +97,8 @@ public class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		@Bean
 		public CachesEndpoint endpoint() {
 			Map<String, CacheManager> cacheManagers = new HashMap<>();
-			cacheManagers.put("cacheManager",
-					new ConcurrentMapCacheManager("countries", "cities"));
-			cacheManagers.put("anotherCacheManager",
-					new ConcurrentMapCacheManager("countries"));
+			cacheManagers.put("cacheManager", new ConcurrentMapCacheManager("countries", "cities"));
+			cacheManagers.put("anotherCacheManager", new ConcurrentMapCacheManager("countries"));
 			return new CachesEndpoint(cacheManagers);
 		}
 

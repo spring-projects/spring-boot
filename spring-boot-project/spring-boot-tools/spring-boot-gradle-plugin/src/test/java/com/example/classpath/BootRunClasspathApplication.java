@@ -32,8 +32,7 @@ public class BootRunClasspathApplication {
 
 	public static void main(String[] args) {
 		int i = 1;
-		for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath()
-				.split(File.pathSeparator)) {
+		for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator)) {
 			System.out.println(i++ + ". " + entry);
 		}
 	}

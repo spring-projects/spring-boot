@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.convert;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionService;
 
@@ -30,32 +29,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(Parameterized.class)
-public class CharArrayFormatterTests {
+class CharArrayFormatterTests {
 
-	private final ConversionService conversionService;
-
-	public CharArrayFormatterTests(String name, ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
-
-	@Test
-	public void convertFromCharArrayToStringShouldConvert() {
+	@ConversionServiceTest
+	void convertFromCharArrayToStringShouldConvert(ConversionService conversionService) {
 		char[] source = { 'b', 'o', 'o', 't' };
-		String converted = this.conversionService.convert(source, String.class);
+		String converted = conversionService.convert(source, String.class);
 		assertThat(converted).isEqualTo("boot");
 	}
 
-	@Test
-	public void convertFromStringToCharArrayShouldConvert() {
+	@ConversionServiceTest
+	void convertFromStringToCharArrayShouldConvert(ConversionService conversionService) {
 		String source = "boot";
-		char[] converted = this.conversionService.convert(source, char[].class);
+		char[] converted = conversionService.convert(source, char[].class);
 		assertThat(converted).containsExactly('b', 'o', 'o', 't');
 	}
 
-	@Parameters(name = "{0}")
-	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(new CharArrayFormatter());
+	static Stream<? extends Arguments> conversionServices() {
+		return ConversionServiceArguments.with(new CharArrayFormatter());
 	}
 
 }

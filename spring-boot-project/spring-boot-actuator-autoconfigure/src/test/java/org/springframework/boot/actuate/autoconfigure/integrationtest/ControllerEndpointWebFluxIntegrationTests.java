@@ -45,37 +45,33 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Phillip Webb
  */
-public class ControllerEndpointWebFluxIntegrationTests {
+class ControllerEndpointWebFluxIntegrationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}
 
 	@Test
-	public void endpointsCanBeAccessed() throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+	void endpointsCanBeAccessed() throws Exception {
+		TestSecurityContextHolder.getContext()
+				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, ExampleController.class);
-		TestPropertyValues.of("management.endpoints.web.exposure.include=*")
-				.applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
 		this.context.refresh();
-		WebTestClient webClient = WebTestClient.bindToApplicationContext(this.context)
-				.build();
+		WebTestClient webClient = WebTestClient.bindToApplicationContext(this.context).build();
 		webClient.get().uri("/actuator/example").exchange().expectStatus().isOk();
 	}
 
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			WebEndpointAutoConfiguration.class,
-			ReactiveManagementContextAutoConfiguration.class,
-			AuditAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-			WebFluxAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-			BeansEndpointAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+			ReactiveManagementContextAutoConfiguration.class, AuditAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, WebFluxAutoConfiguration.class,
+			ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class })
 	static class DefaultConfiguration {
 
 	}

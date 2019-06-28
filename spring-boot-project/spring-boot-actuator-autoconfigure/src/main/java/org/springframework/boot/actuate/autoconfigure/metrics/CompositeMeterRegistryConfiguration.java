@@ -42,8 +42,7 @@ class CompositeMeterRegistryConfiguration {
 
 	@Bean
 	@Primary
-	public CompositeMeterRegistry compositeMeterRegistry(Clock clock,
-			List<MeterRegistry> registries) {
+	public CompositeMeterRegistry compositeMeterRegistry(Clock clock, List<MeterRegistry> registries) {
 		return new CompositeMeterRegistry(clock, registries);
 	}
 

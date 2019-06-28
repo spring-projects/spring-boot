@@ -34,24 +34,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class NonUniqueSessionRepositoryFailureAnalyzerTests {
+class NonUniqueSessionRepositoryFailureAnalyzerTests {
 
 	private final FailureAnalyzer analyzer = new NonUniqueSessionRepositoryFailureAnalyzer();
 
 	@Test
-	public void failureAnalysisWithMultipleCandidates() {
-		FailureAnalysis analysis = analyzeFailure(createFailure(
-				JdbcOperationsSessionRepository.class, HazelcastSessionRepository.class));
+	void failureAnalysisWithMultipleCandidates() {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(JdbcOperationsSessionRepository.class, HazelcastSessionRepository.class));
 		assertThat(analysis).isNotNull();
-		assertThat(analysis.getDescription()).contains(
-				JdbcOperationsSessionRepository.class.getName(),
+		assertThat(analysis.getDescription()).contains(JdbcOperationsSessionRepository.class.getName(),
 				HazelcastSessionRepository.class.getName());
 		assertThat(analysis.getAction()).contains("spring.session.store-type");
 	}
 
 	@SafeVarargs
-	private final Exception createFailure(
-			Class<? extends SessionRepository<?>>... candidates) {
+	private final Exception createFailure(Class<? extends SessionRepository<?>>... candidates) {
 		return new NonUniqueSessionRepositoryException(Arrays.asList(candidates));
 	}
 

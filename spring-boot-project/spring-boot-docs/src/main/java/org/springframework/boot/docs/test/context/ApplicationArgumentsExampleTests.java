@@ -16,28 +16,22 @@
 
 package org.springframework.boot.docs.test.context;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 // tag::example[]
-@RunWith(SpringRunner.class)
 @SpringBootTest(args = "--app.test=one")
-public class ApplicationArgumentsExampleTests {
-
-	@Autowired
-	private ApplicationArguments args;
+class ApplicationArgumentsExampleTests {
 
 	@Test
-	public void applicationArgumentsPopulated() {
-		assertThat(this.args.getOptionNames()).containsOnly("app.test");
-		assertThat(this.args.getOptionValues("app.test")).containsOnly("one");
+	void applicationArgumentsPopulated(@Autowired ApplicationArguments args) {
+		assertThat(args.getOptionNames()).containsOnly("app.test");
+		assertThat(args.getOptionValues("app.test")).containsOnly("one");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.origin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -26,46 +26,45 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class OriginTrackedValueTests {
+class OriginTrackedValueTests {
 
 	@Test
-	public void getValueShouldReturnValue() {
+	void getValueShouldReturnValue() {
 		Object value = new Object();
 		assertThat(OriginTrackedValue.of(value).getValue()).isEqualTo(value);
 	}
 
 	@Test
-	public void getOriginShouldReturnOrigin() {
+	void getOriginShouldReturnOrigin() {
 		Object value = new Object();
 		Origin origin = mock(Origin.class);
 		assertThat(OriginTrackedValue.of(value, origin).getOrigin()).isEqualTo(origin);
 	}
 
 	@Test
-	public void toStringShouldReturnValueToString() {
+	void toStringShouldReturnValueToString() {
 		Object value = new Object();
 		assertThat(OriginTrackedValue.of(value).toString()).isEqualTo(value.toString());
 	}
 
 	@Test
-	public void hashCodeAndEqualsShouldIgnoreOrigin() {
+	void hashCodeAndEqualsShouldIgnoreOrigin() {
 		Object value1 = new Object();
 		OriginTrackedValue tracked1 = OriginTrackedValue.of(value1);
 		OriginTrackedValue tracked2 = OriginTrackedValue.of(value1, mock(Origin.class));
 		OriginTrackedValue tracked3 = OriginTrackedValue.of(new Object());
 		assertThat(tracked1.hashCode()).isEqualTo(tracked2.hashCode());
-		assertThat(tracked1).isEqualTo(tracked1).isEqualTo(tracked2)
-				.isNotEqualTo(tracked3);
+		assertThat(tracked1).isEqualTo(tracked1).isEqualTo(tracked2).isNotEqualTo(tracked3);
 	}
 
 	@Test
-	public void ofWhenValueIsNullShouldReturnNull() {
+	void ofWhenValueIsNullShouldReturnNull() {
 		assertThat(OriginTrackedValue.of(null)).isNull();
 		assertThat(OriginTrackedValue.of(null, mock(Origin.class))).isNull();
 	}
 
 	@Test
-	public void ofWhenValueIsCharSequenceShouldReturnCharSequence() {
+	void ofWhenValueIsCharSequenceShouldReturnCharSequence() {
 		String value = "foo";
 		OriginTrackedValue tracked = OriginTrackedValue.of(value);
 		assertThat(tracked).isInstanceOf(CharSequence.class);

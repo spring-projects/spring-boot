@@ -42,10 +42,8 @@ public class JettyMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(MeterRegistry.class)
-	@ConditionalOnMissingBean({ JettyServerThreadPoolMetrics.class,
-			JettyServerThreadPoolMetricsBinder.class })
-	public JettyServerThreadPoolMetricsBinder jettyServerThreadPoolMetricsBinder(
-			MeterRegistry meterRegistry) {
+	@ConditionalOnMissingBean({ JettyServerThreadPoolMetrics.class, JettyServerThreadPoolMetricsBinder.class })
+	public JettyServerThreadPoolMetricsBinder jettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry) {
 		return new JettyServerThreadPoolMetricsBinder(meterRegistry);
 	}
 

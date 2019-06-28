@@ -35,15 +35,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "server.port=12345" })
-public class SpringBootTestWebEnvironmentRandomPortCustomPortTests {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "server.port=12345" })
+class SpringBootTestWebEnvironmentRandomPortCustomPortTests {
 
 	@Autowired
 	private Environment environment;
 
 	@Test
-	public void validatePortIsNotOverwritten() {
+	void validatePortIsNotOverwritten() {
 		String port = this.environment.getProperty("server.port");
 		assertThat(port).isEqualTo("0");
 	}

@@ -28,8 +28,8 @@ import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public abstract class AbstractFilterRegistrationBeanTests {
+abstract class AbstractFilterRegistrationBeanTests {
 
 	@Mock
 	ServletContext servletContext;
@@ -54,25 +54,23 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	@Mock
 	FilterRegistration.Dynamic registration;
 
-	@Before
-	public void setupMocks() {
+	@BeforeEach
+	void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addFilter(anyString(), any(Filter.class)))
-				.willReturn(this.registration);
+		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 	}
 
 	@Test
-	public void startupWithDefaults() throws Exception {
+	void startupWithDefaults() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("mockFilter"), getExpectedFilter());
 		verify(this.registration).setAsyncSupported(true);
-		verify(this.registration).addMappingForUrlPatterns(
-				EnumSet.of(DispatcherType.REQUEST), false, "/*");
+		verify(this.registration).addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
 	}
 
 	@Test
-	public void startupWithSpecifiedValues() throws Exception {
+	void startupWithSpecifiedValues() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.setName("test");
 		bean.setAsyncSupported(false);
@@ -82,8 +80,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.addUrlPatterns("/c");
 		bean.setServletNames(new LinkedHashSet<>(Arrays.asList("s1", "s2")));
 		bean.addServletNames("s3");
-		bean.setServletRegistrationBeans(
-				Collections.singleton(mockServletRegistration("s4")));
+		bean.setServletRegistrationBeans(Collections.singleton(mockServletRegistration("s4")));
 		bean.addServletRegistrationBeans(mockServletRegistration("s5"));
 		bean.setMatchAfter(true);
 		bean.onStartup(this.servletContext);
@@ -93,14 +90,13 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		verify(this.registration).setInitParameters(expectedInitParameters);
-		verify(this.registration).addMappingForUrlPatterns(
-				EnumSet.of(DispatcherType.REQUEST), true, "/a", "/b", "/c");
-		verify(this.registration).addMappingForServletNames(
-				EnumSet.of(DispatcherType.REQUEST), true, "s4", "s5", "s1", "s2", "s3");
+		verify(this.registration).addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/a", "/b", "/c");
+		verify(this.registration).addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "s4", "s5", "s1",
+				"s2", "s3");
 	}
 
 	@Test
-	public void specificName() throws Exception {
+	void specificName() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.setName("specificName");
 		bean.onStartup(this.servletContext);
@@ -108,50 +104,46 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void deducedName() throws Exception {
+	void deducedName() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("mockFilter"), getExpectedFilter());
 	}
 
 	@Test
-	public void disable() throws Exception {
+	void disable() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, never()).addFilter(eq("mockFilter"),
-				getExpectedFilter());
+		verify(this.servletContext, never()).addFilter(eq("mockFilter"), getExpectedFilter());
 	}
 
 	@Test
-	public void setServletRegistrationBeanMustNotBeNull() {
+	void setServletRegistrationBeanMustNotBeNull() {
+		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
+		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletRegistrationBeans(null))
+				.withMessageContaining("ServletRegistrationBeans must not be null");
+	}
+
+	@Test
+	void addServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> bean.setServletRegistrationBeans(null))
+				.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
 				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Test
-	public void addServletRegistrationBeanMustNotBeNull() {
-		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
-				.withMessageContaining("ServletRegistrationBeans must not be null");
-	}
-
-	@Test
-	public void setServletRegistrationBeanReplacesValue() throws Exception {
-		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean(
-				mockServletRegistration("a"));
-		bean.setServletRegistrationBeans(new LinkedHashSet<ServletRegistrationBean<?>>(
-				Collections.singletonList(mockServletRegistration("b"))));
+	void setServletRegistrationBeanReplacesValue() throws Exception {
+		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean(mockServletRegistration("a"));
+		bean.setServletRegistrationBeans(
+				new LinkedHashSet<ServletRegistrationBean<?>>(Collections.singletonList(mockServletRegistration("b"))));
 		bean.onStartup(this.servletContext);
-		verify(this.registration).addMappingForServletNames(
-				EnumSet.of(DispatcherType.REQUEST), false, "b");
+		verify(this.registration).addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), false, "b");
 	}
 
 	@Test
-	public void modifyInitParameters() throws Exception {
+	void modifyInitParameters() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.addInitParameter("a", "b");
 		bean.getInitParameters().put("a", "c");
@@ -160,49 +152,46 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void setUrlPatternMustNotBeNull() {
+	void setUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlPatterns(null))
 				.withMessageContaining("UrlPatterns must not be null");
 	}
 
 	@Test
-	public void addUrlPatternMustNotBeNull() {
+	void addUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> bean.addUrlPatterns((String[]) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlPatterns((String[]) null))
 				.withMessageContaining("UrlPatterns must not be null");
 	}
 
 	@Test
-	public void setServletNameMustNotBeNull() {
+	void setServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletNames(null))
 				.withMessageContaining("ServletNames must not be null");
 	}
 
 	@Test
-	public void addServletNameMustNotBeNull() {
+	void addServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> bean.addServletNames((String[]) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> bean.addServletNames((String[]) null))
 				.withMessageContaining("ServletNames must not be null");
 	}
 
 	@Test
-	public void withSpecificDispatcherTypes() throws Exception {
+	void withSpecificDispatcherTypes() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.setDispatcherTypes(DispatcherType.INCLUDE, DispatcherType.FORWARD);
 		bean.onStartup(this.servletContext);
-		verify(this.registration).addMappingForUrlPatterns(
-				EnumSet.of(DispatcherType.INCLUDE, DispatcherType.FORWARD), false, "/*");
+		verify(this.registration).addMappingForUrlPatterns(EnumSet.of(DispatcherType.INCLUDE, DispatcherType.FORWARD),
+				false, "/*");
 	}
 
 	@Test
-	public void withSpecificDispatcherTypesEnumSet() throws Exception {
+	void withSpecificDispatcherTypesEnumSet() throws Exception {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		EnumSet<DispatcherType> types = EnumSet.of(DispatcherType.INCLUDE,
-				DispatcherType.FORWARD);
+		EnumSet<DispatcherType> types = EnumSet.of(DispatcherType.INCLUDE, DispatcherType.FORWARD);
 		bean.setDispatcherTypes(types);
 		bean.onStartup(this.servletContext);
 		verify(this.registration).addMappingForUrlPatterns(types, false, "/*");

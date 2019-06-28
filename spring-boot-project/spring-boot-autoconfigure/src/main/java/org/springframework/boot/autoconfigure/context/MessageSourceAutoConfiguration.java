@@ -50,8 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean(name = AbstractApplicationContext.MESSAGE_SOURCE_BEAN_NAME,
-		search = SearchStrategy.CURRENT)
+@ConditionalOnMissingBean(name = AbstractApplicationContext.MESSAGE_SOURCE_BEAN_NAME, search = SearchStrategy.CURRENT)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
@@ -69,8 +68,8 @@ public class MessageSourceAutoConfiguration {
 	public MessageSource messageSource(MessageSourceProperties properties) {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(properties.getBasename())) {
-			messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(
-					StringUtils.trimAllWhitespace(properties.getBasename())));
+			messageSource.setBasenames(StringUtils
+					.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(properties.getBasename())));
 		}
 		if (properties.getEncoding() != null) {
 			messageSource.setDefaultEncoding(properties.getEncoding().name());
@@ -90,10 +89,8 @@ public class MessageSourceAutoConfiguration {
 		private static ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<>();
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			String basename = context.getEnvironment()
-					.getProperty("spring.messages.basename", "messages");
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
 			ConditionOutcome outcome = cache.get(basename);
 			if (outcome == null) {
 				outcome = getMatchOutcomeForBasename(context, basename);
@@ -102,21 +99,16 @@ public class MessageSourceAutoConfiguration {
 			return outcome;
 		}
 
-		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
-				String basename) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("ResourceBundle");
-			for (String name : StringUtils.commaDelimitedListToStringArray(
-					StringUtils.trimAllWhitespace(basename))) {
+		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context, String basename) {
+			ConditionMessage.Builder message = ConditionMessage.forCondition("ResourceBundle");
+			for (String name : StringUtils.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
-						return ConditionOutcome
-								.match(message.found("bundle").items(resource));
+						return ConditionOutcome.match(message.found("bundle").items(resource));
 					}
 				}
 			}
-			return ConditionOutcome.noMatch(
-					message.didNotFind("bundle with basename " + basename).atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("bundle with basename " + basename).atAll());
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {

@@ -39,30 +39,25 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class ConversionServiceParameterValueMapperTests {
+class ConversionServiceParameterValueMapperTests {
 
 	@Test
-	public void mapParameterShouldDelegateToConversionService() {
-		DefaultFormattingConversionService conversionService = spy(
-				new DefaultFormattingConversionService());
-		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
-				conversionService);
-		Object mapped = mapper
-				.mapParameterValue(new TestOperationParameter(Integer.class), "123");
+	void mapParameterShouldDelegateToConversionService() {
+		DefaultFormattingConversionService conversionService = spy(new DefaultFormattingConversionService());
+		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
+		Object mapped = mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123");
 		assertThat(mapped).isEqualTo(123);
 		verify(conversionService).convert("123", Integer.class);
 	}
 
 	@Test
-	public void mapParameterWhenConversionServiceFailsShouldThrowParameterMappingException() {
+	void mapParameterWhenConversionServiceFailsShouldThrowParameterMappingException() {
 		ConversionService conversionService = mock(ConversionService.class);
 		RuntimeException error = new RuntimeException();
 		given(conversionService.convert(any(), any())).willThrow(error);
-		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
-				conversionService);
+		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		assertThatExceptionOfType(ParameterMappingException.class)
-				.isThrownBy(() -> mapper.mapParameterValue(
-						new TestOperationParameter(Integer.class), "123"))
+				.isThrownBy(() -> mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123"))
 				.satisfies((ex) -> {
 					assertThat(ex.getValue()).isEqualTo("123");
 					assertThat(ex.getParameter().getType()).isEqualTo(Integer.class);
@@ -71,22 +66,19 @@ public class ConversionServiceParameterValueMapperTests {
 	}
 
 	@Test
-	public void createShouldRegisterIsoOffsetDateTimeConverter() {
+	void createShouldRegisterIsoOffsetDateTimeConverter() {
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper();
-		Object mapped = mapper.mapParameterValue(
-				new TestOperationParameter(OffsetDateTime.class),
+		Object mapped = mapper.mapParameterValue(new TestOperationParameter(OffsetDateTime.class),
 				"2011-12-03T10:15:30+01:00");
 		assertThat(mapped).isNotNull();
 	}
 
 	@Test
-	public void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter() {
+	void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter() {
 		ConversionService conversionService = new DefaultConversionService();
-		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
-				conversionService);
+		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		assertThatExceptionOfType(ParameterMappingException.class).isThrownBy(() -> mapper
-				.mapParameterValue(new TestOperationParameter(OffsetDateTime.class),
-						"2011-12-03T10:15:30+01:00"));
+				.mapParameterValue(new TestOperationParameter(OffsetDateTime.class), "2011-12-03T10:15:30+01:00"));
 	}
 
 	private static class TestOperationParameter implements OperationParameter {

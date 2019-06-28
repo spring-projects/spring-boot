@@ -42,32 +42,29 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Stephane Nicoll
  */
-public class HealthWebEndpointResponseMapperTests {
+class HealthWebEndpointResponseMapperTests {
 
 	private final HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
 
 	private Set<String> authorizedRoles = Collections.singleton("ACTUATOR");
 
 	@Test
-	public void mapDetailsWithDisableDetailsDoesNotInvokeSupplier() {
+	void mapDetailsWithDisableDetailsDoesNotInvokeSupplier() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.NEVER);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mock(SecurityContext.class);
-		WebEndpointResponse<Health> response = mapper.mapDetails(supplier,
-				securityContext);
+		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		verifyZeroInteractions(supplier);
 		verifyZeroInteractions(securityContext);
 	}
 
 	@Test
-	public void mapDetailsWithUnauthorizedUserDoesNotInvokeSupplier() {
-		HealthWebEndpointResponseMapper mapper = createMapper(
-				ShowDetails.WHEN_AUTHORIZED);
+	void mapDetailsWithUnauthorizedUserDoesNotInvokeSupplier() {
+		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mockSecurityContext("USER");
-		WebEndpointResponse<Health> response = mapper.mapDetails(supplier,
-				securityContext);
+		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getBody()).isNull();
 		verifyZeroInteractions(supplier);
@@ -75,28 +72,24 @@ public class HealthWebEndpointResponseMapperTests {
 	}
 
 	@Test
-	public void mapDetailsWithAuthorizedUserInvokeSupplier() {
-		HealthWebEndpointResponseMapper mapper = createMapper(
-				ShowDetails.WHEN_AUTHORIZED);
+	void mapDetailsWithAuthorizedUserInvokeSupplier() {
+		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.WHEN_AUTHORIZED);
 		Supplier<Health> supplier = mockSupplier();
 		given(supplier.get()).willReturn(Health.down().build());
 		SecurityContext securityContext = mockSecurityContext("ACTUATOR");
-		WebEndpointResponse<Health> response = mapper.mapDetails(supplier,
-				securityContext);
-		assertThat(response.getStatus())
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
+		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
 		assertThat(response.getBody().getStatus()).isEqualTo(Status.DOWN);
 		verify(supplier).get();
 		verify(securityContext).isUserInRole("ACTUATOR");
 	}
 
 	@Test
-	public void mapDetailsWithUnavailableHealth() {
+	void mapDetailsWithUnavailableHealth() {
 		HealthWebEndpointResponseMapper mapper = createMapper(ShowDetails.ALWAYS);
 		Supplier<Health> supplier = mockSupplier();
 		SecurityContext securityContext = mock(SecurityContext.class);
-		WebEndpointResponse<Health> response = mapper.mapDetails(supplier,
-				securityContext);
+		WebEndpointResponse<Health> response = mapper.mapDetails(supplier, securityContext);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getBody()).isNull();
 		verify(supplier).get();
@@ -112,17 +105,15 @@ public class HealthWebEndpointResponseMapperTests {
 		List<String> associatedRoles = Arrays.asList(roles);
 		SecurityContext securityContext = mock(SecurityContext.class);
 		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
-		given(securityContext.isUserInRole(anyString()))
-				.will((Answer<Boolean>) (invocation) -> {
-					String expectedRole = invocation.getArgument(0);
-					return associatedRoles.contains(expectedRole);
-				});
+		given(securityContext.isUserInRole(anyString())).will((Answer<Boolean>) (invocation) -> {
+			String expectedRole = invocation.getArgument(0);
+			return associatedRoles.contains(expectedRole);
+		});
 		return securityContext;
 	}
 
 	private HealthWebEndpointResponseMapper createMapper(ShowDetails showDetails) {
-		return new HealthWebEndpointResponseMapper(this.statusHttpMapper, showDetails,
-				this.authorizedRoles);
+		return new HealthWebEndpointResponseMapper(this.statusHttpMapper, showDetails, this.authorizedRoles);
 	}
 
 }

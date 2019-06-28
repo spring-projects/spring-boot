@@ -57,8 +57,7 @@ public class LoggersEndpoint {
 
 	@ReadOperation
 	public Map<String, Object> loggers() {
-		Collection<LoggerConfiguration> configurations = this.loggingSystem
-				.getLoggerConfigurations();
+		Collection<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		if (configurations == null) {
 			return Collections.emptyMap();
 		}
@@ -71,14 +70,12 @@ public class LoggersEndpoint {
 	@ReadOperation
 	public LoggerLevels loggerLevels(@Selector String name) {
 		Assert.notNull(name, "Name must not be null");
-		LoggerConfiguration configuration = this.loggingSystem
-				.getLoggerConfiguration(name);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(name);
 		return (configuration != null) ? new LoggerLevels(configuration) : null;
 	}
 
 	@WriteOperation
-	public void configureLogLevel(@Selector String name,
-			@Nullable LogLevel configuredLevel) {
+	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "Name must not be empty");
 		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}
@@ -88,8 +85,7 @@ public class LoggersEndpoint {
 		return new TreeSet<>(levels).descendingSet();
 	}
 
-	private Map<String, LoggerLevels> getLoggers(
-			Collection<LoggerConfiguration> configurations) {
+	private Map<String, LoggerLevels> getLoggers(Collection<LoggerConfiguration> configurations) {
 		Map<String, LoggerLevels> loggers = new LinkedHashMap<>(configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
 			loggers.put(configuration.getName(), new LoggerLevels(configuration));

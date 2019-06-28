@@ -46,8 +46,7 @@ import org.springframework.stereotype.Component;
  * @since 2.0.0
  * @see AnnotationConfigApplicationContext
  */
-public class AnnotationConfigReactiveWebApplicationContext
-		extends AnnotationConfigApplicationContext
+public class AnnotationConfigReactiveWebApplicationContext extends AnnotationConfigApplicationContext
 		implements ConfigurableReactiveWebApplicationContext {
 
 	/**
@@ -64,8 +63,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 * @since 2.2.0
 	 */
-	public AnnotationConfigReactiveWebApplicationContext(
-			DefaultListableBeanFactory beanFactory) {
+	public AnnotationConfigReactiveWebApplicationContext(DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
 	}
 
@@ -172,8 +170,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * {@code AbstractRefreshableConfigApplicationContext}
 	 */
 	@Deprecated
-	protected AnnotatedBeanDefinitionReader getAnnotatedBeanDefinitionReader(
-			DefaultListableBeanFactory beanFactory) {
+	protected AnnotatedBeanDefinitionReader getAnnotatedBeanDefinitionReader(DefaultListableBeanFactory beanFactory) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -191,8 +188,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * {@code AbstractRefreshableConfigApplicationContext}
 	 */
 	@Deprecated
-	protected ClassPathBeanDefinitionScanner getClassPathBeanDefinitionScanner(
-			DefaultListableBeanFactory beanFactory) {
+	protected ClassPathBeanDefinitionScanner getClassPathBeanDefinitionScanner(DefaultListableBeanFactory beanFactory) {
 		throw new UnsupportedOperationException();
 	}
 

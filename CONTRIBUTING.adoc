@@ -125,7 +125,7 @@ find the process a little slower than the standard build.
 
 [TIP]
 ====
-If you want to run a build without the samples and integration tests, building the
+If you want to run a build without the smoke tests and integration tests, building the
 `spring-boot-project` module is enough. You can cd there and run the same command, or you
 can run this from the top-level directory:
 
@@ -138,20 +138,20 @@ can run this from the top-level directory:
 
 
 === Importing into Eclipse
-You can import the Spring Boot code into any Eclipse Oxygen based distribution. The easiest
-way to setup a new environment is to use the Eclipse Installer with the provided
-`.setup` file (in the `/eclipse` folder).
+You can import the Spring Boot code into any Eclipse 2019-03-based distribution. The
+easiest way to setup a new environment is to use the Eclipse Installer with the provided
+`spring-boot-project.setup` file (in the `/eclipse` folder).
 
 
 ==== Using the Eclipse Installer
 Spring Boot includes a `.setup` files which can be used with the Eclipse Installer to
 provision a new environment. To use the installer:
 
-* Download and run the latest Eclipse Installer from
-  https://www.eclipse.org/downloads/[eclipse.org/downloads/] (under "Get Eclipse").
+* Download and run the latest
+  https://www.eclipse.org/downloads/packages/installer[Eclipse Installer].
 * Switch to "Advanced Mode" using the drop down menu on the right.
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
-  install and click "`next`".
+  install, `2019-03` as the product version, and click "`next`".
 * For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`"
   and browse for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned
   copy of the source code. Click "`OK`" to add the setup file to the list.
@@ -196,7 +196,7 @@ changes just won't be automatically formatted.
 
 With the requisite eclipse plugins installed you can select
 `import existing maven projects` from the `file` menu to import the code. You will
-need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately.
+need to import the root `spring-boot` pom and the `spring-boot-smoke-tests` pom separately.
 
 
 
@@ -241,11 +241,11 @@ Maven is well supported by most Java IDEs. Refer to your vendor documentation.
 
 
 == Integration Tests
-The sample applications are used as integration tests during the build (when you
-`./mvnw install`). Due to the fact that they make use of the `spring-boot-maven-plugin`
+The smoke tests run as part of the build when you `./mvnw install`.
+Due to the fact that they make use of the `spring-boot-maven-plugin`
 they cannot be called directly, and so instead are launched via the
 `maven-invoker-plugin`. If you encounter build failures running the integration tests,
-check the `build.log` file in the appropriate sample directory.
+check the `build.log` file in the appropriate smoke test directory.
 
 
 == Cloning the git repository on Windows

@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ReactiveHealthIndicatorRegistryFactoryTests {
+class ReactiveHealthIndicatorRegistryFactoryTests {
 
 	private static final Health UP = new Health.Builder().status(Status.UP).build();
 
@@ -38,19 +38,16 @@ public class ReactiveHealthIndicatorRegistryFactoryTests {
 	private final ReactiveHealthIndicatorRegistryFactory factory = new ReactiveHealthIndicatorRegistryFactory();
 
 	@Test
-	public void defaultHealthIndicatorNameFactory() {
-		ReactiveHealthIndicatorRegistry registry = this.factory
-				.createReactiveHealthIndicatorRegistry(Collections
-						.singletonMap("myHealthIndicator", () -> Mono.just(UP)), null);
+	void defaultHealthIndicatorNameFactory() {
+		ReactiveHealthIndicatorRegistry registry = this.factory.createReactiveHealthIndicatorRegistry(
+				Collections.singletonMap("myHealthIndicator", () -> Mono.just(UP)), null);
 		assertThat(registry.getAll()).containsOnlyKeys("my");
 	}
 
 	@Test
-	public void healthIndicatorIsAdapted() {
-		ReactiveHealthIndicatorRegistry registry = this.factory
-				.createReactiveHealthIndicatorRegistry(
-						Collections.singletonMap("test", () -> Mono.just(UP)),
-						Collections.singletonMap("regular", () -> DOWN));
+	void healthIndicatorIsAdapted() {
+		ReactiveHealthIndicatorRegistry registry = this.factory.createReactiveHealthIndicatorRegistry(
+				Collections.singletonMap("test", () -> Mono.just(UP)), Collections.singletonMap("regular", () -> DOWN));
 		assertThat(registry.getAll()).containsOnlyKeys("test", "regular");
 		StepVerifier.create(registry.get("regular").health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);

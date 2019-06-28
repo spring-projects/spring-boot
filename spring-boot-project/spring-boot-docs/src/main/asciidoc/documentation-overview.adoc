@@ -13,10 +13,12 @@ as a map for the rest of the document.
 [[boot-documentation-about]]
 == About the Documentation
 The Spring Boot reference guide is available as
-<<single-index.adoc#spring-boot-reference-documentation, single page>> or
-<<index.adoc#spring-boot-reference-documentation, multi-page>> documentation.
-The latest copy
-of the reference documentation is available at {spring-boot-docs-current}.
+
+* {spring-boot-docs}/html[Multi-page HTML]
+* {spring-boot-docs}/htmlsingle[Single page HTML]
+* {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
+
+The latest copy is available at {spring-boot-docs-current}.
 
 Copies of this document may be made for your own use and for distribution to others,
 provided that you do not charge any fee for such copies and further provided that each

@@ -34,30 +34,28 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Yunkun Huang
  */
-public class ReactiveWebServerFactoryCustomizerTests {
+class ReactiveWebServerFactoryCustomizerTests {
 
 	private ServerProperties properties = new ServerProperties();
 
 	private ReactiveWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties);
 	}
 
 	@Test
-	public void testCustomizeServerPort() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
+	void testCustomizeServerPort() {
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.properties.setPort(9000);
 		this.customizer.customize(factory);
 		verify(factory).setPort(9000);
 	}
 
 	@Test
-	public void testCustomizeServerAddress() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
+	void testCustomizeServerAddress() {
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		InetAddress address = mock(InetAddress.class);
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);
@@ -65,9 +63,8 @@ public class ReactiveWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeServerSsl() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
+	void testCustomizeServerSsl() {
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);

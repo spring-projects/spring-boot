@@ -35,7 +35,7 @@ public class RSocketProperties {
 		return this.server;
 	}
 
-	static class Server {
+	public static class Server {
 
 		/**
 		 * Server port.

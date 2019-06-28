@@ -32,17 +32,14 @@ import org.springframework.test.context.TestContextBootstrapper;
 class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
-	protected MergedContextConfiguration processMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
-		return new ReactiveWebMergedContextConfiguration(
-				super.processMergedContextConfiguration(mergedConfig));
+	protected MergedContextConfiguration processMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
+		return new ReactiveWebMergedContextConfiguration(super.processMergedContextConfiguration(mergedConfig));
 	}
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-				.get(WebFluxTest.class).getValue("properties", String[].class)
-				.orElse(null);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(WebFluxTest.class)
+				.getValue("properties", String[].class).orElse(null);
 	}
 
 }

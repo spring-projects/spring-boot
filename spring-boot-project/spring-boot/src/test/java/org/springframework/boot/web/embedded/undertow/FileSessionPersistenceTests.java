@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.undertow.servlet.api.SessionPersistenceManager.PersistentSession;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,10 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class FileSessionPersistenceTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class FileSessionPersistenceTests {
 
 	private File dir;
 
@@ -48,36 +44,35 @@ public class FileSessionPersistenceTests {
 
 	private Date expiration = new Date(System.currentTimeMillis() + 10000);
 
-	@Before
-	public void setup() throws IOException {
-		this.dir = this.temp.newFolder();
+	@BeforeEach
+	void setup(@TempDir File tempDir) throws IOException {
+		this.dir = tempDir;
+		this.dir.mkdir();
 		this.persistence = new FileSessionPersistence(this.dir);
 	}
 
 	@Test
-	public void loadsNullForMissingFile() {
-		Map<String, PersistentSession> attributes = this.persistence
-				.loadSessionAttributes("test", this.classLoader);
+	void loadsNullForMissingFile() {
+		Map<String, PersistentSession> attributes = this.persistence.loadSessionAttributes("test", this.classLoader);
 		assertThat(attributes).isNull();
 	}
 
 	@Test
-	public void persistAndLoad() {
+	void persistAndLoad() {
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("spring", "boot");
 		PersistentSession session = new PersistentSession(this.expiration, data);
 		sessionData.put("abc", session);
 		this.persistence.persistSessions("test", sessionData);
-		Map<String, PersistentSession> restored = this.persistence
-				.loadSessionAttributes("test", this.classLoader);
+		Map<String, PersistentSession> restored = this.persistence.loadSessionAttributes("test", this.classLoader);
 		assertThat(restored).isNotNull();
 		assertThat(restored.get("abc").getExpiration()).isEqualTo(this.expiration);
 		assertThat(restored.get("abc").getSessionData().get("spring")).isEqualTo("boot");
 	}
 
 	@Test
-	public void dontRestoreExpired() {
+	void dontRestoreExpired() {
 		Date expired = new Date(System.currentTimeMillis() - 1000);
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		Map<String, Object> data = new LinkedHashMap<>();
@@ -85,14 +80,13 @@ public class FileSessionPersistenceTests {
 		PersistentSession session = new PersistentSession(expired, data);
 		sessionData.put("abc", session);
 		this.persistence.persistSessions("test", sessionData);
-		Map<String, PersistentSession> restored = this.persistence
-				.loadSessionAttributes("test", this.classLoader);
+		Map<String, PersistentSession> restored = this.persistence.loadSessionAttributes("test", this.classLoader);
 		assertThat(restored).isNotNull();
 		assertThat(restored.containsKey("abc")).isFalse();
 	}
 
 	@Test
-	public void deleteFileOnClear() {
+	void deleteFileOnClear() {
 		File sessionFile = new File(this.dir, "test.session");
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		this.persistence.persistSessions("test", sessionData);

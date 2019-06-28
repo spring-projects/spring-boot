@@ -37,14 +37,11 @@ import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
  * @author Mohsin Husen
  * @author Andy Wilkinson
  * @since 1.1.0
- * @deprecated since 2.2.0 in favor of other auto-configured Elasticsearch clients
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Client.class, TransportClientFactoryBean.class })
-@ConditionalOnProperty(prefix = "spring.data.elasticsearch", name = "cluster-nodes",
-		matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.data.elasticsearch", name = "cluster-nodes", matchIfMissing = false)
 @EnableConfigurationProperties(ElasticsearchProperties.class)
-@Deprecated
 public class ElasticsearchAutoConfiguration {
 
 	private final ElasticsearchProperties properties;

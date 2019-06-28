@@ -36,32 +36,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class EmbeddedDataSourceConfigurationTests {
+class EmbeddedDataSourceConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void closeContext() {
+	void closeContext() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void defaultEmbeddedDatabase() {
+	void defaultEmbeddedDatabase() {
 		this.context = load();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 	}
 
 	@Test
-	public void generateUniqueName() throws Exception {
+	void generateUniqueName() throws Exception {
 		this.context = load("spring.datasource.generate-unique-name=true");
-		try (AnnotationConfigApplicationContext context2 = load(
-				"spring.datasource.generate-unique-name=true")) {
+		try (AnnotationConfigApplicationContext context2 = load("spring.datasource.generate-unique-name=true")) {
 			DataSource dataSource = this.context.getBean(DataSource.class);
 			DataSource dataSource2 = context2.getBean(DataSource.class);
-			assertThat(getDatabaseName(dataSource))
-					.isNotEqualTo(getDatabaseName(dataSource2));
+			assertThat(getDatabaseName(dataSource)).isNotEqualTo(getDatabaseName(dataSource2));
 		}
 	}
 

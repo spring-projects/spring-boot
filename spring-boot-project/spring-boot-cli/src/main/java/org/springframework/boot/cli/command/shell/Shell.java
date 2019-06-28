@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,8 +87,7 @@ public class Shell {
 
 	private Iterable<Command> getCommands() {
 		List<Command> commands = new ArrayList<>();
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
-				getClass().getClassLoader());
+		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class, getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
 			for (Command command : factory.getCommands()) {
 				commands.add(convertToForkCommand(command));
@@ -113,8 +112,8 @@ public class Shell {
 		this.consoleReader.setHistoryEnabled(true);
 		this.consoleReader.setBellEnabled(false);
 		this.consoleReader.setExpandEvents(false);
-		this.consoleReader.addCompleter(new CommandCompleter(this.consoleReader,
-				this.argumentDelimiter, this.commandRunner));
+		this.consoleReader
+				.addCompleter(new CommandCompleter(this.consoleReader, this.argumentDelimiter, this.commandRunner));
 		this.consoleReader.setCompletionHandler(new CandidateListCompletionHandler());
 	}
 
@@ -142,8 +141,7 @@ public class Shell {
 		String version = getClass().getPackage().getImplementationVersion();
 		version = (version != null) ? " (v" + version + ")" : "";
 		System.out.println(ansi("Spring Boot", Code.BOLD).append(version, Code.FAINT));
-		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit "
-				+ "RETURN for help, and 'exit' to quit."));
+		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit " + "RETURN for help, and 'exit' to quit."));
 	}
 
 	private void runInputLoop() throws Exception {

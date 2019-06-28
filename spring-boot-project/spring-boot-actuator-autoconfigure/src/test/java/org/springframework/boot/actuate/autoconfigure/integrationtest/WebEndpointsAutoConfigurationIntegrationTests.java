@@ -51,45 +51,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class WebEndpointsAutoConfigurationIntegrationTests {
+class WebEndpointsAutoConfigurationIntegrationTests {
 
 	@Test
-	public void healthEndpointWebExtensionIsAutoConfigured() {
-		servletWebRunner()
-				.run((context) -> context.getBean(WebEndpointTestApplication.class));
-		servletWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(HealthEndpointWebExtension.class));
+	void healthEndpointWebExtensionIsAutoConfigured() {
+		servletWebRunner().run((context) -> context.getBean(WebEndpointTestApplication.class));
+		servletWebRunner().run((context) -> assertThat(context).hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
-	public void healthEndpointReactiveWebExtensionIsAutoConfigured() {
-		reactiveWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveHealthEndpointWebExtension.class));
+	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
+		reactiveWebRunner()
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {
-		return new WebApplicationContextRunner().withConfiguration(
-				UserConfigurations.of(WebEndpointTestApplication.class));
+		return new WebApplicationContextRunner()
+				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class));
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
-		return new ReactiveWebApplicationContextRunner().withConfiguration(
-				UserConfigurations.of(WebEndpointTestApplication.class));
+		return new ReactiveWebApplicationContextRunner()
+				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class));
 	}
 
-	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class,
-			LiquibaseAutoConfiguration.class, CassandraAutoConfiguration.class,
-			CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
-			Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class,
-			MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
-			MongoReactiveDataAutoConfiguration.class,
+	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
+			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
+			Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
 			org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class,
 			org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration.class,
-			SolrRepositoriesAutoConfiguration.class, SolrAutoConfiguration.class,
-			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
-			MetricsAutoConfiguration.class })
+			SolrRepositoriesAutoConfiguration.class, SolrAutoConfiguration.class, RedisAutoConfiguration.class,
+			RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class })
 	@SpringBootConfiguration
 	@SuppressWarnings("deprecation")
 	public static class WebEndpointTestApplication {

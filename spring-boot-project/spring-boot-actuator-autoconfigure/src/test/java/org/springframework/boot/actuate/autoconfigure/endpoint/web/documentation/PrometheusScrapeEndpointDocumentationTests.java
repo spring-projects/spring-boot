@@ -36,13 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class PrometheusScrapeEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void prometheus() throws Exception {
-		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk())
-				.andDo(document("prometheus"));
+	void prometheus() throws Exception {
+		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -52,8 +50,8 @@ public class PrometheusScrapeEndpointDocumentationTests
 		@Bean
 		public PrometheusScrapeEndpoint endpoint() {
 			CollectorRegistry collectorRegistry = new CollectorRegistry(true);
-			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry(
-					(key) -> null, collectorRegistry, Clock.SYSTEM);
+			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((key) -> null, collectorRegistry,
+					Clock.SYSTEM);
 			new JvmMemoryMetrics().bindTo(meterRegistry);
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}

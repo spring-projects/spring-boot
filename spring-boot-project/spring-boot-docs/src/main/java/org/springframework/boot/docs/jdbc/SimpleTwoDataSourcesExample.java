@@ -54,8 +54,7 @@ public class SimpleTwoDataSourcesExample {
 		@Primary
 		@ConfigurationProperties("app.datasource.first.configuration")
 		public HikariDataSource firstDataSource() {
-			return firstDataSourceProperties().initializeDataSourceBuilder()
-					.type(HikariDataSource.class).build();
+			return firstDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
 		}
 
 		@Bean

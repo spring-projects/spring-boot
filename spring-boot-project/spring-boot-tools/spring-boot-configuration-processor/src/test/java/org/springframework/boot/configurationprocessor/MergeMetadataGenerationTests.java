@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -47,194 +47,165 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Stephane Nicoll
  */
-public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void mergingOfAdditionalProperty() throws Exception {
+	void mergingOfAdditionalProperty() throws Exception {
 		ItemMetadata property = ItemMetadata.newProperty(null, "foo", "java.lang.String",
 				AdditionalMetadata.class.getName(), null, null, null, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
-		assertThat(metadata).has(Metadata.withProperty("foo", String.class)
-				.fromSource(AdditionalMetadata.class));
+		assertThat(metadata).has(Metadata.withProperty("foo", String.class).fromSource(AdditionalMetadata.class));
 	}
 
 	@Test
-	public void mergingOfAdditionalPropertyMatchingGroup() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty(null, "simple",
-				"java.lang.String", null, null, null, null, null);
+	void mergingOfAdditionalPropertyMatchingGroup() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty(null, "simple", "java.lang.String", null, null, null, null,
+				null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("simple", String.class));
 	}
 
 	@Test
-	public void mergeExistingPropertyDefaultValue() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null,
-				null, null, true, null);
+	void mergeExistingPropertyDefaultValue() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null, null, null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
-				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
-				.withDeprecation(null, null).withDefaultValue(true));
+		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class).fromSource(SimpleProperties.class)
+				.withDescription("A simple flag.").withDeprecation(null, null).withDefaultValue(true));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
-	public void mergeExistingPropertyWithSeveralCandidates() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "flag",
-				Boolean.class.getName(), null, null, null, true, null);
+	void mergeExistingPropertyWithSeveralCandidates() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", Boolean.class.getName(), null, null, null,
+				true, null);
 		writeAdditionalMetadata(property);
-		ConfigurationMetadata metadata = compile(SimpleProperties.class,
-				SimpleConflictingProperties.class);
+		ConfigurationMetadata metadata = compile(SimpleProperties.class, SimpleConflictingProperties.class);
 		assertThat(metadata.getItems()).hasSize(6);
-		List<ItemMetadata> items = metadata.getItems().stream()
-				.filter((item) -> item.getName().equals("simple.flag"))
+		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.getName().equals("simple.flag"))
 				.collect(Collectors.toList());
 		assertThat(items).hasSize(2);
-		ItemMetadata matchingProperty = items.stream()
-				.filter((item) -> item.getType().equals(Boolean.class.getName()))
+		ItemMetadata matchingProperty = items.stream().filter((item) -> item.getType().equals(Boolean.class.getName()))
 				.findFirst().orElse(null);
 		assertThat(matchingProperty).isNotNull();
 		assertThat(matchingProperty.getDefaultValue()).isEqualTo(true);
-		assertThat(matchingProperty.getSourceType())
-				.isEqualTo(SimpleProperties.class.getName());
+		assertThat(matchingProperty.getSourceType()).isEqualTo(SimpleProperties.class.getName());
 		assertThat(matchingProperty.getDescription()).isEqualTo("A simple flag.");
 		ItemMetadata nonMatchingProperty = items.stream()
-				.filter((item) -> item.getType().equals(String.class.getName()))
-				.findFirst().orElse(null);
+				.filter((item) -> item.getType().equals(String.class.getName())).findFirst().orElse(null);
 		assertThat(nonMatchingProperty).isNotNull();
 		assertThat(nonMatchingProperty.getDefaultValue()).isEqualTo("hello");
-		assertThat(nonMatchingProperty.getSourceType())
-				.isEqualTo(SimpleConflictingProperties.class.getName());
+		assertThat(nonMatchingProperty.getSourceType()).isEqualTo(SimpleConflictingProperties.class.getName());
 		assertThat(nonMatchingProperty.getDescription()).isNull();
 	}
 
 	@Test
-	public void mergeExistingPropertyDescription() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
-				null, null, "A nice comparator.", null, null);
+	void mergeExistingPropertyDescription() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, "A nice comparator.",
+				null, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
-						.fromSource(SimpleProperties.class)
-						.withDescription("A nice comparator."));
+		assertThat(metadata).has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
+				.fromSource(SimpleProperties.class).withDescription("A nice comparator."));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
-	public void mergeExistingPropertyDeprecation() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
-				null, null, null, null, new ItemDeprecation("Don't use this.",
-						"simple.complex-comparator", "error"));
+	void mergeExistingPropertyDeprecation() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null, null, null, null, null,
+				new ItemDeprecation("Don't use this.", "simple.complex-comparator", "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
-						.fromSource(SimpleProperties.class).withDeprecation(
-								"Don't use this.", "simple.complex-comparator", "error"));
+		assertThat(metadata).has(
+				Metadata.withProperty("simple.comparator", "java.util.Comparator<?>").fromSource(SimpleProperties.class)
+						.withDeprecation("Don't use this.", "simple.complex-comparator", "error"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
-	public void mergeExistingPropertyDeprecationOverride() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null,
-				null, null, null, null,
+	void mergeExistingPropertyDeprecationOverride() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
 				new ItemDeprecation("Don't use this.", "single.name"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
-		assertThat(metadata).has(
-				Metadata.withProperty("singledeprecated.name", String.class.getName())
-						.fromSource(DeprecatedSingleProperty.class)
-						.withDeprecation("Don't use this.", "single.name"));
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getName())
+				.fromSource(DeprecatedSingleProperty.class).withDeprecation("Don't use this.", "single.name"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
-	public void mergeExistingPropertyDeprecationOverrideLevel() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null,
-				null, null, null, null, new ItemDeprecation(null, null, "error"));
+	void mergeExistingPropertyDeprecationOverrideLevel() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null, null, null, null, null,
+				new ItemDeprecation(null, null, "error"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
-		assertThat(metadata).has(
-				Metadata.withProperty("singledeprecated.name", String.class.getName())
-						.fromSource(DeprecatedSingleProperty.class).withDeprecation(
-								"renamed", "singledeprecated.new-name", "error"));
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class.getName())
+				.fromSource(DeprecatedSingleProperty.class)
+				.withDeprecation("renamed", "singledeprecated.new-name", "error"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
-	public void mergeOfInvalidAdditionalMetadata() throws IOException {
+	void mergeOfInvalidAdditionalMetadata() throws IOException {
 		File additionalMetadataFile = createAdditionalMetadataFile();
 		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
-		assertThatIllegalStateException()
-				.isThrownBy(() -> compile(SimpleProperties.class))
+		assertThatIllegalStateException().isThrownBy(() -> compile(SimpleProperties.class))
 				.withMessage("Compilation failed");
 	}
 
 	@Test
-	public void mergingOfSimpleHint() throws Exception {
-		writeAdditionalHints(ItemHint.newHint("simple.the-name",
-				new ItemHint.ValueHint("boot", "Bla bla"),
+	void mergingOfSimpleHint() throws Exception {
+		writeAdditionalHints(ItemHint.newHint("simple.the-name", new ItemHint.ValueHint("boot", "Bla bla"),
 				new ItemHint.ValueHint("spring", null)));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("The name of this simple properties.")
+				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withHint("simple.the-name")
-				.withValue(0, "boot", "Bla bla").withValue(1, "spring", null));
+		assertThat(metadata)
+				.has(Metadata.withHint("simple.the-name").withValue(0, "boot", "Bla bla").withValue(1, "spring", null));
 	}
 
 	@Test
-	public void mergingOfHintWithNonCanonicalName() throws Exception {
-		writeAdditionalHints(ItemHint.newHint("simple.theName",
-				new ItemHint.ValueHint("boot", "Bla bla")));
+	void mergingOfHintWithNonCanonicalName() throws Exception {
+		writeAdditionalHints(ItemHint.newHint("simple.theName", new ItemHint.ValueHint("boot", "Bla bla")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("The name of this simple properties.")
+				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(
-				Metadata.withHint("simple.the-name").withValue(0, "boot", "Bla bla"));
+		assertThat(metadata).has(Metadata.withHint("simple.the-name").withValue(0, "boot", "Bla bla"));
 	}
 
 	@Test
-	public void mergingOfHintWithProvider() throws Exception {
+	void mergingOfHintWithProvider() throws Exception {
 		writeAdditionalHints(new ItemHint("simple.theName", Collections.emptyList(),
-				Arrays.asList(
-						new ItemHint.ValueProvider("first",
-								Collections.singletonMap("target", "org.foo")),
+				Arrays.asList(new ItemHint.ValueProvider("first", Collections.singletonMap("target", "org.foo")),
 						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("The name of this simple properties.")
+				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
 				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withHint("simple.the-name")
-				.withProvider("first", "target", "org.foo").withProvider("second"));
+		assertThat(metadata).has(
+				Metadata.withHint("simple.the-name").withProvider("first", "target", "org.foo").withProvider("second"));
 	}
 
 	@Test
-	public void mergingOfAdditionalDeprecation() throws Exception {
-		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName",
-				"java.lang.String", null, null, null, null,
-				new ItemDeprecation("Lame name.", "simple.the-name")));
+	void mergingOfAdditionalDeprecation() throws Exception {
+		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName", "java.lang.String", null, null, null,
+				null, new ItemDeprecation("Lame name.", "simple.the-name")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("simple.wrong-name", String.class)
-				.withDeprecation("Lame name.", "simple.the-name"));
+		assertThat(metadata).has(Metadata.withProperty("simple.wrong-name", String.class).withDeprecation("Lame name.",
+				"simple.the-name"));
 	}
 
 	@Test
-	public void mergingOfAdditionalMetadata() throws Exception {
+	void mergingOfAdditionalMetadata() throws Exception {
 		File metaInfFolder = new File(getCompiler().getOutputLocation(), "META-INF");
 		metaInfFolder.mkdirs();
-		File additionalMetadataFile = new File(metaInfFolder,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadataFile = new File(metaInfFolder, "additional-spring-configuration-metadata.json");
 		additionalMetadataFile.createNewFile();
 		JSONObject property = new JSONObject();
 		property.put("name", "foo");
@@ -250,8 +221,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 		writer.close();
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
-		assertThat(metadata).has(Metadata.withProperty("foo", String.class)
-				.fromSource(AdditionalMetadata.class));
+		assertThat(metadata).has(Metadata.withProperty("foo", String.class).fromSource(AdditionalMetadata.class));
 	}
 
 	private void writeAdditionalMetadata(ItemMetadata... metadata) throws Exception {
@@ -305,8 +275,7 @@ public class MergeMetadataGenerationTests extends AbstractMetadataGenerationTest
 	private File createAdditionalMetadataFile() throws IOException {
 		File metaInfFolder = new File(getCompiler().getOutputLocation(), "META-INF");
 		metaInfFolder.mkdirs();
-		File additionalMetadataFile = new File(metaInfFolder,
-				"additional-spring-configuration-metadata.json");
+		File additionalMetadataFile = new File(metaInfFolder, "additional-spring-configuration-metadata.json");
 		additionalMetadataFile.createNewFile();
 		return additionalMetadataFile;
 	}

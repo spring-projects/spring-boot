@@ -29,21 +29,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class IsoOffsetDateTimeConverterTests {
+class IsoOffsetDateTimeConverterTests {
 
 	@Test
-	public void convertShouldConvertIsoDate() {
+	void convertShouldConvertIsoDate() {
 		IsoOffsetDateTimeConverter converter = new IsoOffsetDateTimeConverter();
 		OffsetDateTime time = converter.convert("2011-12-03T10:15:30+01:00");
 		assertThat(time).isNotNull();
 	}
 
 	@Test
-	public void registerConverterShouldRegister() {
+	void registerConverterShouldRegister() {
 		DefaultConversionService service = new DefaultConversionService();
 		IsoOffsetDateTimeConverter.registerConverter(service);
-		OffsetDateTime time = service.convert("2011-12-03T10:15:30+01:00",
-				OffsetDateTime.class);
+		OffsetDateTime time = service.convert("2011-12-03T10:15:30+01:00", OffsetDateTime.class);
 		assertThat(time).isNotNull();
 	}
 

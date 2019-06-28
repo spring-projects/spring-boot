@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.nullValue;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = SpringBootContextLoader.class)
 @WebAppConfiguration("src/test/webapp")
-public class SpringBootMockServletContextTests implements ServletContextAware {
+class SpringBootMockServletContextTests implements ServletContextAware {
 
 	private ServletContext servletContext;
 
@@ -56,7 +56,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 	}
 
 	@Test
-	public void getResourceLocation() throws Exception {
+	void getResourceLocation() throws Exception {
 		testResource("/inwebapp", "src/test/webapp");
 		testResource("/inmetainfresources", "/META-INF/resources");
 		testResource("/inresources", "/resources");
@@ -64,8 +64,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		testResource("/inpublic", "/public");
 	}
 
-	private void testResource(String path, String expectedLocation)
-			throws MalformedURLException {
+	private void testResource(String path, String expectedLocation) throws MalformedURLException {
 		URL resource = this.servletContext.getResource(path);
 		assertThat(resource).isNotNull();
 		assertThat(resource.getPath()).contains(expectedLocation);
@@ -73,9 +72,8 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 
 	// gh-2654
 	@Test
-	public void getRootUrlExistsAndIsEmpty() throws Exception {
-		SpringBootMockServletContext context = new SpringBootMockServletContext(
-				"src/test/doesntexist") {
+	void getRootUrlExistsAndIsEmpty() throws Exception {
+		SpringBootMockServletContext context = new SpringBootMockServletContext("src/test/doesntexist") {
 			@Override
 			protected String getResourceLocation(String path) {
 				// Don't include the Spring Boot defaults for this test
@@ -86,8 +84,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		assertThat(resource).isNotEqualTo(nullValue());
 		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
 		assertThat(file).exists().isDirectory();
-		String[] contents = file
-				.list((dir, name) -> !(".".equals(name) || "..".equals(name)));
+		String[] contents = file.list((dir, name) -> !(".".equals(name) || "..".equals(name)));
 		assertThat(contents).isNotEqualTo(nullValue());
 		assertThat(contents.length).isEqualTo(0);
 	}

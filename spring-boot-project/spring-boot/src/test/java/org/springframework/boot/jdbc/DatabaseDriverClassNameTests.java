@@ -23,13 +23,15 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.sql.XADataSource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.asm.ClassReader;
 
@@ -40,59 +42,47 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(Parameterized.class)
-public class DatabaseDriverClassNameTests {
+class DatabaseDriverClassNameTests {
 
-	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections
-			.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE,
-					DatabaseDriver.DB2, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
-					DatabaseDriver.HANA, DatabaseDriver.TERADATA,
-					DatabaseDriver.REDSHIFT));
+	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections.unmodifiableSet(
+			EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE, DatabaseDriver.DB2, DatabaseDriver.DB2_AS400,
+					DatabaseDriver.INFORMIX, DatabaseDriver.HANA, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT));
 
-	private final String className;
-
-	private final Class<?> requiredType;
-
-	@Parameters(name = "{0} {2}")
-	public static List<Object[]> parameters() {
-		DatabaseDriver[] databaseDrivers = DatabaseDriver.values();
-		List<Object[]> parameters = new ArrayList<>();
-		for (DatabaseDriver databaseDriver : databaseDrivers) {
-			if (EXCLUDED_DRIVERS.contains(databaseDriver)) {
-				continue;
-			}
-			parameters.add(new Object[] { databaseDriver,
-					databaseDriver.getDriverClassName(), Driver.class });
-			if (databaseDriver.getXaDataSourceClassName() != null) {
-				parameters.add(new Object[] { databaseDriver,
-						databaseDriver.getXaDataSourceClassName(), XADataSource.class });
-			}
-		}
-		return parameters;
-	}
-
-	public DatabaseDriverClassNameTests(DatabaseDriver driver, String className,
-			Class<?> requiredType) {
-		this.className = className;
-		this.requiredType = requiredType;
-	}
-
-	@Test
-	public void databaseClassIsOfRequiredType() throws Exception {
-		assertThat(getInterfaceNames(this.className.replace('.', '/')))
-				.contains(this.requiredType.getName().replace('.', '/'));
+	@ParameterizedTest(name = "{0} {2}")
+	@MethodSource
+	void databaseClassIsOfRequiredType(DatabaseDriver driver, String className, Class<?> requiredType)
+			throws Exception {
+		assertThat(getInterfaceNames(className.replace('.', '/'))).contains(requiredType.getName().replace('.', '/'));
 	}
 
 	private List<String> getInterfaceNames(String className) throws IOException {
 		// Use ASM to avoid unwanted side-effects of loading JDBC drivers
-		ClassReader classReader = new ClassReader(
-				getClass().getResourceAsStream("/" + className + ".class"));
+		ClassReader classReader = new ClassReader(getClass().getResourceAsStream("/" + className + ".class"));
 		List<String> interfaceNames = new ArrayList<>();
 		for (String name : classReader.getInterfaces()) {
 			interfaceNames.add(name);
 			interfaceNames.addAll(getInterfaceNames(name));
 		}
 		return interfaceNames;
+	}
+
+	static Stream<? extends Arguments> databaseClassIsOfRequiredType() {
+		return Stream.concat(argumentsForType(Driver.class, DatabaseDriver::getDriverClassName),
+				argumentsForType(XADataSource.class,
+						(databaseDriver) -> databaseDriver.getXaDataSourceClassName() != null,
+						DatabaseDriver::getXaDataSourceClassName));
+	}
+
+	private static Stream<? extends Arguments> argumentsForType(Class<?> clazz,
+			Function<DatabaseDriver, String> classNameExtractor) {
+		return argumentsForType(clazz, (databaseDriver) -> true, classNameExtractor);
+	}
+
+	private static Stream<? extends Arguments> argumentsForType(Class<?> clazz, Predicate<DatabaseDriver> predicate,
+			Function<DatabaseDriver, String> classNameExtractor) {
+		return Stream.of(DatabaseDriver.values()).filter((databaseDriver) -> !EXCLUDED_DRIVERS.contains(databaseDriver))
+				.filter(predicate)
+				.map((databaseDriver) -> Arguments.of(databaseDriver, classNameExtractor.apply(databaseDriver), clazz));
 	}
 
 }

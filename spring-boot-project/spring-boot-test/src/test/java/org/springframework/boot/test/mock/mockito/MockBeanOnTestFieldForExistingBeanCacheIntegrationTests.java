@@ -39,7 +39,7 @@ import static org.mockito.BDDMockito.given;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MockBeanOnTestFieldForExistingBeanConfig.class)
-public class MockBeanOnTestFieldForExistingBeanCacheIntegrationTests {
+class MockBeanOnTestFieldForExistingBeanCacheIntegrationTests {
 
 	@MockBean
 	private ExampleService exampleService;
@@ -48,7 +48,7 @@ public class MockBeanOnTestFieldForExistingBeanCacheIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testMocking() {
+	void testMocking() {
 		given(this.exampleService.greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}

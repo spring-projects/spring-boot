@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
@@ -35,64 +35,65 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class FolderSnapshotTests {
+class FolderSnapshotTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File folder;
 
 	private FolderSnapshot initialSnapshot;
 
-	@Before
-	public void setup() throws Exception {
+	@BeforeEach
+	void setup() throws Exception {
 		this.folder = createTestFolderStructure();
 		this.initialSnapshot = new FolderSnapshot(this.folder);
 	}
 
 	@Test
-	public void folderMustNotBeNull() {
+	void folderMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new FolderSnapshot(null))
 				.withMessageContaining("Folder must not be null");
 	}
 
 	@Test
-	public void folderMustNotBeFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void folderMustNotBeFile() throws Exception {
+		File file = new File(this.tempDir, "file");
+		file.createNewFile();
 		assertThatIllegalArgumentException().isThrownBy(() -> new FolderSnapshot(file))
 				.withMessageContaining("Folder '" + file + "' must not be a file");
 	}
 
 	@Test
-	public void folderDoesNotHaveToExist() throws Exception {
-		File file = new File(this.temporaryFolder.getRoot(), "does/not/exist");
+	void folderDoesNotHaveToExist() throws Exception {
+		File file = new File(this.tempDir, "does/not/exist");
 		FolderSnapshot snapshot = new FolderSnapshot(file);
 		assertThat(snapshot).isEqualTo(new FolderSnapshot(file));
 	}
 
 	@Test
-	public void equalsWhenNothingHasChanged() {
+	void equalsWhenNothingHasChanged() {
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		assertThat(this.initialSnapshot).isEqualTo(updatedSnapshot);
 		assertThat(this.initialSnapshot.hashCode()).isEqualTo(updatedSnapshot.hashCode());
 	}
 
 	@Test
-	public void notEqualsWhenAFileIsAdded() throws Exception {
+	void notEqualsWhenAFileIsAdded() throws Exception {
 		new File(new File(this.folder, "folder1"), "newfile").createNewFile();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		assertThat(this.initialSnapshot).isNotEqualTo(updatedSnapshot);
 	}
 
 	@Test
-	public void notEqualsWhenAFileIsDeleted() {
+	void notEqualsWhenAFileIsDeleted() {
 		new File(new File(this.folder, "folder1"), "file1").delete();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		assertThat(this.initialSnapshot).isNotEqualTo(updatedSnapshot);
 	}
 
 	@Test
-	public void notEqualsWhenAFileIsModified() throws Exception {
+	void notEqualsWhenAFileIsModified() throws Exception {
 		File file1 = new File(new File(this.folder, "folder1"), "file1");
 		FileCopyUtils.copy("updatedcontent".getBytes(), file1);
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
@@ -100,29 +101,26 @@ public class FolderSnapshotTests {
 	}
 
 	@Test
-	public void getChangedFilesSnapshotMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
+	void getChangedFilesSnapshotMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
 				.withMessageContaining("Snapshot must not be null");
 	}
 
 	@Test
-	public void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.initialSnapshot.getChangedFiles(
-						new FolderSnapshot(createTestFolderStructure()), null))
-				.withMessageContaining(
-						"Snapshot source folder must be '" + this.folder + "'");
+	void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> this.initialSnapshot.getChangedFiles(new FolderSnapshot(createTestFolderStructure()), null))
+				.withMessageContaining("Snapshot source folder must be '" + this.folder + "'");
 	}
 
 	@Test
-	public void getChangedFilesWhenNothingHasChanged() {
+	void getChangedFilesWhenNothingHasChanged() {
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		this.initialSnapshot.getChangedFiles(updatedSnapshot, null);
 	}
 
 	@Test
-	public void getChangedFilesWhenAFileIsAddedAndDeletedAndChanged() throws Exception {
+	void getChangedFilesWhenAFileIsAddedAndDeletedAndChanged() throws Exception {
 		File folder1 = new File(this.folder, "folder1");
 		File file1 = new File(folder1, "file1");
 		File file2 = new File(folder1, "file2");
@@ -131,8 +129,7 @@ public class FolderSnapshotTests {
 		file2.delete();
 		newFile.createNewFile();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		ChangedFiles changedFiles = this.initialSnapshot.getChangedFiles(updatedSnapshot,
-				null);
+		ChangedFiles changedFiles = this.initialSnapshot.getChangedFiles(updatedSnapshot, null);
 		assertThat(changedFiles.getSourceFolder()).isEqualTo(this.folder);
 		assertThat(getChangedFile(changedFiles, file1).getType()).isEqualTo(Type.MODIFY);
 		assertThat(getChangedFile(changedFiles, file2).getType()).isEqualTo(Type.DELETE);
@@ -149,7 +146,7 @@ public class FolderSnapshotTests {
 	}
 
 	private File createTestFolderStructure() throws IOException {
-		File root = this.temporaryFolder.newFolder();
+		File root = new File(this.tempDir, UUID.randomUUID().toString());
 		File folder1 = new File(root, "folder1");
 		folder1.mkdirs();
 		FileCopyUtils.copy("abc".getBytes(), new File(folder1, "file1"));

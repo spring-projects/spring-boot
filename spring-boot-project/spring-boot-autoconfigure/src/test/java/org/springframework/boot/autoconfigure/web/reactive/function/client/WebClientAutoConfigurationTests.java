@@ -47,15 +47,13 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  */
-public class WebClientAutoConfigurationTests {
+class WebClientAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class,
-							WebClientAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class));
 
 	@Test
-	public void shouldCreateBuilder() {
+	void shouldCreateBuilder() {
 		this.contextRunner.run((context) -> {
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			WebClient webClient = builder.build();
@@ -64,70 +62,54 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCustomizeClientCodecs() {
-		this.contextRunner.withUserConfiguration(CodecConfiguration.class)
-				.run((context) -> {
-					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
-					CodecCustomizer codecCustomizer = context
-							.getBean(CodecCustomizer.class);
-					WebClientCodecCustomizer clientCustomizer = context
-							.getBean(WebClientCodecCustomizer.class);
-					builder.build();
-					assertThat(clientCustomizer).isNotNull();
-					verify(codecCustomizer).customize(any(CodecConfigurer.class));
-				});
+	void shouldCustomizeClientCodecs() {
+		this.contextRunner.withUserConfiguration(CodecConfiguration.class).run((context) -> {
+			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+			CodecCustomizer codecCustomizer = context.getBean(CodecCustomizer.class);
+			WebClientCodecCustomizer clientCustomizer = context.getBean(WebClientCodecCustomizer.class);
+			builder.build();
+			assertThat(clientCustomizer).isNotNull();
+			verify(codecCustomizer).customize(any(CodecConfigurer.class));
+		});
 	}
 
 	@Test
-	public void webClientShouldApplyCustomizers() {
-		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class)
-				.run((context) -> {
-					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
-					WebClientCustomizer customizer = context
-							.getBean("webClientCustomizer", WebClientCustomizer.class);
-					builder.build();
-					verify(customizer).customize(any(WebClient.Builder.class));
-				});
+	void webClientShouldApplyCustomizers() {
+		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class).run((context) -> {
+			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
+			builder.build();
+			verify(customizer).customize(any(WebClient.Builder.class));
+		});
 	}
 
 	@Test
-	public void shouldGetPrototypeScopedBean() {
-		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class)
-				.run((context) -> {
-					ClientHttpResponse response = mock(ClientHttpResponse.class);
-					ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
-					given(firstConnector.connect(any(), any(), any()))
-							.willReturn(Mono.just(response));
-					WebClient.Builder firstBuilder = context
-							.getBean(WebClient.Builder.class);
-					firstBuilder.clientConnector(firstConnector)
-							.baseUrl("https://first.example.org");
-					ClientHttpConnector secondConnector = mock(ClientHttpConnector.class);
-					given(secondConnector.connect(any(), any(), any()))
-							.willReturn(Mono.just(response));
-					WebClient.Builder secondBuilder = context
-							.getBean(WebClient.Builder.class);
-					secondBuilder.clientConnector(secondConnector)
-							.baseUrl("https://second.example.org");
-					assertThat(firstBuilder).isNotEqualTo(secondBuilder);
-					firstBuilder.build().get().uri("/foo").exchange()
-							.block(Duration.ofSeconds(30));
-					secondBuilder.build().get().uri("/foo").exchange()
-							.block(Duration.ofSeconds(30));
-					verify(firstConnector).connect(eq(HttpMethod.GET),
-							eq(URI.create("https://first.example.org/foo")), any());
-					verify(secondConnector).connect(eq(HttpMethod.GET),
-							eq(URI.create("https://second.example.org/foo")), any());
-					WebClientCustomizer customizer = context
-							.getBean("webClientCustomizer", WebClientCustomizer.class);
-					verify(customizer, times(1)).customize(any(WebClient.Builder.class));
-				});
+	void shouldGetPrototypeScopedBean() {
+		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class).run((context) -> {
+			ClientHttpResponse response = mock(ClientHttpResponse.class);
+			ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
+			given(firstConnector.connect(any(), any(), any())).willReturn(Mono.just(response));
+			WebClient.Builder firstBuilder = context.getBean(WebClient.Builder.class);
+			firstBuilder.clientConnector(firstConnector).baseUrl("https://first.example.org");
+			ClientHttpConnector secondConnector = mock(ClientHttpConnector.class);
+			given(secondConnector.connect(any(), any(), any())).willReturn(Mono.just(response));
+			WebClient.Builder secondBuilder = context.getBean(WebClient.Builder.class);
+			secondBuilder.clientConnector(secondConnector).baseUrl("https://second.example.org");
+			assertThat(firstBuilder).isNotEqualTo(secondBuilder);
+			firstBuilder.build().get().uri("/foo").exchange().block(Duration.ofSeconds(30));
+			secondBuilder.build().get().uri("/foo").exchange().block(Duration.ofSeconds(30));
+			verify(firstConnector).connect(eq(HttpMethod.GET), eq(URI.create("https://first.example.org/foo")), any());
+			verify(secondConnector).connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")),
+					any());
+			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
+			verify(customizer, times(1)).customize(any(WebClient.Builder.class));
+		});
 	}
 
 	@Test
-	public void shouldNotCreateClientBuilderIfAlreadyPresent() {
-		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class,
-				CustomWebClientBuilderConfig.class).run((context) -> {
+	void shouldNotCreateClientBuilderIfAlreadyPresent() {
+		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class, CustomWebClientBuilderConfig.class)
+				.run((context) -> {
 					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 					assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
 				});

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ public interface BindHandler {
 	 * @param context the bind context
 	 * @return the actual item that should be used for binding (may be {@code null})
 	 */
-	default <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
-			BindContext context) {
+	default <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 		return target;
 	}
 
@@ -57,15 +56,29 @@ public interface BindHandler {
 	 * @param result the bound result (never {@code null})
 	 * @return the actual result that should be used (may be {@code null})
 	 */
-	default Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	default Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
+		return result;
+	}
+
+	/**
+	 * Called when binding of an element ends with an unbound result and a newly created
+	 * instance is about to be returned. Implementations may change the ultimately
+	 * returned result or perform addition validation.
+	 * @param name the name of the element being bound
+	 * @param target the item being bound
+	 * @param context the bind context
+	 * @param result the newly created instance (never {@code null})
+	 * @return the actual result that should be used (must not be {@code null})
+	 * @since 2.2.2
+	 */
+	default Object onCreate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		return result;
 	}
 
 	/**
 	 * Called when binding fails for any reason (including failures from
-	 * {@link #onSuccess} calls). Implementations may choose to swallow exceptions and
-	 * return an alternative result.
+	 * {@link #onSuccess} or {@link #onCreate} calls). Implementations may choose to
+	 * swallow exceptions and return an alternative result.
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
@@ -73,8 +86,8 @@ public interface BindHandler {
 	 * @return the actual result that should be used (may be {@code null}).
 	 * @throws Exception if the binding isn't valid
 	 */
-	default Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Exception error) throws Exception {
+	default Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
 		throw error;
 	}
 
@@ -86,8 +99,8 @@ public interface BindHandler {
 	 * @param result the bound result (may be {@code null})
 	 * @throws Exception if the binding isn't valid
 	 */
-	default void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+	default void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
+			throws Exception {
 	}
 
 }

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)
-public class MockBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
+class MockBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
 
 	@MockBean
 	@CustomQualifier
@@ -54,16 +54,15 @@ public class MockBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testMocking() {
+	void testMocking() {
 		this.caller.sayGreeting();
 		verify(this.service).greeting();
 	}
 
 	@Test
-	public void onlyQualifiedBeanIsReplaced() {
+	void onlyQualifiedBeanIsReplaced() {
 		assertThat(this.applicationContext.getBean("service")).isSameAs(this.service);
-		ExampleService anotherService = this.applicationContext.getBean("anotherService",
-				ExampleService.class);
+		ExampleService anotherService = this.applicationContext.getBean("anotherService", ExampleService.class);
 		assertThat(anotherService.greeting()).isEqualTo("Another");
 	}
 

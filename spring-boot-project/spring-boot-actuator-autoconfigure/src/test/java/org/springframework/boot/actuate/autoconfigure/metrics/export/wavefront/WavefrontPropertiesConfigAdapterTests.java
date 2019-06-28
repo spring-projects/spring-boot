@@ -29,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class WavefrontPropertiesConfigAdapterTests extends
-		StepRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
+class WavefrontPropertiesConfigAdapterTests
+		extends StepRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
 
 	@Override
 	protected WavefrontProperties createProperties() {
@@ -38,35 +38,33 @@ public class WavefrontPropertiesConfigAdapterTests extends
 	}
 
 	@Override
-	protected WavefrontPropertiesConfigAdapter createConfigAdapter(
-			WavefrontProperties properties) {
+	protected WavefrontPropertiesConfigAdapter createConfigAdapter(WavefrontProperties properties) {
 		return new WavefrontPropertiesConfigAdapter(properties);
 	}
 
 	@Test
-	public void whenPropertiesUriIsSetAdapterUriReturnsIt() {
+	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setUri(URI.create("https://wavefront.example.com"));
-		assertThat(createConfigAdapter(properties).uri())
-				.isEqualTo("https://wavefront.example.com");
+		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://wavefront.example.com");
 	}
 
 	@Test
-	public void whenPropertiesSourceIsSetAdapterSourceReturnsIt() {
+	void whenPropertiesSourceIsSetAdapterSourceReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setSource("test");
 		assertThat(createConfigAdapter(properties).source()).isEqualTo("test");
 	}
 
 	@Test
-	public void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
+	void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setApiToken("ABC123");
 		assertThat(createConfigAdapter(properties).apiToken()).isEqualTo("ABC123");
 	}
 
 	@Test
-	public void whenPropertiesGlobalPrefixIsSetAdapterGlobalPrefixReturnsIt() {
+	void whenPropertiesGlobalPrefixIsSetAdapterGlobalPrefixReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setGlobalPrefix("test");
 		assertThat(createConfigAdapter(properties).globalPrefix()).isEqualTo("test");

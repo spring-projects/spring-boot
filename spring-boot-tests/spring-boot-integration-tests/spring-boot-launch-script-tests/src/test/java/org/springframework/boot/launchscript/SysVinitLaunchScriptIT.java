@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,18 +46,14 @@ import com.github.dockerjava.core.util.CompressArchiveUtil;
 import com.github.dockerjava.jaxrs.AbstrSyncDockerCmdExec;
 import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 import org.assertj.core.api.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.ansi.AnsiColor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assume.assumeThat;
 
 /**
  * Integration tests for Spring Boot's launch script on OSs that use SysVinit.
@@ -65,19 +61,213 @@ import static org.junit.Assume.assumeThat;
  * @author Andy Wilkinson
  * @author Ali Shahbour
  */
-@RunWith(Parameterized.class)
 public class SysVinitLaunchScriptIT {
 
 	private final SpringBootDockerCmdExecFactory commandExecFactory = new SpringBootDockerCmdExecFactory();
 
 	private static final char ESC = 27;
 
-	private final String os;
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void statusWhenStopped(String os, String version) throws Exception {
+		String output = doTest(os, version, "status-when-stopped.sh");
+		assertThat(output).contains("Status: 3");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
+	}
 
-	private final String version;
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void statusWhenStarted(String os, String version) throws Exception {
+		String output = doTest(os, version, "status-when-started.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+	}
 
-	@Parameters(name = "{0} {1}")
-	public static List<Object[]> parameters() {
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void statusWhenKilled(String os, String version) throws Exception {
+		String output = doTest(os, version, "status-when-killed.sh");
+		assertThat(output).contains("Status: 1");
+		assertThat(output)
+				.has(coloredString(AnsiColor.RED, "Not running (process " + extractPid(output) + " not found)"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void stopWhenStopped(String os, String version) throws Exception {
+		String output = doTest(os, version, "stop-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void forceStopWhenStopped(String os, String version) throws Exception {
+		String output = doTest(os, version, "force-stop-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void startWhenStarted(String os, String version) throws Exception {
+		String output = doTest(os, version, "start-when-started.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Already running [" + extractPid(output) + "]"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void restartWhenStopped(String os, String version) throws Exception {
+		String output = doTest(os, version, "restart-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void restartWhenStarted(String os, String version) throws Exception {
+		String output = doTest(os, version, "restart-when-started.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extract("PID1", output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Stopped [" + extract("PID1", output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extract("PID2", output) + "]"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void startWhenStopped(String os, String version) throws Exception {
+		String output = doTest(os, version, "start-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void basicLaunch(String os, String version) throws Exception {
+		String output = doTest(os, version, "basic-launch.sh");
+		assertThat(output).doesNotContain("PID_FOLDER");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithMissingLogFolderGeneratesAWarning(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-missing-log-folder.sh");
+		assertThat(output).has(
+				coloredString(AnsiColor.YELLOW, "LOG_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithMissingPidFolderGeneratesAWarning(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-missing-pid-folder.sh");
+		assertThat(output).has(
+				coloredString(AnsiColor.YELLOW, "PID_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithSingleCommandLineArgument(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-single-command-line-argument.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithMultipleCommandLineArguments(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-multiple-command-line-arguments.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithSingleRunArg(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-single-run-arg.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithMultipleRunArgs(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-multiple-run-args.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithSingleJavaOpt(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-single-java-opt.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithDoubleLinkSingleJavaOpt(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-double-link-single-java-opt.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithMultipleJavaOpts(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-multiple-java-opts.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithUseOfStartStopDaemonDisabled(String os, String version) throws Exception {
+		// CentOS doesn't have start-stop-daemon
+		Assumptions.assumeFalse(os.equals("CentOS"));
+		doLaunch(os, version, "launch-with-use-of-start-stop-daemon-disabled.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRelativePidFolder(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-relative-pid-folder.sh");
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
+		assertThat(output).has(coloredString(AnsiColor.GREEN, "Stopped [" + extractPid(output) + "]"));
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void pidFolderOwnership(String os, String version) throws Exception {
+		String output = doTest(os, version, "pid-folder-ownership.sh");
+		assertThat(output).contains("phil root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void pidFileOwnership(String os, String version) throws Exception {
+		String output = doTest(os, version, "pid-file-ownership.sh");
+		assertThat(output).contains("phil root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void logFileOwnership(String os, String version) throws Exception {
+		String output = doTest(os, version, "log-file-ownership.sh");
+		assertThat(output).contains("phil root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void logFileOwnershipIsChangedWhenCreated(String os, String version) throws Exception {
+		String output = doTest(os, version, "log-file-ownership-is-changed-when-created.sh");
+		assertThat(output).contains("andy root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void logFileOwnershipIsUnchangedWhenExists(String os, String version) throws Exception {
+		String output = doTest(os, version, "log-file-ownership-is-unchanged-when-exists.sh");
+		assertThat(output).contains("root root");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	public void launchWithRelativeLogFolder(String os, String version) throws Exception {
+		String output = doTest(os, version, "launch-with-relative-log-folder.sh");
+		assertThat(output).contains("Log written");
+	}
+
+	static List<Object[]> parameters() {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
 			for (File version : os.listFiles()) {
@@ -87,213 +277,20 @@ public class SysVinitLaunchScriptIT {
 		return parameters;
 	}
 
-	public SysVinitLaunchScriptIT(String os, String version) {
-		this.os = os;
-		this.version = version;
+	private void doLaunch(String os, String version, String script) throws Exception {
+		assertThat(doTest(os, version, script)).contains("Launched");
 	}
 
-	@Test
-	public void statusWhenStopped() throws Exception {
-		String output = doTest("status-when-stopped.sh");
-		assertThat(output).contains("Status: 3");
-		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
-	}
-
-	@Test
-	public void statusWhenStarted() throws Exception {
-		String output = doTest("status-when-started.sh");
-		assertThat(output).contains("Status: 0");
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
-	}
-
-	@Test
-	public void statusWhenKilled() throws Exception {
-		String output = doTest("status-when-killed.sh");
-		assertThat(output).contains("Status: 1");
-		assertThat(output).has(coloredString(AnsiColor.RED,
-				"Not running (process " + extractPid(output) + " not found)"));
-	}
-
-	@Test
-	public void stopWhenStopped() throws Exception {
-		String output = doTest("stop-when-stopped.sh");
-		assertThat(output).contains("Status: 0");
-		assertThat(output)
-				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
-	}
-
-	@Test
-	public void forceStopWhenStopped() throws Exception {
-		String output = doTest("force-stop-when-stopped.sh");
-		assertThat(output).contains("Status: 0");
-		assertThat(output)
-				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
-	}
-
-	@Test
-	public void startWhenStarted() throws Exception {
-		String output = doTest("start-when-started.sh");
-		assertThat(output).contains("Status: 0");
-		assertThat(output).has(coloredString(AnsiColor.YELLOW,
-				"Already running [" + extractPid(output) + "]"));
-	}
-
-	@Test
-	public void restartWhenStopped() throws Exception {
-		String output = doTest("restart-when-stopped.sh");
-		assertThat(output).contains("Status: 0");
-		assertThat(output)
-				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
-	}
-
-	@Test
-	public void restartWhenStarted() throws Exception {
-		String output = doTest("restart-when-started.sh");
-		assertThat(output).contains("Status: 0");
-		assertThat(output).has(coloredString(AnsiColor.GREEN,
-				"Started [" + extract("PID1", output) + "]"));
-		assertThat(output).has(coloredString(AnsiColor.GREEN,
-				"Stopped [" + extract("PID1", output) + "]"));
-		assertThat(output).has(coloredString(AnsiColor.GREEN,
-				"Started [" + extract("PID2", output) + "]"));
-	}
-
-	@Test
-	public void startWhenStopped() throws Exception {
-		String output = doTest("start-when-stopped.sh");
-		assertThat(output).contains("Status: 0");
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
-	}
-
-	@Test
-	public void basicLaunch() throws Exception {
-		String output = doTest("basic-launch.sh");
-		assertThat(output).doesNotContain("PID_FOLDER");
-	}
-
-	@Test
-	public void launchWithMissingLogFolderGeneratesAWarning() throws Exception {
-		String output = doTest("launch-with-missing-log-folder.sh");
-		assertThat(output).has(coloredString(AnsiColor.YELLOW,
-				"LOG_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
-	}
-
-	@Test
-	public void launchWithMissingPidFolderGeneratesAWarning() throws Exception {
-		String output = doTest("launch-with-missing-pid-folder.sh");
-		assertThat(output).has(coloredString(AnsiColor.YELLOW,
-				"PID_FOLDER /does/not/exist does not exist. Falling back to /tmp"));
-	}
-
-	@Test
-	public void launchWithSingleCommandLineArgument() throws Exception {
-		doLaunch("launch-with-single-command-line-argument.sh");
-	}
-
-	@Test
-	public void launchWithMultipleCommandLineArguments() throws Exception {
-		doLaunch("launch-with-multiple-command-line-arguments.sh");
-	}
-
-	@Test
-	public void launchWithSingleRunArg() throws Exception {
-		doLaunch("launch-with-single-run-arg.sh");
-	}
-
-	@Test
-	public void launchWithMultipleRunArgs() throws Exception {
-		doLaunch("launch-with-multiple-run-args.sh");
-	}
-
-	@Test
-	public void launchWithSingleJavaOpt() throws Exception {
-		doLaunch("launch-with-single-java-opt.sh");
-	}
-
-	@Test
-	public void launchWithDoubleLinkSingleJavaOpt() throws Exception {
-		doLaunch("launch-with-double-link-single-java-opt.sh");
-	}
-
-	@Test
-	public void launchWithMultipleJavaOpts() throws Exception {
-		doLaunch("launch-with-multiple-java-opts.sh");
-	}
-
-	@Test
-	public void launchWithUseOfStartStopDaemonDisabled() throws Exception {
-		// CentOS doesn't have start-stop-daemon
-		assumeThat(this.os, is(not("CentOS")));
-		doLaunch("launch-with-use-of-start-stop-daemon-disabled.sh");
-	}
-
-	@Test
-	public void launchWithRelativePidFolder() throws Exception {
-		String output = doTest("launch-with-relative-pid-folder.sh");
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
-		assertThat(output).has(
-				coloredString(AnsiColor.GREEN, "Stopped [" + extractPid(output) + "]"));
-	}
-
-	@Test
-	public void pidFolderOwnership() throws Exception {
-		String output = doTest("pid-folder-ownership.sh");
-		assertThat(output).contains("phil root");
-	}
-
-	@Test
-	public void pidFileOwnership() throws Exception {
-		String output = doTest("pid-file-ownership.sh");
-		assertThat(output).contains("phil root");
-	}
-
-	@Test
-	public void logFileOwnership() throws Exception {
-		String output = doTest("log-file-ownership.sh");
-		assertThat(output).contains("phil root");
-	}
-
-	@Test
-	public void logFileOwnershipIsChangedWhenCreated() throws Exception {
-		String output = doTest("log-file-ownership-is-changed-when-created.sh");
-		assertThat(output).contains("andy root");
-	}
-
-	@Test
-	public void logFileOwnershipIsUnchangedWhenExists() throws Exception {
-		String output = doTest("log-file-ownership-is-unchanged-when-exists.sh");
-		assertThat(output).contains("root root");
-	}
-
-	@Test
-	public void launchWithRelativeLogFolder() throws Exception {
-		String output = doTest("launch-with-relative-log-folder.sh");
-		assertThat(output).contains("Log written");
-	}
-
-	private void doLaunch(String script) throws Exception {
-		assertThat(doTest(script)).contains("Launched");
-	}
-
-	private String doTest(String script) throws Exception {
+	private String doTest(String os, String version, String script) throws Exception {
 		DockerClient docker = createClient();
-		String imageId = buildImage(docker);
+		String imageId = buildImage(os, version, docker);
 		String container = createContainer(docker, imageId, script);
 		try {
 			copyFilesToContainer(docker, container, script);
 			docker.startContainerCmd(container).exec();
 			StringBuilder output = new StringBuilder();
-			AttachContainerResultCallback resultCallback = docker
-					.attachContainerCmd(container).withStdOut(true).withStdErr(true)
-					.withFollowStream(true).withLogs(true)
-					.exec(new AttachContainerResultCallback() {
+			AttachContainerResultCallback resultCallback = docker.attachContainerCmd(container).withStdOut(true)
+					.withStdErr(true).withFollowStream(true).withLogs(true).exec(new AttachContainerResultCallback() {
 
 						@Override
 						public void onNext(Frame item) {
@@ -319,17 +316,14 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private DockerClient createClient() {
-		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-				.withApiVersion("1.19").build();
-		return DockerClientBuilder.getInstance(config)
-				.withDockerCmdExecFactory(this.commandExecFactory).build();
+		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withApiVersion("1.19")
+				.build();
+		return DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(this.commandExecFactory).build();
 	}
 
-	private String buildImage(DockerClient docker) {
-		String dockerfile = "src/test/resources/conf/" + this.os + "/" + this.version
-				+ "/Dockerfile";
-		String tag = "spring-boot-it/" + this.os.toLowerCase(Locale.ENGLISH) + ":"
-				+ this.version;
+	private String buildImage(String os, String version, DockerClient docker) {
+		String dockerfile = "src/test/resources/conf/" + os + "/" + version + "/Dockerfile";
+		String tag = "spring-boot-it/" + os.toLowerCase(Locale.ENGLISH) + ":" + version;
 		BuildImageResultCallback resultCallback = new BuildImageResultCallback() {
 
 			private List<BuildResponseItem> items = new ArrayList<>();
@@ -346,8 +340,7 @@ public class SysVinitLaunchScriptIT {
 					awaitCompletion();
 				}
 				catch (InterruptedException ex) {
-					throw new DockerClientException(
-							"Interrupted while waiting for image id", ex);
+					throw new DockerClientException("Interrupted while waiting for image id", ex);
 				}
 				return getImageId();
 			}
@@ -359,8 +352,8 @@ public class SysVinitLaunchScriptIT {
 				}
 				String imageId = extractImageId();
 				if (imageId == null) {
-					throw new DockerClientException("Could not build image: "
-							+ this.items.get(this.items.size() - 1).getError());
+					throw new DockerClientException(
+							"Could not build image: " + this.items.get(this.items.size() - 1).getError());
 				}
 				return imageId;
 			}
@@ -379,38 +372,30 @@ public class SysVinitLaunchScriptIT {
 			}
 
 		};
-		docker.buildImageCmd(new File(dockerfile))
-				.withTags(new HashSet<>(Arrays.asList(tag))).exec(resultCallback);
+		docker.buildImageCmd(new File(dockerfile)).withTags(new HashSet<>(Arrays.asList(tag))).exec(resultCallback);
 		String imageId = resultCallback.awaitImageId();
 		return imageId;
 	}
 
-	private String createContainer(DockerClient docker, String imageId,
-			String testScript) {
-		return docker.createContainerCmd(imageId).withTty(false).withCmd("/bin/bash",
-				"-c", "chmod +x " + testScript + " && ./" + testScript).exec().getId();
+	private String createContainer(DockerClient docker, String imageId, String testScript) {
+		return docker.createContainerCmd(imageId).withTty(false)
+				.withCmd("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript).exec().getId();
 	}
 
-	private void copyFilesToContainer(DockerClient docker, final String container,
-			String script) {
+	private void copyFilesToContainer(DockerClient docker, final String container, String script) {
 		copyToContainer(docker, container, findApplication());
-		copyToContainer(docker, container,
-				new File("src/test/resources/scripts/test-functions.sh"));
-		copyToContainer(docker, container,
-				new File("src/test/resources/scripts/" + script));
+		copyToContainer(docker, container, new File("src/test/resources/scripts/test-functions.sh"));
+		copyToContainer(docker, container, new File("src/test/resources/scripts/" + script));
 	}
 
-	private void copyToContainer(DockerClient docker, final String container,
-			final File file) {
-		this.commandExecFactory.createCopyToContainerCmdExec()
-				.exec(new CopyToContainerCmd(container, file));
+	private void copyToContainer(DockerClient docker, final String container, final File file) {
+		this.commandExecFactory.createCopyToContainerCmdExec().exec(new CopyToContainerCmd(container, file));
 	}
 
 	private File findApplication() {
 		File targetDir = new File("target");
 		for (File file : targetDir.listFiles()) {
-			if (file.getName().startsWith("spring-boot-launch-script-tests")
-					&& file.getName().endsWith(".jar")
+			if (file.getName().startsWith("spring-boot-launch-script-tests") && file.getName().endsWith(".jar")
 					&& !file.getName().endsWith("-sources.jar")) {
 				return file;
 			}
@@ -441,15 +426,12 @@ public class SysVinitLaunchScriptIT {
 		if (matcher.matches()) {
 			return matcher.group(1);
 		}
-		throw new IllegalArgumentException(
-				"Failed to extract " + label + " from output: " + output);
+		throw new IllegalArgumentException("Failed to extract " + label + " from output: " + output);
 	}
 
-	private static final class CopyToContainerCmdExec
-			extends AbstrSyncDockerCmdExec<CopyToContainerCmd, Void> {
+	private static final class CopyToContainerCmdExec extends AbstrSyncDockerCmdExec<CopyToContainerCmd, Void> {
 
-		private CopyToContainerCmdExec(WebTarget baseResource,
-				DockerClientConfig dockerClientConfig) {
+		private CopyToContainerCmdExec(WebTarget baseResource, DockerClientConfig dockerClientConfig) {
 			super(baseResource, dockerClientConfig);
 		}
 
@@ -457,12 +439,10 @@ public class SysVinitLaunchScriptIT {
 		protected Void execute(CopyToContainerCmd command) {
 			try (InputStream streamToUpload = new FileInputStream(
 					CompressArchiveUtil.archiveTARFiles(command.getFile().getParentFile(),
-							Arrays.asList(command.getFile()),
-							command.getFile().getName()))) {
-				WebTarget webResource = getBaseResource().path("/containers/{id}/archive")
-						.resolveTemplate("id", command.getContainer());
-				webResource.queryParam("path", ".")
-						.queryParam("noOverwriteDirNonDir", false).request()
+							Arrays.asList(command.getFile()), command.getFile().getName()))) {
+				WebTarget webResource = getBaseResource().path("/containers/{id}/archive").resolveTemplate("id",
+						command.getContainer());
+				webResource.queryParam("path", ".").queryParam("noOverwriteDirNonDir", false).request()
 						.put(Entity.entity(streamToUpload, "application/x-tar")).close();
 				return null;
 			}
@@ -499,8 +479,7 @@ public class SysVinitLaunchScriptIT {
 
 	}
 
-	private static final class SpringBootDockerCmdExecFactory
-			extends JerseyDockerCmdExecFactory {
+	private static final class SpringBootDockerCmdExecFactory extends JerseyDockerCmdExecFactory {
 
 		private CopyToContainerCmdExec createCopyToContainerCmdExec() {
 			return new CopyToContainerCmdExec(getBaseResource(), getDockerClientConfig());

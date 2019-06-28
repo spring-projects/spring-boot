@@ -55,15 +55,14 @@ public class CassandraReactiveDataAutoConfiguration {
 	}
 
 	@Bean
-	public ReactiveSessionFactory reactiveCassandraSessionFactory(
-			ReactiveSession reactiveCassandraSession) {
+	public ReactiveSessionFactory reactiveCassandraSessionFactory(ReactiveSession reactiveCassandraSession) {
 		return new DefaultReactiveSessionFactory(reactiveCassandraSession);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveCassandraTemplate reactiveCassandraTemplate(
-			ReactiveSession reactiveCassandraSession, CassandraConverter converter) {
+	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveSession reactiveCassandraSession,
+			CassandraConverter converter) {
 		return new ReactiveCassandraTemplate(reactiveCassandraSession, converter);
 	}
 

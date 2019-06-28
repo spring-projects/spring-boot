@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.override;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -27,7 +27,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.BootstrapWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,22 +37,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = true)
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ImportAutoConfiguration(ExampleTestConfig.class)
-public class OverrideAutoConfigurationEnabledTrueIntegrationTests {
+class OverrideAutoConfigurationEnabledTrueIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void autoConfiguredContext() {
+	void autoConfiguredContext() {
 		ApplicationContext context = this.context;
-		assertThat(context.getBean(OverrideAutoConfigurationSpringBootApplication.class))
-				.isNotNull();
-		assertThat(context.getBean(ConfigurationPropertiesBindingPostProcessor.class))
-				.isNotNull();
+		assertThat(context.getBean(OverrideAutoConfigurationSpringBootApplication.class)).isNotNull();
+		assertThat(context.getBean(ConfigurationPropertiesBindingPostProcessor.class)).isNotNull();
 	}
 
 }

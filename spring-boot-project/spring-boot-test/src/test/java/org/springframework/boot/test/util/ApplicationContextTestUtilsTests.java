@@ -30,24 +30,23 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class ApplicationContextTestUtilsTests {
+class ApplicationContextTestUtilsTests {
 
 	@Test
-	public void closeNull() {
+	void closeNull() {
 		ApplicationContextTestUtils.closeAll(null);
 	}
 
 	@Test
-	public void closeNonClosableContext() {
+	void closeNonClosableContext() {
 		ApplicationContext mock = mock(ApplicationContext.class);
 		ApplicationContextTestUtils.closeAll(mock);
 	}
 
 	@Test
-	public void closeContextAndParent() {
+	void closeContextAndParent() {
 		ConfigurableApplicationContext mock = mock(ConfigurableApplicationContext.class);
-		ConfigurableApplicationContext parent = mock(
-				ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext parent = mock(ConfigurableApplicationContext.class);
 		given(mock.getParent()).willReturn(parent);
 		given(parent.getParent()).willReturn(null);
 		ApplicationContextTestUtils.closeAll(mock);

@@ -26,10 +26,9 @@ import java.io.File;
  */
 public interface ApplicationLauncher {
 
-	LaunchedApplication launchApplication(JvmLauncher javaLauncher, File serverPortFile)
-			throws Exception;
+	LaunchedApplication launchApplication(JvmLauncher javaLauncher, File serverPortFile) throws Exception;
 
-	LaunchedApplication launchApplication(JvmLauncher jvmLauncher, File serverPortFile,
-			String... additionalArgs) throws Exception;
+	LaunchedApplication launchApplication(JvmLauncher jvmLauncher, File serverPortFile, String... additionalArgs)
+			throws Exception;
 
 }

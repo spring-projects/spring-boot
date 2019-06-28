@@ -49,13 +49,12 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnEnabledHealthIndicator("couchbase")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(CouchbaseAutoConfiguration.class)
-public class CouchbaseReactiveHealthIndicatorAutoConfiguration extends
-		CompositeReactiveHealthIndicatorConfiguration<CouchbaseReactiveHealthIndicator, Cluster> {
+public class CouchbaseReactiveHealthIndicatorAutoConfiguration
+		extends CompositeReactiveHealthIndicatorConfiguration<CouchbaseReactiveHealthIndicator, Cluster> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "couchbaseReactiveHealthIndicator")
-	public ReactiveHealthIndicator couchbaseReactiveHealthIndicator(
-			Map<String, Cluster> clusters) {
+	public ReactiveHealthIndicator couchbaseReactiveHealthIndicator(Map<String, Cluster> clusters) {
 		return createHealthIndicator(clusters);
 	}
 

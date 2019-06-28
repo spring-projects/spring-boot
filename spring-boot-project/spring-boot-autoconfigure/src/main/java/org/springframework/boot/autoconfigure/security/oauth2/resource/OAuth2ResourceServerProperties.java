@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
@@ -39,6 +41,32 @@ public class OAuth2ResourceServerProperties {
 
 	public Jwt getJwt() {
 		return this.jwt;
+	}
+
+	private final OpaqueToken opaqueToken = new OpaqueToken();
+
+	public OpaqueToken getOpaqueToken() {
+		return this.opaqueToken;
+	}
+
+	@PostConstruct
+	public void validate() {
+		if (this.getOpaqueToken().getIntrospectionUri() != null) {
+			if (this.getJwt().getJwkSetUri() != null) {
+				handleError("jwt.jwk-set-uri");
+			}
+			if (this.getJwt().getIssuerUri() != null) {
+				handleError("jwt.issuer-uri");
+			}
+			if (this.getJwt().getPublicKeyLocation() != null) {
+				handleError("jwt.public-key-location");
+			}
+		}
+	}
+
+	private void handleError(String property) {
+		throw new IllegalStateException(
+				"Only one of " + property + " and opaque-token.introspection-uri should be configured.");
 	}
 
 	public static class Jwt {
@@ -99,12 +127,55 @@ public class OAuth2ResourceServerProperties {
 			String key = "spring.security.oauth2.resourceserver.public-key-location";
 			Assert.notNull(this.publicKeyLocation, "PublicKeyLocation must not be null");
 			if (!this.publicKeyLocation.exists()) {
-				throw new InvalidConfigurationPropertyValueException(key,
-						this.publicKeyLocation, "Public key location does not exist");
+				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
+						"Public key location does not exist");
 			}
 			try (InputStream inputStream = this.publicKeyLocation.getInputStream()) {
 				return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
 			}
+		}
+
+	}
+
+	public static class OpaqueToken {
+
+		/**
+		 * Client id used to authenticate with the token introspection endpoint.
+		 */
+		private String clientId;
+
+		/**
+		 * Client secret used to authenticate with the token introspection endpoint.
+		 */
+		private String clientSecret;
+
+		/**
+		 * OAuth 2.0 endpoint through which token introspection is accomplished.
+		 */
+		private String introspectionUri;
+
+		public String getClientId() {
+			return this.clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
+		}
+
+		public String getClientSecret() {
+			return this.clientSecret;
+		}
+
+		public void setClientSecret(String clientSecret) {
+			this.clientSecret = clientSecret;
+		}
+
+		public String getIntrospectionUri() {
+			return this.introspectionUri;
+		}
+
+		public void setIntrospectionUri(String introspectionUri) {
+			this.introspectionUri = introspectionUri;
 		}
 
 	}

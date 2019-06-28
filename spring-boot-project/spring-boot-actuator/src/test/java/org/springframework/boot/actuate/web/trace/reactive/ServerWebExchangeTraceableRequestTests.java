@@ -19,8 +19,8 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -36,66 +36,58 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dmytro Nosan
  */
-public class ServerWebExchangeTraceableRequestTests {
+class ServerWebExchangeTraceableRequestTests {
 
 	private ServerWebExchange exchange;
 
 	private ServerHttpRequest request;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		this.exchange = mock(ServerWebExchange.class);
 		this.request = mock(ServerHttpRequest.class);
 		given(this.exchange.getRequest()).willReturn(this.request);
 	}
 
 	@Test
-	public void getMethod() {
+	void getMethod() {
 		String method = "POST";
 		given(this.request.getMethodValue()).willReturn(method);
-		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
-				this.exchange);
+		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(this.exchange);
 		assertThat(traceableRequest.getMethod()).isSameAs(method);
 	}
 
 	@Test
-	public void getUri() {
+	void getUri() {
 		URI uri = URI.create("http://localhost:8080/");
 		given(this.request.getURI()).willReturn(uri);
-		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
-				this.exchange);
+		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(this.exchange);
 		assertThat(traceableRequest.getUri()).isSameAs(uri);
 	}
 
 	@Test
-	public void getHeaders() {
+	void getHeaders() {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("name", "value");
 		given(this.request.getHeaders()).willReturn(httpHeaders);
-		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
-				this.exchange);
-		assertThat(traceableRequest.getHeaders())
-				.containsOnly(entry("name", Collections.singletonList("value")));
+		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(this.exchange);
+		assertThat(traceableRequest.getHeaders()).containsOnly(entry("name", Collections.singletonList("value")));
 	}
 
 	@Test
-	public void getUnresolvedRemoteAddress() {
-		InetSocketAddress socketAddress = InetSocketAddress
-				.createUnresolved("unresolved.example.com", 8080);
+	void getUnresolvedRemoteAddress() {
+		InetSocketAddress socketAddress = InetSocketAddress.createUnresolved("unresolved.example.com", 8080);
 		given(this.request.getRemoteAddress()).willReturn(socketAddress);
-		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
-				this.exchange);
+		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(this.exchange);
 		assertThat(traceableRequest.getRemoteAddress()).isNull();
 	}
 
 	@Test
-	public void getRemoteAddress() {
+	void getRemoteAddress() {
 		InetSocketAddress socketAddress = new InetSocketAddress(0);
 		given(this.request.getRemoteAddress()).willReturn(socketAddress);
-		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(
-				this.exchange);
-		assertThat(traceableRequest.getRemoteAddress())
-				.isEqualTo(socketAddress.getAddress().toString());
+		ServerWebExchangeTraceableRequest traceableRequest = new ServerWebExchangeTraceableRequest(this.exchange);
+		assertThat(traceableRequest.getRemoteAddress()).isEqualTo(socketAddress.getAddress().toString());
 	}
 
 }

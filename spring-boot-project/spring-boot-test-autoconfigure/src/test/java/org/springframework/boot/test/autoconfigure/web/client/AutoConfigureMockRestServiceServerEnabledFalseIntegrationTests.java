@@ -16,14 +16,12 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -34,19 +32,17 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @RestClientTest
 @AutoConfigureMockRestServiceServer(enabled = false)
-public class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
+class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
+	void mockServerRestTemplateCustomizerShouldNotBeRegistered() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext
-						.getBean(MockServerRestTemplateCustomizer.class));
+				.isThrownBy(() -> this.applicationContext.getBean(MockServerRestTemplateCustomizer.class));
 	}
 
 }

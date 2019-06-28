@@ -55,22 +55,19 @@ class JsonbHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class PreferJsonbOrMissingJacksonAndGsonCondition
-			extends AnyNestedCondition {
+	private static class PreferJsonbOrMissingJacksonAndGsonCondition extends AnyNestedCondition {
 
 		PreferJsonbOrMissingJacksonAndGsonCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(
-				name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "jsonb")
 		static class JsonbPreferred {
 
 		}
 
-		@ConditionalOnMissingBean({ MappingJackson2HttpMessageConverter.class,
-				GsonHttpMessageConverter.class })
+		@ConditionalOnMissingBean({ MappingJackson2HttpMessageConverter.class, GsonHttpMessageConverter.class })
 		static class JacksonAndGsonMissing {
 
 		}

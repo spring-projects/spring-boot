@@ -45,8 +45,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		@Bean
 		public DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
-				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper
-						.unwrap(dataSource, org.apache.tomcat.jdbc.pool.DataSource.class);
+				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource,
+						org.apache.tomcat.jdbc.pool.DataSource.class);
 				if (tomcatDataSource != null) {
 					return new TomcatDataSourcePoolMetadata(tomcatDataSource);
 				}
@@ -63,8 +63,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		@Bean
 		public DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
-				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource,
-						HikariDataSource.class);
+				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
 				if (hikariDataSource != null) {
 					return new HikariDataSourcePoolMetadata(hikariDataSource);
 				}
@@ -81,8 +80,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		@Bean
 		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
-				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource,
-						BasicDataSource.class);
+				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSource.class);
 				if (dbcpDataSource != null) {
 					return new CommonsDbcp2DataSourcePoolMetadata(dbcpDataSource);
 				}

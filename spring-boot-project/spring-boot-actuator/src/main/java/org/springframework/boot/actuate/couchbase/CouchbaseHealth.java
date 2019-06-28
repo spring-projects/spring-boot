@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ class CouchbaseHealth {
 	void applyTo(Builder builder) {
 		builder = isCouchbaseUp(this.diagnostics) ? builder.up() : builder.down();
 		builder.withDetail("sdk", this.diagnostics.sdk());
-		builder.withDetail("endpoints", this.diagnostics.endpoints().stream()
-				.map(this::describe).collect(Collectors.toList()));
+		builder.withDetail("endpoints",
+				this.diagnostics.endpoints().stream().map(this::describe).collect(Collectors.toList()));
 	}
 
 	private boolean isCouchbaseUp(DiagnosticsReport diagnostics) {

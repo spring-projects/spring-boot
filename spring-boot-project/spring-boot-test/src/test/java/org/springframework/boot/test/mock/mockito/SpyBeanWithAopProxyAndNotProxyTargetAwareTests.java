@@ -46,17 +46,16 @@ import static org.mockito.Mockito.verify;
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5837">5837</a>
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
+class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 
 	@SpyBean(proxyTargetAware = false)
 	private DateService dateService;
 
 	@Test
-	public void verifyShouldUseProxyTarget() {
+	void verifyShouldUseProxyTarget() {
 		this.dateService.getDate(false);
 		verify(this.dateService, times(1)).getDate(false);
-		assertThatExceptionOfType(UnfinishedVerificationException.class)
-				.isThrownBy(() -> reset(this.dateService));
+		assertThatExceptionOfType(UnfinishedVerificationException.class).isThrownBy(() -> reset(this.dateService));
 	}
 
 	@Configuration(proxyBeanMethods = false)

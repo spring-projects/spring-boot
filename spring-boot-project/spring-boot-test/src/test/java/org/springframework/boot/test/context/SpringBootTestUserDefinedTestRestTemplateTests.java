@@ -37,13 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "value=123" })
-public class SpringBootTestUserDefinedTestRestTemplateTests
-		extends AbstractSpringBootTestWebServerWebEnvironmentTests {
+class SpringBootTestUserDefinedTestRestTemplateTests extends AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test
-	public void restTemplateIsUserDefined() {
-		assertThat(getContext().getBean("testRestTemplate"))
-				.isInstanceOf(RestTemplate.class);
+	void restTemplateIsUserDefined() {
+		assertThat(getContext().getBean("testRestTemplate")).isInstanceOf(RestTemplate.class);
 	}
 
 	// gh-7711

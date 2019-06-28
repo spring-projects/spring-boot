@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class JndiDataSourceAutoConfigurationTests {
+class JndiDataSourceAutoConfigurationTests {
 
 	private ClassLoader threadContextClassLoader;
 
@@ -53,25 +53,22 @@ public class JndiDataSourceAutoConfigurationTests {
 	private AnnotationConfigApplicationContext context;
 
 	@BeforeEach
-	public void setupJndi() {
+	void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
-		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				TestableInitialContextFactory.class.getName());
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestableInitialContextFactory.class.getName());
 	}
 
 	@BeforeEach
-	public void setupThreadContextClassLoader() {
+	void setupThreadContextClassLoader() {
 		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
-		Thread.currentThread().setContextClassLoader(
-				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
+		Thread.currentThread().setContextClassLoader(new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
-			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-					this.initialContextFactory);
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);
 		}
 		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
@@ -83,8 +80,7 @@ public class JndiDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void dataSourceIsAvailableFromJndi()
-			throws IllegalStateException, NamingException {
+	void dataSourceIsAvailableFromJndi() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -98,67 +94,56 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void mbeanDataSourceIsExcludedFromExport()
-			throws IllegalStateException, NamingException {
+	void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
-		this.context.register(JndiDataSourceAutoConfiguration.class,
-				MBeanExporterConfiguration.class);
+		this.context.register(JndiDataSourceAutoConfiguration.class, MBeanExporterConfiguration.class);
 		this.context.refresh();
 
 		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
-		Set<String> excludedBeans = (Set<String>) ReflectionTestUtils.getField(exporter,
-				"excludedBeans");
+		Set<String> excludedBeans = (Set<String>) ReflectionTestUtils.getField(exporter, "excludedBeans");
 		assertThat(excludedBeans).containsExactly("dataSource");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void mbeanDataSourceIsExcludedFromExportByAllExporters()
-			throws IllegalStateException, NamingException {
+	void mbeanDataSourceIsExcludedFromExportByAllExporters() throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
-		this.context.register(JndiDataSourceAutoConfiguration.class,
-				MBeanExporterConfiguration.class,
+		this.context.register(JndiDataSourceAutoConfiguration.class, MBeanExporterConfiguration.class,
 				AnotherMBeanExporterConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
-		for (MBeanExporter exporter : this.context.getBeansOfType(MBeanExporter.class)
-				.values()) {
-			Set<String> excludedBeans = (Set<String>) ReflectionTestUtils
-					.getField(exporter, "excludedBeans");
+		for (MBeanExporter exporter : this.context.getBeansOfType(MBeanExporter.class).values()) {
+			Set<String> excludedBeans = (Set<String>) ReflectionTestUtils.getField(exporter, "excludedBeans");
 			assertThat(excludedBeans).containsExactly("dataSource");
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void standardDataSourceIsNotExcludedFromExport()
-			throws IllegalStateException, NamingException {
+	void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException, NamingException {
 		DataSource dataSource = mock(DataSource.class);
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.jndi-name:foo").applyTo(this.context);
-		this.context.register(JndiDataSourceAutoConfiguration.class,
-				MBeanExporterConfiguration.class);
+		this.context.register(JndiDataSourceAutoConfiguration.class, MBeanExporterConfiguration.class);
 		this.context.refresh();
 
 		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
-		Set<String> excludedBeans = (Set<String>) ReflectionTestUtils.getField(exporter,
-				"excludedBeans");
+		Set<String> excludedBeans = (Set<String>) ReflectionTestUtils.getField(exporter, "excludedBeans");
 		assertThat(excludedBeans).isEmpty();
 	}
 
-	private void configureJndi(String name, DataSource dataSource)
-			throws IllegalStateException {
+	private void configureJndi(String name, DataSource dataSource) throws IllegalStateException {
 		TestableInitialContextFactory.bind(name, dataSource);
 	}
 

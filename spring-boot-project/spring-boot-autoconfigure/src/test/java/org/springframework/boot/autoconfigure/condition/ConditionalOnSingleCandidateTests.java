@@ -33,36 +33,35 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-public class ConditionalOnSingleCandidateTests {
+class ConditionalOnSingleCandidateTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void singleCandidateNoCandidate() {
+	void singleCandidateNoCandidate() {
 		load(OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
 	@Test
-	public void singleCandidateOneCandidate() {
+	void singleCandidateOneCandidate() {
 		load(FooConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isTrue();
 		assertThat(this.context.getBean("baz")).isEqualTo("foo");
 	}
 
 	@Test
-	public void singleCandidateInAncestorsOneCandidateInCurrent() {
+	void singleCandidateInAncestorsOneCandidateInCurrent() {
 		load();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(FooConfiguration.class,
-				OnBeanSingleCandidateInAncestorsConfiguration.class);
+		child.register(FooConfiguration.class, OnBeanSingleCandidateInAncestorsConfiguration.class);
 		child.setParent(this.context);
 		child.refresh();
 		assertThat(child.containsBean("baz")).isFalse();
@@ -70,7 +69,7 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	@Test
-	public void singleCandidateInAncestorsOneCandidateInParent() {
+	void singleCandidateInAncestorsOneCandidateInParent() {
 		load(FooConfiguration.class);
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
 		child.register(OnBeanSingleCandidateInAncestorsConfiguration.class);
@@ -82,7 +81,7 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	@Test
-	public void singleCandidateInAncestorsOneCandidateInGrandparent() {
+	void singleCandidateInAncestorsOneCandidateInGrandparent() {
 		load(FooConfiguration.class);
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
 		parent.setParent(this.context);
@@ -98,47 +97,40 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	@Test
-	public void singleCandidateMultipleCandidates() {
-		load(FooConfiguration.class, BarConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class);
+	void singleCandidateMultipleCandidates() {
+		load(FooConfiguration.class, BarConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
 	@Test
-	public void singleCandidateMultipleCandidatesOnePrimary() {
-		load(FooPrimaryConfiguration.class, BarConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class);
+	void singleCandidateMultipleCandidatesOnePrimary() {
+		load(FooPrimaryConfiguration.class, BarConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isTrue();
 		assertThat(this.context.getBean("baz")).isEqualTo("foo");
 	}
 
 	@Test
-	public void singleCandidateMultipleCandidatesMultiplePrimary() {
-		load(FooPrimaryConfiguration.class, BarPrimaryConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class);
+	void singleCandidateMultipleCandidatesMultiplePrimary() {
+		load(FooPrimaryConfiguration.class, BarPrimaryConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
 	@Test
-	public void invalidAnnotationTwoTypes() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> load(OnBeanSingleCandidateTwoTypesConfiguration.class))
+	void invalidAnnotationTwoTypes() {
+		assertThatIllegalStateException().isThrownBy(() -> load(OnBeanSingleCandidateTwoTypesConfiguration.class))
 				.withCauseInstanceOf(IllegalArgumentException.class)
-				.withMessageContaining(
-						OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
+				.withMessageContaining(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 	}
 
 	@Test
-	public void invalidAnnotationNoType() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> load(OnBeanSingleCandidateNoTypeConfiguration.class))
+	void invalidAnnotationNoType() {
+		assertThatIllegalStateException().isThrownBy(() -> load(OnBeanSingleCandidateNoTypeConfiguration.class))
 				.withCauseInstanceOf(IllegalArgumentException.class)
-				.withMessageContaining(
-						OnBeanSingleCandidateNoTypeConfiguration.class.getName());
+				.withMessageContaining(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 	}
 
 	@Test
-	public void singleCandidateMultipleCandidatesInContextHierarchy() {
+	void singleCandidateMultipleCandidatesInContextHierarchy() {
 		load(FooPrimaryConfiguration.class, BarConfiguration.class);
 		try (AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext()) {
 			child.setParent(this.context);

@@ -32,8 +32,7 @@ public final class DocumentOptions {
 
 	private final Map<String, String> overrides;
 
-	private DocumentOptions(Map<String, List<String>> metadataSections,
-			Map<String, String> overrides) {
+	private DocumentOptions(Map<String, List<String>> metadataSections, Map<String, String> overrides) {
 		this.metadataSections = metadataSections;
 		this.overrides = overrides;
 	}

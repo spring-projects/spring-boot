@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	private final ParameterValueMapper parameterValueMapper;
 
 	/**
-	 * Creates a new {code ReflectiveOperationInvoker} that will invoke the given
+	 * Creates a new {@code ReflectiveOperationInvoker} that will invoke the given
 	 * {@code method} on the given {@code target}. The given {@code parameterMapper} will
 	 * be used to map parameters to the required types and the given
 	 * {@code parameterNameMapper} will be used map parameters by name.
@@ -78,8 +78,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	private void validateRequiredParameters(InvocationContext context) {
 		Set<OperationParameter> missing = this.operationMethod.getParameters().stream()
-				.filter((parameter) -> isMissing(context, parameter))
-				.collect(Collectors.toSet());
+				.filter((parameter) -> isMissing(context, parameter)).collect(Collectors.toSet());
 		if (!missing.isEmpty()) {
 			throw new MissingParametersException(missing);
 		}
@@ -99,12 +98,11 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	}
 
 	private Object[] resolveArguments(InvocationContext context) {
-		return this.operationMethod.getParameters().stream()
-				.map((parameter) -> resolveArgument(parameter, context)).toArray();
+		return this.operationMethod.getParameters().stream().map((parameter) -> resolveArgument(parameter, context))
+				.toArray();
 	}
 
-	private Object resolveArgument(OperationParameter parameter,
-			InvocationContext context) {
+	private Object resolveArgument(OperationParameter parameter, InvocationContext context) {
 		if (Principal.class.equals(parameter.getType())) {
 			return context.getSecurityContext().getPrincipal();
 		}
@@ -117,8 +115,8 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("target", this.target)
-				.append("method", this.operationMethod).toString();
+		return new ToStringCreator(this).append("target", this.target).append("method", this.operationMethod)
+				.toString();
 	}
 
 }

@@ -57,61 +57,49 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @TestPropertySource(
 		properties = "spring.config.location=classpath:/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/")
-public class EnvironmentEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final FieldDescriptor activeProfiles = fieldWithPath("activeProfiles")
 			.description("Names of the active profiles, if any.");
 
-	private static final FieldDescriptor propertySources = fieldWithPath(
-			"propertySources").description("Property sources in order of precedence.");
+	private static final FieldDescriptor propertySources = fieldWithPath("propertySources")
+			.description("Property sources in order of precedence.");
 
-	private static final FieldDescriptor propertySourceName = fieldWithPath(
-			"propertySources.[].name").description("Name of the property source.");
+	private static final FieldDescriptor propertySourceName = fieldWithPath("propertySources.[].name")
+			.description("Name of the property source.");
 
 	@Test
-	public void env() throws Exception {
-		this.mockMvc.perform(get("/actuator/env")).andExpect(status().isOk()).andDo(
-				document("env/all", preprocessResponse(replacePattern(Pattern.compile(
-						"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
+	void env() throws Exception {
+		this.mockMvc.perform(get("/actuator/env")).andExpect(status().isOk())
+				.andDo(document("env/all", preprocessResponse(replacePattern(
+						Pattern.compile("org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
 						""), filterProperties()),
-						responseFields(activeProfiles, propertySources,
-								propertySourceName,
+						responseFields(activeProfiles, propertySources, propertySourceName,
 								fieldWithPath("propertySources.[].properties")
-										.description(
-												"Properties in the property source keyed by property name."),
+										.description("Properties in the property source keyed by property name."),
 								fieldWithPath("propertySources.[].properties.*.value")
 										.description("Value of the property."),
 								fieldWithPath("propertySources.[].properties.*.origin")
-										.description("Origin of the property, if any.")
-										.optional())));
+										.description("Origin of the property, if any.").optional())));
 	}
 
 	@Test
-	public void singlePropertyFromEnv() throws Exception {
-		this.mockMvc.perform(get("/actuator/env/com.example.cache.max-size"))
-				.andExpect(status().isOk())
-				.andDo(document("env/single",
-						preprocessResponse(replacePattern(Pattern.compile(
-								"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
-								"")),
-						responseFields(
-								fieldWithPath("property").description(
-										"Property from the environment, if found.")
-										.optional(),
-								fieldWithPath("property.source").description(
-										"Name of the source of the property."),
-								fieldWithPath("property.value")
-										.description("Value of the property."),
-								activeProfiles, propertySources, propertySourceName,
-								fieldWithPath("propertySources.[].property").description(
-										"Property in the property source, if any.")
-										.optional(),
-								fieldWithPath("propertySources.[].property.value")
-										.description("Value of the property."),
-								fieldWithPath("propertySources.[].property.origin")
-										.description("Origin of the property, if any.")
-										.optional())));
+	void singlePropertyFromEnv() throws Exception {
+		this.mockMvc.perform(get("/actuator/env/com.example.cache.max-size")).andExpect(status().isOk()).andDo(document(
+				"env/single",
+				preprocessResponse(replacePattern(
+						Pattern.compile("org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
+						"")),
+				responseFields(
+						fieldWithPath("property").description("Property from the environment, if found.").optional(),
+						fieldWithPath("property.source").description("Name of the source of the property."),
+						fieldWithPath("property.value").description("Value of the property."), activeProfiles,
+						propertySources, propertySourceName,
+						fieldWithPath("propertySources.[].property")
+								.description("Property in the property source, if any.").optional(),
+						fieldWithPath("propertySources.[].property.value").description("Value of the property."),
+						fieldWithPath("propertySources.[].property.origin")
+								.description("Origin of the property, if any.").optional())));
 	}
 
 	private OperationPreprocessor filterProperties() {
@@ -120,17 +108,14 @@ public class EnvironmentEndpointDocumentationTests
 
 	@SuppressWarnings("unchecked")
 	private byte[] filterProperties(byte[] content, MediaType mediaType) {
-		ObjectMapper objectMapper = new ObjectMapper()
-				.enable(SerializationFeature.INDENT_OUTPUT);
+		ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 		try {
 			Map<String, Object> payload = objectMapper.readValue(content, Map.class);
-			List<Map<String, Object>> propertySources = (List<Map<String, Object>>) payload
-					.get("propertySources");
+			List<Map<String, Object>> propertySources = (List<Map<String, Object>>) payload.get("propertySources");
 			for (Map<String, Object> propertySource : propertySources) {
-				Map<String, String> properties = (Map<String, String>) propertySource
-						.get("properties");
-				Set<String> filteredKeys = properties.keySet().stream()
-						.filter(this::retainKey).limit(3).collect(Collectors.toSet());
+				Map<String, String> properties = (Map<String, String>) propertySource.get("properties");
+				Set<String> filteredKeys = properties.keySet().stream().filter(this::retainKey).limit(3)
+						.collect(Collectors.toSet());
 				properties.keySet().retainAll(filteredKeys);
 			}
 			return objectMapper.writeValueAsBytes(payload);
@@ -141,8 +126,7 @@ public class EnvironmentEndpointDocumentationTests
 	}
 
 	private boolean retainKey(String key) {
-		return key.startsWith("java.") || key.equals("JAVA_HOME")
-				|| key.startsWith("com.example");
+		return key.startsWith("java.") || key.equals("JAVA_HOME") || key.startsWith("com.example");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -154,17 +138,14 @@ public class EnvironmentEndpointDocumentationTests
 			return new EnvironmentEndpoint(new AbstractEnvironment() {
 
 				@Override
-				protected void customizePropertySources(
-						MutablePropertySources propertySources) {
-					environment.getPropertySources().stream()
-							.filter(this::includedPropertySource)
+				protected void customizePropertySources(MutablePropertySources propertySources) {
+					environment.getPropertySources().stream().filter(this::includedPropertySource)
 							.forEach(propertySources::addLast);
 				}
 
 				private boolean includedPropertySource(PropertySource<?> propertySource) {
 					return propertySource instanceof EnumerablePropertySource
-							&& !"Inlined Test Properties"
-									.equals(propertySource.getName());
+							&& !"Inlined Test Properties".equals(propertySource.getName());
 				}
 
 			});

@@ -37,31 +37,28 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class HibernateDefaultDdlAutoProviderTests {
+class HibernateDefaultDdlAutoProviderTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					HibernateJpaAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode:never");
 
 	@Test
-	public void defaultDDlAutoForEmbedded() {
+	void defaultDDlAutoForEmbedded() {
 		this.contextRunner.run((context) -> {
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.emptyList());
-			assertThat(
-					ddlAutoProvider.getDefaultDdlAuto(context.getBean(DataSource.class)))
-							.isEqualTo("create-drop");
+			assertThat(ddlAutoProvider.getDefaultDdlAuto(context.getBean(DataSource.class))).isEqualTo("create-drop");
 		});
 	}
 
 	@Test
-	public void defaultDDlAutoForEmbeddedWithPositiveContributor() {
+	void defaultDDlAutoForEmbeddedWithPositiveContributor() {
 		this.contextRunner.run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			SchemaManagementProvider provider = mock(SchemaManagementProvider.class);
-			given(provider.getSchemaManagement(dataSource))
-					.willReturn(SchemaManagement.MANAGED);
+			given(provider.getSchemaManagement(dataSource)).willReturn(SchemaManagement.MANAGED);
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.singletonList(provider));
 			assertThat(ddlAutoProvider.getDefaultDdlAuto(dataSource)).isEqualTo("none");
@@ -69,16 +66,14 @@ public class HibernateDefaultDdlAutoProviderTests {
 	}
 
 	@Test
-	public void defaultDDlAutoForEmbeddedWithNegativeContributor() {
+	void defaultDDlAutoForEmbeddedWithNegativeContributor() {
 		this.contextRunner.run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			SchemaManagementProvider provider = mock(SchemaManagementProvider.class);
-			given(provider.getSchemaManagement(dataSource))
-					.willReturn(SchemaManagement.UNMANAGED);
+			given(provider.getSchemaManagement(dataSource)).willReturn(SchemaManagement.UNMANAGED);
 			HibernateDefaultDdlAutoProvider ddlAutoProvider = new HibernateDefaultDdlAutoProvider(
 					Collections.singletonList(provider));
-			assertThat(ddlAutoProvider.getDefaultDdlAuto(dataSource))
-					.isEqualTo("create-drop");
+			assertThat(ddlAutoProvider.getDefaultDdlAuto(dataSource)).isEqualTo("create-drop");
 		});
 	}
 

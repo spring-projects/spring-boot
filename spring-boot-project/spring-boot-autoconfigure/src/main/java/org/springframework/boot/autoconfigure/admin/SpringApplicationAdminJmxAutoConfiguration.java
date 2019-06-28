@@ -41,8 +41,8 @@ import org.springframework.jmx.export.MBeanExporter;
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled",
-		havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true",
+		matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {
 
 	/**
@@ -59,8 +59,7 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar(
-			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment)
-			throws MalformedObjectNameException {
+			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment) throws MalformedObjectNameException {
 		String jmxName = environment.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);
 		if (mbeanExporters != null) { // Make sure to not register that MBean twice
 			for (MBeanExporter mbeanExporter : mbeanExporters) {

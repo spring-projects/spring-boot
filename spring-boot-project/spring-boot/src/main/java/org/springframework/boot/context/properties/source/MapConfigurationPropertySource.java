@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class MapConfigurationPropertySource
-		implements IterableConfigurationPropertySource {
+public class MapConfigurationPropertySource implements IterableConfigurationPropertySource {
 
 	private final Map<String, Object> source;
 
@@ -53,8 +52,7 @@ public class MapConfigurationPropertySource
 	 */
 	public MapConfigurationPropertySource(Map<?, ?> map) {
 		this.source = new LinkedHashMap<>();
-		this.delegate = new SpringIterableConfigurationPropertySource(
-				new MapPropertySource("source", this.source),
+		this.delegate = new SpringIterableConfigurationPropertySource(new MapPropertySource("source", this.source),
 				DefaultPropertyMapper.INSTANCE);
 		putAll(map);
 	}
@@ -84,8 +82,7 @@ public class MapConfigurationPropertySource
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(
-			ConfigurationPropertyName name) {
+	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		return this.delegate.getConfigurationProperty(name);
 	}
 
@@ -104,8 +101,7 @@ public class MapConfigurationPropertySource
 			map.size();
 		}
 		catch (UnsupportedOperationException ex) {
-			throw new IllegalArgumentException(
-					"Security restricted maps are not supported", ex);
+			throw new IllegalArgumentException("Security restricted maps are not supported", ex);
 		}
 	}
 

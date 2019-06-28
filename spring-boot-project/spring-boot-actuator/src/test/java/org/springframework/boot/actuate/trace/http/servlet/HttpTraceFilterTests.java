@@ -52,31 +52,27 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class HttpTraceFilterTests {
+class HttpTraceFilterTests {
 
 	private final InMemoryHttpTraceRepository repository = new InMemoryHttpTraceRepository();
 
-	private final HttpExchangeTracer tracer = new HttpExchangeTracer(
-			EnumSet.allOf(Include.class));
+	private final HttpExchangeTracer tracer = new HttpExchangeTracer(EnumSet.allOf(Include.class));
 
-	private final HttpTraceFilter filter = new HttpTraceFilter(this.repository,
-			this.tracer);
+	private final HttpTraceFilter filter = new HttpTraceFilter(this.repository, this.tracer);
 
 	@Test
-	public void filterTracesExchange() throws ServletException, IOException {
-		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
-				new MockFilterChain());
+	void filterTracesExchange() throws ServletException, IOException {
+		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
 	@Test
-	public void filterCapturesSessionId() throws ServletException, IOException {
+	void filterCapturesSessionId() throws ServletException, IOException {
 		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
 				new MockFilterChain(new HttpServlet() {
 
 					@Override
-					protected void service(HttpServletRequest req,
-							HttpServletResponse resp)
+					protected void service(HttpServletRequest req, HttpServletResponse resp)
 							throws ServletException, IOException {
 						req.getSession(true);
 					}
@@ -89,49 +85,41 @@ public class HttpTraceFilterTests {
 	}
 
 	@Test
-	public void filterCapturesPrincipal() throws ServletException, IOException {
+	void filterCapturesPrincipal() throws ServletException, IOException {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
 		request.setUserPrincipal(principal);
-		this.filter.doFilter(request, new MockHttpServletResponse(),
-				new MockFilterChain());
+		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
-		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository
-				.findAll().get(0).getPrincipal();
+		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository.findAll()
+				.get(0).getPrincipal();
 		assertThat(tracedPrincipal).isNotNull();
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
 	}
 
 	@Test
-	public void statusIsAssumedToBe500WhenChainFails()
-			throws ServletException, IOException {
-		assertThatIOException()
-				.isThrownBy(() -> this.filter.doFilter(new MockHttpServletRequest(),
-						new MockHttpServletResponse(),
-						new MockFilterChain(new HttpServlet() {
+	void statusIsAssumedToBe500WhenChainFails() throws ServletException, IOException {
+		assertThatIOException().isThrownBy(() -> this.filter.doFilter(new MockHttpServletRequest(),
+				new MockHttpServletResponse(), new MockFilterChain(new HttpServlet() {
 
-							@Override
-							protected void service(HttpServletRequest req,
-									HttpServletResponse resp)
-									throws ServletException, IOException {
-								throw new IOException();
-							}
+					@Override
+					protected void service(HttpServletRequest req, HttpServletResponse resp)
+							throws ServletException, IOException {
+						throw new IOException();
+					}
 
-						})))
-				.satisfies((ex) -> {
+				}))).satisfies((ex) -> {
 					assertThat(this.repository.findAll()).hasSize(1);
-					assertThat(this.repository.findAll().get(0).getResponse().getStatus())
-							.isEqualTo(500);
+					assertThat(this.repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
 				});
 	}
 
 	@Test
-	public void filterRejectsInvalidRequests() throws ServletException, IOException {
+	void filterRejectsInvalidRequests() throws ServletException, IOException {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServerName("<script>alert(document.domain)</script>");
-		this.filter.doFilter(request, new MockHttpServletResponse(),
-				new MockFilterChain());
+		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(0);
 	}
 

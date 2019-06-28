@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.ansi;
 
 import java.awt.Color;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class AnsiColorsTests {
+class AnsiColorsTests {
 
 	@Test
-	public void getClosestWhenExactMatchShouldReturnAnsiColor() {
+	void getClosestWhenExactMatchShouldReturnAnsiColor() {
 		assertThat(getClosest(0x000000)).isEqualTo(AnsiColor.BLACK);
 		assertThat(getClosest(0xAA0000)).isEqualTo(AnsiColor.RED);
 		assertThat(getClosest(0x00AA00)).isEqualTo(AnsiColor.GREEN);
@@ -50,7 +50,7 @@ public class AnsiColorsTests {
 	}
 
 	@Test
-	public void getClosestWhenCloseShouldReturnAnsiColor() {
+	void getClosestWhenCloseShouldReturnAnsiColor() {
 		assertThat(getClosest(0x292424)).isEqualTo(AnsiColor.BLACK);
 		assertThat(getClosest(0x8C1919)).isEqualTo(AnsiColor.RED);
 		assertThat(getClosest(0x0BA10B)).isEqualTo(AnsiColor.GREEN);

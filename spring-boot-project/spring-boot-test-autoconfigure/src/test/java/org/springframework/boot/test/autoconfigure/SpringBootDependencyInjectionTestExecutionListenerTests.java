@@ -16,14 +16,15 @@
 
 package org.springframework.boot.test.autoconfigure;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -32,7 +33,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -41,22 +41,19 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class SpringBootDependencyInjectionTestExecutionListenerTests {
-
-	@Rule
-	public OutputCapture out = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class SpringBootDependencyInjectionTestExecutionListenerTests {
 
 	private SpringBootDependencyInjectionTestExecutionListener reportListener = new SpringBootDependencyInjectionTestExecutionListener();
 
 	@Test
-	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener() {
+	void orderShouldBeSameAsDependencyInjectionTestExecutionListener() {
 		Ordered injectionListener = new DependencyInjectionTestExecutionListener();
-		assertThat(this.reportListener.getOrder())
-				.isEqualTo(injectionListener.getOrder());
+		assertThat(this.reportListener.getOrder()).isEqualTo(injectionListener.getOrder());
 	}
 
 	@Test
-	public void prepareFailingTestInstanceShouldPrintReport() throws Exception {
+	void prepareFailingTestInstanceShouldPrintReport(CapturedOutput capturedOutput) throws Exception {
 		TestContext testContext = mock(TestContext.class);
 		given(testContext.getTestInstance()).willThrow(new IllegalStateException());
 		SpringApplication application = new SpringApplication(Config.class);
@@ -69,21 +66,19 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		catch (IllegalStateException ex) {
 			// Expected
 		}
-		this.out.expect(containsString("CONDITIONS EVALUATION REPORT"));
-		this.out.expect(containsString("Positive matches"));
-		this.out.expect(containsString("Negative matches"));
+		assertThat(capturedOutput).contains("CONDITIONS EVALUATION REPORT").contains("Positive matches")
+				.contains("Negative matches");
 	}
 
 	@Test
-	public void originalFailureIsThrownWhenReportGenerationFails() throws Exception {
+	void originalFailureIsThrownWhenReportGenerationFails() throws Exception {
 		TestContext testContext = mock(TestContext.class);
 		IllegalStateException originalFailure = new IllegalStateException();
 		given(testContext.getTestInstance()).willThrow(originalFailure);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		given(testContext.getApplicationContext()).willThrow(new RuntimeException());
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.reportListener.prepareTestInstance(testContext))
+		assertThatIllegalStateException().isThrownBy(() -> this.reportListener.prepareTestInstance(testContext))
 				.isEqualTo(originalFailure);
 	}
 

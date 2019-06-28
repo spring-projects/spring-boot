@@ -55,8 +55,7 @@ public class InfoContributorAutoConfiguration {
 	@Bean
 	@ConditionalOnEnabledInfoContributor("env")
 	@Order(DEFAULT_ORDER)
-	public EnvironmentInfoContributor envInfoContributor(
-			ConfigurableEnvironment environment) {
+	public EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
 		return new EnvironmentInfoContributor(environment);
 	}
 
@@ -67,8 +66,7 @@ public class InfoContributorAutoConfiguration {
 	@Order(DEFAULT_ORDER)
 	public GitInfoContributor gitInfoContributor(GitProperties gitProperties,
 			InfoContributorProperties infoContributorProperties) {
-		return new GitInfoContributor(gitProperties,
-				infoContributorProperties.getGit().getMode());
+		return new GitInfoContributor(gitProperties, infoContributorProperties.getGit().getMode());
 	}
 
 	@Bean

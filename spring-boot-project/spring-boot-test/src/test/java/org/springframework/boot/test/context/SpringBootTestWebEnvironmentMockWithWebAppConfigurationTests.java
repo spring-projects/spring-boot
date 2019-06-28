@@ -41,15 +41,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @DirtiesContext
 @WebAppConfiguration("src/mymain/mywebapp")
-public class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
+class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
 
 	@Autowired
 	private ServletContext servletContext;
 
 	@Test
-	public void resourcePath() {
-		assertThat(this.servletContext).hasFieldOrPropertyWithValue("resourceBasePath",
-				"src/mymain/mywebapp");
+	void resourcePath() {
+		assertThat(this.servletContext).hasFieldOrPropertyWithValue("resourceBasePath", "src/mymain/mywebapp");
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -17,8 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -40,11 +38,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
-@AutoConfigureMockMvc(addFilters = false, webClientEnabled = false,
-		webDriverEnabled = false)
-public class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
+@AutoConfigureMockMvc(addFilters = false, webClientEnabled = false, webDriverEnabled = false)
+class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -53,18 +49,18 @@ public class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 	private MockMvc mvc;
 
 	@Test
-	public void shouldNotAddFilters() throws Exception {
+	void shouldNotAddFilters() throws Exception {
 		this.mvc.perform(get("/one")).andExpect(header().doesNotExist("x-test"));
 	}
 
 	@Test
-	public void shouldNotHaveWebDriver() {
+	void shouldNotHaveWebDriver() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(WebDriver.class));
 	}
 
 	@Test
-	public void shouldNotHaveWebClient() {
+	void shouldNotHaveWebClient() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(WebClient.class));
 	}

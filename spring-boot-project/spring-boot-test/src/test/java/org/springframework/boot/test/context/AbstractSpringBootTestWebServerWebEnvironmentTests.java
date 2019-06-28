@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
+abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@LocalServerPort
 	private int port = 0;
@@ -69,28 +69,26 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	}
 
 	@Test
-	public void runAndTestHttpEndpoint() {
+	void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
-		String body = new RestTemplate()
-				.getForObject("http://localhost:" + this.port + "/", String.class);
+		String body = new RestTemplate().getForObject("http://localhost:" + this.port + "/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 
 	@Test
-	public void injectTestRestTemplate() {
+	void injectTestRestTemplate() {
 		String body = this.restTemplate.getForObject("/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 
 	@Test
-	public void annotationAttributesOverridePropertiesFile() {
+	void annotationAttributesOverridePropertiesFile() {
 		assertThat(this.value).isEqualTo(123);
 	}
 
 	@Test
-	public void validateWebApplicationContextIsSet() {
-		assertThat(this.context).isSameAs(
-				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
+	void validateWebApplicationContextIsSet() {
+		assertThat(this.context).isSameAs(WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
 	protected abstract static class AbstractConfig {

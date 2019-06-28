@@ -36,31 +36,29 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  */
-public class WebMvcPropertiesTests {
+class WebMvcPropertiesTests {
 
 	private final WebMvcProperties properties = new WebMvcProperties();
 
 	@Test
-	public void servletPathWhenEndsWithSlashHasValidMappingAndPrefix() {
+	void servletPathWhenEndsWithSlashHasValidMappingAndPrefix() {
 		bind("spring.mvc.servlet.path", "/foo/");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
-	public void servletPathWhenDoesNotEndWithSlashHasValidMappingAndPrefix() {
+	void servletPathWhenDoesNotEndWithSlashHasValidMappingAndPrefix() {
 		bind("spring.mvc.servlet.path", "/foo");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
-	public void servletPathWhenHasWildcardThrowsException() {
-		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> bind("spring.mvc.servlet.path", "/*"))
-				.withRootCauseInstanceOf(IllegalArgumentException.class)
-				.satisfies((ex) -> assertThat(Throwables.getRootCause(ex))
-						.hasMessage("Path must not contain wildcards"));
+	void servletPathWhenHasWildcardThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bind("spring.mvc.servlet.path", "/*"))
+				.withRootCauseInstanceOf(IllegalArgumentException.class).satisfies(
+						(ex) -> assertThat(Throwables.getRootCause(ex)).hasMessage("Path must not contain wildcards"));
 	}
 
 	private void bind(String name, String value) {

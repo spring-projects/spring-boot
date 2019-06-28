@@ -29,19 +29,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class BootJarTests extends AbstractBootArchiveTests<BootJar> {
+class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
-	public BootJarTests() {
-		super(BootJar.class, "org.springframework.boot.loader.JarLauncher",
-				"BOOT-INF/lib/", "BOOT-INF/classes/");
+	BootJarTests() {
+		super(BootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/");
 	}
 
 	@Test
-	public void contentCanBeAddedToBootInfUsingCopySpecFromGetter() throws IOException {
+	void contentCanBeAddedToBootInfUsingCopySpecFromGetter() throws IOException {
 		BootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Application");
-		bootJar.getBootInf().into("test")
-				.from(new File("build.gradle").getAbsolutePath());
+		bootJar.getBootInf().into("test").from(new File("build.gradle").getAbsolutePath());
 		bootJar.copy();
 		try (JarFile jarFile = new JarFile(bootJar.getArchivePath())) {
 			assertThat(jarFile.getJarEntry("BOOT-INF/test/build.gradle")).isNotNull();
@@ -49,11 +47,10 @@ public class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	}
 
 	@Test
-	public void contentCanBeAddedToBootInfUsingCopySpecAction() throws IOException {
+	void contentCanBeAddedToBootInfUsingCopySpecAction() throws IOException {
 		BootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Application");
-		bootJar.bootInf((copySpec) -> copySpec.into("test")
-				.from(new File("build.gradle").getAbsolutePath()));
+		bootJar.bootInf((copySpec) -> copySpec.into("test").from(new File("build.gradle").getAbsolutePath()));
 		bootJar.copy();
 		try (JarFile jarFile = new JarFile(bootJar.getArchivePath())) {
 			assertThat(jarFile.getJarEntry("BOOT-INF/test/build.gradle")).isNotNull();

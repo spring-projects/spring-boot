@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class InfluxPropertiesTests extends StepRegistryPropertiesTests {
+class InfluxPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		InfluxProperties properties = new InfluxProperties();
 		InfluxConfig config = InfluxConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);
@@ -40,12 +40,9 @@ public class InfluxPropertiesTests extends StepRegistryPropertiesTests {
 		assertThat(properties.getUserName()).isEqualTo(config.userName());
 		assertThat(properties.getPassword()).isEqualTo(config.password());
 		assertThat(properties.getRetentionPolicy()).isEqualTo(config.retentionPolicy());
-		assertThat(properties.getRetentionDuration())
-				.isEqualTo(config.retentionDuration());
-		assertThat(properties.getRetentionReplicationFactor())
-				.isEqualTo(config.retentionReplicationFactor());
-		assertThat(properties.getRetentionShardDuration())
-				.isEqualTo(config.retentionShardDuration());
+		assertThat(properties.getRetentionDuration()).isEqualTo(config.retentionDuration());
+		assertThat(properties.getRetentionReplicationFactor()).isEqualTo(config.retentionReplicationFactor());
+		assertThat(properties.getRetentionShardDuration()).isEqualTo(config.retentionShardDuration());
 		assertThat(properties.getUri()).isEqualTo(config.uri());
 		assertThat(properties.isCompressed()).isEqualTo(config.compressed());
 		assertThat(properties.isAutoCreateDb()).isEqualTo(config.autoCreateDb());

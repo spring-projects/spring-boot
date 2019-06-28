@@ -32,14 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class EnvironmentInfoContributorTests {
+class EnvironmentInfoContributorTests {
 
 	private final StandardEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void extractOnlyInfoProperty() {
-		TestPropertyValues.of("info.app=my app", "info.version=1.0.0", "foo=bar")
-				.applyTo(this.environment);
+	void extractOnlyInfoProperty() {
+		TestPropertyValues.of("info.app=my app", "info.version=1.0.0", "foo=bar").applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
@@ -47,7 +46,7 @@ public class EnvironmentInfoContributorTests {
 	}
 
 	@Test
-	public void extractNoEntry() {
+	void extractNoEntry() {
 		TestPropertyValues.of("foo=bar").applyTo(this.environment);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.getDetails()).isEmpty();
@@ -55,16 +54,14 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void propertiesFromEnvironmentShouldBindCorrectly() {
-		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment,
-				Type.SYSTEM_ENVIRONMENT);
+	void propertiesFromEnvironmentShouldBindCorrectly() {
+		TestPropertyValues.of("INFO_ENVIRONMENT_FOO=green").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT);
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("environment", Map.class)).containsEntry("foo", "green");
 	}
 
 	private static Info contributeFrom(ConfigurableEnvironment environment) {
-		EnvironmentInfoContributor contributor = new EnvironmentInfoContributor(
-				environment);
+		EnvironmentInfoContributor contributor = new EnvironmentInfoContributor(environment);
 		Info.Builder builder = new Info.Builder();
 		contributor.contribute(builder);
 		return builder.build();

@@ -70,8 +70,7 @@ public class CouchbaseAutoConfiguration {
 
 		}
 
-		@ConditionalOnBean(
-				type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
+		@ConditionalOnBean(type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 		static class CouchbaseConfigurerAvailable {
 
 		}

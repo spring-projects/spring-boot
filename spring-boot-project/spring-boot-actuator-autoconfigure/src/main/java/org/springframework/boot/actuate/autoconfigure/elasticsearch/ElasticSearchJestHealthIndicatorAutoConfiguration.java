@@ -48,11 +48,10 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(JestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({ JestAutoConfiguration.class,
-		ElasticSearchClientHealthIndicatorAutoConfiguration.class })
+@AutoConfigureAfter({ JestAutoConfiguration.class, ElasticSearchClientHealthIndicatorAutoConfiguration.class })
 @Deprecated
-public class ElasticSearchJestHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<ElasticsearchJestHealthIndicator, JestClient> {
+public class ElasticSearchJestHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<ElasticsearchJestHealthIndicator, JestClient> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "elasticsearchHealthIndicator")

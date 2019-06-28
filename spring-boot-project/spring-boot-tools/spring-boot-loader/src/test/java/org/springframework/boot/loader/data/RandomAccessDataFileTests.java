@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -44,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class RandomAccessDataFileTests {
+class RandomAccessDataFileTests {
 
 	private static final byte[] BYTES;
 
@@ -55,18 +54,15 @@ public class RandomAccessDataFileTests {
 		}
 	}
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 	private File tempFile;
 
 	private RandomAccessDataFile file;
 
 	private InputStream inputStream;
 
-	@Before
-	public void setup() throws Exception {
-		this.tempFile = this.temporaryFolder.newFile();
+	@BeforeEach
+	void setup(@TempDir File tempDir) throws Exception {
+		this.tempFile = new File(tempDir, "tempFile");
 		FileOutputStream outputStream = new FileOutputStream(this.tempFile);
 		outputStream.write(BYTES);
 		outputStream.close();
@@ -74,84 +70,74 @@ public class RandomAccessDataFileTests {
 		this.inputStream = this.file.getInputStream();
 	}
 
-	@After
-	public void cleanup() throws Exception {
+	@AfterEach
+	void cleanup() throws Exception {
 		this.inputStream.close();
 		this.file.close();
 	}
 
 	@Test
-	public void fileNotNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RandomAccessDataFile(null))
+	void fileNotNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new RandomAccessDataFile(null))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
-	public void fileExists() {
+	void fileExists() {
 		File file = new File("/does/not/exist");
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RandomAccessDataFile(file)).withMessageContaining(
-						String.format("File %s must exist", file.getAbsolutePath()));
+		assertThatIllegalArgumentException().isThrownBy(() -> new RandomAccessDataFile(file))
+				.withMessageContaining(String.format("File %s must exist", file.getAbsolutePath()));
 	}
 
 	@Test
-	public void readWithOffsetAndLengthShouldRead() throws Exception {
+	void readWithOffsetAndLengthShouldRead() throws Exception {
 		byte[] read = this.file.read(2, 3);
 		assertThat(read).isEqualTo(new byte[] { 2, 3, 4 });
 	}
 
 	@Test
-	public void readWhenOffsetIsBeyondEOFShouldThrowException() throws Exception {
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> this.file.read(257, 0));
+	void readWhenOffsetIsBeyondEOFShouldThrowException() throws Exception {
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> this.file.read(257, 0));
 	}
 
 	@Test
-	public void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException()
-			throws Exception {
+	void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> subsection.read(11, 0));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> subsection.read(11, 0));
 	}
 
 	@Test
-	public void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException()
-			throws Exception {
-		assertThatExceptionOfType(EOFException.class)
-				.isThrownBy(() -> this.file.read(256, 1));
+	void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException() throws Exception {
+		assertThatExceptionOfType(EOFException.class).isThrownBy(() -> this.file.read(256, 1));
 	}
 
 	@Test
-	public void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException()
-			throws Exception {
+	void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
-		assertThatExceptionOfType(EOFException.class)
-				.isThrownBy(() -> subsection.read(10, 1));
+		assertThatExceptionOfType(EOFException.class).isThrownBy(() -> subsection.read(10, 1));
 	}
 
 	@Test
-	public void inputStreamRead() throws Exception {
+	void inputStreamRead() throws Exception {
 		for (int i = 0; i <= 255; i++) {
 			assertThat(this.inputStream.read()).isEqualTo(i);
 		}
 	}
 
 	@Test
-	public void inputStreamReadNullBytes() throws Exception {
+	void inputStreamReadNullBytes() throws Exception {
 		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null))
 				.withMessage("Bytes must not be null");
 	}
 
 	@Test
-	public void inputStreamReadNullBytesWithOffset() throws Exception {
-		assertThatNullPointerException()
-				.isThrownBy(() -> this.inputStream.read(null, 0, 1))
+	void inputStreamReadNullBytesWithOffset() throws Exception {
+		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null, 0, 1))
 				.withMessage("Bytes must not be null");
 	}
 
 	@Test
-	public void inputStreamReadBytes() throws Exception {
+	void inputStreamReadBytes() throws Exception {
 		byte[] b = new byte[256];
 		int amountRead = this.inputStream.read(b);
 		assertThat(b).isEqualTo(BYTES);
@@ -159,7 +145,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamReadOffsetBytes() throws Exception {
+	void inputStreamReadOffsetBytes() throws Exception {
 		byte[] b = new byte[7];
 		this.inputStream.skip(1);
 		int amountRead = this.inputStream.read(b, 2, 3);
@@ -168,7 +154,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamReadMoreBytesThanAvailable() throws Exception {
+	void inputStreamReadMoreBytesThanAvailable() throws Exception {
 		byte[] b = new byte[257];
 		int amountRead = this.inputStream.read(b);
 		assertThat(b).startsWith(BYTES);
@@ -176,7 +162,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamReadPastEnd() throws Exception {
+	void inputStreamReadPastEnd() throws Exception {
 		this.inputStream.skip(255);
 		assertThat(this.inputStream.read()).isEqualTo(0xFF);
 		assertThat(this.inputStream.read()).isEqualTo(-1);
@@ -184,7 +170,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamReadZeroLength() throws Exception {
+	void inputStreamReadZeroLength() throws Exception {
 		byte[] b = new byte[] { 0x0F };
 		int amountRead = this.inputStream.read(b, 0, 0);
 		assertThat(b).isEqualTo(new byte[] { 0x0F });
@@ -193,66 +179,62 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamSkip() throws Exception {
+	void inputStreamSkip() throws Exception {
 		long amountSkipped = this.inputStream.skip(4);
 		assertThat(this.inputStream.read()).isEqualTo(4);
 		assertThat(amountSkipped).isEqualTo(4L);
 	}
 
 	@Test
-	public void inputStreamSkipMoreThanAvailable() throws Exception {
+	void inputStreamSkipMoreThanAvailable() throws Exception {
 		long amountSkipped = this.inputStream.skip(257);
 		assertThat(this.inputStream.read()).isEqualTo(-1);
 		assertThat(amountSkipped).isEqualTo(256L);
 	}
 
 	@Test
-	public void inputStreamSkipPastEnd() throws Exception {
+	void inputStreamSkipPastEnd() throws Exception {
 		this.inputStream.skip(256);
 		long amountSkipped = this.inputStream.skip(1);
 		assertThat(amountSkipped).isEqualTo(0L);
 	}
 
 	@Test
-	public void subsectionNegativeOffset() {
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> this.file.getSubsection(-1, 1));
+	void subsectionNegativeOffset() {
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> this.file.getSubsection(-1, 1));
 	}
 
 	@Test
-	public void subsectionNegativeLength() {
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> this.file.getSubsection(0, -1));
+	void subsectionNegativeLength() {
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> this.file.getSubsection(0, -1));
 	}
 
 	@Test
-	public void subsectionZeroLength() throws Exception {
+	void subsectionZeroLength() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 0);
 		assertThat(subsection.getInputStream().read()).isEqualTo(-1);
 	}
 
 	@Test
-	public void subsectionTooBig() {
+	void subsectionTooBig() {
 		this.file.getSubsection(0, 256);
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> this.file.getSubsection(0, 257));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> this.file.getSubsection(0, 257));
 	}
 
 	@Test
-	public void subsectionTooBigWithOffset() {
+	void subsectionTooBigWithOffset() {
 		this.file.getSubsection(1, 255);
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> this.file.getSubsection(1, 256));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> this.file.getSubsection(1, 256));
 	}
 
 	@Test
-	public void subsection() throws Exception {
+	void subsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 1);
 		assertThat(subsection.getInputStream().read()).isEqualTo(1);
 	}
 
 	@Test
-	public void inputStreamReadPastSubsection() throws Exception {
+	void inputStreamReadPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
 		InputStream inputStream = subsection.getInputStream();
 		assertThat(inputStream.read()).isEqualTo(1);
@@ -261,7 +243,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamReadBytesPastSubsection() throws Exception {
+	void inputStreamReadBytesPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
 		InputStream inputStream = subsection.getInputStream();
 		byte[] b = new byte[3];
@@ -271,7 +253,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamSkipPastSubsection() throws Exception {
+	void inputStreamSkipPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
 		InputStream inputStream = subsection.getInputStream();
 		assertThat(inputStream.skip(3)).isEqualTo(2L);
@@ -279,23 +261,23 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputStreamSkipNegative() throws Exception {
+	void inputStreamSkipNegative() throws Exception {
 		assertThat(this.inputStream.skip(-1)).isEqualTo(0L);
 	}
 
 	@Test
-	public void getFile() {
+	void getFile() {
 		assertThat(this.file.getFile()).isEqualTo(this.tempFile);
 	}
 
 	@Test
-	public void concurrentReads() throws Exception {
+	void concurrentReads() throws Exception {
 		ExecutorService executorService = Executors.newFixedThreadPool(20);
 		List<Future<Boolean>> results = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
 			results.add(executorService.submit(() -> {
-				InputStream subsectionInputStream = RandomAccessDataFileTests.this.file
-						.getSubsection(0, 256).getInputStream();
+				InputStream subsectionInputStream = RandomAccessDataFileTests.this.file.getSubsection(0, 256)
+						.getInputStream();
 				byte[] b = new byte[256];
 				subsectionInputStream.read(b);
 				return Arrays.equals(b, BYTES);

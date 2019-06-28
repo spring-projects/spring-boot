@@ -16,11 +16,16 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
@@ -28,14 +33,19 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -48,8 +58,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class TomcatReactiveWebServerFactoryTests
-		extends AbstractReactiveWebServerFactoryTests {
+class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected TomcatReactiveWebServerFactory getFactory() {
@@ -57,12 +66,11 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void tomcatCustomizers() {
+	void tomcatCustomizers() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer[] customizers = new TomcatContextCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatContextCustomizer.class));
-		factory.setTomcatContextCustomizers(
-				Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatContextCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addContextCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -72,7 +80,7 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void contextIsAddedToHostBeforeCustomizersAreCalled() {
+	void contextIsAddedToHostBeforeCustomizersAreCalled() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
 		factory.addContextCustomizers(customizer);
@@ -83,7 +91,7 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void defaultTomcatListeners() {
+	void defaultTomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		if (AprLifecycleListener.isAprAvailable()) {
 			assertThat(factory.getContextLifecycleListeners()).hasSize(1).first()
@@ -95,7 +103,7 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void tomcatListeners() {
+	void tomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		LifecycleListener[] listeners = new LifecycleListener[4];
 		Arrays.setAll(listeners, (i) -> mock(LifecycleListener.class));
@@ -109,47 +117,42 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void setNullConnectorCustomizersShouldThrowException() {
+	void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void addNullAddConnectorCustomizersShouldThrowException() {
+	void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void setNullProtocolHandlerCustomizersShouldThrowException() {
+	void setNullProtocolHandlerCustomizersShouldThrowException() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
+				.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+	}
+
+	@Test
+	void addNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
-				.withMessageContaining(
-						"TomcatProtocolHandlerCustomizers must not be null");
+				.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
+				.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
 	}
 
 	@Test
-	public void addNullProtocolHandlerCustomizersShouldThrowException() {
-		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatIllegalArgumentException().isThrownBy(() -> factory
-				.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
-				.withMessageContaining(
-						"TomcatProtocolHandlerCustomizers must not be null");
-	}
-
-	@Test
-	public void tomcatConnectorCustomizersShouldBeInvoked() {
+	void tomcatConnectorCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatConnectorCustomizer[] customizers = new TomcatConnectorCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatConnectorCustomizer.class));
-		factory.setTomcatConnectorCustomizers(
-				Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatConnectorCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addConnectorCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -160,13 +163,12 @@ public class TomcatReactiveWebServerFactoryTests
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
+	void tomcatProtocolHandlerCustomizersShouldBeInvoked() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>>[] customizers = new TomcatProtocolHandlerCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
-		factory.setTomcatProtocolHandlerCustomizers(
-				Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatProtocolHandlerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addProtocolHandlerCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -176,7 +178,25 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void useForwardedHeaders() {
+	void tomcatAdditionalConnectors() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		Connector[] connectors = new Connector[4];
+		Arrays.setAll(connectors, (i) -> new Connector());
+		factory.addAdditionalTomcatConnectors(connectors);
+		this.webServer = factory.getWebServer(mock(HttpHandler.class));
+		Map<Service, Connector[]> connectorsByService = ((TomcatWebServer) this.webServer).getServiceConnectors();
+		assertThat(connectorsByService.values().iterator().next().length).isEqualTo(connectors.length + 1);
+	}
+
+	@Test
+	void addNullAdditionalConnectorsThrows() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalTomcatConnectors((Connector[]) null))
+				.withMessageContaining("Connectors must not be null");
+	}
+
+	@Test
+	void useForwardedHeaders() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		RemoteIpValve valve = new RemoteIpValve();
 		valve.setProtocolHeader("X-Forwarded-Proto");
@@ -185,7 +205,7 @@ public class TomcatReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void referenceClearingIsDisabled() {
+	void referenceClearingIsDisabled() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		this.webServer.start();
@@ -194,6 +214,43 @@ public class TomcatReactiveWebServerFactoryTests
 		assertThat(context.getClearReferencesObjectStreamClassCaches()).isFalse();
 		assertThat(context.getClearReferencesRmiTargets()).isFalse();
 		assertThat(context.getClearReferencesThreadLocals()).isFalse();
+	}
+
+	@Test
+	protected void portClashOfPrimaryConnectorResultsInPortInUseException() throws IOException {
+		doWithBlockedPort((port) -> {
+			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
+				AbstractReactiveWebServerFactory factory = getFactory();
+				factory.setPort(port);
+				this.webServer = factory.getWebServer(mock(HttpHandler.class));
+				this.webServer.start();
+			}).satisfies((ex) -> handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, port));
+		});
+	}
+
+	protected final void doWithBlockedPort(AbstractServletWebServerFactoryTests.BlockedPortAction action)
+			throws IOException {
+		int port = SocketUtils.findAvailableTcpPort(40000);
+		ServerSocket serverSocket = new ServerSocket();
+		for (int i = 0; i < 10; i++) {
+			try {
+				serverSocket.bind(new InetSocketAddress(port));
+				break;
+			}
+			catch (Exception ex) {
+			}
+		}
+		try {
+			action.run(port);
+		}
+		finally {
+			serverSocket.close();
+		}
+	}
+
+	protected void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
+		assertThat(ex).isInstanceOf(PortInUseException.class);
+		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
 }

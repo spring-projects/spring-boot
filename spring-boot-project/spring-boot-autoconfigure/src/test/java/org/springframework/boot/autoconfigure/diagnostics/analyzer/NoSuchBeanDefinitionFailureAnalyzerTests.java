@@ -47,112 +47,93 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class NoSuchBeanDefinitionFailureAnalyzerTests {
+class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	private final NoSuchBeanDefinitionFailureAnalyzer analyzer = new NoSuchBeanDefinitionFailureAnalyzer();
 
 	@Test
-	public void failureAnalysisForMultipleBeans() {
-		FailureAnalysis analysis = analyzeFailure(
-				new NoUniqueBeanDefinitionException(String.class, 2, "Test"));
+	void failureAnalysisForMultipleBeans() {
+		FailureAnalysis analysis = analyzeFailure(new NoUniqueBeanDefinitionException(String.class, 2, "Test"));
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void failureAnalysisForNoMatchType() {
+	void failureAnalysisForNoMatchType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringHandler.class));
-		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
-				String.class);
-		assertThat(analysis.getDescription()).doesNotContain(
-				"No matching auto-configuration has been found for this type.");
-		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider defining a bean of type '%s' in your configuration.",
-				String.class.getName()));
+		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
+		assertThat(analysis.getDescription())
+				.doesNotContain("No matching auto-configuration has been found for this type.");
+		assertThat(analysis.getAction()).startsWith(
+				String.format("Consider defining a bean of type '%s' in your configuration.", String.class.getName()));
 	}
 
 	@Test
-	public void failureAnalysisForMissingPropertyExactType() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(StringPropertyTypeConfiguration.class));
-		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
-				String.class);
-		assertBeanMethodDisabled(analysis,
-				"did not find property 'spring.string.enabled'",
+	void failureAnalysisForMissingPropertyExactType() {
+		FailureAnalysis analysis = analyzeFailure(createFailure(StringPropertyTypeConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
+		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
 				TestPropertyAutoConfiguration.class, "string");
 		assertActionMissingType(analysis, String.class);
 	}
 
 	@Test
-	public void failureAnalysisForMissingPropertySubType() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(IntegerPropertyTypeConfiguration.class));
+	void failureAnalysisForMissingPropertySubType() {
+		FailureAnalysis analysis = analyzeFailure(createFailure(IntegerPropertyTypeConfiguration.class));
 		assertThat(analysis).isNotNull();
-		assertDescriptionConstructorMissingType(analysis, NumberHandler.class, 0,
-				Number.class);
-		assertBeanMethodDisabled(analysis,
-				"did not find property 'spring.integer.enabled'",
+		assertDescriptionConstructorMissingType(analysis, NumberHandler.class, 0, Number.class);
+		assertBeanMethodDisabled(analysis, "did not find property 'spring.integer.enabled'",
 				TestPropertyAutoConfiguration.class, "integer");
 		assertActionMissingType(analysis, Number.class);
 	}
 
 	@Test
-	public void failureAnalysisForMissingClassOnAutoConfigurationType() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(MissingClassOnAutoConfigurationConfiguration.class));
-		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
-				String.class);
-		assertClassDisabled(analysis, "did not find required class 'com.example.FooBar'",
-				"string", ClassUtils.getShortName(TestTypeClassAutoConfiguration.class));
+	void failureAnalysisForMissingClassOnAutoConfigurationType() {
+		FailureAnalysis analysis = analyzeFailure(createFailure(MissingClassOnAutoConfigurationConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
+		assertClassDisabled(analysis, "did not find required class 'com.example.FooBar'", "string",
+				ClassUtils.getShortName(TestTypeClassAutoConfiguration.class));
 		assertActionMissingType(analysis, String.class);
 	}
 
 	@Test
-	public void failureAnalysisForExcludedAutoConfigurationType() {
+	void failureAnalysisForExcludedAutoConfigurationType() {
 		FatalBeanException failure = createFailure(StringHandler.class);
 		addExclusions(this.analyzer, TestPropertyAutoConfiguration.class);
 		FailureAnalysis analysis = analyzeFailure(failure);
-		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
-				String.class);
-		String configClass = ClassUtils
-				.getShortName(TestPropertyAutoConfiguration.class.getName());
-		assertClassDisabled(analysis,
-				String.format("auto-configuration '%s' was excluded", configClass),
-				"string", ClassUtils.getShortName(TestPropertyAutoConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
+		String configClass = ClassUtils.getShortName(TestPropertyAutoConfiguration.class.getName());
+		assertClassDisabled(analysis, String.format("auto-configuration '%s' was excluded", configClass), "string",
+				ClassUtils.getShortName(TestPropertyAutoConfiguration.class));
 		assertActionMissingType(analysis, String.class);
 	}
 
 	@Test
-	public void failureAnalysisForSeveralConditionsType() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(SeveralAutoConfigurationTypeConfiguration.class));
-		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
-				String.class);
-		assertBeanMethodDisabled(analysis,
-				"did not find property 'spring.string.enabled'",
+	void failureAnalysisForSeveralConditionsType() {
+		FailureAnalysis analysis = analyzeFailure(createFailure(SeveralAutoConfigurationTypeConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
+		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
 				TestPropertyAutoConfiguration.class, "string");
-		assertClassDisabled(analysis, "did not find required class 'com.example.FooBar'",
-				"string", ClassUtils.getShortName(TestPropertyAutoConfiguration.class));
+		assertClassDisabled(analysis, "did not find required class 'com.example.FooBar'", "string",
+				ClassUtils.getShortName(TestPropertyAutoConfiguration.class));
 		assertActionMissingType(analysis, String.class);
 	}
 
 	@Test
-	public void failureAnalysisForNoMatchName() {
+	void failureAnalysisForNoMatchName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNameHandler.class));
-		assertThat(analysis.getDescription()).startsWith(String.format(
-				"Constructor in %s required a bean named '%s' that could not be found",
-				StringNameHandler.class.getName(), "test-string"));
-		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider defining a bean named '%s' in your configuration.",
-				"test-string"));
+		assertThat(analysis.getDescription())
+				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
+						StringNameHandler.class.getName(), "test-string"));
+		assertThat(analysis.getAction())
+				.startsWith(String.format("Consider defining a bean named '%s' in your configuration.", "test-string"));
 	}
 
 	@Test
-	public void failureAnalysisForMissingBeanName() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(StringMissingBeanNameConfiguration.class));
-		assertThat(analysis.getDescription()).startsWith(String.format(
-				"Constructor in %s required a bean named '%s' that could not be found",
-				StringNameHandler.class.getName(), "test-string"));
+	void failureAnalysisForMissingBeanName() {
+		FailureAnalysis analysis = analyzeFailure(createFailure(StringMissingBeanNameConfiguration.class));
+		assertThat(analysis.getDescription())
+				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
+						StringNameHandler.class.getName(), "test-string"));
 		assertBeanMethodDisabled(analysis,
 				"@ConditionalOnBean (types: java.lang.Integer; SearchStrategy: all) did not find any beans",
 				TestMissingBeanAutoConfiguration.class, "string");
@@ -160,75 +141,65 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForNullBeanByType() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(StringNullBeanConfiguration.class));
-		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
-				String.class);
-		assertUserDefinedBean(analysis, "as the bean value is null",
-				TestNullBeanConfiguration.class, "string");
+	void failureAnalysisForNullBeanByType() {
+		FailureAnalysis analysis = analyzeFailure(createFailure(StringNullBeanConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
+		assertUserDefinedBean(analysis, "as the bean value is null", TestNullBeanConfiguration.class, "string");
 		assertActionMissingType(analysis, String.class);
 	}
 
 	@Test
-	public void failureAnalysisForUnmatchedQualifier() {
-		FailureAnalysis analysis = analyzeFailure(
-				createFailure(QualifiedBeanConfiguration.class));
-		assertThat(analysis.getDescription()).containsPattern(
-				"@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");
+	void failureAnalysisForUnmatchedQualifier() {
+		FailureAnalysis analysis = analyzeFailure(createFailure(QualifiedBeanConfiguration.class));
+		assertThat(analysis.getDescription())
+				.containsPattern("@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)");
 	}
 
-	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis,
-			Class<?> component, int index, Class<?> type) {
+	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis, Class<?> component, int index,
+			Class<?> type) {
 		String expected = String.format(
-				"Parameter %s of constructor in %s required a bean of "
-						+ "type '%s' that could not be found.",
-				index, component.getName(), type.getName());
+				"Parameter %s of constructor in %s required a bean of " + "type '%s' that could not be found.", index,
+				component.getName(), type.getName());
 		assertThat(analysis.getDescription()).startsWith(expected);
 	}
 
 	private void assertActionMissingType(FailureAnalysis analysis, Class<?> type) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the entries above or defining a bean of type '%s' "
-						+ "in your configuration.",
+				"Consider revisiting the entries above or defining a bean of type '%s' " + "in your configuration.",
 				type.getName()));
 	}
 
 	private void assertActionMissingName(FailureAnalysis analysis, String name) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the entries above or defining a bean named '%s' "
-						+ "in your configuration.",
+				"Consider revisiting the entries above or defining a bean named '%s' " + "in your configuration.",
 				name));
 	}
 
-	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description,
-			Class<?> target, String methodName) {
-		String expected = String.format("Bean method '%s' in '%s' not loaded because",
-				methodName, ClassUtils.getShortName(target));
+	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description, Class<?> target,
+			String methodName) {
+		String expected = String.format("Bean method '%s' in '%s' not loaded because", methodName,
+				ClassUtils.getShortName(target));
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
 
-	private void assertClassDisabled(FailureAnalysis analysis, String description,
-			String methodName, String className) {
-		String expected = String.format("Bean method '%s' in '%s' not loaded because",
-				methodName, className);
+	private void assertClassDisabled(FailureAnalysis analysis, String description, String methodName,
+			String className) {
+		String expected = String.format("Bean method '%s' in '%s' not loaded because", methodName, className);
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
 
-	private void assertUserDefinedBean(FailureAnalysis analysis, String description,
-			Class<?> target, String methodName) {
-		String expected = String.format("User-defined bean method '%s' in '%s' ignored",
-				methodName, ClassUtils.getShortName(target));
+	private void assertUserDefinedBean(FailureAnalysis analysis, String description, Class<?> target,
+			String methodName) {
+		String expected = String.format("User-defined bean method '%s' in '%s' ignored", methodName,
+				ClassUtils.getShortName(target));
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
 
-	private static void addExclusions(NoSuchBeanDefinitionFailureAnalyzer analyzer,
-			Class<?>... classes) {
-		ConditionEvaluationReport report = (ConditionEvaluationReport) ReflectionTestUtils
-				.getField(analyzer, "report");
+	private static void addExclusions(NoSuchBeanDefinitionFailureAnalyzer analyzer, Class<?>... classes) {
+		ConditionEvaluationReport report = (ConditionEvaluationReport) ReflectionTestUtils.getField(analyzer, "report");
 		List<String> exclusions = new ArrayList<>(report.getExclusions());
 		for (Class<?> c : classes) {
 			exclusions.add(c.getName());
@@ -279,8 +250,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ TestPropertyAutoConfiguration.class,
-			TestTypeClassAutoConfiguration.class })
+	@ImportAutoConfiguration({ TestPropertyAutoConfiguration.class, TestTypeClassAutoConfiguration.class })
 	@Import(StringHandler.class)
 	protected static class SeveralAutoConfigurationTypeConfiguration {
 

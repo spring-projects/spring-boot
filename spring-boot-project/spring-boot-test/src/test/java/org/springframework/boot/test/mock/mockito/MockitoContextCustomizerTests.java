@@ -34,27 +34,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class MockitoContextCustomizerTests {
+class MockitoContextCustomizerTests {
 
 	private static final Set<MockDefinition> NO_DEFINITIONS = Collections.emptySet();
 
 	@Test
-	public void hashCodeAndEquals() {
+	void hashCodeAndEquals() {
 		MockDefinition d1 = createTestMockDefinition(ExampleService.class);
 		MockDefinition d2 = createTestMockDefinition(ExampleServiceCaller.class);
 		MockitoContextCustomizer c1 = new MockitoContextCustomizer(NO_DEFINITIONS);
-		MockitoContextCustomizer c2 = new MockitoContextCustomizer(
-				new LinkedHashSet<>(Arrays.asList(d1, d2)));
-		MockitoContextCustomizer c3 = new MockitoContextCustomizer(
-				new LinkedHashSet<>(Arrays.asList(d2, d1)));
+		MockitoContextCustomizer c2 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d1, d2)));
+		MockitoContextCustomizer c3 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d2, d1)));
 		assertThat(c2.hashCode()).isEqualTo(c3.hashCode());
 		assertThat(c1).isEqualTo(c1).isNotEqualTo(c2);
 		assertThat(c2).isEqualTo(c2).isEqualTo(c3).isNotEqualTo(c1);
 	}
 
 	private MockDefinition createTestMockDefinition(Class<?> typeToMock) {
-		return new MockDefinition(null, ResolvableType.forClass(typeToMock), null, null,
-				false, null, null);
+		return new MockDefinition(null, ResolvableType.forClass(typeToMock), null, null, false, null, null);
 	}
 
 }

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
@@ -28,12 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class DefaultErrorWebExceptionHandlerTests {
+class DefaultErrorWebExceptionHandlerTests {
 
 	@Test
-	public void disconnectedClientExceptionsMatchesFramework() {
-		Object errorHandlers = ReflectionTestUtils.getField(
-				AbstractErrorWebExceptionHandler.class, "DISCONNECTED_CLIENT_EXCEPTIONS");
+	void disconnectedClientExceptionsMatchesFramework() {
+		Object errorHandlers = ReflectionTestUtils.getField(AbstractErrorWebExceptionHandler.class,
+				"DISCONNECTED_CLIENT_EXCEPTIONS");
 		Object webHandlers = ReflectionTestUtils.getField(HttpWebHandlerAdapter.class,
 				"DISCONNECTED_CLIENT_EXCEPTIONS");
 		assertThat(errorHandlers).isNotNull().isEqualTo(webHandlers);

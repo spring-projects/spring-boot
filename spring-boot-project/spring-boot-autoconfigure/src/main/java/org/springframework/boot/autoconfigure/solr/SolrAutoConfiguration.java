@@ -46,8 +46,7 @@ public class SolrAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SolrClient solrClient(SolrProperties properties) {
 		if (StringUtils.hasText(properties.getZkHost())) {
-			return new CloudSolrClient.Builder(Arrays.asList(properties.getZkHost()),
-					Optional.empty()).build();
+			return new CloudSolrClient.Builder(Arrays.asList(properties.getZkHost()), Optional.empty()).build();
 		}
 		return new HttpSolrClient.Builder(properties.getHost()).build();
 	}

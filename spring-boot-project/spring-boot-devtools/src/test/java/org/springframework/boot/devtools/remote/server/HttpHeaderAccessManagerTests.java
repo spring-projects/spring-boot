@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.devtools.remote.server;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Rob Winch
  * @author Phillip Webb
  */
-public class HttpHeaderAccessManagerTests {
+class HttpHeaderAccessManagerTests {
 
 	private static final String HEADER = "X-AUTH_TOKEN";
 
@@ -44,60 +44,56 @@ public class HttpHeaderAccessManagerTests {
 
 	private HttpHeaderAccessManager manager;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.request = new MockHttpServletRequest("GET", "/");
 		this.serverRequest = new ServletServerHttpRequest(this.request);
 		this.manager = new HttpHeaderAccessManager(HEADER, SECRET);
 	}
 
 	@Test
-	public void headerNameMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
+	void headerNameMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
 				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
-	public void headerNameMustNotBeEmpty() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderAccessManager("", SECRET))
+	void headerNameMustNotBeEmpty() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager("", SECRET))
 				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
-	public void expectedSecretMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
+	void expectedSecretMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
 				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test
-	public void expectedSecretMustNotBeEmpty() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderAccessManager(HEADER, ""))
+	void expectedSecretMustNotBeEmpty() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(HEADER, ""))
 				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test
-	public void allowsMatching() {
+	void allowsMatching() {
 		this.request.addHeader(HEADER, SECRET);
 		assertThat(this.manager.isAllowed(this.serverRequest)).isTrue();
 	}
 
 	@Test
-	public void disallowsWrongSecret() {
+	void disallowsWrongSecret() {
 		this.request.addHeader(HEADER, "wrong");
 		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}
 
 	@Test
-	public void disallowsNoSecret() {
+	void disallowsNoSecret() {
 		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}
 
 	@Test
-	public void disallowsWrongHeader() {
+	void disallowsWrongHeader() {
 		this.request.addHeader("X-WRONG", SECRET);
 		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}

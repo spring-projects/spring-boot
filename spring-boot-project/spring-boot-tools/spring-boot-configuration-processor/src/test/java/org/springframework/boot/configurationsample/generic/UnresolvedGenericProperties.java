@@ -26,7 +26,6 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Stephane Nicoll
  */
 @ConfigurationProperties("generic")
-public class UnresolvedGenericProperties<B extends Number, C>
-		extends AbstractGenericProperties<String, B, C> {
+public class UnresolvedGenericProperties<B extends Number, C> extends AbstractGenericProperties<String, B, C> {
 
 }

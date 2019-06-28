@@ -49,8 +49,7 @@ public class SpringApplicationNoWebTests {
 	@Test
 	public void detectWebApplicationTypeToNone() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		assertThat(application.getWebApplicationType())
-				.isEqualTo(WebApplicationType.NONE);
+		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.NONE);
 	}
 
 	@Test

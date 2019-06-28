@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Andy Wilkinson
  */
-public class WebServletHandlerTests {
+class WebServletHandlerTests {
 
 	private final WebServletHandler handler = new WebServletHandler();
 
@@ -47,91 +47,70 @@ public class WebServletHandlerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void defaultServletConfiguration() throws IOException {
+	void defaultServletConfiguration() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory()
-						.getMetadataReader(DefaultConfigurationServlet.class.getName()));
+				new SimpleMetadataReaderFactory().getMetadataReader(DefaultConfigurationServlet.class.getName()));
 		this.handler.handle(scanned, this.registry);
 		BeanDefinition servletRegistrationBean = this.registry
 				.getBeanDefinition(DefaultConfigurationServlet.class.getName());
-		MutablePropertyValues propertyValues = servletRegistrationBean
-				.getPropertyValues();
+		MutablePropertyValues propertyValues = servletRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(false);
-		assertThat(((Map<String, String>) propertyValues.get("initParameters")))
-				.isEmpty();
+		assertThat(((Map<String, String>) propertyValues.get("initParameters"))).isEmpty();
 		assertThat((Integer) propertyValues.get("loadOnStartup")).isEqualTo(-1);
-		assertThat(propertyValues.get("name"))
-				.isEqualTo(DefaultConfigurationServlet.class.getName());
+		assertThat(propertyValues.get("name")).isEqualTo(DefaultConfigurationServlet.class.getName());
 		assertThat((String[]) propertyValues.get("urlMappings")).isEmpty();
 		assertThat(propertyValues.get("servlet")).isEqualTo(scanned);
 	}
 
 	@Test
-	public void servletWithCustomName() throws IOException {
+	void servletWithCustomName() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory()
-						.getMetadataReader(CustomNameServlet.class.getName()));
+				new SimpleMetadataReaderFactory().getMetadataReader(CustomNameServlet.class.getName()));
 		this.handler.handle(scanned, this.registry);
-		BeanDefinition servletRegistrationBean = this.registry
-				.getBeanDefinition("custom");
-		MutablePropertyValues propertyValues = servletRegistrationBean
-				.getPropertyValues();
+		BeanDefinition servletRegistrationBean = this.registry.getBeanDefinition("custom");
+		MutablePropertyValues propertyValues = servletRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("name")).isEqualTo("custom");
 	}
 
 	@Test
-	public void asyncSupported() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(
-				AsyncSupportedServlet.class);
-		MutablePropertyValues propertyValues = servletRegistrationBean
-				.getPropertyValues();
+	void asyncSupported() throws IOException {
+		BeanDefinition servletRegistrationBean = getBeanDefinition(AsyncSupportedServlet.class);
+		MutablePropertyValues propertyValues = servletRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(true);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void initParameters() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(
-				InitParametersServlet.class);
-		MutablePropertyValues propertyValues = servletRegistrationBean
-				.getPropertyValues();
-		assertThat((Map<String, String>) propertyValues.get("initParameters"))
-				.containsEntry("a", "alpha").containsEntry("b", "bravo");
+	void initParameters() throws IOException {
+		BeanDefinition servletRegistrationBean = getBeanDefinition(InitParametersServlet.class);
+		MutablePropertyValues propertyValues = servletRegistrationBean.getPropertyValues();
+		assertThat((Map<String, String>) propertyValues.get("initParameters")).containsEntry("a", "alpha")
+				.containsEntry("b", "bravo");
 	}
 
 	@Test
-	public void urlMappings() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(
-				UrlPatternsServlet.class);
-		MutablePropertyValues propertyValues = servletRegistrationBean
-				.getPropertyValues();
-		assertThat((String[]) propertyValues.get("urlMappings")).contains("alpha",
-				"bravo");
+	void urlMappings() throws IOException {
+		BeanDefinition servletRegistrationBean = getBeanDefinition(UrlPatternsServlet.class);
+		MutablePropertyValues propertyValues = servletRegistrationBean.getPropertyValues();
+		assertThat((String[]) propertyValues.get("urlMappings")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlMappingsFromValue() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(
-				UrlPatternsFromValueServlet.class);
-		MutablePropertyValues propertyValues = servletRegistrationBean
-				.getPropertyValues();
-		assertThat((String[]) propertyValues.get("urlMappings")).contains("alpha",
-				"bravo");
+	void urlMappingsFromValue() throws IOException {
+		BeanDefinition servletRegistrationBean = getBeanDefinition(UrlPatternsFromValueServlet.class);
+		MutablePropertyValues propertyValues = servletRegistrationBean.getPropertyValues();
+		assertThat((String[]) propertyValues.get("urlMappings")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatternsDeclaredTwice() throws IOException {
-		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> getBeanDefinition(UrlPatternsDeclaredTwiceServlet.class))
-				.withMessageContaining(
-						"The urlPatterns and value attributes are mutually exclusive.");
+	void urlPatternsDeclaredTwice() throws IOException {
+		assertThatIllegalStateException().isThrownBy(() -> getBeanDefinition(UrlPatternsDeclaredTwiceServlet.class))
+				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}
 
 	private BeanDefinition getBeanDefinition(Class<?> filterClass) throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory()
-						.getMetadataReader(filterClass.getName()));
+				new SimpleMetadataReaderFactory().getMetadataReader(filterClass.getName()));
 		this.handler.handle(scanned, this.registry);
 		return this.registry.getBeanDefinition(filterClass.getName());
 	}
@@ -146,8 +125,7 @@ public class WebServletHandlerTests {
 
 	}
 
-	@WebServlet(initParams = { @WebInitParam(name = "a", value = "alpha"),
-			@WebInitParam(name = "b", value = "bravo") })
+	@WebServlet(initParams = { @WebInitParam(name = "a", value = "alpha"), @WebInitParam(name = "b", value = "bravo") })
 	class InitParametersServlet extends HttpServlet {
 
 	}

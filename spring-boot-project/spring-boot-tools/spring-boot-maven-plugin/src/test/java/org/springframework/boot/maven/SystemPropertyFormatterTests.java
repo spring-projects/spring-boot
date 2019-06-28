@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.maven.AbstractRunMojo.SystemPropertyFormatter;
 
@@ -25,33 +25,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link AbstractRunMojo.SystemPropertyFormatter}.
  */
-public class SystemPropertyFormatterTests {
+class SystemPropertyFormatterTests {
 
 	@Test
-	public void parseEmpty() {
+	void parseEmpty() {
 		assertThat(SystemPropertyFormatter.format(null, null)).isEqualTo("");
 	}
 
 	@Test
-	public void parseOnlyKey() {
+	void parseOnlyKey() {
 		assertThat(SystemPropertyFormatter.format("key1", null)).isEqualTo("-Dkey1");
 	}
 
 	@Test
-	public void parseKeyWithValue() {
-		assertThat(SystemPropertyFormatter.format("key1", "value1"))
-				.isEqualTo("-Dkey1=\"value1\"");
+	void parseKeyWithValue() {
+		assertThat(SystemPropertyFormatter.format("key1", "value1")).isEqualTo("-Dkey1=\"value1\"");
 	}
 
 	@Test
-	public void parseKeyWithEmptyValue() {
+	void parseKeyWithEmptyValue() {
 		assertThat(SystemPropertyFormatter.format("key1", "")).isEqualTo("-Dkey1");
 	}
 
 	@Test
-	public void parseKeyWithOnlySpaces() {
-		assertThat(SystemPropertyFormatter.format("key1", "   "))
-				.isEqualTo("-Dkey1=\"   \"");
+	void parseKeyWithOnlySpaces() {
+		assertThat(SystemPropertyFormatter.format("key1", "   ")).isEqualTo("-Dkey1=\"   \"");
 	}
 
 }

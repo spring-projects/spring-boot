@@ -22,7 +22,6 @@ package org.springframework.boot.configurationsample.generic;
  * @param <C> mapping value type
  * @author Stephane Nicoll
  */
-public abstract class AbstractIntermediateGenericProperties<C>
-		extends AbstractGenericProperties<String, Integer, C> {
+public abstract class AbstractIntermediateGenericProperties<C> extends AbstractGenericProperties<String, Integer, C> {
 
 }

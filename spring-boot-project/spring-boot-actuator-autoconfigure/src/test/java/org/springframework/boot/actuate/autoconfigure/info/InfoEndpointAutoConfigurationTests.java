@@ -29,30 +29,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class InfoEndpointAutoConfigurationTests {
+class InfoEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(InfoEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
+	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
 				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
 	}
 
 	@Test
-	public void runShouldHaveEndpointBeanEvenIfDefaultIsDisabled() {
+	void runShouldHaveEndpointBeanEvenIfDefaultIsDisabled() {
 		// FIXME
 		this.contextRunner.withPropertyValues("management.endpoint.default.enabled:false")
 				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.info.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(InfoEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(InfoEndpoint.class));
 	}
 
 }

@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Yunkun Huang
  */
-public class JspTemplateAvailabilityProviderTests {
+class JspTemplateAvailabilityProviderTests {
 
 	private final JspTemplateAvailabilityProvider provider = new JspTemplateAvailabilityProvider();
 
@@ -38,28 +38,26 @@ public class JspTemplateAvailabilityProviderTests {
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void availabilityOfTemplateThatDoesNotExist() {
+	void availabilityOfTemplateThatDoesNotExist() {
 		assertThat(isTemplateAvailable("whatever")).isFalse();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomPrefix() {
-		this.environment.setProperty("spring.mvc.view.prefix",
-				"classpath:/custom-templates/");
+	void availabilityOfTemplateWithCustomPrefix() {
+		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
 		assertThat(isTemplateAvailable("custom.jsp")).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomSuffix() {
-		this.environment.setProperty("spring.mvc.view.prefix",
-				"classpath:/custom-templates/");
+	void availabilityOfTemplateWithCustomSuffix() {
+		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
 		this.environment.setProperty("spring.mvc.view.suffix", ".jsp");
 		assertThat(isTemplateAvailable("suffixed")).isTrue();
 	}
 
 	private boolean isTemplateAvailable(String view) {
-		return this.provider.isTemplateAvailable(view, this.environment,
-				getClass().getClassLoader(), this.resourceLoader);
+		return this.provider.isTemplateAvailable(view, this.environment, getClass().getClassLoader(),
+				this.resourceLoader);
 	}
 
 }

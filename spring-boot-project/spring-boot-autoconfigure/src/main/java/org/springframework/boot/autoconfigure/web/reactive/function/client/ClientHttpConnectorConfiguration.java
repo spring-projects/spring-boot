@@ -54,10 +54,8 @@ class ClientHttpConnectorConfiguration {
 		}
 
 		@Bean
-		public ReactorClientHttpConnector reactorClientHttpConnector(
-				ReactorResourceFactory reactorResourceFactory) {
-			return new ReactorClientHttpConnector(reactorResourceFactory,
-					Function.identity());
+		public ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory reactorResourceFactory) {
+			return new ReactorClientHttpConnector(reactorResourceFactory, Function.identity());
 		}
 
 	}
@@ -74,14 +72,10 @@ class ClientHttpConnectorConfiguration {
 		}
 
 		@Bean
-		public JettyClientHttpConnector jettyClientHttpConnector(
-				JettyResourceFactory jettyResourceFactory) {
+		public JettyClientHttpConnector jettyClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
 			SslContextFactory sslContextFactory = new SslContextFactory.Client();
 			HttpClient httpClient = new HttpClient(sslContextFactory);
-			httpClient.setExecutor(jettyResourceFactory.getExecutor());
-			httpClient.setByteBufferPool(jettyResourceFactory.getByteBufferPool());
-			httpClient.setScheduler(jettyResourceFactory.getScheduler());
-			return new JettyClientHttpConnector(httpClient);
+			return new JettyClientHttpConnector(httpClient, jettyResourceFactory);
 		}
 
 	}

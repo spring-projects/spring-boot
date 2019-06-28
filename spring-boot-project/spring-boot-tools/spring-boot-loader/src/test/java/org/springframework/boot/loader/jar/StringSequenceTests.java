@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.loader.jar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -27,94 +27,88 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
  *
  * @author Phillip Webb
  */
-public class StringSequenceTests {
+class StringSequenceTests {
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() {
+	void createWhenSourceIsNullShouldThrowException() {
 		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	public void createWithIndexWhenSourceIsNullShouldThrowException() {
+	void createWithIndexWhenSourceIsNullShouldThrowException() {
 		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null, 0, 0))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	public void createWhenStartIsLessThanZeroShouldThrowException() {
+	void createWhenStartIsLessThanZeroShouldThrowException() {
 		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
 				.isThrownBy(() -> new StringSequence("x", -1, 0));
 	}
 
 	@Test
-	public void createWhenEndIsGreaterThanLengthShouldThrowException() {
+	void createWhenEndIsGreaterThanLengthShouldThrowException() {
 		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
 				.isThrownBy(() -> new StringSequence("x", 0, 2));
 	}
 
 	@Test
-	public void createFromString() {
+	void createFromString() {
 		assertThat(new StringSequence("test").toString()).isEqualTo("test");
 	}
 
 	@Test
-	public void subSequenceWithJustStartShouldReturnSubSequence() {
-		assertThat(new StringSequence("smiles").subSequence(1).toString())
-				.isEqualTo("miles");
+	void subSequenceWithJustStartShouldReturnSubSequence() {
+		assertThat(new StringSequence("smiles").subSequence(1).toString()).isEqualTo("miles");
 	}
 
 	@Test
-	public void subSequenceShouldReturnSubSequence() {
-		assertThat(new StringSequence("hamburger").subSequence(4, 8).toString())
-				.isEqualTo("urge");
-		assertThat(new StringSequence("smiles").subSequence(1, 5).toString())
-				.isEqualTo("mile");
+	void subSequenceShouldReturnSubSequence() {
+		assertThat(new StringSequence("hamburger").subSequence(4, 8).toString()).isEqualTo("urge");
+		assertThat(new StringSequence("smiles").subSequence(1, 5).toString()).isEqualTo("mile");
 	}
 
 	@Test
-	public void subSequenceWhenCalledMultipleTimesShouldReturnSubSequence() {
-		assertThat(new StringSequence("hamburger").subSequence(4, 8).subSequence(1, 3)
-				.toString()).isEqualTo("rg");
+	void subSequenceWhenCalledMultipleTimesShouldReturnSubSequence() {
+		assertThat(new StringSequence("hamburger").subSequence(4, 8).subSequence(1, 3).toString()).isEqualTo("rg");
 	}
 
 	@Test
-	public void subSequenceWhenEndPastExistingEndShouldThrowException() {
+	void subSequenceWhenEndPastExistingEndShouldThrowException() {
 		StringSequence sequence = new StringSequence("abcde").subSequence(1, 4);
 		assertThat(sequence.toString()).isEqualTo("bcd");
 		assertThat(sequence.subSequence(2, 3).toString()).isEqualTo("d");
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> sequence.subSequence(3, 4));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> sequence.subSequence(3, 4));
 	}
 
 	@Test
-	public void subSequenceWhenStartPastExistingEndShouldThrowException() {
+	void subSequenceWhenStartPastExistingEndShouldThrowException() {
 		StringSequence sequence = new StringSequence("abcde").subSequence(1, 4);
 		assertThat(sequence.toString()).isEqualTo("bcd");
 		assertThat(sequence.subSequence(2, 3).toString()).isEqualTo("d");
-		assertThatExceptionOfType(IndexOutOfBoundsException.class)
-				.isThrownBy(() -> sequence.subSequence(4, 3));
+		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> sequence.subSequence(4, 3));
 	}
 
 	@Test
-	public void isEmptyWhenEmptyShouldReturnTrue() {
+	void isEmptyWhenEmptyShouldReturnTrue() {
 		assertThat(new StringSequence("").isEmpty()).isTrue();
 	}
 
 	@Test
-	public void isEmptyWhenNotEmptyShouldReturnFalse() {
+	void isEmptyWhenNotEmptyShouldReturnFalse() {
 		assertThat(new StringSequence("x").isEmpty()).isFalse();
 	}
 
 	@Test
-	public void lengthShouldReturnLength() {
+	void lengthShouldReturnLength() {
 		StringSequence sequence = new StringSequence("hamburger");
 		assertThat(sequence.length()).isEqualTo(9);
 		assertThat(sequence.subSequence(4, 8).length()).isEqualTo(4);
 	}
 
 	@Test
-	public void charAtShouldReturnChar() {
+	void charAtShouldReturnChar() {
 		StringSequence sequence = new StringSequence("hamburger");
 		assertThat(sequence.charAt(0)).isEqualTo('h');
 		assertThat(sequence.charAt(1)).isEqualTo('a');
@@ -123,7 +117,7 @@ public class StringSequenceTests {
 	}
 
 	@Test
-	public void indexOfCharShouldReturnIndexOf() {
+	void indexOfCharShouldReturnIndexOf() {
 		StringSequence sequence = new StringSequence("aabbaacc");
 		assertThat(sequence.indexOf('a')).isEqualTo(0);
 		assertThat(sequence.indexOf('b')).isEqualTo(2);
@@ -131,7 +125,7 @@ public class StringSequenceTests {
 	}
 
 	@Test
-	public void indexOfStringShouldReturnIndexOf() {
+	void indexOfStringShouldReturnIndexOf() {
 		StringSequence sequence = new StringSequence("aabbaacc");
 		assertThat(sequence.indexOf("a")).isEqualTo(0);
 		assertThat(sequence.indexOf("b")).isEqualTo(2);
@@ -139,7 +133,7 @@ public class StringSequenceTests {
 	}
 
 	@Test
-	public void indexOfStringFromIndexShouldReturnIndexOf() {
+	void indexOfStringFromIndexShouldReturnIndexOf() {
 		StringSequence sequence = new StringSequence("aabbaacc");
 		assertThat(sequence.indexOf("a", 2)).isEqualTo(4);
 		assertThat(sequence.indexOf("b", 3)).isEqualTo(3);
@@ -147,15 +141,13 @@ public class StringSequenceTests {
 	}
 
 	@Test
-	public void hashCodeShouldBeSameAsString() {
-		assertThat(new StringSequence("hamburger").hashCode())
-				.isEqualTo("hamburger".hashCode());
-		assertThat(new StringSequence("hamburger").subSequence(4, 8).hashCode())
-				.isEqualTo("urge".hashCode());
+	void hashCodeShouldBeSameAsString() {
+		assertThat(new StringSequence("hamburger").hashCode()).isEqualTo("hamburger".hashCode());
+		assertThat(new StringSequence("hamburger").subSequence(4, 8).hashCode()).isEqualTo("urge".hashCode());
 	}
 
 	@Test
-	public void equalsWhenSameContentShouldMatch() {
+	void equalsWhenSameContentShouldMatch() {
 		StringSequence a = new StringSequence("hamburger").subSequence(4, 8);
 		StringSequence b = new StringSequence("urge");
 		StringSequence c = new StringSequence("urgh");
@@ -163,50 +155,50 @@ public class StringSequenceTests {
 	}
 
 	@Test
-	public void notEqualsWhenSequencesOfDifferentLength() {
+	void notEqualsWhenSequencesOfDifferentLength() {
 		StringSequence a = new StringSequence("abcd");
 		StringSequence b = new StringSequence("ef");
 		assertThat(a).isNotEqualTo(b);
 	}
 
 	@Test
-	public void startsWithWhenExactMatch() {
+	void startsWithWhenExactMatch() {
 		assertThat(new StringSequence("abc").startsWith("abc")).isTrue();
 	}
 
 	@Test
-	public void startsWithWhenLongerAndStartsWith() {
+	void startsWithWhenLongerAndStartsWith() {
 		assertThat(new StringSequence("abcd").startsWith("abc")).isTrue();
 	}
 
 	@Test
-	public void startsWithWhenLongerAndDoesNotStartWith() {
+	void startsWithWhenLongerAndDoesNotStartWith() {
 		assertThat(new StringSequence("abcd").startsWith("abx")).isFalse();
 	}
 
 	@Test
-	public void startsWithWhenShorterAndDoesNotStartWith() {
+	void startsWithWhenShorterAndDoesNotStartWith() {
 		assertThat(new StringSequence("ab").startsWith("abc")).isFalse();
 		assertThat(new StringSequence("ab").startsWith("c")).isFalse();
 	}
 
 	@Test
-	public void startsWithOffsetWhenExactMatch() {
+	void startsWithOffsetWhenExactMatch() {
 		assertThat(new StringSequence("xabc").startsWith("abc", 1)).isTrue();
 	}
 
 	@Test
-	public void startsWithOffsetWhenLongerAndStartsWith() {
+	void startsWithOffsetWhenLongerAndStartsWith() {
 		assertThat(new StringSequence("xabcd").startsWith("abc", 1)).isTrue();
 	}
 
 	@Test
-	public void startsWithOffsetWhenLongerAndDoesNotStartWith() {
+	void startsWithOffsetWhenLongerAndDoesNotStartWith() {
 		assertThat(new StringSequence("xabcd").startsWith("abx", 1)).isFalse();
 	}
 
 	@Test
-	public void startsWithOffsetWhenShorterAndDoesNotStartWith() {
+	void startsWithOffsetWhenShorterAndDoesNotStartWith() {
 		assertThat(new StringSequence("xab").startsWith("abc", 1)).isFalse();
 		assertThat(new StringSequence("xab").startsWith("c", 1)).isFalse();
 	}

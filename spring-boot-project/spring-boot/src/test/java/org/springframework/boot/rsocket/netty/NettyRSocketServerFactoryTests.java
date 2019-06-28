@@ -30,15 +30,13 @@ import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
 import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
-import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -57,10 +55,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class NettyRSocketServerFactoryTests {
-
-	@Rule
-	public OutputCapture output = new OutputCapture();
+class NettyRSocketServerFactoryTests {
 
 	private NettyRSocketServer rSocketServer;
 
@@ -68,8 +63,8 @@ public class NettyRSocketServerFactoryTests {
 
 	private static final Duration TIMEOUT = Duration.ofSeconds(3);
 
-	@After
-	public void tearDown() {
+	@AfterEach
+	void tearDown() {
 		if (this.rSocketServer != null) {
 			try {
 				this.rSocketServer.stop();
@@ -88,7 +83,7 @@ public class NettyRSocketServerFactoryTests {
 	}
 
 	@Test
-	public void specificPort() {
+	void specificPort() {
 		NettyRSocketServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
@@ -96,28 +91,26 @@ public class NettyRSocketServerFactoryTests {
 		this.rSocketServer.start();
 		this.requester = createRSocketTcpClient();
 		String payload = "test payload";
-		String response = this.requester.route("test").data(payload)
-				.retrieveMono(String.class).block(TIMEOUT);
+		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
 
 		assertThat(response).isEqualTo(payload);
 		assertThat(this.rSocketServer.address().getPort()).isEqualTo(specificPort);
 	}
 
 	@Test
-	public void websocketTransport() {
+	void websocketTransport() {
 		NettyRSocketServerFactory factory = getFactory();
 		factory.setTransport(RSocketServer.TRANSPORT.WEBSOCKET);
 		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
 		this.rSocketServer.start();
 		this.requester = createRSocketWebSocketClient();
 		String payload = "test payload";
-		String response = this.requester.route("test").data(payload)
-				.retrieveMono(String.class).block(TIMEOUT);
+		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
 		assertThat(response).isEqualTo(payload);
 	}
 
 	@Test
-	public void serverCustomizers() {
+	void serverCustomizers() {
 		NettyRSocketServerFactory factory = getFactory();
 		ServerRSocketFactoryCustomizer[] customizers = new ServerRSocketFactoryCustomizer[2];
 		for (int i = 0; i < customizers.length; i++) {
@@ -129,40 +122,33 @@ public class NettyRSocketServerFactoryTests {
 		this.rSocketServer = factory.create(new EchoRequestResponseAcceptor());
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (ServerRSocketFactoryCustomizer customizer : customizers) {
-			ordered.verify(customizer)
-					.apply(any(RSocketFactory.ServerRSocketFactory.class));
+			ordered.verify(customizer).apply(any(RSocketFactory.ServerRSocketFactory.class));
 		}
 	}
 
 	private RSocketRequester createRSocketTcpClient() {
 		Assertions.assertThat(this.rSocketServer).isNotNull();
 		InetSocketAddress address = this.rSocketServer.address();
-		return createRSocketRequesterBuilder()
-				.connectTcp(address.getHostString(), address.getPort()).block();
+		return createRSocketRequesterBuilder().connectTcp(address.getHostString(), address.getPort()).block();
 	}
 
 	private RSocketRequester createRSocketWebSocketClient() {
 		Assertions.assertThat(this.rSocketServer).isNotNull();
 		InetSocketAddress address = this.rSocketServer.address();
-		return createRSocketRequesterBuilder()
-				.connect(WebsocketClientTransport.create(address)).block();
+		return createRSocketRequesterBuilder().connect(WebsocketClientTransport.create(address)).block();
 	}
 
 	private RSocketRequester.Builder createRSocketRequesterBuilder() {
-		RSocketStrategies strategies = RSocketStrategies.builder()
-				.decoder(StringDecoder.allMimeTypes())
+		RSocketStrategies strategies = RSocketStrategies.builder().decoder(StringDecoder.allMimeTypes())
 				.encoder(CharSequenceEncoder.allMimeTypes())
-				.dataBufferFactory(
-						new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT))
-				.build();
+				.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT)).build();
 		return RSocketRequester.builder().rsocketStrategies(strategies);
 	}
 
 	static class EchoRequestResponseAcceptor implements SocketAcceptor {
 
 		@Override
-		public Mono<RSocket> accept(ConnectionSetupPayload setupPayload,
-				RSocket rSocket) {
+		public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket rSocket) {
 			return Mono.just(new AbstractRSocket() {
 				@Override
 				public Mono<Payload> requestResponse(Payload payload) {

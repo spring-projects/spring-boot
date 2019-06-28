@@ -57,14 +57,12 @@ import org.springframework.util.Assert;
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@EnableConfigurationProperties({ WebEndpointProperties.class,
-		ManagementServerProperties.class })
+@EnableConfigurationProperties({ WebEndpointProperties.class, ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
-	static class SameManagementContextConfiguration
-			implements SmartInitializingSingleton {
+	static class SameManagementContextConfiguration implements SmartInitializingSingleton {
 
 		private final Environment environment;
 
@@ -76,17 +74,14 @@ public class ManagementContextAutoConfiguration {
 		public void afterSingletonsInstantiated() {
 			verifySslConfiguration();
 			if (this.environment instanceof ConfigurableEnvironment) {
-				addLocalManagementPortPropertyAlias(
-						(ConfigurableEnvironment) this.environment);
+				addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.environment);
 			}
 		}
 
 		private void verifySslConfiguration() {
-			Boolean enabled = this.environment
-					.getProperty("management.server.ssl.enabled", Boolean.class, false);
-			Assert.state(!enabled,
-					"Management-specific SSL cannot be configured as the management "
-							+ "server is not listening on a separate port");
+			Boolean enabled = this.environment.getProperty("management.server.ssl.enabled", Boolean.class, false);
+			Assert.state(!enabled, "Management-specific SSL cannot be configured as the management "
+					+ "server is not listening on a separate port");
 		}
 
 		/**
@@ -94,20 +89,18 @@ public class ManagementContextAutoConfiguration {
 		 * 'local.server.port'.
 		 * @param environment the environment
 		 */
-		private void addLocalManagementPortPropertyAlias(
-				ConfigurableEnvironment environment) {
-			environment.getPropertySources()
-					.addLast(new PropertySource<Object>("Management Server") {
+		private void addLocalManagementPortPropertyAlias(ConfigurableEnvironment environment) {
+			environment.getPropertySources().addLast(new PropertySource<Object>("Management Server") {
 
-						@Override
-						public Object getProperty(String name) {
-							if ("local.management.port".equals(name)) {
-								return environment.getProperty("local.server.port");
-							}
-							return null;
-						}
+				@Override
+				public Object getProperty(String name) {
+					if ("local.management.port".equals(name)) {
+						return environment.getProperty("local.server.port");
+					}
+					return null;
+				}
 
-					});
+			});
 		}
 
 		@Configuration(proxyBeanMethods = false)
@@ -120,8 +113,7 @@ public class ManagementContextAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-	static class DifferentManagementContextConfiguration
-			implements ApplicationListener<WebServerInitializedEvent> {
+	static class DifferentManagementContextConfiguration implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
 
@@ -141,30 +133,25 @@ public class ManagementContextAutoConfiguration {
 								EnableChildManagementContextConfiguration.class,
 								PropertyPlaceholderAutoConfiguration.class);
 				if (isLazyInitialization()) {
-					managementContext.addBeanFactoryPostProcessor(
-							new LazyInitializationBeanFactoryPostProcessor());
+					managementContext.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 				}
 				managementContext.setServerNamespace("management");
 				managementContext.setId(this.applicationContext.getId() + ":management");
 				setClassLoaderIfPossible(managementContext);
-				CloseManagementContextListener.addIfPossible(this.applicationContext,
-						managementContext);
+				CloseManagementContextListener.addIfPossible(this.applicationContext, managementContext);
 				managementContext.refresh();
 			}
 		}
 
 		protected boolean isLazyInitialization() {
 			AbstractApplicationContext context = (AbstractApplicationContext) this.applicationContext;
-			List<BeanFactoryPostProcessor> postProcessors = context
-					.getBeanFactoryPostProcessors();
-			return postProcessors.stream().anyMatch(
-					LazyInitializationBeanFactoryPostProcessor.class::isInstance);
+			List<BeanFactoryPostProcessor> postProcessors = context.getBeanFactoryPostProcessors();
+			return postProcessors.stream().anyMatch(LazyInitializationBeanFactoryPostProcessor.class::isInstance);
 		}
 
 		private void setClassLoaderIfPossible(ConfigurableApplicationContext child) {
 			if (child instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) child)
-						.setClassLoader(this.applicationContext.getClassLoader());
+				((DefaultResourceLoader) child).setClassLoader(this.applicationContext.getClassLoader());
 			}
 		}
 
@@ -174,15 +161,13 @@ public class ManagementContextAutoConfiguration {
 	 * {@link ApplicationListener} to propagate the {@link ContextClosedEvent} and
 	 * {@link ApplicationFailedEvent} from a parent to a child.
 	 */
-	private static class CloseManagementContextListener
-			implements ApplicationListener<ApplicationEvent> {
+	private static class CloseManagementContextListener implements ApplicationListener<ApplicationEvent> {
 
 		private final ApplicationContext parentContext;
 
 		private final ConfigurableApplicationContext childContext;
 
-		CloseManagementContextListener(ApplicationContext parentContext,
-				ConfigurableApplicationContext childContext) {
+		CloseManagementContextListener(ApplicationContext parentContext, ConfigurableApplicationContext childContext) {
 			this.parentContext = parentContext;
 			this.childContext = childContext;
 		}
@@ -220,8 +205,7 @@ public class ManagementContextAutoConfiguration {
 
 		private static void add(ConfigurableApplicationContext parentContext,
 				ConfigurableApplicationContext childContext) {
-			parentContext.addApplicationListener(
-					new CloseManagementContextListener(parentContext, childContext));
+			parentContext.addApplicationListener(new CloseManagementContextListener(parentContext, childContext));
 		}
 
 	}

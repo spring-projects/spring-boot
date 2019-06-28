@@ -34,26 +34,23 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class CouchbaseHealthIndicatorAutoConfigurationTests {
+class CouchbaseHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(Cluster.class, () -> mock(Cluster.class)).withConfiguration(
-					AutoConfigurations.of(CouchbaseHealthIndicatorAutoConfiguration.class,
-							HealthIndicatorAutoConfiguration.class));
+			.withBean(Cluster.class, () -> mock(Cluster.class)).withConfiguration(AutoConfigurations
+					.of(CouchbaseHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(CouchbaseHealthIndicator.class)
+	void runShouldCreateIndicator() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CouchbaseHealthIndicator.class)
 				.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CouchbaseHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 

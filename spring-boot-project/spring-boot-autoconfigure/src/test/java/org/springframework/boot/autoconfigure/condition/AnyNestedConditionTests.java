@@ -36,31 +36,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class AnyNestedConditionTests {
+class AnyNestedConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void neither() {
+	void neither() {
 		this.contextRunner.withUserConfiguration(Config.class).run(match(false));
 	}
 
 	@Test
-	public void propertyA() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a")
-				.run(match(true));
+	void propertyA() {
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a").run(match(true));
 	}
 
 	@Test
-	public void propertyB() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("b:b")
-				.run(match(true));
+	void propertyB() {
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("b:b").run(match(true));
 	}
 
 	@Test
-	public void both() {
-		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("a:a", "b:b").run(match(true));
+	void both() {
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a", "b:b").run(match(true));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> match(boolean expected) {

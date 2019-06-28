@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class RabbitHealthIndicatorTests {
+class RabbitHealthIndicatorTests {
 
 	@Mock
 	private RabbitTemplate rabbitTemplate;
@@ -50,7 +50,7 @@ public class RabbitHealthIndicatorTests {
 	private Channel channel;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		given(this.rabbitTemplate.execute(any())).willAnswer((invocation) -> {
 			ChannelCallback<?> callback = invocation.getArgument(0);
@@ -59,25 +59,23 @@ public class RabbitHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWhenRabbitTemplateIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RabbitHealthIndicator(null))
+	void createWhenRabbitTemplateIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new RabbitHealthIndicator(null))
 				.withMessageContaining("RabbitTemplate must not be null");
 	}
 
 	@Test
-	public void healthWhenConnectionSucceedsShouldReturnUpWithVersion() {
+	void healthWhenConnectionSucceedsShouldReturnUpWithVersion() {
 		Connection connection = mock(Connection.class);
 		given(this.channel.getConnection()).willReturn(connection);
-		given(connection.getServerProperties())
-				.willReturn(Collections.singletonMap("version", "123"));
+		given(connection.getServerProperties()).willReturn(Collections.singletonMap("version", "123"));
 		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("version", "123");
 	}
 
 	@Test
-	public void healthWhenConnectionFailsShouldReturnDown() {
+	void healthWhenConnectionFailsShouldReturnDown() {
 		given(this.channel.getConnection()).willThrow(new RuntimeException());
 		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

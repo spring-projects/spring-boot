@@ -38,26 +38,25 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  */
-public class AutoConfigurationExcludeFilterTests {
+class AutoConfigurationExcludeFilterTests {
 
 	private static final Class<?> FILTERED = ExampleFilteredAutoConfiguration.class;
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void filterExcludeAutoConfiguration() {
+	void filterExcludeAutoConfiguration() {
 		this.context = new AnnotationConfigApplicationContext(Config.class);
 		assertThat(this.context.getBeansOfType(String.class)).hasSize(1);
 		assertThat(this.context.getBean(String.class)).isEqualTo("test");
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(FILTERED));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(FILTERED));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -68,8 +67,7 @@ public class AutoConfigurationExcludeFilterTests {
 
 	}
 
-	static class TestAutoConfigurationExcludeFilter
-			extends AutoConfigurationExcludeFilter {
+	static class TestAutoConfigurationExcludeFilter extends AutoConfigurationExcludeFilter {
 
 		@Override
 		protected List<String> getAutoConfigurations() {

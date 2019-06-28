@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.springframework.context.ApplicationContext;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class JmxEndpointDiscoverer
-		extends EndpointDiscoverer<ExposableJmxEndpoint, JmxOperation>
+public class JmxEndpointDiscoverer extends EndpointDiscoverer<ExposableJmxEndpoint, JmxOperation>
 		implements JmxEndpointsSupplier {
 
 	/**
@@ -47,30 +46,27 @@ public class JmxEndpointDiscoverer
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param filters filters to apply
 	 */
-	public JmxEndpointDiscoverer(ApplicationContext applicationContext,
-			ParameterValueMapper parameterValueMapper,
+	public JmxEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 			Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableJmxEndpoint>> filters) {
 		super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
 	}
 
 	@Override
-	protected ExposableJmxEndpoint createEndpoint(Object endpointBean, EndpointId id,
-			boolean enabledByDefault, Collection<JmxOperation> operations) {
-		return new DiscoveredJmxEndpoint(this, endpointBean, id, enabledByDefault,
-				operations);
+	protected ExposableJmxEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+			Collection<JmxOperation> operations) {
+		return new DiscoveredJmxEndpoint(this, endpointBean, id, enabledByDefault, operations);
 	}
 
 	@Override
-	protected JmxOperation createOperation(EndpointId endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
+	protected JmxOperation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
+			OperationInvoker invoker) {
 		return new DiscoveredJmxOperation(endpointId, operationMethod, invoker);
 	}
 
 	@Override
 	protected OperationKey createOperationKey(JmxOperation operation) {
-		return new OperationKey(operation.getName(),
-				() -> "MBean call '" + operation.getName() + "'");
+		return new OperationKey(operation.getName(), () -> "MBean call '" + operation.getName() + "'");
 	}
 
 }

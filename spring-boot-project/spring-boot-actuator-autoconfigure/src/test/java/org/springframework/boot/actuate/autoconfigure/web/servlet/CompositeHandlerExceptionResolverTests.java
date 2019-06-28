@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CompositeHandlerExceptionResolverTests {
+class CompositeHandlerExceptionResolverTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -48,22 +48,22 @@ public class CompositeHandlerExceptionResolverTests {
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
-	public void resolverShouldDelegateToOtherResolversInContext() {
+	void resolverShouldDelegateToOtherResolversInContext() {
 		load(TestConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
-		ModelAndView resolved = resolver.resolveException(this.request, this.response,
-				null, new HttpRequestMethodNotSupportedException("POST"));
+		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
+				new HttpRequestMethodNotSupportedException("POST"));
 		assertThat(resolved.getViewName()).isEqualTo("test-view");
 	}
 
 	@Test
-	public void resolverShouldAddDefaultResolverIfNonePresent() {
+	void resolverShouldAddDefaultResolverIfNonePresent() {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
 				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
-		ModelAndView resolved = resolver.resolveException(this.request, this.response,
-				null, new HttpRequestMethodNotSupportedException("POST"));
+		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
+				new HttpRequestMethodNotSupportedException("POST"));
 		assertThat(resolved).isNotNull();
 	}
 
@@ -98,8 +98,8 @@ public class CompositeHandlerExceptionResolverTests {
 	static class TestHandlerExceptionResolver implements HandlerExceptionResolver {
 
 		@Override
-		public ModelAndView resolveException(HttpServletRequest request,
-				HttpServletResponse response, Object handler, Exception ex) {
+		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+				Exception ex) {
 			return new ModelAndView("test-view");
 		}
 

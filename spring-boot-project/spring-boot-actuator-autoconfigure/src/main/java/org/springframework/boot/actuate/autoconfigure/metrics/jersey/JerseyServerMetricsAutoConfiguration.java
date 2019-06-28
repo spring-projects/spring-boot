@@ -54,8 +54,7 @@ import org.springframework.core.annotation.Order;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
 @ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
@@ -75,24 +74,22 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(
-			MeterRegistry meterRegistry, JerseyTagsProvider tagsProvider) {
+	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
+			JerseyTagsProvider tagsProvider) {
 		Server server = this.properties.getWeb().getServer();
-		return (config) -> config.register(new MetricsApplicationEventListener(
-				meterRegistry, tagsProvider, server.getRequest().getMetricName(),
-				server.getRequest().getAutotime().isEnabled(),
-				new AnnotationUtilsAnnotationFinder()));
+		return (config) -> config.register(
+				new MetricsApplicationEventListener(meterRegistry, tagsProvider, server.getRequest().getMetricName(),
+						server.getRequest().getAutotime().isEnabled(), new AnnotationUtilsAnnotationFinder()));
 	}
 
 	@Bean
 	@Order(0)
 	public MeterFilter jerseyMetricsUriTagFilter() {
-		String metricName = this.properties.getWeb().getServer().getRequest()
-				.getMetricName();
-		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
-				.format("Reached the maximum number of URI tags for '%s'.", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				this.properties.getWeb().getServer().getMaxUriTags(), filter);
+		String metricName = this.properties.getWeb().getServer().getRequest().getMetricName();
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
+				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri", this.properties.getWeb().getServer().getMaxUriTags(),
+				filter);
 	}
 
 	/**
@@ -101,8 +98,7 @@ public class JerseyServerMetricsAutoConfiguration {
 	private static class AnnotationUtilsAnnotationFinder implements AnnotationFinder {
 
 		@Override
-		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement,
-				Class<A> annotationType) {
+		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
 		}
 

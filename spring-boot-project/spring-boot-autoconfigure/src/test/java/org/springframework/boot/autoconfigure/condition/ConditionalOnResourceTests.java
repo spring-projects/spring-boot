@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class ConditionalOnResourceTests {
+class ConditionalOnResourceTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testResourceExists() {
+	void testResourceExists() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("foo")).isTrue();
@@ -43,7 +43,7 @@ public class ConditionalOnResourceTests {
 	}
 
 	@Test
-	public void testResourceExistsWithPlaceholder() {
+	void testResourceExistsWithPlaceholder() {
 		TestPropertyValues.of("schema=schema.sql").applyTo(this.context);
 		this.context.register(PlaceholderConfiguration.class);
 		this.context.refresh();
@@ -52,7 +52,7 @@ public class ConditionalOnResourceTests {
 	}
 
 	@Test
-	public void testResourceNotExists() {
+	void testResourceNotExists() {
 		this.context.register(MissingConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("foo")).isFalse();

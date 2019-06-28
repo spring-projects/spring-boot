@@ -47,21 +47,18 @@ public class ServletManagementContextAutoConfiguration {
 	}
 
 	@Bean
-	public ManagementServletContext managementServletContext(
-			WebEndpointProperties properties) {
+	public ManagementServletContext managementServletContext(WebEndpointProperties properties) {
 		return properties::getBasePath;
 	}
 
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "management.server",
-			name = "add-application-context-header", havingValue = "true")
+	@ConditionalOnProperty(prefix = "management.server", name = "add-application-context-header", havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
-		public ApplicationContextHeaderFilter applicationContextIdFilter(
-				ApplicationContext context) {
+		public ApplicationContextHeaderFilter applicationContextIdFilter(ApplicationContext context) {
 			return new ApplicationContextHeaderFilter(context);
 		}
 

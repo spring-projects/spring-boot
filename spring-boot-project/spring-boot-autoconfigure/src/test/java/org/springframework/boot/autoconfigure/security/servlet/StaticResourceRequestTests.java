@@ -38,12 +38,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class StaticResourceRequestTests {
+class StaticResourceRequestTests {
 
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Test
-	public void atCommonLocationsShouldMatchCommonLocations() {
+	void atCommonLocationsShouldMatchCommonLocations() {
 		RequestMatcher matcher = this.resourceRequest.atCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
@@ -54,39 +54,35 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
-		RequestMatcher matcher = this.resourceRequest.atCommonLocations()
-				.excluding(StaticResourceLocation.CSS);
+	void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
+		RequestMatcher matcher = this.resourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
 
 	@Test
-	public void atLocationShouldMatchLocation() {
+	void atLocationShouldMatchLocation() {
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
-	public void atLocationWhenHasServletPathShouldMatchLocation() {
+	void atLocationWhenHasServletPathShouldMatchLocation() {
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher, "/foo").matches("/foo", "/css/file.css");
 		assertMatcher(matcher, "/foo").doesNotMatch("/foo", "/js/file.js");
 	}
 
 	@Test
-	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.resourceRequest.at(null))
+	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
-	public void excludeFromSetWhenSetIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> this.resourceRequest.atCommonLocations().excluding(null))
+	void excludeFromSetWhenSetIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
@@ -124,8 +120,7 @@ public class StaticResourceRequestTests {
 		}
 
 		private void matches(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Matches " + getRequestPath(request)).isTrue();
+			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
 		public void doesNotMatch(String path) {
@@ -137,8 +132,7 @@ public class StaticResourceRequestTests {
 		}
 
 		private void doesNotMatch(HttpServletRequest request) {
-			assertThat(this.matcher.matches(request))
-					.as("Does not match " + getRequestPath(request)).isFalse();
+			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
 		private MockHttpServletRequest mockRequest(String path) {
@@ -147,9 +141,7 @@ public class StaticResourceRequestTests {
 
 		private MockHttpServletRequest mockRequest(String servletPath, String path) {
 			MockServletContext servletContext = new MockServletContext();
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-					this.context);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
 				request.setServletPath(servletPath);

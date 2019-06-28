@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,13 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
 
@@ -39,34 +37,30 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  *
  * @author Roman Zaynetdinov
  */
-@RunWith(SpringRunner.class)
 @WebFluxTest
 @WithMockUser
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
-public class WebTestClientRestDocsAutoConfigurationIntegrationTests {
+class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
 
 	private File generatedSnippets;
 
-	@Before
-	public void deleteSnippets() {
-		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
-				"generated-snippets");
+	@BeforeEach
+	void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
 		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}
 
 	@Test
-	public void defaultSnippetsAreWritten() throws Exception {
-		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful()
-				.expectBody().consumeWith(document("default-snippets"));
+	void defaultSnippetsAreWritten() throws Exception {
+		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful().expectBody()
+				.consumeWith(document("default-snippets"));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc")))
-				.contains("'https://api.example.com/'");
-		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc")))
-				.contains("api.example.com");
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc"))).contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc"))).contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
 	}
 

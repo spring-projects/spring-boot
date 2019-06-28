@@ -32,12 +32,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Dave Syer
  * @author Vedran Pavic
  */
-public class AuditEventTests {
+class AuditEventTests {
 
 	@Test
-	public void nowEvent() {
-		AuditEvent event = new AuditEvent("phil", "UNKNOWN",
-				Collections.singletonMap("a", (Object) "b"));
+	void nowEvent() {
+		AuditEvent event = new AuditEvent("phil", "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
 		assertThat(event.getData().get("a")).isEqualTo("b");
 		assertThat(event.getType()).isEqualTo("UNKNOWN");
 		assertThat(event.getPrincipal()).isEqualTo("phil");
@@ -45,45 +44,40 @@ public class AuditEventTests {
 	}
 
 	@Test
-	public void convertStringsToData() {
+	void convertStringsToData() {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN", "a=b", "c=d");
 		assertThat(event.getData().get("a")).isEqualTo("b");
 		assertThat(event.getData().get("c")).isEqualTo("d");
 	}
 
 	@Test
-	public void nullPrincipalIsMappedToEmptyString() {
-		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN",
-				Collections.singletonMap("a", (Object) "b"));
+	void nullPrincipalIsMappedToEmptyString() {
+		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
 		assertThat(auditEvent.getPrincipal()).isEmpty();
 	}
 
 	@Test
-	public void nullTimestamp() {
+	void nullTimestamp() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN",
-						Collections.singletonMap("a", (Object) "b")))
+				.isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN", Collections.singletonMap("a", (Object) "b")))
 				.withMessageContaining("Timestamp must not be null");
 	}
 
 	@Test
-	public void nullType() {
+	void nullType() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new AuditEvent("phil", null,
-						Collections.singletonMap("a", (Object) "b")))
+				.isThrownBy(() -> new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b")))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
-	public void jsonFormat() throws Exception {
+	void jsonFormat() throws Exception {
 		AuditEvent event = new AuditEvent("johannes", "UNKNOWN",
 				Collections.singletonMap("type", (Object) "BadCredentials"));
-		String json = Jackson2ObjectMapperBuilder.json().build()
-				.writeValueAsString(event);
+		String json = Jackson2ObjectMapperBuilder.json().build().writeValueAsString(event);
 		JSONObject jsonObject = new JSONObject(json);
 		assertThat(jsonObject.getString("type")).isEqualTo("UNKNOWN");
-		assertThat(jsonObject.getJSONObject("data").getString("type"))
-				.isEqualTo("BadCredentials");
+		assertThat(jsonObject.getJSONObject("data").getString("type")).isEqualTo("BadCredentials");
 	}
 
 }

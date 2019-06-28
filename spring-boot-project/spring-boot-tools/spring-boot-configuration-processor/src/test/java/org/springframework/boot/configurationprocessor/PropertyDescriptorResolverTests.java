@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,9 +28,8 @@ import java.util.stream.Stream;
 
 import javax.lang.model.element.TypeElement;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
@@ -52,103 +52,89 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class PropertyDescriptorResolverTests {
+class PropertyDescriptorResolverTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void propertiesWithJavaBeanProperties() throws IOException {
-		process(SimpleProperties.class, propertyNames((stream) -> assertThat(stream)
-				.containsExactly("theName", "flag", "comparator")));
+	void propertiesWithJavaBeanProperties() throws IOException {
+		process(SimpleProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator")));
 	}
 
 	@Test
-	public void propertiesWithJavaBeanHierarchicalProperties() throws IOException {
+	void propertiesWithJavaBeanHierarchicalProperties() throws IOException {
 		process(HierarchicalProperties.class,
-				Arrays.asList(HierarchicalPropertiesParent.class,
-						HierarchicalPropertiesGrandparent.class),
+				Arrays.asList(HierarchicalPropertiesParent.class, HierarchicalPropertiesGrandparent.class),
 				(type, metadataEnv) -> {
-					PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(
-							metadataEnv);
-					assertThat(
-							resolver.resolve(type, null).map(PropertyDescriptor::getName))
-									.containsExactly("third", "second", "first");
+					PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
+					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",
+							"second", "first");
 					assertThat(resolver.resolve(type, null)
-							.map((descriptor) -> descriptor.resolveItemMetadata("test",
-									metadataEnv))
-							.map(ItemMetadata::getDefaultValue)).containsExactly("three",
-									"two", "one");
+							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
+							.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
 				});
 	}
 
 	@Test
-	public void propertiesWithLombokGetterSetterAtClassLevel() throws IOException {
-		process(LombokSimpleProperties.class, propertyNames((stream) -> assertThat(stream)
-				.containsExactly("name", "description", "counter", "number", "items")));
+	void propertiesWithLombokGetterSetterAtClassLevel() throws IOException {
+		process(LombokSimpleProperties.class, propertyNames(
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	public void propertiesWithLombokGetterSetterAtFieldLevel() throws IOException {
-		process(LombokExplicitProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("name",
-						"description", "counter", "number", "items")));
+	void propertiesWithLombokGetterSetterAtFieldLevel() throws IOException {
+		process(LombokExplicitProperties.class, propertyNames(
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	public void propertiesWithLombokDataClass() throws IOException {
-		process(LombokSimpleDataProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("name",
-						"description", "counter", "number", "items")));
+	void propertiesWithLombokDataClass() throws IOException {
+		process(LombokSimpleDataProperties.class, propertyNames(
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	public void propertiesWithConstructorParameters() throws IOException {
-		process(ImmutableSimpleProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("theName",
-						"flag", "comparator", "counter")));
+	void propertiesWithConstructorParameters() throws IOException {
+		process(ImmutableSimpleProperties.class, propertyNames(
+				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
 	}
 
 	@Test
-	public void propertiesWithSeveralConstructors() throws IOException {
+	void propertiesWithSeveralConstructors() throws IOException {
+		process(TwoConstructorsExample.class, propertyNames((stream) -> assertThat(stream).containsExactly("name")));
 		process(TwoConstructorsExample.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("name")));
-		process(TwoConstructorsExample.class, properties((stream) -> assertThat(stream)
-				.element(0).isInstanceOf(JavaBeanPropertyDescriptor.class)));
+				properties((stream) -> assertThat(stream).element(0).isInstanceOf(JavaBeanPropertyDescriptor.class)));
 	}
 
 	private BiConsumer<TypeElement, MetadataGenerationEnvironment> properties(
 			Consumer<Stream<PropertyDescriptor<?>>> stream) {
 		return (element, metadataEnv) -> {
-			PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(
-					metadataEnv);
+			PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
 			stream.accept(resolver.resolve(element, null));
 		};
 	}
 
-	private BiConsumer<TypeElement, MetadataGenerationEnvironment> propertyNames(
-			Consumer<Stream<String>> stream) {
-		return properties(
-				(result) -> stream.accept(result.map(PropertyDescriptor::getName)));
+	private BiConsumer<TypeElement, MetadataGenerationEnvironment> propertyNames(Consumer<Stream<String>> stream) {
+		return properties((result) -> stream.accept(result.map(PropertyDescriptor::getName)));
 	}
 
-	private void process(Class<?> target,
-			BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer)
+	private void process(Class<?> target, BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer)
 			throws IOException {
 		process(target, Collections.emptyList(), consumer);
 	}
 
 	private void process(Class<?> target, Collection<Class<?>> additionalClasses,
-			BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer)
-			throws IOException {
-		BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> internalConsumer = (
-				roundEnv, metadataEnv) -> {
+			BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer) throws IOException {
+		BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> internalConsumer = (roundEnv,
+				metadataEnv) -> {
 			TypeElement element = roundEnv.getRootElement(target);
 			consumer.accept(element, metadataEnv);
 		};
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(
 				internalConsumer, new MetadataGenerationEnvironmentFactory());
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
+		TestCompiler compiler = new TestCompiler(this.tempDir);
 		ArrayList<Class<?>> allClasses = new ArrayList<>();
 		allClasses.add(target);
 		allClasses.addAll(additionalClasses);

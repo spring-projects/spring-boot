@@ -38,55 +38,47 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
+class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(ConfigurationPropertiesReportEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ConfigurationPropertiesReportEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
+	void runShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues(
-						"management.endpoints.web.exposure.include=configprops")
+				.withPropertyValues("management.endpoints.web.exposure.include=configprops")
 				.run(validateTestProperties("******", "654321"));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.configprops.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoint.configprops.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues(
-				"management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
-				.withPropertyValues(
-						"management.endpoints.web.exposure.include=configprops")
+	void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withUserConfiguration(Config.class)
+				.withPropertyValues("management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
+				.withPropertyValues("management.endpoints.web.exposure.include=configprops")
 				.run(validateTestProperties("******", "******"));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateTestProperties(
-			String dbPassword, String myTestProperty) {
+	private ContextConsumer<AssertableApplicationContext> validateTestProperties(String dbPassword,
+			String myTestProperty) {
 		return (context) -> {
-			assertThat(context)
-					.hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
+			assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties properties = endpoint
-					.configurationProperties();
-			Map<String, Object> nestedProperties = properties.getContexts()
-					.get(context.getId()).getBeans().get("testProperties")
-					.getProperties();
+			ApplicationConfigurationProperties properties = endpoint.configurationProperties();
+			Map<String, Object> nestedProperties = properties.getContexts().get(context.getId()).getBeans()
+					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);

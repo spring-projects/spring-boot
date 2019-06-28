@@ -38,8 +38,7 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class ReactiveWebServerApplicationContext
-		extends GenericReactiveWebApplicationContext
+public class ReactiveWebServerApplicationContext extends GenericReactiveWebApplicationContext
 		implements ConfigurableWebServerApplicationContext {
 
 	private volatile ServerManager serverManager;
@@ -79,8 +78,7 @@ public class ReactiveWebServerApplicationContext
 			createWebServer();
 		}
 		catch (Throwable ex) {
-			throw new ApplicationContextException("Unable to start reactive web server",
-					ex);
+			throw new ApplicationContextException("Unable to start reactive web server", ex);
 		}
 	}
 
@@ -88,10 +86,8 @@ public class ReactiveWebServerApplicationContext
 		ServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
-			ReactiveWebServerFactory webServerFactory = getWebServerFactory(
-					webServerFactoryBeanName);
-			boolean lazyInit = getBeanFactory()
-					.getBeanDefinition(webServerFactoryBeanName).isLazyInit();
+			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
+			boolean lazyInit = getBeanFactory().getBeanDefinition(webServerFactoryBeanName).isLazyInit();
 			this.serverManager = ServerManager.get(webServerFactory, lazyInit);
 		}
 		initPropertySources();
@@ -99,18 +95,14 @@ public class ReactiveWebServerApplicationContext
 
 	protected String getWebServerFactoryBeanName() {
 		// Use bean names so that we don't consider the hierarchy
-		String[] beanNames = getBeanFactory()
-				.getBeanNamesForType(ReactiveWebServerFactory.class);
+		String[] beanNames = getBeanFactory().getBeanNamesForType(ReactiveWebServerFactory.class);
 		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
-					"Unable to start ReactiveWebApplicationContext due to missing "
-							+ "ReactiveWebServerFactory bean.");
+					"Unable to start ReactiveWebApplicationContext due to missing " + "ReactiveWebServerFactory bean.");
 		}
 		if (beanNames.length > 1) {
-			throw new ApplicationContextException(
-					"Unable to start ReactiveWebApplicationContext due to multiple "
-							+ "ReactiveWebServerFactory beans : "
-							+ StringUtils.arrayToCommaDelimitedString(beanNames));
+			throw new ApplicationContextException("Unable to start ReactiveWebApplicationContext due to multiple "
+					+ "ReactiveWebServerFactory beans : " + StringUtils.arrayToCommaDelimitedString(beanNames));
 		}
 		return beanNames[0];
 	}
@@ -239,10 +231,8 @@ public class ReactiveWebServerApplicationContext
 			this.lazyInit = lazyInit;
 		}
 
-		private Mono<Void> handleUninitialized(ServerHttpRequest request,
-				ServerHttpResponse response) {
-			throw new IllegalStateException(
-					"The HttpHandler has not yet been initialized");
+		private Mono<Void> handleUninitialized(ServerHttpRequest request, ServerHttpResponse response) {
+			throw new IllegalStateException("The HttpHandler has not yet been initialized");
 		}
 
 		@Override
@@ -254,8 +244,7 @@ public class ReactiveWebServerApplicationContext
 			return this.handler;
 		}
 
-		public static ServerManager get(ReactiveWebServerFactory factory,
-				boolean lazyInit) {
+		public static ServerManager get(ReactiveWebServerFactory factory, boolean lazyInit) {
 			return new ServerManager(factory, lazyInit);
 		}
 
@@ -263,11 +252,9 @@ public class ReactiveWebServerApplicationContext
 			return (manager != null) ? manager.server : null;
 		}
 
-		public static void start(ServerManager manager,
-				Supplier<HttpHandler> handlerSupplier) {
+		public static void start(ServerManager manager, Supplier<HttpHandler> handlerSupplier) {
 			if (manager != null && manager.server != null) {
-				manager.handler = manager.lazyInit
-						? new LazyHttpHandler(Mono.fromSupplier(handlerSupplier))
+				manager.handler = manager.lazyInit ? new LazyHttpHandler(Mono.fromSupplier(handlerSupplier))
 						: handlerSupplier.get();
 				manager.server.start();
 			}

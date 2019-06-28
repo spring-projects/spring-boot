@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class LogFileWebEndpointTests {
+class LogFileWebEndpointTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -49,49 +50,51 @@ public class LogFileWebEndpointTests {
 	private File logFile;
 
 	@BeforeEach
-	public void before(@TempDir Path temp) throws IOException {
+	void before(@TempDir Path temp) throws IOException {
 		this.logFile = Files.createTempFile(temp, "junit", null).toFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), this.logFile);
 	}
 
 	@Test
-	public void nullResponseWithoutLogFile() {
+	void nullResponseWithoutLogFile() {
 		assertThat(this.endpoint.logFile()).isNull();
 	}
 
 	@Test
-	public void nullResponseWithMissingLogFile() {
+	void nullResponseWithMissingLogFile() {
 		this.environment.setProperty("logging.file.name", "no_test.log");
 		assertThat(this.endpoint.logFile()).isNull();
 	}
 
 	@Test
-	public void resourceResponseWithLogFile() throws Exception {
+	void resourceResponseWithLogFile() throws Exception {
 		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(),
-				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource)).isEqualTo("--TEST--");
 	}
 
 	@Test
 	@Deprecated
-	public void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
+	void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		Resource resource = this.endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(),
-				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource)).isEqualTo("--TEST--");
 	}
 
 	@Test
-	public void resourceResponseWithExternalLogFile() throws Exception {
-		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment,
-				this.logFile);
+	void resourceResponseWithExternalLogFile() throws Exception {
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment, this.logFile);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(),
-				StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource)).isEqualTo("--TEST--");
+	}
+
+	private String contentOf(Resource resource) throws IOException {
+		try (InputStream input = resource.getInputStream()) {
+			return StreamUtils.copyToString(input, StandardCharsets.UTF_8);
+		}
 	}
 
 }

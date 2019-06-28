@@ -38,51 +38,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SessionAutoConfigurationMongoTests
-		extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb")
-				.withConfiguration(AutoConfigurations.of(
-						EmbeddedMongoAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
+	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
-						JdbcOperationsSessionRepository.class,
-						RedisOperationsSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(
-						EmbeddedMongoAutoConfiguration.class,
+						JdbcOperationsSessionRepository.class, RedisOperationsSessionRepository.class))
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
-	public void mongoSessionStoreWithCustomizations() {
+	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(
-						EmbeddedMongoAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=mongodb",
-						"spring.session.mongodb.collection-name=foo")
+				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.mongodb.collection-name=foo")
 				.run(validateSpringSessionUsesMongo("foo"));
 	}
 
-	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(
-			String collectionName) {
+	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(String collectionName) {
 		return (context) -> {
-			MongoOperationsSessionRepository repository = validateSessionRepository(
-					context, MongoOperationsSessionRepository.class);
-			assertThat(repository).hasFieldOrPropertyWithValue("collectionName",
-					collectionName);
+			MongoOperationsSessionRepository repository = validateSessionRepository(context,
+					MongoOperationsSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("collectionName", collectionName);
 		};
 	}
 

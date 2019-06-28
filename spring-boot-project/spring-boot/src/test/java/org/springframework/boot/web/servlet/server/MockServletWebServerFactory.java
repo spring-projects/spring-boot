@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
-		this.webServer = spy(
-				new MockServletWebServer(mergeInitializers(initializers), getPort()));
+		this.webServer = spy(new MockServletWebServer(mergeInitializers(initializers), getPort()));
 		return this.webServer;
 	}
 
@@ -54,22 +53,18 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 	}
 
 	public RegisteredServlet getRegisteredServlet(int index) {
-		return (getWebServer() != null) ? getWebServer().getRegisteredServlet(index)
-				: null;
+		return (getWebServer() != null) ? getWebServer().getRegisteredServlet(index) : null;
 	}
 
 	public RegisteredFilter getRegisteredFilter(int index) {
-		return (getWebServer() != null) ? getWebServer().getRegisteredFilters(index)
-				: null;
+		return (getWebServer() != null) ? getWebServer().getRegisteredFilters(index) : null;
 	}
 
 	public static class MockServletWebServer
-			extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer
-			implements WebServer {
+			extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer implements WebServer {
 
 		public MockServletWebServer(ServletContextInitializer[] initializers, int port) {
-			super(Arrays.stream(initializers)
-					.map((initializer) -> (Initializer) initializer::onStartup)
+			super(Arrays.stream(initializers).map((initializer) -> (Initializer) initializer::onStartup)
 					.toArray(Initializer[]::new), port);
 		}
 

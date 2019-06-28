@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 /**
  * {@link OriginLookup} backed by a {@link Map} containing {@link OriginTrackedValue
@@ -32,12 +33,30 @@ import org.springframework.core.env.MapPropertySource;
  * @since 2.0.0
  * @see OriginTrackedValue
  */
-public final class OriginTrackedMapPropertySource extends MapPropertySource
-		implements OriginLookup<String> {
+public final class OriginTrackedMapPropertySource extends MapPropertySource implements OriginLookup<String> {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private final boolean immutable;
+
+	/**
+	 * Create a new {@link OriginTrackedMapPropertySource} instance.
+	 * @param name the property source name
+	 * @param source the underlying map source
+	 */
+	@SuppressWarnings("rawtypes")
 	public OriginTrackedMapPropertySource(String name, Map source) {
+		this(name, source, false);
+	}
+
+	/**
+	 * Create a new {@link OriginTrackedMapPropertySource} instance.
+	 * @param name the property source name
+	 * @param source the underlying map source
+	 * @param immutable if the underlying source is immutable and guaranteed not to change
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public OriginTrackedMapPropertySource(String name, Map source, boolean immutable) {
 		super(name, source);
+		this.immutable = immutable;
 	}
 
 	@Override
@@ -56,6 +75,15 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource
 			return ((OriginTrackedValue) value).getOrigin();
 		}
 		return null;
+	}
+
+	/**
+	 * Return {@code true} if this {@link PropertySource} is immutable and has contents
+	 * that will never change.
+	 * @return if the property source is read only
+	 */
+	public boolean isImmutable() {
+		return this.immutable;
 	}
 
 }

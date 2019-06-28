@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -36,20 +36,19 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class PropertySourcesPlaceholdersResolverTests {
+class PropertySourcesPlaceholdersResolverTests {
 
 	private PropertySourcesPlaceholdersResolver resolver;
 
 	@Test
-	public void placeholderResolverIfEnvironmentNullShouldThrowException() {
+	void placeholderResolverIfEnvironmentNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new PropertySourcesPlaceholdersResolver((Environment) null))
+				.isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
-	public void resolveIfPlaceholderPresentResolvesProperty() {
+	void resolveIfPlaceholderPresentResolvesProperty() {
 		MutablePropertySources sources = getPropertySources();
 		this.resolver = new PropertySourcesPlaceholdersResolver(sources);
 		Object resolved = this.resolver.resolvePlaceholders("${FOO}");
@@ -57,24 +56,23 @@ public class PropertySourcesPlaceholdersResolverTests {
 	}
 
 	@Test
-	public void resolveIfPlaceholderAbsentUsesDefault() {
+	void resolveIfPlaceholderAbsentUsesDefault() {
 		this.resolver = new PropertySourcesPlaceholdersResolver((PropertySources) null);
 		Object resolved = this.resolver.resolvePlaceholders("${FOO:bar}");
 		assertThat(resolved).isEqualTo("bar");
 	}
 
 	@Test
-	public void resolveIfPlaceholderAbsentAndNoDefaultUsesPlaceholder() {
+	void resolveIfPlaceholderAbsentAndNoDefaultUsesPlaceholder() {
 		this.resolver = new PropertySourcesPlaceholdersResolver((PropertySources) null);
 		Object resolved = this.resolver.resolvePlaceholders("${FOO}");
 		assertThat(resolved).isEqualTo("${FOO}");
 	}
 
 	@Test
-	public void resolveIfHelperPresentShouldUseIt() {
+	void resolveIfHelperPresentShouldUseIt() {
 		MutablePropertySources sources = getPropertySources();
-		TestPropertyPlaceholderHelper helper = new TestPropertyPlaceholderHelper("$<",
-				">");
+		TestPropertyPlaceholderHelper helper = new TestPropertyPlaceholderHelper("$<", ">");
 		this.resolver = new PropertySourcesPlaceholdersResolver(sources, helper);
 		Object resolved = this.resolver.resolvePlaceholders("$<FOO>");
 		assertThat(resolved).isEqualTo("hello world");
@@ -90,8 +88,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 
 	static class TestPropertyPlaceholderHelper extends PropertyPlaceholderHelper {
 
-		TestPropertyPlaceholderHelper(String placeholderPrefix,
-				String placeholderSuffix) {
+		TestPropertyPlaceholderHelper(String placeholderPrefix, String placeholderSuffix) {
 			super(placeholderPrefix, placeholderSuffix);
 		}
 

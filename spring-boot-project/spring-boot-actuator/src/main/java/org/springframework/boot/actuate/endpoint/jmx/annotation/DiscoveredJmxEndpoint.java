@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,10 @@ import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
  *
  * @author Phillip Webb
  */
-class DiscoveredJmxEndpoint extends AbstractDiscoveredEndpoint<JmxOperation>
-		implements ExposableJmxEndpoint {
+class DiscoveredJmxEndpoint extends AbstractDiscoveredEndpoint<JmxOperation> implements ExposableJmxEndpoint {
 
-	DiscoveredJmxEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
-			EndpointId id, boolean enabledByDefault,
-			Collection<JmxOperation> operations) {
+	DiscoveredJmxEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
+			boolean enabledByDefault, Collection<JmxOperation> operations) {
 		super(discoverer, endpointBean, id, enabledByDefault, operations);
 	}
 

@@ -41,53 +41,51 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Alex Derkach
  */
-public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
+class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void couchbaseNotAvailable() {
+	void couchbaseNotAvailable() {
 		load(null);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void defaultRepository() {
+	void defaultRepository() {
 		load(DefaultConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(1);
 	}
 
 	@Test
-	public void imperativeRepositories() {
-		load(DefaultConfiguration.class,
-				"spring.data.couchbase.repositories.type=imperative");
+	void imperativeRepositories() {
+		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=imperative");
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void disabledRepositories() {
+	void disabledRepositories() {
 		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void noRepositoryAvailable() {
+	void noRepositoryAvailable() {
 		load(NoRepositoryConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
-		assertThat(this.context.getBeansOfType(ReactiveCityCouchbaseRepository.class))
-				.isEmpty();
+		assertThat(this.context.getBeansOfType(ReactiveCityCouchbaseRepository.class)).isEmpty();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -96,11 +94,9 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 		if (config != null) {
 			context.register(config);
 		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
-				CouchbaseRepositoriesAutoConfiguration.class,
-				CouchbaseReactiveDataAutoConfiguration.class,
-				CouchbaseReactiveRepositoriesAutoConfiguration.class);
+		context.register(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class,
+				CouchbaseReactiveDataAutoConfiguration.class, CouchbaseReactiveRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}

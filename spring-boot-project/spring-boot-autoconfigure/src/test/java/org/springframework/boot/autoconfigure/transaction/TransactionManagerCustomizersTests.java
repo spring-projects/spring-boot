@@ -32,21 +32,19 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class TransactionManagerCustomizersTests {
+class TransactionManagerCustomizersTests {
 
 	@Test
-	public void customizeWithNullCustomizersShouldDoNothing() {
-		new TransactionManagerCustomizers(null)
-				.customize(mock(PlatformTransactionManager.class));
+	void customizeWithNullCustomizersShouldDoNothing() {
+		new TransactionManagerCustomizers(null).customize(mock(PlatformTransactionManager.class));
 	}
 
 	@Test
-	public void customizeShouldCheckGeneric() {
+	void customizeShouldCheckGeneric() {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestJtaCustomizer());
-		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(
-				list);
+		TransactionManagerCustomizers customizers = new TransactionManagerCustomizers(list);
 		customizers.customize(mock(PlatformTransactionManager.class));
 		customizers.customize(mock(JtaTransactionManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);

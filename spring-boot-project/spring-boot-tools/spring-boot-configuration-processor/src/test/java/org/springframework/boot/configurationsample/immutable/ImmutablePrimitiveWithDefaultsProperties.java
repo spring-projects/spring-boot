@@ -42,9 +42,8 @@ public class ImmutablePrimitiveWithDefaultsProperties {
 
 	private final double ratio;
 
-	public ImmutablePrimitiveWithDefaultsProperties(@DefaultValue("true") boolean flag,
-			@DefaultValue("120") byte octet, @DefaultValue("a") char letter,
-			@DefaultValue("1000") short number, @DefaultValue("42") int counter,
+	public ImmutablePrimitiveWithDefaultsProperties(@DefaultValue("true") boolean flag, @DefaultValue("120") byte octet,
+			@DefaultValue("a") char letter, @DefaultValue("1000") short number, @DefaultValue("42") int counter,
 			@DefaultValue("2000") long value, @DefaultValue("0.5") float percentage,
 			@DefaultValue("42.42") double ratio) {
 		this.flag = flag;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 
 import org.springframework.beans.factory.ObjectFactory;
 
@@ -36,50 +39,48 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class MockRestarter implements TestRule {
+public class MockRestarter implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
 	private Map<String, Object> attributes = new HashMap<>();
 
 	private Restarter mock = mock(Restarter.class);
 
+	public Restarter getMock() {
+		return this.mock;
+	}
+
 	@Override
-	public Statement apply(Statement base, Description description) {
-		return new Statement() {
-
-			@Override
-			public void evaluate() throws Throwable {
-				setup();
-				base.evaluate();
-				cleanup();
-			}
-
-		};
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void setup() {
-		Restarter.setInstance(this.mock);
-		given(this.mock.getInitialUrls()).willReturn(new URL[] {});
-		given(this.mock.getOrAddAttribute(anyString(), any(ObjectFactory.class)))
-				.willAnswer((invocation) -> {
-					String name = invocation.getArgument(0);
-					ObjectFactory factory = invocation.getArgument(1);
-					Object attribute = MockRestarter.this.attributes.get(name);
-					if (attribute == null) {
-						attribute = factory.getObject();
-						MockRestarter.this.attributes.put(name, attribute);
-					}
-					return attribute;
-				});
-		given(this.mock.getThreadFactory()).willReturn(Thread::new);
-	}
-
-	private void cleanup() {
+	public void afterEach(ExtensionContext context) throws Exception {
 		this.attributes.clear();
 		Restarter.clearInstance();
 	}
 
-	public Restarter getMock() {
+	@Override
+	public void beforeEach(ExtensionContext context) throws Exception {
+		Restarter.setInstance(this.mock);
+		given(this.mock.getInitialUrls()).willReturn(new URL[] {});
+		given(this.mock.getOrAddAttribute(anyString(), any(ObjectFactory.class))).willAnswer((invocation) -> {
+			String name = invocation.getArgument(0);
+			ObjectFactory<?> factory = invocation.getArgument(1);
+			Object attribute = MockRestarter.this.attributes.get(name);
+			if (attribute == null) {
+				attribute = factory.getObject();
+				MockRestarter.this.attributes.put(name, attribute);
+			}
+			return attribute;
+		});
+		given(this.mock.getThreadFactory()).willReturn(Thread::new);
+	}
+
+	@Override
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+			throws ParameterResolutionException {
+		return parameterContext.getParameter().getType().equals(Restarter.class);
+	}
+
+	@Override
+	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+			throws ParameterResolutionException {
 		return this.mock;
 	}
 

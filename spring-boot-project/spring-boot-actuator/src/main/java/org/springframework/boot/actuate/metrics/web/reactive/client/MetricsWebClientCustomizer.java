@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.metrics.web.reactive.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
-import org.springframework.boot.actuate.metrics.Autotime;
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -41,12 +41,12 @@ public class MetricsWebClientCustomizer implements WebClientCustomizer {
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsWebClientCustomizer(MeterRegistry, WebClientExchangeTagsProvider, String, Autotime)}
+	 * {@link #MetricsWebClientCustomizer(MeterRegistry, WebClientExchangeTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	public MetricsWebClientCustomizer(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName) {
-		this(meterRegistry, tagProvider, metricName, new Autotime());
+	public MetricsWebClientCustomizer(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName) {
+		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
 	/**
@@ -56,14 +56,12 @@ public class MetricsWebClientCustomizer implements WebClientCustomizer {
 	 * @param meterRegistry the meter registry
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
-	 * @param autotime auto-timed request settings
+	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
-	public MetricsWebClientCustomizer(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName,
-			Autotime autotime) {
-		this.filterFunction = new MetricsWebClientFilterFunction(meterRegistry,
-				tagProvider, metricName, autotime);
+	public MetricsWebClientCustomizer(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName, AutoTimer autoTimer) {
+		this.filterFunction = new MetricsWebClientFilterFunction(meterRegistry, tagProvider, metricName, autoTimer);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegrationTests {
+class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegrationTests {
 
 	@SpyBean
 	private SimpleExampleStringGenericService spy;
@@ -48,10 +48,10 @@ public class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegration
 	private ExampleGenericStringServiceCaller caller;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say two");
-		assertThat(Mockito.mockingDetails(this.spy).getMockCreationSettings()
-				.getMockName().toString()).isEqualTo("two");
+		assertThat(Mockito.mockingDetails(this.spy).getMockCreationSettings().getMockName().toString())
+				.isEqualTo("two");
 		verify(this.spy).greeting();
 	}
 

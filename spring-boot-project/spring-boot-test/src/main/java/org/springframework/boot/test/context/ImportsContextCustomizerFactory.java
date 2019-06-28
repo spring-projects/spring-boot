@@ -41,8 +41,7 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		if (MergedAnnotations.from(testClass, SearchStrategy.EXHAUSTIVE)
-				.isPresent(Import.class)) {
+		if (MergedAnnotations.from(testClass, SearchStrategy.EXHAUSTIVE).isPresent(Import.class)) {
 			assertHasNoBeanMethods(testClass);
 			return new ImportsContextCustomizer(testClass);
 		}

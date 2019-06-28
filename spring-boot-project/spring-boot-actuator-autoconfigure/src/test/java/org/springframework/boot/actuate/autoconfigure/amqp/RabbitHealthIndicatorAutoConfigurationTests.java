@@ -32,25 +32,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class RabbitHealthIndicatorAutoConfigurationTests {
+class RabbitHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class,
-					RabbitHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+					RabbitHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(RabbitHealthIndicator.class)
+	void runShouldCreateIndicator() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RabbitHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.rabbit.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(RabbitHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(RabbitHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 

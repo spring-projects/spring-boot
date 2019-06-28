@@ -119,8 +119,8 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 		}
 
 		@Override
-		protected AbstractJsonMarshalTester<Object> createTester(
-				Class<?> resourceLoadClass, ResolvableType type, Jsonb marshaller) {
+		protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type,
+				Jsonb marshaller) {
 			return new JsonbTester<>(resourceLoadClass, type, marshaller);
 		}
 

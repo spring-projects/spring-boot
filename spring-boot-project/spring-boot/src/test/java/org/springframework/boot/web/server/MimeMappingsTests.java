@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -31,16 +31,16 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  */
-public class MimeMappingsTests {
+class MimeMappingsTests {
 
 	@Test
-	public void defaultsCannotBeModified() {
+	void defaultsCannotBeModified() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 				.isThrownBy(() -> MimeMappings.DEFAULT.add("foo", "foo/bar"));
 	}
 
 	@Test
-	public void createFromExisting() {
+	void createFromExisting() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
@@ -50,7 +50,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void createFromMap() {
+	void createFromMap() {
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
@@ -60,7 +60,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void iterate() {
+	void iterate() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
@@ -75,7 +75,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void getAll() {
+	void getAll() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
@@ -87,20 +87,20 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void addNew() {
+	void addNew() {
 		MimeMappings mappings = new MimeMappings();
 		assertThat(mappings.add("foo", "bar")).isNull();
 	}
 
 	@Test
-	public void addReplacesExisting() {
+	void addReplacesExisting() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.add("foo", "baz")).isEqualTo("bar");
 	}
 
 	@Test
-	public void remove() {
+	void remove() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.remove("foo")).isEqualTo("bar");
@@ -108,20 +108,20 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void get() {
+	void get() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.get("foo")).isEqualTo("bar");
 	}
 
 	@Test
-	public void getMissing() {
+	void getMissing() {
 		MimeMappings mappings = new MimeMappings();
 		assertThat(mappings.get("foo")).isNull();
 	}
 
 	@Test
-	public void makeUnmodifiable() {
+	void makeUnmodifiable() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		MimeMappings unmodifiable = MimeMappings.unmodifiableMappings(mappings);

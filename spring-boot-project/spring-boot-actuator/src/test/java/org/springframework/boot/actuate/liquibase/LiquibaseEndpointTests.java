@@ -42,53 +42,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class LiquibaseEndpointTests {
+class LiquibaseEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					LiquibaseAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void liquibaseReportIsReturned() {
+	void liquibaseReportIsReturned() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
-			Map<String, LiquibaseBean> liquibaseBeans = context
-					.getBean(LiquibaseEndpoint.class).liquibaseBeans().getContexts()
-					.get(context.getId()).getLiquibaseBeans();
+			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
+					.getContexts().get(context.getId()).getLiquibaseBeans();
 			assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 		});
 	}
 
 	@Test
-	public void invokeWithCustomSchema() {
+	void invokeWithCustomSchema() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA",
 						"spring.datasource.schema=classpath:/db/create-custom-schema.sql")
 				.run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context
-							.getBean(LiquibaseEndpoint.class).liquibaseBeans()
-							.getContexts().get(context.getId()).getLiquibaseBeans();
-					assertThat(liquibaseBeans.get("liquibase").getChangeSets())
-							.hasSize(1);
+					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
+					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 				});
 	}
 
 	@Test
-	public void invokeWithCustomTables() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues(
-				"spring.liquibase.database-change-log-lock-table=liquibase_database_changelog_lock",
-				"spring.liquibase.database-change-log-table=liquibase_database_changelog")
+	void invokeWithCustomTables() {
+		this.contextRunner.withUserConfiguration(Config.class)
+				.withPropertyValues("spring.liquibase.database-change-log-lock-table=liquibase_database_changelog_lock",
+						"spring.liquibase.database-change-log-table=liquibase_database_changelog")
 				.run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context
-							.getBean(LiquibaseEndpoint.class).liquibaseBeans()
-							.getContexts().get(context.getId()).getLiquibaseBeans();
-					assertThat(liquibaseBeans.get("liquibase").getChangeSets())
-							.hasSize(1);
+					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
+					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 				});
 	}
 
 	@Test
-	public void connectionAutoCommitPropertyIsReset() {
+	void connectionAutoCommitPropertyIsReset() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			assertThat(getAutoCommit(dataSource)).isTrue();

@@ -140,8 +140,8 @@ public class ServerProperties {
 	}
 
 	public void setUseForwardHeaders(Boolean useForwardHeaders) {
-		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders)
-				? ForwardHeadersStrategy.NATIVE : ForwardHeadersStrategy.NONE;
+		this.forwardHeadersStrategy = Boolean.TRUE.equals(useForwardHeaders) ? ForwardHeadersStrategy.NATIVE
+				: ForwardHeadersStrategy.NONE;
 	}
 
 	public String getServerHeader() {
@@ -294,8 +294,7 @@ public class ServerProperties {
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
 				+ "0:0:0:0:0:0:0:1|::1";
 
 		/**
@@ -399,6 +398,11 @@ public class ServerProperties {
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
+
+		/**
+		 * Modeler MBean Registry configuration.
+		 */
+		private final Mbeanregistry mbeanregistry = new Mbeanregistry();
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -550,6 +554,10 @@ public class ServerProperties {
 
 		public Resource getResource() {
 			return this.resource;
+		}
+
+		public Mbeanregistry getMbeanregistry() {
+			return this.mbeanregistry;
 		}
 
 		/**
@@ -817,6 +825,23 @@ public class ServerProperties {
 
 			public void setCacheTtl(Duration cacheTtl) {
 				this.cacheTtl = cacheTtl;
+			}
+
+		}
+
+		public static class Mbeanregistry {
+
+			/**
+			 * Whether Tomcat's MBean Registry should be enabled.
+			 */
+			private boolean enabled;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
 			}
 
 		}

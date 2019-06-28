@@ -39,44 +39,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CouchbaseRepositoriesAutoConfigurationTests {
+class CouchbaseRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void couchbaseNotAvailable() {
+	void couchbaseNotAvailable() {
 		load(null);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void defaultRepository() {
+	void defaultRepository() {
 		load(DefaultConfiguration.class);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(1);
 	}
 
 	@Test
-	public void reactiveRepositories() {
-		load(DefaultConfiguration.class,
-				"spring.data.couchbase.repositories.type=reactive");
+	void reactiveRepositories() {
+		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=reactive");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void disabledRepositories() {
+	void disabledRepositories() {
 		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void noRepositoryAvailable() {
+	void noRepositoryAvailable() {
 		load(NoRepositoryConfiguration.class);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
@@ -87,9 +86,8 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 		if (config != null) {
 			context.register(config);
 		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
-				CouchbaseRepositoriesAutoConfiguration.class);
+		context.register(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}

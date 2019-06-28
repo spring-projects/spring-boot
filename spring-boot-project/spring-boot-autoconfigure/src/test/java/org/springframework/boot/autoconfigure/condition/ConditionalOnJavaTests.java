@@ -22,12 +22,13 @@ import java.util.ServiceLoader;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.Assume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
@@ -40,33 +41,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Oliver Gierke
  * @author Phillip Webb
  */
-public class ConditionalOnJavaTests {
+class ConditionalOnJavaTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	private final OnJavaCondition condition = new OnJavaCondition();
 
 	@Test
-	public void doesNotMatchIfBetterVersionIsRequired() {
-		Assume.javaEight();
+	@EnabledOnJre(JRE.JAVA_8)
+	void doesNotMatchIfBetterVersionIsRequired() {
 		this.contextRunner.withUserConfiguration(Java9Required.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void doesNotMatchIfLowerIsRequired() {
+	void doesNotMatchIfLowerIsRequired() {
 		this.contextRunner.withUserConfiguration(Java7Required.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void matchesIfVersionIsInRange() {
+	void matchesIfVersionIsInRange() {
 		this.contextRunner.withUserConfiguration(Java8Required.class)
 				.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
-	public void boundsTests() {
+	void boundsTests() {
 		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.NINE, JavaVersion.EIGHT, true);
 		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.EIGHT, true);
 		testBounds(Range.EQUAL_OR_NEWER, JavaVersion.EIGHT, JavaVersion.NINE, false);
@@ -76,48 +77,42 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Test
-	public void equalOrNewerMessage() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER,
-				JavaVersion.NINE, JavaVersion.EIGHT);
-		assertThat(outcome.getMessage())
-				.isEqualTo("@ConditionalOnJava (1.8 or newer) found 1.9");
+	void equalOrNewerMessage() {
+		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER, JavaVersion.NINE,
+				JavaVersion.EIGHT);
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (1.8 or newer) found 1.9");
 	}
 
 	@Test
-	public void olderThanMessage() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN,
-				JavaVersion.NINE, JavaVersion.EIGHT);
-		assertThat(outcome.getMessage())
-				.isEqualTo("@ConditionalOnJava (older than 1.8) found 1.9");
+	void olderThanMessage() {
+		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN, JavaVersion.NINE,
+				JavaVersion.EIGHT);
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 1.8) found 1.9");
 	}
 
 	@Test
-	public void java8IsDetected() throws Exception {
-		Assume.javaEight();
+	@EnabledOnJre(JRE.JAVA_8)
+	void java8IsDetected() throws Exception {
 		assertThat(getJavaVersion()).isEqualTo("1.8");
 	}
 
 	@Test
-	public void java8IsTheFallback() throws Exception {
-		Assume.javaEight();
-		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
-				.isEqualTo("1.8");
+	@EnabledOnJre(JRE.JAVA_8)
+	void java8IsTheFallback() throws Exception {
+		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class)).isEqualTo("1.8");
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
 		FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClasses);
 		Class<?> javaVersionClass = classLoader.loadClass(JavaVersion.class.getName());
-		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
-				"getJavaVersion");
+		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass, "getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
 		classLoader.close();
 		return javaVersion.toString();
 	}
 
-	private void testBounds(Range range, JavaVersion runningVersion, JavaVersion version,
-			boolean expected) {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
-				version);
+	private void testBounds(Range range, JavaVersion runningVersion, JavaVersion version, boolean expected) {
+		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion, version);
 		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
 	}
 

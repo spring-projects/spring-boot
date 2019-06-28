@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,36 +65,27 @@ public abstract class MockServletWebServer {
 	private void initialize() {
 		try {
 			this.servletContext = mock(ServletContext.class);
-			given(this.servletContext.addServlet(anyString(), any(Servlet.class)))
-					.willAnswer((invocation) -> {
-						RegisteredServlet registeredServlet = new RegisteredServlet(
-								invocation.getArgument(1));
-						MockServletWebServer.this.registeredServlets
-								.add(registeredServlet);
-						return registeredServlet.getRegistration();
-					});
-			given(this.servletContext.addFilter(anyString(), any(Filter.class)))
-					.willAnswer((invocation) -> {
-						RegisteredFilter registeredFilter = new RegisteredFilter(
-								invocation.getArgument(1));
-						MockServletWebServer.this.registeredFilters.add(registeredFilter);
-						return registeredFilter.getRegistration();
-					});
+			given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willAnswer((invocation) -> {
+				RegisteredServlet registeredServlet = new RegisteredServlet(invocation.getArgument(1));
+				MockServletWebServer.this.registeredServlets.add(registeredServlet);
+				return registeredServlet.getRegistration();
+			});
+			given(this.servletContext.addFilter(anyString(), any(Filter.class))).willAnswer((invocation) -> {
+				RegisteredFilter registeredFilter = new RegisteredFilter(invocation.getArgument(1));
+				MockServletWebServer.this.registeredFilters.add(registeredFilter);
+				return registeredFilter.getRegistration();
+			});
 			final Map<String, String> initParameters = new HashMap<>();
-			given(this.servletContext.setInitParameter(anyString(), anyString()))
-					.will((invocation) -> {
-						initParameters.put(invocation.getArgument(0),
-								invocation.getArgument(1));
-						return null;
-					});
+			given(this.servletContext.setInitParameter(anyString(), anyString())).will((invocation) -> {
+				initParameters.put(invocation.getArgument(0), invocation.getArgument(1));
+				return null;
+			});
 			given(this.servletContext.getInitParameterNames())
 					.willReturn(Collections.enumeration(initParameters.keySet()));
-			given(this.servletContext.getInitParameter(anyString())).willAnswer(
-					(invocation) -> initParameters.get(invocation.getArgument(0)));
-			given(this.servletContext.getAttributeNames())
-					.willReturn(Collections.emptyEnumeration());
-			given(this.servletContext.getNamedDispatcher("default"))
-					.willReturn(mock(RequestDispatcher.class));
+			given(this.servletContext.getInitParameter(anyString()))
+					.willAnswer((invocation) -> initParameters.get(invocation.getArgument(0)));
+			given(this.servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
+			given(this.servletContext.getNamedDispatcher("default")).willReturn(mock(RequestDispatcher.class));
 			for (Initializer initializer : this.initializers) {
 				initializer.onStartup(this.servletContext);
 			}

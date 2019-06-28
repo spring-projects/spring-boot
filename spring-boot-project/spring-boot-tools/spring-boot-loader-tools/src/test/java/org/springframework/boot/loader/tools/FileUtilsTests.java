@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import org.springframework.util.FileSystemUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,77 +33,70 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class FileUtilsTests {
+class FileUtilsTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File outputDirectory;
 
 	private File originDirectory;
 
-	@Before
-	public void init() throws IOException {
-		this.outputDirectory = this.temporaryFolder.newFolder("remove");
-		this.originDirectory = this.temporaryFolder.newFolder("keep");
-		FileSystemUtils.deleteRecursively(this.outputDirectory);
-		FileSystemUtils.deleteRecursively(this.originDirectory);
+	@BeforeEach
+	void init() throws IOException {
+		this.outputDirectory = new File(this.tempDir, "remove");
+		this.originDirectory = new File(this.tempDir, "keep");
 		this.outputDirectory.mkdirs();
 		this.originDirectory.mkdirs();
 	}
 
 	@Test
-	public void simpleDuplicateFile() throws IOException {
+	void simpleDuplicateFile() throws IOException {
 		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "logback.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isFalse();
 	}
 
 	@Test
-	public void nestedDuplicateFile() throws IOException {
+	void nestedDuplicateFile() throws IOException {
 		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
 		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/logback.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isFalse();
 	}
 
 	@Test
-	public void nestedNonDuplicateFile() throws IOException {
+	void nestedNonDuplicateFile() throws IOException {
 		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
 		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/different.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isTrue();
 	}
 
 	@Test
-	public void nonDuplicateFile() throws IOException {
+	void nonDuplicateFile() throws IOException {
 		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "different.xml").createNewFile();
-		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
-				this.originDirectory);
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file.exists()).isTrue();
 	}
 
 	@Test
-	public void hash() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void hash() throws Exception {
+		File file = new File(this.tempDir, "file");
 		try (OutputStream outputStream = new FileOutputStream(file)) {
 			outputStream.write(new byte[] { 1, 2, 3 });
 		}
-		assertThat(FileUtils.sha1Hash(file))
-				.isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
+		assertThat(FileUtils.sha1Hash(file)).isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
 	}
 
 }

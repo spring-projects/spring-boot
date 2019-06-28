@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,8 @@ final class OriginTrackedFieldError extends FieldError implements OriginProvider
 	private final Origin origin;
 
 	private OriginTrackedFieldError(FieldError fieldError, Origin origin) {
-		super(fieldError.getObjectName(), fieldError.getField(),
-				fieldError.getRejectedValue(), fieldError.isBindingFailure(),
-				fieldError.getCodes(), fieldError.getArguments(),
+		super(fieldError.getObjectName(), fieldError.getField(), fieldError.getRejectedValue(),
+				fieldError.isBindingFailure(), fieldError.getCodes(), fieldError.getArguments(),
 				fieldError.getDefaultMessage());
 		this.origin = origin;
 	}

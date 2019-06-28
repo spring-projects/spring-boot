@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,8 @@ import org.springframework.util.ObjectUtils;
  */
 public class ApplicationPid {
 
-	private static final PosixFilePermission[] WRITE_PERMISSIONS = {
-			PosixFilePermission.OWNER_WRITE, PosixFilePermission.GROUP_WRITE,
-			PosixFilePermission.OTHERS_WRITE };
+	private static final PosixFilePermission[] WRITE_PERMISSIONS = { PosixFilePermission.OWNER_WRITE,
+			PosixFilePermission.GROUP_WRITE, PosixFilePermission.OTHERS_WRITE };
 
 	private final String pid;
 
@@ -113,8 +112,7 @@ public class ApplicationPid {
 
 	private boolean canWritePosixFile(File file) throws IOException {
 		try {
-			Set<PosixFilePermission> permissions = Files
-					.getPosixFilePermissions(file.toPath());
+			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(file.toPath());
 			for (PosixFilePermission permission : WRITE_PERMISSIONS) {
 				if (permissions.contains(permission)) {
 					return true;

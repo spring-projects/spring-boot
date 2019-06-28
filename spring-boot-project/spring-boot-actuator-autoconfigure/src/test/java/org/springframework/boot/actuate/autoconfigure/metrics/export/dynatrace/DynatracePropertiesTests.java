@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class DynatracePropertiesTests extends StepRegistryPropertiesTests {
+class DynatracePropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		DynatraceProperties properties = new DynatraceProperties();
 		DynatraceConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);

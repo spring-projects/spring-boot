@@ -59,8 +59,7 @@ import org.springframework.util.ReflectionUtils;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
 @ConditionalOnProperty("spring.test.jsontesters.enabled")
-@AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class,
-		JsonbAutoConfiguration.class })
+@AutoConfigureAfter({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class, JsonbAutoConfiguration.class })
 public class JsonTestersAutoConfiguration {
 
 	@Bean
@@ -71,8 +70,7 @@ public class JsonTestersAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	public FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
-		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class,
-				null);
+		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class, null);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -82,8 +80,7 @@ public class JsonTestersAutoConfiguration {
 		@Bean
 		@Scope("prototype")
 		@ConditionalOnBean(ObjectMapper.class)
-		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(
-				ObjectMapper mapper) {
+		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
 			return new JsonTesterFactoryBean<>(JacksonTester.class, mapper);
 		}
 
@@ -148,14 +145,12 @@ public class JsonTestersAutoConfiguration {
 			Constructor<?>[] constructors = this.objectType.getDeclaredConstructors();
 			for (Constructor<?> constructor : constructors) {
 				if (constructor.getParameterCount() == 1
-						&& constructor.getParameterTypes()[0]
-								.isInstance(this.marshaller)) {
+						&& constructor.getParameterTypes()[0].isInstance(this.marshaller)) {
 					ReflectionUtils.makeAccessible(constructor);
 					return (T) BeanUtils.instantiateClass(constructor, this.marshaller);
 				}
 			}
-			throw new IllegalStateException(
-					this.objectType + " does not have a usable constructor");
+			throw new IllegalStateException(this.objectType + " does not have a usable constructor");
 		}
 
 		@Override
@@ -168,21 +163,17 @@ public class JsonTestersAutoConfiguration {
 	/**
 	 * {@link BeanPostProcessor} used to initialize JSON testers.
 	 */
-	static class JsonMarshalTestersBeanPostProcessor
-			extends InstantiationAwareBeanPostProcessorAdapter {
+	static class JsonMarshalTestersBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter {
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
-			ReflectionUtils.doWithFields(bean.getClass(),
-					(field) -> processField(bean, field));
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			ReflectionUtils.doWithFields(bean.getClass(), (field) -> processField(bean, field));
 			return bean;
 		}
 
 		private void processField(Object bean, Field field) {
 			if (AbstractJsonMarshalTester.class.isAssignableFrom(field.getType())) {
-				initializeTester(bean, field, bean.getClass(),
-						ResolvableType.forField(field).getGeneric());
+				initializeTester(bean, field, bean.getClass(), ResolvableType.forField(field).getGeneric());
 			}
 			else if (BasicJsonTester.class.isAssignableFrom(field.getType())) {
 				initializeTester(bean, field, bean.getClass());

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  * @author Artsiom Yudovin
  * @author Filip Hrisafov
  */
-public class ElasticsearchRestHealthIndicatorTest {
+class ElasticsearchRestHealthIndicatorTest {
 
 	private final RestClient restClient = mock(RestClient.class);
 
@@ -50,10 +50,9 @@ public class ElasticsearchRestHealthIndicatorTest {
 			this.restClient);
 
 	@Test
-	public void elasticsearchIsUp() throws IOException {
+	void elasticsearchIsUp() throws IOException {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
-		httpEntity.setContent(
-				new ByteArrayInputStream(createJsonResult(200, "green").getBytes()));
+		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "green").getBytes()));
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
 		given(statusLine.getStatusCode()).willReturn(200);
@@ -66,10 +65,9 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	@Test
-	public void elasticsearchWithYellowStatusIsUp() throws IOException {
+	void elasticsearchWithYellowStatusIsUp() throws IOException {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
-		httpEntity.setContent(
-				new ByteArrayInputStream(createJsonResult(200, "yellow").getBytes()));
+		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "yellow").getBytes()));
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
 		given(statusLine.getStatusCode()).willReturn(200);
@@ -82,17 +80,15 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	@Test
-	public void elasticsearchIsDown() throws IOException {
-		given(this.restClient.performRequest(any(Request.class)))
-				.willThrow(new IOException("Couldn't connect"));
+	void elasticsearchIsDown() throws IOException {
+		given(this.restClient.performRequest(any(Request.class))).willThrow(new IOException("Couldn't connect"));
 		Health health = this.elasticsearchRestHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails())
-				.contains(entry("error", "java.io.IOException: Couldn't connect"));
+		assertThat(health.getDetails()).contains(entry("error", "java.io.IOException: Couldn't connect"));
 	}
 
 	@Test
-	public void elasticsearchIsDownByResponseCode() throws IOException {
+	void elasticsearchIsDownByResponseCode() throws IOException {
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
 		given(statusLine.getStatusCode()).willReturn(500);
@@ -106,10 +102,9 @@ public class ElasticsearchRestHealthIndicatorTest {
 	}
 
 	@Test
-	public void elasticsearchIsOutOfServiceByStatus() throws IOException {
+	void elasticsearchIsOutOfServiceByStatus() throws IOException {
 		BasicHttpEntity httpEntity = new BasicHttpEntity();
-		httpEntity.setContent(
-				new ByteArrayInputStream(createJsonResult(200, "red").getBytes()));
+		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "red").getBytes()));
 		Response response = mock(Response.class);
 		StatusLine statusLine = mock(StatusLine.class);
 		given(statusLine.getStatusCode()).willReturn(200);
@@ -121,33 +116,28 @@ public class ElasticsearchRestHealthIndicatorTest {
 		assertHealthDetailsWithStatus(health.getDetails(), "red");
 	}
 
-	private void assertHealthDetailsWithStatus(Map<String, Object> details,
-			String status) {
-		assertThat(details).contains(entry("cluster_name", "elasticsearch"),
-				entry("status", status), entry("timed_out", false),
-				entry("number_of_nodes", 1), entry("number_of_data_nodes", 1),
-				entry("active_primary_shards", 0), entry("active_shards", 0),
-				entry("relocating_shards", 0), entry("initializing_shards", 0),
-				entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
-				entry("number_of_pending_tasks", 0),
-				entry("number_of_in_flight_fetch", 0),
-				entry("task_max_waiting_in_queue_millis", 0),
-				entry("active_shards_percent_as_number", 100.0));
+	private void assertHealthDetailsWithStatus(Map<String, Object> details, String status) {
+		assertThat(details).contains(entry("cluster_name", "elasticsearch"), entry("status", status),
+				entry("timed_out", false), entry("number_of_nodes", 1), entry("number_of_data_nodes", 1),
+				entry("active_primary_shards", 0), entry("active_shards", 0), entry("relocating_shards", 0),
+				entry("initializing_shards", 0), entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
+				entry("number_of_pending_tasks", 0), entry("number_of_in_flight_fetch", 0),
+				entry("task_max_waiting_in_queue_millis", 0), entry("active_shards_percent_as_number", 100.0));
 	}
 
 	private String createJsonResult(int responseCode, String status) {
 		if (responseCode == 200) {
-			return String.format("{\"cluster_name\":\"elasticsearch\","
-					+ "\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1,"
-					+ "\"number_of_data_nodes\":1,\"active_primary_shards\":0,"
-					+ "\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0,"
-					+ "\"unassigned_shards\":0,\"delayed_unassigned_shards\":0,"
-					+ "\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0,"
-					+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}",
+			return String.format(
+					"{\"cluster_name\":\"elasticsearch\","
+							+ "\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1,"
+							+ "\"number_of_data_nodes\":1,\"active_primary_shards\":0,"
+							+ "\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0,"
+							+ "\"unassigned_shards\":0,\"delayed_unassigned_shards\":0,"
+							+ "\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0,"
+							+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}",
 					status);
 		}
-		return "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": "
-				+ responseCode + "\n" + "}";
+		return "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": " + responseCode + "\n" + "}";
 	}
 
 }

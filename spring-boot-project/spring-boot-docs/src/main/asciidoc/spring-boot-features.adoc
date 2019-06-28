@@ -1586,9 +1586,7 @@ You can also add a custom Spring `Validator` by creating a bean definition calle
 configuration properties validator is created very early in the application's lifecycle,
 and declaring the `@Bean` method as static lets the bean be created without having to
 instantiate the `@Configuration` class. Doing so avoids any problems that may be caused
-by early instantiation. There is a
-{github-code}/spring-boot-samples/spring-boot-sample-property-validation[property
-validation sample] that shows how to set things up.
+by early instantiation.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
 `@ConfigurationProperties` beans. Point your web browser to
@@ -2361,9 +2359,9 @@ https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[reg
 a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes
 it easier to directly register Spring Beans.
 
-You can use the `@JsonComponent` annotation directly on `JsonSerializer` or
-`JsonDeserializer` implementations. You can also use it on classes that contain
-serializers/deserializers as inner classes, as shown in the following example:
+You can use the `@JsonComponent` annotation directly on `JsonSerializer`,
+`JsonDeserializer` or `KeyDeserializer` implementations. You can also use it on classes
+that contain serializers/deserializers as inner classes, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -2702,7 +2700,7 @@ follows:
 	     +- resources/
 	         +- templates/
 	             +- error/
-	             |   +- 5xx.ftl
+	             |   +- 5xx.ftlh
 	             +- <other templates>
 ----
 
@@ -3212,9 +3210,6 @@ an `@Order`, which you can set with `spring.jersey.filter.order`. Both the servl
 the filter registrations can be given init parameters by using `spring.jersey.init.*` to
 specify a map of properties.
 
-There is a {github-code}/spring-boot-samples/spring-boot-sample-jersey[Jersey sample] so
-that you can see how to set things up.
-
 
 
 [[boot-features-embedded-container]]
@@ -3379,6 +3374,8 @@ NOTE: `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `Under
 are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods
 for Tomcat, Jetty and Undertow respectively.
 
+
+
 [[boot-features-customizing-configurableservletwebserverfactory-directly]]
 ===== Customizing ConfigurableServletWebServerFactory Directly
 If the preceding customization techniques are too limited, you can register the
@@ -3403,6 +3400,7 @@ are also provided should you need to do something more exotic. See the
 code documentation] for details.
 
 
+
 [[boot-features-jsp-limitations]]
 ==== JSP Limitations
 When running a Spring Boot application that uses an embedded servlet container (and is
@@ -3419,20 +3417,19 @@ packaged as an executable archive), there are some limitations in the JSP suppor
 <<boot-features-error-handling-custom-error-pages,Custom error pages>> should be used
 instead.
 
-There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so
-that you can see how to set things up.
+
 
 [[boot-features-reactive-server]]
 === Embedded Reactive Server Support
-
 Spring Boot includes support for the following embedded reactive web servers:
 Reactor Netty, Tomcat, Jetty, and Undertow. Most developers use the appropriate “Starter”
 to obtain a fully configured instance. By default, the embedded server listens for HTTP
 requests on port 8080.
 
+
+
 [[boot-features-reactive-server-resources]]
 === Reactive Server Resources Configuration
-
 When auto-configuring a Reactor Netty or Jetty server, Spring Boot will create specific
 beans that will provide HTTP resources to the server instance: `ReactorResourceFactory`
 or `JettyResourceFactory`.
@@ -3450,6 +3447,8 @@ both clients and servers.
 
 You can learn more about the resource configuration on the client side in the
 <<boot-features-webclient-runtime, WebClient Runtime section>>.
+
+
 
 [[boot-features-rsocket]]
 == RSocket
@@ -3483,6 +3482,8 @@ The following code shows a typical `@Controller`:
 	}
 ----
 
+
+
 [[boot-features-rsocket-strategies-auto-configuration]]
 === RSocket Strategies Auto-configuration
 Spring Boot auto-configures an `RSocketStrategies` bean that provides all the required
@@ -3497,6 +3498,7 @@ The `spring-boot-starter-rsocket` Starter provides both dependencies.
 Developers can customize the `RSocketStrategies` component by creating beans that
 implement the `RSocketStrategiesCustomizer` interface. Note that their `@Order` is
 important, as it determines the order of codecs.
+
 
 
 [[boot-features-rsocket-server-auto-configuration]]
@@ -3544,6 +3546,8 @@ about customization possibilities.
 Developers can create `RSocketStrategiesCustomizer` beans to add other strategies,
 assuming there are `Encoder` and `Decoder` implementations available.
 
+
+
 [[boot-features-rsocket-requester]]
 === Calling RSocket Services with `RSocketRequester`
 
@@ -3580,6 +3584,7 @@ The following code shows a typical example:
 
 	}
 ----
+
 
 
 [[boot-features-security]]
@@ -3620,6 +3625,7 @@ the entire application (including actuator endpoints if actuator is on the class
 You can provide a different `AuthenticationEventPublisher` by adding a bean for it.
 
 
+
 [[boot-features-security-mvc]]
 === MVC Security
 The default security configuration is implemented in `SecurityAutoConfiguration` and
@@ -3632,8 +3638,6 @@ so does not disable the `UserDetailsService` configuration or Actuator's securit
 
 To also switch off the `UserDetailsService` configuration, you can add a bean of type
 `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
-There are several secure applications in the {github-code}/spring-boot-samples/[Spring
-Boot samples] to get you started with common use cases.
 
 Access rules can be overridden by adding a custom `WebSecurityConfigurerAdapter`. Spring
 Boot provides convenience methods that can be used to override access rules for actuator
@@ -3787,8 +3791,8 @@ In other words, the two configurations in the following example use the Google p
 [[boot-features-security-oauth2-server]]
 ==== Resource Server
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can
-set up an OAuth2 Resource Server as long as a JWK Set URI or OIDC Issuer URI is specified,
-as shown in the following examples:
+set up an OAuth2 Resource Server. For JWT configuration, a JWK Set URI or OIDC Issuer URI
+needs to be specified, as shown in the following examples:
 
 [source,properties,indent=0]
 ----
@@ -3811,7 +3815,20 @@ The same properties are applicable for both servlet and reactive applications.
 Alternatively, you can define your own `JwtDecoder` bean for servlet applications
 or a `ReactiveJwtDecoder` for reactive applications.
 
+In cases where opaque tokens are used instead of JWTs, you can configure the following properties
+to validate tokens via introspection:
 
+[source,properties,indent=0]
+----
+	spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://example.com/check-token
+	spring.security.oauth2.resourceserver.opaque-token.client-id=my-client-id
+	spring.security.oauth2.resourceserver.opaque-token.client-secret-my-client-secret
+----
+
+Again, the same properties are applicable for both servlet and reactive applications.
+
+Alternatively, you can define your own `OAuth2TokenIntrospectionClient` bean for servlet applications
+or a `ReactiveOAuth2TokenIntrospectionClient` for reactive applications.
 
 ==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0
@@ -4276,7 +4293,7 @@ path by using the `spring.h2.console.path` property.
 
 [[boot-features-jooq]]
 === Using jOOQ
-Java Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from
+jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from
 https://www.datageekery.com/[Data Geekery] which generates Java code from your
 database and lets you build type-safe SQL queries through its fluent API. Both the
 commercial and open source editions can be used with Spring Boot.
@@ -4851,12 +4868,15 @@ auto-configuration for Elasticsearch.
 Spring Boot supports several clients:
 
 * The official Java "Low Level" and "High Level" REST clients
-* https://github.com/searchbox-io/Jest[Jest]
+* The `ReactiveElasticsearchClient` provided by Spring Data Elasticsearch
 
 The transport client is still available but its support has been deprecated in
 https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch]
-and will be removed in a future release. Spring Boot provides a dedicated "`Starter`",
-`spring-boot-starter-data-elasticsearch`.
+and Elasticsearch itself. It will be removed in a future release.
+Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elasticsearch`.
+
+The https://github.com/searchbox-io/Jest[Jest] client has been deprecated as well, since
+both Elasticsearch and Spring Data Elasticsearch provide official support for REST clients.
 
 [[boot-features-connecting-to-elasticsearch-rest]]
 ==== Connecting to Elasticsearch using REST clients
@@ -4885,6 +4905,28 @@ If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` 
 on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which wraps
 any existing `RestClient` bean, reusing its HTTP configuration.
 
+[[boot-features-connecting-to-elasticsearch-reactive-rest]]
+==== Connecting to Elasticsearch using Reactive REST clients
+{spring-data-elasticsearch}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient`
+for querying Elasticsearch instances in a reactive fashion. It is built on top of WebFlux's
+`WebClient`, so both `spring-boot-starter-elasticsearch` and `spring-boot-starter-webflux`
+dependencies are useful to enable this support.
+
+By default, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`
+bean that targets `http://localhost:9200`.
+You can further tune how it is configured, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.elasticsearch.reactive.endpoints=search.example.com:9200
+	spring.elasticsearch.reactive.use-ssl=true
+	spring.elasticsearch.reactive.socket-timeout=10s
+	spring.elasticsearch.reactive.username=user
+	spring.elasticsearch.reactive.password=secret
+----
+
+If the configuration properties are not enough and you'd like to fully control the client
+configuration, you can register a custom `ClientConfiguration` bean.
 
 [[boot-features-connecting-to-elasticsearch-jest]]
 ==== Connecting to Elasticsearch using Jest
@@ -4918,25 +4960,21 @@ To take full control over the registration, define a `JestClient` bean.
 
 [[boot-features-connecting-to-elasticsearch-spring-data]]
 ==== Connecting to Elasticsearch by Using Spring Data
-To connect to Elasticsearch, you must provide the address of one or more cluster nodes.
-The address can be specified by setting the `spring.data.elasticsearch.cluster-nodes`
-property to a comma-separated `host:port` list. With this configuration in place, an
-`ElasticsearchTemplate` or `TransportClient` can be injected like any other Spring bean,
-as shown in the following example:
 
-[source,properties,indent=0]
-----
-	spring.data.elasticsearch.cluster-nodes=localhost:9300
-----
+To connect to Elasticsearch, a `RestHighLevelClient` bean must be defined,
+auto-configured by Spring Boot or manually provided by the application (see previous sections).
+With this configuration in place, an
+`ElasticsearchRestTemplate` can be injected like any other Spring bean,
+as shown in the following example:
 
 [source,java,indent=0]
 ----
 	@Component
 	public class MyBean {
 
-		private final ElasticsearchTemplate template;
+		private final ElasticsearchRestTemplate template;
 
-		public MyBean(ElasticsearchTemplate template) {
+		public MyBean(ElasticsearchRestTemplate template) {
 			this.template = template;
 		}
 
@@ -4945,9 +4983,12 @@ as shown in the following example:
 	}
 ----
 
-If you add your own `ElasticsearchTemplate` or `TransportClient` `@Bean`, it replaces the
-default.
-
+In the presence of `spring-data-elasticsearch` and the required dependencies
+for using a `WebClient` (typically `spring-boot-starter-webflux`), Spring Boot can also
+auto-configure a
+<<boot-features-connecting-to-elasticsearch-reactive-rest,ReactiveElasticsearchClient>>
+and a `ReactiveElasticsearchTemplate` as beans. They are the reactive equivalent of the
+other REST clients.
 
 
 [[boot-features-spring-data-elasticsearch-repositories]]
@@ -4962,8 +5003,24 @@ now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in 
 way.
 
 TIP: For complete details of Spring Data Elasticsearch, refer to the
-https://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
+{spring-data-elasticsearch-reference}[reference documentation].
 
+Spring Boot supports both classic and reactive Elasticsearch repositories, using the
+`ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans. Most likely those
+beans are auto-configured by Spring Boot given the required dependencies are present.
+
+If you wish to use your own template for backing the Elasticsearch repositories, you can
+add your own `ElasticsearchRestTemplate` or `ElasticsearchOperations` `@Bean`,
+as long as it is named `"elasticsearchTemplate"`. Same applies to
+`ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperations`, with the bean
+name `"reactiveElasticsearchTemplate"`.
+
+You can choose to disable the repositories support with the following property:
+
+[source,properties,indent=0]
+----
+    spring.data.elasticsearch.repositories.enabled=false
+----
 
 
 [[boot-features-cassandra]]
@@ -6867,9 +6924,9 @@ useful libraries.
 
 [TIP]
 ====
-The starter also brings the vintage engine and `junit:junit` so that you can run both
-JUnit 4 and Junit 5 tests. If you have migrated your tests to JUnit 5, you should
-exclude JUnit 4 support, as shown in the following example:
+The starter also brings the vintage engine so that you can run both JUnit 4 and JUnit 5
+tests. If you have migrated your tests to JUnit 5, you should exclude JUnit 4 support, as
+shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -6881,10 +6938,6 @@ exclude JUnit 4 support, as shown in the following example:
 			<exclusion>
 				<groupId>org.junit.vintage</groupId>
 				<artifactId>junit-vintage-engine</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
 			</exclusion>
 		</exclusions>
 	</dependency>
@@ -7062,7 +7115,6 @@ that class explicitly where it is required, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@SpringBootTest
 	@Import(MyTestsConfiguration.class)
 	public class MyTests {
@@ -7911,7 +7963,6 @@ The specific beans that you want to test should be specified by using the `value
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@RestClientTest(RemoteVehicleDetailsService.class)
 	public class ExampleRestClientTest {
 
@@ -8233,27 +8284,26 @@ which auto-configures one for you.
 [[boot-features-output-capture-test-utility]]
 ==== OutputCapture
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and
-`System.err` output. You can declare the capture as a `@RegisterExtension` and then use
-`toString()` for assertions, as follows:
+`System.err` output. To use with {@link ExtendWith @ExtendWith}, you can inject
+`CapturedOutput` as an argument to your test class constructor or test method as follows:
 
 [source,java,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
-    import org.junit.jupiter.api.extension.RegisterExtension;
+    import org.junit.jupiter.api.extension.ExtendWith;
 
-	import org.springframework.boot.test.extension.OutputCapture;
+    import org.springframework.boot.test.system.CapturedOutput;
+    import org.springframework.boot.test.system.OutputCaptureExtension;
 
 	import static org.assertj.core.api.Assertions.assertThat;
 
+	@ExtendWith(OutputCaptureExtension.class)
 	class MyTest {
 
-		@RegisterExtension
-		public OutputCapture output = new OutputCapture();
-
 		@Test
-		void testName() {
+		void testName(CapturedOutput output) {
 			System.out.println("Hello World!");
-			assertThat(this.output.toString()).contains("World"));
+			assertThat(output).contains("World"));
 		}
 
 	}
@@ -8966,8 +9016,7 @@ makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-sta
 methods, which is a good fit for Kotlin.
 
 JUnit 5 is the default and the vintage engine is provided for backward compatibility with
-JUnit 4. If you don't use it, exclude `org.junit.vintange:junit-vintage-engine` and
-`junit:junit`. See the
+JUnit 4. If you don't use it, exclude `org.junit.vintange:junit-vintage-engine`. See the
 {junit5-documentation}/#dependency-metadata-junit-jupiter-samples[JUnit 5 documentation]
 for more details. You also need to
 {junit5-documentation}/#writing-tests-test-instance-lifecycle-changing-default[switch test

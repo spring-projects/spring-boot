@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,20 +52,16 @@ public class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 
 	@Test
 	public void buildWithCustomTimeouts() {
-		WebServiceMessageSender messageSender = this.builder
-				.setConnectTimeout(Duration.ofSeconds(5))
+		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
 				.setReadTimeout(Duration.ofSeconds(2)).build();
-		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(
-				messageSender);
-		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory,
-				"client");
+		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(messageSender);
+		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory, "client");
 		assertThat(client).isNotNull();
 		assertThat(client.connectTimeoutMillis()).isEqualTo(5000);
 		assertThat(client.readTimeoutMillis()).isEqualTo(2000);
 	}
 
-	private OkHttp3ClientHttpRequestFactory assertOkHttp3RequestFactory(
-			WebServiceMessageSender messageSender) {
+	private OkHttp3ClientHttpRequestFactory assertOkHttp3RequestFactory(WebServiceMessageSender messageSender) {
 		assertThat(messageSender).isInstanceOf(ClientHttpRequestMessageSender.class);
 		ClientHttpRequestMessageSender sender = (ClientHttpRequestMessageSender) messageSender;
 		ClientHttpRequestFactory requestFactory = sender.getRequestFactory();

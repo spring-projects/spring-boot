@@ -31,18 +31,14 @@ import org.springframework.util.StringUtils;
  * @author Nishant Raut
  * @since 2.0.0
  */
-public class DefaultRestTemplateExchangeTagsProvider
-		implements RestTemplateExchangeTagsProvider {
+public class DefaultRestTemplateExchangeTagsProvider implements RestTemplateExchangeTagsProvider {
 
 	@Override
-	public Iterable<Tag> getTags(String urlTemplate, HttpRequest request,
-			ClientHttpResponse response) {
-		Tag uriTag = (StringUtils.hasText(urlTemplate)
-				? RestTemplateExchangeTags.uri(urlTemplate)
+	public Iterable<Tag> getTags(String urlTemplate, HttpRequest request, ClientHttpResponse response) {
+		Tag uriTag = (StringUtils.hasText(urlTemplate) ? RestTemplateExchangeTags.uri(urlTemplate)
 				: RestTemplateExchangeTags.uri(request));
 		return Arrays.asList(RestTemplateExchangeTags.method(request), uriTag,
-				RestTemplateExchangeTags.status(response),
-				RestTemplateExchangeTags.clientName(request),
+				RestTemplateExchangeTags.status(response), RestTemplateExchangeTags.clientName(request),
 				RestTemplateExchangeTags.outcome(response));
 	}
 

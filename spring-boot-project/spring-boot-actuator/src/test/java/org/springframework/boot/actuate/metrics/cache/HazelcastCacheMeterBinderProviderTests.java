@@ -33,16 +33,16 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class HazelcastCacheMeterBinderProviderTests {
+class HazelcastCacheMeterBinderProviderTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void hazelcastCacheProvider() {
+	void hazelcastCacheProvider() {
 		IMap<Object, Object> nativeCache = mock(IMap.class);
 		given(nativeCache.getName()).willReturn("test");
 		HazelcastCache cache = new HazelcastCache(nativeCache);
-		MeterBinder meterBinder = new HazelcastCacheMeterBinderProvider()
-				.getMeterBinder(cache, Collections.emptyList());
+		MeterBinder meterBinder = new HazelcastCacheMeterBinderProvider().getMeterBinder(cache,
+				Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(HazelcastCacheMetrics.class);
 	}
 

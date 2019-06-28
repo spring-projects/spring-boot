@@ -33,86 +33,65 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class SecurityRequestMatcherProviderAutoConfigurationTests {
+class SecurityRequestMatcherProviderAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(SecurityRequestMatcherProviderAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SecurityRequestMatcherProviderAutoConfiguration.class));
 
 	@Test
-	public void configurationConditionalOnWebApplication() {
+	void configurationConditionalOnWebApplication() {
 		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations
-						.of(SecurityRequestMatcherProviderAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(SecurityRequestMatcherProviderAutoConfiguration.class))
 				.withUserConfiguration(TestMvcConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(RequestMatcherProvider.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(RequestMatcherProvider.class));
 	}
 
 	@Test
-	public void configurationConditionalOnRequestMatcherClass() {
+	void configurationConditionalOnRequestMatcherClass() {
 		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(
-						"org.springframework.security.web.util.matcher.RequestMatcher"))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(RequestMatcherProvider.class));
+				.withClassLoader(
+						new FilteredClassLoader("org.springframework.security.web.util.matcher.RequestMatcher"))
+				.run((context) -> assertThat(context).doesNotHaveBean(RequestMatcherProvider.class));
 	}
 
 	@Test
-	public void registersMvcRequestMatcherProviderIfMvcPresent() {
-		this.contextRunner.withUserConfiguration(TestMvcConfiguration.class)
-				.run((context) -> assertThat(context)
-						.getBean(RequestMatcherProvider.class)
-						.isInstanceOf(MvcRequestMatcherProvider.class));
+	void registersMvcRequestMatcherProviderIfMvcPresent() {
+		this.contextRunner.withUserConfiguration(TestMvcConfiguration.class).run((context) -> assertThat(context)
+				.getBean(RequestMatcherProvider.class).isInstanceOf(MvcRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(
-						"org.springframework.web.servlet.DispatcherServlet"))
-				.withUserConfiguration(TestJerseyConfiguration.class)
-				.run((context) -> assertThat(context)
-						.getBean(RequestMatcherProvider.class)
-						.isInstanceOf(JerseyRequestMatcherProvider.class));
+	void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
+				.withUserConfiguration(TestJerseyConfiguration.class).run((context) -> assertThat(context)
+						.getBean(RequestMatcherProvider.class).isInstanceOf(JerseyRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void mvcRequestMatcherProviderConditionalOnDispatcherServletClass() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(
-						"org.springframework.web.servlet.DispatcherServlet"))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(MvcRequestMatcherProvider.class));
+	void mvcRequestMatcherProviderConditionalOnDispatcherServletClass() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
+				.run((context) -> assertThat(context).doesNotHaveBean(MvcRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void jerseyRequestMatcherProviderConditionalOnResourceConfigClass() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(
-						"org.glassfish.jersey.server.ResourceConfig"))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(JerseyRequestMatcherProvider.class));
+	void jerseyRequestMatcherProviderConditionalOnResourceConfigClass() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.glassfish.jersey.server.ResourceConfig"))
+				.run((context) -> assertThat(context).doesNotHaveBean(JerseyRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void mvcRequestMatcherProviderConditionalOnHandlerMappingIntrospectorBean() {
+	void mvcRequestMatcherProviderConditionalOnHandlerMappingIntrospectorBean() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations
-						.of(SecurityRequestMatcherProviderAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(MvcRequestMatcherProvider.class));
+				.withConfiguration(AutoConfigurations.of(SecurityRequestMatcherProviderAutoConfiguration.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(MvcRequestMatcherProvider.class));
 	}
 
 	@Test
-	public void jerseyRequestMatcherProviderConditionalOnJerseyApplicationPathBean() {
+	void jerseyRequestMatcherProviderConditionalOnJerseyApplicationPathBean() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations
-						.of(SecurityRequestMatcherProviderAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(
-						"org.springframework.web.servlet.DispatcherServlet"))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(JerseyRequestMatcherProvider.class));
+				.withConfiguration(AutoConfigurations.of(SecurityRequestMatcherProviderAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
+				.run((context) -> assertThat(context).doesNotHaveBean(JerseyRequestMatcherProvider.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

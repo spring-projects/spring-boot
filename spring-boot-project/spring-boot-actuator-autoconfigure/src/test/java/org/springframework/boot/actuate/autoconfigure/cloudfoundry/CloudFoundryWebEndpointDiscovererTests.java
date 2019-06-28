@@ -50,18 +50,18 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryWebEndpointDiscovererTests {
+class CloudFoundryWebEndpointDiscovererTests {
 
 	@Test
-	public void getEndpointsShouldAddCloudFoundryHealthExtension() {
+	void getEndpointsShouldAddCloudFoundryHealthExtension() {
 		load(TestConfiguration.class, (discoverer) -> {
 			Collection<ExposableWebEndpoint> endpoints = discoverer.getEndpoints();
 			assertThat(endpoints.size()).isEqualTo(2);
 			for (ExposableWebEndpoint endpoint : endpoints) {
 				if (endpoint.getEndpointId().equals(EndpointId.of("health"))) {
 					WebOperation operation = findMainReadOperation(endpoint);
-					assertThat(operation.invoke(new InvocationContext(
-							mock(SecurityContext.class), Collections.emptyMap())))
+					assertThat(operation
+							.invoke(new InvocationContext(mock(SecurityContext.class), Collections.emptyMap())))
 									.isEqualTo("cf");
 				}
 			}
@@ -74,30 +74,23 @@ public class CloudFoundryWebEndpointDiscovererTests {
 				return operation;
 			}
 		}
-		throw new IllegalStateException(
-				"No main read operation found from " + endpoint.getOperations());
+		throw new IllegalStateException("No main read operation found from " + endpoint.getOperations());
 	}
 
-	private void load(Class<?> configuration,
-			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
+	private void load(Class<?> configuration, Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
 		this.load((id) -> null, EndpointId::toString, configuration, consumer);
 	}
 
-	private void load(Function<EndpointId, Long> timeToLive,
-			PathMapper endpointPathMapper, Class<?> configuration,
+	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper, Class<?> configuration,
 			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration)) {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
-			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
-					Collections.singletonList("application/json"),
+			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
-			CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(
-					context, parameterMapper, mediaTypes,
-					Collections.singletonList(endpointPathMapper),
-					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
-					Collections.emptyList());
+			CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(context,
+					parameterMapper, mediaTypes, Collections.singletonList(endpointPathMapper),
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), Collections.emptyList());
 			consumer.accept(discoverer);
 		}
 	}

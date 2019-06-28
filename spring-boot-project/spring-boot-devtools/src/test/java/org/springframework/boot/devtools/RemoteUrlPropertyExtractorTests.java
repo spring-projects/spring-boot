@@ -17,8 +17,8 @@
 package org.springframework.boot.devtools;
 
 import ch.qos.logback.classic.Logger;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
@@ -34,49 +34,43 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Phillip Webb
  */
-public class RemoteUrlPropertyExtractorTests {
+class RemoteUrlPropertyExtractorTests {
 
-	@After
-	public void preventRunFailuresFromPollutingLoggerContext() {
-		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class))
-				.getLoggerContext().getTurboFilterList().clear();
+	@AfterEach
+	void preventRunFailuresFromPollutingLoggerContext() {
+		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class)).getLoggerContext()
+				.getTurboFilterList().clear();
 	}
 
 	@Test
-	public void missingUrl() {
-		assertThatIllegalStateException().isThrownBy(this::doTest)
-				.withMessageContaining("No remote URL specified");
+	void missingUrl() {
+		assertThatIllegalStateException().isThrownBy(this::doTest).withMessageContaining("No remote URL specified");
 	}
 
 	@Test
-	public void malformedUrl() {
+	void malformedUrl() {
 		assertThatIllegalStateException().isThrownBy(() -> doTest("::://wibble"))
 				.withMessageContaining("Malformed URL '::://wibble'");
 
 	}
 
 	@Test
-	public void multipleUrls() {
-		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> doTest("http://localhost:8080", "http://localhost:9090"))
+	void multipleUrls() {
+		assertThatIllegalStateException().isThrownBy(() -> doTest("http://localhost:8080", "http://localhost:9090"))
 				.withMessageContaining("Multiple URLs specified");
 	}
 
 	@Test
-	public void validUrl() {
+	void validUrl() {
 		ApplicationContext context = doTest("http://localhost:8080");
-		assertThat(context.getEnvironment().getProperty("remoteUrl"))
-				.isEqualTo("http://localhost:8080");
-		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache"))
-				.isNull();
+		assertThat(context.getEnvironment().getProperty("remoteUrl")).isEqualTo("http://localhost:8080");
+		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache")).isNull();
 	}
 
 	@Test
-	public void cleanValidUrl() {
+	void cleanValidUrl() {
 		ApplicationContext context = doTest("http://localhost:8080/");
-		assertThat(context.getEnvironment().getProperty("remoteUrl"))
-				.isEqualTo("http://localhost:8080");
+		assertThat(context.getEnvironment().getProperty("remoteUrl")).isEqualTo("http://localhost:8080");
 	}
 
 	private ApplicationContext doTest(String... args) {

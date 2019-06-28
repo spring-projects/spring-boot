@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 case "$JDK_VERSION" in
 	java8)
@@ -30,7 +29,7 @@ if [[ $current = $latest ]]; then
 fi
 
 existing_tasks=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-buildmaster )
-existing_jdk_issues=$( echo "$existing_tasks" | jq -c --arg TITLE $ISSUE_TITLE '.[] | select(.title==$TITLE)' )
+existing_jdk_issues=$( echo "$existing_tasks" | jq -c --arg TITLE "$ISSUE_TITLE" '.[] | select(.title==$TITLE)' )
 
 if [[ ${existing_jdk_issues} = "" ]]; then
 	curl \

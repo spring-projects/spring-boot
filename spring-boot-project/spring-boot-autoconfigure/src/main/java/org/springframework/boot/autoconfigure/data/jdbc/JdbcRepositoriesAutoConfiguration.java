@@ -45,10 +45,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 @SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(NamedParameterJdbcOperations.class)
-@ConditionalOnClass({ NamedParameterJdbcOperations.class,
-		AbstractJdbcConfiguration.class })
-@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnClass({ NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class })
+@ConditionalOnProperty(prefix = "spring.data.jdbc.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration.class)
 public class JdbcRepositoriesAutoConfiguration {
 
@@ -60,8 +59,7 @@ public class JdbcRepositoriesAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnMissingBean({ AbstractJdbcConfiguration.class,
-			JdbcConfiguration.class })
+	@ConditionalOnMissingBean({ AbstractJdbcConfiguration.class, JdbcConfiguration.class })
 	static class SpringBootJdbcConfiguration extends AbstractJdbcConfiguration {
 
 	}

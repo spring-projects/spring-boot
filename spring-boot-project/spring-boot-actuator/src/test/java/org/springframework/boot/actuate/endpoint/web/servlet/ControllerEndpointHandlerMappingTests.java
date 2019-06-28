@@ -43,12 +43,12 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ControllerEndpointHandlerMappingTests {
+class ControllerEndpointHandlerMappingTests {
 
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
 	@Test
-	public void mappingWithNoPrefix() throws Exception {
+	void mappingWithNoPrefix() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ExposableControllerEndpoint second = secondEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("", first, second);
@@ -60,11 +60,10 @@ public class ControllerEndpointHandlerMappingTests {
 	}
 
 	@Test
-	public void mappingWithPrefix() throws Exception {
+	void mappingWithPrefix() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ExposableControllerEndpoint second = secondEndpoint();
-		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first,
-				second);
+		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first, second);
 		assertThat(mapping.getHandler(request("GET", "/actuator/first")).getHandler())
 				.isEqualTo(handlerOf(first.getController(), "get"));
 		assertThat(mapping.getHandler(request("POST", "/actuator/second")).getHandler())
@@ -74,7 +73,7 @@ public class ControllerEndpointHandlerMappingTests {
 	}
 
 	@Test
-	public void mappingNarrowedToMethod() throws Exception {
+	void mappingNarrowedToMethod() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
 		assertThatExceptionOfType(HttpRequestMethodNotSupportedException.class)
@@ -82,7 +81,7 @@ public class ControllerEndpointHandlerMappingTests {
 	}
 
 	@Test
-	public void mappingWithNoPath() throws Exception {
+	void mappingWithNoPath() throws Exception {
 		ExposableControllerEndpoint pathless = pathlessEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", pathless);
 		assertThat(mapping.getHandler(request("GET", "/actuator/pathless")).getHandler())
@@ -91,18 +90,16 @@ public class ControllerEndpointHandlerMappingTests {
 		assertThat(mapping.getHandler(request("GET", "/"))).isNull();
 	}
 
-	private ControllerEndpointHandlerMapping createMapping(String prefix,
-			ExposableControllerEndpoint... endpoints) {
-		ControllerEndpointHandlerMapping mapping = new ControllerEndpointHandlerMapping(
-				new EndpointMapping(prefix), Arrays.asList(endpoints), null);
+	private ControllerEndpointHandlerMapping createMapping(String prefix, ExposableControllerEndpoint... endpoints) {
+		ControllerEndpointHandlerMapping mapping = new ControllerEndpointHandlerMapping(new EndpointMapping(prefix),
+				Arrays.asList(endpoints), null);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		return mapping;
 	}
 
 	private HandlerMethod handlerOf(Object source, String methodName) {
-		return new HandlerMethod(source,
-				ReflectionUtils.findMethod(source.getClass(), methodName));
+		return new HandlerMethod(source, ReflectionUtils.findMethod(source.getClass(), methodName));
 	}
 
 	private MockHttpServletRequest request(String method, String requestURI) {

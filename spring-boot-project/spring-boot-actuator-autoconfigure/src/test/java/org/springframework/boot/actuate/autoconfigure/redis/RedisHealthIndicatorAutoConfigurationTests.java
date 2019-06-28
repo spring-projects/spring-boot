@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,22 +42,18 @@ public class RedisHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-					RedisHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+					RedisHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(RedisHealthIndicator.class)
-						.doesNotHaveBean(RedisReactiveHealthIndicator.class)
-						.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RedisHealthIndicator.class)
+				.doesNotHaveBean(RedisReactiveHealthIndicator.class).doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.redis.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(RedisHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(RedisHealthIndicator.class)
 						.doesNotHaveBean(RedisReactiveHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}

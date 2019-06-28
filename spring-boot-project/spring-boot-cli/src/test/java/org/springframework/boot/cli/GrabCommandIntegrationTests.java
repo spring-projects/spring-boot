@@ -18,13 +18,15 @@ package org.springframework.boot.cli;
 
 import java.io.File;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.cli.command.grab.GrabCommand;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,49 +38,48 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  * @author Dave Syer
  */
-public class GrabCommandIntegrationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class GrabCommandIntegrationTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@RegisterExtension
+	CliTester cli;
 
-	@Rule
-	public CliTester cli = new CliTester("src/test/resources/grab-samples/");
+	GrabCommandIntegrationTests(CapturedOutput capturedOutput) {
+		this.cli = new CliTester("src/test/resources/grab-samples/", capturedOutput);
+	}
 
-	@Before
-	@After
-	public void deleteLocalRepository() {
+	@BeforeEach
+	@AfterEach
+	void deleteLocalRepository() {
 		System.clearProperty("grape.root");
 		System.clearProperty("groovy.grape.report.downloads");
 	}
 
 	@Test
-	public void grab() throws Exception {
+	void grab() throws Exception {
 
-		System.setProperty("grape.root", this.temp.getRoot().getAbsolutePath());
+		System.setProperty("grape.root", this.cli.getTemp().getAbsolutePath());
 		System.setProperty("groovy.grape.report.downloads", "true");
 
 		// Use --autoconfigure=false to limit the amount of downloaded dependencies
 		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
-		assertThat(new File(this.temp.getRoot(), "repository/joda-time/joda-time"))
-				.isDirectory();
+		assertThat(new File(this.cli.getTemp(), "repository/joda-time/joda-time")).isDirectory();
 		// Should be resolved from local repository cache
 		assertThat(output.contains("Downloading: file:")).isTrue();
 	}
 
 	@Test
-	public void duplicateDependencyManagementBomAnnotationsProducesAnError() {
+	void duplicateDependencyManagementBomAnnotationsProducesAnError() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(
-						() -> this.cli.grab("duplicateDependencyManagementBom.groovy"))
+				.isThrownBy(() -> this.cli.grab("duplicateDependencyManagementBom.groovy"))
 				.withMessageContaining("Duplicate @DependencyManagementBom annotation");
 	}
 
 	@Test
-	public void customMetadata() throws Exception {
-		System.setProperty("grape.root", this.temp.getRoot().getAbsolutePath());
-		File repository = new File(this.temp.getRoot().getAbsolutePath(), "repository");
-		FileSystemUtils.copyRecursively(
-				new File("src/test/resources/grab-samples/repository"), repository);
+	void customMetadata() throws Exception {
+		System.setProperty("grape.root", this.cli.getTemp().getAbsolutePath());
+		File repository = new File(this.cli.getTemp().getAbsolutePath(), "repository");
+		FileSystemUtils.copyRecursively(new File("src/test/resources/grab-samples/repository"), repository);
 		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
 		assertThat(new File(repository, "javax/ejb/ejb-api/3.0")).isDirectory();
 	}

@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.integration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -33,24 +30,20 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Tim Ysewyn
  */
-@RunWith(WebEndpointRunners.class)
-public class IntegrationGraphEndpointWebIntegrationTests {
+class IntegrationGraphEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void graph() {
-		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isOk().expectBody()
-				.jsonPath("contentDescriptor.providerVersion").isNotEmpty()
+	@WebEndpointTest
+	void graph(WebTestClient client) {
+		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isOk().expectBody().jsonPath("contentDescriptor.providerVersion").isNotEmpty()
 				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.0f)
 				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
 	}
 
-	@Test
-	public void rebuild() {
-		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isNoContent();
+	@WebEndpointTest
+	void rebuild(WebTestClient client) {
+		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isNoContent();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -58,8 +51,7 @@ public class IntegrationGraphEndpointWebIntegrationTests {
 	public static class TestConfiguration {
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint(
-				IntegrationGraphServer integrationGraphServer) {
+		public IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
 			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 

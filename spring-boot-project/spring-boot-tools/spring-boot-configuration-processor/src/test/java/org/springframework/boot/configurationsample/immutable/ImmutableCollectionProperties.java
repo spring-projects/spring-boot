@@ -35,8 +35,7 @@ public class ImmutableCollectionProperties {
 
 	private final List<Duration> durations;
 
-	public ImmutableCollectionProperties(List<String> names,
-			@DefaultValue({ "true", "false" }) List<Boolean> flags,
+	public ImmutableCollectionProperties(List<String> names, @DefaultValue({ "true", "false" }) List<Boolean> flags,
 			@DefaultValue({ "10s", "1m", "1h" }) List<Duration> durations) {
 		this.names = names;
 		this.flags = flags;

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -33,71 +33,65 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests {
+class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void simpleMethodConfig() {
+	void simpleMethodConfig() {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
 		assertThat(metadata)
-				.has(Metadata.withGroup("foo").fromSource(SimpleMethodConfig.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
+				.has(Metadata.withProperty("foo.name", String.class).fromSource(SimpleMethodConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
 				.fromSource(SimpleMethodConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(SimpleMethodConfig.Foo.class));
 	}
 
 	@Test
-	public void invalidMethodConfig() {
+	void invalidMethodConfig() {
 		ConfigurationMetadata metadata = compile(InvalidMethodConfig.class);
-		assertThat(metadata).has(Metadata.withProperty("something.name", String.class)
-				.fromSource(InvalidMethodConfig.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("something.name", String.class).fromSource(InvalidMethodConfig.class));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("invalid.name"));
 	}
 
 	@Test
-	public void methodAndClassConfig() {
+	void methodAndClassConfig() {
 		ConfigurationMetadata metadata = compile(MethodAndClassConfig.class);
-		assertThat(metadata).has(Metadata.withProperty("conflict.name", String.class)
+		assertThat(metadata)
+				.has(Metadata.withProperty("conflict.name", String.class).fromSource(MethodAndClassConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class).withDefaultValue(false)
 				.fromSource(MethodAndClassConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(MethodAndClassConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("conflict.value", String.class)
-				.fromSource(MethodAndClassConfig.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("conflict.value", String.class).fromSource(MethodAndClassConfig.class));
 	}
 
 	@Test
-	public void emptyTypeMethodConfig() {
+	void emptyTypeMethodConfig() {
 		ConfigurationMetadata metadata = compile(EmptyTypeMethodConfig.class);
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("something.foo"));
 	}
 
 	@Test
-	public void deprecatedMethodConfig() {
+	void deprecatedMethodConfig() {
 		Class<DeprecatedMethodConfig> type = DeprecatedMethodConfig.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
-				.fromSource(DeprecatedMethodConfig.Foo.class)
-				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(DeprecatedMethodConfig.Foo.class)
-				.withDeprecation(null, null));
+				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
 	}
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void deprecatedMethodConfigOnClass() {
+	void deprecatedMethodConfigOnClass() {
 		Class<?> type = org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
-				.fromSource(
-						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
-				.withDefaultValue(false)
-				.fromSource(
-						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
 	}
 

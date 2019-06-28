@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ class JsonReader {
 
 	private final SentenceExtractor sentenceExtractor = new SentenceExtractor();
 
-	public RawConfigurationMetadata read(InputStream in, Charset charset)
-			throws IOException {
+	public RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
 		try {
 			JSONObject json = readJson(in, charset);
 			List<ConfigurationMetadataSource> groups = parseAllSources(json);
@@ -60,8 +59,7 @@ class JsonReader {
 		}
 	}
 
-	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root)
-			throws Exception {
+	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root) throws Exception {
 		List<ConfigurationMetadataSource> result = new ArrayList<>();
 		if (!root.has("groups")) {
 			return result;
@@ -74,8 +72,7 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root)
-			throws Exception {
+	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root) throws Exception {
 		List<ConfigurationMetadataItem> result = new ArrayList<>();
 		if (!root.has("properties")) {
 			return result;
@@ -88,8 +85,7 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root)
-			throws Exception {
+	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root) throws Exception {
 		List<ConfigurationMetadataHint> result = new ArrayList<>();
 		if (!root.has("hints")) {
 			return result;
@@ -139,8 +135,7 @@ class JsonReader {
 				valueHint.setValue(readItemValue(value.get("value")));
 				String description = value.optString("description", null);
 				valueHint.setDescription(description);
-				valueHint.setShortDescription(
-						this.sentenceExtractor.getFirstSentence(description));
+				valueHint.setShortDescription(this.sentenceExtractor.getFirstSentence(description));
 				hint.getValueHints().add(valueHint);
 			}
 		}
@@ -155,8 +150,7 @@ class JsonReader {
 					Iterator<?> keys = parameters.keys();
 					while (keys.hasNext()) {
 						String key = (String) keys.next();
-						valueProvider.getParameters().put(key,
-								readItemValue(parameters.get(key)));
+						valueProvider.getParameters().put(key, readItemValue(parameters.get(key)));
 					}
 				}
 				hint.getValueProviders().add(valueProvider);
@@ -169,13 +163,11 @@ class JsonReader {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			Deprecation deprecation = new Deprecation();
-			deprecation.setLevel(parseDeprecationLevel(
-					deprecationJsonObject.optString("level", null)));
+			deprecation.setLevel(parseDeprecationLevel(deprecationJsonObject.optString("level", null)));
 			String reason = deprecationJsonObject.optString("reason", null);
 			deprecation.setReason(reason);
 			deprecation.setShortReason(this.sentenceExtractor.getFirstSentence(reason));
-			deprecation
-					.setReplacement(deprecationJsonObject.optString("replacement", null));
+			deprecation.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
 		return object.optBoolean("deprecated") ? new Deprecation() : null;

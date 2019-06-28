@@ -84,15 +84,13 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
 	static class DefaultTemplateResolverConfiguration {
 
-		private static final Log logger = LogFactory
-				.getLog(DefaultTemplateResolverConfiguration.class);
+		private static final Log logger = LogFactory.getLog(DefaultTemplateResolverConfiguration.class);
 
 		private final ThymeleafProperties properties;
 
 		private final ApplicationContext applicationContext;
 
-		DefaultTemplateResolverConfiguration(ThymeleafProperties properties,
-				ApplicationContext applicationContext) {
+		DefaultTemplateResolverConfiguration(ThymeleafProperties properties, ApplicationContext applicationContext) {
 			this.properties = properties;
 			this.applicationContext = applicationContext;
 		}
@@ -101,11 +99,9 @@ public class ThymeleafAutoConfiguration {
 		public void checkTemplateLocationExists() {
 			boolean checkTemplateLocation = this.properties.isCheckTemplateLocation();
 			if (checkTemplateLocation) {
-				TemplateLocation location = new TemplateLocation(
-						this.properties.getPrefix());
+				TemplateLocation location = new TemplateLocation(this.properties.getPrefix());
 				if (!location.exists(this.applicationContext)) {
-					logger.warn("Cannot find template location: " + location
-							+ " (please add some templates or check "
+					logger.warn("Cannot find template location: " + location + " (please add some templates or check "
 							+ "your Thymeleaf configuration)");
 				}
 			}
@@ -138,12 +134,10 @@ public class ThymeleafAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public SpringTemplateEngine templateEngine(ThymeleafProperties properties,
-				ObjectProvider<ITemplateResolver> templateResolvers,
-				ObjectProvider<IDialect> dialects) {
+				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
-			engine.setRenderHiddenMarkersBeforeCheckboxes(
-					properties.isRenderHiddenMarkersBeforeCheckboxes());
+			engine.setRenderHiddenMarkersBeforeCheckboxes(properties.isRenderHiddenMarkersBeforeCheckboxes());
 			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
 			dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
@@ -171,14 +165,13 @@ public class ThymeleafAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean(name = "thymeleafViewResolver")
-			public ThymeleafViewResolver thymeleafViewResolver(
-					ThymeleafProperties properties, SpringTemplateEngine templateEngine) {
+			public ThymeleafViewResolver thymeleafViewResolver(ThymeleafProperties properties,
+					SpringTemplateEngine templateEngine) {
 				ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 				resolver.setTemplateEngine(templateEngine);
 				resolver.setCharacterEncoding(properties.getEncoding().name());
 				resolver.setContentType(
-						appendCharset(properties.getServlet().getContentType(),
-								resolver.getCharacterEncoding()));
+						appendCharset(properties.getServlet().getContentType(), resolver.getCharacterEncoding()));
 				resolver.setProducePartialOutputWhileProcessing(
 						properties.getServlet().isProducePartialOutputWhileProcessing());
 				resolver.setExcludedViewNames(properties.getExcludedViewNames());
@@ -212,12 +205,10 @@ public class ThymeleafAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(ISpringWebFluxTemplateEngine.class)
 		public SpringWebFluxTemplateEngine templateEngine(ThymeleafProperties properties,
-				ObjectProvider<ITemplateResolver> templateResolvers,
-				ObjectProvider<IDialect> dialects) {
+				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
 			engine.setEnableSpringELCompiler(properties.isEnableSpringElCompiler());
-			engine.setRenderHiddenMarkersBeforeCheckboxes(
-					properties.isRenderHiddenMarkersBeforeCheckboxes());
+			engine.setRenderHiddenMarkersBeforeCheckboxes(properties.isRenderHiddenMarkersBeforeCheckboxes());
 			templateResolvers.orderedStream().forEach(engine::addTemplateResolver);
 			dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
@@ -232,8 +223,7 @@ public class ThymeleafAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "thymeleafReactiveViewResolver")
-		public ThymeleafReactiveViewResolver thymeleafViewResolver(
-				ISpringWebFluxTemplateEngine templateEngine,
+		public ThymeleafReactiveViewResolver thymeleafViewResolver(ISpringWebFluxTemplateEngine templateEngine,
 				ThymeleafProperties properties) {
 			ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
 			resolver.setTemplateEngine(templateEngine);
@@ -245,24 +235,20 @@ public class ThymeleafAutoConfiguration {
 			return resolver;
 		}
 
-		private void mapProperties(ThymeleafProperties properties,
-				ThymeleafReactiveViewResolver resolver) {
+		private void mapProperties(ThymeleafProperties properties, ThymeleafReactiveViewResolver resolver) {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getEncoding).to(resolver::setDefaultCharset);
 			resolver.setExcludedViewNames(properties.getExcludedViewNames());
 			resolver.setViewNames(properties.getViewNames());
 		}
 
-		private void mapReactiveProperties(Reactive properties,
-				ThymeleafReactiveViewResolver resolver) {
+		private void mapReactiveProperties(Reactive properties, ThymeleafReactiveViewResolver resolver) {
 			PropertyMapper map = PropertyMapper.get();
-			map.from(properties::getMediaTypes).whenNonNull()
-					.to(resolver::setSupportedMediaTypes);
-			map.from(properties::getMaxChunkSize).asInt(DataSize::toBytes)
-					.when((size) -> size > 0).to(resolver::setResponseMaxChunkSizeBytes);
+			map.from(properties::getMediaTypes).whenNonNull().to(resolver::setSupportedMediaTypes);
+			map.from(properties::getMaxChunkSize).asInt(DataSize::toBytes).when((size) -> size > 0)
+					.to(resolver::setResponseMaxChunkSizeBytes);
 			map.from(properties::getFullModeViewNames).to(resolver::setFullModeViewNames);
-			map.from(properties::getChunkedModeViewNames)
-					.to(resolver::setChunkedModeViewNames);
+			map.from(properties::getChunkedModeViewNames).to(resolver::setChunkedModeViewNames);
 		}
 
 	}

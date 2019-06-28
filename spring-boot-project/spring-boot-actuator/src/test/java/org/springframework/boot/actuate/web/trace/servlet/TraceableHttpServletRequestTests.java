@@ -27,34 +27,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class TraceableHttpServletRequestTests {
+class TraceableHttpServletRequestTests {
 
 	private MockHttpServletRequest request;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.request = new MockHttpServletRequest("GET", "/script");
 	}
 
 	@Test
-	public void getUriWithoutQueryStringShouldReturnUri() {
+	void getUriWithoutQueryStringShouldReturnUri() {
 		validate("http://localhost/script");
 	}
 
 	@Test
-	public void getUriShouldReturnUriWithQueryString() {
+	void getUriShouldReturnUriWithQueryString() {
 		this.request.setQueryString("a=b");
 		validate("http://localhost/script?a=b");
 	}
 
 	@Test
-	public void getUriWithSpecialCharactersInQueryStringShouldEncode() {
+	void getUriWithSpecialCharactersInQueryStringShouldEncode() {
 		this.request.setQueryString("a=${b}");
 		validate("http://localhost/script?a=$%7Bb%7D");
 	}
 
 	@Test
-	public void getUriWithSpecialCharactersEncodedShouldNotDoubleEncode() {
+	void getUriWithSpecialCharactersEncodedShouldNotDoubleEncode() {
 		this.request.setQueryString("a=$%7Bb%7D");
 		validate("http://localhost/script?a=$%7Bb%7D");
 	}

@@ -43,8 +43,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EmbeddedJMS.class)
-@ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 class ArtemisEmbeddedServerConfiguration {
 
 	private final ArtemisProperties properties;
@@ -56,19 +56,16 @@ class ArtemisEmbeddedServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public org.apache.activemq.artemis.core.config.Configuration artemisConfiguration() {
-		return new ArtemisEmbeddedConfigurationFactory(this.properties)
-				.createConfiguration();
+		return new ArtemisEmbeddedConfigurationFactory(this.properties).createConfiguration();
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public EmbeddedJMS artemisServer(
-			org.apache.activemq.artemis.core.config.Configuration configuration,
+	public EmbeddedJMS artemisServer(org.apache.activemq.artemis.core.config.Configuration configuration,
 			JMSConfiguration jmsConfiguration,
 			ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers) {
 		EmbeddedJMS server = new EmbeddedJMS();
-		configurationCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(configuration));
+		configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 		server.setConfiguration(configuration);
 		server.setJmsConfiguration(jmsConfiguration);
 		server.setRegistry(new ArtemisNoOpBindingRegistry());
@@ -77,8 +74,7 @@ class ArtemisEmbeddedServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JMSConfiguration artemisJmsConfiguration(
-			ObjectProvider<JMSQueueConfiguration> queuesConfiguration,
+	public JMSConfiguration artemisJmsConfiguration(ObjectProvider<JMSQueueConfiguration> queuesConfiguration,
 			ObjectProvider<TopicConfiguration> topicsConfiguration) {
 		JMSConfiguration configuration = new JMSConfigurationImpl();
 		addAll(configuration.getQueueConfigurations(), queuesConfiguration);

@@ -50,16 +50,14 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 @ConditionalOnBean(CassandraOperations.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({ CassandraAutoConfiguration.class,
-		CassandraDataAutoConfiguration.class,
+@AutoConfigureAfter({ CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
 		CassandraReactiveHealthIndicatorAutoConfiguration.class })
-public class CassandraHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<CassandraHealthIndicator, CassandraOperations> {
+public class CassandraHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<CassandraHealthIndicator, CassandraOperations> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "cassandraHealthIndicator")
-	public HealthIndicator cassandraHealthIndicator(
-			Map<String, CassandraOperations> cassandraOperations) {
+	public HealthIndicator cassandraHealthIndicator(Map<String, CassandraOperations> cassandraOperations) {
 		return createHealthIndicator(cassandraOperations);
 	}
 

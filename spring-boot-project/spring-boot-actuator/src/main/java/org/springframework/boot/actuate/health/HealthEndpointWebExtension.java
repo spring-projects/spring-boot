@@ -43,8 +43,7 @@ public class HealthEndpointWebExtension {
 
 	private final HealthWebEndpointResponseMapper responseMapper;
 
-	public HealthEndpointWebExtension(HealthEndpoint delegate,
-			HealthWebEndpointResponseMapper responseMapper) {
+	public HealthEndpointWebExtension(HealthEndpoint delegate, HealthWebEndpointResponseMapper responseMapper) {
 		this.delegate = delegate;
 		this.responseMapper = responseMapper;
 	}
@@ -55,25 +54,20 @@ public class HealthEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Health> healthForComponent(SecurityContext securityContext,
-			@Selector String component) {
+	public WebEndpointResponse<Health> healthForComponent(SecurityContext securityContext, @Selector String component) {
 		Supplier<Health> health = () -> this.delegate.healthForComponent(component);
 		return this.responseMapper.mapDetails(health, securityContext);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Health> healthForComponentInstance(
-			SecurityContext securityContext, @Selector String component,
-			@Selector String instance) {
-		Supplier<Health> health = () -> this.delegate
-				.healthForComponentInstance(component, instance);
+	public WebEndpointResponse<Health> healthForComponentInstance(SecurityContext securityContext,
+			@Selector String component, @Selector String instance) {
+		Supplier<Health> health = () -> this.delegate.healthForComponentInstance(component, instance);
 		return this.responseMapper.mapDetails(health, securityContext);
 	}
 
-	public WebEndpointResponse<Health> getHealth(SecurityContext securityContext,
-			ShowDetails showDetails) {
-		return this.responseMapper.map(this.delegate.health(), securityContext,
-				showDetails);
+	public WebEndpointResponse<Health> getHealth(SecurityContext securityContext, ShowDetails showDetails) {
+		return this.responseMapper.map(this.delegate.health(), securityContext, showDetails);
 	}
 
 }

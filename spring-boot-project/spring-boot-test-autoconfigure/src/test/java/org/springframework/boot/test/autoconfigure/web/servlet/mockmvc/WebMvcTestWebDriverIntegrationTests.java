@@ -16,10 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
@@ -28,7 +27,6 @@ import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -38,11 +36,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
 @WithMockUser
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class WebMvcTestWebDriverIntegrationTests {
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
+class WebMvcTestWebDriverIntegrationTests {
 
 	private static WebDriver previousWebDriver;
 
@@ -50,7 +47,7 @@ public class WebMvcTestWebDriverIntegrationTests {
 	private WebDriver webDriver;
 
 	@Test
-	public void shouldAutoConfigureWebClient() {
+	void shouldAutoConfigureWebClient() {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
@@ -58,12 +55,11 @@ public class WebMvcTestWebDriverIntegrationTests {
 	}
 
 	@Test
-	public void shouldBeADifferentWebClient() {
+	void shouldBeADifferentWebClient() {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
-		assertThatExceptionOfType(NoSuchWindowException.class)
-				.isThrownBy(previousWebDriver::getWindowHandle);
+		assertThatExceptionOfType(NoSuchWindowException.class).isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
 	}
 

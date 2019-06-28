@@ -30,41 +30,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Razib Shahriar
  */
-public class AbstractNestedConditionTests {
+class AbstractNestedConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void validPhase() {
+	void validPhase() {
 		this.contextRunner.withUserConfiguration(ValidConfig.class)
 				.run((context) -> assertThat(context).hasBean("myBean"));
 	}
 
 	@Test
-	public void invalidMemberPhase() {
+	void invalidMemberPhase() {
 		this.contextRunner.withUserConfiguration(InvalidConfig.class).run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context.getStartupFailure().getCause())
-					.isInstanceOf(IllegalStateException.class)
-					.hasMessageContaining("Nested condition "
-							+ InvalidNestedCondition.class.getName()
+			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)
+					.hasMessageContaining("Nested condition " + InvalidNestedCondition.class.getName()
 							+ " uses a configuration phase that is inappropriate for class "
 							+ OnBeanCondition.class.getName());
 		});
 	}
 
 	@Test
-	public void invalidNestedMemberPhase() {
-		this.contextRunner.withUserConfiguration(DoubleNestedConfig.class)
-				.run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure().getCause())
-							.isInstanceOf(IllegalStateException.class)
-							.hasMessageContaining("Nested condition "
-									+ DoubleNestedCondition.class.getName()
-									+ " uses a configuration phase that is inappropriate for class "
-									+ ValidNestedCondition.class.getName());
-				});
+	void invalidNestedMemberPhase() {
+		this.contextRunner.withUserConfiguration(DoubleNestedConfig.class).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)
+					.hasMessageContaining("Nested condition " + DoubleNestedCondition.class.getName()
+							+ " uses a configuration phase that is inappropriate for class "
+							+ ValidNestedCondition.class.getName());
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -85,8 +80,7 @@ public class AbstractNestedConditionTests {
 		}
 
 		@Override
-		protected ConditionOutcome getFinalMatchOutcome(
-				MemberMatchOutcomes memberOutcomes) {
+		protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 			return ConditionOutcome.match();
 		}
 
@@ -115,8 +109,7 @@ public class AbstractNestedConditionTests {
 		}
 
 		@Override
-		protected ConditionOutcome getFinalMatchOutcome(
-				MemberMatchOutcomes memberOutcomes) {
+		protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 			return ConditionOutcome.match();
 		}
 
@@ -140,8 +133,7 @@ public class AbstractNestedConditionTests {
 		}
 
 		@Override
-		protected ConditionOutcome getFinalMatchOutcome(
-				MemberMatchOutcomes memberOutcomes) {
+		protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 			return ConditionOutcome.match();
 		}
 

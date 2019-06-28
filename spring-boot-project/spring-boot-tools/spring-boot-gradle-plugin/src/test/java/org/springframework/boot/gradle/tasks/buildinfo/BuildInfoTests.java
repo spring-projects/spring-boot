@@ -35,13 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class BuildInfoTests {
+class BuildInfoTests {
 
 	@TempDir
 	File temp;
 
 	@Test
-	public void basicExecution() {
+	void basicExecution() {
 		Properties properties = buildInfoProperties(createTask(createProject("test")));
 		assertThat(properties).containsKey("build.time");
 		assertThat(properties).containsEntry("build.artifact", "unspecified");
@@ -51,72 +51,71 @@ public class BuildInfoTests {
 	}
 
 	@Test
-	public void customArtifactIsReflectedInProperties() {
+	void customArtifactIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setArtifact("custom");
 		assertThat(buildInfoProperties(task)).containsEntry("build.artifact", "custom");
 	}
 
 	@Test
-	public void projectGroupIsReflectedInProperties() {
+	void projectGroupIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProject().setGroup("com.example");
 		assertThat(buildInfoProperties(task)).containsEntry("build.group", "com.example");
 	}
 
 	@Test
-	public void customGroupIsReflectedInProperties() {
+	void customGroupIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setGroup("com.example");
 		assertThat(buildInfoProperties(task)).containsEntry("build.group", "com.example");
 	}
 
 	@Test
-	public void customNameIsReflectedInProperties() {
+	void customNameIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setName("Example");
 		assertThat(buildInfoProperties(task)).containsEntry("build.name", "Example");
 	}
 
 	@Test
-	public void projectVersionIsReflectedInProperties() {
+	void projectVersionIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProject().setVersion("1.2.3");
 		assertThat(buildInfoProperties(task)).containsEntry("build.version", "1.2.3");
 	}
 
 	@Test
-	public void customVersionIsReflectedInProperties() {
+	void customVersionIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setVersion("2.3.4");
 		assertThat(buildInfoProperties(task)).containsEntry("build.version", "2.3.4");
 	}
 
 	@Test
-	public void timeIsSetInProperties() {
+	void timeIsSetInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		assertThat(buildInfoProperties(task)).containsEntry("build.time",
 				DateTimeFormatter.ISO_INSTANT.format(task.getProperties().getTime()));
 	}
 
 	@Test
-	public void timeCanBeRemovedFromProperties() {
+	void timeCanBeRemovedFromProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setTime(null);
 		assertThat(buildInfoProperties(task)).doesNotContainKey("build.time");
 	}
 
 	@Test
-	public void timeCanBeCustomizedInProperties() {
+	void timeCanBeCustomizedInProperties() {
 		Instant now = Instant.now();
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setTime(now);
-		assertThat(buildInfoProperties(task)).containsEntry("build.time",
-				DateTimeFormatter.ISO_INSTANT.format(now));
+		assertThat(buildInfoProperties(task)).containsEntry("build.time", DateTimeFormatter.ISO_INSTANT.format(now));
 	}
 
 	@Test
-	public void additionalPropertiesAreReflectedInProperties() {
+	void additionalPropertiesAreReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().getAdditional().put("a", "alpha");
 		task.getProperties().getAdditional().put("b", "bravo");
@@ -126,8 +125,7 @@ public class BuildInfoTests {
 
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
-		return ProjectBuilder.builder().withProjectDir(projectDir).withName(projectName)
-				.build();
+		return ProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
 	}
 
 	private BuildInfo createTask(Project project) {
@@ -136,8 +134,7 @@ public class BuildInfoTests {
 
 	private Properties buildInfoProperties(BuildInfo task) {
 		task.generateBuildProperties();
-		return buildInfoProperties(
-				new File(task.getDestinationDir(), "build-info.properties"));
+		return buildInfoProperties(new File(task.getDestinationDir(), "build-info.properties"));
 	}
 
 	private Properties buildInfoProperties(File file) {

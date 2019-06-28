@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class GroovyTemplateAvailabilityProviderTests {
+class GroovyTemplateAvailabilityProviderTests {
 
 	private TemplateAvailabilityProvider provider = new GroovyTemplateAvailabilityProvider();
 
@@ -39,45 +39,43 @@ public class GroovyTemplateAvailabilityProviderTests {
 	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void availabilityOfTemplateInDefaultLocation() {
-		assertThat(this.provider.isTemplateAvailable("home", this.environment,
-				getClass().getClassLoader(), this.resourceLoader)).isTrue();
+	void availabilityOfTemplateInDefaultLocation() {
+		assertThat(this.provider.isTemplateAvailable("home", this.environment, getClass().getClassLoader(),
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateThatDoesNotExist() {
-		assertThat(this.provider.isTemplateAvailable("whatever", this.environment,
-				getClass().getClassLoader(), this.resourceLoader)).isFalse();
+	void availabilityOfTemplateThatDoesNotExist() {
+		assertThat(this.provider.isTemplateAvailable("whatever", this.environment, getClass().getClassLoader(),
+				this.resourceLoader)).isFalse();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomLoaderPath() {
-		this.environment.setProperty("spring.groovy.template.resource-loader-path",
-				"classpath:/custom-templates/");
-		assertThat(this.provider.isTemplateAvailable("custom", this.environment,
-				getClass().getClassLoader(), this.resourceLoader)).isTrue();
+	void availabilityOfTemplateWithCustomLoaderPath() {
+		this.environment.setProperty("spring.groovy.template.resource-loader-path", "classpath:/custom-templates/");
+		assertThat(this.provider.isTemplateAvailable("custom", this.environment, getClass().getClassLoader(),
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomLoaderPathConfiguredAsAList() {
-		this.environment.setProperty("spring.groovy.template.resource-loader-path[0]",
-				"classpath:/custom-templates/");
-		assertThat(this.provider.isTemplateAvailable("custom", this.environment,
-				getClass().getClassLoader(), this.resourceLoader)).isTrue();
+	void availabilityOfTemplateWithCustomLoaderPathConfiguredAsAList() {
+		this.environment.setProperty("spring.groovy.template.resource-loader-path[0]", "classpath:/custom-templates/");
+		assertThat(this.provider.isTemplateAvailable("custom", this.environment, getClass().getClassLoader(),
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomPrefix() {
+	void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.groovy.template.prefix", "prefix/");
-		assertThat(this.provider.isTemplateAvailable("prefixed", this.environment,
-				getClass().getClassLoader(), this.resourceLoader)).isTrue();
+		assertThat(this.provider.isTemplateAvailable("prefixed", this.environment, getClass().getClassLoader(),
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
-	public void availabilityOfTemplateWithCustomSuffix() {
+	void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.groovy.template.suffix", ".groovytemplate");
-		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment,
-				getClass().getClassLoader(), this.resourceLoader)).isTrue();
+		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment, getClass().getClassLoader(),
+				this.resourceLoader)).isTrue();
 	}
 
 }

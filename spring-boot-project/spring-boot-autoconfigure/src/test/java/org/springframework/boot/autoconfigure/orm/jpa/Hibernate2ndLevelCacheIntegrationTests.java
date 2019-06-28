@@ -41,8 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Hibernate2ndLevelCacheIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class,
-					DataSourceAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode=never")
 			.withUserConfiguration(TestConfiguration.class);
@@ -51,12 +50,12 @@ public class Hibernate2ndLevelCacheIntegrationTests {
 	public void hibernate2ndLevelCacheWithJCacheAndEhCache3() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";
-		this.contextRunner.withPropertyValues("spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation,
-				"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
-				"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
-				"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
+		this.contextRunner
+				.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
+						"spring.cache.jcache.config=" + configLocation,
+						"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
+						"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
+						"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 

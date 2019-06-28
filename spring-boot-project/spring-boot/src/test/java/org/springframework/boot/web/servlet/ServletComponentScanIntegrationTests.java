@@ -20,8 +20,8 @@ import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -38,43 +38,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ServletComponentScanIntegrationTests {
+class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void componentsAreRegistered() {
+	void componentsAreRegistered() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		String port = this.context.getEnvironment().getProperty("local.server.port");
-		String response = new RestTemplate()
-				.getForObject("http://localhost:" + port + "/test", String.class);
+		String response = new RestTemplate().getForObject("http://localhost:" + port + "/test", String.class);
 		assertThat(response).isEqualTo("alpha bravo");
 	}
 
 	@Test
-	public void multipartConfigIsHonoured() {
+	void multipartConfigIsHonoured() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		@SuppressWarnings("rawtypes")
-		Map<String, ServletRegistrationBean> beans = this.context
-				.getBeansOfType(ServletRegistrationBean.class);
-		ServletRegistrationBean<?> servletRegistrationBean = beans
-				.get(TestMultipartServlet.class.getName());
+		Map<String, ServletRegistrationBean> beans = this.context.getBeansOfType(ServletRegistrationBean.class);
+		ServletRegistrationBean<?> servletRegistrationBean = beans.get(TestMultipartServlet.class.getName());
 		assertThat(servletRegistrationBean).isNotNull();
-		MultipartConfigElement multipartConfig = servletRegistrationBean
-				.getMultipartConfig();
+		MultipartConfigElement multipartConfig = servletRegistrationBean.getMultipartConfig();
 		assertThat(multipartConfig).isNotNull();
 		assertThat(multipartConfig.getLocation()).isEqualTo("test");
 		assertThat(multipartConfig.getMaxRequestSize()).isEqualTo(2048);
@@ -83,8 +79,7 @@ public class ServletComponentScanIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ServletComponentScan(
-			basePackages = "org.springframework.boot.web.servlet.testcomponents")
+	@ServletComponentScan(basePackages = "org.springframework.boot.web.servlet.testcomponents")
 	static class TestConfiguration {
 
 		@Bean

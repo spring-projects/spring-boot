@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 public class OnPropertyListCondition extends SpringBootCondition {
 
-	private static final Bindable<List<String>> STRING_LIST = Bindable
-			.listOf(String.class);
+	private static final Bindable<List<String>> STRING_LIST = Bindable.listOf(String.class);
 
 	private final String propertyName;
 
@@ -49,24 +48,19 @@ public class OnPropertyListCondition extends SpringBootCondition {
 	 * @param messageBuilder a message builder supplier that should provide a fresh
 	 * instance on each call
 	 */
-	protected OnPropertyListCondition(String propertyName,
-			Supplier<ConditionMessage.Builder> messageBuilder) {
+	protected OnPropertyListCondition(String propertyName, Supplier<ConditionMessage.Builder> messageBuilder) {
 		this.propertyName = propertyName;
 		this.messageBuilder = messageBuilder;
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		BindResult<?> property = Binder.get(context.getEnvironment())
-				.bind(this.propertyName, STRING_LIST);
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		BindResult<?> property = Binder.get(context.getEnvironment()).bind(this.propertyName, STRING_LIST);
 		ConditionMessage.Builder messageBuilder = this.messageBuilder.get();
 		if (property.isBound()) {
-			return ConditionOutcome
-					.match(messageBuilder.found("property").items(this.propertyName));
+			return ConditionOutcome.match(messageBuilder.found("property").items(this.propertyName));
 		}
-		return ConditionOutcome
-				.noMatch(messageBuilder.didNotFind("property").items(this.propertyName));
+		return ConditionOutcome.noMatch(messageBuilder.didNotFind("property").items(this.propertyName));
 	}
 
 }

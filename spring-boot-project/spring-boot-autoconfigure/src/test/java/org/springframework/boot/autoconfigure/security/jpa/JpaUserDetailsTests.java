@@ -37,13 +37,12 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @author Dave Syer
  */
-@ContextConfiguration(classes = JpaUserDetailsTests.Main.class,
-		loader = SpringBootContextLoader.class)
+@ContextConfiguration(classes = JpaUserDetailsTests.Main.class, loader = SpringBootContextLoader.class)
 @DirtiesContext
-public class JpaUserDetailsTests {
+class JpaUserDetailsTests {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 	}
 
 	public static void main(String[] args) {
@@ -51,8 +50,8 @@ public class JpaUserDetailsTests {
 	}
 
 	@Import({ EmbeddedDataSourceConfiguration.class, DataSourceAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
+			HibernateJpaAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			SecurityAutoConfiguration.class })
 	public static class Main {
 
 	}

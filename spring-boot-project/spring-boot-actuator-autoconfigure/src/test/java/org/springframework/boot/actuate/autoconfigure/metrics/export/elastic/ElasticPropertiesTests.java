@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ElasticPropertiesTests extends StepRegistryPropertiesTests {
+class ElasticPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		ElasticProperties properties = new ElasticProperties();
 		ElasticConfig config = ElasticConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);
@@ -39,8 +39,7 @@ public class ElasticPropertiesTests extends StepRegistryPropertiesTests {
 		assertThat(properties.getIndex()).isEqualTo(config.index());
 		assertThat(properties.getIndexDateFormat()).isEqualTo(config.indexDateFormat());
 		assertThat(properties.getPassword()).isEqualTo(config.password());
-		assertThat(properties.getTimestampFieldName())
-				.isEqualTo(config.timestampFieldName());
+		assertThat(properties.getTimestampFieldName()).isEqualTo(config.timestampFieldName());
 		assertThat(properties.getUserName()).isEqualTo(config.userName());
 		assertThat(properties.isAutoCreateIndex()).isEqualTo(config.autoCreateIndex());
 	}

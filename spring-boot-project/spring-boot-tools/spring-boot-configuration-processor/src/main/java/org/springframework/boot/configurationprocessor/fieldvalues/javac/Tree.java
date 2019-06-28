@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,22 +30,17 @@ class Tree extends ReflectionWrapper {
 
 	private final Class<?> treeVisitorType = findClass("com.sun.source.tree.TreeVisitor");
 
-	private final Method acceptMethod = findMethod("accept", this.treeVisitorType,
-			Object.class);
+	private final Method acceptMethod = findMethod("accept", this.treeVisitorType, Object.class);
 
-	private final Method getClassTreeMembers = findMethod(
-			findClass("com.sun.source.tree.ClassTree"), "getMembers");
+	private final Method getClassTreeMembers = findMethod(findClass("com.sun.source.tree.ClassTree"), "getMembers");
 
 	Tree(Object instance) {
 		super("com.sun.source.tree.Tree", instance);
 	}
 
 	public void accept(TreeVisitor visitor) throws Exception {
-		this.acceptMethod.invoke(getInstance(),
-				Proxy.newProxyInstance(getInstance().getClass().getClassLoader(),
-						new Class<?>[] { this.treeVisitorType },
-						new TreeVisitorInvocationHandler(visitor)),
-				0);
+		this.acceptMethod.invoke(getInstance(), Proxy.newProxyInstance(getInstance().getClass().getClassLoader(),
+				new Class<?>[] { this.treeVisitorType }, new TreeVisitorInvocationHandler(visitor)), 0);
 	}
 
 	/**
@@ -61,15 +56,12 @@ class Tree extends ReflectionWrapper {
 
 		@Override
 		@SuppressWarnings("rawtypes")
-		public Object invoke(Object proxy, Method method, Object[] args)
-				throws Throwable {
+		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (method.getName().equals("visitClass") && (Integer) args[1] == 0) {
-				Iterable members = (Iterable) Tree.this.getClassTreeMembers
-						.invoke(args[0]);
+				Iterable members = (Iterable) Tree.this.getClassTreeMembers.invoke(args[0]);
 				for (Object member : members) {
 					if (member != null) {
-						Tree.this.acceptMethod.invoke(member, proxy,
-								((Integer) args[1]) + 1);
+						Tree.this.acceptMethod.invoke(member, proxy, ((Integer) args[1]) + 1);
 					}
 				}
 			}

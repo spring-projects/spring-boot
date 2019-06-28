@@ -48,63 +48,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final List<FieldDescriptor> levelFields = Arrays.asList(
-			fieldWithPath("configuredLevel")
-					.description("Configured level of the logger, if any.").optional(),
-			fieldWithPath("effectiveLevel")
-					.description("Effective level of the logger."));
+			fieldWithPath("configuredLevel").description("Configured level of the logger, if any.").optional(),
+			fieldWithPath("effectiveLevel").description("Effective level of the logger."));
 
 	@MockBean
 	private LoggingSystem loggingSystem;
 
 	@Test
-	public void allLoggers() throws Exception {
-		given(this.loggingSystem.getSupportedLogLevels())
-				.willReturn(EnumSet.allOf(LogLevel.class));
-		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Arrays.asList(
-				new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
-				new LoggerConfiguration("com.example", LogLevel.DEBUG, LogLevel.DEBUG)));
+	void allLoggers() throws Exception {
+		given(this.loggingSystem.getSupportedLogLevels()).willReturn(EnumSet.allOf(LogLevel.class));
+		given(this.loggingSystem.getLoggerConfigurations())
+				.willReturn(Arrays.asList(new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
+						new LoggerConfiguration("com.example", LogLevel.DEBUG, LogLevel.DEBUG)));
 		this.mockMvc.perform(get("/actuator/loggers")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("loggers/all", responseFields(
-						fieldWithPath("levels")
-								.description("Levels support by the logging system."),
-						fieldWithPath("loggers").description("Loggers keyed by name."))
-								.andWithPrefix("loggers.*.", levelFields)));
+				.andDo(MockMvcRestDocumentation.document("loggers/all",
+						responseFields(fieldWithPath("levels").description("Levels support by the logging system."),
+								fieldWithPath("loggers").description("Loggers keyed by name."))
+										.andWithPrefix("loggers.*.", levelFields)));
 	}
 
 	@Test
-	public void logger() throws Exception {
-		given(this.loggingSystem.getLoggerConfiguration("com.example")).willReturn(
-				new LoggerConfiguration("com.example", LogLevel.INFO, LogLevel.INFO));
-		this.mockMvc.perform(get("/actuator/loggers/com.example"))
-				.andExpect(status().isOk()).andDo(MockMvcRestDocumentation
-						.document("loggers/single", responseFields(levelFields)));
+	void logger() throws Exception {
+		given(this.loggingSystem.getLoggerConfiguration("com.example"))
+				.willReturn(new LoggerConfiguration("com.example", LogLevel.INFO, LogLevel.INFO));
+		this.mockMvc.perform(get("/actuator/loggers/com.example")).andExpect(status().isOk())
+				.andDo(MockMvcRestDocumentation.document("loggers/single", responseFields(levelFields)));
 	}
 
 	@Test
-	public void setLogLevel() throws Exception {
+	void setLogLevel() throws Exception {
 		this.mockMvc
-				.perform(post("/actuator/loggers/com.example")
-						.content("{\"configuredLevel\":\"debug\"}")
+				.perform(post("/actuator/loggers/com.example").content("{\"configuredLevel\":\"debug\"}")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNoContent()).andDo(
-						MockMvcRestDocumentation.document("loggers/set",
-								requestFields(fieldWithPath("configuredLevel")
-										.description("Level for the logger. May be"
-												+ " omitted to clear the level.")
-										.optional())));
+				.andExpect(status().isNoContent())
+				.andDo(MockMvcRestDocumentation.document("loggers/set", requestFields(fieldWithPath("configuredLevel")
+						.description("Level for the logger. May be" + " omitted to clear the level.").optional())));
 		verify(this.loggingSystem).setLogLevel("com.example", LogLevel.DEBUG);
 	}
 
 	@Test
-	public void clearLogLevel() throws Exception {
+	void clearLogLevel() throws Exception {
 		this.mockMvc
-				.perform(post("/actuator/loggers/com.example").content("{}")
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("loggers/clear"));
+				.perform(post("/actuator/loggers/com.example").content("{}").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNoContent()).andDo(MockMvcRestDocumentation.document("loggers/clear"));
 		verify(this.loggingSystem).setLogLevel("com.example", null);
 	}
 

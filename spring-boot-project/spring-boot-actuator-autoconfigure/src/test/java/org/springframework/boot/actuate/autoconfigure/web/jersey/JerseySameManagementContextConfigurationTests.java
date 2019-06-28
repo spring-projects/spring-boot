@@ -47,72 +47,62 @@ import static org.mockito.Mockito.verify;
 public class JerseySameManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(JerseySameManagementContextConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
 
 	@Test
 	public void autoConfigurationIsConditionalOnServletWebApplication() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations
-						.of(JerseySameManagementContextConfiguration.class));
-		contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+				.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
+		contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
 	public void autoConfigurationIsConditionalOnClassResourceConfig() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
 	public void resourceConfigIsCustomizedWithResourceConfigCustomizerBean() {
-		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ResourceConfig.class);
-					ResourceConfig config = context.getBean(ResourceConfig.class);
-					ResourceConfigCustomizer customizer = context
-							.getBean(ResourceConfigCustomizer.class);
-					verify(customizer).customize(config);
-				});
+		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ResourceConfig.class);
+			ResourceConfig config = context.getBean(ResourceConfig.class);
+			ResourceConfigCustomizer customizer = context.getBean(ResourceConfigCustomizer.class);
+			verify(customizer).customize(config);
+		});
 	}
 
 	@Test
 	public void jerseyApplicationPathIsAutoConfiguredWhenNeeded() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(DefaultJerseyApplicationPath.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DefaultJerseyApplicationPath.class));
 	}
 
 	@Test
 	public void jerseyApplicationPathIsConditionalOnMissingBean() {
-		this.contextRunner.withUserConfiguration(ConfigWithJerseyApplicationPath.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JerseyApplicationPath.class);
-					assertThat(context).hasBean("testJerseyApplicationPath");
-				});
+		this.contextRunner.withUserConfiguration(ConfigWithJerseyApplicationPath.class).run((context) -> {
+			assertThat(context).hasSingleBean(JerseyApplicationPath.class);
+			assertThat(context).hasBean("testJerseyApplicationPath");
+		});
 	}
 
 	@Test
 	public void existingResourceConfigBeanShouldNotAutoConfigureRelatedBeans() {
-		this.contextRunner.withUserConfiguration(ConfigWithResourceConfig.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ResourceConfig.class);
-					assertThat(context).doesNotHaveBean(JerseyApplicationPath.class);
-					assertThat(context).doesNotHaveBean(ServletRegistrationBean.class);
-					assertThat(context).hasBean("customResourceConfig");
-				});
+		this.contextRunner.withUserConfiguration(ConfigWithResourceConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(ResourceConfig.class);
+			assertThat(context).doesNotHaveBean(JerseyApplicationPath.class);
+			assertThat(context).doesNotHaveBean(ServletRegistrationBean.class);
+			assertThat(context).hasBean("customResourceConfig");
+		});
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void servletRegistrationBeanIsAutoConfiguredWhenNeeded() {
-		this.contextRunner.withPropertyValues("spring.jersey.application-path=/jersey")
-				.run((context) -> {
-					ServletRegistrationBean<ServletContainer> bean = context
-							.getBean(ServletRegistrationBean.class);
-					assertThat(bean.getUrlMappings()).containsExactly("/jersey/*");
-				});
+		this.contextRunner.withPropertyValues("spring.jersey.application-path=/jersey").run((context) -> {
+			ServletRegistrationBean<ServletContainer> bean = context.getBean(ServletRegistrationBean.class);
+			assertThat(bean.getUrlMappings()).containsExactly("/jersey/*");
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

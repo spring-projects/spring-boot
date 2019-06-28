@@ -57,8 +57,7 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class DefaultErrorAttributes implements ErrorAttributes {
 
-	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName()
-			+ ".ERROR";
+	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
 	private final boolean includeException;
 
@@ -79,15 +78,13 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	@Override
-	public Map<String, Object> getErrorAttributes(ServerRequest request,
-			boolean includeStackTrace) {
+	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
 		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
-				.from(error.getClass(), SearchStrategy.EXHAUSTIVE)
-				.get(ResponseStatus.class);
+				.from(error.getClass(), SearchStrategy.EXHAUSTIVE).get(ResponseStatus.class);
 		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
@@ -97,25 +94,21 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		return errorAttributes;
 	}
 
-	private HttpStatus determineHttpStatus(Throwable error,
-			MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
+	private HttpStatus determineHttpStatus(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getStatus();
 		}
-		return responseStatusAnnotation.getValue("code", HttpStatus.class)
-				.orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+		return responseStatusAnnotation.getValue("code", HttpStatus.class).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	private String determineMessage(Throwable error,
-			MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
+	private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
 		if (error instanceof WebExchangeBindException) {
 			return error.getMessage();
 		}
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
-		return responseStatusAnnotation.getValue("reason", String.class)
-				.orElseGet(error::getMessage);
+		return responseStatusAnnotation.getValue("reason", String.class).orElseGet(error::getMessage);
 	}
 
 	private Throwable determineException(Throwable error) {
@@ -132,8 +125,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes, Throwable error,
-			boolean includeStackTrace) {
+	private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace) {
 		if (this.includeException) {
 			errorAttributes.put("exception", error.getClass().getName());
 		}
@@ -151,8 +143,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Throwable getError(ServerRequest request) {
 		return (Throwable) request.attribute(ERROR_ATTRIBUTE)
-				.orElseThrow(() -> new IllegalStateException(
-						"Missing exception attribute in ServerWebExchange"));
+				.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
 	}
 
 	@Override

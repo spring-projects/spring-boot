@@ -16,13 +16,11 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
@@ -30,33 +28,30 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @WithMockUser
 @WebFluxTest
-public class WebFluxTestAllControllersIntegrationTests {
+class WebFluxTestAllControllersIntegrationTests {
 
 	@Autowired
 	private WebTestClient webClient;
 
 	@Test
-	public void shouldFindController1() {
-		this.webClient.get().uri("/one").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("one");
+	void shouldFindController1() {
+		this.webClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
 	}
 
 	@Test
-	public void shouldFindController2() {
-		this.webClient.get().uri("/two").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("two");
+	void shouldFindController2() {
+		this.webClient.get().uri("/two").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("two");
 	}
 
 	@Test
-	public void webExceptionHandling() {
+	void webExceptionHandling() {
 		this.webClient.get().uri("/one/error").exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
-	public void shouldFindJsonController() {
+	void shouldFindJsonController() {
 		this.webClient.get().uri("/json").exchange().expectStatus().isOk();
 	}
 

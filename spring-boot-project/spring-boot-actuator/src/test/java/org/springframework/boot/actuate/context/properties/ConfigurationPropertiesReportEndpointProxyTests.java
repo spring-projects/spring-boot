@@ -45,20 +45,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointProxyTests {
+class ConfigurationPropertiesReportEndpointProxyTests {
 
 	@Test
-	public void testWithProxyClass() {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(Config.class, SqlExecutor.class);
+	void testWithProxyClass() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class,
+				SqlExecutor.class);
 		contextRunner.run((context) -> {
 			ApplicationConfigurationProperties applicationProperties = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class)
-					.configurationProperties();
-			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans()
-					.values().stream()
-					.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
-					.filter("executor.sql"::equals).findFirst()).isNotEmpty();
+					.getBean(ConfigurationPropertiesReportEndpoint.class).configurationProperties();
+			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans().values().stream()
+					.map(ConfigurationPropertiesBeanDescriptor::getPrefix).filter("executor.sql"::equals).findFirst())
+							.isNotEmpty();
 		});
 	}
 
@@ -79,8 +77,7 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 
 		@Bean
 		public DataSource dataSource() {
-			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL)
-					.build();
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 	}

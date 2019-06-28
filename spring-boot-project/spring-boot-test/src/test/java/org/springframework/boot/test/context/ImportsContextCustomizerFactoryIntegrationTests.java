@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @ExtendWith(SpringExtension.class)
 @Import(ImportedBean.class)
-public class ImportsContextCustomizerFactoryIntegrationTests {
+class ImportsContextCustomizerFactoryIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -47,12 +47,12 @@ public class ImportsContextCustomizerFactoryIntegrationTests {
 	private ImportedBean bean;
 
 	@Test
-	public void beanWasImported() {
+	void beanWasImported() {
 		assertThat(this.bean).isNotNull();
 	}
 
 	@Test
-	public void testItselfIsNotABean() {
+	void testItselfIsNotABean() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(getClass()));
 	}

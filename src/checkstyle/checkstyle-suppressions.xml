@@ -17,8 +17,8 @@
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]spring-boot-samples[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]spring-boot-samples[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
 	<suppress files="Ansi.*\.java" checks="JavadocVariable" />
@@ -37,4 +37,12 @@
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
 	<suppress files="FlywayAutoConfigurationTests\.java" checks="IllegalImport" />
+	<suppress files="ModifiedClassPathRunnerOverridesTests" checks="SpringJUnit5" />
+	<suppress files="ModifiedClassPathRunnerExclusionsTests" checks="SpringJUnit5" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
+	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
+	<suppress files="JavaLoggingSystemTests" checks="SpringJUnit5" />
+	<suppress files="Log4J2LoggingSystemTests" checks="SpringJUnit5" />
+	<suppress files="RestClientTestWithComponentIntegrationTests" checks="SpringJUnit5" />
+	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
 </suppressions>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.time.Duration;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.MediaType;
@@ -36,33 +36,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class MustacheViewTests {
+class MustacheViewTests {
 
-	private final String templateUrl = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+	private final String templateUrl = "classpath:/" + getClass().getPackage().getName().replace(".", "/")
+			+ "/template.html";
 
 	private GenericApplicationContext context = new GenericApplicationContext();
 
 	private MockServerWebExchange exchange;
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		this.context.refresh();
 	}
 
 	@Test
-	public void viewResolvesHandlebars() {
-		this.exchange = MockServerWebExchange
-				.from(MockServerHttpRequest.get("/test").build());
+	void viewResolvesHandlebars() {
+		this.exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
 		view.setUrl(this.templateUrl);
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML,
-				this.exchange).block(Duration.ofSeconds(30));
-		assertThat(this.exchange.getResponse().getBodyAsString()
-				.block(Duration.ofSeconds(30))).isEqualTo("Hello Spring");
+		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML, this.exchange)
+				.block(Duration.ofSeconds(30));
+		assertThat(this.exchange.getResponse().getBodyAsString().block(Duration.ofSeconds(30)).trim())
+				.isEqualTo("Hello Spring");
 	}
 
 }

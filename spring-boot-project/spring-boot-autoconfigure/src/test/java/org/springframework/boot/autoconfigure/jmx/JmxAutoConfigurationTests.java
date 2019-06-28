@@ -44,12 +44,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Christian Dupuis
  * @author Artsiom Yudovin
  */
-public class JmxAutoConfigurationTests {
+class JmxAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		if (this.context != null) {
 			this.context.close();
 			if (this.context.getParent() != null) {
@@ -59,7 +59,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultMBeanExport() {
+	void testDefaultMBeanExport() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
@@ -68,7 +68,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testEnabledMBeanExport() {
+	void testEnabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
 		this.context = new AnnotationConfigApplicationContext();
@@ -79,7 +79,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDisabledMBeanExport() {
+	void testDisabledMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "false");
 		this.context = new AnnotationConfigApplicationContext();
@@ -91,7 +91,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultDomainConfiguredOnMBeanExport() {
+	void testDefaultDomainConfiguredOnMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
 		env.setProperty("spring.jmx.default-domain", "my-test-domain");
@@ -102,15 +102,14 @@ public class JmxAutoConfigurationTests {
 		this.context.refresh();
 		MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
 		assertThat(mBeanExporter).isNotNull();
-		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
-				.getField(mBeanExporter, "namingStrategy");
+		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils.getField(mBeanExporter,
+				"namingStrategy");
 		assertThat(naming).hasFieldOrPropertyWithValue("defaultDomain", "my-test-domain");
-		assertThat(naming).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames",
-				true);
+		assertThat(naming).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", true);
 	}
 
 	@Test
-	public void testBasicParentContext() {
+	void testBasicParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
@@ -122,7 +121,7 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void testParentContext() {
+	void testParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -134,13 +133,12 @@ public class JmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void customJmxDomain() {
+	void customJmxDomain() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomJmxDomainConfiguration.class,
-				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.register(CustomJmxDomainConfiguration.class, JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		IntegrationMBeanExporter mbeanExporter = this.context
-				.getBean(IntegrationMBeanExporter.class);
+		IntegrationMBeanExporter mbeanExporter = this.context.getBean(IntegrationMBeanExporter.class);
 		assertThat(mbeanExporter).hasFieldOrPropertyWithValue("domain", "foo.my");
 	}
 

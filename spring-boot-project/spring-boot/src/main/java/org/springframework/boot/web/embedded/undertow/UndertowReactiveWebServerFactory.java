@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -93,8 +94,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	}
 
 	@Override
-	public WebServer getWebServer(
-			org.springframework.http.server.reactive.HttpHandler httpHandler) {
+	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		Undertow.Builder builder = createBuilder(getPort());
 		Closeable closeable = configureHandler(builder, httpHandler);
 		return new UndertowWebServer(builder, getPort() >= 0, closeable);
@@ -132,8 +132,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		if (this.useForwardHeaders) {
 			handler = Handlers.proxyPeerAddress(handler);
 		}
-		handler = UndertowCompressionConfigurer.configureCompression(getCompression(),
-				handler);
+		handler = UndertowCompressionConfigurer.configureCompression(getCompression(), handler);
 		Closeable closeable = null;
 		if (isAccessLogEnabled()) {
 			closeable = configureAccessLogHandler(builder, handler);
@@ -144,27 +143,27 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		return closeable;
 	}
 
-	private Closeable configureAccessLogHandler(Undertow.Builder builder,
-			HttpHandler handler) {
+	private Closeable configureAccessLogHandler(Undertow.Builder builder, HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
 			XnioWorker worker = createWorker();
-			String prefix = (this.accessLogPrefix != null) ? this.accessLogPrefix
-					: "access_log.";
-			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					worker, this.accessLogDirectory, prefix, this.accessLogSuffix,
-					this.accessLogRotate);
-			String formatString = ((this.accessLogPattern != null) ? this.accessLogPattern
-					: "common");
-			builder.setHandler(new AccessLogHandler(handler, accessLogReceiver,
-					formatString, Undertow.class.getClassLoader()));
+			String prefix = (this.accessLogPrefix != null) ? this.accessLogPrefix : "access_log.";
+			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(worker, this.accessLogDirectory,
+					prefix, this.accessLogSuffix, this.accessLogRotate);
+			String formatString = ((this.accessLogPattern != null) ? this.accessLogPattern : "common");
+			builder.setHandler(
+					new AccessLogHandler(handler, accessLogReceiver, formatString, Undertow.class.getClassLoader()));
 			return () -> {
 				try {
 					accessLogReceiver.close();
 					worker.shutdown();
+					worker.awaitTermination(30, TimeUnit.SECONDS);
 				}
 				catch (IOException ex) {
 					throw new IllegalStateException(ex);
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
 				}
 			};
 		}
@@ -176,20 +175,17 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	private void createAccessLogDirectoryIfNecessary() {
 		Assert.state(this.accessLogDirectory != null, "Access log directory is not set");
 		if (!this.accessLogDirectory.isDirectory() && !this.accessLogDirectory.mkdirs()) {
-			throw new IllegalStateException("Failed to create access log directory '"
-					+ this.accessLogDirectory + "'");
+			throw new IllegalStateException("Failed to create access log directory '" + this.accessLogDirectory + "'");
 		}
 	}
 
 	private XnioWorker createWorker() throws IOException {
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
-		return xnio.createWorker(
-				OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
+		return xnio.createWorker(OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
 	}
 
 	private void customizeSsl(Undertow.Builder builder) {
-		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider())
-				.customize(builder);
+		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider()).customize(builder);
 		if (getHttp2() != null) {
 			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().isEnabled());
 		}
@@ -208,8 +204,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * customizers.
 	 * @param customizers the customizers to set
 	 */
-	public void setDeploymentInfoCustomizers(
-			Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
+	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
 	}
@@ -224,8 +219,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	}
 
 	@Override
-	public void addDeploymentInfoCustomizers(
-			UndertowDeploymentInfoCustomizer... customizers) {
+	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
 		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
@@ -299,8 +293,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * existing customizers.
 	 * @param customizers the customizers to set
 	 */
-	public void setBuilderCustomizers(
-			Collection<? extends UndertowBuilderCustomizer> customizers) {
+	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers = new ArrayList<>(customizers);
 	}

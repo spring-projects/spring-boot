@@ -37,10 +37,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class XADataSourceAutoConfigurationTests {
+class XADataSourceAutoConfigurationTests {
 
 	@Test
-	public void wrapExistingXaDataSource() {
+	void wrapExistingXaDataSource() {
 		ApplicationContext context = createContext(WrapExisting.class);
 		context.getBean(DataSource.class);
 		XADataSource source = context.getBean(XADataSource.class);
@@ -49,9 +49,8 @@ public class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromUrl() {
-		ApplicationContext context = createContext(FromProperties.class,
-				"spring.datasource.url:jdbc:hsqldb:mem:test",
+	void createFromUrl() {
+		ApplicationContext context = createContext(FromProperties.class, "spring.datasource.url:jdbc:hsqldb:mem:test",
 				"spring.datasource.username:un");
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
@@ -62,7 +61,7 @@ public class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromClass() throws Exception {
+	void createFromClass() throws Exception {
 		ApplicationContext context = createContext(FromProperties.class,
 				"spring.datasource.xa.data-source-class-name:org.hsqldb.jdbc.pool.JDBCXADataSource",
 				"spring.datasource.xa.properties.login-timeout:123");

@@ -42,13 +42,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(SignalFxMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.signalfx", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.signalfx", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(SignalFxProperties.class)
 public class SignalFxMetricsExportAutoConfiguration {
 
@@ -60,8 +59,7 @@ public class SignalFxMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SignalFxMeterRegistry signalFxMeterRegistry(SignalFxConfig config,
-			Clock clock) {
+	public SignalFxMeterRegistry signalFxMeterRegistry(SignalFxConfig config, Clock clock) {
 		return new SignalFxMeterRegistry(config, clock);
 	}
 

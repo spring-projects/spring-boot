@@ -30,41 +30,37 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class AnnotatedClassFinderTests {
+class AnnotatedClassFinderTests {
 
-	private AnnotatedClassFinder finder = new AnnotatedClassFinder(
-			SpringBootConfiguration.class);
+	private AnnotatedClassFinder finder = new AnnotatedClassFinder(SpringBootConfiguration.class);
 
 	@Test
-	public void findFromClassWhenSourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
+	void findFromClassWhenSourceIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
-	public void findFromPackageWhenSourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.finder.findFromPackage((String) null))
+	void findFromPackageWhenSourceIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.finder.findFromPackage((String) null))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
-	public void findFromPackageWhenNoConfigurationFoundShouldReturnNull() {
+	void findFromPackageWhenNoConfigurationFoundShouldReturnNull() {
 		Class<?> config = this.finder.findFromPackage("org.springframework.boot");
 		assertThat(config).isNull();
 	}
 
 	@Test
-	public void findFromClassWhenConfigurationIsFoundShouldReturnConfiguration() {
+	void findFromClassWhenConfigurationIsFoundShouldReturnConfiguration() {
 		Class<?> config = this.finder.findFromClass(Example.class);
 		assertThat(config).isEqualTo(ExampleConfig.class);
 	}
 
 	@Test
-	public void findFromPackageWhenConfigurationIsFoundShouldReturnConfiguration() {
-		Class<?> config = this.finder
-				.findFromPackage("org.springframework.boot.test.context.example.scan");
+	void findFromPackageWhenConfigurationIsFoundShouldReturnConfiguration() {
+		Class<?> config = this.finder.findFromPackage("org.springframework.boot.test.context.example.scan");
 		assertThat(config).isEqualTo(ExampleConfig.class);
 	}
 

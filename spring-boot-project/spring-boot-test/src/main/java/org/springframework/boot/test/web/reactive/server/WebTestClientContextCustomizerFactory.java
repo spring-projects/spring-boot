@@ -38,8 +38,7 @@ class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		MergedAnnotations annotations = MergedAnnotations.from(testClass,
-				SearchStrategy.INHERITED_ANNOTATIONS);
+		MergedAnnotations annotations = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS);
 		if (isWebClientPresent() && annotations.isPresent(SpringBootTest.class)) {
 			return new WebTestClientContextCustomizer();
 		}

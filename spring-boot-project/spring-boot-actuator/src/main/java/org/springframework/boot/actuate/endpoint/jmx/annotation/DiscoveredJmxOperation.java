@@ -60,14 +60,12 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 	private final List<JmxOperationParameter> parameters;
 
-	DiscoveredJmxOperation(EndpointId endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
+	DiscoveredJmxOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		super(operationMethod, invoker);
 		Method method = operationMethod.getMethod();
 		this.name = method.getName();
 		this.outputType = JmxType.get(method.getReturnType());
-		this.description = getDescription(method,
-				() -> "Invoke " + this.name + " for endpoint " + endpointId);
+		this.description = getDescription(method, () -> "Invoke " + this.name + " for endpoint " + endpointId);
 		this.parameters = getParameters(operationMethod);
 	}
 
@@ -84,29 +82,24 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 			return Collections.emptyList();
 		}
 		Method method = operationMethod.getMethod();
-		ManagedOperationParameter[] managed = jmxAttributeSource
-				.getManagedOperationParameters(method);
+		ManagedOperationParameter[] managed = jmxAttributeSource.getManagedOperationParameters(method);
 		if (managed.length == 0) {
-			return asList(operationMethod.getParameters().stream()
-					.map(DiscoveredJmxOperationParameter::new));
+			return asList(operationMethod.getParameters().stream().map(DiscoveredJmxOperationParameter::new));
 		}
 		return mergeParameters(operationMethod.getParameters(), managed);
 	}
 
-	private List<JmxOperationParameter> mergeParameters(
-			OperationParameters operationParameters,
+	private List<JmxOperationParameter> mergeParameters(OperationParameters operationParameters,
 			ManagedOperationParameter[] managedParameters) {
 		List<JmxOperationParameter> merged = new ArrayList<>(managedParameters.length);
 		for (int i = 0; i < managedParameters.length; i++) {
-			merged.add(new DiscoveredJmxOperationParameter(managedParameters[i],
-					operationParameters.get(i)));
+			merged.add(new DiscoveredJmxOperationParameter(managedParameters[i], operationParameters.get(i)));
 		}
 		return Collections.unmodifiableList(merged);
 	}
 
 	private <T> List<T> asList(Stream<T> stream) {
-		return stream.collect(Collectors.collectingAndThen(Collectors.toList(),
-				Collections::unmodifiableList));
+		return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 
 	@Override
@@ -131,16 +124,14 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 	@Override
 	protected void appendFields(ToStringCreator creator) {
-		creator.append("name", this.name).append("outputType", this.outputType)
-				.append("description", this.description)
+		creator.append("name", this.name).append("outputType", this.outputType).append("description", this.description)
 				.append("parameters", this.parameters);
 	}
 
 	/**
 	 * A discovered {@link JmxOperationParameter}.
 	 */
-	private static class DiscoveredJmxOperationParameter
-			implements JmxOperationParameter {
+	private static class DiscoveredJmxOperationParameter implements JmxOperationParameter {
 
 		private final String name;
 
@@ -197,8 +188,7 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 			if (source.isEnum()) {
 				return String.class;
 			}
-			if (Date.class.isAssignableFrom(source)
-					|| Instant.class.isAssignableFrom(source)) {
+			if (Date.class.isAssignableFrom(source) || Instant.class.isAssignableFrom(source)) {
 				return String.class;
 			}
 			if (source.getName().startsWith("java.")) {

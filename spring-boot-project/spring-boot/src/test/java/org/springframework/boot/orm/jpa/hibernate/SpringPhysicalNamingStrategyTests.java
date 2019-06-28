@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.mapping.PersistentClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,14 +35,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class SpringPhysicalNamingStrategyTests {
+class SpringPhysicalNamingStrategyTests {
 
 	private Metadata metadata;
 
 	private MetadataSources metadataSources;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.metadataSources = new MetadataSources(createServiceRegistry());
 		this.metadataSources.addAnnotatedClass(TelephoneNumber.class);
 		this.metadata = this.metadataSources.getMetadataBuilder()
@@ -50,24 +50,20 @@ public class SpringPhysicalNamingStrategyTests {
 	}
 
 	private StandardServiceRegistry createServiceRegistry() {
-		return new StandardServiceRegistryBuilder()
-				.applySetting(AvailableSettings.DIALECT, H2Dialect.class).build();
+		return new StandardServiceRegistryBuilder().applySetting(AvailableSettings.DIALECT, H2Dialect.class).build();
 	}
 
 	@Test
-	public void tableNameShouldBeLowercaseUnderscore() {
-		PersistentClass binding = this.metadata
-				.getEntityBinding(TelephoneNumber.class.getName());
+	void tableNameShouldBeLowercaseUnderscore() {
+		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("telephone_number");
 	}
 
 	@Test
-	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() {
+	void tableNameShouldNotBeLowerCaseIfCaseSensitive() {
 		this.metadata = this.metadataSources.getMetadataBuilder()
-				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy())
-				.build();
-		PersistentClass binding = this.metadata
-				.getEntityBinding(TelephoneNumber.class.getName());
+				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy()).build();
+		PersistentClass binding = this.metadata.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("Telephone_Number");
 	}
 

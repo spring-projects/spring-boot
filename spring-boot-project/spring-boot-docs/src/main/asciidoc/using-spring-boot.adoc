@@ -973,8 +973,8 @@ pattern that is applied to the classpath, as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	restart.exclude.companycommonlibs=/mycorp-common-[\\w-]+\.jar
-	restart.include.projectcommon=/mycorp-myproj-[\\w-]+\.jar
+	restart.exclude.companycommonlibs=/mycorp-common-[\\w\\d-\.]+\.jar
+	restart.include.projectcommon=/mycorp-myproj-[\\w\\d-\.]+\.jar
 ----
 
 NOTE: All property keys must be unique. As long as a property starts with

@@ -50,20 +50,17 @@ abstract class AbstractCacheAutoConfigurationTests {
 	protected final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
 
-	protected <T extends CacheManager> T getCacheManager(
-			AssertableApplicationContext loaded, Class<T> type) {
+	protected <T extends CacheManager> T getCacheManager(AssertableApplicationContext loaded, Class<T> type) {
 		CacheManager cacheManager = loaded.getBean(CacheManager.class);
 		assertThat(cacheManager).as("Wrong cache manager type").isInstanceOf(type);
 		return type.cast(cacheManager);
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected ContextConsumer<AssertableApplicationContext> verifyCustomizers(
-			String... expectedCustomizerNames) {
+	protected ContextConsumer<AssertableApplicationContext> verifyCustomizers(String... expectedCustomizerNames) {
 		return (context) -> {
 			CacheManager cacheManager = getCacheManager(context, CacheManager.class);
-			List<String> expected = new ArrayList<>(
-					Arrays.asList(expectedCustomizerNames));
+			List<String> expected = new ArrayList<>(Arrays.asList(expectedCustomizerNames));
 			Map<String, CacheManagerTestCustomizer> customizer = context
 					.getBeansOfType(CacheManagerTestCustomizer.class);
 			customizer.forEach((key, value) -> {
@@ -147,8 +144,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 	}
 
-	abstract static class CacheManagerTestCustomizer<T extends CacheManager>
-			implements CacheManagerCustomizer<T> {
+	abstract static class CacheManagerTestCustomizer<T extends CacheManager> implements CacheManagerCustomizer<T> {
 
 		T cacheManager;
 

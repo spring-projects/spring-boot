@@ -42,31 +42,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryReactiveHealthEndpointWebExtensionTests {
+class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withPropertyValues("VCAP_APPLICATION={}")
-			.withConfiguration(AutoConfigurations.of(
-					ReactiveSecurityAutoConfiguration.class,
-					ReactiveUserDetailsServiceAutoConfiguration.class,
-					WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
-					HttpMessageConvertersAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+					ReactiveUserDetailsServiceAutoConfiguration.class, WebFluxAutoConfiguration.class,
+					JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class,
 					ReactiveCloudFoundryActuatorAutoConfigurationTests.WebClientCustomizerConfig.class,
-					WebClientAutoConfiguration.class,
-					ManagementContextAutoConfiguration.class,
+					WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class,
+					HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
 					ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
 	@Test
-	public void healthDetailsAlwaysPresent() {
+	void healthDetailsAlwaysPresent() {
 		this.contextRunner.run((context) -> {
 			CloudFoundryReactiveHealthEndpointWebExtension extension = context
 					.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);
-			assertThat(extension.health().block(Duration.ofSeconds(30)).getBody()
-					.getDetails()).isNotEmpty();
+			assertThat(extension.health().block(Duration.ofSeconds(30)).getBody().getDetails()).isNotEmpty();
 		});
 	}
 

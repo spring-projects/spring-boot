@@ -34,10 +34,10 @@ import org.springframework.test.context.ContextHierarchy;
 @SpringBootTest
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfiguration.class),
 		@ContextConfiguration(classes = ChildConfiguration.class) })
-public class SpringBootTestContextHierarchyTests {
+class SpringBootTestContextHierarchyTests {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 
 	}
 

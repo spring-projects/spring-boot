@@ -17,7 +17,7 @@
 package org.springframework.boot;
 
 import org.apache.commons.logging.Log;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,18 +31,17 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class StartUpLoggerTests {
+class StartUpLoggerTests {
 
 	private final Log log = mock(Log.class);
 
 	@Test
-	public void sourceClassIncluded() {
+	void sourceClassIncluded() {
 		given(this.log.isInfoEnabled()).willReturn(true);
 		new StartupInfoLogger(getClass()).logStarting(this.log);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		verify(this.log).info(captor.capture());
-		assertThat(captor.getValue().toString())
-				.startsWith("Starting " + getClass().getSimpleName());
+		assertThat(captor.getValue().toString()).startsWith("Starting " + getClass().getSimpleName());
 	}
 
 }

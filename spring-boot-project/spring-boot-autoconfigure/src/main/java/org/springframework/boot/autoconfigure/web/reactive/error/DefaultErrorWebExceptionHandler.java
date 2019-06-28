@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -73,6 +74,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  */
 public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
+	private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html", StandardCharsets.UTF_8);
+
 	private static final Map<HttpStatus.Series, String> SERIES_VIEWS;
 
 	static {
@@ -91,18 +94,15 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param errorProperties the error configuration properties
 	 * @param applicationContext the current application context
 	 */
-	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-			ResourceProperties resourceProperties, ErrorProperties errorProperties,
-			ApplicationContext applicationContext) {
+	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
+			ErrorProperties errorProperties, ApplicationContext applicationContext) {
 		super(errorAttributes, resourceProperties, applicationContext);
 		this.errorProperties = errorProperties;
 	}
 
 	@Override
-	protected RouterFunction<ServerResponse> getRoutingFunction(
-			ErrorAttributes errorAttributes) {
-		return route(acceptsTextHtml(), this::renderErrorView).andRoute(all(),
-				this::renderErrorResponse);
+	protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+		return route(acceptsTextHtml(), this::renderErrorView).andRoute(all(), this::renderErrorResponse);
 	}
 
 	/**
@@ -114,15 +114,12 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
 		HttpStatus errorStatus = getHttpStatus(error);
-		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus)
-				.contentType(MediaType.TEXT_HTML);
+		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
 		return Flux
-				.just("error/" + errorStatus.value(),
-						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
+				.just("error/" + errorStatus.value(), "error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
 				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
 				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
-						? renderDefaultErrorView(responseBody, error)
-						: Mono.error(getError(request)))
+						? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
 				.next();
 	}
 
@@ -134,8 +131,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
 		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.ALL);
 		Map<String, Object> error = getErrorAttributes(request, includeStackTrace);
-		return ServerResponse.status(getHttpStatus(error))
-				.contentType(MediaType.APPLICATION_JSON_UTF8)
+		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON_UTF8)
 				.body(BodyInserters.fromObject(error));
 	}
 
@@ -146,8 +142,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
-		ErrorProperties.IncludeStacktrace include = this.errorProperties
-				.getIncludeStacktrace();
+		ErrorProperties.IncludeStacktrace include = this.errorProperties.getIncludeStacktrace();
 		if (include == ErrorProperties.IncludeStacktrace.ALWAYS) {
 			return true;
 		}
@@ -180,8 +175,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
 				acceptedMediaTypes.remove(MediaType.ALL);
 				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
-				return acceptedMediaTypes.stream()
-						.anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
+				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}
 			catch (InvalidMediaTypeException ex) {
 				return false;

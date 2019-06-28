@@ -54,8 +54,7 @@ public class MustacheAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
 
-	public MustacheAutoConfiguration(MustacheProperties mustache,
-			ApplicationContext applicationContext) {
+	public MustacheAutoConfiguration(MustacheProperties mustache, ApplicationContext applicationContext) {
 		this.mustache = mustache;
 		this.applicationContext = applicationContext;
 	}
@@ -66,8 +65,7 @@ public class MustacheAutoConfiguration {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
 			if (!location.exists(this.applicationContext)) {
 				logger.warn("Cannot find template location: " + location
-						+ " (please add some templates, check your Mustache "
-						+ "configuration, or set spring.mustache."
+						+ " (please add some templates, check your Mustache " + "configuration, or set spring.mustache."
 						+ "check-template-location=false)");
 			}
 		}
@@ -75,10 +73,8 @@ public class MustacheAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader,
-			Environment environment) {
-		return Mustache.compiler().withLoader(mustacheTemplateLoader)
-				.withCollector(collector(environment));
+	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader, Environment environment) {
+		return Mustache.compiler().withLoader(mustacheTemplateLoader).withCollector(collector(environment));
 	}
 
 	private Collector collector(Environment environment) {
@@ -90,8 +86,8 @@ public class MustacheAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(TemplateLoader.class)
 	public MustacheResourceTemplateLoader mustacheTemplateLoader() {
-		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(
-				this.mustache.getPrefix(), this.mustache.getSuffix());
+		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(this.mustache.getPrefix(),
+				this.mustache.getSuffix());
 		loader.setCharset(this.mustache.getCharsetName());
 		return loader;
 	}

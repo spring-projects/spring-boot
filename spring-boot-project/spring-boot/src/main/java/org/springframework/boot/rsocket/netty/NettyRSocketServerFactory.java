@@ -48,8 +48,7 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @since 2.2.0
  */
-public class NettyRSocketServerFactory
-		implements RSocketServerFactory, ConfigurableRSocketServerFactory {
+public class NettyRSocketServerFactory implements RSocketServerFactory, ConfigurableRSocketServerFactory {
 
 	private int port = 9898;
 
@@ -91,8 +90,7 @@ public class NettyRSocketServerFactory
 	 * server builder. Calling this method will replace any existing customizers.
 	 * @param serverCustomizers the customizers to set
 	 */
-	public void setServerCustomizers(
-			Collection<? extends ServerRSocketFactoryCustomizer> serverCustomizers) {
+	public void setServerCustomizers(Collection<? extends ServerRSocketFactoryCustomizer> serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
 		this.serverCustomizers = new ArrayList<>(serverCustomizers);
 	}
@@ -102,8 +100,7 @@ public class NettyRSocketServerFactory
 	 * server.
 	 * @param serverCustomizers the customizers to add
 	 */
-	public void addServerCustomizers(
-			ServerRSocketFactoryCustomizer... serverCustomizers) {
+	public void addServerCustomizers(ServerRSocketFactoryCustomizer... serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
 		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
 	}
@@ -124,8 +121,7 @@ public class NettyRSocketServerFactory
 		for (ServerRSocketFactoryCustomizer customizer : this.serverCustomizers) {
 			factory = customizer.apply(factory);
 		}
-		Mono<CloseableChannel> starter = factory.acceptor(socketAcceptor)
-				.transport(transport).start();
+		Mono<CloseableChannel> starter = factory.acceptor(socketAcceptor).transport(transport).start();
 		return new NettyRSocketServer(starter, this.lifecycleTimeout);
 	}
 
@@ -133,8 +129,7 @@ public class NettyRSocketServerFactory
 		if (this.transport == RSocketServer.TRANSPORT.WEBSOCKET) {
 			if (this.resourceFactory != null) {
 				HttpServer httpServer = HttpServer.create()
-						.tcpConfiguration((tcpServer) -> tcpServer
-								.runOn(this.resourceFactory.getLoopResources()));
+						.tcpConfiguration((tcpServer) -> tcpServer.runOn(this.resourceFactory.getLoopResources()));
 				return WebsocketServerTransport.create(httpServer);
 			}
 			else {
@@ -143,8 +138,7 @@ public class NettyRSocketServerFactory
 		}
 		else {
 			if (this.resourceFactory != null) {
-				TcpServer tcpServer = TcpServer.create()
-						.runOn(this.resourceFactory.getLoopResources())
+				TcpServer tcpServer = TcpServer.create().runOn(this.resourceFactory.getLoopResources())
 						.addressSupplier(this::getListenAddress);
 				return TcpServerTransport.create(tcpServer);
 			}

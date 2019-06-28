@@ -18,9 +18,8 @@ package org.springframework.boot.system;
 
 import java.io.File;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -31,49 +30,48 @@ import static org.assertj.core.api.Assertions.contentOf;
  *
  * @author Phillip Webb
  */
-public class ApplicationPidTests {
+class ApplicationPidTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void toStringWithPid() {
+	void toStringWithPid() {
 		assertThat(new ApplicationPid("123").toString()).isEqualTo("123");
 	}
 
 	@Test
-	public void toStringWithoutPid() {
+	void toStringWithoutPid() {
 		assertThat(new ApplicationPid(null).toString()).isEqualTo("???");
 	}
 
 	@Test
-	public void throwIllegalStateWritingMissingPid() {
+	void throwIllegalStateWritingMissingPid() {
 		ApplicationPid pid = new ApplicationPid(null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> pid.write(this.temporaryFolder.newFile()))
+		assertThatIllegalStateException().isThrownBy(() -> pid.write(new File(this.tempDir, "pid")))
 				.withMessageContaining("No PID available");
 	}
 
 	@Test
-	public void writePid() throws Exception {
+	void writePid() throws Exception {
 		ApplicationPid pid = new ApplicationPid("123");
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
 		pid.write(file);
 		assertThat(contentOf(file)).isEqualTo("123");
 	}
 
 	@Test
-	public void writeNewPid() throws Exception {
+	void writeNewPid() throws Exception {
 		// gh-10784
 		ApplicationPid pid = new ApplicationPid("123");
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
 		file.delete();
 		pid.write(file);
 		assertThat(contentOf(file)).isEqualTo("123");
 	}
 
 	@Test
-	public void getPidFromJvm() {
+	void getPidFromJvm() {
 		assertThat(new ApplicationPid().toString()).isNotEmpty();
 	}
 

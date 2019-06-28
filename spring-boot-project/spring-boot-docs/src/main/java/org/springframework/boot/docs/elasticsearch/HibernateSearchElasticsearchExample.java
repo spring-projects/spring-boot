@@ -35,8 +35,7 @@ public class HibernateSearchElasticsearchExample {
 	 * {@link EntityManagerFactory} beans depend on the {@code elasticsearchClient} bean.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	static class ElasticsearchJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	static class ElasticsearchJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		ElasticsearchJpaDependencyConfiguration() {
 			super("elasticsearchClient");

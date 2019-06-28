@@ -25,10 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class DatadogPropertiesConfigAdapterTests {
+class DatadogPropertiesConfigAdapterTests {
 
 	@Test
-	public void uriCanBeSet() {
+	void uriCanBeSet() {
 		DatadogProperties properties = new DatadogProperties();
 		properties.setUri("https://app.example.com/api/v1/series");
 		properties.setApiKey("my-key");

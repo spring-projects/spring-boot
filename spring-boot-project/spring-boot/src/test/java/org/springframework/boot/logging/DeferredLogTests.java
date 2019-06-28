@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.logging;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Phillip Webb
  */
-public class DeferredLogTests {
+class DeferredLogTests {
 
 	private DeferredLog deferredLog = new DeferredLog();
 
@@ -45,121 +45,121 @@ public class DeferredLogTests {
 	private Log log = mock(Log.class);
 
 	@Test
-	public void isTraceEnabled() {
+	void isTraceEnabled() {
 		assertThat(this.deferredLog.isTraceEnabled()).isTrue();
 	}
 
 	@Test
-	public void isDebugEnabled() {
+	void isDebugEnabled() {
 		assertThat(this.deferredLog.isDebugEnabled()).isTrue();
 	}
 
 	@Test
-	public void isInfoEnabled() {
+	void isInfoEnabled() {
 		assertThat(this.deferredLog.isInfoEnabled()).isTrue();
 	}
 
 	@Test
-	public void isWarnEnabled() {
+	void isWarnEnabled() {
 		assertThat(this.deferredLog.isWarnEnabled()).isTrue();
 	}
 
 	@Test
-	public void isErrorEnabled() {
+	void isErrorEnabled() {
 		assertThat(this.deferredLog.isErrorEnabled()).isTrue();
 	}
 
 	@Test
-	public void isFatalEnabled() {
+	void isFatalEnabled() {
 		assertThat(this.deferredLog.isFatalEnabled()).isTrue();
 	}
 
 	@Test
-	public void trace() {
+	void trace() {
 		this.deferredLog.trace(this.message);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).trace(this.message, null);
 	}
 
 	@Test
-	public void traceWithThrowable() {
+	void traceWithThrowable() {
 		this.deferredLog.trace(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).trace(this.message, this.throwable);
 	}
 
 	@Test
-	public void debug() {
+	void debug() {
 		this.deferredLog.debug(this.message);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).debug(this.message, null);
 	}
 
 	@Test
-	public void debugWithThrowable() {
+	void debugWithThrowable() {
 		this.deferredLog.debug(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).debug(this.message, this.throwable);
 	}
 
 	@Test
-	public void info() {
+	void info() {
 		this.deferredLog.info(this.message);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).info(this.message, null);
 	}
 
 	@Test
-	public void infoWithThrowable() {
+	void infoWithThrowable() {
 		this.deferredLog.info(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).info(this.message, this.throwable);
 	}
 
 	@Test
-	public void warn() {
+	void warn() {
 		this.deferredLog.warn(this.message);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).warn(this.message, null);
 	}
 
 	@Test
-	public void warnWithThrowable() {
+	void warnWithThrowable() {
 		this.deferredLog.warn(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).warn(this.message, this.throwable);
 	}
 
 	@Test
-	public void error() {
+	void error() {
 		this.deferredLog.error(this.message);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).error(this.message, null);
 	}
 
 	@Test
-	public void errorWithThrowable() {
+	void errorWithThrowable() {
 		this.deferredLog.error(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).error(this.message, this.throwable);
 	}
 
 	@Test
-	public void fatal() {
+	void fatal() {
 		this.deferredLog.fatal(this.message);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).fatal(this.message, null);
 	}
 
 	@Test
-	public void fatalWithThrowable() {
+	void fatalWithThrowable() {
 		this.deferredLog.fatal(this.message, this.throwable);
 		this.deferredLog.replayTo(this.log);
 		verify(this.log).fatal(this.message, this.throwable);
 	}
 
 	@Test
-	public void clearsOnReplayTo() {
+	void clearsOnReplayTo() {
 		this.deferredLog.info("1");
 		this.deferredLog.fatal("2");
 		Log log2 = mock(Log.class);
@@ -173,9 +173,8 @@ public class DeferredLogTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void switchTo() {
-		List<String> lines = (List<String>) ReflectionTestUtils.getField(this.deferredLog,
-				"lines");
+	void switchTo() {
+		List<String> lines = (List<String>) ReflectionTestUtils.getField(this.deferredLog, "lines");
 		assertThat(lines).isEmpty();
 
 		this.deferredLog.error(this.message, this.throwable);

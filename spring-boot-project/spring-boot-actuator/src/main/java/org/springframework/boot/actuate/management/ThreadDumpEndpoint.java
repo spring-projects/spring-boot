@@ -36,8 +36,7 @@ public class ThreadDumpEndpoint {
 
 	@ReadOperation
 	public ThreadDumpDescriptor threadDump() {
-		return new ThreadDumpDescriptor(Arrays
-				.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true)));
+		return new ThreadDumpDescriptor(Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true)));
 	}
 
 	/**

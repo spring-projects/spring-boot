@@ -43,12 +43,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class StaticResourceRequestTests {
+class StaticResourceRequestTests {
 
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Test
-	public void atCommonLocationsShouldMatchCommonLocations() {
+	void atCommonLocationsShouldMatchCommonLocations() {
 		ServerWebExchangeMatcher matcher = this.resourceRequest.atCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
@@ -59,7 +59,7 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
+	void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
 		ServerWebExchangeMatcher matcher = this.resourceRequest.atCommonLocations()
 				.excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
@@ -67,25 +67,21 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void atLocationShouldMatchLocation() {
-		ServerWebExchangeMatcher matcher = this.resourceRequest
-				.at(StaticResourceLocation.CSS);
+	void atLocationShouldMatchLocation() {
+		ServerWebExchangeMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
-	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.resourceRequest.at(null))
+	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
-	public void excludeFromSetWhenSetIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> this.resourceRequest.atCommonLocations().excluding(null))
+	void excludeFromSetWhenSetIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
 				.withMessageContaining("Locations must not be null");
 	}
 
@@ -101,40 +97,35 @@ public class StaticResourceRequestTests {
 
 		private final ServerWebExchangeMatcher matcher;
 
-		RequestMatcherAssert(StaticApplicationContext context,
-				ServerWebExchangeMatcher matcher) {
+		RequestMatcherAssert(StaticApplicationContext context, ServerWebExchangeMatcher matcher) {
 			this.context = context;
 			this.matcher = matcher;
 		}
 
 		void matches(String path) {
-			ServerWebExchange exchange = webHandler().createExchange(
-					MockServerHttpRequest.get(path).build(),
+			ServerWebExchange exchange = webHandler().createExchange(MockServerHttpRequest.get(path).build(),
 					new MockServerHttpResponse());
 			matches(exchange);
 		}
 
 		private void matches(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30))
-					.isMatch()).as("Matches " + getRequestPath(exchange)).isTrue();
+			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
+					.as("Matches " + getRequestPath(exchange)).isTrue();
 		}
 
 		void doesNotMatch(String path) {
-			ServerWebExchange exchange = webHandler().createExchange(
-					MockServerHttpRequest.get(path).build(),
+			ServerWebExchange exchange = webHandler().createExchange(MockServerHttpRequest.get(path).build(),
 					new MockServerHttpResponse());
 			doesNotMatch(exchange);
 		}
 
 		private void doesNotMatch(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30))
-					.isMatch()).as("Does not match " + getRequestPath(exchange))
-							.isFalse();
+			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
+					.as("Does not match " + getRequestPath(exchange)).isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {
-			TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(
-					mock(WebHandler.class));
+			TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(mock(WebHandler.class));
 			adapter.setApplicationContext(this.context);
 			return adapter;
 		}
@@ -152,8 +143,7 @@ public class StaticResourceRequestTests {
 		}
 
 		@Override
-		protected ServerWebExchange createExchange(ServerHttpRequest request,
-				ServerHttpResponse response) {
+		protected ServerWebExchange createExchange(ServerHttpRequest request, ServerHttpResponse response) {
 			return super.createExchange(request, response);
 		}
 

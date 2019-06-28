@@ -43,16 +43,15 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.main.web-application-type=reactive")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
 @DirtiesContext
-public class WebTestClientContextCustomizerWithOverrideIntegrationTests {
+class WebTestClientContextCustomizerWithOverrideIntegrationTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
 
 	@Test
-	public void test() {
+	void test() {
 		assertThat(this.webTestClient).isInstanceOf(CustomWebTestClient.class);
 	}
 

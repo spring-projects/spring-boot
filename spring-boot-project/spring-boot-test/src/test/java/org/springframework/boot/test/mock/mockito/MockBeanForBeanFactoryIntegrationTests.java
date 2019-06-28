@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)
-public class MockBeanForBeanFactoryIntegrationTests {
+class MockBeanForBeanFactoryIntegrationTests {
 
 	// gh-7439
 
@@ -48,7 +48,7 @@ public class MockBeanForBeanFactoryIntegrationTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void testName() {
+	void testName() {
 		TestBean testBean = mock(TestBean.class);
 		given(testBean.hello()).willReturn("amock");
 		given(this.testFactoryBean.getObjectType()).willReturn((Class) TestBean.class);

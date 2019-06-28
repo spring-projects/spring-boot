@@ -87,8 +87,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
-			ConfigurableListableBeanFactory beanFactory,
-			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
+			ConfigurableListableBeanFactory beanFactory, ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			HibernateProperties hibernateProperties,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
 			ObjectProvider<SchemaManagementProvider> providers,
@@ -98,31 +97,25 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		super(dataSource, jpaProperties, jtaTransactionManager);
 		this.hibernateProperties = hibernateProperties;
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(providers);
-		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
-				metadataProviders.getIfAvailable());
+		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(metadataProviders.getIfAvailable());
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
-				physicalNamingStrategy.getIfAvailable(),
-				implicitNamingStrategy.getIfAvailable(), beanFactory,
-				hibernatePropertiesCustomizers.orderedStream()
-						.collect(Collectors.toList()));
+				physicalNamingStrategy.getIfAvailable(), implicitNamingStrategy.getIfAvailable(), beanFactory,
+				hibernatePropertiesCustomizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
-			PhysicalNamingStrategy physicalNamingStrategy,
-			ImplicitNamingStrategy implicitNamingStrategy,
+			PhysicalNamingStrategy physicalNamingStrategy, ImplicitNamingStrategy implicitNamingStrategy,
 			ConfigurableListableBeanFactory beanFactory,
 			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		List<HibernatePropertiesCustomizer> customizers = new ArrayList<>();
-		if (ClassUtils.isPresent(
-				"org.hibernate.resource.beans.container.spi.BeanContainer",
+		if (ClassUtils.isPresent("org.hibernate.resource.beans.container.spi.BeanContainer",
 				getClass().getClassLoader())) {
-			customizers
-					.add((properties) -> properties.put(AvailableSettings.BEAN_CONTAINER,
-							new SpringBeanContainer(beanFactory)));
+			customizers.add((properties) -> properties.put(AvailableSettings.BEAN_CONTAINER,
+					new SpringBeanContainer(beanFactory)));
 		}
 		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
-			customizers.add(new NamingStrategiesHibernatePropertiesCustomizer(
-					physicalNamingStrategy, implicitNamingStrategy));
+			customizers.add(
+					new NamingStrategiesHibernatePropertiesCustomizer(physicalNamingStrategy, implicitNamingStrategy));
 		}
 		customizers.addAll(hibernatePropertiesCustomizers);
 		return customizers;
@@ -135,13 +128,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider
-				.getDefaultDdlAuto(getDataSource());
-		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
-				getProperties().getProperties(),
-				new HibernateSettings().ddlAuto(defaultDdlMode)
-						.hibernatePropertiesCustomizers(
-								this.hibernatePropertiesCustomizers)));
+		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(getDataSource());
+		return new LinkedHashMap<>(this.hibernateProperties
+				.determineHibernateProperties(getProperties().getProperties(), new HibernateSettings()
+						.ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override
@@ -155,8 +145,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private void configureJtaPlatform(Map<String, Object> vendorProperties)
-			throws LinkageError {
+	private void configureJtaPlatform(Map<String, Object> vendorProperties) throws LinkageError {
 		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
 		// Make sure Hibernate doesn't attempt to auto-detect a JTA platform
 		if (jtaTransactionManager == null) {
@@ -169,38 +158,32 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private void configureProviderDisablesAutocommit(
-			Map<String, Object> vendorProperties) {
+	private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties) {
 		if (isDataSourceAutoCommitDisabled() && !isJta()) {
 			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
 		}
 	}
 
 	private boolean isDataSourceAutoCommitDisabled() {
-		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
-				.getDataSourcePoolMetadata(getDataSource());
-		return poolMetadata != null
-				&& Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit());
+		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(getDataSource());
+		return poolMetadata != null && Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit());
 	}
 
 	private boolean runningOnWebSphere() {
-		return ClassUtils.isPresent(
-				"com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
+		return ClassUtils.isPresent("com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
 				getClass().getClassLoader());
 	}
 
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
 			JtaTransactionManager jtaTransactionManager) {
 		try {
-			vendorProperties.put(JTA_PLATFORM,
-					new SpringJtaPlatform(jtaTransactionManager));
+			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(jtaTransactionManager));
 		}
 		catch (LinkageError ex) {
 			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
 			// containers (e.g. JBoss EAP 6) wrap it in the superclass LinkageError
 			if (!isUsingJndi()) {
-				throw new IllegalStateException("Unable to set Hibernate JTA "
-						+ "platform, are you using the correct "
+				throw new IllegalStateException("Unable to set Hibernate JTA " + "platform, are you using the correct "
 						+ "version of Hibernate?", ex);
 			}
 			// Assume that Hibernate will use JNDI
@@ -228,19 +211,17 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				// Continue searching
 			}
 		}
-		throw new IllegalStateException("No available JtaPlatform candidates amongst "
-				+ Arrays.toString(NO_JTA_PLATFORM_CLASSES));
+		throw new IllegalStateException(
+				"No available JtaPlatform candidates amongst " + Arrays.toString(NO_JTA_PLATFORM_CLASSES));
 	}
 
-	private static class NamingStrategiesHibernatePropertiesCustomizer
-			implements HibernatePropertiesCustomizer {
+	private static class NamingStrategiesHibernatePropertiesCustomizer implements HibernatePropertiesCustomizer {
 
 		private final PhysicalNamingStrategy physicalNamingStrategy;
 
 		private final ImplicitNamingStrategy implicitNamingStrategy;
 
-		NamingStrategiesHibernatePropertiesCustomizer(
-				PhysicalNamingStrategy physicalNamingStrategy,
+		NamingStrategiesHibernatePropertiesCustomizer(PhysicalNamingStrategy physicalNamingStrategy,
 				ImplicitNamingStrategy implicitNamingStrategy) {
 			this.physicalNamingStrategy = physicalNamingStrategy;
 			this.implicitNamingStrategy = implicitNamingStrategy;
@@ -249,12 +230,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		@Override
 		public void customize(Map<String, Object> hibernateProperties) {
 			if (this.physicalNamingStrategy != null) {
-				hibernateProperties.put("hibernate.physical_naming_strategy",
-						this.physicalNamingStrategy);
+				hibernateProperties.put("hibernate.physical_naming_strategy", this.physicalNamingStrategy);
 			}
 			if (this.implicitNamingStrategy != null) {
-				hibernateProperties.put("hibernate.implicit_naming_strategy",
-						this.implicitNamingStrategy);
+				hibernateProperties.put("hibernate.implicit_naming_strategy", this.implicitNamingStrategy);
 			}
 		}
 

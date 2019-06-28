@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  * {@link Source#toInstance(Function) new instance}.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public final class PropertyMapper {
@@ -229,8 +230,7 @@ public final class PropertyMapper {
 		 * @return a new filtered source instance
 		 */
 		public Source<T> whenNonNull() {
-			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier),
-					Objects::nonNull);
+			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier), Objects::nonNull);
 		}
 
 		/**
@@ -289,7 +289,7 @@ public final class PropertyMapper {
 		 */
 		public Source<T> whenNot(Predicate<T> predicate) {
 			Assert.notNull(predicate, "Predicate must not be null");
-			return new Source<>(this.supplier, predicate.negate());
+			return when(predicate.negate());
 		}
 
 		/**
@@ -300,7 +300,7 @@ public final class PropertyMapper {
 		 */
 		public Source<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "Predicate must not be null");
-			return new Source<>(this.supplier, predicate);
+			return new Source<>(this.supplier, (this.predicate != null) ? this.predicate.and(predicate) : predicate);
 		}
 
 		/**

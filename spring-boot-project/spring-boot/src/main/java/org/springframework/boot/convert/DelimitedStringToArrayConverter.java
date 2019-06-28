@@ -47,38 +47,33 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return targetType.getElementTypeDescriptor() == null || this.conversionService
-				.canConvert(sourceType, targetType.getElementTypeDescriptor());
+		return targetType.getElementTypeDescriptor() == null
+				|| this.conversionService.canConvert(sourceType, targetType.getElementTypeDescriptor());
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
 		return convert((String) source, sourceType, targetType);
 	}
 
-	private Object convert(String source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	private Object convert(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
-		String[] elements = getElements(source,
-				(delimiter != null) ? delimiter.value() : ",");
+		String[] elements = getElements(source, (delimiter != null) ? delimiter.value() : ",");
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
 		Object target = Array.newInstance(elementDescriptor.getType(), elements.length);
 		for (int i = 0; i < elements.length; i++) {
 			String sourceElement = elements[i];
-			Object targetElement = this.conversionService.convert(sourceElement.trim(),
-					sourceType, elementDescriptor);
+			Object targetElement = this.conversionService.convert(sourceElement.trim(), sourceType, elementDescriptor);
 			Array.set(target, i, targetElement);
 		}
 		return target;
 	}
 
 	private String[] getElements(String source, String delimiter) {
-		return StringUtils.delimitedListToStringArray(source,
-				Delimiter.NONE.equals(delimiter) ? null : delimiter);
+		return StringUtils.delimitedListToStringArray(source, Delimiter.NONE.equals(delimiter) ? null : delimiter);
 	}
 
 }

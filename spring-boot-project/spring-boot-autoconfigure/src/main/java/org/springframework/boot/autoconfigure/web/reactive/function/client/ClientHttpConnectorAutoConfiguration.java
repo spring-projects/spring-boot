@@ -39,15 +39,13 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebClient.class)
-@Import({ ClientHttpConnectorConfiguration.ReactorNetty.class,
-		ClientHttpConnectorConfiguration.JettyClient.class })
+@Import({ ClientHttpConnectorConfiguration.ReactorNetty.class, ClientHttpConnectorConfiguration.JettyClient.class })
 public class ClientHttpConnectorAutoConfiguration {
 
 	@Bean
 	@Order(0)
 	@ConditionalOnBean(ClientHttpConnector.class)
-	public WebClientCustomizer clientConnectorCustomizer(
-			ClientHttpConnector clientHttpConnector) {
+	public WebClientCustomizer clientConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
 		return (builder) -> builder.clientConnector(clientHttpConnector);
 	}
 

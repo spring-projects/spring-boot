@@ -8,12 +8,6 @@ bomr:
         - 'type: dependency-upgrade'
     policy: same-major-version
     prohibited:
-      - project: couchbase-client
-        versions:
-          # Jar contains dependencies' classes resulting in duplicates
-          - '[2.7.3]'
-          # Artifacts published as .bundle files rather than .jar files
-          - '[2.7.5]'
       - project: maven-invoker-plugin
         versions:
           # NPE in InstallMojo.installProjectPom (InstallMojo.java:387)
@@ -31,10 +25,6 @@ bomr:
       - 'io.micrometer:micrometer-registry-azure-monitor'
       - 'org.eclipse.jetty.gcloud:jetty-gcloud-session-manager'
       - 'org.eclipse.jetty:jetty-home'
-      # Mismanaged by Jetty's bom. See
-      # https://github.com/eclipse/jetty.project/issues/3680
-      - 'org.eclipse.jetty:infinispan-embedded'
-      - 'org.eclipse.jetty:infinispan-remote'
     repositories:
       # Caffeine Simulator's dependencies
       - 'https://maven.imagej.net/content/repositories/public/'

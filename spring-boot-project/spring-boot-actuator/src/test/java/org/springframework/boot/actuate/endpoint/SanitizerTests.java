@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class SanitizerTests {
+class SanitizerTests {
 
 	@Test
-	public void defaults() {
+	void defaults() {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
@@ -39,12 +39,11 @@ public class SanitizerTests {
 		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
-		assertThat(sanitizer.sanitize("sun.java.command",
-				"--spring.redis.password=pa55w0rd")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
 	}
 
 	@Test
-	public void regex() {
+	void regex() {
 		Sanitizer sanitizer = new Sanitizer(".*lock.*");
 		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("veryokish", "secret")).isEqualTo("secret");

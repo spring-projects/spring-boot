@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationdocs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 
@@ -27,12 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class CompoundConfigurationTableEntryTests {
+class CompoundConfigurationTableEntryTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	public void simpleProperty() {
+	void simpleProperty() {
 		ConfigurationMetadataProperty firstProp = new ConfigurationMetadataProperty();
 		firstProp.setId("spring.test.first");
 		firstProp.setType("java.lang.String");
@@ -42,15 +42,14 @@ public class CompoundConfigurationTableEntryTests {
 		ConfigurationMetadataProperty thirdProp = new ConfigurationMetadataProperty();
 		thirdProp.setId("spring.test.third");
 		thirdProp.setType("java.lang.String");
-		CompoundConfigurationTableEntry entry = new CompoundConfigurationTableEntry(
-				"spring.test", "This is a description.");
+		CompoundConfigurationTableEntry entry = new CompoundConfigurationTableEntry("spring.test",
+				"This is a description.");
 		entry.addConfigurationKeys(firstProp, secondProp, thirdProp);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
 		assertThat(builder.toString()).isEqualTo(
-				"|`+spring.test.first+` +" + NEWLINE + "`+spring.test.second+` +"
-						+ NEWLINE + "`+spring.test.third+` +" + NEWLINE + NEWLINE + "|"
-						+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+				"|`+spring.test.first+` +" + NEWLINE + "`+spring.test.second+` +" + NEWLINE + "`+spring.test.third+` +"
+						+ NEWLINE + NEWLINE + "|" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 }

@@ -33,10 +33,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnEnabledEndpointCondition extends AbstractEndpointCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		return getEnablementOutcome(context, metadata,
-				ConditionalOnEnabledEndpoint.class);
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		return getEnablementOutcome(context, metadata, ConditionalOnEnabledEndpoint.class);
 	}
 
 }

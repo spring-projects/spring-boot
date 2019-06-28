@@ -30,13 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @SpringBootTest(properties = "spring.config.name=custom-config-name")
-public class SpringBootTestCustomConfigNameTests {
+class SpringBootTestCustomConfigNameTests {
 
 	@Value("${test.foo}")
 	private String foo;
 
 	@Test
-	public void propertyIsLoadedFromConfigFileWithCustomName() {
+	void propertyIsLoadedFromConfigFileWithCustomName() {
 		assertThat(this.foo).isEqualTo("bar");
 	}
 

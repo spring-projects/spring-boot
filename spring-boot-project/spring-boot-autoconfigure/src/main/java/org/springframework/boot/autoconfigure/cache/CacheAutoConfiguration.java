@@ -67,23 +67,20 @@ public class CacheAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CacheManagerCustomizers cacheManagerCustomizers(
-			ObjectProvider<CacheManagerCustomizer<?>> customizers) {
-		return new CacheManagerCustomizers(
-				customizers.orderedStream().collect(Collectors.toList()));
+	public CacheManagerCustomizers cacheManagerCustomizers(ObjectProvider<CacheManagerCustomizer<?>> customizers) {
+		return new CacheManagerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean
-	public CacheManagerValidator cacheAutoConfigurationValidator(
-			CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
+	public CacheManagerValidator cacheAutoConfigurationValidator(CacheProperties cacheProperties,
+			ObjectProvider<CacheManager> cacheManager) {
 		return new CacheManagerValidator(cacheProperties, cacheManager);
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class CacheManagerJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
+	protected static class CacheManagerJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public CacheManagerJpaDependencyConfiguration() {
 			super("cacheManager");
@@ -101,8 +98,7 @@ public class CacheAutoConfiguration {
 
 		private final ObjectProvider<CacheManager> cacheManager;
 
-		CacheManagerValidator(CacheProperties cacheProperties,
-				ObjectProvider<CacheManager> cacheManager) {
+		CacheManagerValidator(CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
 			this.cacheProperties = cacheProperties;
 			this.cacheManager = cacheManager;
 		}
@@ -110,8 +106,7 @@ public class CacheAutoConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			Assert.notNull(this.cacheManager.getIfAvailable(),
-					() -> "No cache manager could "
-							+ "be auto-configured, check your configuration (caching "
+					() -> "No cache manager could " + "be auto-configured, check your configuration (caching "
 							+ "type is '" + this.cacheProperties.getType() + "')");
 		}
 

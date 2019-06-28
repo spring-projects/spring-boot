@@ -34,61 +34,60 @@ import static org.mockito.Mockito.mock;
  * @author Michael Simons
  * @author Stephane Nicoll
  */
-public class SqlDialectLookupTests {
+class SqlDialectLookupTests {
 
 	@Test
-	public void getSqlDialectWhenDataSourceIsNullShouldReturnDefault() {
+	void getSqlDialectWhenDataSourceIsNullShouldReturnDefault() {
 		assertThat(SqlDialectLookup.getDialect(null)).isEqualTo(SQLDialect.DEFAULT);
 	}
 
 	@Test
-	public void getSqlDialectWhenDataSourceIsUnknownShouldReturnDefault()
-			throws Exception {
+	void getSqlDialectWhenDataSourceIsUnknownShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:idontexist:", SQLDialect.DEFAULT);
 	}
 
 	@Test
-	public void getSqlDialectWhenDerbyShouldReturnDerby() throws Exception {
+	void getSqlDialectWhenDerbyShouldReturnDerby() throws Exception {
 		testGetSqlDialect("jdbc:derby:", SQLDialect.DERBY);
 	}
 
 	@Test
-	public void getSqlDialectWhenH2ShouldReturnH2() throws Exception {
+	void getSqlDialectWhenH2ShouldReturnH2() throws Exception {
 		testGetSqlDialect("jdbc:h2:", SQLDialect.H2);
 	}
 
 	@Test
-	public void getSqlDialectWhenHsqldbShouldReturnHsqldb() throws Exception {
+	void getSqlDialectWhenHsqldbShouldReturnHsqldb() throws Exception {
 		testGetSqlDialect("jdbc:hsqldb:", SQLDialect.HSQLDB);
 	}
 
 	@Test
-	public void getSqlDialectWhenMysqlShouldReturnMysql() throws Exception {
+	void getSqlDialectWhenMysqlShouldReturnMysql() throws Exception {
 		testGetSqlDialect("jdbc:mysql:", SQLDialect.MYSQL);
 	}
 
 	@Test
-	public void getSqlDialectWhenOracleShouldReturnDefault() throws Exception {
+	void getSqlDialectWhenOracleShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:oracle:", SQLDialect.DEFAULT);
 	}
 
 	@Test
-	public void getSqlDialectWhenPostgresShouldReturnPostgres() throws Exception {
+	void getSqlDialectWhenPostgresShouldReturnPostgres() throws Exception {
 		testGetSqlDialect("jdbc:postgresql:", SQLDialect.POSTGRES);
 	}
 
 	@Test
-	public void getSqlDialectWhenSqlserverShouldReturnDefault() throws Exception {
+	void getSqlDialectWhenSqlserverShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:sqlserver:", SQLDialect.DEFAULT);
 	}
 
 	@Test
-	public void getSqlDialectWhenDb2ShouldReturnDefault() throws Exception {
+	void getSqlDialectWhenDb2ShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:db2:", SQLDialect.DEFAULT);
 	}
 
 	@Test
-	public void getSqlDialectWhenInformixShouldReturnDefault() throws Exception {
+	void getSqlDialectWhenInformixShouldReturnDefault() throws Exception {
 		testGetSqlDialect("jdbc:informix-sqli:", SQLDialect.DEFAULT);
 	}
 

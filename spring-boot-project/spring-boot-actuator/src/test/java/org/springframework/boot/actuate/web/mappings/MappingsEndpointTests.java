@@ -70,62 +70,51 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class MappingsEndpointTests {
+class MappingsEndpointTests {
 
 	@Test
-	public void servletWebMappings() {
+	void servletWebMappings() {
 		Supplier<ConfigurableWebApplicationContext> contextSupplier = prepareContextSupplier();
 		new WebApplicationContextRunner(contextSupplier)
-				.withUserConfiguration(EndpointConfiguration.class,
-						ServletWebConfiguration.class)
-				.run((context) -> {
+				.withUserConfiguration(EndpointConfiguration.class, ServletWebConfiguration.class).run((context) -> {
 					ContextMappings contextMappings = contextMappings(context);
 					assertThat(contextMappings.getParentId()).isNull();
-					assertThat(contextMappings.getMappings()).containsOnlyKeys(
-							"dispatcherServlets", "servletFilters", "servlets");
+					assertThat(contextMappings.getMappings()).containsOnlyKeys("dispatcherServlets", "servletFilters",
+							"servlets");
 					Map<String, List<DispatcherServletMappingDescription>> dispatcherServlets = mappings(
 							contextMappings, "dispatcherServlets");
 					assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
 					List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets
 							.get("dispatcherServlet");
 					assertThat(handlerMappings).hasSize(1);
-					List<ServletRegistrationMappingDescription> servlets = mappings(
-							contextMappings, "servlets");
+					List<ServletRegistrationMappingDescription> servlets = mappings(contextMappings, "servlets");
 					assertThat(servlets).hasSize(1);
-					List<FilterRegistrationMappingDescription> filters = mappings(
-							contextMappings, "servletFilters");
+					List<FilterRegistrationMappingDescription> filters = mappings(contextMappings, "servletFilters");
 					assertThat(filters).hasSize(1);
 				});
 	}
 
 	@Test
-	public void servletWebMappingsWithAdditionalDispatcherServlets() {
+	void servletWebMappingsWithAdditionalDispatcherServlets() {
 		Supplier<ConfigurableWebApplicationContext> contextSupplier = prepareContextSupplier();
-		new WebApplicationContextRunner(contextSupplier).withUserConfiguration(
-				EndpointConfiguration.class, ServletWebConfiguration.class,
-				CustomDispatcherServletConfiguration.class).run((context) -> {
+		new WebApplicationContextRunner(contextSupplier).withUserConfiguration(EndpointConfiguration.class,
+				ServletWebConfiguration.class, CustomDispatcherServletConfiguration.class).run((context) -> {
 					ContextMappings contextMappings = contextMappings(context);
 					Map<String, List<DispatcherServletMappingDescription>> dispatcherServlets = mappings(
 							contextMappings, "dispatcherServlets");
 					assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet",
-							"customDispatcherServletRegistration",
-							"anotherDispatcherServletRegistration");
+							"customDispatcherServletRegistration", "anotherDispatcherServletRegistration");
 					assertThat(dispatcherServlets.get("dispatcherServlet")).hasSize(1);
-					assertThat(
-							dispatcherServlets.get("customDispatcherServletRegistration"))
-									.hasSize(1);
-					assertThat(dispatcherServlets
-							.get("anotherDispatcherServletRegistration")).hasSize(1);
+					assertThat(dispatcherServlets.get("customDispatcherServletRegistration")).hasSize(1);
+					assertThat(dispatcherServlets.get("anotherDispatcherServletRegistration")).hasSize(1);
 				});
 	}
 
 	@SuppressWarnings("unchecked")
 	private Supplier<ConfigurableWebApplicationContext> prepareContextSupplier() {
 		ServletContext servletContext = mock(ServletContext.class);
-		given(servletContext.getInitParameterNames())
-				.willReturn(Collections.emptyEnumeration());
-		given(servletContext.getAttributeNames())
-				.willReturn(Collections.emptyEnumeration());
+		given(servletContext.getInitParameterNames()).willReturn(Collections.emptyEnumeration());
+		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
 		FilterRegistration filterRegistration = mock(FilterRegistration.class);
 		given((Map<String, FilterRegistration>) servletContext.getFilterRegistrations())
 				.willReturn(Collections.singletonMap("testFilter", filterRegistration));
@@ -140,27 +129,22 @@ public class MappingsEndpointTests {
 	}
 
 	@Test
-	public void reactiveWebMappings() {
+	void reactiveWebMappings() {
 		new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(EndpointConfiguration.class,
-						ReactiveWebConfiguration.class)
-				.run((context) -> {
+				.withUserConfiguration(EndpointConfiguration.class, ReactiveWebConfiguration.class).run((context) -> {
 					ContextMappings contextMappings = contextMappings(context);
 					assertThat(contextMappings.getParentId()).isNull();
-					assertThat(contextMappings.getMappings())
-							.containsOnlyKeys("dispatcherHandlers");
+					assertThat(contextMappings.getMappings()).containsOnlyKeys("dispatcherHandlers");
 					Map<String, List<DispatcherHandlerMappingDescription>> dispatcherHandlers = mappings(
 							contextMappings, "dispatcherHandlers");
 					assertThat(dispatcherHandlers).containsOnlyKeys("webHandler");
-					List<DispatcherHandlerMappingDescription> handlerMappings = dispatcherHandlers
-							.get("webHandler");
+					List<DispatcherHandlerMappingDescription> handlerMappings = dispatcherHandlers.get("webHandler");
 					assertThat(handlerMappings).hasSize(3);
 				});
 	}
 
 	private ContextMappings contextMappings(ApplicationContext context) {
-		ApplicationMappings applicationMappings = context.getBean(MappingsEndpoint.class)
-				.mappings();
+		ApplicationMappings applicationMappings = context.getBean(MappingsEndpoint.class).mappings();
 		assertThat(applicationMappings.getContexts()).containsOnlyKeys(context.getId());
 		return applicationMappings.getContexts().get(context.getId());
 	}
@@ -174,8 +158,7 @@ public class MappingsEndpointTests {
 	static class EndpointConfiguration {
 
 		@Bean
-		public MappingsEndpoint mappingsEndpoint(
-				Collection<MappingDescriptionProvider> descriptionProviders,
+		public MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
 				ApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
 		}
@@ -194,8 +177,8 @@ public class MappingsEndpointTests {
 
 		@Bean
 		public RouterFunction<ServerResponse> routerFunction() {
-			return route(GET("/one"), (request) -> ServerResponse.ok().build())
-					.andRoute(POST("/two"), (request) -> ServerResponse.ok().build());
+			return route(GET("/one"), (request) -> ServerResponse.ok().build()).andRoute(POST("/two"),
+					(request) -> ServerResponse.ok().build());
 		}
 
 		@RequestMapping("/three")
@@ -226,8 +209,7 @@ public class MappingsEndpointTests {
 		}
 
 		@Bean
-		public DispatcherServlet dispatcherServlet(WebApplicationContext context)
-				throws ServletException {
+		public DispatcherServlet dispatcherServlet(WebApplicationContext context) throws ServletException {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
 			dispatcherServlet.init(new MockServletConfig());
 			return dispatcherServlet;
@@ -266,8 +248,7 @@ public class MappingsEndpointTests {
 			return registrationBean;
 		}
 
-		private DispatcherServlet createTestDispatcherServlet(
-				WebApplicationContext context) {
+		private DispatcherServlet createTestDispatcherServlet(WebApplicationContext context) {
 			try {
 				DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
 				dispatcherServlet.init(new MockServletConfig());

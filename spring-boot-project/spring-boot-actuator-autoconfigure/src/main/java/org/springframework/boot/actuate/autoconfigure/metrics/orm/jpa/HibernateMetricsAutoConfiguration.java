@@ -48,27 +48,24 @@ import org.springframework.util.StringUtils;
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
-@ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class,
-		MeterRegistry.class })
+@ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
 public class HibernateMetricsAutoConfiguration {
 
 	private static final String ENTITY_MANAGER_FACTORY_SUFFIX = "entityManagerFactory";
 
 	@Autowired
-	public void bindEntityManagerFactoriesToRegistry(
-			Map<String, EntityManagerFactory> entityManagerFactories,
+	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
 			MeterRegistry registry) {
-		entityManagerFactories.forEach((name,
-				factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
+		entityManagerFactories.forEach((name, factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
 	}
 
-	private void bindEntityManagerFactoryToRegistry(String beanName,
-			EntityManagerFactory entityManagerFactory, MeterRegistry registry) {
+	private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory,
+			MeterRegistry registry) {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
 		try {
-			new HibernateMetrics(entityManagerFactory.unwrap(SessionFactory.class),
-					entityManagerFactoryName, Collections.emptyList()).bindTo(registry);
+			new HibernateMetrics(entityManagerFactory.unwrap(SessionFactory.class), entityManagerFactoryName,
+					Collections.emptyList()).bindTo(registry);
 		}
 		catch (PersistenceException ex) {
 			// Continue
@@ -81,10 +78,9 @@ public class HibernateMetricsAutoConfiguration {
 	 * @return a name for the given entity manager factory
 	 */
 	private String getEntityManagerFactoryName(String beanName) {
-		if (beanName.length() > ENTITY_MANAGER_FACTORY_SUFFIX.length() && StringUtils
-				.endsWithIgnoreCase(beanName, ENTITY_MANAGER_FACTORY_SUFFIX)) {
-			return beanName.substring(0,
-					beanName.length() - ENTITY_MANAGER_FACTORY_SUFFIX.length());
+		if (beanName.length() > ENTITY_MANAGER_FACTORY_SUFFIX.length()
+				&& StringUtils.endsWithIgnoreCase(beanName, ENTITY_MANAGER_FACTORY_SUFFIX)) {
+			return beanName.substring(0, beanName.length() - ENTITY_MANAGER_FACTORY_SUFFIX.length());
 		}
 		return beanName;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.asm.Opcodes;
 import org.springframework.beans.DirectFieldAccessor;
@@ -49,15 +49,14 @@ public abstract class AbstractConfigurationClassTests {
 	private ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
 	@Test
-	public void allBeanMethodsArePublic() throws IOException {
+	void allBeanMethodsArePublic() throws IOException {
 		Set<String> nonPublicBeanMethods = new HashSet<>();
 		for (AnnotationMetadata configurationClass : findConfigurationClasses()) {
-			Set<MethodMetadata> beanMethods = configurationClass
-					.getAnnotatedMethods(Bean.class.getName());
+			Set<MethodMetadata> beanMethods = configurationClass.getAnnotatedMethods(Bean.class.getName());
 			for (MethodMetadata methodMetadata : beanMethods) {
 				if (!isPublic(methodMetadata)) {
-					nonPublicBeanMethods.add(methodMetadata.getDeclaringClassName() + "."
-							+ methodMetadata.getMethodName());
+					nonPublicBeanMethods
+							.add(methodMetadata.getDeclaringClassName() + "." + methodMetadata.getMethodName());
 				}
 			}
 		}
@@ -66,16 +65,13 @@ public abstract class AbstractConfigurationClassTests {
 
 	private Set<AnnotationMetadata> findConfigurationClasses() throws IOException {
 		Set<AnnotationMetadata> configurationClasses = new HashSet<>();
-		Resource[] resources = this.resolver.getResources("classpath*:"
-				+ getClass().getPackage().getName().replace('.', '/') + "/**/*.class");
+		Resource[] resources = this.resolver
+				.getResources("classpath*:" + getClass().getPackage().getName().replace('.', '/') + "/**/*.class");
 		for (Resource resource : resources) {
 			if (!isTestClass(resource)) {
-				MetadataReader metadataReader = new SimpleMetadataReaderFactory()
-						.getMetadataReader(resource);
-				AnnotationMetadata annotationMetadata = metadataReader
-						.getAnnotationMetadata();
-				if (annotationMetadata.getAnnotationTypes()
-						.contains(Configuration.class.getName())) {
+				MetadataReader metadataReader = new SimpleMetadataReaderFactory().getMetadataReader(resource);
+				AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+				if (annotationMetadata.getAnnotationTypes().contains(Configuration.class.getName())) {
 					configurationClasses.add(annotationMetadata);
 				}
 			}
@@ -89,8 +85,7 @@ public abstract class AbstractConfigurationClassTests {
 	}
 
 	private boolean isPublic(MethodMetadata methodMetadata) {
-		int access = (Integer) new DirectFieldAccessor(methodMetadata)
-				.getPropertyValue("access");
+		int access = (Integer) new DirectFieldAccessor(methodMetadata).getPropertyValue("access");
 		return (access & Opcodes.ACC_PUBLIC) != 0;
 	}
 

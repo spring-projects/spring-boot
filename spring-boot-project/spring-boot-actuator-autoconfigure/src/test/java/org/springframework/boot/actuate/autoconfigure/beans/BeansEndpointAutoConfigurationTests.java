@@ -29,31 +29,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class BeansEndpointAutoConfigurationTests {
+class BeansEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(BeansEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(BeansEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=beans")
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=beans")
 				.run((context) -> assertThat(context).hasSingleBean(BeansEndpoint.class));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(BeansEndpoint.class));
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(BeansEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.beans.enabled:false")
 				.withPropertyValues("management.endpoints.web.exposure.include=*")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(BeansEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(BeansEndpoint.class));
 	}
 
 }

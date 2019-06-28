@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  */
-public class HibernatePropertiesTests {
+class HibernatePropertiesTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfiguration.class);
@@ -54,111 +54,90 @@ public class HibernatePropertiesTests {
 	private Supplier<String> ddlAutoSupplier;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void noCustomNamingStrategy() {
+	void noCustomNamingStrategy() {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> {
-			assertThat(hibernateProperties)
-					.doesNotContainKeys("hibernate.ejb.naming_strategy");
-			assertThat(hibernateProperties).containsEntry(
-					AvailableSettings.PHYSICAL_NAMING_STRATEGY,
+			assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
+			assertThat(hibernateProperties).containsEntry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
 					SpringPhysicalNamingStrategy.class.getName());
-			assertThat(hibernateProperties).containsEntry(
-					AvailableSettings.IMPLICIT_NAMING_STRATEGY,
+			assertThat(hibernateProperties).containsEntry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
 					SpringImplicitNamingStrategy.class.getName());
 		}));
 	}
 
 	@Test
-	public void hibernate5CustomNamingStrategies() {
-		this.contextRunner.withPropertyValues(
-				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+	void hibernate5CustomNamingStrategies() {
+		this.contextRunner
+				.withPropertyValues("spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
 				.run(assertHibernateProperties((hibernateProperties) -> {
 					assertThat(hibernateProperties).contains(
-							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
-									"com.example.Implicit"),
-							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
-									"com.example.Physical"));
-					assertThat(hibernateProperties)
-							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
+							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
+					assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 				}));
 	}
 
 	@Test
-	public void hibernate5CustomNamingStrategiesViaJpaProperties() {
-		this.contextRunner.withPropertyValues(
-				"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
-				"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
+	void hibernate5CustomNamingStrategiesViaJpaProperties() {
+		this.contextRunner
+				.withPropertyValues("spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
+						"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
 				.run(assertHibernateProperties((hibernateProperties) -> {
 					// You can override them as we don't provide any default
 					assertThat(hibernateProperties).contains(
-							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
-									"com.example.Implicit"),
-							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
-									"com.example.Physical"));
-					assertThat(hibernateProperties)
-							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
+							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
+					assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 				}));
 	}
 
 	@Test
-	public void useNewIdGeneratorMappingsDefault() {
-		this.contextRunner.run(assertHibernateProperties(
-				(hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
-						AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true")));
+	void useNewIdGeneratorMappingsDefault() {
+		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
+				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true")));
 	}
 
 	@Test
-	public void useNewIdGeneratorMappingsFalse() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.hibernate.use-new-id-generator-mappings:false")
-				.run(assertHibernateProperties(
-						(hibernateProperties) -> assertThat(hibernateProperties)
-								.containsEntry(
-										AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS,
-										"false")));
+	void useNewIdGeneratorMappingsFalse() {
+		this.contextRunner.withPropertyValues("spring.jpa.hibernate.use-new-id-generator-mappings:false")
+				.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
+						.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false")));
 	}
 
 	@Test
-	public void scannerUsesDisabledScannerByDefault() {
-		this.contextRunner.run(assertHibernateProperties(
-				(hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
-						AvailableSettings.SCANNER,
-						"org.hibernate.boot.archive.scan.internal.DisabledScanner")));
+	void scannerUsesDisabledScannerByDefault() {
+		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
+				.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.DisabledScanner")));
 	}
 
 	@Test
-	public void scannerCanBeCustomized() {
+	void scannerCanBeCustomized() {
 		this.contextRunner.withPropertyValues(
 				"spring.jpa.properties.hibernate.archive.scanner:org.hibernate.boot.archive.scan.internal.StandardScanner")
-				.run(assertHibernateProperties((hibernateProperties) -> assertThat(
-						hibernateProperties).containsEntry(AvailableSettings.SCANNER,
-								"org.hibernate.boot.archive.scan.internal.StandardScanner")));
+				.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
+						AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.StandardScanner")));
 	}
 
 	@Test
-	public void defaultDdlAutoIsNotInvokedIfPropertyIsSet() {
+	void defaultDdlAutoIsNotInvokedIfPropertyIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.hibernate.ddl-auto=validate")
 				.run(assertDefaultDdlAutoNotInvoked("validate"));
 	}
 
 	@Test
-	public void defaultDdlAutoIsNotInvokedIfHibernateSpecificPropertyIsSet() {
-		this.contextRunner
-				.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
+	void defaultDdlAutoIsNotInvokedIfHibernateSpecificPropertyIsSet() {
+		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
 				.run(assertDefaultDdlAutoNotInvoked("create"));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(
-			String expectedDdlAuto) {
+	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(String expectedDdlAuto) {
 		return assertHibernateProperties((hibernateProperties) -> {
-			assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO,
-					expectedDdlAuto);
+			assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, expectedDdlAuto);
 			verify(this.ddlAutoSupplier, never()).get();
 		});
 	}
@@ -168,9 +147,8 @@ public class HibernatePropertiesTests {
 		return (context) -> {
 			assertThat(context).hasSingleBean(JpaProperties.class);
 			assertThat(context).hasSingleBean(HibernateProperties.class);
-			Map<String, Object> hibernateProperties = context
-					.getBean(HibernateProperties.class).determineHibernateProperties(
-							context.getBean(JpaProperties.class).getProperties(),
+			Map<String, Object> hibernateProperties = context.getBean(HibernateProperties.class)
+					.determineHibernateProperties(context.getBean(JpaProperties.class).getProperties(),
 							new HibernateSettings().ddlAuto(this.ddlAutoSupplier));
 			consumer.accept(hibernateProperties);
 		};

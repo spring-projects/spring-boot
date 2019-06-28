@@ -29,34 +29,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class OAuth2ClientRegistrationRepositoryConfigurationTests {
+class OAuth2ClientRegistrationRepositoryConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
-		this.contextRunner
-				.withUserConfiguration(
-						OAuth2ClientRegistrationRepositoryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ClientRegistrationRepository.class));
+	void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
+		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(ClientRegistrationRepository.class));
 	}
 
 	@Test
-	public void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
-		this.contextRunner
-				.withUserConfiguration(
-						OAuth2ClientRegistrationRepositoryConfiguration.class)
+	void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
+		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
 				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
-						REGISTRATION_PREFIX + ".foo.client-secret=secret",
-						REGISTRATION_PREFIX + ".foo.provider=github")
+						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
 				.run((context) -> {
-					ClientRegistrationRepository repository = context
-							.getBean(ClientRegistrationRepository.class);
-					ClientRegistration registration = repository
-							.findByRegistrationId("foo");
+					ClientRegistrationRepository repository = context.getBean(ClientRegistrationRepository.class);
+					ClientRegistration registration = repository.findByRegistrationId("foo");
 					assertThat(registration).isNotNull();
 					assertThat(registration.getClientSecret()).isEqualTo("secret");
 				});

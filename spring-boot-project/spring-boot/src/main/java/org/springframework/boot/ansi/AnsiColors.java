@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,7 @@ public final class AnsiColors {
 	 */
 	private static final class LabColor {
 
-		private static final ColorSpace XYZ_COLOR_SPACE = ColorSpace
-				.getInstance(ColorSpace.CS_CIEXYZ);
+		private static final ColorSpace XYZ_COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
 
 		private final double l;
 
@@ -117,8 +116,7 @@ public final class AnsiColors {
 		}
 
 		private double f(double t) {
-			return (t > (216.0 / 24389.0)) ? Math.cbrt(t)
-					: (1.0 / 3.0) * Math.pow(29.0 / 6.0, 2) * t + (4.0 / 29.0);
+			return (t > (216.0 / 24389.0)) ? Math.cbrt(t) : (1.0 / 3.0) * Math.pow(29.0 / 6.0, 2) * t + (4.0 / 29.0);
 		}
 
 		// See https://en.wikipedia.org/wiki/Color_difference#CIE94
@@ -127,12 +125,9 @@ public final class AnsiColors {
 			double deltaC = c1 - Math.sqrt(other.a * other.a + other.b * other.b);
 			double deltaA = this.a - other.a;
 			double deltaB = this.b - other.b;
-			double deltaH = Math.sqrt(
-					Math.max(0.0, deltaA * deltaA + deltaB * deltaB - deltaC * deltaC));
-			return Math.sqrt(Math.max(0.0,
-					Math.pow((this.l - other.l) / (1.0), 2)
-							+ Math.pow(deltaC / (1 + 0.045 * c1), 2)
-							+ Math.pow(deltaH / (1 + 0.015 * c1), 2.0)));
+			double deltaH = Math.sqrt(Math.max(0.0, deltaA * deltaA + deltaB * deltaB - deltaC * deltaC));
+			return Math.sqrt(Math.max(0.0, Math.pow((this.l - other.l) / (1.0), 2)
+					+ Math.pow(deltaC / (1 + 0.045 * c1), 2) + Math.pow(deltaH / (1 + 0.015 * c1), 2.0)));
 		}
 
 	}

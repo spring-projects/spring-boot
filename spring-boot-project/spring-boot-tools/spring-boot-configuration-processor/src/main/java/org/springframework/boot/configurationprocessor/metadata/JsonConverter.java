@@ -37,12 +37,10 @@ class JsonConverter {
 
 	private static final ItemMetadataComparator ITEM_COMPARATOR = new ItemMetadataComparator();
 
-	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType)
-			throws Exception {
+	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		List<ItemMetadata> items = metadata.getItems().stream()
-				.filter((item) -> item.isOfItemType(itemType)).sorted(ITEM_COMPARATOR)
-				.collect(Collectors.toList());
+		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.isOfItemType(itemType))
+				.sorted(ITEM_COMPARATOR).collect(Collectors.toList());
 		for (ItemMetadata item : items) {
 			if (item.isOfItemType(itemType)) {
 				jsonArray.put(toJsonObject(item));
@@ -123,8 +121,7 @@ class JsonConverter {
 		return providers;
 	}
 
-	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider)
-			throws Exception {
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws Exception {
 		JSONObject result = new JSONObject();
 		result.put("name", provider.getName());
 		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {

@@ -37,47 +37,44 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Maciej Walkowiak
  * @author Patrick Bray
  */
-public class SendGridAutoConfigurationTests {
+class SendGridAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void expectedSendGridBeanCreatedApiKey() {
+	void expectedSendGridBeanCreatedApiKey() {
 		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
 		assertThat(sendGrid).extracting("apiKey").containsExactly("SG.SECRET-API-KEY");
 	}
 
 	@Test
-	public void autoConfigurationNotFiredWhenPropertiesNotSet() {
+	void autoConfigurationNotFiredWhenPropertiesNotSet() {
 		loadContext();
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(SendGrid.class));
 	}
 
 	@Test
-	public void autoConfigurationNotFiredWhenBeanAlreadyCreated() {
-		loadContext(ManualSendGridConfiguration.class,
-				"spring.sendgrid.api-key:SG.SECRET-API-KEY");
+	void autoConfigurationNotFiredWhenBeanAlreadyCreated() {
+		loadContext(ManualSendGridConfiguration.class, "spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
 		assertThat(sendGrid).extracting("apiKey").containsExactly("SG.CUSTOM_API_KEY");
 	}
 
 	@Test
-	public void expectedSendGridBeanWithProxyCreated() {
-		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY",
-				"spring.sendgrid.proxy.host:localhost",
+	void expectedSendGridBeanWithProxyCreated() {
+		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY", "spring.sendgrid.proxy.host:localhost",
 				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("client").extracting("httpClient")
-				.extracting("routePlanner")
+		assertThat(sendGrid).extracting("client").extracting("httpClient").extracting("routePlanner")
 				.hasOnlyElementsOfType(DefaultProxyRoutePlanner.class);
 	}
 

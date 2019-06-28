@@ -42,9 +42,8 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 
 	private static final String LOMBOK_ACCESS_LEVEL_PUBLIC = "PUBLIC";
 
-	LombokPropertyDescriptor(TypeElement typeElement, ExecutableElement factoryMethod,
-			VariableElement field, String name, TypeMirror type, ExecutableElement getter,
-			ExecutableElement setter) {
+	LombokPropertyDescriptor(TypeElement typeElement, ExecutableElement factoryMethod, VariableElement field,
+			String name, TypeMirror type, ExecutableElement getter, ExecutableElement setter) {
 		super(typeElement, factoryMethod, field, name, type, field, getter, setter);
 	}
 
@@ -71,10 +70,8 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 	}
 
 	@Override
-	protected ItemDeprecation resolveItemDeprecation(
-			MetadataGenerationEnvironment environment) {
-		boolean deprecated = environment.isDeprecated(getField())
-				|| environment.isDeprecated(getGetter())
+	protected ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
+		boolean deprecated = environment.isDeprecated(getField()) || environment.isDeprecated(getGetter())
 				|| environment.isDeprecated(getFactoryMethod());
 		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
 	}
@@ -93,25 +90,20 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 	 * write accessor
 	 * @return {@code true} if this field has a public accessor of the specified type
 	 */
-	private boolean hasLombokPublicAccessor(MetadataGenerationEnvironment env,
-			boolean getter) {
-		String annotation = (getter ? LOMBOK_GETTER_ANNOTATION
-				: LOMBOK_SETTER_ANNOTATION);
-		AnnotationMirror lombokMethodAnnotationOnField = env.getAnnotation(getField(),
-				annotation);
+	private boolean hasLombokPublicAccessor(MetadataGenerationEnvironment env, boolean getter) {
+		String annotation = (getter ? LOMBOK_GETTER_ANNOTATION : LOMBOK_SETTER_ANNOTATION);
+		AnnotationMirror lombokMethodAnnotationOnField = env.getAnnotation(getField(), annotation);
 		if (lombokMethodAnnotationOnField != null) {
 			return isAccessLevelPublic(env, lombokMethodAnnotationOnField);
 		}
-		AnnotationMirror lombokMethodAnnotationOnElement = env
-				.getAnnotation(getOwnerElement(), annotation);
+		AnnotationMirror lombokMethodAnnotationOnElement = env.getAnnotation(getOwnerElement(), annotation);
 		if (lombokMethodAnnotationOnElement != null) {
 			return isAccessLevelPublic(env, lombokMethodAnnotationOnElement);
 		}
 		return (env.getAnnotation(getOwnerElement(), LOMBOK_DATA_ANNOTATION) != null);
 	}
 
-	private boolean isAccessLevelPublic(MetadataGenerationEnvironment env,
-			AnnotationMirror lombokAnnotation) {
+	private boolean isAccessLevelPublic(MetadataGenerationEnvironment env, AnnotationMirror lombokAnnotation) {
 		Map<String, Object> values = env.getAnnotationElementValues(lombokAnnotation);
 		Object value = values.get("value");
 		return (value == null || value.toString().equals(LOMBOK_ACCESS_LEVEL_PUBLIC));

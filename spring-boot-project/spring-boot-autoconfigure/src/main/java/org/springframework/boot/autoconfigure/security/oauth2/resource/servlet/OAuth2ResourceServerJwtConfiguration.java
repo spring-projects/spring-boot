@@ -20,6 +20,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
@@ -28,6 +29,8 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
@@ -35,7 +38,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
 /**
  * Configures a {@link JwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI or Public
- * Key configuration is available.
+ * Key configuration is available. Also configures a {@link WebSecurityConfigurerAdapter}
+ * if a {@link JwtDecoder} bean is found.
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
@@ -43,42 +47,59 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 @Configuration(proxyBeanMethods = false)
 class OAuth2ResourceServerJwtConfiguration {
 
-	private final OAuth2ResourceServerProperties.Jwt properties;
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(JwtDecoder.class)
+	static class JwtDecoderConfiguration {
 
-	OAuth2ResourceServerJwtConfiguration(OAuth2ResourceServerProperties properties) {
-		this.properties = properties.getJwt();
+		private final OAuth2ResourceServerProperties.Jwt properties;
+
+		JwtDecoderConfiguration(OAuth2ResourceServerProperties properties) {
+			this.properties = properties.getJwt();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
+		public JwtDecoder jwtDecoderByJwkKeySetUri() {
+			return NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
+					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
+		}
+
+		@Bean
+		@Conditional(KeyValueCondition.class)
+		public JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
+			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
+					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
+			return NimbusJwtDecoder.withPublicKey(publicKey).build();
+		}
+
+		private byte[] getKeySpec(String keyValue) {
+			keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
+			return Base64.getMimeDecoder().decode(keyValue);
+		}
+
+		@Bean
+		@Conditional(IssuerUriCondition.class)
+		public JwtDecoder jwtDecoderByIssuerUri() {
+			return JwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
+		}
+
 	}
 
-	@Bean
-	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-	@ConditionalOnMissingBean
-	public JwtDecoder jwtDecoderByJwkKeySetUri() {
-		return NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-				.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm()))
-				.build();
-	}
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
+	static class OAuth2WebSecurityConfigurerAdapter {
 
-	@Bean
-	@Conditional(KeyValueCondition.class)
-	@ConditionalOnMissingBean
-	public JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
-		RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-				.generatePublic(new X509EncodedKeySpec(
-						getKeySpec(this.properties.readPublicKey())));
-		return NimbusJwtDecoder.withPublicKey(publicKey).build();
-	}
+		@Bean
+		@ConditionalOnBean(JwtDecoder.class)
+		public WebSecurityConfigurerAdapter jwtDecoderWebSecurityConfigurerAdapter() {
+			return new WebSecurityConfigurerAdapter() {
+				@Override
+				protected void configure(HttpSecurity http) throws Exception {
+					http.authorizeRequests().anyRequest().authenticated().and().oauth2ResourceServer().jwt();
+				}
+			};
+		}
 
-	private byte[] getKeySpec(String keyValue) {
-		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "")
-				.replace("-----END PUBLIC KEY-----", "");
-		return Base64.getMimeDecoder().decode(keyValue);
-	}
-
-	@Bean
-	@Conditional(IssuerUriCondition.class)
-	@ConditionalOnMissingBean
-	public JwtDecoder jwtDecoderByIssuerUri() {
-		return JwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
 	}
 
 }

@@ -56,97 +56,72 @@ import static org.mockito.Mockito.mock;
  * @author Rui Figueira
  * @author Stephane Nicoll
  */
-public class HibernateMetricsAutoConfigurationTests {
+class HibernateMetricsAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple())
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					HibernateJpaAutoConfiguration.class,
-					HibernateMetricsAutoConfiguration.class))
+					HibernateJpaAutoConfiguration.class, HibernateMetricsAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
-	public void autoConfiguredEntityManagerFactoryWithStatsIsInstrumented() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.hibernate.generate_statistics:true")
+	void autoConfiguredEntityManagerFactoryWithStatsIsInstrumented() {
+		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.generate_statistics:true")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("hibernate.statements")
-							.tags("entityManagerFactory", "entityManagerFactory").meter();
+					registry.get("hibernate.statements").tags("entityManagerFactory", "entityManagerFactory").meter();
 				});
 	}
 
 	@Test
-	public void autoConfiguredEntityManagerFactoryWithoutStatsIsNotInstrumented() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.hibernate.generate_statistics:false")
+	void autoConfiguredEntityManagerFactoryWithoutStatsIsNotInstrumented() {
+		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.generate_statistics:false")
 				.run((context) -> {
-					context.getBean(EntityManagerFactory.class)
-							.unwrap(SessionFactory.class);
+					context.getBean(EntityManagerFactory.class).unwrap(SessionFactory.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("hibernate.statements").meter()).isNull();
 				});
 	}
 
 	@Test
-	public void entityManagerFactoryInstrumentationCanBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.enable.hibernate=false",
-						"spring.jpa.properties.hibernate.generate_statistics:true")
-				.run((context) -> {
-					context.getBean(EntityManagerFactory.class)
-							.unwrap(SessionFactory.class);
+	void entityManagerFactoryInstrumentationCanBeDisabled() {
+		this.contextRunner.withPropertyValues("management.metrics.enable.hibernate=false",
+				"spring.jpa.properties.hibernate.generate_statistics:true").run((context) -> {
+					context.getBean(EntityManagerFactory.class).unwrap(SessionFactory.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("hibernate.statements").meter()).isNull();
 				});
 	}
 
 	@Test
-	public void allEntityManagerFactoriesCanBeInstrumented() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.hibernate.generate_statistics:true")
-				.withUserConfiguration(TwoEntityManagerFactoriesConfiguration.class)
-				.run((context) -> {
-					context.getBean("firstEntityManagerFactory",
-							EntityManagerFactory.class).unwrap(SessionFactory.class);
-					context.getBean("secondOne", EntityManagerFactory.class)
+	void allEntityManagerFactoriesCanBeInstrumented() {
+		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.generate_statistics:true")
+				.withUserConfiguration(TwoEntityManagerFactoriesConfiguration.class).run((context) -> {
+					context.getBean("firstEntityManagerFactory", EntityManagerFactory.class)
 							.unwrap(SessionFactory.class);
+					context.getBean("secondOne", EntityManagerFactory.class).unwrap(SessionFactory.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("hibernate.statements")
-							.tags("entityManagerFactory", "first").meter();
-					registry.get("hibernate.statements")
-							.tags("entityManagerFactory", "secondOne").meter();
+					registry.get("hibernate.statements").tags("entityManagerFactory", "first").meter();
+					registry.get("hibernate.statements").tags("entityManagerFactory", "secondOne").meter();
 				});
 	}
 
 	@Test
-	public void entityManagerFactoryInstrumentationIsDisabledIfNotHibernateSessionFactory() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.hibernate.generate_statistics:true")
-				.withUserConfiguration(
-						NonHibernateEntityManagerFactoryConfiguration.class)
-				.run((context) -> {
+	void entityManagerFactoryInstrumentationIsDisabledIfNotHibernateSessionFactory() {
+		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.generate_statistics:true")
+				.withUserConfiguration(NonHibernateEntityManagerFactoryConfiguration.class).run((context) -> {
 					// ensure EntityManagerFactory is not a Hibernate SessionFactory
-					assertThatThrownBy(() -> context.getBean(EntityManagerFactory.class)
-							.unwrap(SessionFactory.class))
-									.isInstanceOf(PersistenceException.class);
+					assertThatThrownBy(() -> context.getBean(EntityManagerFactory.class).unwrap(SessionFactory.class))
+							.isInstanceOf(PersistenceException.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("hibernate.statements").meter()).isNull();
 				});
 	}
 
 	@Test
-	public void entityManagerFactoryInstrumentationIsDisabledIfHibernateIsNotAvailable() {
+	void entityManagerFactoryInstrumentationIsDisabledIfHibernateIsNotAvailable() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(SessionFactory.class))
-				.withUserConfiguration(
-						NonHibernateEntityManagerFactoryConfiguration.class)
-				.run((context) -> {
-					assertThat(context)
-							.doesNotHaveBean(HibernateMetricsAutoConfiguration.class);
+				.withUserConfiguration(NonHibernateEntityManagerFactoryConfiguration.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(HibernateMetricsAutoConfiguration.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("hibernate.statements").meter()).isNull();
 				});
@@ -174,13 +149,11 @@ public class HibernateMetricsAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class TwoEntityManagerFactoriesConfiguration {
 
-		private static final Class<?>[] PACKAGE_CLASSES = new Class<?>[] {
-				MyEntity.class };
+		private static final Class<?>[] PACKAGE_CLASSES = new Class<?>[] { MyEntity.class };
 
 		@Primary
 		@Bean
-		public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(
-				DataSource ds) {
+		public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(DataSource ds) {
 			return createSessionFactory(ds);
 		}
 
@@ -189,12 +162,11 @@ public class HibernateMetricsAutoConfigurationTests {
 			return createSessionFactory(ds);
 		}
 
-		private LocalContainerEntityManagerFactoryBean createSessionFactory(
-				DataSource ds) {
+		private LocalContainerEntityManagerFactoryBean createSessionFactory(DataSource ds) {
 			Map<String, String> jpaProperties = new HashMap<>();
 			jpaProperties.put("hibernate.generate_statistics", "true");
-			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
-					jpaProperties, null).dataSource(ds).packages(PACKAGE_CLASSES).build();
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), jpaProperties, null).dataSource(ds)
+					.packages(PACKAGE_CLASSES).build();
 		}
 
 	}

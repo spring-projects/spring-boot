@@ -30,26 +30,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class OnBootstrapHostsConditionTests {
+class OnBootstrapHostsConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfig.class);
 
 	@Test
-	public void bootstrapHostsNotDefined() {
+	void bootstrapHostsNotDefined() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void bootstrapHostsDefinedAsCommaSeparated() {
+	void bootstrapHostsDefinedAsCommaSeparated() {
 		this.contextRunner.withPropertyValues("spring.couchbase.bootstrap-hosts=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void bootstrapHostsDefinedAsList() {
-		this.contextRunner
-				.withPropertyValues("spring.couchbase.bootstrap-hosts[0]=value1")
+	void bootstrapHostsDefinedAsList() {
+		this.contextRunner.withPropertyValues("spring.couchbase.bootstrap-hosts[0]=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 

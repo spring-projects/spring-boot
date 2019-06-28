@@ -19,8 +19,8 @@ package org.springframework.boot.web.embedded.tomcat;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http2.Http2Protocol;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.util.unit.DataSize;
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Rudy Adams
  */
-public class CompressionConnectorCustomizerTests {
+class CompressionConnectorCustomizerTests {
 
 	private static final int MIN_SIZE = 100;
 
@@ -42,8 +42,8 @@ public class CompressionConnectorCustomizerTests {
 
 	private Compression compression;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.compression = new Compression();
 		this.compression.setEnabled(true);
 		this.compression.setMinResponseSize(DataSize.ofBytes(MIN_SIZE));
@@ -52,14 +52,13 @@ public class CompressionConnectorCustomizerTests {
 	}
 
 	@Test
-	public void shouldCustomizeCompressionForHttp1AndHttp2Protocol() {
+	void shouldCustomizeCompressionForHttp1AndHttp2Protocol() {
 		CompressionConnectorCustomizer compressionConnectorCustomizer = new CompressionConnectorCustomizer(
 				this.compression);
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		connector.addUpgradeProtocol(new Http2Protocol());
 		compressionConnectorCustomizer.customize(connector);
-		AbstractHttp11Protocol<?> abstractHttp11Protocol = (AbstractHttp11Protocol<?>) connector
-				.getProtocolHandler();
+		AbstractHttp11Protocol<?> abstractHttp11Protocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
 		verifyHttp1(abstractHttp11Protocol);
 		Http2Protocol http2Protocol = (Http2Protocol) connector.findUpgradeProtocols()[0];
 		verifyHttp2Upgrade(http2Protocol);

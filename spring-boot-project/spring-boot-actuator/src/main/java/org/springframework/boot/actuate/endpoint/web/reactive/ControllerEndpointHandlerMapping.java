@@ -59,8 +59,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 */
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableControllerEndpoint> endpoints,
-			CorsConfiguration corsConfiguration) {
+			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration) {
 		Assert.notNull(endpointMapping, "EndpointMapping must not be null");
 		Assert.notNull(endpoints, "Endpoints must not be null");
 		this.endpointMapping = endpointMapping;
@@ -69,8 +68,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		setOrder(-100);
 	}
 
-	private Map<Object, ExposableControllerEndpoint> getHandlers(
-			Collection<ExposableControllerEndpoint> endpoints) {
+	private Map<Object, ExposableControllerEndpoint> getHandlers(Collection<ExposableControllerEndpoint> endpoints) {
 		Map<Object, ExposableControllerEndpoint> handlers = new LinkedHashMap<>();
 		endpoints.forEach((endpoint) -> handlers.put(endpoint.getController(), endpoint));
 		return Collections.unmodifiableMap(handlers);
@@ -82,38 +80,31 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	}
 
 	@Override
-	protected void registerHandlerMethod(Object handler, Method method,
-			RequestMappingInfo mapping) {
+	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
 		ExposableControllerEndpoint endpoint = this.handlers.get(handler);
 		mapping = withEndpointMappedPatterns(endpoint, mapping);
 		super.registerHandlerMethod(handler, method, mapping);
 	}
 
-	private RequestMappingInfo withEndpointMappedPatterns(
-			ExposableControllerEndpoint endpoint, RequestMappingInfo mapping) {
+	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
+			RequestMappingInfo mapping) {
 		Set<PathPattern> patterns = mapping.getPatternsCondition().getPatterns();
 		if (patterns.isEmpty()) {
 			patterns = Collections.singleton(getPathPatternParser().parse(""));
 		}
 		PathPattern[] endpointMappedPatterns = patterns.stream()
-				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern))
-				.toArray(PathPattern[]::new);
+				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(PathPattern[]::new);
 		return withNewPatterns(mapping, endpointMappedPatterns);
 	}
 
-	private PathPattern getEndpointMappedPattern(ExposableControllerEndpoint endpoint,
-			PathPattern pattern) {
-		return getPathPatternParser().parse(
-				this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern));
+	private PathPattern getEndpointMappedPattern(ExposableControllerEndpoint endpoint, PathPattern pattern) {
+		return getPathPatternParser().parse(this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern));
 	}
 
-	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping,
-			PathPattern[] patterns) {
-		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
-				patterns);
-		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(),
-				mapping.getParamsCondition(), mapping.getHeadersCondition(),
-				mapping.getConsumesCondition(), mapping.getProducesCondition(),
+	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping, PathPattern[] patterns) {
+		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(patterns);
+		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
+				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
 				mapping.getCustomCondition());
 	}
 
@@ -123,8 +114,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	}
 
 	@Override
-	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
-			RequestMappingInfo mapping) {
+	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
 	}
 

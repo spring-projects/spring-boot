@@ -23,8 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.validation.Configuration;
 import javax.validation.Validation;
 
-import org.apache.catalina.mbeans.MBeanFactory;
-
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
@@ -50,8 +48,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @since 1.3.0
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class BackgroundPreinitializer
-		implements ApplicationListener<SpringApplicationEvent> {
+public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent> {
 
 	/**
 	 * System property that instructs Spring Boot how to run pre initialization. When the
@@ -62,8 +59,7 @@ public class BackgroundPreinitializer
 	 */
 	public static final String IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME = "spring.backgroundpreinitializer.ignore";
 
-	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(
-			false);
+	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(false);
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 
@@ -74,8 +70,7 @@ public class BackgroundPreinitializer
 				&& preinitializationStarted.compareAndSet(false, true)) {
 			performPreinitialization();
 		}
-		if ((event instanceof ApplicationReadyEvent
-				|| event instanceof ApplicationFailedEvent)
+		if ((event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent)
 				&& preinitializationStarted.get()) {
 			try {
 				preinitializationComplete.await();
@@ -99,7 +94,6 @@ public class BackgroundPreinitializer
 					runSafely(new ConversionServiceInitializer());
 					runSafely(new ValidationInitializer());
 					runSafely(new MessageConverterInitializer());
-					runSafely(new MBeanFactoryInitializer());
 					runSafely(new JacksonInitializer());
 					runSafely(new CharsetInitializer());
 					preinitializationComplete.countDown();
@@ -133,18 +127,6 @@ public class BackgroundPreinitializer
 		@Override
 		public void run() {
 			new AllEncompassingFormHttpMessageConverter();
-		}
-
-	}
-
-	/**
-	 * Early initializer to load Tomcat MBean XML.
-	 */
-	private static class MBeanFactoryInitializer implements Runnable {
-
-		@Override
-		public void run() {
-			new MBeanFactory();
 		}
 
 	}

@@ -41,13 +41,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(GangliaMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.ganglia", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.ganglia", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(GangliaProperties.class)
 public class GangliaMetricsExportAutoConfiguration {
 
@@ -59,8 +58,7 @@ public class GangliaMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig,
-			Clock clock) {
+	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig, Clock clock) {
 		return new GangliaMeterRegistry(gangliaConfig, clock);
 	}
 

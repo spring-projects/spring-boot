@@ -42,16 +42,13 @@ public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware
 	/**
 	 * The bean name that this class is registered with.
 	 */
-	public static final String BEAN_NAME = ConfigurationBeanFactoryMetadata.class
-			.getName();
+	public static final String BEAN_NAME = ConfigurationBeanFactoryMetadata.class.getName();
 
 	private ConfigurableApplicationContext applicationContext;
 
-	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(
-			Class<A> type) {
+	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(Class<A> type) {
 		Map<String, Object> result = new HashMap<>();
-		for (String name : this.applicationContext.getBeanFactory()
-				.getBeanDefinitionNames()) {
+		for (String name : this.applicationContext.getBeanFactory().getBeanDefinitionNames()) {
 			if (findFactoryAnnotation(name, type) != null) {
 				result.put(name, this.applicationContext.getBean(name));
 			}
@@ -59,15 +56,13 @@ public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware
 		return result;
 	}
 
-	public <A extends Annotation> A findFactoryAnnotation(String beanName,
-			Class<A> type) {
+	public <A extends Annotation> A findFactoryAnnotation(String beanName, Class<A> type) {
 		Method method = findFactoryMethod(beanName);
 		return (method != null) ? AnnotationUtils.findAnnotation(method, type) : null;
 	}
 
 	public Method findFactoryMethod(String beanName) {
-		ConfigurableListableBeanFactory beanFactory = this.applicationContext
-				.getBeanFactory();
+		ConfigurableListableBeanFactory beanFactory = this.applicationContext.getBeanFactory();
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			if (beanDefinition instanceof RootBeanDefinition) {
@@ -78,8 +73,7 @@ public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,19 +50,16 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
 		if (bean instanceof AbstractConnectionFactory) {
-			bindConnectionFactoryToRegistry(getMeterRegistry(), beanName,
-					(AbstractConnectionFactory) bean);
+			bindConnectionFactoryToRegistry(getMeterRegistry(), beanName, (AbstractConnectionFactory) bean);
 		}
 		return bean;
 	}
 
 	private void bindConnectionFactoryToRegistry(MeterRegistry registry, String beanName,
 			AbstractConnectionFactory connectionFactory) {
-		ConnectionFactory rabbitConnectionFactory = connectionFactory
-				.getRabbitConnectionFactory();
+		ConnectionFactory rabbitConnectionFactory = connectionFactory.getRabbitConnectionFactory();
 		String connectionFactoryName = getConnectionFactoryName(beanName);
-		new RabbitMetrics(rabbitConnectionFactory, Tags.of("name", connectionFactoryName))
-				.bindTo(registry);
+		new RabbitMetrics(rabbitConnectionFactory, Tags.of("name", connectionFactoryName)).bindTo(registry);
 	}
 
 	/**
@@ -73,8 +70,7 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 	private String getConnectionFactoryName(String beanName) {
 		if (beanName.length() > CONNECTION_FACTORY_SUFFIX.length()
 				&& StringUtils.endsWithIgnoreCase(beanName, CONNECTION_FACTORY_SUFFIX)) {
-			return beanName.substring(0,
-					beanName.length() - CONNECTION_FACTORY_SUFFIX.length());
+			return beanName.substring(0, beanName.length() - CONNECTION_FACTORY_SUFFIX.length());
 		}
 		return beanName;
 	}

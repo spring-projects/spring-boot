@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @ContextConfiguration(loader = SpringBootContextLoader.class)
 @WebAppConfiguration
-public class SpringBootContextLoaderMockMvcTests {
+class SpringBootContextLoaderMockMvcTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -61,20 +61,18 @@ public class SpringBootContextLoaderMockMvcTests {
 	private MockMvc mvc;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
 
 	@Test
-	public void testMockHttpEndpoint() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(content().string("Hello World"));
+	void testMockHttpEndpoint() throws Exception {
+		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello World"));
 	}
 
 	@Test
-	public void validateWebApplicationContextIsSet() {
-		assertThat(this.context).isSameAs(
-				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
+	void validateWebApplicationContextIsSet() {
+		assertThat(this.context).isSameAs(WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
 	@Configuration(proxyBeanMethods = false)

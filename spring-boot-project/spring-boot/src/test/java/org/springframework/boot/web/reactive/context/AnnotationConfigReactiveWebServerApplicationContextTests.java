@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.ServerManager;
 import org.springframework.boot.web.reactive.context.config.ExampleReactiveWebServerApplicationConfiguration;
@@ -38,27 +38,26 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class AnnotationConfigReactiveWebServerApplicationContextTests {
+class AnnotationConfigReactiveWebServerApplicationContextTests {
 
 	private AnnotationConfigReactiveWebServerApplicationContext context;
 
 	@Test
-	public void createFromScan() {
+	void createFromScan() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				ExampleReactiveWebServerApplicationConfiguration.class.getPackage()
-						.getName());
+				ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		verifyContext();
 	}
 
 	@Test
-	public void createFromConfigClass() {
+	void createFromConfigClass() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				ExampleReactiveWebServerApplicationConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void registerAndRefresh() {
+	void registerAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
 		this.context.refresh();
@@ -66,36 +65,32 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void multipleRegistersAndRefresh() {
+	void multipleRegistersAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.register(WebServerConfiguration.class);
 		this.context.register(HttpHandlerConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(WebServerConfiguration.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(HttpHandlerConfiguration.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(HttpHandlerConfiguration.class)).hasSize(1);
 	}
 
 	@Test
-	public void scanAndRefresh() {
+	void scanAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
-		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class
-				.getPackage().getName());
+		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}
 
 	@Test
-	public void httpHandlerInitialization() {
+	void httpHandlerInitialization() {
 		// gh-14666
-		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				InitializationTestConfig.class);
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext(InitializationTestConfig.class);
 		verifyContext();
 	}
 
 	private void verifyContext() {
-		MockReactiveWebServerFactory factory = this.context
-				.getBean(MockReactiveWebServerFactory.class);
+		MockReactiveWebServerFactory factory = this.context.getBean(MockReactiveWebServerFactory.class);
 		HttpHandler expectedHandler = this.context.getBean(HttpHandler.class);
 		HttpHandler actualHandler = factory.getWebServer().getHttpHandler();
 		if (actualHandler instanceof ServerManager) {
@@ -163,8 +158,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 			};
 		}
 
-		private static class Listener
-				implements ApplicationListener<ContextRefreshedEvent> {
+		private static class Listener implements ApplicationListener<ContextRefreshedEvent> {
 
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {

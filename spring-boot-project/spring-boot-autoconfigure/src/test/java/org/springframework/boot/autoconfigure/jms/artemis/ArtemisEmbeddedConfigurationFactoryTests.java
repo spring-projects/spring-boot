@@ -35,52 +35,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class ArtemisEmbeddedConfigurationFactoryTests {
+class ArtemisEmbeddedConfigurationFactoryTests {
 
 	@Test
-	public void defaultDataDir() {
+	void defaultDataDir() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setPersistent(true);
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
-		assertThat(configuration.getJournalDirectory())
-				.startsWith(System.getProperty("java.io.tmpdir")).endsWith("/journal");
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
+		assertThat(configuration.getJournalDirectory()).startsWith(System.getProperty("java.io.tmpdir"))
+				.endsWith("/journal");
 	}
 
 	@Test
-	public void persistenceSetup() {
+	void persistenceSetup() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setPersistent(true);
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		assertThat(configuration.isPersistenceEnabled()).isTrue();
 		assertThat(configuration.getJournalType()).isEqualTo(JournalType.NIO);
 	}
 
 	@Test
-	public void generatedClusterPassword() {
+	void generatedClusterPassword() {
 		ArtemisProperties properties = new ArtemisProperties();
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		assertThat(configuration.getClusterPassword().length()).isEqualTo(36);
 	}
 
 	@Test
-	public void specificClusterPassword() {
+	void specificClusterPassword() {
 		ArtemisProperties properties = new ArtemisProperties();
 		properties.getEmbedded().setClusterPassword("password");
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		assertThat(configuration.getClusterPassword()).isEqualTo("password");
 	}
 
 	@Test
-	public void hasDlqExpiryQueueAddressSettingsConfigured() {
+	void hasDlqExpiryQueueAddressSettingsConfigured() {
 		ArtemisProperties properties = new ArtemisProperties();
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
-		Map<String, AddressSettings> addressesSettings = configuration
-				.getAddressesSettings();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
+		Map<String, AddressSettings> addressesSettings = configuration.getAddressesSettings();
 		assertThat((Object) addressesSettings.get("#").getDeadLetterAddress())
 				.isEqualTo(SimpleString.toSimpleString("DLQ"));
 		assertThat((Object) addressesSettings.get("#").getExpiryAddress())
@@ -88,12 +82,10 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void hasDlqExpiryQueueConfigured() {
+	void hasDlqExpiryQueueConfigured() {
 		ArtemisProperties properties = new ArtemisProperties();
-		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
-				.createConfiguration();
-		List<CoreAddressConfiguration> addressConfigurations = configuration
-				.getAddressConfigurations();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
+		List<CoreAddressConfiguration> addressConfigurations = configuration.getAddressConfigurations();
 		assertThat(addressConfigurations).hasSize(2);
 	}
 

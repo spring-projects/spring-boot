@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.ansi;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
@@ -29,22 +29,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class AnsiOutputTests {
+class AnsiOutputTests {
 
-	@BeforeClass
-	public static void enable() {
+	@BeforeAll
+	static void enable() {
 		AnsiOutput.setEnabled(Enabled.ALWAYS);
 	}
 
-	@AfterClass
-	public static void reset() {
+	@AfterAll
+	static void reset() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 
 	@Test
-	public void encoding() {
-		String encoded = AnsiOutput.toString("A", AnsiColor.RED, AnsiStyle.BOLD, "B",
-				AnsiStyle.NORMAL, "D", AnsiColor.GREEN, "E", AnsiStyle.FAINT, "F");
+	void encoding() {
+		String encoded = AnsiOutput.toString("A", AnsiColor.RED, AnsiStyle.BOLD, "B", AnsiStyle.NORMAL, "D",
+				AnsiColor.GREEN, "E", AnsiStyle.FAINT, "F");
 		assertThat(encoded).isEqualTo("A[31;1mB[0mD[32mE[2mF[0;39m");
 	}
 

@@ -56,29 +56,25 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	public JedisConnectionFactory redisConnectionFactory(
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers)
-			throws UnknownHostException {
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) throws UnknownHostException {
 		return createJedisConnectionFactory(builderCustomizers);
 	}
 
 	private JedisConnectionFactory createJedisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
-		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(
-				builderCustomizers);
+		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers);
 		if (getSentinelConfig() != null) {
 			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
 		if (getClusterConfiguration() != null) {
-			return new JedisConnectionFactory(getClusterConfiguration(),
-					clientConfiguration);
+			return new JedisConnectionFactory(getClusterConfiguration(), clientConfiguration);
 		}
 		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
 	}
 
 	private JedisClientConfiguration getJedisClientConfiguration(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
-		JedisClientConfigurationBuilder builder = applyProperties(
-				JedisClientConfiguration.builder());
+		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
 		RedisProperties.Pool pool = getProperties().getJedis().getPool();
 		if (pool != null) {
 			applyPooling(pool, builder);
@@ -86,13 +82,11 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		builderCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(builder));
+		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
-	private JedisClientConfigurationBuilder applyProperties(
-			JedisClientConfigurationBuilder builder) {
+	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		if (getProperties().isSsl()) {
 			builder.useSsl();
 		}
@@ -114,8 +108,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		config.setMaxIdle(pool.getMaxIdle());
 		config.setMinIdle(pool.getMinIdle());
 		if (pool.getTimeBetweenEvictionRuns() != null) {
-			config.setTimeBetweenEvictionRunsMillis(
-					pool.getTimeBetweenEvictionRuns().toMillis());
+			config.setTimeBetweenEvictionRunsMillis(pool.getTimeBetweenEvictionRuns().toMillis());
 		}
 		if (pool.getMaxWait() != null) {
 			config.setMaxWaitMillis(pool.getMaxWait().toMillis());
@@ -123,8 +116,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return config;
 	}
 
-	private void customizeConfigurationFromUrl(
-			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
+	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
 		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
 		if (connectionInfo.isUseSsl()) {
 			builder.useSsl();

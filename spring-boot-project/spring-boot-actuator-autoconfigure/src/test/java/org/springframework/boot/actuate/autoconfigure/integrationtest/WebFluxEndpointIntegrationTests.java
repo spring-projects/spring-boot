@@ -41,33 +41,28 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Andy Wilkinson
  */
-public class WebFluxEndpointIntegrationTests {
+class WebFluxEndpointIntegrationTests {
 
 	@Test
-	public void linksAreProvidedToAllEndpointTypes() throws Exception {
+	void linksAreProvidedToAllEndpointTypes() throws Exception {
 		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
-						CodecsAutoConfiguration.class, WebFluxAutoConfiguration.class,
-						HttpHandlerAutoConfiguration.class,
-						EndpointAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class,
-						ManagementContextAutoConfiguration.class,
-						ReactiveManagementContextAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
+						WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
+						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						ManagementContextAutoConfiguration.class, ReactiveManagementContextAutoConfiguration.class,
 						BeansEndpointAutoConfiguration.class))
 				.withUserConfiguration(EndpointsConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include:*")
-				.run((context) -> {
+				.withPropertyValues("management.endpoints.web.exposure.include:*").run((context) -> {
 					WebTestClient client = createWebTestClient(context);
-					client.get().uri("/actuator").exchange().expectStatus().isOk()
-							.expectBody().jsonPath("_links.beans").isNotEmpty()
-							.jsonPath("_links.restcontroller").isNotEmpty()
-							.jsonPath("_links.controller").isNotEmpty();
+					client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
+							.isNotEmpty().jsonPath("_links.restcontroller").isNotEmpty().jsonPath("_links.controller")
+							.isNotEmpty();
 				});
 	}
 
 	private WebTestClient createWebTestClient(ApplicationContext context) {
-		return WebTestClient.bindToApplicationContext(context).configureClient()
-				.baseUrl("https://spring.example.org").build();
+		return WebTestClient.bindToApplicationContext(context).configureClient().baseUrl("https://spring.example.org")
+				.build();
 	}
 
 	@ControllerEndpoint(id = "controller")

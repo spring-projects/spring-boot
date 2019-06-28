@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ public class JmsPoolConnectionFactoryFactory {
 
 	private final JmsPoolConnectionFactoryProperties properties;
 
-	public JmsPoolConnectionFactoryFactory(
-			JmsPoolConnectionFactoryProperties properties) {
+	public JmsPoolConnectionFactoryFactory(JmsPoolConnectionFactoryProperties properties) {
 		this.properties = properties;
 	}
 
@@ -42,30 +41,25 @@ public class JmsPoolConnectionFactoryFactory {
 	 * @param connectionFactory the connection factory to wrap
 	 * @return a pooled connection factory
 	 */
-	public JmsPoolConnectionFactory createPooledConnectionFactory(
-			ConnectionFactory connectionFactory) {
+	public JmsPoolConnectionFactory createPooledConnectionFactory(ConnectionFactory connectionFactory) {
 		JmsPoolConnectionFactory pooledConnectionFactory = new JmsPoolConnectionFactory();
 		pooledConnectionFactory.setConnectionFactory(connectionFactory);
 
-		pooledConnectionFactory
-				.setBlockIfSessionPoolIsFull(this.properties.isBlockIfFull());
+		pooledConnectionFactory.setBlockIfSessionPoolIsFull(this.properties.isBlockIfFull());
 		if (this.properties.getBlockIfFullTimeout() != null) {
-			pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
-					this.properties.getBlockIfFullTimeout().toMillis());
+			pooledConnectionFactory
+					.setBlockIfSessionPoolIsFullTimeout(this.properties.getBlockIfFullTimeout().toMillis());
 		}
 		if (this.properties.getIdleTimeout() != null) {
-			pooledConnectionFactory.setConnectionIdleTimeout(
-					(int) this.properties.getIdleTimeout().toMillis());
+			pooledConnectionFactory.setConnectionIdleTimeout((int) this.properties.getIdleTimeout().toMillis());
 		}
 		pooledConnectionFactory.setMaxConnections(this.properties.getMaxConnections());
-		pooledConnectionFactory.setMaxSessionsPerConnection(
-				this.properties.getMaxSessionsPerConnection());
+		pooledConnectionFactory.setMaxSessionsPerConnection(this.properties.getMaxSessionsPerConnection());
 		if (this.properties.getTimeBetweenExpirationCheck() != null) {
-			pooledConnectionFactory.setConnectionCheckInterval(
-					this.properties.getTimeBetweenExpirationCheck().toMillis());
+			pooledConnectionFactory
+					.setConnectionCheckInterval(this.properties.getTimeBetweenExpirationCheck().toMillis());
 		}
-		pooledConnectionFactory
-				.setUseAnonymousProducers(this.properties.isUseAnonymousProducers());
+		pooledConnectionFactory.setUseAnonymousProducers(this.properties.isUseAnonymousProducers());
 		return pooledConnectionFactory;
 	}
 

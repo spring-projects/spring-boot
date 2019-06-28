@@ -27,26 +27,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class HumioPropertiesConfigAdapterTests {
+class HumioPropertiesConfigAdapterTests {
 
 	@Test
-	public void whenApiTokenIsSetAdapterApiTokenReturnsIt() {
+	void whenApiTokenIsSetAdapterApiTokenReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setApiToken("ABC123");
-		assertThat(new HumioPropertiesConfigAdapter(properties).apiToken())
-				.isEqualTo("ABC123");
+		assertThat(new HumioPropertiesConfigAdapter(properties).apiToken()).isEqualTo("ABC123");
 	}
 
 	@Test
-	public void whenPropertiesRepositoryIsSetAdapterRepositoryReturnsIt() {
+	void whenPropertiesRepositoryIsSetAdapterRepositoryReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setRepository("test");
-		assertThat(new HumioPropertiesConfigAdapter(properties).repository())
-				.isEqualTo("test");
+		assertThat(new HumioPropertiesConfigAdapter(properties).repository()).isEqualTo("test");
 	}
 
 	@Test
-	public void whenPropertiesTagsIsSetAdapterTagsReturnsIt() {
+	void whenPropertiesTagsIsSetAdapterTagsReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setTags(Collections.singletonMap("name", "test"));
 		assertThat(new HumioPropertiesConfigAdapter(properties).tags())
@@ -54,11 +52,10 @@ public class HumioPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	public void whenPropertiesUriIsSetAdapterUriReturnsIt() {
+	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
 		HumioProperties properties = new HumioProperties();
 		properties.setUri("https://humio.example.com");
-		assertThat(new HumioPropertiesConfigAdapter(properties).uri())
-				.isEqualTo("https://humio.example.com");
+		assertThat(new HumioPropertiesConfigAdapter(properties).uri()).isEqualTo("https://humio.example.com");
 	}
 
 }

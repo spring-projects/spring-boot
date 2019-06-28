@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Andy Wilkinson
  */
-public class WebFilterHandlerTests {
+class WebFilterHandlerTests {
 
 	private final WebFilterHandler handler = new WebFilterHandler();
 
@@ -54,10 +54,9 @@ public class WebFilterHandlerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void defaultFilterConfiguration() throws IOException {
+	void defaultFilterConfiguration() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory()
-						.getMetadataReader(DefaultConfigurationFilter.class.getName()));
+				new SimpleMetadataReaderFactory().getMetadataReader(DefaultConfigurationFilter.class.getName()));
 		this.handler.handle(scanned, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry
 				.getBeanDefinition(DefaultConfigurationFilter.class.getName());
@@ -65,20 +64,17 @@ public class WebFilterHandlerTests {
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(false);
 		assertThat((EnumSet<DispatcherType>) propertyValues.get("dispatcherTypes"))
 				.containsExactly(DispatcherType.REQUEST);
-		assertThat(((Map<String, String>) propertyValues.get("initParameters")))
-				.isEmpty();
+		assertThat(((Map<String, String>) propertyValues.get("initParameters"))).isEmpty();
 		assertThat((String[]) propertyValues.get("servletNames")).isEmpty();
 		assertThat((String[]) propertyValues.get("urlPatterns")).isEmpty();
-		assertThat(propertyValues.get("name"))
-				.isEqualTo(DefaultConfigurationFilter.class.getName());
+		assertThat(propertyValues.get("name")).isEqualTo(DefaultConfigurationFilter.class.getName());
 		assertThat(propertyValues.get("filter")).isEqualTo(scanned);
 	}
 
 	@Test
-	public void filterWithCustomName() throws IOException {
+	void filterWithCustomName() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory()
-						.getMetadataReader(CustomNameFilter.class.getName()));
+				new SimpleMetadataReaderFactory().getMetadataReader(CustomNameFilter.class.getName()));
 		this.handler.handle(scanned, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry.getBeanDefinition("custom");
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
@@ -86,73 +82,60 @@ public class WebFilterHandlerTests {
 	}
 
 	@Test
-	public void asyncSupported() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(
-				AsyncSupportedFilter.class);
+	void asyncSupported() throws IOException {
+		BeanDefinition filterRegistrationBean = getBeanDefinition(AsyncSupportedFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(true);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void dispatcherTypes() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(
-				DispatcherTypesFilter.class);
+	void dispatcherTypes() throws IOException {
+		BeanDefinition filterRegistrationBean = getBeanDefinition(DispatcherTypesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat((Set<DispatcherType>) propertyValues.get("dispatcherTypes"))
-				.containsExactly(DispatcherType.FORWARD, DispatcherType.INCLUDE,
-						DispatcherType.REQUEST);
+		assertThat((Set<DispatcherType>) propertyValues.get("dispatcherTypes")).containsExactly(DispatcherType.FORWARD,
+				DispatcherType.INCLUDE, DispatcherType.REQUEST);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void initParameters() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(
-				InitParametersFilter.class);
+	void initParameters() throws IOException {
+		BeanDefinition filterRegistrationBean = getBeanDefinition(InitParametersFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat((Map<String, String>) propertyValues.get("initParameters"))
-				.containsEntry("a", "alpha").containsEntry("b", "bravo");
+		assertThat((Map<String, String>) propertyValues.get("initParameters")).containsEntry("a", "alpha")
+				.containsEntry("b", "bravo");
 	}
 
 	@Test
-	public void servletNames() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(
-				ServletNamesFilter.class);
+	void servletNames() throws IOException {
+		BeanDefinition filterRegistrationBean = getBeanDefinition(ServletNamesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat((String[]) propertyValues.get("servletNames")).contains("alpha",
-				"bravo");
+		assertThat((String[]) propertyValues.get("servletNames")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatterns() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(
-				UrlPatternsFilter.class);
+	void urlPatterns() throws IOException {
+		BeanDefinition filterRegistrationBean = getBeanDefinition(UrlPatternsFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha",
-				"bravo");
+		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatternsFromValue() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(
-				UrlPatternsFromValueFilter.class);
+	void urlPatternsFromValue() throws IOException {
+		BeanDefinition filterRegistrationBean = getBeanDefinition(UrlPatternsFromValueFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha",
-				"bravo");
+		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatternsDeclaredTwice() throws IOException {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> getBeanDefinition(UrlPatternsDeclaredTwiceFilter.class))
-				.withMessageContaining(
-						"The urlPatterns and value attributes are mutually exclusive.");
+	void urlPatternsDeclaredTwice() throws IOException {
+		assertThatIllegalStateException().isThrownBy(() -> getBeanDefinition(UrlPatternsDeclaredTwiceFilter.class))
+				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}
 
 	BeanDefinition getBeanDefinition(Class<?> filterClass) throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory()
-						.getMetadataReader(filterClass.getName()));
+				new SimpleMetadataReaderFactory().getMetadataReader(filterClass.getName()));
 		this.handler.handle(scanned, this.registry);
 		return this.registry.getBeanDefinition(filterClass.getName());
 	}
@@ -167,14 +150,12 @@ public class WebFilterHandlerTests {
 
 	}
 
-	@WebFilter(dispatcherTypes = { DispatcherType.REQUEST, DispatcherType.FORWARD,
-			DispatcherType.INCLUDE })
+	@WebFilter(dispatcherTypes = { DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE })
 	class DispatcherTypesFilter extends BaseFilter {
 
 	}
 
-	@WebFilter(initParams = { @WebInitParam(name = "a", value = "alpha"),
-			@WebInitParam(name = "b", value = "bravo") })
+	@WebFilter(initParams = { @WebInitParam(name = "a", value = "alpha"), @WebInitParam(name = "b", value = "bravo") })
 	class InitParametersFilter extends BaseFilter {
 
 	}
@@ -212,8 +193,7 @@ public class WebFilterHandlerTests {
 		}
 
 		@Override
-		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) {
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
 		}
 
 		@Override

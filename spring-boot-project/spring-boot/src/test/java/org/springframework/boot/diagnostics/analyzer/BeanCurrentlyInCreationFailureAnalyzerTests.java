@@ -22,7 +22,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,95 +38,84 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link BeanCurrentlyInCreationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
-public class BeanCurrentlyInCreationFailureAnalyzerTests {
+class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	private final FailureAnalyzer analyzer = new BeanCurrentlyInCreationFailureAnalyzer();
 
 	@Test
-	public void cyclicBeanMethods() throws IOException {
+	void cyclicBeanMethods() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CyclicBeanMethodsConfiguration.class);
 		List<String> lines = readDescriptionLines(analysis);
 		assertThat(lines).hasSize(9);
-		assertThat(lines.get(0)).isEqualTo(
-				"The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(lines.get(0))
+				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
 		assertThat(lines.get(1)).isEqualTo("");
 		assertThat(lines.get(2)).isEqualTo("┌─────┐");
-		assertThat(lines.get(3)).startsWith(
-				"|  one defined in " + InnerInnerConfiguration.class.getName());
+		assertThat(lines.get(3)).startsWith("|  one defined in " + InnerInnerConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("↑     ↓");
-		assertThat(lines.get(5))
-				.startsWith("|  two defined in " + InnerConfiguration.class.getName());
+		assertThat(lines.get(5)).startsWith("|  two defined in " + InnerConfiguration.class.getName());
 		assertThat(lines.get(6)).isEqualTo("↑     ↓");
-		assertThat(lines.get(7)).startsWith(
-				"|  three defined in " + CyclicBeanMethodsConfiguration.class.getName());
+		assertThat(lines.get(7)).startsWith("|  three defined in " + CyclicBeanMethodsConfiguration.class.getName());
 		assertThat(lines.get(8)).isEqualTo("└─────┘");
 	}
 
 	@Test
-	public void cycleWithAutowiredFields() throws IOException {
+	void cycleWithAutowiredFields() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CycleWithAutowiredFields.class);
-		assertThat(analysis.getDescription()).startsWith(
-				"The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(analysis.getDescription())
+				.startsWith("The dependencies of some of the beans in the application context form a cycle:");
 		List<String> lines = readDescriptionLines(analysis);
 		assertThat(lines).hasSize(9);
-		assertThat(lines.get(0)).isEqualTo(
-				"The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(lines.get(0))
+				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
 		assertThat(lines.get(1)).isEqualTo("");
 		assertThat(lines.get(2)).isEqualTo("┌─────┐");
-		assertThat(lines.get(3)).startsWith(
-				"|  three defined in " + BeanThreeConfiguration.class.getName());
+		assertThat(lines.get(3)).startsWith("|  three defined in " + BeanThreeConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("↑     ↓");
-		assertThat(lines.get(5)).startsWith(
-				"|  one defined in " + CycleWithAutowiredFields.class.getName());
+		assertThat(lines.get(5)).startsWith("|  one defined in " + CycleWithAutowiredFields.class.getName());
 		assertThat(lines.get(6)).isEqualTo("↑     ↓");
-		assertThat(lines.get(7)).startsWith("|  " + BeanTwoConfiguration.class.getName()
-				+ " (field private " + BeanThree.class.getName());
+		assertThat(lines.get(7)).startsWith(
+				"|  " + BeanTwoConfiguration.class.getName() + " (field private " + BeanThree.class.getName());
 		assertThat(lines.get(8)).isEqualTo("└─────┘");
 	}
 
 	@Test
-	public void cycleReferencedViaOtherBeans() throws IOException {
-		FailureAnalysis analysis = performAnalysis(
-				CycleReferencedViaOtherBeansConfiguration.class);
+	void cycleReferencedViaOtherBeans() throws IOException {
+		FailureAnalysis analysis = performAnalysis(CycleReferencedViaOtherBeansConfiguration.class);
 		List<String> lines = readDescriptionLines(analysis);
 		assertThat(lines).hasSize(12);
-		assertThat(lines.get(0)).isEqualTo(
-				"The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(lines.get(0))
+				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
 		assertThat(lines.get(1)).isEqualTo("");
-		assertThat(lines.get(2))
-				.contains("refererOne " + "(field " + RefererTwo.class.getName());
+		assertThat(lines.get(2)).contains("refererOne " + "(field " + RefererTwo.class.getName());
 		assertThat(lines.get(3)).isEqualTo("      ↓");
-		assertThat(lines.get(4))
-				.contains("refererTwo " + "(field " + BeanOne.class.getName());
+		assertThat(lines.get(4)).contains("refererTwo " + "(field " + BeanOne.class.getName());
 		assertThat(lines.get(5)).isEqualTo("┌─────┐");
-		assertThat(lines.get(6)).startsWith("|  one defined in "
-				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
+		assertThat(lines.get(6))
+				.startsWith("|  one defined in " + CycleReferencedViaOtherBeansConfiguration.class.getName());
 		assertThat(lines.get(7)).isEqualTo("↑     ↓");
-		assertThat(lines.get(8)).startsWith("|  two defined in "
-				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
+		assertThat(lines.get(8))
+				.startsWith("|  two defined in " + CycleReferencedViaOtherBeansConfiguration.class.getName());
 		assertThat(lines.get(9)).isEqualTo("↑     ↓");
-		assertThat(lines.get(10)).startsWith("|  three defined in "
-				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
+		assertThat(lines.get(10))
+				.startsWith("|  three defined in " + CycleReferencedViaOtherBeansConfiguration.class.getName());
 		assertThat(lines.get(11)).isEqualTo("└─────┘");
 	}
 
 	@Test
-	public void cycleWithAnUnknownStartIsNotAnalyzed() {
-		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test")))
-				.isNull();
+	void cycleWithAnUnknownStartIsNotAnalyzed() {
+		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test"))).isNull();
 	}
 
-	private List<String> readDescriptionLines(FailureAnalysis analysis)
-			throws IOException {
-		try (BufferedReader reader = new BufferedReader(
-				new StringReader(analysis.getDescription()))) {
+	private List<String> readDescriptionLines(FailureAnalysis analysis) throws IOException {
+		try (BufferedReader reader = new BufferedReader(new StringReader(analysis.getDescription()))) {
 			return reader.lines().collect(Collectors.toList());
 		}
 	}
@@ -138,8 +127,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	private Exception createFailure(Class<?> configuration) {
-		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration)) {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			fail("Expected failure did not occur");
 			return null;
 		}

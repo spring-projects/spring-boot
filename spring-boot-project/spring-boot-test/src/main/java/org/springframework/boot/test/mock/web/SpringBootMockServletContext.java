@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,8 @@ import org.springframework.mock.web.MockServletContext;
  */
 public class SpringBootMockServletContext extends MockServletContext {
 
-	private static final String[] SPRING_BOOT_RESOURCE_LOCATIONS = new String[] {
-			"classpath:META-INF/resources", "classpath:resources", "classpath:static",
-			"classpath:public" };
+	private static final String[] SPRING_BOOT_RESOURCE_LOCATIONS = new String[] { "classpath:META-INF/resources",
+			"classpath:resources", "classpath:static", "classpath:public" };
 
 	private final ResourceLoader resourceLoader;
 
@@ -48,8 +47,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 		this(resourceBasePath, new FileSystemResourceLoader());
 	}
 
-	public SpringBootMockServletContext(String resourceBasePath,
-			ResourceLoader resourceLoader) {
+	public SpringBootMockServletContext(String resourceBasePath, ResourceLoader resourceLoader) {
 		super(resourceBasePath, resourceLoader);
 		this.resourceLoader = resourceLoader;
 	}

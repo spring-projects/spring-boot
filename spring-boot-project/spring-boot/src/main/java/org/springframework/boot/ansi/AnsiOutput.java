@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ public abstract class AnsiOutput {
 
 	private static Boolean ansiCapable;
 
-	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name")
-			.toLowerCase(Locale.ENGLISH);
+	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
 	private static final String ENCODE_START = "\033[";
 
@@ -55,16 +54,20 @@ public abstract class AnsiOutput {
 	}
 
 	/**
+	 * Returns if ANSI output is enabled
+	 * @return if ANSI enabled, disabled or detected
+	 */
+	public static Enabled getEnabled() {
+		return AnsiOutput.enabled;
+	}
+
+	/**
 	 * Sets if the System.console() is known to be available.
 	 * @param consoleAvailable if the console is known to be available or {@code null} to
 	 * use standard detection logic.
 	 */
 	public static void setConsoleAvailable(Boolean consoleAvailable) {
 		AnsiOutput.consoleAvailable = consoleAvailable;
-	}
-
-	static Enabled getEnabled() {
-		return AnsiOutput.enabled;
 	}
 
 	/**

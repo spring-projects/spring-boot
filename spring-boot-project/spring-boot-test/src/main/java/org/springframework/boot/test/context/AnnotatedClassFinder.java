@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import org.springframework.util.ClassUtils;
  */
 public final class AnnotatedClassFinder {
 
-	private static final Map<String, Class<?>> cache = Collections
-			.synchronizedMap(new Cache(40));
+	private static final Map<String, Class<?>> cache = Collections.synchronizedMap(new Cache(40));
 
 	private final Class<? extends Annotation> annotationType;
 
@@ -90,11 +89,9 @@ public final class AnnotatedClassFinder {
 		while (!source.isEmpty()) {
 			Set<BeanDefinition> components = this.scanner.findCandidateComponents(source);
 			if (!components.isEmpty()) {
-				Assert.state(components.size() == 1,
-						() -> "Found multiple @" + this.annotationType.getSimpleName()
-								+ " annotated classes " + components);
-				return ClassUtils.resolveClassName(
-						components.iterator().next().getBeanClassName(), null);
+				Assert.state(components.size() == 1, () -> "Found multiple @" + this.annotationType.getSimpleName()
+						+ " annotated classes " + components);
+				return ClassUtils.resolveClassName(components.iterator().next().getBeanClassName(), null);
 			}
 			source = getParentPackage(source);
 		}

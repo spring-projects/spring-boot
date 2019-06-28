@@ -48,8 +48,7 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 	private static final ConcurrentReferenceHashMap<Environment, Set<ExposureInformation>> endpointExposureCache = new ConcurrentReferenceHashMap<>();
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionOutcome enablementOutcome = getEnablementOutcome(context, metadata,
 				ConditionalOnAvailableEndpoint.class);
 		if (!enablementOutcome.isMatch()) {
@@ -58,40 +57,34 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 		ConditionMessage message = enablementOutcome.getConditionMessage();
 		Environment environment = context.getEnvironment();
 		if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
-			return new ConditionOutcome(true,
-					message.andCondition(ConditionalOnAvailableEndpoint.class)
-							.because("application is running on Cloud Foundry"));
+			return new ConditionOutcome(true, message.andCondition(ConditionalOnAvailableEndpoint.class)
+					.because("application is running on Cloud Foundry"));
 		}
-		AnnotationAttributes attributes = getEndpointAttributes(
-				ConditionalOnAvailableEndpoint.class, context, metadata);
+		AnnotationAttributes attributes = getEndpointAttributes(ConditionalOnAvailableEndpoint.class, context,
+				metadata);
 		EndpointId id = EndpointId.of(attributes.getString("id"));
-		Set<ExposureInformation> exposureInformations = getExposureInformation(
-				environment);
+		Set<ExposureInformation> exposureInformations = getExposureInformation(environment);
 		for (ExposureInformation exposureInformation : exposureInformations) {
 			if (exposureInformation.isExposed(id)) {
 				return new ConditionOutcome(true,
 						message.andCondition(ConditionalOnAvailableEndpoint.class)
 								.because("marked as exposed by a 'management.endpoints."
-										+ exposureInformation.getPrefix()
-										+ ".exposure' property"));
+										+ exposureInformation.getPrefix() + ".exposure' property"));
 			}
 		}
-		return new ConditionOutcome(false,
-				message.andCondition(ConditionalOnAvailableEndpoint.class).because(
-						"no 'management.endpoints' property marked it as exposed"));
+		return new ConditionOutcome(false, message.andCondition(ConditionalOnAvailableEndpoint.class)
+				.because("no 'management.endpoints' property marked it as exposed"));
 	}
 
 	private Set<ExposureInformation> getExposureInformation(Environment environment) {
-		Set<ExposureInformation> exposureInformations = endpointExposureCache
-				.get(environment);
+		Set<ExposureInformation> exposureInformations = endpointExposureCache.get(environment);
 		if (exposureInformations == null) {
 			exposureInformations = new HashSet<>(2);
 			Binder binder = Binder.get(environment);
 			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
 				exposureInformations.add(new ExposureInformation(binder, "jmx", "*"));
 			}
-			exposureInformations
-					.add(new ExposureInformation(binder, "web", "info", "health"));
+			exposureInformations.add(new ExposureInformation(binder, "web", "info", "health"));
 			endpointExposureCache.put(environment, exposureInformations);
 		}
 		return exposureInformations;
@@ -109,20 +102,16 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 
 		ExposureInformation(Binder binder, String prefix, String... exposeDefaults) {
 			this.prefix = prefix;
-			this.include = bind(binder,
-					"management.endpoints." + prefix + ".exposure.include");
-			this.exclude = bind(binder,
-					"management.endpoints." + prefix + ".exposure.exclude");
+			this.include = bind(binder, "management.endpoints." + prefix + ".exposure.include");
+			this.exclude = bind(binder, "management.endpoints." + prefix + ".exposure.exclude");
 			this.exposeDefaults = new HashSet<>(Arrays.asList(exposeDefaults));
 		}
 
 		private Set<String> bind(Binder binder, String name) {
-			List<String> values = binder.bind(name, Bindable.listOf(String.class))
-					.orElse(Collections.emptyList());
+			List<String> values = binder.bind(name, Bindable.listOf(String.class)).orElse(Collections.emptyList());
 			Set<String> result = new HashSet<>(values.size());
 			for (String value : values) {
-				result.add("*".equals(value) ? "*"
-						: EndpointId.fromPropertyValue(value).toLowerCaseString());
+				result.add("*".equals(value) ? "*" : EndpointId.fromPropertyValue(value).toLowerCaseString());
 			}
 			return result;
 		}
@@ -139,8 +128,7 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 				}
 			}
 			if (this.include.isEmpty()) {
-				if (this.exposeDefaults.contains("*")
-						|| this.exposeDefaults.contains(id)) {
+				if (this.exposeDefaults.contains("*") || this.exposeDefaults.contains(id)) {
 					return true;
 				}
 			}

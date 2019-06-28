@@ -38,42 +38,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-public class LdapRepositoriesAutoConfigurationTests {
+class LdapRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		load(EmptyConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(PersonRepository.class)).isEmpty();
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
 		assertThat(this.context.getBean(PersonLdapRepository.class)).isNotNull();
 	}
 
 	private void load(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.ldap.urls:ldap://localhost:389")
-				.applyTo(this.context);
+		TestPropertyValues.of("spring.ldap.urls:ldap://localhost:389").applyTo(this.context);
 		this.context.register(configurationClasses);
-		this.context.register(LdapAutoConfiguration.class,
-				LdapRepositoriesAutoConfiguration.class,
+		this.context.register(LdapAutoConfiguration.class, LdapRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}

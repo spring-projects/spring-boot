@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.springframework.boot.context;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer.ComponentScanPackageCheck;
@@ -33,7 +33,8 @@ import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWith
 import org.springframework.boot.context.configwarnings.orgspring.InOrgSpringPackageConfiguration;
 import org.springframework.boot.context.configwarnings.real.InRealButScanningProblemPackages;
 import org.springframework.boot.context.configwarnings.real.InRealPackageConfiguration;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConfigurationWarningsApplicationContextInitializerTests {
+@ExtendWith(OutputCaptureExtension.class)
+class ConfigurationWarningsApplicationContextInitializerTests {
 
 	private static final String DEFAULT_SCAN_WARNING = "Your ApplicationContext is unlikely to "
 			+ "start due to a @ComponentScan of the default package.";
@@ -51,70 +53,65 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	private static final String ORGSPRING_SCAN_WARNING = "Your ApplicationContext is unlikely to "
 			+ "start due to a @ComponentScan of 'org.springframework'.";
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
-
 	@Test
-	public void logWarningInDefaultPackage() {
+	void logWarningInDefaultPackage(CapturedOutput capturedOutput) {
 		load(InDefaultPackageConfiguration.class);
-		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
+		assertThat(capturedOutput).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void logWarningInDefaultPackageAndMetaAnnotation() {
+	void logWarningInDefaultPackageAndMetaAnnotation(CapturedOutput capturedOutput) {
 		load(InDefaultPackageWithMetaAnnotationConfiguration.class);
-		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
+		assertThat(capturedOutput).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogIfInRealPackage() {
+	void noLogIfInRealPackage(CapturedOutput capturedOutput) {
 		load(InRealPackageConfiguration.class);
-		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogWithoutComponentScanAnnotation() {
+	void noLogWithoutComponentScanAnnotation(CapturedOutput capturedOutput) {
 		load(InDefaultPackageWithoutScanConfiguration.class);
-		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogIfHasValue() {
+	void noLogIfHasValue(CapturedOutput capturedOutput) {
 		load(InDefaultPackageWithValueConfiguration.class);
-		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogIfHasBasePackages() {
+	void noLogIfHasBasePackages(CapturedOutput capturedOutput) {
 		load(InDefaultPackageWithBasePackagesConfiguration.class);
-		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogIfHasBasePackageClasses() {
+	void noLogIfHasBasePackageClasses(CapturedOutput capturedOutput) {
 		load(InDefaultPackageWithBasePackageClassesConfiguration.class);
-		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void logWarningInOrgSpringPackage() {
+	void logWarningInOrgSpringPackage(CapturedOutput capturedOutput) {
 		load(InOrgSpringPackageConfiguration.class);
-		assertThat(this.output.toString()).contains(ORGSPRING_SCAN_WARNING);
+		assertThat(capturedOutput).contains(ORGSPRING_SCAN_WARNING);
 	}
 
 	@Test
-	public void logWarningIfScanningProblemPackages() {
+	void logWarningIfScanningProblemPackages(CapturedOutput capturedOutput) {
 		load(InRealButScanningProblemPackages.class);
-		assertThat(this.output.toString())
-				.contains("Your ApplicationContext is unlikely to start due to a "
-						+ "@ComponentScan of the default package, 'org.springframework'.");
+		assertThat(capturedOutput).contains("Your ApplicationContext is unlikely to start due to a "
+				+ "@ComponentScan of the default package, 'org.springframework'.");
 
 	}
 
 	private void load(Class<?> configClass) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			new TestConfigurationWarningsApplicationContextInitializer()
-					.initialize(context);
+			new TestConfigurationWarningsApplicationContextInitializer().initialize(context);
 			context.register(configClass);
 			context.refresh();
 		}
@@ -140,8 +137,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	static class TestComponentScanPackageCheck extends ComponentScanPackageCheck {
 
 		@Override
-		protected Set<String> getComponentScanningPackages(
-				BeanDefinitionRegistry registry) {
+		protected Set<String> getComponentScanningPackages(BeanDefinitionRegistry registry) {
 			Set<String> scannedPackages = super.getComponentScanningPackages(registry);
 			Set<String> result = new LinkedHashSet<>();
 			for (String scannedPackage : scannedPackages) {

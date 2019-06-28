@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public class MavenSettingsReader {
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decrypted = decryptSettings(settings);
 		if (!decrypted.getProblems().isEmpty()) {
-			Log.error(
-					"Maven settings decryption failed. Some Maven repositories may be inaccessible");
+			Log.error("Maven settings decryption failed. Some Maven repositories may be inaccessible");
 			// Continue - the encrypted credentials may not be used
 		}
 		return new MavenSettings(settings, decrypted);
@@ -70,18 +69,15 @@ public class MavenSettingsReader {
 		request.setUserSettingsFile(settingsFile);
 		request.setSystemProperties(System.getProperties());
 		try {
-			return new DefaultSettingsBuilderFactory().newInstance().build(request)
-					.getEffectiveSettings();
+			return new DefaultSettingsBuilderFactory().newInstance().build(request).getEffectiveSettings();
 		}
 		catch (SettingsBuildingException ex) {
-			throw new IllegalStateException(
-					"Failed to build settings from " + settingsFile, ex);
+			throw new IllegalStateException("Failed to build settings from " + settingsFile, ex);
 		}
 	}
 
 	private SettingsDecryptionResult decryptSettings(Settings settings) {
-		DefaultSettingsDecryptionRequest request = new DefaultSettingsDecryptionRequest(
-				settings);
+		DefaultSettingsDecryptionRequest request = new DefaultSettingsDecryptionRequest(settings);
 
 		return createSettingsDecrypter().decrypt(request);
 	}
@@ -93,16 +89,14 @@ public class MavenSettingsReader {
 		return settingsDecrypter;
 	}
 
-	private void setField(Class<?> sourceClass, String fieldName, Object target,
-			Object value) {
+	private void setField(Class<?> sourceClass, String fieldName, Object target, Object value) {
 		try {
 			Field field = sourceClass.getDeclaredField(fieldName);
 			field.setAccessible(true);
 			field.set(target, value);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Failed to set field '" + fieldName + "' on '" + target + "'", ex);
+			throw new IllegalStateException("Failed to set field '" + fieldName + "' on '" + target + "'", ex);
 		}
 	}
 

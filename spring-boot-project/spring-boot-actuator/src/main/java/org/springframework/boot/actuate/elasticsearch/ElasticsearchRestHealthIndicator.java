@@ -57,8 +57,7 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Response response = this.client
-				.performRequest(new Request("GET", "/_cluster/health/"));
+		Response response = this.client.performRequest(new Request("GET", "/_cluster/health/"));
 		StatusLine statusLine = response.getStatusLine();
 		if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
 			builder.down();
@@ -67,8 +66,7 @@ public class ElasticsearchRestHealthIndicator extends AbstractHealthIndicator {
 			return;
 		}
 		try (InputStream inputStream = response.getEntity().getContent()) {
-			doHealthCheck(builder,
-					StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8));
+			doHealthCheck(builder, StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8));
 		}
 	}
 

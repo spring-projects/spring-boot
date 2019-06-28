@@ -18,7 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.util.unit.DataSize;
 
@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class MultipartConfigFactoryTests {
+class MultipartConfigFactoryTests {
 
 	@Test
-	public void sensibleDefaults() {
+	void sensibleDefaults() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		MultipartConfigElement config = factory.createMultipartConfig();
 		assertThat(config.getLocation()).isEqualTo("");
@@ -43,7 +43,7 @@ public class MultipartConfigFactoryTests {
 	}
 
 	@Test
-	public void createWithDataSizes() {
+	void createWithDataSizes() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setMaxFileSize(DataSize.ofBytes(1));
 		factory.setMaxRequestSize(DataSize.ofKilobytes(2));
@@ -55,7 +55,7 @@ public class MultipartConfigFactoryTests {
 	}
 
 	@Test
-	public void createWithNegativeDataSizes() {
+	void createWithNegativeDataSizes() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setMaxFileSize(DataSize.ofBytes(-1));
 		factory.setMaxRequestSize(DataSize.ofKilobytes(-2));

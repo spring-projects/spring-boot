@@ -54,6 +54,7 @@ class MetadataGenerationEnvironment {
 	static {
 		Set<String> excludes = new HashSet<>();
 		excludes.add("com.zaxxer.hikari.IConnectionCustomizer");
+		excludes.add("groovy.lang.MetaClass");
 		excludes.add("groovy.text.markup.MarkupTemplateEngine");
 		excludes.add("java.io.Writer");
 		excludes.add("java.io.PrintWriter");
@@ -91,12 +92,9 @@ class MetadataGenerationEnvironment {
 
 	private final String readOperationAnnotation;
 
-	MetadataGenerationEnvironment(ProcessingEnvironment environment,
-			String configurationPropertiesAnnotation,
-			String nestedConfigurationPropertyAnnotation,
-			String deprecatedConfigurationPropertyAnnotation,
-			String defaultValueAnnotation, String endpointAnnotation,
-			String readOperationAnnotation) {
+	MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
+			String nestedConfigurationPropertyAnnotation, String deprecatedConfigurationPropertyAnnotation,
+			String defaultValueAnnotation, String endpointAnnotation, String readOperationAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -134,8 +132,7 @@ class MetadataGenerationEnvironment {
 	 * value has been detected
 	 */
 	public Object getFieldDefaultValue(TypeElement type, String name) {
-		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues)
-				.get(name);
+		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues).get(name);
 	}
 
 	public boolean isExcluded(TypeMirror type) {
@@ -160,8 +157,7 @@ class MetadataGenerationEnvironment {
 	}
 
 	public ItemDeprecation resolveItemDeprecation(Element element) {
-		AnnotationMirror annotation = getAnnotation(element,
-				this.deprecatedConfigurationPropertyAnnotation);
+		AnnotationMirror annotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
 		String reason = null;
 		String replacement = null;
 		if (annotation != null) {
@@ -191,8 +187,8 @@ class MetadataGenerationEnvironment {
 
 	public Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
 		Map<String, Object> values = new LinkedHashMap<>();
-		annotation.getElementValues().forEach((name, value) -> values
-				.put(name.getSimpleName().toString(), getAnnotationValue(value)));
+		annotation.getElementValues()
+				.forEach((name, value) -> values.put(name.getSimpleName().toString(), getAnnotationValue(value)));
 		return values;
 	}
 
@@ -200,8 +196,7 @@ class MetadataGenerationEnvironment {
 		Object value = annotationValue.getValue();
 		if (value instanceof List) {
 			List<Object> values = new ArrayList<>();
-			((List<?>) value)
-					.forEach((v) -> values.add(((AnnotationValue) v).getValue()));
+			((List<?>) value).forEach((v) -> values.add(((AnnotationValue) v).getValue()));
 			return values;
 		}
 		return value;
@@ -258,8 +253,7 @@ class MetadataGenerationEnvironment {
 			// continue
 		}
 		Element superType = this.typeUtils.asElement(element.getSuperclass());
-		if (superType instanceof TypeElement
-				&& superType.asType().getKind() != TypeKind.NONE) {
+		if (superType instanceof TypeElement && superType.asType().getKind() != TypeKind.NONE) {
 			resolveFieldValuesFor(values, (TypeElement) superType);
 		}
 	}

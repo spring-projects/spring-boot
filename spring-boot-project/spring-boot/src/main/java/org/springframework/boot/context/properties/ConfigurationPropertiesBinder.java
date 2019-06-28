@@ -77,33 +77,57 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-		this.propertySources = new PropertySourcesDeducer(applicationContext)
-				.getPropertySources();
-		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(
-				applicationContext, this.validatorBeanName);
-		this.jsr303Present = ConfigurationPropertiesJsr303Validator
-				.isJsr303Present(applicationContext);
+		this.propertySources = new PropertySourcesDeducer(applicationContext).getPropertySources();
+		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext,
+				this.validatorBeanName);
+		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
 	public <T> BindResult<T> bind(Bindable<T> target) {
-		ConfigurationProperties annotation = target
-				.getAnnotation(ConfigurationProperties.class);
-		Assert.state(annotation != null,
-				() -> "Missing @ConfigurationProperties on " + target);
-		List<Validator> validators = getValidators(target);
-		BindHandler bindHandler = getBindHandler(annotation, validators);
+		ConfigurationProperties annotation = getAnnotation(target);
+		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	private Validator getConfigurationPropertiesValidator(
-			ApplicationContext applicationContext, String validatorBeanName) {
+	public <T> T bindOrCreate(Bindable<T> target) {
+		ConfigurationProperties annotation = getAnnotation(target);
+		BindHandler bindHandler = getBindHandler(target, annotation);
+		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);
+	}
+
+	private <T> ConfigurationProperties getAnnotation(Bindable<?> target) {
+		ConfigurationProperties annotation = target.getAnnotation(ConfigurationProperties.class);
+		Assert.state(annotation != null, () -> "Missing @ConfigurationProperties on " + target);
+		return annotation;
+	}
+
+	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext,
+			String validatorBeanName) {
 		if (applicationContext.containsBean(validatorBeanName)) {
 			return applicationContext.getBean(validatorBeanName, Validator.class);
 		}
 		return null;
+	}
+
+	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
+		List<Validator> validators = getValidators(target);
+		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
+		if (annotation.ignoreInvalidFields()) {
+			handler = new IgnoreErrorsBindHandler(handler);
+		}
+		if (!annotation.ignoreUnknownFields()) {
+			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
+			handler = new NoUnboundElementsBindHandler(handler, filter);
+		}
+		if (!validators.isEmpty()) {
+			handler = new ValidationBindHandler(handler, validators.toArray(new Validator[0]));
+		}
+		for (ConfigurationPropertiesBindHandlerAdvisor advisor : getBindHandlerAdvisors()) {
+			handler = advisor.apply(handler);
+		}
+		return handler;
 	}
 
 	private List<Validator> getValidators(Bindable<?> target) {
@@ -122,43 +146,20 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 
 	private Validator getJsr303Validator() {
 		if (this.jsr303Validator == null) {
-			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(
-					this.applicationContext);
+			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
 		}
 		return this.jsr303Validator;
 	}
 
-	private BindHandler getBindHandler(ConfigurationProperties annotation,
-			List<Validator> validators) {
-		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
-		if (annotation.ignoreInvalidFields()) {
-			handler = new IgnoreErrorsBindHandler(handler);
-		}
-		if (!annotation.ignoreUnknownFields()) {
-			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
-			handler = new NoUnboundElementsBindHandler(handler, filter);
-		}
-		if (!validators.isEmpty()) {
-			handler = new ValidationBindHandler(handler,
-					validators.toArray(new Validator[0]));
-		}
-		for (ConfigurationPropertiesBindHandlerAdvisor advisor : getBindHandlerAdvisors()) {
-			handler = advisor.apply(handler);
-		}
-		return handler;
-	}
-
 	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
-		return this.applicationContext
-				.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
-				.orderedStream().collect(Collectors.toList());
+		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class).orderedStream()
+				.collect(Collectors.toList());
 	}
 
 	private Binder getBinder() {
 		if (this.binder == null) {
-			this.binder = new Binder(getConfigurationPropertySources(),
-					getPropertySourcesPlaceholdersResolver(), getConversionService(),
-					getPropertyEditorInitializer());
+			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
+					getConversionService(), getPropertyEditorInitializer());
 		}
 		return this.binder;
 	}
@@ -172,14 +173,12 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 	}
 
 	private ConversionService getConversionService() {
-		return new ConversionServiceDeducer(this.applicationContext)
-				.getConversionService();
+		return new ConversionServiceDeducer(this.applicationContext).getConversionService();
 	}
 
 	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			return ((ConfigurableApplicationContext) this.applicationContext)
-					.getBeanFactory()::copyRegisteredEditorsTo;
+			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
 	}

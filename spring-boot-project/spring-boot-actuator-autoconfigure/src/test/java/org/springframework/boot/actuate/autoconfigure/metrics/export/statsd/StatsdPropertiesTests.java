@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class StatsdPropertiesTests {
+class StatsdPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		StatsdProperties properties = new StatsdProperties();
 		StatsdConfig config = StatsdConfig.DEFAULT;
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());
@@ -38,8 +38,7 @@ public class StatsdPropertiesTests {
 		assertThat(properties.getPort()).isEqualTo(config.port());
 		assertThat(properties.getMaxPacketLength()).isEqualTo(config.maxPacketLength());
 		assertThat(properties.getPollingFrequency()).isEqualTo(config.pollingFrequency());
-		assertThat(properties.isPublishUnchangedMeters())
-				.isEqualTo(config.publishUnchangedMeters());
+		assertThat(properties.isPublishUnchangedMeters()).isEqualTo(config.publishUnchangedMeters());
 	}
 
 }

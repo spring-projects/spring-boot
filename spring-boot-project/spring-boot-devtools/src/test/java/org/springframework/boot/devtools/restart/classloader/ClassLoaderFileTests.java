@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.devtools.restart.classloader;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 
@@ -28,54 +28,50 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ClassLoaderFileTests {
+class ClassLoaderFileTests {
 
 	public static final byte[] BYTES = "ABC".getBytes();
 
 	@Test
-	public void kindMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(null, null))
+	void kindMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(null, null))
 				.withMessageContaining("Kind must not be null");
 	}
 
 	@Test
-	public void addedContentsMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
+	void addedContentsMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
 				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
-	public void modifiedContentsMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
+	void modifiedContentsMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
 				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
-	public void deletedContentsMustBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
+	void deletedContentsMustBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
 				.withMessageContaining("Contents must be null");
 	}
 
 	@Test
-	public void added() {
+	void added() {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.ADDED, BYTES);
 		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.ADDED);
 		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
-	public void modified() {
+	void modified() {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.MODIFIED, BYTES);
 		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.MODIFIED);
 		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
-	public void deleted() {
+	void deleted() {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.DELETED, null);
 		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.DELETED);
 		assertThat(file.getContents()).isNull();

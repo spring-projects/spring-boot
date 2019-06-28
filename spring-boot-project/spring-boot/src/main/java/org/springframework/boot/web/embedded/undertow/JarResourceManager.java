@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import io.undertow.server.handlers.resource.ResourceChangeListener;
 import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.server.handlers.resource.URLResource;
 
+import org.springframework.util.StringUtils;
+
 /**
  * {@link ResourceManager} for JAR resources.
  *
@@ -46,10 +48,9 @@ class JarResourceManager implements ResourceManager {
 
 	@Override
 	public Resource getResource(String path) throws IOException {
-		URL url = new URL("jar:file:" + this.jarPath + "!"
-				+ (path.startsWith("/") ? path : "/" + path));
+		URL url = new URL("jar:file:" + this.jarPath + "!" + (path.startsWith("/") ? path : "/" + path));
 		URLResource resource = new URLResource(url, path);
-		if (resource.getContentLength() < 0) {
+		if (StringUtils.hasText(path) && !"/".equals(path) && resource.getContentLength() < 0) {
 			return null;
 		}
 		return resource;

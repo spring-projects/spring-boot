@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,13 @@ class PropertiesMigrationReport {
 	 * @return a report with the configurations keys that should be renamed
 	 */
 	public String getWarningReport() {
-		Map<String, List<PropertyMigration>> content = getContent(
-				LegacyProperties::getRenamed);
+		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getRenamed);
 		if (content.isEmpty()) {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
-		report.append(String.format("%nThe use of configuration keys that have been "
-				+ "renamed was found in the environment:%n%n"));
+		report.append(String.format(
+				"%nThe use of configuration keys that have been " + "renamed was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
 		report.append("Each configuration key has been temporarily mapped to its "
@@ -63,32 +62,27 @@ class PropertiesMigrationReport {
 	 * @return a report with the configurations keys that are no longer supported
 	 */
 	public String getErrorReport() {
-		Map<String, List<PropertyMigration>> content = getContent(
-				LegacyProperties::getUnsupported);
+		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getUnsupported);
 		if (content.isEmpty()) {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
-		report.append(String.format("%nThe use of configuration keys that are no longer "
-				+ "supported was found in the environment:%n%n"));
+		report.append(String.format(
+				"%nThe use of configuration keys that are no longer " + "supported was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
-		report.append("Please refer to the migration guide or reference guide for "
-				+ "potential alternatives.");
+		report.append("Please refer to the migration guide or reference guide for " + "potential alternatives.");
 		report.append(String.format("%n"));
 		return report.toString();
 	}
 
 	private Map<String, List<PropertyMigration>> getContent(
 			Function<LegacyProperties, List<PropertyMigration>> extractor) {
-		return this.content.entrySet().stream()
-				.filter((entry) -> !extractor.apply(entry.getValue()).isEmpty())
-				.collect(Collectors.toMap(Map.Entry::getKey,
-						(entry) -> new ArrayList<>(extractor.apply(entry.getValue()))));
+		return this.content.entrySet().stream().filter((entry) -> !extractor.apply(entry.getValue()).isEmpty()).collect(
+				Collectors.toMap(Map.Entry::getKey, (entry) -> new ArrayList<>(extractor.apply(entry.getValue()))));
 	}
 
-	private void append(StringBuilder report,
-			Map<String, List<PropertyMigration>> content) {
+	private void append(StringBuilder report, Map<String, List<PropertyMigration>> content) {
 		content.forEach((name, properties) -> {
 			report.append(String.format("Property source '%s':%n", name));
 			properties.sort(PropertyMigration.COMPARATOR);
@@ -96,8 +90,7 @@ class PropertiesMigrationReport {
 				ConfigurationMetadataProperty metadata = property.getMetadata();
 				report.append(String.format("\tKey: %s%n", metadata.getId()));
 				if (property.getLineNumber() != null) {
-					report.append(
-							String.format("\t\tLine: %d%n", property.getLineNumber()));
+					report.append(String.format("\t\tLine: %d%n", property.getLineNumber()));
 				}
 				report.append(String.format("\t\t%s%n", property.determineReason()));
 			});
@@ -123,13 +116,11 @@ class PropertiesMigrationReport {
 		}
 
 		public List<PropertyMigration> getRenamed() {
-			return this.properties.stream().filter(PropertyMigration::isCompatibleType)
-					.collect(Collectors.toList());
+			return this.properties.stream().filter(PropertyMigration::isCompatibleType).collect(Collectors.toList());
 		}
 
 		public List<PropertyMigration> getUnsupported() {
-			return this.properties.stream()
-					.filter((property) -> !property.isCompatibleType())
+			return this.properties.stream().filter((property) -> !property.isCompatibleType())
 					.collect(Collectors.toList());
 		}
 

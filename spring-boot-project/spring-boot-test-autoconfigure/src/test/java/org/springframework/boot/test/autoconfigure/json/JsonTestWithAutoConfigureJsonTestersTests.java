@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.json;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.app.ExampleBasicObject;
@@ -27,7 +26,6 @@ import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,11 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
 @AutoConfigureJsonTesters(enabled = false)
 @ContextConfiguration(classes = ExampleJsonApplication.class)
-public class JsonTestWithAutoConfigureJsonTestersTests {
+class JsonTestWithAutoConfigureJsonTestersTests {
 
 	@Autowired(required = false)
 	private BasicJsonTester basicJson;
@@ -56,22 +53,22 @@ public class JsonTestWithAutoConfigureJsonTestersTests {
 	private JsonbTester<ExampleBasicObject> jsonbTester;
 
 	@Test
-	public void basicJson() {
+	void basicJson() {
 		assertThat(this.basicJson).isNull();
 	}
 
 	@Test
-	public void jackson() {
+	void jackson() {
 		assertThat(this.jacksonTester).isNull();
 	}
 
 	@Test
-	public void gson() {
+	void gson() {
 		assertThat(this.gsonTester).isNull();
 	}
 
 	@Test
-	public void jsonb() {
+	void jsonb() {
 		assertThat(this.jsonbTester).isNull();
 	}
 

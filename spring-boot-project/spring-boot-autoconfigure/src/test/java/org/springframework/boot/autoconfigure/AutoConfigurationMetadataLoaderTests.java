@@ -27,66 +27,65 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class AutoConfigurationMetadataLoaderTests {
+class AutoConfigurationMetadataLoaderTests {
 
 	@Test
-	public void loadShouldLoadProperties() {
+	void loadShouldLoadProperties() {
 		assertThat(load()).isNotNull();
 	}
 
 	@Test
-	public void wasProcessedWhenProcessedShouldReturnTrue() {
+	void wasProcessedWhenProcessedShouldReturnTrue() {
 		assertThat(load().wasProcessed("test")).isTrue();
 	}
 
 	@Test
-	public void wasProcessedWhenNotProcessedShouldReturnFalse() {
+	void wasProcessedWhenNotProcessedShouldReturnFalse() {
 		assertThat(load().wasProcessed("testx")).isFalse();
 	}
 
 	@Test
-	public void getIntegerShouldReturnValue() {
+	void getIntegerShouldReturnValue() {
 		assertThat(load().getInteger("test", "int")).isEqualTo(123);
 	}
 
 	@Test
-	public void getIntegerWhenMissingShouldReturnNull() {
+	void getIntegerWhenMissingShouldReturnNull() {
 		assertThat(load().getInteger("test", "intx")).isNull();
 	}
 
 	@Test
-	public void getIntegerWithDefaultWhenMissingShouldReturnDefault() {
+	void getIntegerWithDefaultWhenMissingShouldReturnDefault() {
 		assertThat(load().getInteger("test", "intx", 345)).isEqualTo(345);
 	}
 
 	@Test
-	public void getSetShouldReturnValue() {
+	void getSetShouldReturnValue() {
 		assertThat(load().getSet("test", "set")).containsExactly("a", "b", "c");
 	}
 
 	@Test
-	public void getSetWhenMissingShouldReturnNull() {
+	void getSetWhenMissingShouldReturnNull() {
 		assertThat(load().getSet("test", "setx")).isNull();
 	}
 
 	@Test
-	public void getSetWithDefaultWhenMissingShouldReturnDefault() {
-		assertThat(load().getSet("test", "setx", Collections.singleton("x")))
-				.containsExactly("x");
+	void getSetWithDefaultWhenMissingShouldReturnDefault() {
+		assertThat(load().getSet("test", "setx", Collections.singleton("x"))).containsExactly("x");
 	}
 
 	@Test
-	public void getShouldReturnValue() {
+	void getShouldReturnValue() {
 		assertThat(load().get("test", "string")).isEqualTo("abc");
 	}
 
 	@Test
-	public void getWhenMissingShouldReturnNull() {
+	void getWhenMissingShouldReturnNull() {
 		assertThat(load().get("test", "stringx")).isNull();
 	}
 
 	@Test
-	public void getWithDefaultWhenMissingShouldReturnDefault() {
+	void getWithDefaultWhenMissingShouldReturnDefault() {
 		assertThat(load().get("test", "stringx", "xyz")).isEqualTo("xyz");
 	}
 

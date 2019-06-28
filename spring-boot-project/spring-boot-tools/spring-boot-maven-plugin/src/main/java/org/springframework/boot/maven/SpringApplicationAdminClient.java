@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,12 +66,10 @@ class SpringApplicationAdminClient {
 			return false; // Instance not available yet
 		}
 		catch (AttributeNotFoundException ex) {
-			throw new IllegalStateException("Unexpected: attribute 'Ready' not available",
-					ex);
+			throw new IllegalStateException("Unexpected: attribute 'Ready' not available", ex);
 		}
 		catch (ReflectionException ex) {
-			throw new MojoExecutionException("Failed to retrieve Ready attribute",
-					ex.getCause());
+			throw new MojoExecutionException("Failed to retrieve Ready attribute", ex.getCause());
 		}
 		catch (MBeanException | IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
@@ -84,8 +82,7 @@ class SpringApplicationAdminClient {
 	 * @throws IOException if an I/O error occurs
 	 * @throws InstanceNotFoundException if the lifecycle mbean cannot be found
 	 */
-	public void stop()
-			throws MojoExecutionException, IOException, InstanceNotFoundException {
+	public void stop() throws MojoExecutionException, IOException, InstanceNotFoundException {
 		try {
 			this.connection.invoke(this.objectName, "shutdown", null, null);
 		}

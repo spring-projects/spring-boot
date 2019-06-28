@@ -40,10 +40,8 @@ public class DiskSpaceHealthIndicatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "diskSpaceHealthIndicator")
-	public DiskSpaceHealthIndicator diskSpaceHealthIndicator(
-			DiskSpaceHealthIndicatorProperties properties) {
-		return new DiskSpaceHealthIndicator(properties.getPath(),
-				properties.getThreshold());
+	public DiskSpaceHealthIndicator diskSpaceHealthIndicator(DiskSpaceHealthIndicatorProperties properties) {
+		return new DiskSpaceHealthIndicator(properties.getPath(), properties.getThreshold());
 	}
 
 	@Bean

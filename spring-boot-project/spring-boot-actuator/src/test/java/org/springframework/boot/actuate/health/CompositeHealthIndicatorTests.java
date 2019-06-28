@@ -36,7 +36,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
-public class CompositeHealthIndicatorTests {
+class CompositeHealthIndicatorTests {
 
 	private HealthAggregator healthAggregator;
 
@@ -47,23 +47,20 @@ public class CompositeHealthIndicatorTests {
 	private HealthIndicator two;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.one.health())
-				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
-		given(this.two.health())
-				.willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
+		given(this.one.health()).willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
+		given(this.two.health()).willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
 
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
 
 	@Test
-	public void createWithIndicators() {
+	void createWithIndicators() {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator, indicators);
 		Health result = composite.health();
 		assertThat(result.getDetails()).hasSize(2);
 		assertThat(result.getDetails()).containsEntry("one",
@@ -73,21 +70,19 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	public void testSerialization() throws Exception {
+	void testSerialization() throws Exception {
 		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);
-		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, Collections.singletonMap("db", innerComposite));
+		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(this.healthAggregator, indicators);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(this.healthAggregator,
+				Collections.singletonMap("db", innerComposite));
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
-		assertThat(mapper.writeValueAsString(result)).isEqualTo(
-				"{\"status\":\"UNKNOWN\",\"details\":{\"db\":{\"status\":\"UNKNOWN\""
+		assertThat(mapper.writeValueAsString(result))
+				.isEqualTo("{\"status\":\"UNKNOWN\",\"details\":{\"db\":{\"status\":\"UNKNOWN\""
 						+ ",\"details\":{\"db1\":{\"status\":\"UNKNOWN\",\"details\""
-						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\""
-						+ ":{\"2\":\"2\"}}}}}}");
+						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\"" + ":{\"2\":\"2\"}}}}}}");
 	}
 
 }

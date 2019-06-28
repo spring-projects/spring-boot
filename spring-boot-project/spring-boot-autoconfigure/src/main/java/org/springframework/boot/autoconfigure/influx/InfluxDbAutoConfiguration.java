@@ -47,12 +47,11 @@ public class InfluxDbAutoConfiguration {
 	@ConditionalOnProperty("spring.influx.url")
 	public InfluxDB influxDb(InfluxDbProperties properties,
 			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder) {
-		return new InfluxDBImpl(properties.getUrl(), properties.getUser(),
-				properties.getPassword(), determineBuilder(builder.getIfAvailable()));
+		return new InfluxDBImpl(properties.getUrl(), properties.getUser(), properties.getPassword(),
+				determineBuilder(builder.getIfAvailable()));
 	}
 
-	private static OkHttpClient.Builder determineBuilder(
-			InfluxDbOkHttpClientBuilderProvider builder) {
+	private static OkHttpClient.Builder determineBuilder(InfluxDbOkHttpClientBuilderProvider builder) {
 		if (builder != null) {
 			return builder.get();
 		}

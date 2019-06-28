@@ -58,13 +58,11 @@ public final class SpringBootVersion {
 	}
 
 	private static String determineSpringBootVersion() {
-		String implementationVersion = SpringBootVersion.class.getPackage()
-				.getImplementationVersion();
+		String implementationVersion = SpringBootVersion.class.getPackage().getImplementationVersion();
 		if (implementationVersion != null) {
 			return implementationVersion;
 		}
-		CodeSource codeSource = SpringBootVersion.class.getProtectionDomain()
-				.getCodeSource();
+		CodeSource codeSource = SpringBootVersion.class.getProtectionDomain().getCodeSource();
 		if (codeSource == null) {
 			return null;
 		}
@@ -72,8 +70,7 @@ public final class SpringBootVersion {
 		try {
 			URLConnection connection = codeSourceLocation.openConnection();
 			if (connection instanceof JarURLConnection) {
-				return getImplementationVersion(
-						((JarURLConnection) connection).getJarFile());
+				return getImplementationVersion(((JarURLConnection) connection).getJarFile());
 			}
 			try (JarFile jarFile = new JarFile(new File(codeSourceLocation.toURI()))) {
 				return getImplementationVersion(jarFile);
@@ -85,8 +82,7 @@ public final class SpringBootVersion {
 	}
 
 	private static String getImplementationVersion(JarFile jarFile) throws IOException {
-		return jarFile.getManifest().getMainAttributes()
-				.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+		return jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
 	}
 
 }

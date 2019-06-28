@@ -39,60 +39,51 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ImportsContextCustomizerFactoryTests {
+class ImportsContextCustomizerFactoryTests {
 
 	private ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
 
 	@Test
-	public void getContextCustomizerWhenHasNoImportAnnotationShouldReturnNull() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(TestWithNoImport.class, null);
+	void getContextCustomizerWhenHasNoImportAnnotationShouldReturnNull() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithNoImport.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasImportAnnotationShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(TestWithImport.class, null);
+	void getContextCustomizerWhenHasImportAnnotationShouldReturnCustomizer() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithImport.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasMetaImportAnnotationShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(TestWithMetaImport.class, null);
+	void getContextCustomizerWhenHasMetaImportAnnotationShouldReturnCustomizer() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithMetaImport.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void contextCustomizerEqualsAndHashCode() {
-		ContextCustomizer customizer1 = this.factory
-				.createContextCustomizer(TestWithImport.class, null);
-		ContextCustomizer customizer2 = this.factory
-				.createContextCustomizer(TestWithImport.class, null);
-		ContextCustomizer customizer3 = this.factory
-				.createContextCustomizer(TestWithImportAndMetaImport.class, null);
-		ContextCustomizer customizer4 = this.factory
-				.createContextCustomizer(TestWithSameImportAndMetaImport.class, null);
+	void contextCustomizerEqualsAndHashCode() {
+		ContextCustomizer customizer1 = this.factory.createContextCustomizer(TestWithImport.class, null);
+		ContextCustomizer customizer2 = this.factory.createContextCustomizer(TestWithImport.class, null);
+		ContextCustomizer customizer3 = this.factory.createContextCustomizer(TestWithImportAndMetaImport.class, null);
+		ContextCustomizer customizer4 = this.factory.createContextCustomizer(TestWithSameImportAndMetaImport.class,
+				null);
 		assertThat(customizer1.hashCode()).isEqualTo(customizer1.hashCode());
 		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
-		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2)
-				.isNotEqualTo(customizer3);
+		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2).isNotEqualTo(customizer3);
 		assertThat(customizer3).isEqualTo(customizer4);
 	}
 
 	@Test
-	public void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
+	void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.factory
-						.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
+				.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
 				.withMessageContaining("Test classes cannot include @Bean methods");
 	}
 
 	@Test
-	public void contextCustomizerImportsBeans() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(TestWithImport.class, null);
+	void contextCustomizerImportsBeans() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithImport.class, null);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		customizer.customizeContext(context, mock(MergedContextConfiguration.class));
 		context.refresh();
@@ -100,9 +91,9 @@ public class ImportsContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
-		assertThat(this.factory.createContextCustomizer(
-				TestWithImportAndSelfAnnotatingAnnotation.class, null)).isNotNull();
+	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
+		assertThat(this.factory.createContextCustomizer(TestWithImportAndSelfAnnotatingAnnotation.class, null))
+				.isNotNull();
 	}
 
 	static class TestWithNoImport {

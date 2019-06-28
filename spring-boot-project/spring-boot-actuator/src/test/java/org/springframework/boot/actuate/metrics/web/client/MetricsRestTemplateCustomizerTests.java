@@ -27,7 +27,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.metrics.Autotime;
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  * @author Brian Clozel
  */
-public class MetricsRestTemplateCustomizerTests {
+class MetricsRestTemplateCustomizerTests {
 
 	private MeterRegistry registry;
 
@@ -54,35 +54,31 @@ public class MetricsRestTemplateCustomizerTests {
 	private MetricsRestTemplateCustomizer customizer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		this.restTemplate = new RestTemplate();
 		this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 		this.customizer = new MetricsRestTemplateCustomizer(this.registry,
-				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests",
-				new Autotime());
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests", AutoTimer.ENABLED);
 		this.customizer.customize(this.restTemplate);
 	}
 
 	@Test
-	public void interceptRestTemplate() {
+	void interceptRestTemplate() {
 		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess("OK",
-						MediaType.APPLICATION_JSON));
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
 		String result = this.restTemplate.getForObject("/test/{id}", String.class, 123);
-		assertThat(this.registry.find("http.client.requests").meters()).anySatisfy(
-				(m) -> assertThat(m.getId().getTags().stream().map(Tag::getKey))
-						.doesNotContain("bucket"));
-		assertThat(this.registry.get("http.client.requests")
-				.tags("method", "GET", "uri", "/test/{id}", "status", "200").timer()
-				.count()).isEqualTo(1);
+		assertThat(this.registry.find("http.client.requests").meters())
+				.anySatisfy((m) -> assertThat(m.getId().getTags().stream().map(Tag::getKey)).doesNotContain("bucket"));
+		assertThat(this.registry.get("http.client.requests").tags("method", "GET", "uri", "/test/{id}", "status", "200")
+				.timer().count()).isEqualTo(1);
 		assertThat(result).isEqualTo("OK");
 		this.mockServer.verify();
 	}
 
 	@Test
-	public void avoidDuplicateRegistration() {
+	void avoidDuplicateRegistration() {
 		this.customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
 		this.customizer.customize(this.restTemplate);
@@ -90,11 +86,10 @@ public class MetricsRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void normalizeUriToContainLeadingSlash() {
+	void normalizeUriToContainLeadingSlash() {
 		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess("OK",
-						MediaType.APPLICATION_JSON));
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
 		String result = this.restTemplate.getForObject("test/{id}", String.class, 123);
 		this.registry.get("http.client.requests").tags("uri", "/test/{id}").timer();
 		assertThat(result).isEqualTo("OK");
@@ -102,14 +97,11 @@ public class MetricsRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void interceptRestTemplateWithUri() throws URISyntaxException {
-		this.mockServer
-				.expect(MockRestRequestMatchers.requestTo("http://localhost/test/123"))
+	void interceptRestTemplateWithUri() throws URISyntaxException {
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("http://localhost/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-				.andRespond(MockRestResponseCreators.withSuccess("OK",
-						MediaType.APPLICATION_JSON));
-		String result = this.restTemplate
-				.getForObject(new URI("http://localhost/test/123"), String.class);
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+		String result = this.restTemplate.getForObject(new URI("http://localhost/test/123"), String.class);
 		assertThat(result).isEqualTo("OK");
 		this.registry.get("http.client.requests").tags("uri", "/test/123").timer();
 		this.mockServer.verify();

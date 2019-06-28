@@ -16,21 +16,22 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.codec.ByteArrayDecoder;
+import org.springframework.core.codec.ByteArrayEncoder;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.http.codec.cbor.Jackson2CborDecoder;
 import org.springframework.http.codec.cbor.Jackson2CborEncoder;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,87 +41,62 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class RSocketStrategiesAutoConfigurationTests {
+class RSocketStrategiesAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(BaseConfiguration.class).withConfiguration(
-					AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class));
 
 	@Test
-	public void shouldCreateDefaultBeans() {
+	void shouldCreateDefaultBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
-			assertThat(strategies.decoders()).hasSize(2);
-			assertThat(strategies.decoders().get(0))
-					.isInstanceOf(Jackson2CborDecoder.class);
-			assertThat(strategies.decoders().get(1))
-					.isInstanceOf(Jackson2JsonDecoder.class);
-			assertThat(strategies.encoders()).hasSize(2);
-			assertThat(strategies.encoders().get(0))
-					.isInstanceOf(Jackson2CborEncoder.class);
-			assertThat(strategies.encoders().get(1))
-					.isInstanceOf(Jackson2JsonEncoder.class);
+			assertThat(strategies.decoders()).hasSize(3);
+			assertThat(strategies.decoders().get(0)).isInstanceOf(Jackson2CborDecoder.class);
+			assertThat(strategies.decoders().get(1)).isInstanceOf(Jackson2JsonDecoder.class);
+			assertThat(strategies.decoders().get(2)).isInstanceOf(StringDecoder.class);
+			assertThat(strategies.encoders()).hasSize(3);
+			assertThat(strategies.encoders().get(0)).isInstanceOf(Jackson2CborEncoder.class);
+			assertThat(strategies.encoders().get(1)).isInstanceOf(Jackson2JsonEncoder.class);
+			assertThat(strategies.encoders().get(2)).isInstanceOf(CharSequenceEncoder.class);
 		});
 	}
 
 	@Test
-	public void shouldUseCustomStrategies() {
+	void shouldUseCustomStrategies() {
 		this.contextRunner.withUserConfiguration(UserStrategies.class).run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
-			assertThat(context.getBeanNamesForType(RSocketStrategies.class))
-					.contains("customRSocketStrategies");
+			assertThat(context.getBeanNamesForType(RSocketStrategies.class)).contains("customRSocketStrategies");
 		});
 	}
 
 	@Test
-	public void shouldUseStrategiesCustomizer() {
-		this.contextRunner.withUserConfiguration(StrategiesCustomizer.class)
-				.run((context) -> {
-					assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
-					RSocketStrategies strategies = context
-							.getBean(RSocketStrategies.class);
-					assertThat(strategies.decoders()).hasSize(3)
-							.hasAtLeastOneElementOfType(StringDecoder.class);
-					assertThat(strategies.encoders()).hasSize(3)
-							.hasAtLeastOneElementOfType(CharSequenceEncoder.class);
-				});
+	void shouldUseStrategiesCustomizer() {
+		this.contextRunner.withUserConfiguration(StrategiesCustomizer.class).run((context) -> {
+			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
+			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
+			assertThat(strategies.decoders()).hasSize(4).hasAtLeastOneElementOfType(ByteArrayDecoder.class);
+			assertThat(strategies.encoders()).hasSize(4).hasAtLeastOneElementOfType(ByteArrayEncoder.class);
+		});
 	}
 
-	@Configuration
-	static class BaseConfiguration {
-
-		@Bean
-		public ObjectMapper objectMapper() {
-			return new ObjectMapper();
-		}
-
-		@Bean
-		public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-			return new Jackson2ObjectMapperBuilder();
-		}
-
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class UserStrategies {
 
 		@Bean
 		public RSocketStrategies customRSocketStrategies() {
-			return RSocketStrategies.builder()
-					.encoder(CharSequenceEncoder.textPlainOnly())
+			return RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
 					.decoder(StringDecoder.textPlainOnly()).build();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class StrategiesCustomizer {
 
 		@Bean
 		public RSocketStrategiesCustomizer myCustomizer() {
-			return (strategies) -> strategies.encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly());
+			return (strategies) -> strategies.encoder(new ByteArrayEncoder()).decoder(new ByteArrayDecoder());
 		}
 
 	}

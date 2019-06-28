@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.metrics.Autotime;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -116,8 +115,8 @@ public class MetricsProperties {
 			 * @return request metric name
 			 * @deprecated since 2.2.0 in favor of {@link ClientRequest#getMetricName()}
 			 */
-			@DeprecatedConfigurationProperty(
-					replacement = "management.metrics.web.client.request.metric-name")
+			@Deprecated
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.client.request.metric-name")
 			public String getRequestsMetricName() {
 				return this.request.getMetricName();
 			}
@@ -128,6 +127,7 @@ public class MetricsProperties {
 			 * @deprecated since 2.2.0 in favor of
 			 * {@link ClientRequest#setMetricName(String)}
 			 */
+			@Deprecated
 			public void setRequestsMetricName(String requestsMetricName) {
 				this.request.setMetricName(requestsMetricName);
 			}
@@ -151,10 +151,10 @@ public class MetricsProperties {
 				 * Auto-timed request settings.
 				 */
 				@NestedConfigurationProperty
-				private final Autotime autoTime = new Autotime();
+				private final AutoTimeProperties autotime = new AutoTimeProperties();
 
-				public Autotime getAutotime() {
-					return this.autoTime;
+				public AutoTimeProperties getAutotime() {
+					return this.autotime;
 				}
 
 				public String getMetricName() {
@@ -187,10 +187,9 @@ public class MetricsProperties {
 			/**
 			 * Return whether server requests should be automatically timed.
 			 * @return {@code true} if server request should be automatically timed
-			 * @deprecated since 2.2.0 in favor of {@link Autotime#isEnabled()}
+			 * @deprecated since 2.2.0 in favor of {@link AutoTimeProperties#isEnabled()}
 			 */
-			@DeprecatedConfigurationProperty(
-					replacement = "management.metrics.web.server.request.autotime.enabled")
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.autotime.enabled")
 			@Deprecated
 			public boolean isAutoTimeRequests() {
 				return this.request.getAutotime().isEnabled();
@@ -200,7 +199,7 @@ public class MetricsProperties {
 			 * Set whether server requests should be automatically timed.
 			 * @param autoTimeRequests whether server requests should be automatically
 			 * timed
-			 * @deprecated since 2.2.0 in favor of {@link Autotime#isEnabled()}
+			 * @deprecated since 2.2.0 in favor of {@link AutoTimeProperties#isEnabled()}
 			 */
 			@Deprecated
 			public void setAutoTimeRequests(boolean autoTimeRequests) {
@@ -212,8 +211,7 @@ public class MetricsProperties {
 			 * @return request metric name
 			 * @deprecated since 2.2.0 in favor of {@link ServerRequest#getMetricName()}
 			 */
-			@DeprecatedConfigurationProperty(
-					replacement = "management.metrics.web.server.request.metric-name")
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.metric-name")
 			@Deprecated
 			public String getRequestsMetricName() {
 				return this.request.getMetricName();
@@ -249,9 +247,9 @@ public class MetricsProperties {
 				 * Auto-timed request settings.
 				 */
 				@NestedConfigurationProperty
-				private final Autotime autotime = new Autotime();
+				private final AutoTimeProperties autotime = new AutoTimeProperties();
 
-				public Autotime getAutotime() {
+				public AutoTimeProperties getAutotime() {
 					return this.autotime;
 				}
 

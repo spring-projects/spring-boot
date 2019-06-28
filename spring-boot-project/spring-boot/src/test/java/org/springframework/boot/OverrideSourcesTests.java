@@ -16,8 +16,8 @@
 
 package org.springframework.boot;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,28 +33,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class OverrideSourcesTests {
+class OverrideSourcesTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void beanInjectedToMainConfiguration() {
+	void beanInjectedToMainConfiguration() {
 		this.context = SpringApplication.run(new Class<?>[] { MainConfiguration.class },
 				new String[] { "--spring.main.web-application-type=none" });
 		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("foo");
 	}
 
 	@Test
-	public void primaryBeanInjectedProvingSourcesNotOverridden() {
-		this.context = SpringApplication.run(
-				new Class<?>[] { MainConfiguration.class, TestConfiguration.class },
+	void primaryBeanInjectedProvingSourcesNotOverridden() {
+		this.context = SpringApplication.run(new Class<?>[] { MainConfiguration.class, TestConfiguration.class },
 				new String[] { "--spring.main.web-application-type=none",
 						"--spring.main.allow-bean-definition-overriding=true",
 						"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });

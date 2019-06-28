@@ -43,87 +43,68 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class ReactiveUserDetailsServiceAutoConfigurationTests {
+class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(ReactiveUserDetailsServiceAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class));
 
 	@Test
-	public void configuresADefaultUser() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class)
-				.run((context) -> {
-					ReactiveUserDetailsService userDetailsService = context
-							.getBean(ReactiveUserDetailsService.class);
-					assertThat(userDetailsService.findByUsername("user")
-							.block(Duration.ofSeconds(30))).isNotNull();
-				});
+	void configuresADefaultUser() {
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run((context) -> {
+			ReactiveUserDetailsService userDetailsService = context.getBean(ReactiveUserDetailsService.class);
+			assertThat(userDetailsService.findByUsername("user").block(Duration.ofSeconds(30))).isNotNull();
+		});
 	}
 
 	@Test
-	public void doesNotConfigureDefaultUserIfUserDetailsServiceAvailable() {
-		this.contextRunner
-				.withUserConfiguration(UserConfig.class, TestSecurityConfiguration.class)
-				.run((context) -> {
-					ReactiveUserDetailsService userDetailsService = context
-							.getBean(ReactiveUserDetailsService.class);
-					assertThat(userDetailsService.findByUsername("user")
-							.block(Duration.ofSeconds(30))).isNull();
-					assertThat(userDetailsService.findByUsername("foo")
-							.block(Duration.ofSeconds(30))).isNotNull();
-					assertThat(userDetailsService.findByUsername("admin")
-							.block(Duration.ofSeconds(30))).isNotNull();
-				});
+	void doesNotConfigureDefaultUserIfUserDetailsServiceAvailable() {
+		this.contextRunner.withUserConfiguration(UserConfig.class, TestSecurityConfiguration.class).run((context) -> {
+			ReactiveUserDetailsService userDetailsService = context.getBean(ReactiveUserDetailsService.class);
+			assertThat(userDetailsService.findByUsername("user").block(Duration.ofSeconds(30))).isNull();
+			assertThat(userDetailsService.findByUsername("foo").block(Duration.ofSeconds(30))).isNotNull();
+			assertThat(userDetailsService.findByUsername("admin").block(Duration.ofSeconds(30))).isNotNull();
+		});
 	}
 
 	@Test
-	public void doesNotConfigureDefaultUserIfAuthenticationManagerAvailable() {
-		this.contextRunner
-				.withUserConfiguration(AuthenticationManagerConfig.class,
-						TestSecurityConfiguration.class)
-				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.getBean(ReactiveUserDetailsService.class).isNull());
+	void doesNotConfigureDefaultUserIfAuthenticationManagerAvailable() {
+		this.contextRunner.withUserConfiguration(AuthenticationManagerConfig.class, TestSecurityConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+				.run((context) -> assertThat(context).getBean(ReactiveUserDetailsService.class).isNull());
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class)
-				.run(((context) -> {
-					MapReactiveUserDetailsService userDetailsService = context
-							.getBean(MapReactiveUserDetailsService.class);
-					String password = userDetailsService.findByUsername("user")
-							.block(Duration.ofSeconds(30)).getPassword();
-					assertThat(password).startsWith("{noop}");
-				}));
+	void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run(((context) -> {
+			MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);
+			String password = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30)).getPassword();
+			assertThat(password).startsWith("{noop}");
+		}));
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword() {
+	void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword() {
 		testPasswordEncoding(TestSecurityConfiguration.class, "secret", "{noop}secret");
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword() {
+	void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword() {
 		String password = "{bcrypt}$2a$10$sCBi9fy9814vUPf2ZRbtp.fR5/VgRk2iBFZ.ypu5IyZ28bZgxrVDa";
 		testPasswordEncoding(TestSecurityConfiguration.class, password, password);
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderBeanPresent() {
+	void userDetailsServiceWhenPasswordEncoderBeanPresent() {
 		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "secret");
 	}
 
-	private void testPasswordEncoding(Class<?> configClass, String providedPassword,
-			String expectedPassword) {
+	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
 		this.contextRunner.withUserConfiguration(configClass)
-				.withPropertyValues("spring.security.user.password=" + providedPassword)
-				.run(((context) -> {
+				.withPropertyValues("spring.security.user.password=" + providedPassword).run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
-					String password = userDetailsService.findByUsername("user")
-							.block(Duration.ofSeconds(30)).getPassword();
+					String password = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30))
+							.getPassword();
 					assertThat(password).isEqualTo(expectedPassword);
 				}));
 	}
@@ -140,10 +121,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 		@Bean
 		public MapReactiveUserDetailsService userDetailsService() {
-			UserDetails foo = User.withUsername("foo").password("foo").roles("USER")
-					.build();
-			UserDetails admin = User.withUsername("admin").password("admin")
-					.roles("USER", "ADMIN").build();
+			UserDetails foo = User.withUsername("foo").password("foo").roles("USER").build();
+			UserDetails admin = User.withUsername("admin").password("admin").roles("USER", "ADMIN").build();
 			return new MapReactiveUserDetailsService(foo, admin);
 		}
 

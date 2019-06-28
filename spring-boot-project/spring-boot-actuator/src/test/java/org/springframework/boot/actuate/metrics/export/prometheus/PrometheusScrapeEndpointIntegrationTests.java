@@ -21,10 +21,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -35,15 +33,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Jon Schneider
  */
-@RunWith(WebEndpointRunners.class)
-public class PrometheusScrapeEndpointIntegrationTests {
+class PrometheusScrapeEndpointIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void scrapeHasContentTypeText004() {
-		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk()
-				.expectHeader()
+	@WebEndpointTest
+	void scrapeHasContentTypeText004(WebTestClient client) {
+		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk().expectHeader()
 				.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004));
 	}
 
@@ -51,8 +45,7 @@ public class PrometheusScrapeEndpointIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public PrometheusScrapeEndpoint prometheusScrapeEndpoint(
-				CollectorRegistry collectorRegistry) {
+		public PrometheusScrapeEndpoint prometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
 

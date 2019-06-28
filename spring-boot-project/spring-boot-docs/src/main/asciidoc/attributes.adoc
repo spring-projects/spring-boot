@@ -52,6 +52,8 @@
 :spring-session: https://projects.spring.io/spring-session/
 :spring-framework: https://projects.spring.io/spring-framework/
 :spring-security: https://projects.spring.io/spring-security/
+:spring-data-elasticsearch: https://spring.io/projects/spring-data-elasticsearch
+:spring-data-elasticsearch-reference: https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/
 :spring-data-jpa: https://projects.spring.io/spring-data-jpa/
 :spring-security-reference: https://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
 :spring-security-oauth2-reference: https://projects.spring.io/spring-security-oauth/docs/oauth2.html

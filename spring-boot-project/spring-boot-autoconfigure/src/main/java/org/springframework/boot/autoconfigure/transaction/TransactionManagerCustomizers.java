@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,17 +34,13 @@ public class TransactionManagerCustomizers {
 
 	private final List<PlatformTransactionManagerCustomizer<?>> customizers;
 
-	public TransactionManagerCustomizers(
-			Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers != null) ? new ArrayList<>(customizers)
-				: Collections.emptyList();
+	public TransactionManagerCustomizers(Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
+		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public void customize(PlatformTransactionManager transactionManager) {
-		LambdaSafe
-				.callbacks(PlatformTransactionManagerCustomizer.class, this.customizers,
-						transactionManager)
+		LambdaSafe.callbacks(PlatformTransactionManagerCustomizer.class, this.customizers, transactionManager)
 				.withLogger(TransactionManagerCustomizers.class)
 				.invoke((customizer) -> customizer.customize(transactionManager));
 	}

@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
@@ -29,7 +29,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -43,17 +44,14 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Dmytro Nosan
  */
-public class WebFluxMetricsAutoConfigurationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class WebFluxMetricsAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(
-					AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
 
 	@Test
-	public void shouldProvideWebFluxMetricsBeans() {
+	void shouldProvideWebFluxMetricsBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(MetricsWebFilter.class).hasSize(1);
 			assertThat(context).getBeans(DefaultWebFluxTagsProvider.class).hasSize(1);
@@ -61,49 +59,41 @@ public class WebFluxMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotOverrideCustomTagsProvider() {
+	void shouldNotOverrideCustomTagsProvider() {
 		this.contextRunner.withUserConfiguration(CustomWebFluxTagsProviderConfig.class)
-				.run((context) -> assertThat(context).getBeans(WebFluxTagsProvider.class)
-						.hasSize(1).containsKey("customWebFluxTagsProvider"));
+				.run((context) -> assertThat(context).getBeans(WebFluxTagsProvider.class).hasSize(1)
+						.containsKey("customWebFluxTagsProvider"));
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
-				.run((context) -> {
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
-					assertThat(this.output.toString())
-							.contains("Reached the maximum number of URI tags "
-									+ "for 'http.server.requests'");
+					assertThat(capturedOutput)
+							.contains("Reached the maximum number of URI tags " + "for 'http.server.requests'");
 				});
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
-				.run((context) -> {
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
-					assertThat(this.output.toString()).doesNotContain(
-							"Reached the maximum number of URI tags for 'http.server.requests'");
+					assertThat(capturedOutput)
+							.doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
 				});
 	}
 
 	@Test
-	public void metricsAreNotRecordedIfAutoTimeRequestsIsDisabled() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+	void metricsAreNotRecordedIfAutoTimeRequestsIsDisabled() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
-				.withPropertyValues(
-						"management.metrics.web.server.request.autotime.enabled=false")
-				.run((context) -> {
+				.withPropertyValues("management.metrics.web.server.request.autotime.enabled=false").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.find("http.server.requests").meter()).isNull();
 				});
@@ -111,22 +101,17 @@ public class WebFluxMetricsAutoConfigurationTests {
 
 	@Test
 	@Deprecated
-	public void metricsAreNotRecordedIfAutoTimeRequestsIsDisabledWithDeprecatedProperty() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+	void metricsAreNotRecordedIfAutoTimeRequestsIsDisabledWithDeprecatedProperty() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
 				.withUserConfiguration(TestController.class)
-				.withPropertyValues(
-						"management.metrics.web.server.auto-time-requests=false")
-				.run((context) -> {
+				.withPropertyValues("management.metrics.web.server.auto-time-requests=false").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.find("http.server.requests").meter()).isNull();
 				});
 	}
 
-	private MeterRegistry getInitializedMeterRegistry(
-			AssertableReactiveWebApplicationContext context) {
-		WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context)
-				.build();
+	private MeterRegistry getInitializedMeterRegistry(AssertableReactiveWebApplicationContext context) {
+		WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
 		for (int i = 0; i < 3; i++) {
 			webTestClient.get().uri("/test" + i).exchange().expectStatus().isOk();
 		}

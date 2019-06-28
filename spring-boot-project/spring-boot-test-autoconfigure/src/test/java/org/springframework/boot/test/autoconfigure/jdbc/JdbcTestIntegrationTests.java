@@ -20,8 +20,7 @@ import java.util.Collection;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,11 +39,10 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @JdbcTest
 @TestPropertySource(
 		properties = "spring.datasource.schema=classpath:org/springframework/boot/test/autoconfigure/jdbc/schema.sql")
-public class JdbcTestIntegrationTests {
+class JdbcTestIntegrationTests {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -57,7 +54,7 @@ public class JdbcTestIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testJdbcTemplate() {
+	void testJdbcTemplate() {
 		ExampleRepository repository = new ExampleRepository(this.jdbcTemplate);
 		repository.save(new ExampleEntity(1, "John"));
 		Collection<ExampleEntity> entities = repository.findAll();
@@ -68,28 +65,25 @@ public class JdbcTestIntegrationTests {
 	}
 
 	@Test
-	public void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+	void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
 	}
 
 	@Test
-	public void didNotInjectExampleRepository() {
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(
-				() -> this.applicationContext.getBean(ExampleRepository.class));
+	void didNotInjectExampleRepository() {
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+				.isThrownBy(() -> this.applicationContext.getBean(ExampleRepository.class));
 	}
 
 	@Test
-	public void flywayAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(FlywayAutoConfiguration.class));
+	void flywayAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(FlywayAutoConfiguration.class));
 	}
 
 	@Test
-	public void liquibaseAutoConfigurationWasImported() {
-		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+	void liquibaseAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
 	}
 
 }

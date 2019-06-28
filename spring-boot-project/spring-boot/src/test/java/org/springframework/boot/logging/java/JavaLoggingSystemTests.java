@@ -34,7 +34,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -50,14 +50,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
-	private static final FileFilter SPRING_LOG_FILTER = (pathname) -> pathname.getName()
-			.startsWith("spring.log");
+	private static final FileFilter SPRING_LOG_FILTER = (pathname) -> pathname.getName().startsWith("spring.log");
 
-	private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(
-			getClass().getClassLoader());
+	private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass().getClassLoader());
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public OutputCaptureRule output = new OutputCaptureRule();
 
 	private Logger logger;
 
@@ -120,8 +118,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void testSystemPropertyInitializesFormat() {
 		System.setProperty(LoggingSystemProperties.PID_KEY, "1234");
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:" + ClassUtils
-				.addResourcePathToPackagePath(getClass(), "logging.properties"), null);
+		this.loggingSystem.initialize(null,
+				"classpath:" + ClassUtils.addResourcePathToPackagePath(getClass(), "logging.properties"), null);
 		this.logger.info("Hello world");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
@@ -131,8 +129,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonDefaultConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:logging-nondefault.properties",
-				null);
+		this.loggingSystem.initialize(null, "classpath:logging-nondefault.properties", null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertThat(output).contains("INFO: Hello");
@@ -141,15 +138,14 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem
-				.initialize(null, "classpath:logging-nonexistent.properties", null));
+		assertThatIllegalStateException().isThrownBy(
+				() -> this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties", null));
 	}
 
 	@Test
 	public void getSupportedLevels() {
-		assertThat(this.loggingSystem.getSupportedLogLevels())
-				.isEqualTo(EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO,
-						LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF));
+		assertThat(this.loggingSystem.getSupportedLogLevels()).isEqualTo(
+				EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF));
 	}
 
 	@Test
@@ -159,8 +155,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.fine("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
-				.isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello")).isEqualTo(1);
 	}
 
 	@Test
@@ -172,8 +167,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", null);
 		this.logger.fine("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
-				.isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello")).isEqualTo(1);
 	}
 
 	@Test
@@ -181,11 +175,9 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
-		List<LoggerConfiguration> configurations = this.loggingSystem
-				.getLoggerConfigurations();
+		List<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
-		assertThat(configurations.get(0).getName())
-				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
+		assertThat(configurations.get(0).getName()).isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
 	}
 
 	@Test
@@ -193,10 +185,9 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
-		LoggerConfiguration configuration = this.loggingSystem
-				.getLoggerConfiguration(getClass().getName());
-		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
-				LogLevel.DEBUG, LogLevel.DEBUG));
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
+		assertThat(configuration)
+				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 }

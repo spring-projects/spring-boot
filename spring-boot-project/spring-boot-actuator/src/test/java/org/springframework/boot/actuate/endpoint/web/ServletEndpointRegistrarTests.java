@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ServletEndpointRegistrarTests {
+class ServletEndpointRegistrarTests {
 
 	@Mock
 	private ServletContext servletContext;
@@ -61,83 +61,67 @@ public class ServletEndpointRegistrarTests {
 	private ArgumentCaptor<Servlet> servlet;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addServlet(any(String.class), any(Servlet.class)))
-				.willReturn(this.dynamic);
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
 	}
 
 	@Test
-	public void createWhenServletEndpointsIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ServletEndpointRegistrar(null, null))
+	void createWhenServletEndpointsIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ServletEndpointRegistrar(null, null))
 				.withMessageContaining("ServletEndpoints must not be null");
 	}
 
 	@Test
-	public void onStartupShouldRegisterServlets() throws ServletException {
+	void onStartupShouldRegisterServlets() throws ServletException {
 		assertBasePath(null, "/test/*");
 	}
 
 	@Test
-	public void onStartupWhenHasBasePathShouldIncludeBasePath() throws ServletException {
+	void onStartupWhenHasBasePathShouldIncludeBasePath() throws ServletException {
 		assertBasePath("/actuator", "/actuator/test/*");
 	}
 
 	@Test
-	public void onStartupWhenHasEmptyBasePathShouldPrefixWithSlash()
-			throws ServletException {
+	void onStartupWhenHasEmptyBasePathShouldPrefixWithSlash() throws ServletException {
 		assertBasePath("", "/test/*");
 	}
 
 	@Test
-	public void onStartupWhenHasRootBasePathShouldNotAddDuplicateSlash()
-			throws ServletException {
+	void onStartupWhenHasRootBasePathShouldNotAddDuplicateSlash() throws ServletException {
 		assertBasePath("/", "/test/*");
 	}
 
-	private void assertBasePath(String basePath, String expectedMapping)
-			throws ServletException {
-		ExposableServletEndpoint endpoint = mockEndpoint(
-				new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath,
-				Collections.singleton(endpoint));
+	private void assertBasePath(String basePath, String expectedMapping) throws ServletException {
+		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath, Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"),
-				this.servlet.capture());
+		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"), this.servlet.capture());
 		assertThat(this.servlet.getValue()).isInstanceOf(TestServlet.class);
 		verify(this.dynamic).addMapping(expectedMapping);
 	}
 
 	@Test
-	public void onStartupWhenHasInitParametersShouldRegisterInitParameters()
-			throws Exception {
+	void onStartupWhenHasInitParametersShouldRegisterInitParameters() throws Exception {
 		ExposableServletEndpoint endpoint = mockEndpoint(
 				new EndpointServlet(TestServlet.class).withInitParameter("a", "b"));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
-				Collections.singleton(endpoint));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setInitParameters(Collections.singletonMap("a", "b"));
 	}
 
 	@Test
-	public void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup()
-			throws Exception {
-		ExposableServletEndpoint endpoint = mockEndpoint(
-				new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
-				Collections.singleton(endpoint));
+	void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup() throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setLoadOnStartup(7);
 	}
 
 	@Test
-	public void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue()
-			throws Exception {
-		ExposableServletEndpoint endpoint = mockEndpoint(
-				new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
-				Collections.singleton(endpoint));
+	void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue() throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setLoadOnStartup(-1);
 	}

@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanOnConfigurationFieldForNewBeanIntegrationTests {
+class SpyBeanOnConfigurationFieldForNewBeanIntegrationTests {
 
 	@Autowired
 	private Config config;
@@ -45,7 +45,7 @@ public class SpyBeanOnConfigurationFieldForNewBeanIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say simple");
 		verify(this.config.exampleService).greeting();
 	}

@@ -44,71 +44,64 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class DataSourceHealthIndicatorTests {
+class DataSourceHealthIndicatorTests {
 
 	private final DataSourceHealthIndicator indicator = new DataSourceHealthIndicator();
 
 	private SingleConnectionDataSource dataSource;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
-		this.dataSource = new SingleConnectionDataSource(
-				db.getUrl("testdb") + ";shutdown=true", "sa", "", false);
+		this.dataSource = new SingleConnectionDataSource(db.getUrl("testdb") + ";shutdown=true", "sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
 	}
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.dataSource != null) {
 			this.dataSource.destroy();
 		}
 	}
 
 	@Test
-	public void healthIndicatorWithDefaultSettings() {
+	void healthIndicatorWithDefaultSettings() {
 		this.indicator.setDataSource(this.dataSource);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(
-				entry("database", "HSQL Database Engine"), entry("result", 1L),
+		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"), entry("result", 1L),
 				entry("validationQuery", DatabaseDriver.HSQLDB.getValidationQuery()));
 	}
 
 	@Test
-	public void healthIndicatorWithCustomValidationQuery() {
+	void healthIndicatorWithCustomValidationQuery() {
 		String customValidationQuery = "SELECT COUNT(*) from FOO";
-		new JdbcTemplate(this.dataSource)
-				.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
+		new JdbcTemplate(this.dataSource).execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
 		this.indicator.setDataSource(this.dataSource);
 		this.indicator.setQuery(customValidationQuery);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(
-				entry("database", "HSQL Database Engine"), entry("result", 0L),
+		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"), entry("result", 0L),
 				entry("validationQuery", customValidationQuery));
 	}
 
 	@Test
-	public void healthIndicatorWithInvalidValidationQuery() {
+	void healthIndicatorWithInvalidValidationQuery() {
 		String invalidValidationQuery = "SELECT COUNT(*) from BAR";
 		this.indicator.setDataSource(this.dataSource);
 		this.indicator.setQuery(invalidValidationQuery);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails()).contains(
-				entry("database", "HSQL Database Engine"),
+		assertThat(health.getDetails()).contains(entry("database", "HSQL Database Engine"),
 				entry("validationQuery", invalidValidationQuery));
-		assertThat(health.getDetails()).containsOnlyKeys("database", "error",
-				"validationQuery");
+		assertThat(health.getDetails()).containsOnlyKeys("database", "error", "validationQuery");
 	}
 
 	@Test
-	public void healthIndicatorCloseConnection() throws Exception {
+	void healthIndicatorCloseConnection() throws Exception {
 		DataSource dataSource = mock(DataSource.class);
 		Connection connection = mock(Connection.class);
-		given(connection.getMetaData())
-				.willReturn(this.dataSource.getConnection().getMetaData());
+		given(connection.getMetaData()).willReturn(this.dataSource.getConnection().getMetaData());
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();

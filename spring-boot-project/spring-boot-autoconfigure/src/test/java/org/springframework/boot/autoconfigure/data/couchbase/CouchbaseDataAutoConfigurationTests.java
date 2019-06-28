@@ -53,41 +53,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CouchbaseDataAutoConfigurationTests {
+class CouchbaseDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void disabledIfCouchbaseIsNotConfigured() {
+	void disabledIfCouchbaseIsNotConfigured() {
 		load(null);
 		assertThat(this.context.getBeansOfType(IndexManager.class)).isEmpty();
 	}
 
 	@Test
-	public void customConfiguration() {
+	void customConfiguration() {
 		load(CustomCouchbaseConfiguration.class);
-		CouchbaseTemplate couchbaseTemplate = this.context
-				.getBean(CouchbaseTemplate.class);
-		assertThat(couchbaseTemplate.getDefaultConsistency())
-				.isEqualTo(Consistency.STRONGLY_CONSISTENT);
+		CouchbaseTemplate couchbaseTemplate = this.context.getBean(CouchbaseTemplate.class);
+		assertThat(couchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
 	}
 
 	@Test
-	public void validatorIsPresent() {
+	void validatorIsPresent() {
 		load(CouchbaseTestConfigurer.class);
-		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).hasSize(1);
 	}
 
 	@Test
-	public void autoIndexIsDisabledByDefault() {
+	void autoIndexIsDisabledByDefault() {
 		load(CouchbaseTestConfigurer.class);
 		IndexManager indexManager = this.context.getBean(IndexManager.class);
 		assertThat(indexManager.isIgnoreViews()).isTrue();
@@ -96,7 +93,7 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableAutoIndex() {
+	void enableAutoIndex() {
 		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.auto-index=true");
 		IndexManager indexManager = this.context.getBean(IndexManager.class);
 		assertThat(indexManager.isIgnoreViews()).isFalse();
@@ -105,32 +102,29 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void changeConsistency() {
-		load(CouchbaseTestConfigurer.class,
-				"spring.data.couchbase.consistency=eventually-consistent");
+	void changeConsistency() {
+		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.consistency=eventually-consistent");
 		SpringBootCouchbaseDataConfiguration configuration = this.context
 				.getBean(SpringBootCouchbaseDataConfiguration.class);
-		assertThat(configuration.getDefaultConsistency())
-				.isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
+		assertThat(configuration.getDefaultConsistency()).isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
-		CouchbaseMappingContext mappingContext = this.context
-				.getBean(CouchbaseMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		CouchbaseMappingContext mappingContext = this.context.getBean(CouchbaseMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
 	}
 
 	@Test
-	public void customConversions() {
+	void customConversions() {
 		load(CustomConversionsConfig.class);
 		CouchbaseTemplate template = this.context.getBean(CouchbaseTemplate.class);
-		assertThat(template.getConverter().getConversionService()
-				.canConvert(CouchbaseProperties.class, Boolean.class)).isTrue();
+		assertThat(template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
+				.isTrue();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -139,9 +133,8 @@ public class CouchbaseDataAutoConfigurationTests {
 		if (config != null) {
 			context.register(config);
 		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
-				CouchbaseDataAutoConfiguration.class);
+		context.register(PropertyPlaceholderAutoConfiguration.class, ValidationAutoConfiguration.class,
+				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}
@@ -167,8 +160,7 @@ public class CouchbaseDataAutoConfigurationTests {
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 		public CouchbaseCustomConversions myCustomConversions() {
-			return new CouchbaseCustomConversions(
-					Collections.singletonList(new MyConverter()));
+			return new CouchbaseCustomConversions(Collections.singletonList(new MyConverter()));
 		}
 
 	}

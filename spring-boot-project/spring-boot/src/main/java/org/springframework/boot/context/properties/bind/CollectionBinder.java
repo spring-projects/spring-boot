@@ -40,14 +40,12 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
-		Class<?> collectionType = (target.getValue() != null) ? List.class
-				: target.getType().resolve(Object.class);
+		Class<?> collectionType = (target.getValue() != null) ? List.class : target.getType().resolve(Object.class);
 		ResolvableType aggregateType = ResolvableType.forClassWithGenerics(List.class,
 				target.getType().asCollection().getGenerics());
 		ResolvableType elementType = target.getType().asCollection().getGeneric();
 		IndexedCollectionSupplier result = new IndexedCollectionSupplier(
-				() -> CollectionFactory.createCollection(collectionType,
-						elementType.resolve(), 0));
+				() -> CollectionFactory.createCollection(collectionType, elementType.resolve(), 0));
 		bindIndexed(name, target, elementBinder, aggregateType, elementType, result);
 		if (result.wasSupplied()) {
 			return result.get();
@@ -56,8 +54,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	@Override
-	protected Collection<Object> merge(Supplier<Collection<Object>> existing,
-			Collection<Object> additional) {
+	protected Collection<Object> merge(Supplier<Collection<Object>> existing, Collection<Object> additional) {
 		Collection<Object> existingCollection = getExistingIfPossible(existing);
 		if (existingCollection == null) {
 			return additional;
@@ -72,8 +69,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		}
 	}
 
-	private Collection<Object> getExistingIfPossible(
-			Supplier<Collection<Object>> existing) {
+	private Collection<Object> getExistingIfPossible(Supplier<Collection<Object>> existing) {
 		try {
 			return existing.get();
 		}
@@ -92,8 +88,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	private Collection<Object> createNewCollection(Collection<Object> collection) {
-		Collection<Object> result = CollectionFactory
-				.createCollection(collection.getClass(), collection.size());
+		Collection<Object> result = CollectionFactory.createCollection(collection.getClass(), collection.size());
 		result.addAll(collection);
 		return result;
 	}

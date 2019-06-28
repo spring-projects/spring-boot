@@ -58,33 +58,27 @@ public final class WebApplicationContextRunner extends
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
 	 */
-	public WebApplicationContextRunner(
-			Supplier<ConfigurableWebApplicationContext> contextFactory) {
+	public WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory) {
 		super(contextFactory);
 	}
 
-	private WebApplicationContextRunner(
-			Supplier<ConfigurableWebApplicationContext> contextFactory,
+	private WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
 			List<Configurations> configurations) {
-		super(contextFactory, initializers, environmentProperties, systemProperties,
-				classLoader, parent, beanRegistrations, configurations);
+		super(contextFactory, initializers, environmentProperties, systemProperties, classLoader, parent,
+				beanRegistrations, configurations);
 	}
 
 	@Override
-	protected WebApplicationContextRunner newInstance(
-			Supplier<ConfigurableWebApplicationContext> contextFactory,
+	protected WebApplicationContextRunner newInstance(Supplier<ConfigurableWebApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
-			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
-			ClassLoader classLoader, ApplicationContext parent,
-			List<BeanRegistration<?>> beanRegistrations,
+			TestPropertyValues environmentProperties, TestPropertyValues systemProperties, ClassLoader classLoader,
+			ApplicationContext parent, List<BeanRegistration<?>> beanRegistrations,
 			List<Configurations> configurations) {
-		return new WebApplicationContextRunner(contextFactory, initializers,
-				environmentProperties, systemProperties, classLoader, parent,
-				beanRegistrations, configurations);
+		return new WebApplicationContextRunner(contextFactory, initializers, environmentProperties, systemProperties,
+				classLoader, parent, beanRegistrations, configurations);
 	}
 
 	/**

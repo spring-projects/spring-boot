@@ -60,6 +60,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -75,10 +76,9 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled",
-		matchIfMissing = true)
-@AutoConfigureAfter({ ServletManagementContextAutoConfiguration.class,
-		HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class })
+@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
+@AutoConfigureAfter({ ServletManagementContextAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+		InfoEndpointAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean(DispatcherServlet.class)
@@ -98,13 +98,11 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
 	@ConditionalOnBean({ InfoEndpoint.class, GitProperties.class })
-	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(
-			GitProperties properties, ObjectProvider<InfoContributor> infoContributors) {
+	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(GitProperties properties,
+			ObjectProvider<InfoContributor> infoContributors) {
 		List<InfoContributor> contributors = infoContributors.orderedStream()
 				.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
-						? new GitInfoContributor(properties,
-								InfoPropertiesInfoContributor.Mode.FULL)
-						: infoContributor)
+						? new GitInfoContributor(properties, InfoPropertiesInfoContributor.Mode.FULL) : infoContributor)
 				.collect(Collectors.toList());
 		return new CloudFoundryInfoEndpointWebExtension(new InfoEndpoint(contributors));
 	}
@@ -112,52 +110,46 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@Bean
 	public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
-			RestTemplateBuilder restTemplateBuilder,
-			ServletEndpointsSupplier servletEndpointsSupplier,
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
-			ApplicationContext applicationContext) {
-		CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(
-				applicationContext, parameterMapper, endpointMediaTypes, null,
-				Collections.emptyList(), Collections.emptyList());
-		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
-				restTemplateBuilder, applicationContext.getEnvironment());
+			RestTemplateBuilder restTemplateBuilder, ServletEndpointsSupplier servletEndpointsSupplier,
+			ControllerEndpointsSupplier controllerEndpointsSupplier, ApplicationContext applicationContext) {
+		CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(applicationContext,
+				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList());
+		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(restTemplateBuilder,
+				applicationContext.getEnvironment());
 		Collection<ExposableWebEndpoint> webEndpoints = discoverer.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpoints);
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		return new CloudFoundryWebEndpointServletHandlerMapping(
-				new EndpointMapping("/cloudfoundryapplication"), webEndpoints,
-				endpointMediaTypes, getCorsConfiguration(), securityInterceptor,
+		return new CloudFoundryWebEndpointServletHandlerMapping(new EndpointMapping("/cloudfoundryapplication"),
+				webEndpoints, endpointMediaTypes, getCorsConfiguration(), securityInterceptor,
 				new EndpointLinksResolver(allEndpoints));
 	}
 
-	private CloudFoundrySecurityInterceptor getSecurityInterceptor(
-			RestTemplateBuilder restTemplateBuilder, Environment environment) {
-		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
-				restTemplateBuilder, environment);
+	private CloudFoundrySecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
+			Environment environment) {
+		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restTemplateBuilder,
+				environment);
 		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
-		return new CloudFoundrySecurityInterceptor(tokenValidator,
-				cloudfoundrySecurityService,
+		return new CloudFoundrySecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}
 
-	private CloudFoundrySecurityService getCloudFoundrySecurityService(
-			RestTemplateBuilder restTemplateBuilder, Environment environment) {
+	private CloudFoundrySecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
+			Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
-		boolean skipSslValidation = environment.getProperty(
-				"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
-		return (cloudControllerUrl != null) ? new CloudFoundrySecurityService(
-				restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
+		boolean skipSslValidation = environment.getProperty("management.cloudfoundry.skip-ssl-validation",
+				Boolean.class, false);
+		return (cloudControllerUrl != null)
+				? new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
 	private CorsConfiguration getCorsConfiguration() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
-		corsConfiguration.setAllowedMethods(
-				Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
+		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
 		corsConfiguration.setAllowedHeaders(
-				Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
+				Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
 		return corsConfiguration;
 	}
 
@@ -169,13 +161,11 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@ConditionalOnClass(WebSecurity.class)
 	@Order(SecurityProperties.IGNORED_ORDER)
 	@Configuration(proxyBeanMethods = false)
-	public static class IgnoredPathsWebSecurityConfigurer
-			implements WebSecurityConfigurer<WebSecurity> {
+	public static class IgnoredPathsWebSecurityConfigurer implements WebSecurityConfigurer<WebSecurity> {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
-			builder.ignoring().requestMatchers(
-					new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+			builder.ignoring().requestMatchers(new AntPathRequestMatcher("/cloudfoundryapplication/**"));
 		}
 
 		@Override

@@ -43,13 +43,12 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(ElasticMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.elastic", name = "enabled",
-		havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.metrics.export.elastic", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @EnableConfigurationProperties(ElasticProperties.class)
 public class ElasticMetricsExportAutoConfiguration {
 
@@ -67,12 +66,9 @@ public class ElasticMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig,
-			Clock clock) {
-		return ElasticMeterRegistry.builder(elasticConfig).clock(clock)
-				.httpClient(
-						new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
-								this.properties.getReadTimeout()))
+	public ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig, Clock clock) {
+		return ElasticMeterRegistry.builder(elasticConfig).clock(clock).httpClient(
+				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
 				.build();
 	}
 

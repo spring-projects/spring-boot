@@ -37,6 +37,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RestClientTest(ExampleRestClient.class)
 public class RestClientTestWithComponentIntegrationTests {
 
+	// JUnit 4 because RestClientTestWithoutJacksonIntegrationTests uses
+	// ModifiedClassPathRunner
+
 	@Autowired
 	private MockRestServiceServer server;
 
@@ -45,8 +48,7 @@ public class RestClientTestWithComponentIntegrationTests {
 
 	@Test
 	public void mockServerCall() {
-		this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("hello");
 	}
 

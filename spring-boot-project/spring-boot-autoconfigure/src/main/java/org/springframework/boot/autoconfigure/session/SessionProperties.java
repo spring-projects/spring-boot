@@ -113,8 +113,8 @@ public class SessionProperties {
 		/**
 		 * Session repository filter dispatcher types.
 		 */
-		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(Arrays.asList(
-				DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
+		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(
+				Arrays.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 		public int getFilterOrder() {
 			return this.filterOrder;

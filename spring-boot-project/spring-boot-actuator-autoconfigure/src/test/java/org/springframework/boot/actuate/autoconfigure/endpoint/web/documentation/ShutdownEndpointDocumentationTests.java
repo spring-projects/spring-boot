@@ -36,15 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class ShutdownEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+class ShutdownEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void shutdown() throws Exception {
+	void shutdown() throws Exception {
 		this.mockMvc.perform(post("/actuator/shutdown")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("shutdown",
-						responseFields(fieldWithPath("message").description(
-								"Message describing the result of the request."))));
+				.andDo(MockMvcRestDocumentation.document("shutdown", responseFields(
+						fieldWithPath("message").description("Message describing the result of the request."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -25,7 +25,7 @@ import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.http.CacheControl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.Matchers.endsWith;
 
 /**
  * Tests for {@link ResourceProperties}.
@@ -33,54 +33,53 @@ import static org.hamcrest.CoreMatchers.endsWith;
  * @author Stephane Nicoll
  * @author Kristine Jetzke
  */
-public class ResourcePropertiesTests {
+class ResourcePropertiesTests {
 
 	private final ResourceProperties properties = new ResourceProperties();
 
 	@Test
-	public void resourceChainNoCustomization() {
+	void resourceChainNoCustomization() {
 		assertThat(this.properties.getChain().getEnabled()).isNull();
 	}
 
 	@Test
-	public void resourceChainStrategyEnabled() {
+	void resourceChainStrategyEnabled() {
 		this.properties.getChain().getStrategy().getFixed().setEnabled(true);
 		assertThat(this.properties.getChain().getEnabled()).isTrue();
 	}
 
 	@Test
-	public void resourceChainEnabled() {
+	void resourceChainEnabled() {
 		this.properties.getChain().setEnabled(true);
 		assertThat(this.properties.getChain().getEnabled()).isTrue();
 	}
 
 	@Test
-	public void resourceChainDisabled() {
+	void resourceChainDisabled() {
 		this.properties.getChain().setEnabled(false);
 		assertThat(this.properties.getChain().getEnabled()).isFalse();
 	}
 
 	@Test
-	public void defaultStaticLocationsAllEndWithTrailingSlash() {
+	void defaultStaticLocationsAllEndWithTrailingSlash() {
 		assertThat(this.properties.getStaticLocations()).are(Matched.by(endsWith("/")));
 	}
 
 	@Test
-	public void customStaticLocationsAreNormalizedToEndWithTrailingSlash() {
+	void customStaticLocationsAreNormalizedToEndWithTrailingSlash() {
 		this.properties.setStaticLocations(new String[] { "/foo", "/bar", "/baz/" });
 		String[] actual = this.properties.getStaticLocations();
 		assertThat(actual).containsExactly("/foo/", "/bar/", "/baz/");
 	}
 
 	@Test
-	public void emptyCacheControl() {
-		CacheControl cacheControl = this.properties.getCache().getCachecontrol()
-				.toHttpCacheControl();
+	void emptyCacheControl() {
+		CacheControl cacheControl = this.properties.getCache().getCachecontrol().toHttpCacheControl();
 		assertThat(cacheControl).isNull();
 	}
 
 	@Test
-	public void cacheControlAllPropertiesSet() {
+	void cacheControlAllPropertiesSet() {
 		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setCachePrivate(true);
@@ -92,13 +91,13 @@ public class ResourcePropertiesTests {
 		properties.setStaleIfError(Duration.ofSeconds(6));
 		properties.setStaleWhileRevalidate(Duration.ofSeconds(7));
 		CacheControl cacheControl = properties.toHttpCacheControl();
-		assertThat(cacheControl.getHeaderValue()).isEqualTo(
-				"max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
+		assertThat(cacheControl.getHeaderValue())
+				.isEqualTo("max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
 						+ " s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
 	}
 
 	@Test
-	public void invalidCacheControlCombination() {
+	void invalidCacheControlCombination() {
 		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setNoStore(true);

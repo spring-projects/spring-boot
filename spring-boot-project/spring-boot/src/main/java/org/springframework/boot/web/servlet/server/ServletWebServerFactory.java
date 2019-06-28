@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.web.servlet.server;
-
-import org.apache.catalina.core.ApplicationContext;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -34,7 +32,7 @@ public interface ServletWebServerFactory {
 	/**
 	 * Gets a new fully configured but paused {@link WebServer} instance. Clients should
 	 * not be able to connect to the returned server until {@link WebServer#start()} is
-	 * called (which happens when the {@link ApplicationContext} has been fully
+	 * called (which happens when the {@code ApplicationContext} has been fully
 	 * refreshed).
 	 * @param initializers {@link ServletContextInitializer}s that should be applied as
 	 * the server starts

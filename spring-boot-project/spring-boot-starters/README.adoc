@@ -130,6 +130,9 @@ do as they were designed before this was clarified.
 | https://github.com/jbosstm/narayana[Narayana]
 | https://github.com/snowdrop/narayana-spring-boot
 
+| https://developer.nexmo.com/[Nexmo]
+| https://github.com/nexmo/nexmo-spring-boot-starter
+
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 

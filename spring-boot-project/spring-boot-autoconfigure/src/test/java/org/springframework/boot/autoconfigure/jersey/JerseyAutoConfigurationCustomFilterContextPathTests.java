@@ -53,15 +53,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "spring.jersey.type=filter", "server.servlet.context-path=/app" })
 @DirtiesContext
-public class JerseyAutoConfigurationCustomFilterContextPathTests {
+class JerseyAutoConfigurationCustomFilterContextPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello",
-				String.class);
+	void contextLoads() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -78,7 +77,7 @@ public class JerseyAutoConfigurationCustomFilterContextPathTests {
 			return "Hello " + this.msg;
 		}
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 
@@ -92,8 +91,8 @@ public class JerseyAutoConfigurationCustomFilterContextPathTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

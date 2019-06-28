@@ -16,7 +16,7 @@
 
 package org.springframework.boot;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -29,22 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringBootConfigurationTests {
+class SpringBootConfigurationTests {
 
 	@Test
-	public void proxyBeanMethodsIsEnabledByDefault() {
+	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(DefaultSpringBootConfiguration.class,
-						Configuration.class);
+				.getMergedAnnotationAttributes(DefaultSpringBootConfiguration.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
 	}
 
 	@Test
-	public void proxyBeanMethodsCanBeDisabled() {
+	void proxyBeanMethodsCanBeDisabled() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(
-						NoBeanMethodProxyingSpringBootConfiguration.class,
-						Configuration.class);
+				.getMergedAnnotationAttributes(NoBeanMethodProxyingSpringBootConfiguration.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);
 	}
 

@@ -18,8 +18,7 @@ package org.springframework.boot.test.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,7 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,19 +36,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @JdbcTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
-public class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTests {
+class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTests {
 
 	@Autowired
 	private DataSource dataSource;
 
 	@Test
-	public void replacesDefinedDataSourceWithExplicit() throws Exception {
+	void replacesDefinedDataSourceWithExplicit() throws Exception {
 		// H2 is explicitly defined but HSQL is the override.
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("HSQL");
 	}
 
@@ -60,8 +56,7 @@ public class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTest
 
 		@Bean
 		public DataSource dataSource() {
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseType.H2).build();
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.H2).build();
 		}
 
 	}

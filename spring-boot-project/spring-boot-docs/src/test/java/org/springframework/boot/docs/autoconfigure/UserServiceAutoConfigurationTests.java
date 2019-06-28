@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.autoconfigure;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class UserServiceAutoConfigurationTests {
+class UserServiceAutoConfigurationTests {
 
 	// tag::runner[]
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -41,7 +41,7 @@ public class UserServiceAutoConfigurationTests {
 
 	// tag::test-env[]
 	@Test
-	public void serviceNameCanBeConfigured() {
+	void serviceNameCanBeConfigured() {
 		this.contextRunner.withPropertyValues("user.name=test123").run((context) -> {
 			assertThat(context).hasSingleBean(UserService.class);
 			assertThat(context.getBean(UserService.class).getName()).isEqualTo("test123");
@@ -51,7 +51,7 @@ public class UserServiceAutoConfigurationTests {
 
 	// tag::test-classloader[]
 	@Test
-	public void serviceIsIgnoredIfLibraryIsNotPresent() {
+	void serviceIsIgnoredIfLibraryIsNotPresent() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(UserService.class))
 				.run((context) -> assertThat(context).doesNotHaveBean("userService"));
 	}
@@ -59,13 +59,11 @@ public class UserServiceAutoConfigurationTests {
 
 	// tag::test-user-config[]
 	@Test
-	public void defaultServiceBacksOff() {
-		this.contextRunner.withUserConfiguration(UserConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(UserService.class);
-					assertThat(context).getBean("myUserService")
-							.isSameAs(context.getBean(UserService.class));
-				});
+	void defaultServiceBacksOff() {
+		this.contextRunner.withUserConfiguration(UserConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(UserService.class);
+			assertThat(context).getBean("myUserService").isSameAs(context.getBean(UserService.class));
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

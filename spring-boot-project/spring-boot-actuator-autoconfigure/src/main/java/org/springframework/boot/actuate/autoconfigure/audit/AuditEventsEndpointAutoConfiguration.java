@@ -42,8 +42,7 @@ public class AuditEventsEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(AuditEventRepository.class)
-	public AuditEventsEndpoint auditEventsEndpoint(
-			AuditEventRepository auditEventRepository) {
+	public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {
 		return new AuditEventsEndpoint(auditEventRepository);
 	}
 

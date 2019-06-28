@@ -19,9 +19,8 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 import java.io.File;
 
 import io.restassured.specification.RequestSpecification;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,13 +32,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileSystemUtils;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -52,10 +50,9 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
  *
  * @author Eddú Meléndez
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestDocs
-public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
+class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@LocalServerPort
 	private int port;
@@ -65,26 +62,22 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 
 	private File generatedSnippets;
 
-	@Before
-	public void deleteSnippets() {
-		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
-				"generated-snippets");
+	@BeforeEach
+	void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
 		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}
 
 	@Test
-	public void snippetGeneration() {
+	void snippetGeneration() {
 		given(this.documentationSpec)
 				.filter(document("default-snippets",
-						preprocessRequest(modifyUris().scheme("https")
-								.host("api.example.com").removePort())))
+						preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
 				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
-		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md")))
-				.contains("'https://api.example.com/'");
-		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.md")))
-				.contains("api.example.com");
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md"))).contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.md"))).contains("api.example.com");
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
@@ -99,14 +92,13 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 
 		@Bean
 		public RestDocsRestAssuredConfigurationCustomizer templateFormatCustomizer() {
-			return (configurer) -> configurer.snippets()
-					.withTemplateFormat(TemplateFormats.markdown());
+			return (configurer) -> configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 		}
 
 		@Bean
 		public RestDocsRestAssuredConfigurationCustomizer defaultSnippetsCustomizer() {
-			return (configurer) -> configurer.snippets().withAdditionalDefaults(
-					responseFields(fieldWithPath("_links.self").description("Main URL")));
+			return (configurer) -> configurer.snippets()
+					.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}

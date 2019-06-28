@@ -31,46 +31,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class MeterValueTests {
+class MeterValueTests {
 
 	@Test
-	public void getValueForDistributionSummaryWhenFromLongShouldReturnLongValue() {
+	void getValueForDistributionSummaryWhenFromLongShouldReturnLongValue() {
 		MeterValue meterValue = MeterValue.valueOf(123L);
 		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123);
 	}
 
 	@Test
-	public void getValueForDistributionSummaryWhenFromNumberStringShouldReturnLongValue() {
+	void getValueForDistributionSummaryWhenFromNumberStringShouldReturnLongValue() {
 		MeterValue meterValue = MeterValue.valueOf("123");
 		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123);
 	}
 
 	@Test
-	public void getValueForDistributionSummaryWhenFromDurationStringShouldReturnNull() {
+	void getValueForDistributionSummaryWhenFromDurationStringShouldReturnNull() {
 		MeterValue meterValue = MeterValue.valueOf("123ms");
 		assertThat(meterValue.getValue(Type.DISTRIBUTION_SUMMARY)).isNull();
 	}
 
 	@Test
-	public void getValueForTimerWhenFromLongShouldReturnMsToNanosValue() {
+	void getValueForTimerWhenFromLongShouldReturnMsToNanosValue() {
 		MeterValue meterValue = MeterValue.valueOf(123L);
 		assertThat(meterValue.getValue(Type.TIMER)).isEqualTo(123000000);
 	}
 
 	@Test
-	public void getValueForTimerWhenFromNumberStringShouldMsToNanosValue() {
+	void getValueForTimerWhenFromNumberStringShouldMsToNanosValue() {
 		MeterValue meterValue = MeterValue.valueOf("123");
 		assertThat(meterValue.getValue(Type.TIMER)).isEqualTo(123000000);
 	}
 
 	@Test
-	public void getValueForTimerWhenFromDurationStringShouldReturnDurationNanos() {
+	void getValueForTimerWhenFromDurationStringShouldReturnDurationNanos() {
 		MeterValue meterValue = MeterValue.valueOf("123ms");
 		assertThat(meterValue.getValue(Type.TIMER)).isEqualTo(123000000);
 	}
 
 	@Test
-	public void getValueForOthersShouldReturnNull() {
+	void getValueForOthersShouldReturnNull() {
 		MeterValue meterValue = MeterValue.valueOf("123");
 		assertThat(meterValue.getValue(Type.COUNTER)).isNull();
 		assertThat(meterValue.getValue(Type.GAUGE)).isNull();
@@ -79,13 +79,13 @@ public class MeterValueTests {
 	}
 
 	@Test
-	public void valueOfShouldWorkInBinder() {
+	void valueOfShouldWorkInBinder() {
 		MockEnvironment environment = new MockEnvironment();
 		TestPropertyValues.of("duration=10ms", "long=20").applyTo(environment);
-		assertThat(Binder.get(environment).bind("duration", Bindable.of(MeterValue.class))
-				.get().getValue(Type.TIMER)).isEqualTo(10000000);
-		assertThat(Binder.get(environment).bind("long", Bindable.of(MeterValue.class))
-				.get().getValue(Type.TIMER)).isEqualTo(20000000);
+		assertThat(Binder.get(environment).bind("duration", Bindable.of(MeterValue.class)).get().getValue(Type.TIMER))
+				.isEqualTo(10000000);
+		assertThat(Binder.get(environment).bind("long", Bindable.of(MeterValue.class)).get().getValue(Type.TIMER))
+				.isEqualTo(20000000);
 	}
 
 }

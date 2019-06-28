@@ -16,8 +16,8 @@
 
 package org.springframework.boot.context.config;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -32,19 +32,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class ConfigFileApplicationListenerYamlProfileNegationTests {
+class ConfigFileApplicationListenerYamlProfileNegationTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void yamlProfileNegationDefaultProfile() {
+	void yamlProfileNegationDefaultProfile() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=profilenegation";
@@ -53,7 +53,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileNegationWithActiveProfile() {
+	void yamlProfileNegationWithActiveProfile() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=profilenegation";
@@ -62,7 +62,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileNegationLocalActiveProfiles() {
+	void yamlProfileNegationLocalActiveProfiles() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=profilenegation-local-active-profiles";
@@ -71,7 +71,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileNegationOverrideLocalActiveProfiles() {
+	void yamlProfileNegationOverrideLocalActiveProfiles() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=profilenegation-local-active-profiles";
@@ -80,7 +80,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileNegationWithProfileSpecificFile() {
+	void yamlProfileNegationWithProfileSpecificFile() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=profilenegation";
@@ -89,7 +89,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileCascading() {
+	void yamlProfileCascading() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
@@ -103,7 +103,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileCascadingOverrideProfilesA() {
+	void yamlProfileCascadingOverrideProfilesA() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
@@ -117,7 +117,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileCascadingMultipleActiveProfilesViaPropertiesShouldPreserveOrder() {
+	void yamlProfileCascadingMultipleActiveProfilesViaPropertiesShouldPreserveOrder() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
@@ -131,7 +131,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 	}
 
 	@Test
-	public void yamlProfileCascadingOverrideProfilesB() {
+	void yamlProfileCascadingOverrideProfilesB() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
@@ -144,12 +144,10 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
 	}
 
-	private void assertVersionProperty(ConfigurableApplicationContext context,
-			String expectedVersion, String... expectedActiveProfiles) {
-		assertThat(context.getEnvironment().getActiveProfiles())
-				.isEqualTo(expectedActiveProfiles);
-		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
-				.isEqualTo(expectedVersion);
+	private void assertVersionProperty(ConfigurableApplicationContext context, String expectedVersion,
+			String... expectedActiveProfiles) {
+		assertThat(context.getEnvironment().getActiveProfiles()).isEqualTo(expectedActiveProfiles);
+		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch").isEqualTo(expectedVersion);
 	}
 
 	@Configuration(proxyBeanMethods = false)

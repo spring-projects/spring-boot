@@ -28,7 +28,7 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 /**
  * {@link AnnotationCustomizableTypeExcludeFilter} that can be used to any test annotation
- * that uses the standard {code includeFilters}, {code excludeFilters} and
+ * that uses the standard {@code includeFilters}, {@code excludeFilters} and
  * {@code useDefaultFilters} attributes.
  *
  * @param <A> the annotation type
@@ -52,8 +52,7 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 	private MergedAnnotation<A> annotation;
 
 	protected StandardAnnotationCustomizableTypeExcludeFilter(Class<?> testClass) {
-		this.annotation = MergedAnnotations
-				.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+		this.annotation = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
 				.get(getAnnotationType());
 	}
 
@@ -68,9 +67,7 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 
 	@Override
 	protected Filter[] getFilters(FilterType type) {
-		return this.annotation
-				.getValue(FILTER_TYPE_ATTRIBUTES[type.ordinal()], Filter[].class)
-				.orElse(NO_FILTERS);
+		return this.annotation.getValue(FILTER_TYPE_ATTRIBUTES[type.ordinal()], Filter[].class).orElse(NO_FILTERS);
 	}
 
 	@Override
@@ -90,8 +87,8 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 
 	@SuppressWarnings("unchecked")
 	protected Class<A> getAnnotationType() {
-		ResolvableType type = ResolvableType.forClass(
-				StandardAnnotationCustomizableTypeExcludeFilter.class, getClass());
+		ResolvableType type = ResolvableType.forClass(StandardAnnotationCustomizableTypeExcludeFilter.class,
+				getClass());
 		return (Class<A>) type.resolveGeneric();
 	}
 

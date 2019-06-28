@@ -48,13 +48,13 @@ import org.springframework.util.StringUtils;
 public class CouchbaseCacheConfiguration {
 
 	@Bean
-	public CouchbaseCacheManager cacheManager(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizers, Bucket bucket) {
+	public CouchbaseCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
+			Bucket bucket) {
 		List<String> cacheNames = cacheProperties.getCacheNames();
 		CacheBuilder builder = CacheBuilder.newInstance(bucket);
 		Couchbase couchbase = cacheProperties.getCouchbase();
-		PropertyMapper.get().from(couchbase::getExpiration).whenNonNull()
-				.asInt(Duration::getSeconds).to(builder::withExpiration);
+		PropertyMapper.get().from(couchbase::getExpiration).whenNonNull().asInt(Duration::getSeconds)
+				.to(builder::withExpiration);
 		String[] names = StringUtils.toStringArray(cacheNames);
 		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(builder, names);
 		return customizers.customize(cacheManager);

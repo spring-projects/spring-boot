@@ -29,12 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class ConditionalOnMissingClassTests {
+class ConditionalOnMissingClassTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testVanillaOnClassCondition() {
+	void testVanillaOnClassCondition() {
 		this.context.register(BasicConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("bar")).isFalse();
@@ -42,7 +42,7 @@ public class ConditionalOnMissingClassTests {
 	}
 
 	@Test
-	public void testMissingOnClassCondition() {
+	void testMissingOnClassCondition() {
 		this.context.register(MissingConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("bar")).isTrue();

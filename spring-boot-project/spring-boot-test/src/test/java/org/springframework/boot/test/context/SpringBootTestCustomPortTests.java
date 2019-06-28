@@ -31,13 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @SpringBootTest(properties = "server.port=12345")
-public class SpringBootTestCustomPortTests {
+class SpringBootTestCustomPortTests {
 
 	@Autowired
 	private Environment environment;
 
 	@Test
-	public void validatePortIsNotOverwritten() {
+	void validatePortIsNotOverwritten() {
 		String port = this.environment.getProperty("server.port");
 		assertThat(port).isEqualTo("12345");
 	}

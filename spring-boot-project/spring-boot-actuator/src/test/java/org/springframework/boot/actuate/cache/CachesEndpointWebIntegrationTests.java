@@ -19,14 +19,11 @@ package org.springframework.boot.actuate.cache;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -39,61 +36,49 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(WebEndpointRunners.class)
-public class CachesEndpointWebIntegrationTests {
+class CachesEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	private static ConfigurableApplicationContext context;
-
-	@Test
-	public void allCaches() {
+	@WebEndpointTest
+	void allCaches(WebTestClient client) {
 		client.get().uri("/actuator/caches").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("cacheManagers.one.caches.a.target")
-				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.one.caches.b.target")
-				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.a.target")
-				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.c.target")
+				.jsonPath("cacheManagers.one.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.one.caches.b.target").isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.two.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.two.caches.c.target").isEqualTo(ConcurrentHashMap.class.getName());
+	}
+
+	@WebEndpointTest
+	void namedCache(WebTestClient client) {
+		client.get().uri("/actuator/caches/b").exchange().expectStatus().isOk().expectBody().jsonPath("name")
+				.isEqualTo("b").jsonPath("cacheManager").isEqualTo("one").jsonPath("target")
 				.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
-	@Test
-	public void namedCache() {
-		client.get().uri("/actuator/caches/b").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("name").isEqualTo("b").jsonPath("cacheManager")
-				.isEqualTo("one").jsonPath("target")
-				.isEqualTo(ConcurrentHashMap.class.getName());
+	@WebEndpointTest
+	void namedCacheWithUnknownName(WebTestClient client) {
+		client.get().uri("/actuator/caches/does-not-exist").exchange().expectStatus().isNotFound();
 	}
 
-	@Test
-	public void namedCacheWithUnknownName() {
-		client.get().uri("/actuator/caches/does-not-exist").exchange().expectStatus()
-				.isNotFound();
-	}
-
-	@Test
-	public void namedCacheWithNonUniqueName() {
+	@WebEndpointTest
+	void namedCacheWithNonUniqueName(WebTestClient client) {
 		client.get().uri("/actuator/caches/a").exchange().expectStatus().isBadRequest();
 	}
 
-	@Test
-	public void clearNamedCache() {
+	@WebEndpointTest
+	void clearNamedCache(WebTestClient client, ApplicationContext context) {
 		Cache b = context.getBean("one", CacheManager.class).getCache("b");
 		b.put("test", "value");
 		client.delete().uri("/actuator/caches/b").exchange().expectStatus().isNoContent();
 		assertThat(b.get("test")).isNull();
 	}
 
-	@Test
-	public void cleanNamedCacheWithUnknownName() {
-		client.delete().uri("/actuator/caches/does-not-exist").exchange().expectStatus()
-				.isNotFound();
+	@WebEndpointTest
+	void cleanNamedCacheWithUnknownName(WebTestClient client) {
+		client.delete().uri("/actuator/caches/does-not-exist").exchange().expectStatus().isNotFound();
 	}
 
-	@Test
-	public void clearNamedCacheWithNonUniqueName() {
+	@WebEndpointTest
+	void clearNamedCacheWithNonUniqueName(WebTestClient client) {
 		client.get().uri("/actuator/caches/a").exchange().expectStatus().isBadRequest();
 	}
 
@@ -116,8 +101,7 @@ public class CachesEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public CachesEndpointWebExtension cachesEndpointWebExtension(
-				CachesEndpoint endpoint) {
+		public CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint endpoint) {
 			return new CachesEndpointWebExtension(endpoint);
 		}
 

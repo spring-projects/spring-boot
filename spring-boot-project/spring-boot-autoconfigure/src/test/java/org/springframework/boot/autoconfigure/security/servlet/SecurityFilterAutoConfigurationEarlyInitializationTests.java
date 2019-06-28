@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -30,7 +30,8 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -50,37 +51,30 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Phillip Webb
  */
-public class SecurityFilterAutoConfigurationEarlyInitializationTests {
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	@Test
-	public void testSecurityFilterDoesNotCauseEarlyInitialization() {
+	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput capturedOutput) {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
-			String password = this.output.toString()
-					.split("Using generated security password: ")[1].split("\n")[0]
-							.trim();
-			new TestRestTemplate("user", password)
-					.getForEntity("http://localhost:" + port, Object.class);
+			String password = capturedOutput.toString().split("Using generated security password: ")[1].split("\n")[0]
+					.trim();
+			new TestRestTemplate("user", password).getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
 
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class,
-			ConverterBean.class })
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, SecurityAutoConfiguration.class,
-			UserDetailsServiceAutoConfiguration.class,
-			SecurityFilterAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class, ConverterBean.class })
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class,
+			SecurityFilterAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 
 		@Bean
@@ -109,7 +103,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 		private static final long serialVersionUID = 1L;
 
-		public JacksonModuleBean(DeserializerBean myDeser) {
+		JacksonModuleBean(DeserializerBean myDeser) {
 			addDeserializer(SourceType.class, myDeser);
 		}
 
@@ -121,7 +115,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 		@Autowired
 		ConversionService conversionService;
 
-		public DeserializerBean() {
+		DeserializerBean() {
 			super(SourceType.class);
 		}
 

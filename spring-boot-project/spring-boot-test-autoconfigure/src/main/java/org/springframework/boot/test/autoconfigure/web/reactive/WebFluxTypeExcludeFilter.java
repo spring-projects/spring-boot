@@ -37,8 +37,7 @@ import org.springframework.web.server.WebExceptionHandler;
  *
  * @author Stephane Nicoll
  */
-class WebFluxTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<WebFluxTest> {
+class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebFluxTest> {
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
@@ -67,8 +66,7 @@ class WebFluxTypeExcludeFilter
 
 	WebFluxTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
-		this.controllers = getAnnotation().getValue("controllers", Class[].class)
-				.orElse(NO_CONTROLLERS);
+		this.controllers = getAnnotation().getValue("controllers", Class[].class).orElse(NO_CONTROLLERS);
 	}
 
 	@Override

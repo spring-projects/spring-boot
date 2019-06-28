@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -39,35 +39,30 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ConfigurationsTests {
+class ConfigurationsTests {
 
 	@Test
-	public void createWhenClassesIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestConfigurations(null))
+	void createWhenClassesIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations(null))
 				.withMessageContaining("Classes must not be null");
 	}
 
 	@Test
-	public void createShouldSortClasses() {
+	void createShouldSortClasses() {
 		TestSortedConfigurations configurations = new TestSortedConfigurations(
 				Arrays.asList(OutputStream.class, InputStream.class));
-		assertThat(configurations.getClasses()).containsExactly(InputStream.class,
-				OutputStream.class);
+		assertThat(configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
 	}
 
 	@Test
-	public void getClassesShouldMergeByClassAndSort() {
-		Configurations c1 = new TestSortedConfigurations(
-				Arrays.asList(OutputStream.class, InputStream.class));
-		Configurations c2 = new TestConfigurations(
-				Collections.singletonList(Short.class));
-		Configurations c3 = new TestSortedConfigurations(
-				Arrays.asList(String.class, Integer.class));
+	void getClassesShouldMergeByClassAndSort() {
+		Configurations c1 = new TestSortedConfigurations(Arrays.asList(OutputStream.class, InputStream.class));
+		Configurations c2 = new TestConfigurations(Collections.singletonList(Short.class));
+		Configurations c3 = new TestSortedConfigurations(Arrays.asList(String.class, Integer.class));
 		Configurations c4 = new TestConfigurations(Arrays.asList(Long.class, Byte.class));
 		Class<?>[] classes = Configurations.getClasses(c1, c2, c3, c4);
-		assertThat(classes).containsExactly(Short.class, Long.class, Byte.class,
-				InputStream.class, Integer.class, OutputStream.class, String.class);
+		assertThat(classes).containsExactly(Short.class, Long.class, Byte.class, InputStream.class, Integer.class,
+				OutputStream.class, String.class);
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

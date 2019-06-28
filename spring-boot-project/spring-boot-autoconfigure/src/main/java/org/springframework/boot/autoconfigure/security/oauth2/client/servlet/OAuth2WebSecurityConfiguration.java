@@ -50,8 +50,7 @@ class OAuth2WebSecurityConfiguration {
 	@ConditionalOnMissingBean
 	public OAuth2AuthorizedClientRepository authorizedClientRepository(
 			OAuth2AuthorizedClientService authorizedClientService) {
-		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(
-				authorizedClientService);
+		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -60,8 +59,7 @@ class OAuth2WebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login()
-					.and().oauth2Client();
+			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login().and().oauth2Client();
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 * URLs were created.
 	 * @param urls the urls managed by the classloader
 	 */
-	public RestartClassLoader(ClassLoader parent, URL[] urls,
-			ClassLoaderFileRepository updatedFiles) {
+	public RestartClassLoader(ClassLoader parent, URL[] urls, ClassLoaderFileRepository updatedFiles) {
 		this(parent, urls, updatedFiles, LogFactory.getLog(RestartClassLoader.class));
 	}
 
@@ -74,8 +73,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 * @param urls the urls managed by the classloader
 	 * @param logger the logger used for messages
 	 */
-	public RestartClassLoader(ClassLoader parent, URL[] urls,
-			ClassLoaderFileRepository updatedFiles, Log logger) {
+	public RestartClassLoader(ClassLoader parent, URL[] urls, ClassLoaderFileRepository updatedFiles, Log logger) {
 		super(urls, parent);
 		Assert.notNull(parent, "Parent must not be null");
 		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
@@ -126,13 +124,11 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		if (file.getKind() == Kind.DELETED) {
 			return null;
 		}
-		return AccessController
-				.doPrivileged((PrivilegedAction<URL>) () -> createFileUrl(name, file));
+		return AccessController.doPrivileged((PrivilegedAction<URL>) () -> createFileUrl(name, file));
 	}
 
 	@Override
-	public Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
+	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		String path = name.replace('.', '/').concat(".class");
 		ClassLoaderFile file = this.updatedFiles.getFile(path);
 		if (file != null && file.getKind() == Kind.DELETED) {
@@ -173,8 +169,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 	private URL createFileUrl(String name, ClassLoaderFile file) {
 		try {
-			return new URL("reloaded", null, -1, "/" + name,
-					new ClassLoaderFileURLStreamHandler(file));
+			return new URL("reloaded", null, -1, "/" + name, new ClassLoaderFileURLStreamHandler(file));
 		}
 		catch (MalformedURLException ex) {
 			throw new IllegalStateException(ex);

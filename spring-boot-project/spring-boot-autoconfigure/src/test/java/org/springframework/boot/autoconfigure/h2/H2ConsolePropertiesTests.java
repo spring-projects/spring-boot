@@ -25,30 +25,28 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Madhura Bhave
  */
-public class H2ConsolePropertiesTests {
+class H2ConsolePropertiesTests {
 
 	private H2ConsoleProperties properties;
 
 	@Test
-	public void pathMustNotBeEmpty() {
+	void pathMustNotBeEmpty() {
 		this.properties = new H2ConsoleProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath(""))
 				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
-	public void pathMustHaveLengthGreaterThanOne() {
+	void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new H2ConsoleProperties();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.properties.setPath("/"))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("/"))
 				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
-	public void customPathMustBeginWithASlash() {
+	void customPathMustBeginWithASlash() {
 		this.properties = new H2ConsoleProperties();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.properties.setPath("custom"))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.properties.setPath("custom"))
 				.withMessageContaining("Path must start with '/'");
 	}
 

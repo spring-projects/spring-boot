@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ContextConfiguration
-public class SpringBootTestContextBootstrapperWithContextConfigurationTests {
+class SpringBootTestContextBootstrapperWithContextConfigurationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -46,12 +46,12 @@ public class SpringBootTestContextBootstrapperWithContextConfigurationTests {
 	private SpringBootTestContextBootstrapperExampleConfig config;
 
 	@Test
-	public void findConfigAutomatically() {
+	void findConfigAutomatically() {
 		assertThat(this.config).isNotNull();
 	}
 
 	@Test
-	public void contextWasCreatedViaSpringApplication() {
+	void contextWasCreatedViaSpringApplication() {
 		assertThat(this.context.getId()).startsWith("application");
 	}
 

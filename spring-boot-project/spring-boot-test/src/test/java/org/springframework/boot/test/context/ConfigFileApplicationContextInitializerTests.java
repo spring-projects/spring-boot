@@ -37,13 +37,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class,
 		initializers = ConfigFileApplicationContextInitializer.class)
-public class ConfigFileApplicationContextInitializerTests {
+class ConfigFileApplicationContextInitializerTests {
 
 	@Autowired
 	private Environment environment;
 
 	@Test
-	public void initializerPopulatesEnvironment() {
+	void initializerPopulatesEnvironment() {
 		assertThat(this.environment.getProperty("foo")).isEqualTo("bucket");
 	}
 

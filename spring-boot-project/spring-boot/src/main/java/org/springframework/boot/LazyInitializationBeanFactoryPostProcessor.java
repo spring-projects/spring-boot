@@ -30,17 +30,14 @@ import org.springframework.core.Ordered;
  * @author Madhura Bhave
  * @since 2.2.0
  */
-public final class LazyInitializationBeanFactoryPostProcessor
-		implements BeanFactoryPostProcessor, Ordered {
+public final class LazyInitializationBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-			throws BeansException {
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		for (String name : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(name);
 			if (beanDefinition instanceof AbstractBeanDefinition) {
-				Boolean lazyInit = ((AbstractBeanDefinition) beanDefinition)
-						.getLazyInit();
+				Boolean lazyInit = ((AbstractBeanDefinition) beanDefinition).getLazyInit();
 				if (lazyInit != null && !lazyInit) {
 					continue;
 				}

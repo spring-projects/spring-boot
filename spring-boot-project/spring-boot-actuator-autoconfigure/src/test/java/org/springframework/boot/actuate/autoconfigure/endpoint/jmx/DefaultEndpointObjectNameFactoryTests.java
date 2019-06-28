@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class DefaultEndpointObjectNameFactoryTests {
+class DefaultEndpointObjectNameFactoryTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -49,30 +49,26 @@ public class DefaultEndpointObjectNameFactoryTests {
 	private String contextId;
 
 	@Test
-	public void generateObjectName() {
+	void generateObjectName() {
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString())
-				.isEqualTo("org.springframework.boot:type=Endpoint,name=Test");
+		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=Test");
 	}
 
 	@Test
-	public void generateObjectNameWithCapitalizedId() {
-		ObjectName objectName = generateObjectName(
-				endpoint(EndpointId.of("testEndpoint")));
-		assertThat(objectName.toString())
-				.isEqualTo("org.springframework.boot:type=Endpoint,name=TestEndpoint");
+	void generateObjectNameWithCapitalizedId() {
+		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("testEndpoint")));
+		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=TestEndpoint");
 	}
 
 	@Test
-	public void generateObjectNameWithCustomDomain() {
+	void generateObjectNameWithCustomDomain() {
 		this.properties.setDomain("com.example.acme");
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString())
-				.isEqualTo("com.example.acme:type=Endpoint,name=Test");
+		assertThat(objectName.toString()).isEqualTo("com.example.acme:type=Endpoint,name=Test");
 	}
 
 	@Test
-	public void generateObjectNameWithUniqueNames() {
+	void generateObjectNameWithUniqueNames() {
 		this.environment.setProperty("spring.jmx.unique-names", "true");
 		assertUniqueObjectName();
 	}
@@ -81,39 +77,34 @@ public class DefaultEndpointObjectNameFactoryTests {
 		ExposableJmxEndpoint endpoint = endpoint(EndpointId.of("test"));
 		String id = ObjectUtils.getIdentityHexString(endpoint);
 		ObjectName objectName = generateObjectName(endpoint);
-		assertThat(objectName.toString()).isEqualTo(
-				"org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
+		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
 	}
 
 	@Test
-	public void generateObjectNameWithStaticNames() {
+	void generateObjectNameWithStaticNames() {
 		this.properties.getStaticNames().setProperty("counter", "42");
 		this.properties.getStaticNames().setProperty("foo", "bar");
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
 		assertThat(objectName.getKeyProperty("counter")).isEqualTo("42");
 		assertThat(objectName.getKeyProperty("foo")).isEqualTo("bar");
-		assertThat(objectName.toString())
-				.startsWith("org.springframework.boot:type=Endpoint,name=Test,");
+		assertThat(objectName.toString()).startsWith("org.springframework.boot:type=Endpoint,name=Test,");
 	}
 
 	@Test
-	public void generateObjectNameWithDuplicate() throws MalformedObjectNameException {
+	void generateObjectNameWithDuplicate() throws MalformedObjectNameException {
 		this.contextId = "testContext";
-		given(this.mBeanServer.queryNames(
-				new ObjectName("org.springframework.boot:type=Endpoint,name=Test,*"),
-				null)).willReturn(
-						Collections.singleton(new ObjectName(
-								"org.springframework.boot:type=Endpoint,name=Test")));
+		given(this.mBeanServer.queryNames(new ObjectName("org.springframework.boot:type=Endpoint,name=Test,*"), null))
+				.willReturn(Collections.singleton(new ObjectName("org.springframework.boot:type=Endpoint,name=Test")));
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString()).isEqualTo(
-				"org.springframework.boot:type=Endpoint,name=Test,context=testContext");
+		assertThat(objectName.toString())
+				.isEqualTo("org.springframework.boot:type=Endpoint,name=Test,context=testContext");
 
 	}
 
 	private ObjectName generateObjectName(ExposableJmxEndpoint endpoint) {
 		try {
-			return new DefaultEndpointObjectNameFactory(this.properties, this.environment,
-					this.mBeanServer, this.contextId).getObjectName(endpoint);
+			return new DefaultEndpointObjectNameFactory(this.properties, this.environment, this.mBeanServer,
+					this.contextId).getObjectName(endpoint);
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new AssertionError("Invalid object name", ex);

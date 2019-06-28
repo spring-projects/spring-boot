@@ -20,11 +20,12 @@ import java.io.File;
 import java.io.StringWriter;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,10 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class FreeMarkerAutoConfigurationTests {
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
@@ -46,49 +45,48 @@ public class FreeMarkerAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(FreeMarkerAutoConfiguration.class));
 
 	@Test
-	public void renderNonWebAppTemplate() {
+	void renderNonWebAppTemplate() {
 		this.contextRunner.run((context) -> {
-			freemarker.template.Configuration freemarker = context
-					.getBean(freemarker.template.Configuration.class);
+			freemarker.template.Configuration freemarker = context.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
-			freemarker.getTemplate("message.ftl").process(this, writer);
+			freemarker.getTemplate("message.ftlh").process(new DataModel(), writer);
 			assertThat(writer.toString()).contains("Hello World");
 		});
 	}
 
-	public String getGreeting() {
-		return "Hello World";
-	}
-
 	@Test
-	public void nonExistentTemplateLocation() {
+	void nonExistentTemplateLocation(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.templateLoaderPath:"
 						+ "classpath:/does-not-exist/,classpath:/also-does-not-exist")
-				.run((context) -> assertThat(this.output)
-						.contains("Cannot find template location"));
+				.run((context) -> assertThat(capturedOutput).contains("Cannot find template location"));
 	}
 
 	@Test
-	public void emptyTemplateLocation() {
-		File emptyDirectory = new File(this.buildOutput.getTestResourcesLocation(),
-				"empty-templates/empty-directory");
+	void emptyTemplateLocation(CapturedOutput capturedOutput) {
+		File emptyDirectory = new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory");
 		emptyDirectory.mkdirs();
 		this.contextRunner
-				.withPropertyValues("spring.freemarker.templateLoaderPath:"
-						+ "classpath:/empty-templates/empty-directory/")
-				.run((context) -> assertThat(this.output.toString())
-						.doesNotContain("Cannot find template location"));
+				.withPropertyValues(
+						"spring.freemarker.templateLoaderPath:" + "classpath:/empty-templates/empty-directory/")
+				.run((context) -> assertThat(capturedOutput).doesNotContain("Cannot find template location"));
 	}
 
 	@Test
-	public void nonExistentLocationAndEmptyLocation() {
-		new File(this.buildOutput.getTestResourcesLocation(),
-				"empty-templates/empty-directory").mkdirs();
-		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/does-not-exist/,classpath:/empty-templates/empty-directory/")
-				.run((context) -> assertThat(this.output.toString())
-						.doesNotContain("Cannot find template location"));
+	void nonExistentLocationAndEmptyLocation(CapturedOutput capturedOutput) {
+		new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory").mkdirs();
+		this.contextRunner
+				.withPropertyValues("spring.freemarker.templateLoaderPath:"
+						+ "classpath:/does-not-exist/,classpath:/empty-templates/empty-directory/")
+				.run((context) -> assertThat(capturedOutput).doesNotContain("Cannot find template location"));
+	}
+
+	public static class DataModel {
+
+		public String getGreeting() {
+			return "Hello World";
+		}
+
 	}
 
 }

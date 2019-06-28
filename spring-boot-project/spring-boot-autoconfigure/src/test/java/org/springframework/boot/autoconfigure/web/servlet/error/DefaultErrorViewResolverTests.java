@@ -56,7 +56,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class DefaultErrorViewResolverTests {
+class DefaultErrorViewResolverTests {
 
 	private DefaultErrorViewResolver resolver;
 
@@ -70,143 +70,129 @@ public class DefaultErrorViewResolverTests {
 	private HttpServletRequest request = new MockHttpServletRequest();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.refresh();
 		this.resourceProperties = new ResourceProperties();
 		TemplateAvailabilityProviders templateAvailabilityProviders = new TestTemplateAvailabilityProviders(
 				this.templateAvailabilityProvider);
-		this.resolver = new DefaultErrorViewResolver(applicationContext,
-				this.resourceProperties, templateAvailabilityProviders);
+		this.resolver = new DefaultErrorViewResolver(applicationContext, this.resourceProperties,
+				templateAvailabilityProviders);
 	}
 
 	@Test
-	public void createWhenApplicationContextIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new DefaultErrorViewResolver(null, new ResourceProperties()))
+	void createWhenApplicationContextIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DefaultErrorViewResolver(null, new ResourceProperties()))
 				.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
-	public void createWhenResourcePropertiesIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), null))
+	void createWhenResourcePropertiesIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), null))
 				.withMessageContaining("ResourceProperties must not be null");
 	}
 
 	@Test
-	public void resolveWhenNoMatchShouldReturnNull() {
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+	void resolveWhenNoMatchShouldReturnNull() {
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNull();
 	}
 
 	@Test
-	public void resolveWhenExactTemplateMatchShouldReturnTemplate() {
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+	void resolveWhenExactTemplateMatchShouldReturnTemplate() {
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
-		verify(this.templateAvailabilityProvider).isTemplateAvailable(eq("error/404"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class));
+		verify(this.templateAvailabilityProvider).isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class));
 		verifyNoMoreInteractions(this.templateAvailabilityProvider);
 	}
 
 	@Test
-	public void resolveWhenSeries5xxTemplateMatchShouldReturnTemplate() {
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/5xx"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.SERVICE_UNAVAILABLE, this.model);
+	void resolveWhenSeries5xxTemplateMatchShouldReturnTemplate() {
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/5xx"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.SERVICE_UNAVAILABLE,
+				this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/5xx");
 	}
 
 	@Test
-	public void resolveWhenSeries4xxTemplateMatchShouldReturnTemplate() {
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+	void resolveWhenSeries4xxTemplateMatchShouldReturnTemplate() {
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/4xx");
 	}
 
 	@Test
-	public void resolveWhenExactResourceMatchShouldReturnResource() throws Exception {
+	void resolveWhenExactResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/exact");
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
-	public void resolveWhenSeries4xxResourceMatchShouldReturnResource() throws Exception {
+	void resolveWhenSeries4xxResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/4xx");
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("4xx/4xx");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
-	public void resolveWhenSeries5xxResourceMatchShouldReturnResource() throws Exception {
+	void resolveWhenSeries5xxResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/5xx");
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.INTERNAL_SERVER_ERROR, this.model);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.INTERNAL_SERVER_ERROR,
+				this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("5xx/5xx");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
-	public void resolveWhenTemplateAndResourceMatchShouldFavorTemplate() {
+	void resolveWhenTemplateAndResourceMatchShouldFavorTemplate() {
 		setResourceLocation("/exact");
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
 	}
 
 	@Test
-	public void resolveWhenExactResourceMatchAndSeriesTemplateMatchShouldFavorResource()
-			throws Exception {
+	void resolveWhenExactResourceMatchAndSeriesTemplateMatchShouldFavorResource() throws Exception {
 		setResourceLocation("/exact");
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"),
-				any(Environment.class), any(ClassLoader.class),
-				any(ResourceLoader.class))).willReturn(true);
-		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
-				HttpStatus.NOT_FOUND, this.model);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
-	public void orderShouldBeLowest() {
+	void orderShouldBeLowest() {
 		assertThat(this.resolver.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE);
 	}
 
 	@Test
-	public void setOrderShouldChangeOrder() {
+	void setOrderShouldChangeOrder() {
 		this.resolver.setOrder(123);
 		assertThat(this.resolver.getOrder()).isEqualTo(123);
 	}
 
 	private void setResourceLocation(String path) {
 		String packageName = getClass().getPackage().getName();
-		this.resourceProperties.setStaticLocations(new String[] {
-				"classpath:" + packageName.replace('.', '/') + path + "/" });
+		this.resourceProperties
+				.setStaticLocations(new String[] { "classpath:" + packageName.replace('.', '/') + path + "/" });
 	}
 
 	private MockHttpServletResponse render(ModelAndView modelAndView) throws Exception {
@@ -215,8 +201,7 @@ public class DefaultErrorViewResolverTests {
 		return response;
 	}
 
-	private static class TestTemplateAvailabilityProviders
-			extends TemplateAvailabilityProviders {
+	private static class TestTemplateAvailabilityProviders extends TemplateAvailabilityProviders {
 
 		TestTemplateAvailabilityProviders(TemplateAvailabilityProvider provider) {
 			super(Collections.singletonList(provider));

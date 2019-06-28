@@ -16,8 +16,8 @@
 
 package org.springframework.boot.logging;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystem.NoOpLoggingSystem;
 
@@ -29,28 +29,28 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-public class LoggingSystemTests {
+class LoggingSystemTests {
 
-	@After
-	public void clearSystemProperty() {
+	@AfterEach
+	void clearSystemProperty() {
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 	}
 
 	@Test
-	public void loggingSystemCanBeDisabled() {
+	void loggingSystemCanBeDisabled() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, LoggingSystem.NONE);
 		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
 		assertThat(loggingSystem).isInstanceOf(NoOpLoggingSystem.class);
 	}
 
 	@Test
-	public void getLoggerConfigurationIsUnsupported() {
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(
-				() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));
+	void getLoggerConfigurationIsUnsupported() {
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));
 	}
 
 	@Test
-	public void listLoggerConfigurationsIsUnsupported() {
+	void listLoggerConfigurationsIsUnsupported() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfigurations());
 	}

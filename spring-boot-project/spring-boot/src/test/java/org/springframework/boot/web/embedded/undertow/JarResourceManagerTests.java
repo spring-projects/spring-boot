@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,9 @@ import java.util.zip.ZipEntry;
 
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceManager;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,39 +35,37 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class JarResourceManagerTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class JarResourceManagerTests {
 
 	private ResourceManager resourceManager;
 
-	@Before
-	public void createJar() throws IOException {
-		File jar = this.temp.newFile();
-		JarOutputStream out = new JarOutputStream(new FileOutputStream(jar));
-		out.putNextEntry(new ZipEntry("hello.txt"));
-		out.write("hello".getBytes());
-		out.close();
+	@BeforeEach
+	void createJar(@TempDir File tempDir) throws IOException {
+		File jar = new File(tempDir, "test.jar");
+		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(jar))) {
+			out.putNextEntry(new ZipEntry("hello.txt"));
+			out.write("hello".getBytes());
+			out.close();
+		}
 		this.resourceManager = new JarResourceManager(jar);
 	}
 
 	@Test
-	public void emptyPathIsHandledCorrectly() throws IOException {
+	void emptyPathIsHandledCorrectly() throws IOException {
 		Resource resource = this.resourceManager.getResource("");
 		assertThat(resource).isNotNull();
 		assertThat(resource.isDirectory()).isTrue();
 	}
 
 	@Test
-	public void rootPathIsHandledCorrectly() throws IOException {
+	void rootPathIsHandledCorrectly() throws IOException {
 		Resource resource = this.resourceManager.getResource("/");
 		assertThat(resource).isNotNull();
 		assertThat(resource.isDirectory()).isTrue();
 	}
 
 	@Test
-	public void resourceIsFoundInJarFile() throws IOException {
+	void resourceIsFoundInJarFile() throws IOException {
 		Resource resource = this.resourceManager.getResource("/hello.txt");
 		assertThat(resource).isNotNull();
 		assertThat(resource.isDirectory()).isFalse();
@@ -76,7 +73,7 @@ public class JarResourceManagerTests {
 	}
 
 	@Test
-	public void resourceIsFoundInJarFileWithoutLeadingSlash() throws IOException {
+	void resourceIsFoundInJarFileWithoutLeadingSlash() throws IOException {
 		Resource resource = this.resourceManager.getResource("hello.txt");
 		assertThat(resource).isNotNull();
 		assertThat(resource.isDirectory()).isFalse();

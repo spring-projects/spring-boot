@@ -50,77 +50,76 @@ import static org.mockito.Mockito.mock;
  * @author Mark Paluch
  * @author Stephane Nicoll
  */
-public class CassandraDataAutoConfigurationTests {
+class CassandraDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void templateExists() {
+	void templateExists() {
 		load(TestExcludeConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length)
-				.isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length).isEqualTo(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() {
+	void userTypeResolverShouldBeSet() {
 		load();
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
 				.isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	@Test
-	public void defaultConversions() {
+	void defaultConversions() {
 		load();
 		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
-		assertThat(template.getConverter().getConversionService().canConvert(Person.class,
-				String.class)).isFalse();
+		assertThat(template.getConverter().getConversionService().canConvert(Person.class, String.class)).isFalse();
 	}
 
 	@Test
-	public void customConversions() {
+	void customConversions() {
 		load(CustomConversionConfig.class);
 		CassandraTemplate template = this.context.getBean(CassandraTemplate.class);
-		assertThat(template.getConverter().getConversionService().canConvert(Person.class,
-				String.class)).isTrue();
+		assertThat(template.getConverter().getConversionService().canConvert(Person.class, String.class)).isTrue();
 
+	}
+
+	@Test
+	void clusterDoesNotExist() {
+		this.context = new AnnotationConfigApplicationContext(CassandraDataAutoConfiguration.class);
+		assertThat(this.context.getBeansOfType(Session.class)).isEmpty();
 	}
 
 	public void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test")
-				.applyTo(ctx);
+		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test").applyTo(ctx);
 		if (!ObjectUtils.isEmpty(config)) {
 			ctx.register(config);
 		}
-		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class,
-				CassandraDataAutoConfiguration.class);
+		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = { Session.class },
-			type = FilterType.ASSIGNABLE_TYPE))
+	@ComponentScan(
+			excludeFilters = @ComponentScan.Filter(classes = { Session.class }, type = FilterType.ASSIGNABLE_TYPE))
 	static class TestExcludeConfiguration {
 
 	}
@@ -146,8 +145,7 @@ public class CassandraDataAutoConfigurationTests {
 
 		@Bean
 		public CassandraCustomConversions myCassandraCustomConversions() {
-			return new CassandraCustomConversions(
-					Collections.singletonList(new MyConverter()));
+			return new CassandraCustomConversions(Collections.singletonList(new MyConverter()));
 		}
 
 	}

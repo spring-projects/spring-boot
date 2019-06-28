@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,18 +28,15 @@ import org.springframework.boot.context.properties.PropertyMapper;
  * @author Stephane Nicoll
  * @since 2.0
  */
-public final class DirectRabbitListenerContainerFactoryConfigurer extends
-		AbstractRabbitListenerContainerFactoryConfigurer<DirectRabbitListenerContainerFactory> {
+public final class DirectRabbitListenerContainerFactoryConfigurer
+		extends AbstractRabbitListenerContainerFactoryConfigurer<DirectRabbitListenerContainerFactory> {
 
 	@Override
-	public void configure(DirectRabbitListenerContainerFactory factory,
-			ConnectionFactory connectionFactory) {
+	public void configure(DirectRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
 		PropertyMapper map = PropertyMapper.get();
-		RabbitProperties.DirectContainer config = getRabbitProperties().getListener()
-				.getDirect();
+		RabbitProperties.DirectContainer config = getRabbitProperties().getListener().getDirect();
 		configure(factory, connectionFactory, config);
-		map.from(config::getConsumersPerQueue).whenNonNull()
-				.to(factory::setConsumersPerQueue);
+		map.from(config::getConsumersPerQueue).whenNonNull().to(factory::setConsumersPerQueue);
 	}
 
 }

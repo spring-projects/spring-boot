@@ -33,10 +33,8 @@ import org.springframework.context.annotation.Configuration;
 public class HibernateSecondLevelCacheExample {
 
 	@Bean
-	public HibernatePropertiesCustomizer hibernateSecondLevelCacheCustomizer(
-			JCacheCacheManager cacheManager) {
-		return (properties) -> properties.put(ConfigSettings.CACHE_MANAGER,
-				cacheManager.getCacheManager());
+	public HibernatePropertiesCustomizer hibernateSecondLevelCacheCustomizer(JCacheCacheManager cacheManager) {
+		return (properties) -> properties.put(ConfigSettings.CACHE_MANAGER, cacheManager.getCacheManager());
 
 	}
 

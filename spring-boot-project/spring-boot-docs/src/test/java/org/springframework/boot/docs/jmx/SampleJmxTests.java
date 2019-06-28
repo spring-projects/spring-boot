@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package org.springframework.boot.docs.jmx;
 
 import javax.management.MBeanServer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Example integration test that uses JMX.
@@ -33,16 +33,16 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @SuppressWarnings("unused")
 // tag::test[]
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = "spring.jmx.enabled=true")
 @DirtiesContext
-public class SampleJmxTests {
+class SampleJmxTests {
 
 	@Autowired
 	private MBeanServer mBeanServer;
 
 	@Test
-	public void exampleTest() {
+	void exampleTest() {
 		// ...
 	}
 

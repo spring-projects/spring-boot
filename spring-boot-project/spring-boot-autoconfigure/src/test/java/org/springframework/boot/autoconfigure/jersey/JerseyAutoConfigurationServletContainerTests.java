@@ -36,7 +36,8 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationServ
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,27 +54,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-@ExtendWith(OutputCapture.class)
-public class JerseyAutoConfigurationServletContainerTests {
+@ExtendWith(OutputCaptureExtension.class)
+class JerseyAutoConfigurationServletContainerTests {
 
 	@Test
-	public void existingJerseyServletIsAmended(OutputCapture output) {
-		assertThat(output)
-				.contains("Configuring existing registration for Jersey servlet");
-		assertThat(output).contains(
-				"Servlet " + Application.class.getName() + " was not registered");
+	void existingJerseyServletIsAmended(CapturedOutput output) {
+		assertThat(output).contains("Configuring existing registration for Jersey servlet");
+		assertThat(output).contains("Servlet " + Application.class.getName() + " was not registered");
 	}
 
-	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class,
-			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, JerseyAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	@Import(ContainerConfiguration.class)
 	@Path("/hello")
+	@Configuration(proxyBeanMethods = false)
 	public static class Application extends ResourceConfig {
 
 		@Value("${message:World}")
 		private String msg;
 
-		public Application() {
+		Application() {
 			register(Application.class);
 		}
 

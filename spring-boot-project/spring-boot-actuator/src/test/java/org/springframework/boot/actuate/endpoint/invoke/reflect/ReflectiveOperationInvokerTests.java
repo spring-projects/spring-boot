@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class ReflectiveOperationInvokerTests {
+class ReflectiveOperationInvokerTests {
 
 	private Example target;
 
@@ -48,74 +48,68 @@ public class ReflectiveOperationInvokerTests {
 	private ParameterValueMapper parameterValueMapper;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.target = new Example();
-		this.operationMethod = new OperationMethod(
-				ReflectionUtils.findMethod(Example.class, "reverse", String.class),
+		this.operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class, "reverse", String.class),
 				OperationType.READ);
-		this.parameterValueMapper = (parameter, value) -> (value != null)
-				? value.toString() : null;
+		this.parameterValueMapper = (parameter, value) -> (value != null) ? value.toString() : null;
 	}
 
 	@Test
-	public void createWhenTargetIsNullShouldThrowException() {
+	void createWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ReflectiveOperationInvoker(null,
-						this.operationMethod, this.parameterValueMapper))
+				.isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod, this.parameterValueMapper))
 				.withMessageContaining("Target must not be null");
 	}
 
 	@Test
-	public void createWhenOperationMethodIsNullShouldThrowException() {
+	void createWhenOperationMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null,
-						this.parameterValueMapper))
+				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper))
 				.withMessageContaining("OperationMethod must not be null");
 	}
 
 	@Test
-	public void createWhenParameterValueMapperIsNullShouldThrowException() {
+	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target,
-						this.operationMethod, null))
+				.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod, null))
 				.withMessageContaining("ParameterValueMapper must not be null");
 	}
 
 	@Test
-	public void invokeShouldInvokeMethod() {
-		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
-				this.operationMethod, this.parameterValueMapper);
-		Object result = invoker.invoke(new InvocationContext(mock(SecurityContext.class),
-				Collections.singletonMap("name", "boot")));
+	void invokeShouldInvokeMethod() {
+		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
+				this.parameterValueMapper);
+		Object result = invoker
+				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", "boot")));
 		assertThat(result).isEqualTo("toob");
 	}
 
 	@Test
-	public void invokeWhenMissingNonNullableArgumentShouldThrowException() {
-		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
-				this.operationMethod, this.parameterValueMapper);
-		assertThatExceptionOfType(MissingParametersException.class).isThrownBy(
-				() -> invoker.invoke(new InvocationContext(mock(SecurityContext.class),
-						Collections.singletonMap("name", null))));
+	void invokeWhenMissingNonNullableArgumentShouldThrowException() {
+		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
+				this.parameterValueMapper);
+		assertThatExceptionOfType(MissingParametersException.class).isThrownBy(() -> invoker
+				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", null))));
 	}
 
 	@Test
-	public void invokeWhenMissingNullableArgumentShouldInvoke() {
-		OperationMethod operationMethod = new OperationMethod(ReflectionUtils.findMethod(
-				Example.class, "reverseNullable", String.class), OperationType.READ);
-		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
-				operationMethod, this.parameterValueMapper);
-		Object result = invoker.invoke(new InvocationContext(mock(SecurityContext.class),
-				Collections.singletonMap("name", null)));
+	void invokeWhenMissingNullableArgumentShouldInvoke() {
+		OperationMethod operationMethod = new OperationMethod(
+				ReflectionUtils.findMethod(Example.class, "reverseNullable", String.class), OperationType.READ);
+		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, operationMethod,
+				this.parameterValueMapper);
+		Object result = invoker
+				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", null)));
 		assertThat(result).isEqualTo("llun");
 	}
 
 	@Test
-	public void invokeShouldResolveParameters() {
-		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
-				this.operationMethod, this.parameterValueMapper);
-		Object result = invoker.invoke(new InvocationContext(mock(SecurityContext.class),
-				Collections.singletonMap("name", 1234)));
+	void invokeShouldResolveParameters() {
+		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
+				this.parameterValueMapper);
+		Object result = invoker
+				.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", 1234)));
 		assertThat(result).isEqualTo("4321");
 	}
 

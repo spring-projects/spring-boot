@@ -16,7 +16,7 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 
@@ -30,17 +30,17 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class OptionalLiveReloadServerTests {
+class OptionalLiveReloadServerTests {
 
 	@Test
-	public void nullServer() throws Exception {
+	void nullServer() throws Exception {
 		OptionalLiveReloadServer server = new OptionalLiveReloadServer(null);
 		server.startServer();
 		server.triggerReload();
 	}
 
 	@Test
-	public void serverWontStart() throws Exception {
+	void serverWontStart() throws Exception {
 		LiveReloadServer delegate = mock(LiveReloadServer.class);
 		OptionalLiveReloadServer server = new OptionalLiveReloadServer(delegate);
 		willThrow(new RuntimeException("Error")).given(delegate).start();

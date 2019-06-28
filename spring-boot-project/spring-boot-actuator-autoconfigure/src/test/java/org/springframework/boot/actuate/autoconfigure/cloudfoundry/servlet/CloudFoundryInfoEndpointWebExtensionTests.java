@@ -17,7 +17,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -46,36 +46,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryInfoEndpointWebExtensionTests {
+class CloudFoundryInfoEndpointWebExtensionTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withPropertyValues("VCAP_APPLICATION={}")
-			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
-					WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-					DispatcherServletAutoConfiguration.class,
-					HttpMessageConvertersAutoConfiguration.class,
-					PropertyPlaceholderAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class,
-					ManagementContextAutoConfiguration.class,
-					ServletManagementContextAutoConfiguration.class,
-					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					ProjectInfoAutoConfiguration.class,
-					InfoContributorAutoConfiguration.class,
-					InfoEndpointAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class,
-					CloudFoundryActuatorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+					RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, ProjectInfoAutoConfiguration.class,
+					InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void gitFullDetailsAlwaysPresent() {
-		this.contextRunner
-				.withInitializer(
-						new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
+	void gitFullDetailsAlwaysPresent() {
+		this.contextRunner.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
 				.run((context) -> {
 					CloudFoundryInfoEndpointWebExtension extension = context
 							.getBean(CloudFoundryInfoEndpointWebExtension.class);
-					Map<String, Object> git = (Map<String, Object>) extension.info()
-							.get("git");
+					Map<String, Object> git = (Map<String, Object>) extension.info().get("git");
 					Map<String, Object> commit = (Map<String, Object>) git.get("commit");
 					assertThat(commit).hasSize(4);
 				});

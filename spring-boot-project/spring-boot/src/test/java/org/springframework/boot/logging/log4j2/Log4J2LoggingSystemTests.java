@@ -42,7 +42,7 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.testsupport.assertj.Matched;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,7 +66,7 @@ import static org.mockito.Mockito.verify;
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public OutputCaptureRule output = new OutputCaptureRule();
 
 	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
 
@@ -114,8 +114,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonDefaultConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:log4j2-nondefault.xml",
-				getLogFile(tmpDir() + "/tmp.log", null));
+		this.loggingSystem.initialize(null, "classpath:log4j2-nondefault.xml", getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		Configuration configuration = this.loggingSystem.getConfiguration();
@@ -129,14 +128,13 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem
-				.initialize(null, "classpath:log4j2-nonexistent.xml", null));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null));
 	}
 
 	@Test
 	public void getSupportedLevels() {
-		assertThat(this.loggingSystem.getSupportedLogLevels())
-				.isEqualTo(EnumSet.allOf(LogLevel.class));
+		assertThat(this.loggingSystem.getSupportedLogLevels()).isEqualTo(EnumSet.allOf(LogLevel.class));
 	}
 
 	@Test
@@ -146,8 +144,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
-				.isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello")).isEqualTo(1);
 	}
 
 	@Test
@@ -159,8 +156,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", null);
 		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
-				.isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello")).isEqualTo(1);
 	}
 
 	@Test
@@ -168,11 +164,9 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
-		List<LoggerConfiguration> configurations = this.loggingSystem
-				.getLoggerConfigurations();
+		List<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
-		assertThat(configurations.get(0).getName())
-				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
+		assertThat(configurations.get(0).getName()).isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
 	}
 
 	@Test
@@ -180,10 +174,9 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
-		LoggerConfiguration configuration = this.loggingSystem
-				.getLoggerConfiguration(getClass().getName());
-		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
-				LogLevel.DEBUG, LogLevel.DEBUG));
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
+		assertThat(configuration)
+				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 	@Test
@@ -200,8 +193,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	public void loggingThatUsesJulIsCaptured() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
-		java.util.logging.Logger julLogger = java.util.logging.Logger
-				.getLogger(getClass().getName());
+		java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(getClass().getName());
 		julLogger.severe("Hello world");
 		String output = this.output.toString().trim();
 		assertThat(output).contains("Hello world");
@@ -209,39 +201,33 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	public void configLocationsWithNoExtraDependencies() {
-		assertThat(this.loggingSystem.getStandardConfigLocations())
-				.contains("log4j2.properties", "log4j2.xml");
+		assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2.properties", "log4j2.xml");
 	}
 
 	@Test
 	public void configLocationsWithJacksonDatabind() {
 		this.loggingSystem.availableClasses(ObjectMapper.class.getName());
-		assertThat(this.loggingSystem.getStandardConfigLocations())
-				.contains("log4j2.json", "log4j2.jsn", "log4j2.xml");
+		assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2.json", "log4j2.jsn", "log4j2.xml");
 	}
 
 	@Test
 	public void configLocationsWithJacksonDataformatYaml() {
-		this.loggingSystem
-				.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser");
-		assertThat(this.loggingSystem.getStandardConfigLocations())
-				.contains("log4j2.yaml", "log4j2.yml", "log4j2.xml");
+		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser");
+		assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2.yaml", "log4j2.yml", "log4j2.xml");
 	}
 
 	@Test
 	public void configLocationsWithJacksonDatabindAndDataformatYaml() {
-		this.loggingSystem.availableClasses(
-				"com.fasterxml.jackson.dataformat.yaml.YAMLParser",
+		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser",
 				ObjectMapper.class.getName());
-		assertThat(this.loggingSystem.getStandardConfigLocations()).contains(
-				"log4j2.yaml", "log4j2.yml", "log4j2.json", "log4j2.jsn", "log4j2.xml");
+		assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2.yaml", "log4j2.yml", "log4j2.json",
+				"log4j2.jsn", "log4j2.xml");
 	}
 
 	@Test
 	public void springConfigLocations() {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).containsExactly("log4j2-spring.properties",
-				"log4j2-spring.xml");
+		assertThat(locations).containsExactly("log4j2-spring.properties", "log4j2-spring.xml");
 	}
 
 	@Test
@@ -269,12 +255,10 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			this.loggingSystem.beforeInitialize();
 			this.logger.info("Hidden");
 			this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
-			Matcher<String> expectedOutput = Matchers.allOf(
-					containsString("java.lang.RuntimeException: Expected"),
+			Matcher<String> expectedOutput = Matchers.allOf(containsString("java.lang.RuntimeException: Expected"),
 					not(containsString("Wrapped by:")));
 			this.output.expect(expectedOutput);
-			this.logger.warn("Expected exception",
-					new RuntimeException("Expected", new RuntimeException("Cause")));
+			this.logger.warn("Expected exception", new RuntimeException("Expected", new RuntimeException("Cause")));
 			String fileContents = contentOf(new File(tmpDir() + "/spring.log"));
 			assertThat(fileContents).is(Matched.by(expectedOutput));
 		}
@@ -310,8 +294,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		}
 
 		public Configuration getConfiguration() {
-			return ((org.apache.logging.log4j.core.LoggerContext) LogManager
-					.getContext(false)).getConfiguration();
+			return ((org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false)).getConfiguration();
 		}
 
 		@Override

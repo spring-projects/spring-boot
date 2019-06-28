@@ -57,8 +57,7 @@ public class HazelcastClientFactory {
 		this.clientConfig = clientConfig;
 	}
 
-	private ClientConfig getClientConfig(Resource clientConfigLocation)
-			throws IOException {
+	private ClientConfig getClientConfig(Resource clientConfigLocation) throws IOException {
 		URL configUrl = clientConfigLocation.getURL();
 		String configFileName = configUrl.getPath();
 		if (configFileName.endsWith(".yaml")) {
@@ -73,8 +72,7 @@ public class HazelcastClientFactory {
 	 */
 	public HazelcastInstance getHazelcastInstance() {
 		if (StringUtils.hasText(this.clientConfig.getInstanceName())) {
-			return HazelcastClient
-					.getHazelcastClientByName(this.clientConfig.getInstanceName());
+			return HazelcastClient.getHazelcastClientByName(this.clientConfig.getInstanceName());
 		}
 		return HazelcastClient.newHazelcastClient(this.clientConfig);
 	}

@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AppOpticsPropertiesTests extends StepRegistryPropertiesTests {
+class AppOpticsPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		AppOpticsProperties properties = new AppOpticsProperties();
 		AppOpticsConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);

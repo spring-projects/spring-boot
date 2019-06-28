@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,13 @@ package org.springframework.boot.convert;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,81 +34,59 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(Parameterized.class)
-public class DelimitedStringToArrayConverterTests {
+class DelimitedStringToArrayConverterTests {
 
-	private final ConversionService conversionService;
-
-	public DelimitedStringToArrayConverterTests(String name,
-			ConversionService conversionService) {
-		this.conversionService = conversionService;
+	@ConversionServiceTest
+	void canConvertFromStringToArrayShouldReturnTrue(ConversionService conversionService) {
+		assertThat(conversionService.canConvert(String.class, String[].class)).isTrue();
 	}
 
-	@Test
-	public void canConvertFromStringToArrayShouldReturnTrue() {
-		assertThat(this.conversionService.canConvert(String.class, String[].class))
-				.isTrue();
+	@ConversionServiceTest
+	void matchesWhenTargetIsNotAnnotatedShouldReturnTrue(ConversionService conversionService) {
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
+		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "noAnnotation"), 0);
+		assertThat(new DelimitedStringToArrayConverter(conversionService).matches(sourceType, targetType)).isTrue();
 	}
 
-	@Test
-	public void matchesWhenTargetIsNotAnnotatedShouldReturnTrue() {
+	@ConversionServiceTest
+	void matchesWhenHasAnnotationAndNonConvertibleElementTypeShouldReturnFalse(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "noAnnotation"), 0);
-		assertThat(new DelimitedStringToArrayConverter(this.conversionService)
-				.matches(sourceType, targetType)).isTrue();
+				.nested(ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
+		assertThat(new DelimitedStringToArrayConverter(conversionService).matches(sourceType, targetType)).isFalse();
 	}
 
-	@Test
-	public void matchesWhenHasAnnotationAndConvertibleElementTypeShouldReturnTrue() {
-		if (this.conversionService instanceof ApplicationConversionService) {
-			TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-			TypeDescriptor targetType = TypeDescriptor.nested(
-					ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
-			assertThat(new DelimitedStringToArrayConverter(this.conversionService)
-					.matches(sourceType, targetType)).isTrue();
-		}
-	}
-
-	@Test
-	public void matchesWhenHasAnnotationAndNonConvertibleElementTypeShouldReturnFalse() {
+	@ConversionServiceTest
+	void convertWhenHasDelimiterOfNoneShouldReturnWholeString(ConversionService conversionService) {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor.nested(
-				ReflectionUtils.findField(Values.class, "nonConvertibleElementType"), 0);
-		assertThat(new DelimitedStringToArrayConverter(this.conversionService)
-				.matches(sourceType, targetType)).isFalse();
-	}
-
-	@Test
-	public void convertWhenHasConvertibleElementTypeShouldReturnConvertedType() {
-		if (this.conversionService instanceof ApplicationConversionService) {
-			TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-			TypeDescriptor targetType = TypeDescriptor.nested(
-					ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
-			Integer[] converted = (Integer[]) this.conversionService
-					.convert(" 1 |  2| 3  ", sourceType, targetType);
-			assertThat(converted).containsExactly(1, 2, 3);
-		}
-	}
-
-	@Test
-	public void convertWhenHasDelimiterOfNoneShouldReturnWholeString() {
-		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
-		TypeDescriptor targetType = TypeDescriptor
-				.nested(ReflectionUtils.findField(Values.class, "delimiterNone"), 0);
-		String[] converted = (String[]) this.conversionService.convert("a,b,c",
-				sourceType, targetType);
+		TypeDescriptor targetType = TypeDescriptor.nested(ReflectionUtils.findField(Values.class, "delimiterNone"), 0);
+		String[] converted = (String[]) conversionService.convert("a,b,c", sourceType, targetType);
 		assertThat(converted).containsExactly("a,b,c");
 	}
 
-	@Parameters(name = "{0}")
-	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(
-				DelimitedStringToArrayConverterTests::addConverter);
+	@Test
+	void matchesWhenHasAnnotationAndConvertibleElementTypeShouldReturnTrue() {
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
+		TypeDescriptor targetType = TypeDescriptor
+				.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+		assertThat(
+				new DelimitedStringToArrayConverter(new ApplicationConversionService()).matches(sourceType, targetType))
+						.isTrue();
 	}
 
-	private static void addConverter(FormattingConversionService service) {
-		service.addConverter(new DelimitedStringToArrayConverter(service));
+	@Test
+	void convertWhenHasConvertibleElementTypeShouldReturnConvertedType() {
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
+		TypeDescriptor targetType = TypeDescriptor
+				.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
+		Integer[] converted = (Integer[]) new ApplicationConversionService().convert(" 1 |  2| 3  ", sourceType,
+				targetType);
+		assertThat(converted).containsExactly(1, 2, 3);
+	}
+
+	static Stream<? extends Arguments> conversionServices() {
+		return ConversionServiceArguments
+				.with((service) -> service.addConverter(new DelimitedStringToArrayConverter(service)));
 	}
 
 	static class Values {

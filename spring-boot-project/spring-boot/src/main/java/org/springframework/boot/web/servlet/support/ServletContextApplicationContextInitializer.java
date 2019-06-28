@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ServletContextApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
+public class ServletContextApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
 
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 
@@ -74,8 +74,7 @@ public class ServletContextApplicationContextInitializer implements
 	public void initialize(ConfigurableWebApplicationContext applicationContext) {
 		applicationContext.setServletContext(this.servletContext);
 		if (this.addApplicationContextAttribute) {
-			this.servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+			this.servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 					applicationContext);
 		}
 

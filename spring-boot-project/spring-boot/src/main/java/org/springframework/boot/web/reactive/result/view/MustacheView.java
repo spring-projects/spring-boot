@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,19 +75,17 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	@Override
-	protected Mono<Void> renderInternal(Map<String, Object> model, MediaType contentType,
-			ServerWebExchange exchange) {
+	protected Mono<Void> renderInternal(Map<String, Object> model, MediaType contentType, ServerWebExchange exchange) {
 		Resource resource = resolveResource();
 		if (resource == null) {
-			return Mono.error(new IllegalStateException(
-					"Could not find Mustache template with URL [" + getUrl() + "]"));
+			return Mono
+					.error(new IllegalStateException("Could not find Mustache template with URL [" + getUrl() + "]"));
 		}
 		DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer();
 		try (Reader reader = getReader(resource)) {
 			Template template = this.compiler.compile(reader);
 			Charset charset = getCharset(contentType).orElse(getDefaultCharset());
-			try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(),
-					charset)) {
+			try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset)) {
 				template.execute(model, writer);
 				writer.flush();
 			}

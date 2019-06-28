@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,12 @@ import org.springframework.util.StringUtils;
  */
 public final class LoggingFailureAnalysisReporter implements FailureAnalysisReporter {
 
-	private static final Log logger = LogFactory
-			.getLog(LoggingFailureAnalysisReporter.class);
+	private static final Log logger = LogFactory.getLog(LoggingFailureAnalysisReporter.class);
 
 	@Override
 	public void report(FailureAnalysis failureAnalysis) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Application failed to start due to an exception",
-					failureAnalysis.getCause());
+			logger.debug("Application failed to start due to an exception", failureAnalysis.getCause());
 		}
 		if (logger.isErrorEnabled()) {
 			logger.error(buildMessage(failureAnalysis));

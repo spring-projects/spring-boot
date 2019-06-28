@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,8 +81,7 @@ public abstract class Launcher {
 	 * @param classLoader the classloader
 	 * @throws Exception if the launch fails
 	 */
-	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
-			throws Exception {
+	protected void launch(String[] args, String mainClass, ClassLoader classLoader) throws Exception {
 		Thread.currentThread().setContextClassLoader(classLoader);
 		createMainMethodRunner(mainClass, args, classLoader).run();
 	}
@@ -94,8 +93,7 @@ public abstract class Launcher {
 	 * @param classLoader the classloader
 	 * @return the main method runner
 	 */
-	protected MainMethodRunner createMainMethodRunner(String mainClass, String[] args,
-			ClassLoader classLoader) {
+	protected MainMethodRunner createMainMethodRunner(String mainClass, String[] args, ClassLoader classLoader) {
 		return new MainMethodRunner(mainClass, args);
 	}
 
@@ -123,11 +121,9 @@ public abstract class Launcher {
 		}
 		File root = new File(path);
 		if (!root.exists()) {
-			throw new IllegalStateException(
-					"Unable to determine code source archive from " + root);
+			throw new IllegalStateException("Unable to determine code source archive from " + root);
 		}
-		return (root.isDirectory() ? new ExplodedArchive(root)
-				: new JarFileArchive(root));
+		return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
 	}
 
 }

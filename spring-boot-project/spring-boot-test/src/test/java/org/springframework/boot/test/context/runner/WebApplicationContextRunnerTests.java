@@ -30,13 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class WebApplicationContextRunnerTests extends
+class WebApplicationContextRunnerTests extends
 		AbstractApplicationContextRunnerTests<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
 	@Test
-	public void contextShouldHaveMockServletContext() {
-		get().run((context) -> assertThat(context.getServletContext())
-				.isInstanceOf(MockServletContext.class));
+	void contextShouldHaveMockServletContext() {
+		get().run((context) -> assertThat(context.getServletContext()).isInstanceOf(MockServletContext.class));
 	}
 
 	@Override

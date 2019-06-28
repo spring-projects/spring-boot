@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.devtools.restart;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -29,30 +29,30 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class DefaultRestartInitializerTests {
+class DefaultRestartInitializerTests {
 
 	@Test
-	public void jUnitStackShouldReturnNull() {
+	void jUnitStackShouldReturnNull() {
 		testSkippedStacks("org.junit.runners.Something");
 	}
 
 	@Test
-	public void jUnit5StackShouldReturnNull() {
+	void jUnit5StackShouldReturnNull() {
 		testSkippedStacks("org.junit.platform.Something");
 	}
 
 	@Test
-	public void springTestStackShouldReturnNull() {
+	void springTestStackShouldReturnNull() {
 		testSkippedStacks("org.springframework.boot.test.Something");
 	}
 
 	@Test
-	public void cucumberStackShouldReturnNull() {
+	void cucumberStackShouldReturnNull() {
 		testSkippedStacks("cucumber.runtime.Runtime.run");
 	}
 
 	@Test
-	public void validMainThreadShouldReturnUrls() {
+	void validMainThreadShouldReturnUrls() {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
@@ -62,7 +62,7 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void threadNotNamedMainShouldReturnNull() {
+	void threadNotNamedMainShouldReturnNull() {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
@@ -72,10 +72,9 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void threadNotUsingAppClassLoader() {
+	void threadNotUsingAppClassLoader() {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
-		ClassLoader classLoader = new MockLauncherClassLoader(
-				getClass().getClassLoader());
+		ClassLoader classLoader = new MockLauncherClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
@@ -83,9 +82,8 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void urlsCanBeRetrieved() {
-		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread()))
-				.isNotEmpty();
+	void urlsCanBeRetrieved() {
+		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread())).isNotEmpty();
 	}
 
 	protected void testSkippedStacks(String s) {
@@ -93,8 +91,7 @@ public class DefaultRestartInitializerTests {
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = mock(Thread.class);
 		thread.setName("main");
-		StackTraceElement element = new StackTraceElement(s, "someMethod", "someFile",
-				123);
+		StackTraceElement element = new StackTraceElement(s, "someMethod", "someFile", 123);
 		given(thread.getStackTrace()).willReturn(new StackTraceElement[] { element });
 		given(thread.getContextClassLoader()).willReturn(classLoader);
 		assertThat(initializer.getInitialUrls(thread)).isEqualTo(null);

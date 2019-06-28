@@ -30,38 +30,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class MappingWebEndpointPathMapperTests {
+class MappingWebEndpointPathMapperTests {
 
 	@Test
-	public void defaultConfiguration() {
-		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
-				Collections.emptyMap());
-		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper),
-				EndpointId.of("test"))).isEqualTo("test");
+	void defaultConfiguration() {
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(Collections.emptyMap());
+		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper), EndpointId.of("test"))).isEqualTo("test");
 	}
 
 	@Test
-	public void userConfiguration() {
+	void userConfiguration() {
 		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
 				Collections.singletonMap("test", "custom"));
-		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper),
-				EndpointId.of("test"))).isEqualTo("custom");
+		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper), EndpointId.of("test")))
+				.isEqualTo("custom");
 	}
 
 	@Test
-	public void mixedCaseDefaultConfiguration() {
-		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
-				Collections.emptyMap());
-		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper),
-				EndpointId.of("testEndpoint"))).isEqualTo("testEndpoint");
+	void mixedCaseDefaultConfiguration() {
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(Collections.emptyMap());
+		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper), EndpointId.of("testEndpoint")))
+				.isEqualTo("testEndpoint");
 	}
 
 	@Test
-	public void mixedCaseUserConfiguration() {
+	void mixedCaseUserConfiguration() {
 		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
 				Collections.singletonMap("test-endpoint", "custom"));
-		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper),
-				EndpointId.of("testEndpoint"))).isEqualTo("custom");
+		assertThat(PathMapper.getRootPath(Collections.singletonList(mapper), EndpointId.of("testEndpoint")))
+				.isEqualTo("custom");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,8 +134,7 @@ public class HttpTunnelPayload {
 	 * @return payload data or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	public static ByteBuffer getPayloadData(ReadableByteChannel channel)
-			throws IOException {
+	public static ByteBuffer getPayloadData(ReadableByteChannel channel) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		try {
 			int amountRead = channel.read(buffer);

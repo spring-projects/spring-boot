@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class JmxPropertiesTests {
+class JmxPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		JmxProperties properties = new JmxProperties();
 		JmxConfig config = JmxConfig.DEFAULT;
 		assertThat(properties.getDomain()).isEqualTo(config.domain());

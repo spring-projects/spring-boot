@@ -16,7 +16,7 @@
 
 package org.springframework.boot.devtools.tunnel.server;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -26,16 +26,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class StaticPortProviderTests {
+class StaticPortProviderTests {
 
 	@Test
-	public void portMustBePositive() {
+	void portMustBePositive() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StaticPortProvider(0))
 				.withMessageContaining("Port must be positive");
 	}
 
 	@Test
-	public void getPort() {
+	void getPort() {
 		StaticPortProvider provider = new StaticPortProvider(123);
 		assertThat(provider.getPort()).isEqualTo(123);
 	}

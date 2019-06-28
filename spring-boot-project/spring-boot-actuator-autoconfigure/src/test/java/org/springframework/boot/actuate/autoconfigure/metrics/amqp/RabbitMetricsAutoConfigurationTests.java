@@ -31,14 +31,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class RabbitMetricsAutoConfigurationTests {
+class RabbitMetricsAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(
-					RabbitAutoConfiguration.class, RabbitMetricsAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(
+					AutoConfigurations.of(RabbitAutoConfiguration.class, RabbitMetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguredConnectionFactoryIsInstrumented() {
+	void autoConfiguredConnectionFactoryIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			registry.get("rabbitmq.connections").meter();
@@ -46,12 +46,11 @@ public class RabbitMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.rabbitmq=false")
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("rabbitmq.connections").meter()).isNull();
-				});
+	void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
+		this.contextRunner.withPropertyValues("management.metrics.enable.rabbitmq=false").run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			assertThat(registry.find("rabbitmq.connections").meter()).isNull();
+		});
 	}
 
 }

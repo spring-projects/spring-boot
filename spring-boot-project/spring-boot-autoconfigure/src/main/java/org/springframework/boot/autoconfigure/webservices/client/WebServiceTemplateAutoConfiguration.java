@@ -46,8 +46,8 @@ public class WebServiceTemplateAutoConfiguration {
 	public WebServiceTemplateBuilder webServiceTemplateBuilder(
 			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
 		WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
-		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers
-				.orderedStream().collect(Collectors.toList());
+		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers.orderedStream()
+				.collect(Collectors.toList());
 		if (!customizers.isEmpty()) {
 			builder = builder.customizers(customizers);
 		}

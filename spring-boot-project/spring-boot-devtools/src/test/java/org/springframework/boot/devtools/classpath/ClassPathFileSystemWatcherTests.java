@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
@@ -47,25 +46,20 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class ClassPathFileSystemWatcherTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class ClassPathFileSystemWatcherTests {
 
 	@Test
-	public void urlsMustNotBeNull() {
+	void urlsMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathFileSystemWatcher(
-						mock(FileSystemWatcherFactory.class),
+				.isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
 						mock(ClassPathRestartStrategy.class), (URL[]) null))
 				.withMessageContaining("Urls must not be null");
 	}
 
 	@Test
-	public void configuredWithRestartStrategy() throws Exception {
+	void configuredWithRestartStrategy(@TempDir File folder) throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		Map<String, Object> properties = new HashMap<>();
-		File folder = this.temp.newFolder();
 		List<URL> urls = new ArrayList<>();
 		urls.add(new URL("https://spring.io"));
 		urls.add(folder.toURI().toURL());
@@ -86,8 +80,8 @@ public class ClassPathFileSystemWatcherTests {
 			Thread.sleep(500);
 		}
 		assertThat(events.size()).isEqualTo(1);
-		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator()
-				.next().getFile()).isEqualTo(classFile);
+		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator().next().getFile())
+				.isEqualTo(classFile);
 		context.close();
 	}
 
@@ -96,18 +90,15 @@ public class ClassPathFileSystemWatcherTests {
 
 		public final Environment environment;
 
-		public Config(Environment environment) {
+		Config(Environment environment) {
 			this.environment = environment;
 		}
 
 		@Bean
-		public ClassPathFileSystemWatcher watcher(
-				ClassPathRestartStrategy restartStrategy) {
-			FileSystemWatcher watcher = new FileSystemWatcher(false,
-					Duration.ofMillis(100), Duration.ofMillis(10));
+		public ClassPathFileSystemWatcher watcher(ClassPathRestartStrategy restartStrategy) {
+			FileSystemWatcher watcher = new FileSystemWatcher(false, Duration.ofMillis(100), Duration.ofMillis(10));
 			URL[] urls = this.environment.getProperty("urls", URL[].class);
-			return new ClassPathFileSystemWatcher(
-					new MockFileSystemWatcherFactory(watcher), restartStrategy, urls);
+			return new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(watcher), restartStrategy, urls);
 		}
 
 		@Bean
@@ -137,8 +128,7 @@ public class ClassPathFileSystemWatcherTests {
 
 	}
 
-	private static class MockFileSystemWatcherFactory
-			implements FileSystemWatcherFactory {
+	private static class MockFileSystemWatcherFactory implements FileSystemWatcherFactory {
 
 		private final FileSystemWatcher watcher;
 

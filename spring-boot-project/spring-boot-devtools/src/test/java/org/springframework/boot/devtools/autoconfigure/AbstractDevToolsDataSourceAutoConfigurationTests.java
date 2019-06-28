@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
@@ -48,23 +48,21 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
+abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
-	public void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
-		ConfigurableApplicationContext context = getContext(
-				() -> createContext(SingleDataSourceConfiguration.class));
+	void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
+		ConfigurableApplicationContext context = getContext(() -> createContext(SingleDataSourceConfiguration.class));
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
 		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
-	public void multipleDataSourcesAreIgnored() throws Exception {
+	void multipleDataSourcesAreIgnored() throws Exception {
 		ConfigurableApplicationContext context = getContext(
 				() -> createContext(MultipleDataSourcesConfiguration.class));
-		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class)
-				.values();
+		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
 		for (DataSource dataSource : dataSources) {
 			Statement statement = configureDataSourceBehavior(dataSource);
 			verify(statement, never()).execute("SHUTDOWN");
@@ -72,19 +70,17 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void emptyFactoryMethodMetadataIgnored() {
+	void emptyFactoryMethodMetadataIgnored() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		DataSource dataSource = mock(DataSource.class);
-		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(
-				dataSource.getClass());
+		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(dataSource.getClass());
 		context.registerBeanDefinition("dataSource", beanDefinition);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		context.refresh();
 		context.close();
 	}
 
-	protected final Statement configureDataSourceBehavior(DataSource dataSource)
-			throws SQLException {
+	protected final Statement configureDataSourceBehavior(DataSource dataSource) throws SQLException {
 		Connection connection = mock(Connection.class);
 		Statement statement = mock(Statement.class);
 		doReturn(connection).when(dataSource).getConnection();
@@ -92,8 +88,8 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return statement;
 	}
 
-	protected ConfigurableApplicationContext getContext(
-			Supplier<ConfigurableApplicationContext> supplier) throws Exception {
+	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)
+			throws Exception {
 		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
 		Thread thread = new Thread(() -> {
 			ConfigurableApplicationContext context = supplier.get();
@@ -108,20 +104,17 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return this.createContext(null, classes);
 	}
 
-	protected final ConfigurableApplicationContext createContext(String driverClassName,
-			Class<?>... classes) {
+	protected final ConfigurableApplicationContext createContext(String driverClassName, Class<?>... classes) {
 		return this.createContext(driverClassName, null, classes);
 	}
 
-	protected final ConfigurableApplicationContext createContext(String driverClassName,
-			String url, Class<?>... classes) {
+	protected final ConfigurableApplicationContext createContext(String driverClassName, String url,
+			Class<?>... classes) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(classes);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		if (driverClassName != null) {
-			TestPropertyValues
-					.of("spring.datasource.driver-class-name:" + driverClassName)
-					.applyTo(context);
+			TestPropertyValues.of("spring.datasource.driver-class-name:" + driverClassName).applyTo(context);
 		}
 		if (url != null) {
 			TestPropertyValues.of("spring.datasource.url:" + url).applyTo(context);
@@ -168,8 +161,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	private static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof DataSource) {
 				bean = spy(bean);
 			}
@@ -177,8 +169,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
 

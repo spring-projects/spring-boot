@@ -34,43 +34,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ImportAutoConfigurationTests {
+class ImportAutoConfigurationTests {
 
 	@Test
-	public void multipleAnnotationsShouldMergeCorrectly() {
-		assertThat(getImportedConfigBeans(Config.class)).containsExactly("ConfigA",
-				"ConfigB", "ConfigC", "ConfigD");
-		assertThat(getImportedConfigBeans(AnotherConfig.class)).containsExactly("ConfigA",
-				"ConfigB", "ConfigC", "ConfigD");
+	void multipleAnnotationsShouldMergeCorrectly() {
+		assertThat(getImportedConfigBeans(Config.class)).containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD");
+		assertThat(getImportedConfigBeans(AnotherConfig.class)).containsExactly("ConfigA", "ConfigB", "ConfigC",
+				"ConfigD");
 	}
 
 	@Test
-	public void classesAsAnAlias() {
-		assertThat(getImportedConfigBeans(AnotherConfigUsingClasses.class))
-				.containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD");
+	void classesAsAnAlias() {
+		assertThat(getImportedConfigBeans(AnotherConfigUsingClasses.class)).containsExactly("ConfigA", "ConfigB",
+				"ConfigC", "ConfigD");
 	}
 
 	@Test
-	public void excluding() {
-		assertThat(getImportedConfigBeans(ExcludingConfig.class))
-				.containsExactly("ConfigA", "ConfigB", "ConfigD");
+	void excluding() {
+		assertThat(getImportedConfigBeans(ExcludingConfig.class)).containsExactly("ConfigA", "ConfigB", "ConfigD");
 	}
 
 	@Test
-	public void excludeAppliedGlobally() {
-		assertThat(getImportedConfigBeans(ExcludeDConfig.class, ImportADConfig.class))
-				.containsExactly("ConfigA");
+	void excludeAppliedGlobally() {
+		assertThat(getImportedConfigBeans(ExcludeDConfig.class, ImportADConfig.class)).containsExactly("ConfigA");
 	}
 
 	@Test
-	public void excludeWithRedundancy() {
-		assertThat(getImportedConfigBeans(ExcludeADConfig.class, ExcludeDConfig.class,
-				ImportADConfig.class)).isEmpty();
+	void excludeWithRedundancy() {
+		assertThat(getImportedConfigBeans(ExcludeADConfig.class, ExcludeDConfig.class, ImportADConfig.class)).isEmpty();
 	}
 
 	private List<String> getImportedConfigBeans(Class<?>... config) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				config);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(config);
 		String shortName = ClassUtils.getShortName(ImportAutoConfigurationTests.class);
 		int beginIndex = shortName.length() + 1;
 		List<String> orderedConfigBeans = new ArrayList<>();
@@ -102,8 +97,7 @@ public class ImportAutoConfigurationTests {
 
 	}
 
-	@ImportAutoConfiguration(classes = { ConfigD.class, ConfigB.class },
-			exclude = ConfigC.class)
+	@ImportAutoConfiguration(classes = { ConfigD.class, ConfigB.class }, exclude = ConfigC.class)
 	@MetaImportAutoConfiguration
 	static class ExcludingConfig {
 

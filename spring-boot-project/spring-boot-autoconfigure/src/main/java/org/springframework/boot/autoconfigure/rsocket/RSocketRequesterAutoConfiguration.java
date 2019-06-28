@@ -41,16 +41,14 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketRequester.class, RSocketFactory.class, HttpServer.class,
-		TcpServerTransport.class })
+@ConditionalOnClass({ RSocketRequester.class, RSocketFactory.class, HttpServer.class, TcpServerTransport.class })
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 public class RSocketRequesterAutoConfiguration {
 
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public RSocketRequester.Builder rsocketRequesterBuilder(
-			RSocketStrategies strategies) {
+	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies) {
 		return RSocketRequester.builder().rsocketStrategies(strategies);
 	}
 

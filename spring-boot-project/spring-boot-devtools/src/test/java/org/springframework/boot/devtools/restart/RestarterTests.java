@@ -22,16 +22,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ThreadFactory;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
@@ -54,35 +55,33 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class RestarterTests {
+@ExtendWith(OutputCaptureExtension.class)
+class RestarterTests {
 
-	@Rule
-	public OutputCapture out = new OutputCapture();
-
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		RestarterInitializer.setRestarterInstance();
 	}
 
-	@After
-	public void cleanup() {
+	@AfterEach
+	void cleanup() {
 		Restarter.clearInstance();
 	}
 
 	@Test
-	public void cantGetInstanceBeforeInitialize() {
+	void cantGetInstanceBeforeInitialize() {
 		Restarter.clearInstance();
 		assertThatIllegalStateException().isThrownBy(Restarter::getInstance)
 				.withMessageContaining("Restarter has not been initialized");
 	}
 
 	@Test
-	public void testRestart() throws Exception {
+	void testRestart(CapturedOutput capturedOutput) throws Exception {
 		Restarter.clearInstance();
 		Thread thread = new Thread(SampleApplication::main);
 		thread.start();
 		Thread.sleep(2600);
-		String output = this.out.toString();
+		String output = capturedOutput.toString();
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0")).isGreaterThan(1);
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1")).isGreaterThan(1);
 		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(0);
@@ -90,7 +89,7 @@ public class RestarterTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void getOrAddAttributeWithNewAttribute() {
+	void getOrAddAttributeWithNewAttribute() {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		given(objectFactory.getObject()).willReturn("abc");
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
@@ -98,46 +97,42 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void addUrlsMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> Restarter.getInstance().addUrls(null))
+	void addUrlsMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addUrls(null))
 				.withMessageContaining("Urls must not be null");
 	}
 
 	@Test
-	public void addUrls() throws Exception {
+	void addUrls() throws Exception {
 		URL url = new URL("file:/proj/module-a.jar!/");
 		Collection<URL> urls = Collections.singleton(url);
 		Restarter restarter = Restarter.getInstance();
 		restarter.addUrls(urls);
 		restarter.restart();
-		ClassLoader classLoader = ((TestableRestarter) restarter)
-				.getRelaunchClassLoader();
+		ClassLoader classLoader = ((TestableRestarter) restarter).getRelaunchClassLoader();
 		assertThat(((URLClassLoader) classLoader).getURLs()[0]).isEqualTo(url);
 	}
 
 	@Test
-	public void addClassLoaderFilesMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
+	void addClassLoaderFilesMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
 				.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test
-	public void addClassLoaderFiles() {
+	void addClassLoaderFiles() {
 		ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 		classLoaderFiles.addFile("f", new ClassLoaderFile(Kind.ADDED, "abc".getBytes()));
 		Restarter restarter = Restarter.getInstance();
 		restarter.addClassLoaderFiles(classLoaderFiles);
 		restarter.restart();
-		ClassLoader classLoader = ((TestableRestarter) restarter)
-				.getRelaunchClassLoader();
+		ClassLoader classLoader = ((TestableRestarter) restarter).getRelaunchClassLoader();
 		assertThat(classLoader.getResourceAsStream("f")).hasContent("abc");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void getOrAddAttributeWithExistingAttribute() {
+	void getOrAddAttributeWithExistingAttribute() {
 		Restarter.getInstance().getOrAddAttribute("x", () -> "abc");
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
@@ -146,7 +141,7 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void getThreadFactory() throws Exception {
+	void getThreadFactory() throws Exception {
 		final ClassLoader parentLoader = Thread.currentThread().getContextClassLoader();
 		final ClassLoader contextClassLoader = new URLClassLoader(new URL[0]);
 		Thread thread = new Thread(() -> {
@@ -165,7 +160,7 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void getInitialUrls() throws Exception {
+	void getInitialUrls() throws Exception {
 		Restarter.clearInstance();
 		RestartInitializer initializer = mock(RestartInitializer.class);
 		URL[] urls = new URL[] { new URL("file:/proj/module-a.jar!/") };
@@ -217,8 +212,7 @@ public class RestarterTests {
 
 	}
 
-	private static class CloseCountingApplicationListener
-			implements ApplicationListener<ContextClosedEvent> {
+	private static class CloseCountingApplicationListener implements ApplicationListener<ContextClosedEvent> {
 
 		static int closed = 0;
 
@@ -234,12 +228,11 @@ public class RestarterTests {
 		private ClassLoader relaunchClassLoader;
 
 		TestableRestarter() {
-			this(Thread.currentThread(), new String[] {}, false,
-					new MockRestartInitializer());
+			this(Thread.currentThread(), new String[] {}, false, new MockRestartInitializer());
 		}
 
-		protected TestableRestarter(Thread thread, String[] args,
-				boolean forceReferenceCleanup, RestartInitializer initializer) {
+		protected TestableRestarter(Thread thread, String[] args, boolean forceReferenceCleanup,
+				RestartInitializer initializer) {
 			super(thread, args, forceReferenceCleanup, initializer);
 		}
 

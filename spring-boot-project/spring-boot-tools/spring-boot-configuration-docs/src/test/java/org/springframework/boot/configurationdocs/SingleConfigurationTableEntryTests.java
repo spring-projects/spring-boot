@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationdocs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 
@@ -27,12 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class SingleConfigurationTableEntryTests {
+class SingleConfigurationTableEntryTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	public void simpleProperty() {
+	void simpleProperty() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDefaultValue("something");
@@ -41,12 +41,12 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE
-				+ "|`+something+`" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+something+`" + NEWLINE
+				+ "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
-	public void noDefaultValue() {
+	void noDefaultValue() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDescription("This is a description.");
@@ -54,12 +54,12 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|"
-				+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo(
+				"|`+spring.test.prop+`" + NEWLINE + "|" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
-	public void defaultValueWithPipes() {
+	void defaultValueWithPipes() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDefaultValue("first|second");
@@ -68,13 +68,12 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE
-				+ "|`+first{vbar}" + NEWLINE + "second+`" + NEWLINE
-				+ "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first{vbar}" + NEWLINE
+				+ "second+`" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
-	public void defaultValueWithBackslash() {
+	void defaultValueWithBackslash() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDefaultValue("first\\second");
@@ -83,13 +82,12 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString())
-				.isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first\\\\second+`"
-						+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first\\\\second+`" + NEWLINE
+				+ "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
-	public void mapProperty() {
+	void mapProperty() {
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
 		property.setDescription("This is a description.");
@@ -97,12 +95,12 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop.*+`" + NEWLINE + "|"
-				+ NEWLINE + "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo(
+				"|`+spring.test.prop.*+`" + NEWLINE + "|" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 	@Test
-	public void listProperty() {
+	void listProperty() {
 		String[] defaultValue = new String[] { "first", "second", "third" };
 		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
 		property.setId("spring.test.prop");
@@ -112,9 +110,8 @@ public class SingleConfigurationTableEntryTests {
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
-		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE
-				+ "|`+first," + NEWLINE + "second," + NEWLINE + "third+`" + NEWLINE
-				+ "|+++This is a description.+++" + NEWLINE);
+		assertThat(builder.toString()).isEqualTo("|`+spring.test.prop+`" + NEWLINE + "|`+first," + NEWLINE + "second,"
+				+ NEWLINE + "third+`" + NEWLINE + "|+++This is a description.+++" + NEWLINE);
 	}
 
 }

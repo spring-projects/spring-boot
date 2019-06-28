@@ -43,18 +43,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfig.class),
 		@ContextConfiguration(classes = ChildConfig.class) })
-public class MockBeanOnContextHierarchyIntegrationTests {
+class MockBeanOnContextHierarchyIntegrationTests {
 
 	@Autowired
 	private ChildConfig childConfig;
 
 	@Test
-	public void testMocking() {
+	void testMocking() {
 		ApplicationContext context = this.childConfig.getContext();
 		ApplicationContext parentContext = context.getParent();
 		assertThat(parentContext.getBeanNamesForType(ExampleService.class)).hasSize(1);
-		assertThat(parentContext.getBeanNamesForType(ExampleServiceCaller.class))
-				.hasSize(0);
+		assertThat(parentContext.getBeanNamesForType(ExampleServiceCaller.class)).hasSize(0);
 		assertThat(context.getBeanNamesForType(ExampleService.class)).hasSize(0);
 		assertThat(context.getBeanNamesForType(ExampleServiceCaller.class)).hasSize(1);
 		assertThat(context.getBean(ExampleService.class)).isNotNull();
@@ -74,8 +73,7 @@ public class MockBeanOnContextHierarchyIntegrationTests {
 		private ApplicationContext context;
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.context = applicationContext;
 		}
 

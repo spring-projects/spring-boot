@@ -46,13 +46,12 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnEnabledHealthIndicator("rabbit")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(RabbitAutoConfiguration.class)
-public class RabbitHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
+public class RabbitHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "rabbitHealthIndicator")
-	public HealthIndicator rabbitHealthIndicator(
-			Map<String, RabbitTemplate> rabbitTemplates) {
+	public HealthIndicator rabbitHealthIndicator(Map<String, RabbitTemplate> rabbitTemplates) {
 		return createHealthIndicator(rabbitTemplates);
 	}
 

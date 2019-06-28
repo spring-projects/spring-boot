@@ -45,36 +45,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void beans() throws Exception {
-		List<FieldDescriptor> beanFields = Arrays.asList(
-				fieldWithPath("aliases").description("Names of any aliases."),
+	void beans() throws Exception {
+		List<FieldDescriptor> beanFields = Arrays.asList(fieldWithPath("aliases").description("Names of any aliases."),
 				fieldWithPath("scope").description("Scope of the bean."),
 				fieldWithPath("type").description("Fully qualified type of the bean."),
-				fieldWithPath("resource")
-						.description("Resource in which the bean was defined, if any.")
-						.optional(),
+				fieldWithPath("resource").description("Resource in which the bean was defined, if any.").optional(),
 				fieldWithPath("dependencies").description("Names of any dependencies."));
 		ResponseFieldsSnippet responseFields = responseFields(
-				fieldWithPath("contexts")
-						.description("Application contexts keyed by id."),
-				parentIdField(),
-				fieldWithPath("contexts.*.beans")
-						.description("Beans in the application context keyed by name."))
-								.andWithPrefix("contexts.*.beans.*.", beanFields);
+				fieldWithPath("contexts").description("Application contexts keyed by id."), parentIdField(),
+				fieldWithPath("contexts.*.beans").description("Beans in the application context keyed by name."))
+						.andWithPrefix("contexts.*.beans.*.", beanFields);
 		this.mockMvc.perform(get("/actuator/beans")).andExpect(status().isOk())
 				.andDo(document("beans",
-						preprocessResponse(limit(this::isIndependentBean, "contexts",
-								getApplicationContext().getId(), "beans")),
+						preprocessResponse(
+								limit(this::isIndependentBean, "contexts", getApplicationContext().getId(), "beans")),
 						responseFields));
 	}
 
 	private boolean isIndependentBean(Entry<String, Map<String, Object>> bean) {
 		return CollectionUtils.isEmpty((Collection<?>) bean.getValue().get("aliases"))
-				&& CollectionUtils
-						.isEmpty((Collection<?>) bean.getValue().get("dependencies"));
+				&& CollectionUtils.isEmpty((Collection<?>) bean.getValue().get("dependencies"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

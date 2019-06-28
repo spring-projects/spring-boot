@@ -38,54 +38,44 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ReactiveSessionAutoConfigurationMongoTests
-		extends AbstractSessionAutoConfigurationTests {
+class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
-	public void defaultConfig() {
+	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb")
-				.withConfiguration(AutoConfigurations.of(
-						EmbeddedMongoAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-						MongoReactiveAutoConfiguration.class,
-						MongoReactiveDataAutoConfiguration.class))
+						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(
-						ReactiveRedisOperationsSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(
-						EmbeddedMongoAutoConfiguration.class,
+	void defaultConfigWithUniqueStoreImplementation() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveRedisOperationsSessionRepository.class))
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-						MongoReactiveAutoConfiguration.class,
-						MongoReactiveDataAutoConfiguration.class))
+						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
-	public void mongoSessionStoreWithCustomizations() {
+	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(
-						EmbeddedMongoAutoConfiguration.class,
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-						MongoReactiveAutoConfiguration.class,
-						MongoReactiveDataAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=mongodb",
-						"spring.session.mongodb.collection-name=foo")
+						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.mongodb.collection-name=foo")
 				.run(validateSpringSessionUsesMongo("foo"));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesMongo(
 			String collectionName) {
 		return (context) -> {
-			ReactiveMongoOperationsSessionRepository repository = validateSessionRepository(
-					context, ReactiveMongoOperationsSessionRepository.class);
+			ReactiveMongoOperationsSessionRepository repository = validateSessionRepository(context,
+					ReactiveMongoOperationsSessionRepository.class);
 			assertThat(repository.getCollectionName()).isEqualTo(collectionName);
 		};
 	}

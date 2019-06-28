@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.withSettings;
  *
  * @author Phillip Webb
  */
-public class DispatcherTests {
+class DispatcherTests {
 
 	@Mock
 	private AccessManager accessManager;
@@ -62,8 +62,8 @@ public class DispatcherTests {
 
 	private ServerHttpResponse serverResponse;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.request = new MockHttpServletRequest();
 		this.response = new MockHttpServletResponse();
@@ -72,52 +72,44 @@ public class DispatcherTests {
 	}
 
 	@Test
-	public void accessManagerMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
+	void accessManagerMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
 				.withMessageContaining("AccessManager must not be null");
 	}
 
 	@Test
-	public void mappersMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Dispatcher(this.accessManager, null))
+	void mappersMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(this.accessManager, null))
 				.withMessageContaining("Mappers must not be null");
 	}
 
 	@Test
-	public void accessManagerVetoRequest() throws Exception {
-		given(this.accessManager.isAllowed(any(ServerHttpRequest.class)))
-				.willReturn(false);
+	void accessManagerVetoRequest() throws Exception {
+		given(this.accessManager.isAllowed(any(ServerHttpRequest.class))).willReturn(false);
 		HandlerMapper mapper = mock(HandlerMapper.class);
 		Handler handler = mock(Handler.class);
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);
-		Dispatcher dispatcher = new Dispatcher(this.accessManager,
-				Collections.singleton(mapper));
+		Dispatcher dispatcher = new Dispatcher(this.accessManager, Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
 		verifyZeroInteractions(handler);
 		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 
 	@Test
-	public void accessManagerAllowRequest() throws Exception {
-		given(this.accessManager.isAllowed(any(ServerHttpRequest.class)))
-				.willReturn(true);
+	void accessManagerAllowRequest() throws Exception {
+		given(this.accessManager.isAllowed(any(ServerHttpRequest.class))).willReturn(true);
 		HandlerMapper mapper = mock(HandlerMapper.class);
 		Handler handler = mock(Handler.class);
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);
-		Dispatcher dispatcher = new Dispatcher(this.accessManager,
-				Collections.singleton(mapper));
+		Dispatcher dispatcher = new Dispatcher(this.accessManager, Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
 		verify(handler).handle(this.serverRequest, this.serverResponse);
 	}
 
 	@Test
-	public void ordersMappers() throws Exception {
-		HandlerMapper mapper1 = mock(HandlerMapper.class,
-				withSettings().extraInterfaces(Ordered.class));
-		HandlerMapper mapper2 = mock(HandlerMapper.class,
-				withSettings().extraInterfaces(Ordered.class));
+	void ordersMappers() throws Exception {
+		HandlerMapper mapper1 = mock(HandlerMapper.class, withSettings().extraInterfaces(Ordered.class));
+		HandlerMapper mapper2 = mock(HandlerMapper.class, withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) mapper1).getOrder()).willReturn(1);
 		given(((Ordered) mapper2).getOrder()).willReturn(2);
 		List<HandlerMapper> mappers = Arrays.asList(mapper2, mapper1);

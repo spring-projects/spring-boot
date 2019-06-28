@@ -33,8 +33,8 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 
 	private final ConfigurationProperties annotation;
 
-	ConfigurationPropertiesBindException(String beanName, Class<?> beanType,
-			ConfigurationProperties annotation, Exception cause) {
+	ConfigurationPropertiesBindException(String beanName, Class<?> beanType, ConfigurationProperties annotation,
+			Exception cause) {
 		super(beanName, getMessage(beanType, annotation), cause);
 		this.beanType = beanType;
 		this.annotation = annotation;
@@ -56,8 +56,7 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 		return this.annotation;
 	}
 
-	private static String getMessage(Class<?> beanType,
-			ConfigurationProperties annotation) {
+	private static String getMessage(Class<?> beanType, ConfigurationProperties annotation) {
 		StringBuilder message = new StringBuilder();
 		message.append("Could not bind properties to '");
 		message.append(ClassUtils.getShortName(beanType)).append("' : ");

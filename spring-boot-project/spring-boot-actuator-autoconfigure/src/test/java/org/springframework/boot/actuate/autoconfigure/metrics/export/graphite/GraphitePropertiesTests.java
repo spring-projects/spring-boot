@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class GraphitePropertiesTests {
+class GraphitePropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		GraphiteProperties properties = new GraphiteProperties();
 		GraphiteConfig config = GraphiteConfig.DEFAULT;
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());

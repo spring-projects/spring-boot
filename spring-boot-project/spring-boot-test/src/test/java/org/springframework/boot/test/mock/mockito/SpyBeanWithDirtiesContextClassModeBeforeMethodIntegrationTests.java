@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
  */
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SpyBeanWithDirtiesContextClassModeBeforeMethodIntegrationTests {
+class SpyBeanWithDirtiesContextClassModeBeforeMethodIntegrationTests {
 
 	@SpyBean
 	private SimpleExampleService exampleService;
@@ -47,7 +47,7 @@ public class SpyBeanWithDirtiesContextClassModeBeforeMethodIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testSpying() throws Exception {
+	void testSpying() throws Exception {
 		this.caller.sayGreeting();
 		verify(this.exampleService).greeting();
 	}

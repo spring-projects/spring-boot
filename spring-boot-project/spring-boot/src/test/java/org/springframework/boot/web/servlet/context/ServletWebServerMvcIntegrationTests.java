@@ -19,8 +19,8 @@ package org.springframework.boot.web.servlet.context;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -53,12 +53,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Ivan Sopov
  */
-public class ServletWebServerMvcIntegrationTests {
+class ServletWebServerMvcIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
-	public void closeContext() {
+	@AfterEach
+	void closeContext() {
 		try {
 			this.context.close();
 		}
@@ -68,42 +68,36 @@ public class ServletWebServerMvcIntegrationTests {
 	}
 
 	@Test
-	public void tomcat() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				TomcatConfig.class);
+	void tomcat() throws Exception {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(TomcatConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
-	public void jetty() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				JettyConfig.class);
+	void jetty() throws Exception {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(JettyConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
-	public void undertow() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				UndertowConfig.class);
+	void undertow() throws Exception {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(UndertowConfig.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
-	public void advancedConfig() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				AdvancedConfig.class);
+	void advancedConfig() throws Exception {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(AdvancedConfig.class);
 		doTest(this.context, "/example/spring/hello");
 	}
 
-	private void doTest(AnnotationConfigServletWebServerApplicationContext context,
-			String resourcePath) throws Exception {
+	private void doTest(AnnotationConfigServletWebServerApplicationContext context, String resourcePath)
+			throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
-				"http://localhost:" + context.getWebServer().getPort() + resourcePath),
-				HttpMethod.GET);
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
+				new URI("http://localhost:" + context.getWebServer().getPort() + resourcePath), HttpMethod.GET);
 		try (ClientHttpResponse response = request.execute()) {
-			String actual = StreamUtils.copyToString(response.getBody(),
-					StandardCharsets.UTF_8);
+			String actual = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
 			assertThat(actual).isEqualTo("Hello World");
 		}
 	}
@@ -111,8 +105,7 @@ public class ServletWebServerMvcIntegrationTests {
 	// Simple main method for testing in a browser
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		new AnnotationConfigServletWebServerApplicationContext(
-				JettyServletWebServerFactory.class, Config.class);
+		new AnnotationConfigServletWebServerApplicationContext(JettyServletWebServerFactory.class, Config.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -174,7 +167,7 @@ public class ServletWebServerMvcIntegrationTests {
 
 		private final Environment env;
 
-		public AdvancedConfig(Environment env) {
+		AdvancedConfig(Environment env) {
 			this.env = env;
 		}
 
@@ -186,10 +179,8 @@ public class ServletWebServerMvcIntegrationTests {
 		}
 
 		@Bean
-		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(
-				DispatcherServlet dispatcherServlet) {
-			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
-					dispatcherServlet);
+		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(DispatcherServlet dispatcherServlet) {
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet);
 			registration.addUrlMappings("/spring/*");
 			return registration;
 		}

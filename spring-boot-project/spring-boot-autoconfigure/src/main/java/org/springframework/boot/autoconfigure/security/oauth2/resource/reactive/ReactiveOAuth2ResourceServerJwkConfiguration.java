@@ -20,6 +20,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
@@ -28,13 +29,16 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
  * Configures a {@link ReactiveJwtDecoder} when a JWK Set URI, OpenID Connect Issuer URI
- * or Public Key configuration is available.
+ * or Public Key configuration is available. Also configures a
+ * {@link SecurityWebFilterChain} if a {@link ReactiveJwtDecoder} bean is found.
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
@@ -42,41 +46,56 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
 
-	private final OAuth2ResourceServerProperties.Jwt properties;
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(ReactiveJwtDecoder.class)
+	static class JwtConfiguration {
 
-	ReactiveOAuth2ResourceServerJwkConfiguration(
-			OAuth2ResourceServerProperties properties) {
-		this.properties = properties.getJwt();
+		private final OAuth2ResourceServerProperties.Jwt properties;
+
+		JwtConfiguration(OAuth2ResourceServerProperties properties) {
+			this.properties = properties.getJwt();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
+		public ReactiveJwtDecoder jwtDecoder() {
+			return new NimbusReactiveJwtDecoder(this.properties.getJwkSetUri());
+		}
+
+		@Bean
+		@Conditional(KeyValueCondition.class)
+		public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
+			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
+					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
+			return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
+		}
+
+		private byte[] getKeySpec(String keyValue) {
+			keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
+			return Base64.getMimeDecoder().decode(keyValue);
+		}
+
+		@Bean
+		@Conditional(IssuerUriCondition.class)
+		public ReactiveJwtDecoder jwtDecoderByIssuerUri() {
+			return ReactiveJwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
+		}
+
 	}
 
-	@Bean
-	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-	@ConditionalOnMissingBean
-	public ReactiveJwtDecoder jwtDecoder() {
-		return new NimbusReactiveJwtDecoder(this.properties.getJwkSetUri());
-	}
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(SecurityWebFilterChain.class)
+	static class WebSecurityConfiguration {
 
-	@Bean
-	@Conditional(KeyValueCondition.class)
-	@ConditionalOnMissingBean
-	public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
-		RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-				.generatePublic(new X509EncodedKeySpec(
-						getKeySpec(this.properties.readPublicKey())));
-		return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
-	}
+		@Bean
+		@ConditionalOnBean(ReactiveJwtDecoder.class)
+		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
+				ReactiveJwtDecoder jwtDecoder) {
+			http.authorizeExchange().anyExchange().authenticated().and().oauth2ResourceServer().jwt()
+					.jwtDecoder(jwtDecoder);
+			return http.build();
+		}
 
-	private byte[] getKeySpec(String keyValue) {
-		keyValue = keyValue.replace("-----BEGIN PUBLIC KEY-----", "")
-				.replace("-----END PUBLIC KEY-----", "");
-		return Base64.getMimeDecoder().decode(keyValue);
-	}
-
-	@Bean
-	@Conditional(IssuerUriCondition.class)
-	@ConditionalOnMissingBean
-	public ReactiveJwtDecoder jwtDecoderByIssuerUri() {
-		return ReactiveJwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
 	}
 
 }

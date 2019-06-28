@@ -40,73 +40,65 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Andy Wilkinson
  */
-public class CodecsAutoConfigurationTests {
+class CodecsAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CodecsAutoConfiguration.class));
 
 	@Test
-	public void autoConfigShouldProvideALoggingRequestDetailsCustomizer() {
+	void autoConfigShouldProvideALoggingRequestDetailsCustomizer() {
 		this.contextRunner.run((context) -> {
 			CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
 			CodecConfigurer configurer = new DefaultClientCodecConfigurer();
 			customizer.customize(configurer);
-			assertThat(configurer.defaultCodecs())
-					.hasFieldOrPropertyWithValue("enableLoggingRequestDetails", false);
+			assertThat(configurer.defaultCodecs()).hasFieldOrPropertyWithValue("enableLoggingRequestDetails", false);
 		});
 
 	}
 
 	@Test
-	public void loggingRequestDetailsCustomizerShouldUseHttpProperties() {
-		this.contextRunner.withPropertyValues("spring.http.log-request-details=true")
-				.run((context) -> {
-					CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
-					CodecConfigurer configurer = new DefaultClientCodecConfigurer();
-					customizer.customize(configurer);
-					assertThat(configurer.defaultCodecs()).hasFieldOrPropertyWithValue(
-							"enableLoggingRequestDetails", true);
-				});
+	void loggingRequestDetailsCustomizerShouldUseHttpProperties() {
+		this.contextRunner.withPropertyValues("spring.http.log-request-details=true").run((context) -> {
+			CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
+			CodecConfigurer configurer = new DefaultClientCodecConfigurer();
+			customizer.customize(configurer);
+			assertThat(configurer.defaultCodecs()).hasFieldOrPropertyWithValue("enableLoggingRequestDetails", true);
+		});
 	}
 
 	@Test
-	public void loggingRequestDetailsBeanShouldHaveOrderZero() {
+	void loggingRequestDetailsBeanShouldHaveOrderZero() {
 		this.contextRunner.run((context) -> {
 			Method customizerMethod = ReflectionUtils.findMethod(
-					CodecsAutoConfiguration.LoggingCodecConfiguration.class,
-					"loggingCodecCustomizer", HttpProperties.class);
-			Integer order = new TestAnnotationAwareOrderComparator()
-					.findOrder(customizerMethod);
+					CodecsAutoConfiguration.LoggingCodecConfiguration.class, "loggingCodecCustomizer",
+					HttpProperties.class);
+			Integer order = new TestAnnotationAwareOrderComparator().findOrder(customizerMethod);
 			assertThat(order).isEqualTo(0);
 		});
 	}
 
 	@Test
-	public void jacksonCodecCustomizerBacksOffWhenThereIsNoObjectMapper() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean("jacksonCodecCustomizer"));
+	void jacksonCodecCustomizerBacksOffWhenThereIsNoObjectMapper() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("jacksonCodecCustomizer"));
 	}
 
 	@Test
-	public void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
+	void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
 		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
 				.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
 	}
 
 	@Test
-	public void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
-		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class,
-				CodecCustomizerConfiguration.class).run((context) -> {
-					List<CodecCustomizer> codecCustomizers = context
-							.getBean(CodecCustomizers.class).codecCustomizers;
+	void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
+		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class, CodecCustomizerConfiguration.class)
+				.run((context) -> {
+					List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
 					assertThat(codecCustomizers).hasSize(3);
-					assertThat(codecCustomizers.get(2))
-							.isInstanceOf(TestCodecCustomizer.class);
+					assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
 				});
 	}
 
-	static class TestAnnotationAwareOrderComparator
-			extends AnnotationAwareOrderComparator {
+	static class TestAnnotationAwareOrderComparator extends AnnotationAwareOrderComparator {
 
 		@Override
 		public Integer findOrder(Object obj) {

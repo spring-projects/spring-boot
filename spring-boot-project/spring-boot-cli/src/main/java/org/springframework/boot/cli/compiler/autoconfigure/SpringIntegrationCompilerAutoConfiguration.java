@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * @author Dave Syer
  * @author Artem Bilan
  */
-public class SpringIntegrationCompilerAutoConfiguration
-		extends CompilerAutoConfiguration {
+public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
@@ -40,18 +39,14 @@ public class SpringIntegrationCompilerAutoConfiguration
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses(
-						"org.springframework.integration.config.EnableIntegration")
+		dependencies.ifAnyMissingClasses("org.springframework.integration.config.EnableIntegration")
 				.add("spring-boot-starter-integration");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("org.springframework.messaging.Message",
-				"org.springframework.messaging.MessageChannel",
-				"org.springframework.messaging.PollableChannel",
-				"org.springframework.messaging.SubscribableChannel",
+		imports.addImports("org.springframework.messaging.Message", "org.springframework.messaging.MessageChannel",
+				"org.springframework.messaging.PollableChannel", "org.springframework.messaging.SubscribableChannel",
 				"org.springframework.messaging.MessageHeaders",
 				"org.springframework.integration.support.MessageBuilder",
 				"org.springframework.integration.channel.DirectChannel",

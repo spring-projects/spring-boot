@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
@@ -31,61 +31,53 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ConfigurationPropertyTests {
+class ConfigurationPropertyTests {
 
-	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
-			.of("foo");
+	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
 	@Test
-	public void createWhenNameIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
+	void createWhenNameIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
-	public void createWhenValueIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
+	void createWhenValueIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
 				.withMessageContaining("Value must not be null");
 	}
 
 	@Test
-	public void getNameShouldReturnName() {
+	void getNameShouldReturnName() {
 		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
 		assertThat((Object) property.getName()).isEqualTo(NAME);
 	}
 
 	@Test
-	public void getValueShouldReturnValue() {
+	void getValueShouldReturnValue() {
 		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
 		assertThat(property.getValue()).isEqualTo("foo");
 	}
 
 	@Test
-	public void getPropertyOriginShouldReturnValuePropertyOrigin() {
+	void getPropertyOriginShouldReturnValuePropertyOrigin() {
 		Origin origin = mock(Origin.class);
 		OriginProvider property = ConfigurationProperty.of(NAME, "foo", origin);
 		assertThat(property.getOrigin()).isEqualTo(origin);
 	}
 
 	@Test
-	public void equalsAndHashCode() {
-		ConfigurationProperty property1 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("foo"), "bar", null);
-		ConfigurationProperty property2 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("foo"), "bar", null);
-		ConfigurationProperty property3 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("foo"), "baz", null);
-		ConfigurationProperty property4 = new ConfigurationProperty(
-				ConfigurationPropertyName.of("baz"), "bar", null);
+	void equalsAndHashCode() {
+		ConfigurationProperty property1 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "bar", null);
+		ConfigurationProperty property2 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "bar", null);
+		ConfigurationProperty property3 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "baz", null);
+		ConfigurationProperty property4 = new ConfigurationProperty(ConfigurationPropertyName.of("baz"), "bar", null);
 		assertThat(property1.hashCode()).isEqualTo(property2.hashCode());
-		assertThat(property1).isEqualTo(property2).isNotEqualTo(property3)
-				.isNotEqualTo(property4);
+		assertThat(property1).isEqualTo(property2).isNotEqualTo(property3).isNotEqualTo(property4);
 	}
 
 	@Test
-	public void toStringShouldReturnValue() {
+	void toStringShouldReturnValue() {
 		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
 		assertThat(property.toString()).contains("name").contains("value");
 	}

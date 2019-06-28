@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,16 +76,15 @@ public class ImageBanner implements Banner {
 	}
 
 	@Override
-	public void printBanner(Environment environment, Class<?> sourceClass,
-			PrintStream out) {
+	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 		String headless = System.getProperty("java.awt.headless");
 		try {
 			System.setProperty("java.awt.headless", "true");
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
-			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass()
-					+ ": '" + ex.getMessage() + "')");
+			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass() + ": '" + ex.getMessage()
+					+ "')");
 			logger.debug("Image banner printing failure", ex);
 		}
 		finally {
@@ -98,8 +97,7 @@ public class ImageBanner implements Banner {
 		}
 	}
 
-	private void printBanner(Environment environment, PrintStream out)
-			throws IOException {
+	private void printBanner(Environment environment, PrintStream out) throws IOException {
 		int width = getProperty(environment, "width", Integer.class, 76);
 		int height = getProperty(environment, "height", Integer.class, 0);
 		int margin = getProperty(environment, "margin", Integer.class, 2);
@@ -114,22 +112,19 @@ public class ImageBanner implements Banner {
 		}
 	}
 
-	private <T> T getProperty(Environment environment, String name, Class<T> targetType,
-			T defaultValue) {
+	private <T> T getProperty(Environment environment, String name, Class<T> targetType, T defaultValue) {
 		return environment.getProperty(PROPERTY_PREFIX + name, targetType, defaultValue);
 	}
 
 	private Frame[] readFrames(int width, int height) throws IOException {
 		try (InputStream inputStream = this.image.getInputStream()) {
-			try (ImageInputStream imageStream = ImageIO
-					.createImageInputStream(inputStream)) {
+			try (ImageInputStream imageStream = ImageIO.createImageInputStream(inputStream)) {
 				return readFrames(width, height, imageStream);
 			}
 		}
 	}
 
-	private Frame[] readFrames(int width, int height, ImageInputStream stream)
-			throws IOException {
+	private Frame[] readFrames(int width, int height, ImageInputStream stream) throws IOException {
 		Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
 		Assert.state(readers.hasNext(), "Unable to read image banner source");
 		ImageReader reader = readers.next();
@@ -148,8 +143,8 @@ public class ImageBanner implements Banner {
 		}
 	}
 
-	private Frame readFrame(int width, int height, ImageReader reader, int imageIndex,
-			ImageReadParam readParam) throws IOException {
+	private Frame readFrame(int width, int height, ImageReader reader, int imageIndex, ImageReadParam readParam)
+			throws IOException {
 		BufferedImage image = reader.read(imageIndex, readParam);
 		BufferedImage resized = resizeImage(image, width, height);
 		int delayTime = getDelayTime(reader, imageIndex);
@@ -158,11 +153,9 @@ public class ImageBanner implements Banner {
 
 	private int getDelayTime(ImageReader reader, int imageIndex) throws IOException {
 		IIOMetadata metadata = reader.getImageMetadata(imageIndex);
-		IIOMetadataNode root = (IIOMetadataNode) metadata
-				.getAsTree(metadata.getNativeMetadataFormatName());
+		IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(metadata.getNativeMetadataFormatName());
 		IIOMetadataNode extension = findNode(root, "GraphicControlExtension");
-		String attribute = (extension != null) ? extension.getAttribute("delayTime")
-				: null;
+		String attribute = (extension != null) ? extension.getAttribute("delayTime") : null;
 		return (attribute != null) ? Integer.parseInt(attribute) * 10 : 0;
 	}
 
@@ -186,8 +179,7 @@ public class ImageBanner implements Banner {
 			double aspectRatio = (double) width / image.getWidth() * 0.5;
 			height = (int) Math.ceil(image.getHeight() * aspectRatio);
 		}
-		BufferedImage resized = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
+		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Image scaled = image.getScaledInstance(width, height, Image.SCALE_DEFAULT);
 		resized.getGraphics().drawImage(scaled, 0, 0, null);
 		return resized;
@@ -198,8 +190,7 @@ public class ImageBanner implements Banner {
 		out.print("\033[" + lines + "A\r");
 	}
 
-	private void printBanner(BufferedImage image, int margin, boolean invert,
-			PrintStream out) {
+	private void printBanner(BufferedImage image, int margin, boolean invert, PrintStream out) {
 		AnsiElement background = invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT;
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));

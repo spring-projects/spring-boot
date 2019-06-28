@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jms.extra.MessageDrivenContainer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -39,12 +39,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class AtomikosDependsOnBeanFactoryPostProcessorTests {
+class AtomikosDependsOnBeanFactoryPostProcessorTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@Test
-	public void setsDependsOn() {
+	void setsDependsOn() {
 		this.context = new AnnotationConfigApplicationContext(Config.class);
 		assertDependsOn("dataSource");
 		assertDependsOn("connectionFactory");
@@ -59,8 +59,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessorTests {
 			assertThat(expected).as("No dependsOn expected for " + bean).isEmpty();
 			return;
 		}
-		HashSet<String> dependsOn = new HashSet<>(
-				Arrays.asList(definition.getDependsOn()));
+		HashSet<String> dependsOn = new HashSet<>(Arrays.asList(definition.getDependsOn()));
 		assertThat(dependsOn).isEqualTo(new HashSet<>(Arrays.asList(expected)));
 	}
 

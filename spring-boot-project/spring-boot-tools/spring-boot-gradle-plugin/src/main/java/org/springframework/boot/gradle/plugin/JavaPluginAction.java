@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,25 +77,20 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBuildTask(Project project) {
-		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME)
-				.dependsOn(this.singlePublishedArtifact);
+		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(this.singlePublishedArtifact);
 	}
 
 	private BootJar configureBootJarTask(Project project) {
-		BootJar bootJar = project.getTasks().create(SpringBootPlugin.BOOT_JAR_TASK_NAME,
-				BootJar.class);
-		bootJar.setDescription("Assembles an executable jar archive containing the main"
-				+ " classes and their dependencies.");
+		BootJar bootJar = project.getTasks().create(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class);
+		bootJar.setDescription(
+				"Assembles an executable jar archive containing the main" + " classes and their dependencies.");
 		bootJar.setGroup(BasePlugin.BUILD_GROUP);
 		bootJar.classpath((Callable<FileCollection>) () -> {
-			JavaPluginConvention convention = project.getConvention()
-					.getPlugin(JavaPluginConvention.class);
-			SourceSet mainSourceSet = convention.getSourceSets()
-					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+			JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
+			SourceSet mainSourceSet = convention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			return mainSourceSet.getRuntimeClasspath();
 		});
-		bootJar.conventionMapping("mainClassName",
-				new MainClassConvention(project, bootJar::getClasspath));
+		bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
 		return bootJar;
 	}
 
@@ -105,30 +100,26 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project) {
-		JavaPluginConvention javaConvention = project.getConvention()
-				.getPlugin(JavaPluginConvention.class);
+		JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
 		BootRun run = project.getTasks().create("bootRun", BootRun.class);
 		run.setDescription("Runs this project as a Spring Boot application.");
 		run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
-		run.classpath(javaConvention.getSourceSets()
-				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath());
+		run.classpath(javaConvention.getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath());
 		run.getConventionMapping().map("jvmArgs", () -> {
 			if (project.hasProperty("applicationDefaultJvmArgs")) {
 				return project.property("applicationDefaultJvmArgs");
 			}
 			return Collections.emptyList();
 		});
-		run.conventionMapping("main",
-				new MainClassConvention(project, run::getClasspath));
+		run.conventionMapping("main", new MainClassConvention(project, run::getClasspath));
 	}
 
 	private void configureUtf8Encoding(Project project) {
-		project.afterEvaluate((evaluated) -> evaluated.getTasks()
-				.withType(JavaCompile.class, (compile) -> {
-					if (compile.getOptions().getEncoding() == null) {
-						compile.getOptions().setEncoding("UTF-8");
-					}
-				}));
+		project.afterEvaluate((evaluated) -> evaluated.getTasks().withType(JavaCompile.class, (compile) -> {
+			if (compile.getOptions().getEncoding() == null) {
+				compile.getOptions().setEncoding("UTF-8");
+			}
+		}));
 	}
 
 	private void configureParametersCompilerArg(Project project) {
@@ -141,8 +132,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(Project project) {
-		project.afterEvaluate((evaluated) -> evaluated.getTasks()
-				.withType(JavaCompile.class, this::configureAdditionalMetadataLocations));
+		project.afterEvaluate((evaluated) -> evaluated.getTasks().withType(JavaCompile.class,
+				this::configureAdditionalMetadataLocations));
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
@@ -163,35 +154,27 @@ final class JavaPluginAction implements PluginApplicationAction {
 			}
 			JavaCompile compile = (JavaCompile) task;
 			if (hasConfigurationProcessorOnClasspath(compile)) {
-				findMatchingSourceSet(compile).ifPresent(
-						(sourceSet) -> configureAdditionalMetadataLocations(compile,
-								sourceSet));
+				findMatchingSourceSet(compile)
+						.ifPresent((sourceSet) -> configureAdditionalMetadataLocations(compile, sourceSet));
 			}
 		}
 
 		private boolean hasConfigurationProcessorOnClasspath(JavaCompile compile) {
 			Set<File> files = (compile.getOptions().getAnnotationProcessorPath() != null)
-					? compile.getOptions().getAnnotationProcessorPath().getFiles()
-					: compile.getClasspath().getFiles();
-			return files.stream().map(File::getName).anyMatch(
-					(name) -> name.startsWith("spring-boot-configuration-processor"));
+					? compile.getOptions().getAnnotationProcessorPath().getFiles() : compile.getClasspath().getFiles();
+			return files.stream().map(File::getName)
+					.anyMatch((name) -> name.startsWith("spring-boot-configuration-processor"));
 		}
 
 		private Optional<SourceSet> findMatchingSourceSet(JavaCompile compile) {
-			return compile
-					.getProject().getConvention().getPlugin(JavaPluginConvention.class)
-					.getSourceSets().stream().filter((sourceSet) -> sourceSet
-							.getCompileJavaTaskName().equals(compile.getName()))
-					.findFirst();
+			return compile.getProject().getConvention().getPlugin(JavaPluginConvention.class).getSourceSets().stream()
+					.filter((sourceSet) -> sourceSet.getCompileJavaTaskName().equals(compile.getName())).findFirst();
 		}
 
-		private void configureAdditionalMetadataLocations(JavaCompile compile,
-				SourceSet sourceSet) {
-			String locations = StringUtils.collectionToCommaDelimitedString(
-					sourceSet.getResources().getSrcDirs());
-			compile.getOptions().getCompilerArgs().add(
-					"-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
-							+ locations);
+		private void configureAdditionalMetadataLocations(JavaCompile compile, SourceSet sourceSet) {
+			String locations = StringUtils.collectionToCommaDelimitedString(sourceSet.getResources().getSrcDirs());
+			compile.getOptions().getCompilerArgs()
+					.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + locations);
 		}
 
 	}

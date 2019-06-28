@@ -33,24 +33,18 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class SpringBootConditionTests {
+class SpringBootConditionTests {
 
 	@Test
-	public void sensibleClassException() {
-		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
-				.withMessageContaining(
-						"Error processing condition on " + ErrorOnClass.class.getName());
+	void sensibleClassException() {
+		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
+				.withMessageContaining("Error processing condition on " + ErrorOnClass.class.getName());
 	}
 
 	@Test
-	public void sensibleMethodException() {
-		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
-				.withMessageContaining("Error processing condition on "
-						+ ErrorOnMethod.class.getName() + ".myBean");
+	void sensibleMethodException() {
+		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
+				.withMessageContaining("Error processing condition on " + ErrorOnMethod.class.getName() + ".myBean");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -73,8 +67,7 @@ public class SpringBootConditionTests {
 	public static class AlwaysThrowsCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			throw new RuntimeException("Oh no!");
 		}
 

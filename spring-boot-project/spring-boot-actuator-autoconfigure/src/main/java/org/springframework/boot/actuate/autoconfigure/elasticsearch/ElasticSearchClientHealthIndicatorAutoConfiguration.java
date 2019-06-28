@@ -54,13 +54,12 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureAfter(ElasticsearchAutoConfiguration.class)
 @EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
 @Deprecated
-public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
+public class ElasticSearchClientHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
 
 	private final ElasticsearchHealthIndicatorProperties properties;
 
-	public ElasticSearchClientHealthIndicatorAutoConfiguration(
-			ElasticsearchHealthIndicatorProperties properties) {
+	public ElasticSearchClientHealthIndicatorAutoConfiguration(ElasticsearchHealthIndicatorProperties properties) {
 		this.properties = properties;
 	}
 
@@ -73,8 +72,7 @@ public class ElasticSearchClientHealthIndicatorAutoConfiguration extends
 	@Override
 	protected ElasticsearchHealthIndicator createHealthIndicator(Client client) {
 		Duration responseTimeout = this.properties.getResponseTimeout();
-		return new ElasticsearchHealthIndicator(client,
-				(responseTimeout != null) ? responseTimeout.toMillis() : 100,
+		return new ElasticsearchHealthIndicator(client, (responseTimeout != null) ? responseTimeout.toMillis() : 100,
 				this.properties.getIndices());
 	}
 

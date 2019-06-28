@@ -42,38 +42,36 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Christoph Strobl
  * @author Oliver Gierke
  */
-public class SolrRepositoriesAutoConfigurationTests {
+class SolrRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		this.context.close();
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		initContext(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(SolrClient.class))
-				.isInstanceOf(HttpSolrClient.class);
+		assertThat(this.context.getBean(SolrClient.class)).isInstanceOf(HttpSolrClient.class);
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		initContext(EmptyConfiguration.class);
-		assertThat(this.context.getBean(SolrClient.class))
-				.isInstanceOf(HttpSolrClient.class);
+		assertThat(this.context.getBean(SolrClient.class)).isInstanceOf(HttpSolrClient.class);
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		initContext(CustomizedConfiguration.class);
 		assertThat(this.context.getBean(CitySolrRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		initContext(SortOfInvalidCustomConfiguration.class);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.context.getBean(CityRepository.class));
@@ -82,8 +80,7 @@ public class SolrRepositoriesAutoConfigurationTests {
 	private void initContext(Class<?> configClass) {
 
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(configClass, SolrAutoConfiguration.class,
-				SolrRepositoriesAutoConfiguration.class,
+		this.context.register(configClass, SolrAutoConfiguration.class, SolrRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}

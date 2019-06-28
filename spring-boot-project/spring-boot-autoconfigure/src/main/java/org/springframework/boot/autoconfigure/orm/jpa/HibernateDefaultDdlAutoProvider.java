@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,8 @@ class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
 		return StreamSupport.stream(this.providers.spliterator(), false)
-				.map((provider) -> provider.getSchemaManagement(dataSource))
-				.filter(SchemaManagement.MANAGED::equals).findFirst()
-				.orElse(SchemaManagement.UNMANAGED);
+				.map((provider) -> provider.getSchemaManagement(dataSource)).filter(SchemaManagement.MANAGED::equals)
+				.findFirst().orElse(SchemaManagement.UNMANAGED);
 	}
 
 }

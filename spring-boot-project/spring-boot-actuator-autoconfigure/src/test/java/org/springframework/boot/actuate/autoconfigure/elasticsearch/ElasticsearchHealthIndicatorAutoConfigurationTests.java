@@ -37,41 +37,34 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 @Deprecated
-public class ElasticsearchHealthIndicatorAutoConfigurationTests {
+class ElasticsearchHealthIndicatorAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
-					ElasticSearchClientHealthIndicatorAutoConfiguration.class,
-					ElasticSearchJestHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
+			.of(ElasticsearchAutoConfiguration.class, ElasticSearchClientHealthIndicatorAutoConfiguration.class,
+					ElasticSearchJestHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
-		this.contextRunner
-				.withPropertyValues("spring.data.elasticsearch.cluster-nodes:localhost:0")
+	void runShouldCreateIndicator() {
+		this.contextRunner.withPropertyValues("spring.data.elasticsearch.cluster-nodes:localhost:0")
 				.withSystemProperties("es.set.netty.runtime.available.processors=false")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ElasticsearchHealthIndicator.class)
+				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchHealthIndicator.class)
 						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class)
 						.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenUsingJestClientShouldCreateIndicator() {
+	void runWhenUsingJestClientShouldCreateIndicator() {
 		this.contextRunner.withBean(JestClient.class, () -> mock(JestClient.class))
 				.withSystemProperties("es.set.netty.runtime.available.processors=false")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(ElasticsearchJestHealthIndicator.class)
+				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchJestHealthIndicator.class)
 						.doesNotHaveBean(ElasticsearchHealthIndicator.class)
 						.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner
-				.withPropertyValues("management.health.elasticsearch.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ElasticsearchHealthIndicator.class)
+	void runWhenDisabledShouldNotCreateIndicator() {
+		this.contextRunner.withPropertyValues("management.health.elasticsearch.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchHealthIndicator.class)
 						.doesNotHaveBean(ElasticsearchJestHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}

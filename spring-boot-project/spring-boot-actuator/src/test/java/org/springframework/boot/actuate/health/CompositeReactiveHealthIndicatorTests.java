@@ -32,20 +32,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CompositeReactiveHealthIndicatorTests {
+class CompositeReactiveHealthIndicatorTests {
 
-	private static final Health UNKNOWN_HEALTH = Health.unknown()
-			.withDetail("detail", "value").build();
+	private static final Health UNKNOWN_HEALTH = Health.unknown().withDetail("detail", "value").build();
 
 	private static final Health HEALTHY = Health.up().build();
 
 	private OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
 
 	@Test
-	public void singleIndicator() {
-		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
-				this.healthAggregator, new DefaultReactiveHealthIndicatorRegistry(
-						Collections.singletonMap("test", () -> Mono.just(HEALTHY))));
+	void singleIndicator() {
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(this.healthAggregator,
+				new DefaultReactiveHealthIndicatorRegistry(Collections.singletonMap("test", () -> Mono.just(HEALTHY))));
 		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("test");
@@ -54,16 +52,15 @@ public class CompositeReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void longHealth() {
+	void longHealth() {
 		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		for (int i = 0; i < 50; i++) {
 			indicators.put("test" + i, new TimeoutHealth(10000, Status.UP));
 		}
-		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
-				this.healthAggregator,
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(this.healthAggregator,
 				new DefaultReactiveHealthIndicatorRegistry(indicators));
-		StepVerifier.withVirtualTime(indicator::health).expectSubscription()
-				.thenAwait(Duration.ofMillis(10000)).consumeNextWith((h) -> {
+		StepVerifier.withVirtualTime(indicator::health).expectSubscription().thenAwait(Duration.ofMillis(10000))
+				.consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
 					assertThat(h.getDetails()).hasSize(50);
 				}).verifyComplete();
@@ -71,14 +68,12 @@ public class CompositeReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void timeoutReachedUsesFallback() {
+	void timeoutReachedUsesFallback() {
 		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		indicators.put("slow", new TimeoutHealth(10000, Status.UP));
 		indicators.put("fast", new TimeoutHealth(10, Status.UP));
-		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
-				this.healthAggregator,
-				new DefaultReactiveHealthIndicatorRegistry(indicators))
-						.timeoutStrategy(100, UNKNOWN_HEALTH);
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(this.healthAggregator,
+				new DefaultReactiveHealthIndicatorRegistry(indicators)).timeoutStrategy(100, UNKNOWN_HEALTH);
 		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
@@ -88,16 +83,14 @@ public class CompositeReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	public void timeoutNotReached() {
+	void timeoutNotReached() {
 		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		indicators.put("slow", new TimeoutHealth(10000, Status.UP));
 		indicators.put("fast", new TimeoutHealth(10, Status.UP));
-		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
-				this.healthAggregator,
-				new DefaultReactiveHealthIndicatorRegistry(indicators))
-						.timeoutStrategy(20000, null);
-		StepVerifier.withVirtualTime(indicator::health).expectSubscription()
-				.thenAwait(Duration.ofMillis(10000)).consumeNextWith((h) -> {
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(this.healthAggregator,
+				new DefaultReactiveHealthIndicatorRegistry(indicators)).timeoutStrategy(20000, null);
+		StepVerifier.withVirtualTime(indicator::health).expectSubscription().thenAwait(Duration.ofMillis(10000))
+				.consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
 					assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
 					assertThat(h.getDetails().get("slow")).isEqualTo(HEALTHY);
@@ -118,8 +111,7 @@ public class CompositeReactiveHealthIndicatorTests {
 
 		@Override
 		public Mono<Health> health() {
-			return Mono.delay(Duration.ofMillis(this.timeout))
-					.map((l) -> Health.status(this.status).build());
+			return Mono.delay(Duration.ofMillis(this.timeout)).map((l) -> Health.status(this.status).build());
 		}
 
 	}

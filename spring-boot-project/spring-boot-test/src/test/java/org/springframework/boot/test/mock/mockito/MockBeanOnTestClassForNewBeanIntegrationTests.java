@@ -37,13 +37,13 @@ import static org.mockito.BDDMockito.given;
  */
 @ExtendWith(SpringExtension.class)
 @MockBean(ExampleService.class)
-public class MockBeanOnTestClassForNewBeanIntegrationTests {
+class MockBeanOnTestClassForNewBeanIntegrationTests {
 
 	@Autowired
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testMocking() {
+	void testMocking() {
 		given(this.caller.getService().greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}

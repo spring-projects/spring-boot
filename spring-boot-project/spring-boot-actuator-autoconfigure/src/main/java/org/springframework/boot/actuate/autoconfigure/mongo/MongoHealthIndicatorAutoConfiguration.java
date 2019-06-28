@@ -48,13 +48,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 		MongoReactiveHealthIndicatorAutoConfiguration.class })
-public class MongoHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
+public class MongoHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "mongoHealthIndicator")
-	public HealthIndicator mongoHealthIndicator(
-			Map<String, MongoTemplate> mongoTemplates) {
+	public HealthIndicator mongoHealthIndicator(Map<String, MongoTemplate> mongoTemplates) {
 		return createHealthIndicator(mongoTemplates);
 	}
 

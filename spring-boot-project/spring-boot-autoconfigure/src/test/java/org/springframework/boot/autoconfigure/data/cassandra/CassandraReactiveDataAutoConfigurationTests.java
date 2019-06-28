@@ -44,40 +44,37 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Mark Paluch
  */
-public class CassandraReactiveDataAutoConfigurationTests {
+class CassandraReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void templateExists() {
+	void templateExists() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
-		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class))
-				.hasSize(1);
+		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class)).hasSize(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() {
+	void userTypeResolverShouldBeSet() {
 		load("spring.data.cassandra.keyspaceName:boot_test");
-		CassandraMappingContext mappingContext = this.context
-				.getBean(CassandraMappingContext.class);
+		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
 				.isInstanceOf(SimpleUserTypeResolver.class);
 	}
@@ -92,8 +89,7 @@ public class CassandraReactiveDataAutoConfigurationTests {
 		if (config != null) {
 			ctx.register(config);
 		}
-		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class,
-				CassandraDataAutoConfiguration.class,
+		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
 				CassandraReactiveDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

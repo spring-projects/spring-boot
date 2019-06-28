@@ -46,8 +46,7 @@ public class SecurityRequestMatcherProviderAutoConfiguration {
 
 		@Bean
 		@ConditionalOnClass(DispatcherServlet.class)
-		public RequestMatcherProvider requestMatcherProvider(
-				HandlerMappingIntrospector introspector) {
+		public RequestMatcherProvider requestMatcherProvider(HandlerMappingIntrospector introspector) {
 			return new MvcRequestMatcherProvider(introspector);
 		}
 
@@ -60,8 +59,7 @@ public class SecurityRequestMatcherProviderAutoConfiguration {
 	public static class JerseyRequestMatcherConfiguration {
 
 		@Bean
-		public RequestMatcherProvider requestMatcherProvider(
-				JerseyApplicationPath applicationPath) {
+		public RequestMatcherProvider requestMatcherProvider(JerseyApplicationPath applicationPath) {
 			return new JerseyRequestMatcherProvider(applicationPath);
 		}
 

@@ -48,8 +48,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
 class HazelcastSessionConfiguration {
 
 	@Configuration
-	public static class SpringBootHazelcastHttpSessionConfiguration
-			extends HazelcastHttpSessionConfiguration {
+	public static class SpringBootHazelcastHttpSessionConfiguration extends HazelcastHttpSessionConfiguration {
 
 		@Autowired
 		public void customize(SessionProperties sessionProperties,

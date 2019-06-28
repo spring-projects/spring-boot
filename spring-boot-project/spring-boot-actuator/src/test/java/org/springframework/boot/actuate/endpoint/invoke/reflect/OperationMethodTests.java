@@ -32,43 +32,37 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class OperationMethodTests {
+class OperationMethodTests {
 
-	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example",
-			String.class);
+	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
 	@Test
-	public void createWhenMethodIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OperationMethod(null, OperationType.READ))
+	void createWhenMethodIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(null, OperationType.READ))
 				.withMessageContaining("Method must not be null");
 	}
 
 	@Test
-	public void createWhenOperationTypeIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
+	void createWhenOperationTypeIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
 				.withMessageContaining("OperationType must not be null");
 	}
 
 	@Test
-	public void getMethodShouldReturnMethod() {
-		OperationMethod operationMethod = new OperationMethod(this.exampleMethod,
-				OperationType.READ);
+	void getMethodShouldReturnMethod() {
+		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		assertThat(operationMethod.getMethod()).isEqualTo(this.exampleMethod);
 	}
 
 	@Test
-	public void getOperationTypeShouldReturnOperationType() {
-		OperationMethod operationMethod = new OperationMethod(this.exampleMethod,
-				OperationType.READ);
+	void getOperationTypeShouldReturnOperationType() {
+		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		assertThat(operationMethod.getOperationType()).isEqualTo(OperationType.READ);
 	}
 
 	@Test
-	public void getParametersShouldReturnParameters() {
-		OperationMethod operationMethod = new OperationMethod(this.exampleMethod,
-				OperationType.READ);
+	void getParametersShouldReturnParameters() {
+		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		OperationParameters parameters = operationMethod.getParameters();
 		assertThat(parameters.getParameterCount()).isEqualTo(1);
 		assertThat(parameters.iterator().next().getName()).isEqualTo("name");

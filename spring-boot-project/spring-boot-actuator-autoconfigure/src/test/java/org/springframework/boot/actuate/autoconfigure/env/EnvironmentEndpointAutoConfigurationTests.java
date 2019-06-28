@@ -36,60 +36,51 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class EnvironmentEndpointAutoConfigurationTests {
+class EnvironmentEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=env")
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
 				.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.run(validateSystemProperties("******", "******"));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(EnvironmentEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentEndpoint.class));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(EnvironmentEndpoint.class));
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentEndpoint.class));
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=env")
+	void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
 				.withSystemProperties("dbPassword=123456", "apiKey=123456")
 				.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
 				.run(validateSystemProperties("******", "123456"));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(
-			String dbPassword, String apiKey) {
+	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String dbPassword, String apiKey) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 			EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
 			EnvironmentDescriptor env = endpoint.environment(null);
-			Map<String, PropertyValueDescriptor> systemProperties = getSource(
-					"systemProperties", env).getProperties();
-			assertThat(systemProperties.get("dbPassword").getValue())
-					.isEqualTo(dbPassword);
+			Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env).getProperties();
+			assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo(dbPassword);
 			assertThat(systemProperties.get("apiKey").getValue()).isEqualTo(apiKey);
 		};
 	}
 
-	private PropertySourceDescriptor getSource(String name,
-			EnvironmentDescriptor descriptor) {
-		return descriptor.getPropertySources().stream()
-				.filter((source) -> name.equals(source.getName())).findFirst().get();
+	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
+		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
+				.get();
 	}
 
 }

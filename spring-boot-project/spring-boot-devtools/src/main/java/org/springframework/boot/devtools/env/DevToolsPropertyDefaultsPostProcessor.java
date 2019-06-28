@@ -46,8 +46,7 @@ import org.springframework.util.ClassUtils;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostProcessor {
 
-	private static final Log logger = DevToolsLogFactory
-			.getLog(DevToolsPropertyDefaultsPostProcessor.class);
+	private static final Log logger = DevToolsLogFactory.getLog(DevToolsPropertyDefaultsPostProcessor.class);
 
 	private static final String ENABLED = "spring.devtools.add-properties";
 
@@ -73,25 +72,20 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("spring.mvc.log-resolved-exception", "true");
 		properties.put("server.error.include-stacktrace", "ALWAYS");
 		properties.put("server.servlet.jsp.init-parameters.development", "true");
-		properties.put("spring.reactor.stacktrace-mode.enabled", "true");
+		properties.put("spring.reactor.debug", "true");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
-		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())
-				&& isLocalApplication(environment)) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread()) && isLocalApplication(environment)) {
 			if (canAddProperties(environment)) {
-				logger.info("Devtools property defaults active! Set '" + ENABLED
-						+ "' to 'false' to disable");
-				environment.getPropertySources()
-						.addLast(new MapPropertySource("devtools", PROPERTIES));
+				logger.info("Devtools property defaults active! Set '" + ENABLED + "' to 'false' to disable");
+				environment.getPropertySources().addLast(new MapPropertySource("devtools", PROPERTIES));
 			}
-			if (isWebApplication(environment)
-					&& !environment.containsProperty(WEB_LOGGING)) {
-				logger.info("For additional web related logging consider "
-						+ "setting the '" + WEB_LOGGING + "' property to 'DEBUG'");
+			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING)) {
+				logger.info("For additional web related logging consider " + "setting the '" + WEB_LOGGING
+						+ "' property to 'DEBUG'");
 			}
 		}
 	}
@@ -123,8 +117,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private boolean isWebApplication(Environment environment) {
 		for (String candidate : WEB_ENVIRONMENT_CLASSES) {
-			Class<?> environmentClass = resolveClassName(candidate,
-					environment.getClass().getClassLoader());
+			Class<?> environmentClass = resolveClassName(candidate, environment.getClass().getClassLoader());
 			if (environmentClass != null && environmentClass.isInstance(environment)) {
 				return true;
 			}

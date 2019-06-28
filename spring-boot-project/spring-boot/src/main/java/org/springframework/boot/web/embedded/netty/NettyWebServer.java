@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,17 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import reactor.netty.ChannelBindException;
 import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerRoutes;
 
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
@@ -42,6 +47,8 @@ import org.springframework.util.Assert;
  */
 public class NettyWebServer implements WebServer {
 
+	private static final Predicate<HttpServerRequest> ALWAYS = (r) -> true;
+
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
 	private final HttpServer httpServer;
@@ -50,15 +57,20 @@ public class NettyWebServer implements WebServer {
 
 	private final Duration lifecycleTimeout;
 
+	private List<NettyRouteProvider> routeProviders = Collections.emptyList();
+
 	private DisposableServer disposableServer;
 
-	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
-			Duration lifecycleTimeout) {
+	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout) {
 		Assert.notNull(httpServer, "HttpServer must not be null");
 		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
 		this.httpServer = httpServer;
 		this.handlerAdapter = handlerAdapter;
 		this.lifecycleTimeout = lifecycleTimeout;
+	}
+
+	public void setRouteProviders(List<NettyRouteProvider> routeProviders) {
+		this.routeProviders = routeProviders;
 	}
 
 	@Override
@@ -80,11 +92,22 @@ public class NettyWebServer implements WebServer {
 	}
 
 	private DisposableServer startHttpServer() {
-		if (this.lifecycleTimeout != null) {
-			return this.httpServer.handle(this.handlerAdapter)
-					.bindNow(this.lifecycleTimeout);
+		HttpServer server = this.httpServer;
+		if (this.routeProviders.isEmpty()) {
+			server = server.handle(this.handlerAdapter);
 		}
-		return this.httpServer.handle(this.handlerAdapter).bindNow();
+		else {
+			server = server.route(this::applyRouteProviders);
+		}
+		if (this.lifecycleTimeout != null) {
+			return server.bindNow(this.lifecycleTimeout);
+		}
+		return server.bindNow();
+	}
+
+	private void applyRouteProviders(HttpServerRoutes routes) {
+		this.routeProviders.forEach((provider) -> provider.apply(routes));
+		routes.route(ALWAYS, this.handlerAdapter);
 	}
 
 	private ChannelBindException findBindException(Exception ex) {

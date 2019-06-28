@@ -19,8 +19,8 @@ package org.springframework.boot.web.servlet.view;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class MustacheViewTests {
+class MustacheViewTests {
 
-	private final String templateUrl = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+	private final String templateUrl = "classpath:/" + getClass().getPackage().getName().replace(".", "/")
+			+ "/template.html";
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
@@ -46,25 +46,22 @@ public class MustacheViewTests {
 
 	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		this.context.refresh();
 		MockServletContext servletContext = new MockServletContext();
 		this.context.setServletContext(servletContext);
-		servletContext.setAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-				this.context);
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 	}
 
 	@Test
-	public void viewResolvesHandlebars() throws Exception {
+	void viewResolvesHandlebars() throws Exception {
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
 		view.setUrl(this.templateUrl);
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("World", "Spring"), this.request,
-				this.response);
-		assertThat(this.response.getContentAsString()).isEqualTo("Hello Spring");
+		view.render(Collections.singletonMap("World", "Spring"), this.request, this.response);
+		assertThat(this.response.getContentAsString().trim()).isEqualTo("Hello Spring");
 	}
 
 }

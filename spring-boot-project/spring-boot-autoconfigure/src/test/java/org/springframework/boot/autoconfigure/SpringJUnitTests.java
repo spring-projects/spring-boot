@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DirtiesContext
 @SpringBootTest
-public class SpringJUnitTests {
+class SpringJUnitTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -43,12 +43,12 @@ public class SpringJUnitTests {
 	private String foo = "bar";
 
 	@Test
-	public void testContextCreated() {
+	void testContextCreated() {
 		assertThat(this.context).isNotNull();
 	}
 
 	@Test
-	public void testContextInitialized() {
+	void testContextInitialized() {
 		assertThat(this.foo).isEqualTo("bucket");
 	}
 

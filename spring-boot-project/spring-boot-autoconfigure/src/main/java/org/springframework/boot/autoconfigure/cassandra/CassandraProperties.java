@@ -55,8 +55,7 @@ public class CassandraProperties {
 	/**
 	 * Cluster node addresses.
 	 */
-	private final List<String> contactPoints = new ArrayList<>(
-			Collections.singleton("localhost"));
+	private final List<String> contactPoints = new ArrayList<>(Collections.singleton("localhost"));
 
 	/**
 	 * Port of the Cassandra server.

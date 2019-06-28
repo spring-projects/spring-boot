@@ -18,13 +18,11 @@ package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
@@ -32,19 +30,18 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @WithMockUser
 @WebFluxTest(controllers = ExampleController2.class)
-public class WebFluxTestConverterIntegrationTests {
+class WebFluxTestConverterIntegrationTests {
 
 	@Autowired
 	private WebTestClient webClient;
 
 	@Test
-	public void shouldFindConverter() {
+	void shouldFindConverter() {
 		UUID id = UUID.randomUUID();
-		this.webClient.get().uri("/two/" + id).exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo(id + "two");
+		this.webClient.get().uri("/two/" + id).exchange().expectStatus().isOk().expectBody(String.class)
+				.isEqualTo(id + "two");
 	}
 
 }

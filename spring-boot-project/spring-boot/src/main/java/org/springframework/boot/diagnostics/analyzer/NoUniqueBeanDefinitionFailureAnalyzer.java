@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-class NoUniqueBeanDefinitionFailureAnalyzer
-		extends AbstractInjectionFailureAnalyzer<NoUniqueBeanDefinitionException>
+class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyzer<NoUniqueBeanDefinitionException>
 		implements BeanFactoryAware {
 
 	private ConfigurableBeanFactory beanFactory;
@@ -46,8 +45,8 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			NoUniqueBeanDefinitionException cause, String description) {
+	protected FailureAnalysis analyze(Throwable rootFailure, NoUniqueBeanDefinitionException cause,
+			String description) {
 		if (description == null) {
 			return null;
 		}
@@ -56,8 +55,7 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 			return null;
 		}
 		StringBuilder message = new StringBuilder();
-		message.append(String.format("%s required a single bean, but %d were found:%n",
-				description, beanNames.length));
+		message.append(String.format("%s required a single bean, but %d were found:%n", description, beanNames.length));
 		for (String beanName : beanNames) {
 			buildMessage(message, beanName);
 		}
@@ -70,30 +68,26 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 
 	private void buildMessage(StringBuilder message, String beanName) {
 		try {
-			BeanDefinition definition = this.beanFactory
-					.getMergedBeanDefinition(beanName);
+			BeanDefinition definition = this.beanFactory.getMergedBeanDefinition(beanName);
 			message.append(getDefinitionDescription(beanName, definition));
 		}
 		catch (NoSuchBeanDefinitionException ex) {
-			message.append(String
-					.format("\t- %s: a programmatically registered singleton", beanName));
+			message.append(String.format("\t- %s: a programmatically registered singleton", beanName));
 		}
 	}
 
 	private String getDefinitionDescription(String beanName, BeanDefinition definition) {
 		if (StringUtils.hasText(definition.getFactoryMethodName())) {
-			return String.format("\t- %s: defined by method '%s' in %s%n", beanName,
-					definition.getFactoryMethodName(),
+			return String.format("\t- %s: defined by method '%s' in %s%n", beanName, definition.getFactoryMethodName(),
 					definition.getResourceDescription());
 		}
-		return String.format("\t- %s: defined in %s%n", beanName,
-				definition.getResourceDescription());
+		return String.format("\t- %s: defined in %s%n", beanName, definition.getResourceDescription());
 	}
 
 	private String[] extractBeanNames(NoUniqueBeanDefinitionException cause) {
 		if (cause.getMessage().contains("but found")) {
-			return StringUtils.commaDelimitedListToStringArray(cause.getMessage()
-					.substring(cause.getMessage().lastIndexOf(':') + 1).trim());
+			return StringUtils.commaDelimitedListToStringArray(
+					cause.getMessage().substring(cause.getMessage().lastIndexOf(':') + 1).trim());
 		}
 		return null;
 	}

@@ -32,13 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @SpringBootTest
 @ContextConfiguration(locations = "classpath:test.groovy")
-public class SpringBootTestGroovyConfigurationTests {
+class SpringBootTestGroovyConfigurationTests {
 
 	@Autowired
 	private String foo;
 
 	@Test
-	public void groovyConfigLoaded() {
+	void groovyConfigLoaded() {
 		assertThat(this.foo).isNotNull();
 	}
 

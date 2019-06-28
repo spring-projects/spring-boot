@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,11 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.util.Arrays;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,55 +30,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(Parameterized.class)
-public class EmbeddedServletContainerJarPackagingIntegrationTests
-		extends AbstractEmbeddedServletContainerIntegrationTests {
+@EmbeddedServletContainerTest(packaging = "jar",
+		launchers = { PackagedApplicationLauncher.class, ExplodedApplicationLauncher.class })
+public class EmbeddedServletContainerJarPackagingIntegrationTests {
 
-	@Parameters(name = "{0}")
-	public static Object[] parameters() {
-		return AbstractEmbeddedServletContainerIntegrationTests.parameters("jar",
-				Arrays.asList(PackagedApplicationLauncher.class,
-						ExplodedApplicationLauncher.class));
-	}
-
-	public EmbeddedServletContainerJarPackagingIntegrationTests(String name,
-			AbstractApplicationLauncher launcher) {
-		super(name, launcher);
-	}
-
-	@Test
-	public void nestedMetaInfResourceIsAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest
-				.getForEntity("/nested-meta-inf-resource.txt", String.class);
+	@TestTemplate
+	public void nestedMetaInfResourceIsAvailableViaHttp(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
-	@Test
-	public void nestedMetaInfResourceIsAvailableViaServletContext() {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/servletContext?/nested-meta-inf-resource.txt", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	@Test
-	public void nestedJarIsNotAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest
-				.getForEntity("/BOOT-INF/lib/resources-1.0.jar", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-	}
-
-	@Test
-	public void applicationClassesAreNotAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/BOOT-INF/classes/com/example/ResourceHandlingApplication.class",
+	@TestTemplate
+	public void nestedMetaInfResourceIsAvailableViaServletContext(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
 				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@TestTemplate
+	public void nestedJarIsNotAvailableViaHttp(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/BOOT-INF/lib/resources-1.0.jar", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	@Test
-	public void launcherIsNotAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/org/springframework/boot/loader/Launcher.class", String.class);
+	@TestTemplate
+	public void applicationClassesAreNotAvailableViaHttp(RestTemplate rest) {
+		ResponseEntity<String> entity = rest
+				.getForEntity("/BOOT-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@TestTemplate
+	public void launcherIsNotAvailableViaHttp(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/org/springframework/boot/loader/Launcher.class",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

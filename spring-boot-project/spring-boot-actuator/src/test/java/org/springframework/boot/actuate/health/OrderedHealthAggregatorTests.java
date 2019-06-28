@@ -30,63 +30,57 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Christian Dupuis
  */
-public class OrderedHealthAggregatorTests {
+class OrderedHealthAggregatorTests {
 
 	private OrderedHealthAggregator healthAggregator;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
 
 	@Test
-	public void defaultOrder() {
+	void defaultOrder() {
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
 		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
-		assertThat(this.healthAggregator.aggregate(healths).getStatus())
-				.isEqualTo(Status.DOWN);
+		assertThat(this.healthAggregator.aggregate(healths).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
-	public void customOrder() {
-		this.healthAggregator.setStatusOrder(Status.UNKNOWN, Status.UP,
-				Status.OUT_OF_SERVICE, Status.DOWN);
+	void customOrder() {
+		this.healthAggregator.setStatusOrder(Status.UNKNOWN, Status.UP, Status.OUT_OF_SERVICE, Status.DOWN);
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
 		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
-		assertThat(this.healthAggregator.aggregate(healths).getStatus())
-				.isEqualTo(Status.UNKNOWN);
+		assertThat(this.healthAggregator.aggregate(healths).getStatus()).isEqualTo(Status.UNKNOWN);
 	}
 
 	@Test
-	public void defaultOrderWithCustomStatus() {
+	void defaultOrderWithCustomStatus() {
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
 		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
 		healths.put("h5", new Health.Builder().status(new Status("CUSTOM")).build());
-		assertThat(this.healthAggregator.aggregate(healths).getStatus())
-				.isEqualTo(Status.DOWN);
+		assertThat(this.healthAggregator.aggregate(healths).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
-	public void customOrderWithCustomStatus() {
-		this.healthAggregator.setStatusOrder(
-				Arrays.asList("DOWN", "OUT_OF_SERVICE", "UP", "UNKNOWN", "CUSTOM"));
+	void customOrderWithCustomStatus() {
+		this.healthAggregator.setStatusOrder(Arrays.asList("DOWN", "OUT_OF_SERVICE", "UP", "UNKNOWN", "CUSTOM"));
 		Map<String, Health> healths = new HashMap<>();
 		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
 		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
 		healths.put("h5", new Health.Builder().status(new Status("CUSTOM")).build());
-		assertThat(this.healthAggregator.aggregate(healths).getStatus())
-				.isEqualTo(Status.DOWN);
+		assertThat(this.healthAggregator.aggregate(healths).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 }

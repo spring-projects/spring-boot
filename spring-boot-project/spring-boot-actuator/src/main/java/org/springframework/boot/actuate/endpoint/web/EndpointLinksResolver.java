@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,12 +52,10 @@ public class EndpointLinksResolver {
 	 * @param endpoints the endpoints
 	 * @param basePath the basePath
 	 */
-	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints,
-			String basePath) {
+	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints, String basePath) {
 		this.endpoints = endpoints;
 		if (logger.isInfoEnabled()) {
-			logger.info("Exposing " + endpoints.size()
-					+ " endpoint(s) beneath base path '" + basePath + "'");
+			logger.info("Exposing " + endpoints.size() + " endpoint(s) beneath base path '" + basePath + "'");
 		}
 	}
 
@@ -91,8 +89,7 @@ public class EndpointLinksResolver {
 		return requestUrl;
 	}
 
-	private void collectLinks(Map<String, Link> links, ExposableWebEndpoint endpoint,
-			String normalizedUrl) {
+	private void collectLinks(Map<String, Link> links, ExposableWebEndpoint endpoint, String normalizedUrl) {
 		for (WebOperation operation : endpoint.getOperations()) {
 			links.put(operation.getId(), createLink(normalizedUrl, operation));
 		}

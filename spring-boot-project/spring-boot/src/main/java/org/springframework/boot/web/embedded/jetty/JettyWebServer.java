@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,8 +97,8 @@ public class JettyWebServer implements WebServer {
 					@Override
 					protected void doStart() throws Exception {
 						for (Connector connector : JettyWebServer.this.connectors) {
-							Assert.state(connector.isStopped(), () -> "Connector "
-									+ connector + " has been started prematurely");
+							Assert.state(connector.isStopped(),
+									() -> "Connector " + connector + " has been started prematurely");
 						}
 						JettyWebServer.this.server.setConnectors(null);
 					}
@@ -111,8 +111,7 @@ public class JettyWebServer implements WebServer {
 			catch (Throwable ex) {
 				// Ensure process isn't left running
 				stopSilently();
-				throw new WebServerException("Unable to start embedded Jetty web server",
-						ex);
+				throw new WebServerException("Unable to start embedded Jetty web server", ex);
 			}
 		}
 	}
@@ -147,17 +146,15 @@ public class JettyWebServer implements WebServer {
 						connector.start();
 					}
 					catch (IOException ex) {
-						if (connector instanceof NetworkConnector
-								&& findBindException(ex) != null) {
-							throw new PortInUseException(
-									((NetworkConnector) connector).getPort());
+						if (connector instanceof NetworkConnector && findBindException(ex) != null) {
+							throw new PortInUseException(((NetworkConnector) connector).getPort());
 						}
 						throw ex;
 					}
 				}
 				this.started = true;
-				logger.info("Jetty started on port(s) " + getActualPortsDescription()
-						+ " with context path '" + getContextPath() + "'");
+				logger.info("Jetty started on port(s) " + getActualPortsDescription() + " with context path '"
+						+ getContextPath() + "'");
 			}
 			catch (WebServerException ex) {
 				stopSilently();
@@ -194,9 +191,8 @@ public class JettyWebServer implements WebServer {
 	private Integer getLocalPort(Connector connector) {
 		try {
 			// Jetty 9 internals are different, but the method name is the same
-			return (Integer) ReflectionUtils.invokeMethod(
-					ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"),
-					connector);
+			return (Integer) ReflectionUtils
+					.invokeMethod(ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"), connector);
 		}
 		catch (Exception ex) {
 			logger.info("could not determine port ( " + ex.getMessage() + ")");
@@ -210,9 +206,8 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.server.getHandlers())
-				.filter(ContextHandler.class::isInstance).map(ContextHandler.class::cast)
-				.map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
+		return Arrays.stream(this.server.getHandlers()).filter(ContextHandler.class::isInstance)
+				.map(ContextHandler.class::cast).map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
 	}
 
 	private void handleDeferredInitialize(Handler... handlers) throws Exception {

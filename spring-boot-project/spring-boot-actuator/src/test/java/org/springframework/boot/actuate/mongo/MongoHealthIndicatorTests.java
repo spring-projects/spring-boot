@@ -36,19 +36,19 @@ import static org.mockito.Mockito.verify;
  *
  * @author Christian Dupuis
  */
-public class MongoHealthIndicatorTests {
+class MongoHealthIndicatorTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void mongoIsUp() {
+	void mongoIsUp() {
 		Document commandResult = mock(Document.class);
 		given(commandResult.getString("version")).willReturn("2.6.4");
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
@@ -62,15 +62,13 @@ public class MongoHealthIndicatorTests {
 	}
 
 	@Test
-	public void mongoIsDown() {
+	void mongoIsDown() {
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ buildInfo: 1 }"))
-				.willThrow(new MongoException("Connection failed"));
+		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error"))
-				.contains("Connection failed");
+		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
 		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 

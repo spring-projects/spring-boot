@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,20 +45,18 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	private List<HandlerExceptionResolver> resolvers;
 
 	@Override
-	public ModelAndView resolveException(HttpServletRequest request,
-			HttpServletResponse response, Object handler, Exception ex) {
+	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Exception ex) {
 		if (this.resolvers == null) {
 			this.resolvers = extractResolvers();
 		}
-		return this.resolvers.stream().map(
-				(resolver) -> resolver.resolveException(request, response, handler, ex))
+		return this.resolvers.stream().map((resolver) -> resolver.resolveException(request, response, handler, ex))
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {
 		List<HandlerExceptionResolver> list = new ArrayList<>();
-		list.addAll(
-				this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
+		list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		if (list.isEmpty()) {

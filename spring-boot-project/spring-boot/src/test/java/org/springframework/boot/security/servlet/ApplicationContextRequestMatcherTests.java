@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -38,46 +38,42 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ApplicationContextRequestMatcherTests {
+class ApplicationContextRequestMatcherTests {
 
 	@Test
-	public void createWhenContextClassIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
+	void createWhenContextClassIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
 				.withMessageContaining("Context class must not be null");
 	}
 
 	@Test
-	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
+	void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
 				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context);
 	}
 
 	@Test
-	public void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
+	void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context).get())
-						.isEqualTo(context.getBean(ExistingBean.class));
+				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
-	public void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
+	void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
-		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(
-				ExistingBean.class).callMatchesAndReturnProvidedContext(context);
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(supplier::get);
+		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(ExistingBean.class)
+				.callMatchesAndReturnProvidedContext(context);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 
 	private StaticWebApplicationContext createWebApplicationContext() {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		MockServletContext servletContext = new MockServletContext();
 		context.setServletContext(servletContext);
-		servletContext.setAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 		return context;
 	}
 
@@ -99,8 +95,7 @@ public class ApplicationContextRequestMatcherTests {
 
 	}
 
-	static class TestApplicationContextRequestMatcher<C>
-			extends ApplicationContextRequestMatcher<C> {
+	static class TestApplicationContextRequestMatcher<C> extends ApplicationContextRequestMatcher<C> {
 
 		private Supplier<C> providedContext;
 
@@ -108,14 +103,11 @@ public class ApplicationContextRequestMatcherTests {
 			super(context);
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(
-				WebApplicationContext context) {
-			return callMatchesAndReturnProvidedContext(
-					new MockHttpServletRequest(context.getServletContext()));
+		public Supplier<C> callMatchesAndReturnProvidedContext(WebApplicationContext context) {
+			return callMatchesAndReturnProvidedContext(new MockHttpServletRequest(context.getServletContext()));
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(
-				HttpServletRequest request) {
+		public Supplier<C> callMatchesAndReturnProvidedContext(HttpServletRequest request) {
 			matches(request);
 			return getProvidedContext();
 		}

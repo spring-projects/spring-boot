@@ -38,8 +38,7 @@ public class EnvironmentEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(
-			@Selector String toMatch) {
+	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(@Selector String toMatch) {
 		EnvironmentEntryDescriptor descriptor = this.delegate.environmentEntry(toMatch);
 		return new WebEndpointResponse<>(descriptor, getStatus(descriptor));
 	}

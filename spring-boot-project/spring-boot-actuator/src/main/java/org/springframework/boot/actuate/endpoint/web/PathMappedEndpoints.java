@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,21 +56,18 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param basePath the base path of the endpoints
 	 * @param suppliers the endpoint suppliers
 	 */
-	public PathMappedEndpoints(String basePath,
-			Collection<EndpointsSupplier<?>> suppliers) {
+	public PathMappedEndpoints(String basePath, Collection<EndpointsSupplier<?>> suppliers) {
 		Assert.notNull(suppliers, "Suppliers must not be null");
 		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(suppliers);
 	}
 
-	private Map<EndpointId, PathMappedEndpoint> getEndpoints(
-			Collection<EndpointsSupplier<?>> suppliers) {
+	private Map<EndpointId, PathMappedEndpoint> getEndpoints(Collection<EndpointsSupplier<?>> suppliers) {
 		Map<EndpointId, PathMappedEndpoint> endpoints = new LinkedHashMap<>();
 		suppliers.forEach((supplier) -> {
 			supplier.getEndpoints().forEach((endpoint) -> {
 				if (endpoint instanceof PathMappedEndpoint) {
-					endpoints.put(endpoint.getEndpointId(),
-							(PathMappedEndpoint) endpoint);
+					endpoints.put(endpoint.getEndpointId(), (PathMappedEndpoint) endpoint);
 				}
 			});
 		});
@@ -150,8 +147,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	private <T> List<T> asList(Stream<T> stream) {
-		return stream.collect(Collectors.collectingAndThen(Collectors.toList(),
-				Collections::unmodifiableList));
+		return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 
 }

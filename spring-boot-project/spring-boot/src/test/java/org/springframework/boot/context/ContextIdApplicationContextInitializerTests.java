@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -34,33 +34,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class ContextIdApplicationContextInitializerTests {
+class ContextIdApplicationContextInitializerTests {
 
 	private final ContextIdApplicationContextInitializer initializer = new ContextIdApplicationContextInitializer();
 
 	private List<ConfigurableApplicationContext> contexts = new ArrayList<>();
 
-	@After
-	public void closeContexts() {
+	@AfterEach
+	void closeContexts() {
 		Collections.reverse(this.contexts);
 		this.contexts.forEach(ConfigurableApplicationContext::close);
 	}
 
 	@Test
-	public void singleContextWithDefaultName() {
+	void singleContextWithDefaultName() {
 		ConfigurableApplicationContext context = createContext(null);
 		assertThat(context.getId()).isEqualTo("application");
 	}
 
 	@Test
-	public void singleContextWithCustomName() {
-		ConfigurableApplicationContext context = createContext(null,
-				"spring.application.name=test");
+	void singleContextWithCustomName() {
+		ConfigurableApplicationContext context = createContext(null, "spring.application.name=test");
 		assertThat(context.getId()).isEqualTo("test");
 	}
 
 	@Test
-	public void linearHierarchy() {
+	void linearHierarchy() {
 		ConfigurableApplicationContext grandparent = createContext(null);
 		ConfigurableApplicationContext parent = createContext(grandparent);
 		ConfigurableApplicationContext child = createContext(parent);
@@ -68,7 +67,7 @@ public class ContextIdApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void complexHierarchy() {
+	void complexHierarchy() {
 		ConfigurableApplicationContext grandparent = createContext(null);
 		ConfigurableApplicationContext parent1 = createContext(grandparent);
 		ConfigurableApplicationContext parent2 = createContext(grandparent);
@@ -81,15 +80,14 @@ public class ContextIdApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void contextWithParentWithNoContextIdFallsBackToDefaultId() {
+	void contextWithParentWithNoContextIdFallsBackToDefaultId() {
 		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
 		this.contexts.add(parent);
 		parent.refresh();
 		assertThat(createContext(parent).getId()).isEqualTo("application");
 	}
 
-	private ConfigurableApplicationContext createContext(
-			ConfigurableApplicationContext parent, String... properties) {
+	private ConfigurableApplicationContext createContext(ConfigurableApplicationContext parent, String... properties) {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, properties);
 		if (parent != null) {

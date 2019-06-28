@@ -40,118 +40,87 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Andreas Neiser
  */
-public class MockitoPostProcessorTests {
+class MockitoPostProcessorTests {
 
 	@Test
-	public void cannotMockMultipleBeans() {
+	void cannotMockMultipleBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);
 		assertThatIllegalStateException().isThrownBy(context::refresh)
-				.withMessageContaining(
-						"Unable to register mock bean " + ExampleService.class.getName()
-								+ " expected a single matching bean to replace "
-								+ "but found [example1, example2]");
+				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
+						+ " expected a single matching bean to replace " + "but found [example1, example2]");
 	}
 
 	@Test
-	public void cannotMockMultipleQualifiedBeans() {
+	void cannotMockMultipleQualifiedBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleQualifiedBeans.class);
 		assertThatIllegalStateException().isThrownBy(context::refresh)
-				.withMessageContaining(
-						"Unable to register mock bean " + ExampleService.class.getName()
-								+ " expected a single matching bean to replace "
-								+ "but found [example1, example3]");
+				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
+						+ " expected a single matching bean to replace " + "but found [example1, example3]");
 	}
 
 	@Test
-	public void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
+	void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
-		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(
-				TestFactoryBean.class);
-		factoryBeanDefinition.setAttribute("factoryBeanObjectType",
-				SomeInterface.class.getName());
+		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
+		factoryBeanDefinition.setAttribute("factoryBeanObjectType", SomeInterface.class.getName());
 		context.registerBeanDefinition("beanToBeMocked", factoryBeanDefinition);
 		context.register(MockedFactoryBean.class);
 		context.refresh();
-		assertThat(Mockito.mockingDetails(context.getBean("beanToBeMocked")).isMock())
-				.isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean("beanToBeMocked")).isMock()).isTrue();
 	}
 
 	@Test
-	public void canMockPrimaryBean() {
+	void canMockPrimaryBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MockPrimaryBean.class);
 		context.refresh();
-		assertThat(Mockito.mockingDetails(context.getBean(MockPrimaryBean.class).mock)
-				.isMock()).isTrue();
-		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isMock())
-				.isTrue();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("examplePrimary", ExampleService.class))
-				.isMock()).isTrue();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("exampleQualified", ExampleService.class))
-				.isMock()).isFalse();
+		assertThat(Mockito.mockingDetails(context.getBean(MockPrimaryBean.class).mock).isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean("examplePrimary", ExampleService.class)).isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean("exampleQualified", ExampleService.class)).isMock())
+				.isFalse();
 	}
 
 	@Test
-	public void canMockQualifiedBeanWithPrimaryBeanPresent() {
+	void canMockQualifiedBeanWithPrimaryBeanPresent() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MockQualifiedBean.class);
 		context.refresh();
-		assertThat(Mockito.mockingDetails(context.getBean(MockQualifiedBean.class).mock)
-				.isMock()).isTrue();
-		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isMock())
-				.isFalse();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("examplePrimary", ExampleService.class))
-				.isMock()).isFalse();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("exampleQualified", ExampleService.class))
-				.isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean(MockQualifiedBean.class).mock).isMock()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isMock()).isFalse();
+		assertThat(Mockito.mockingDetails(context.getBean("examplePrimary", ExampleService.class)).isMock()).isFalse();
+		assertThat(Mockito.mockingDetails(context.getBean("exampleQualified", ExampleService.class)).isMock()).isTrue();
 	}
 
 	@Test
-	public void canSpyPrimaryBean() {
+	void canSpyPrimaryBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(SpyPrimaryBean.class);
 		context.refresh();
-		assertThat(
-				Mockito.mockingDetails(context.getBean(SpyPrimaryBean.class).spy).isSpy())
-						.isTrue();
-		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isSpy())
-				.isTrue();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("examplePrimary", ExampleService.class))
-				.isSpy()).isTrue();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("exampleQualified", ExampleService.class))
-				.isSpy()).isFalse();
+		assertThat(Mockito.mockingDetails(context.getBean(SpyPrimaryBean.class).spy).isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean("examplePrimary", ExampleService.class)).isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean("exampleQualified", ExampleService.class)).isSpy()).isFalse();
 	}
 
 	@Test
-	public void canSpyQualifiedBeanWithPrimaryBeanPresent() {
+	void canSpyQualifiedBeanWithPrimaryBeanPresent() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(SpyQualifiedBean.class);
 		context.refresh();
-		assertThat(Mockito.mockingDetails(context.getBean(SpyQualifiedBean.class).spy)
-				.isSpy()).isTrue();
-		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isSpy())
-				.isFalse();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("examplePrimary", ExampleService.class))
-				.isSpy()).isFalse();
-		assertThat(Mockito
-				.mockingDetails(context.getBean("exampleQualified", ExampleService.class))
-				.isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean(SpyQualifiedBean.class).spy).isSpy()).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean(ExampleService.class)).isSpy()).isFalse();
+		assertThat(Mockito.mockingDetails(context.getBean("examplePrimary", ExampleService.class)).isSpy()).isFalse();
+		assertThat(Mockito.mockingDetails(context.getBean("exampleQualified", ExampleService.class)).isSpy()).isTrue();
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -32,26 +32,25 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class DiscoveredOperationMethodTests {
+class DiscoveredOperationMethodTests {
 
 	@Test
-	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
+	void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
 				.withMessageContaining("AnnotationAttributes must not be null");
 	}
 
 	@Test
-	public void getProducesMediaTypesShouldReturnMediaTypes() {
+	void getProducesMediaTypesShouldReturnMediaTypes() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		String[] produces = new String[] { "application/json" };
 		annotationAttributes.put("produces", produces);
-		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method,
-				OperationType.READ, annotationAttributes);
-		assertThat(discovered.getProducesMediaTypes())
-				.containsExactly("application/json");
+		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method, OperationType.READ,
+				annotationAttributes);
+		assertThat(discovered.getProducesMediaTypes()).containsExactly("application/json");
 	}
 
 	public void example() {

@@ -60,15 +60,20 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 public class ReactiveWebServerFactoryAutoConfiguration {
 
 	@Bean
-	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(
-			ServerProperties serverProperties) {
+	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties);
 	}
 
 	@Bean
+	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
+	public TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
+			ServerProperties serverProperties) {
+		return new TomcatReactiveWebServerFactoryCustomizer(serverProperties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "server.forward-headers-strategy",
-			havingValue = "framework")
+	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
 	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
 		return new ForwardedHeaderTransformer();
 	}
@@ -77,8 +82,7 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
 	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
-	public static class BeanPostProcessorsRegistrar
-			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+	public static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 		private ConfigurableListableBeanFactory beanFactory;
 
@@ -95,15 +99,12 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 			if (this.beanFactory == null) {
 				return;
 			}
-			registerSyntheticBeanIfMissing(registry,
-					"webServerFactoryCustomizerBeanPostProcessor",
+			registerSyntheticBeanIfMissing(registry, "webServerFactoryCustomizerBeanPostProcessor",
 					WebServerFactoryCustomizerBeanPostProcessor.class);
 		}
 
-		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry,
-				String name, Class<?> beanClass) {
-			if (ObjectUtils.isEmpty(
-					this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
+		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name, Class<?> beanClass) {
+			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(name, beanDefinition);

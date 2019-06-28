@@ -58,8 +58,7 @@ public class HealthEndpoint {
 	 */
 	@ReadOperation
 	public Health healthForComponent(@Selector String component) {
-		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator,
-				component);
+		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator, component);
 		return (indicator != null) ? indicator.health() : null;
 	}
 
@@ -72,16 +71,13 @@ public class HealthEndpoint {
 	 * @return the {@link Health} for the component instance of {@code null}
 	 */
 	@ReadOperation
-	public Health healthForComponentInstance(@Selector String component,
-			@Selector String instance) {
-		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator,
-				component);
+	public Health healthForComponentInstance(@Selector String component, @Selector String instance) {
+		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator, component);
 		HealthIndicator nestedIndicator = getNestedHealthIndicator(indicator, instance);
 		return (nestedIndicator != null) ? nestedIndicator.health() : null;
 	}
 
-	private HealthIndicator getNestedHealthIndicator(HealthIndicator healthIndicator,
-			String name) {
+	private HealthIndicator getNestedHealthIndicator(HealthIndicator healthIndicator, String name) {
 		if (healthIndicator instanceof CompositeHealthIndicator) {
 			return ((CompositeHealthIndicator) healthIndicator).getRegistry().get(name);
 		}

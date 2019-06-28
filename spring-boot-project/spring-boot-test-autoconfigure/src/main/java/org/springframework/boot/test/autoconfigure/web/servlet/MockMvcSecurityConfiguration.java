@@ -58,8 +58,7 @@ class MockMvcSecurityConfiguration {
 			builder.apply(new MockMvcConfigurerAdapter() {
 
 				@Override
-				public RequestPostProcessor beforeMockMvcCreated(
-						ConfigurableMockMvcBuilder<?> builder,
+				public RequestPostProcessor beforeMockMvcCreated(ConfigurableMockMvcBuilder<?> builder,
 						WebApplicationContext context) {
 					return SecurityMockMvcRequestPostProcessors.testSecurityContext();
 				}

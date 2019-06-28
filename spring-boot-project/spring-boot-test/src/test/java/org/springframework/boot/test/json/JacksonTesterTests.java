@@ -31,25 +31,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
+class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
-	public void initFieldsWhenTestIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> JacksonTester.initFields(null, new ObjectMapper()))
+	void initFieldsWhenTestIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> JacksonTester.initFields(null, new ObjectMapper()))
 				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
-	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
+	void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> JacksonTester.initFields(new InitFieldsTestClass(),
-						(ObjectMapper) null))
+				.isThrownBy(() -> JacksonTester.initFields(new InitFieldsTestClass(), (ObjectMapper) null))
 				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test
-	public void initFieldsShouldSetNullFields() {
+	void initFieldsShouldSetNullFields() {
 		InitFieldsTestClass test = new InitFieldsTestClass();
 		assertThat(test.test).isNull();
 		assertThat(test.base).isNull();
@@ -61,8 +59,7 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 	}
 
 	@Override
-	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
-			ResolvableType type) {
+	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type) {
 		return new JacksonTester<>(resourceLoadClass, type, new ObjectMapper());
 	}
 
@@ -70,9 +67,8 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public JacksonTester<ExampleObject> base;
 
-		public JacksonTester<ExampleObject> baseSet = new JacksonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new ObjectMapper());
+		public JacksonTester<ExampleObject> baseSet = new JacksonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new ObjectMapper());
 
 	}
 
@@ -80,9 +76,8 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public JacksonTester<List<ExampleObject>> test;
 
-		public JacksonTester<ExampleObject> testSet = new JacksonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new ObjectMapper());
+		public JacksonTester<ExampleObject> testSet = new JacksonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new ObjectMapper());
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ import org.apache.commons.logging.Log;
  */
 class DocumentRoot {
 
-	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
-			"static" };
+	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public", "static" };
 
 	private final Log logger;
 
@@ -127,8 +126,7 @@ class DocumentRoot {
 		}
 		if (codeSourceFile != null && codeSourceFile.exists()) {
 			String path = codeSourceFile.getAbsolutePath();
-			int webInfPathIndex = path
-					.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
+			int webInfPathIndex = path.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
 			if (webInfPathIndex >= 0) {
 				path = path.substring(0, webInfPathIndex);
 				return new File(path);

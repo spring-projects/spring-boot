@@ -67,8 +67,7 @@ class DefaultLogbackConfiguration {
 
 	private final LogFile logFile;
 
-	DefaultLogbackConfiguration(LoggingInitializationContext initializationContext,
-			LogFile logFile) {
+	DefaultLogbackConfiguration(LoggingInitializationContext initializationContext, LogFile logFile) {
 		this.patterns = getPatternsResolver(initializationContext.getEnvironment());
 		this.logFile = logFile;
 	}
@@ -91,8 +90,7 @@ class DefaultLogbackConfiguration {
 			base(config);
 			Appender<ILoggingEvent> consoleAppender = consoleAppender(config);
 			if (this.logFile != null) {
-				Appender<ILoggingEvent> fileAppender = fileAppender(config,
-						this.logFile.toString());
+				Appender<ILoggingEvent> fileAppender = fileAppender(config, this.logFile.toString());
 				config.root(Level.INFO, consoleAppender, fileAppender);
 			}
 			else {
@@ -117,8 +115,7 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty("logging.pattern.console",
-				CONSOLE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty("logging.pattern.console", CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		config.start(encoder);
 		appender.setEncoder(encoder);
@@ -126,12 +123,10 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
-	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config,
-			String logFile) {
+	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty("logging.pattern.file",
-				FILE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty("logging.pattern.file", FILE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);
@@ -141,16 +136,15 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
-	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
-			LogbackConfigurator config, String logFile) {
+	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config,
+			String logFile) {
 		SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
-		rollingPolicy.setCleanHistoryOnStart(this.patterns.getProperty(
-				"logging.file.clean-history-on-start", Boolean.class, false));
+		rollingPolicy.setCleanHistoryOnStart(
+				this.patterns.getProperty("logging.file.clean-history-on-start", Boolean.class, false));
 		rollingPolicy.setFileNamePattern(logFile + ".%d{yyyy-MM-dd}.%i.gz");
-		setMaxFileSize(rollingPolicy,
-				getDataSize("logging.file.max-size", MAX_FILE_SIZE));
-		rollingPolicy.setMaxHistory(this.patterns.getProperty("logging.file.max-history",
-				Integer.class, MAX_FILE_HISTORY));
+		setMaxFileSize(rollingPolicy, getDataSize("logging.file.max-size", MAX_FILE_SIZE));
+		rollingPolicy
+				.setMaxHistory(this.patterns.getProperty("logging.file.max-history", Integer.class, MAX_FILE_HISTORY));
 		DataSize totalSizeCap = getDataSize("logging.file.total-size-cap",
 				DataSize.ofBytes(CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP));
 		rollingPolicy.setTotalSizeCap(new FileSize(totalSizeCap.toBytes()));
@@ -159,18 +153,15 @@ class DefaultLogbackConfiguration {
 		config.start(rollingPolicy);
 	}
 
-	private void setMaxFileSize(
-			SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy,
-			DataSize maxFileSize) {
+	private void setMaxFileSize(SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy, DataSize maxFileSize) {
 		try {
 			rollingPolicy.setMaxFileSize(new FileSize(maxFileSize.toBytes()));
 		}
 		catch (NoSuchMethodError ex) {
 			// Logback < 1.1.8 used String configuration
-			Method method = ReflectionUtils.findMethod(
-					SizeAndTimeBasedRollingPolicy.class, "setMaxFileSize", String.class);
-			ReflectionUtils.invokeMethod(method, rollingPolicy,
-					String.valueOf(maxFileSize.toBytes()));
+			Method method = ReflectionUtils.findMethod(SizeAndTimeBasedRollingPolicy.class, "setMaxFileSize",
+					String.class);
+			ReflectionUtils.invokeMethod(method, rollingPolicy, String.valueOf(maxFileSize.toBytes()));
 		}
 	}
 

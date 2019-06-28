@@ -34,35 +34,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class PropertyPlaceholderAutoConfigurationTests {
+class PropertyPlaceholderAutoConfigurationTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void propertyPlaceholders() {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				PlaceholderConfig.class);
+	void propertyPlaceholders() {
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, PlaceholderConfig.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);
 		this.context.refresh();
-		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
-				.isEqualTo("two");
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo()).isEqualTo("two");
 	}
 
 	@Test
-	public void propertyPlaceholdersOverride() {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				PlaceholderConfig.class, PlaceholdersOverride.class);
+	void propertyPlaceholdersOverride() {
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, PlaceholderConfig.class,
+				PlaceholdersOverride.class);
 		TestPropertyValues.of("foo:two").applyTo(this.context);
 		this.context.refresh();
-		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
-				.isEqualTo("spam");
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo()).isEqualTo("spam");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -83,8 +80,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer morePlaceholders() {
 			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-			configurer.setProperties(StringUtils
-					.splitArrayElementsIntoProperties(new String[] { "foo=spam" }, "="));
+			configurer.setProperties(StringUtils.splitArrayElementsIntoProperties(new String[] { "foo=spam" }, "="));
 			configurer.setLocalOverride(true);
 			configurer.setOrder(0);
 			return configurer;

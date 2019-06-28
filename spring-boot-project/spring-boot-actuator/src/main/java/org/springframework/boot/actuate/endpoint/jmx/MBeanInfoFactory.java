@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ class MBeanInfoFactory {
 		String className = EndpointMBean.class.getName();
 		String description = getDescription(endpoint);
 		ModelMBeanOperationInfo[] operations = getMBeanOperations(endpoint);
-		return new ModelMBeanInfoSupport(className, description, NO_ATTRIBUTES,
-				NO_CONSTRUCTORS, operations, NO_NOTIFICATIONS);
+		return new ModelMBeanInfoSupport(className, description, NO_ATTRIBUTES, NO_CONSTRUCTORS, operations,
+				NO_NOTIFICATIONS);
 	}
 
 	private String getDescription(ExposableJmxEndpoint endpoint) {
@@ -62,8 +62,7 @@ class MBeanInfoFactory {
 	}
 
 	private ModelMBeanOperationInfo[] getMBeanOperations(ExposableJmxEndpoint endpoint) {
-		return endpoint.getOperations().stream().map(this::getMBeanOperation)
-				.toArray(ModelMBeanOperationInfo[]::new);
+		return endpoint.getOperations().stream().map(this::getMBeanOperation).toArray(ModelMBeanOperationInfo[]::new);
 	}
 
 	private ModelMBeanOperationInfo getMBeanOperation(JmxOperation operation) {
@@ -76,21 +75,18 @@ class MBeanInfoFactory {
 	}
 
 	private MBeanParameterInfo[] getSignature(List<JmxOperationParameter> parameters) {
-		return parameters.stream().map(this::getMBeanParameter)
-				.toArray(MBeanParameterInfo[]::new);
+		return parameters.stream().map(this::getMBeanParameter).toArray(MBeanParameterInfo[]::new);
 	}
 
 	private MBeanParameterInfo getMBeanParameter(JmxOperationParameter parameter) {
-		return new MBeanParameterInfo(parameter.getName(), parameter.getType().getName(),
-				parameter.getDescription());
+		return new MBeanParameterInfo(parameter.getName(), parameter.getType().getName(), parameter.getDescription());
 	}
 
 	private int getImpact(OperationType operationType) {
 		if (operationType == OperationType.READ) {
 			return MBeanOperationInfo.INFO;
 		}
-		if (operationType == OperationType.WRITE
-				|| operationType == OperationType.DELETE) {
+		if (operationType == OperationType.WRITE || operationType == OperationType.DELETE) {
 			return MBeanOperationInfo.ACTION;
 		}
 		return MBeanOperationInfo.UNKNOWN;

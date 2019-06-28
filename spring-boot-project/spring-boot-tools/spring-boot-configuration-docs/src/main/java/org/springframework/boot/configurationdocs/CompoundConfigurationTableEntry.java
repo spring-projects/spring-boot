@@ -40,8 +40,7 @@ class CompoundConfigurationTableEntry extends ConfigurationTableEntry {
 	}
 
 	void addConfigurationKeys(ConfigurationMetadataProperty... properties) {
-		Stream.of(properties).map(ConfigurationMetadataProperty::getId)
-				.forEach(this.configurationKeys::add);
+		Stream.of(properties).map(ConfigurationMetadataProperty::getId).forEach(this.configurationKeys::add);
 	}
 
 	@Override

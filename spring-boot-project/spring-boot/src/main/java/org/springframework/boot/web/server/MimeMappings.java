@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -254,8 +254,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 */
 	private MimeMappings(MimeMappings mappings, boolean mutable) {
 		Assert.notNull(mappings, "Mappings must not be null");
-		this.map = (mutable ? new LinkedHashMap<>(mappings.map)
-				: Collections.unmodifiableMap(mappings.map));
+		this.map = (mutable ? new LinkedHashMap<>(mappings.map) : Collections.unmodifiableMap(mappings.map));
 	}
 
 	@Override
@@ -366,8 +365,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			}
 			if (obj instanceof Mapping) {
 				Mapping other = (Mapping) obj;
-				return this.extension.equals(other.extension)
-						&& this.mimeType.equals(other.mimeType);
+				return this.extension.equals(other.extension) && this.mimeType.equals(other.mimeType);
 			}
 			return false;
 		}
@@ -379,8 +377,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		@Override
 		public String toString() {
-			return "Mapping [extension=" + this.extension + ", mimeType=" + this.mimeType
-					+ "]";
+			return "Mapping [extension=" + this.extension + ", mimeType=" + this.mimeType + "]";
 		}
 
 	}

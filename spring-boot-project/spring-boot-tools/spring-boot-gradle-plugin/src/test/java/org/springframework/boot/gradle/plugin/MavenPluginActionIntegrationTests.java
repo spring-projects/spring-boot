@@ -36,8 +36,7 @@ public class MavenPluginActionIntegrationTests {
 
 	@TestTemplate
 	public void clearsConf2ScopeMappingsOfUploadBootArchivesTask() {
-		assertThat(this.gradleBuild.build("conf2ScopeMappings").getOutput())
-				.contains("Conf2ScopeMappings = 0");
+		assertThat(this.gradleBuild.build("conf2ScopeMappings").getOutput()).contains("Conf2ScopeMappings = 0");
 	}
 
 }

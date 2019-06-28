@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -29,21 +29,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ImmutablePropertiesMetadataGenerationTests
-		extends AbstractMetadataGenerationTests {
+class ImmutablePropertiesMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
-	public void immutableSimpleProperties() {
+	void immutableSimpleProperties() {
 		ConfigurationMetadata metadata = compile(ImmutableSimpleProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("immutable")
-				.fromSource(ImmutableSimpleProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("immutable.the-name", String.class)
-				.fromSource(ImmutableSimpleProperties.class)
-				.withDescription("The name of this simple properties.")
-				.withDefaultValue("boot"));
-		assertThat(metadata).has(Metadata.withProperty("immutable.flag", Boolean.class)
-				.withDefaultValue(false).fromSource(ImmutableSimpleProperties.class)
-				.withDescription("A simple flag.").withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withGroup("immutable").fromSource(ImmutableSimpleProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("immutable.the-name", String.class).fromSource(ImmutableSimpleProperties.class)
+						.withDescription("The name of this simple properties.").withDefaultValue("boot"));
+		assertThat(metadata).has(Metadata.withProperty("immutable.flag", Boolean.class).withDefaultValue(false)
+				.fromSource(ImmutableSimpleProperties.class).withDescription("A simple flag.")
+				.withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty("immutable.comparator"));
 		assertThat(metadata).has(Metadata.withProperty("immutable.counter"));
 		assertThat(metadata.getItems()).hasSize(5);

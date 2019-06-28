@@ -52,66 +52,53 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class HttpTraceEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
 	private HttpTraceRepository repository;
 
 	@Test
-	public void traces() throws Exception {
+	void traces() throws Exception {
 		TraceableRequest request = mock(TraceableRequest.class);
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
-		given(request.getHeaders()).willReturn(Collections
-				.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
+		given(request.getHeaders())
+				.willReturn(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
 		TraceableResponse response = mock(TraceableResponse.class);
 		given(response.getStatus()).willReturn(200);
-		given(response.getHeaders()).willReturn(Collections.singletonMap(
-				HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
+		given(response.getHeaders())
+				.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
 		HttpExchangeTracer tracer = new HttpExchangeTracer(EnumSet.allOf(Include.class));
 		HttpTrace trace = tracer.receivedRequest(request);
-		tracer.sendingResponse(trace, response, () -> principal,
-				() -> UUID.randomUUID().toString());
+		tracer.sendingResponse(trace, response, () -> principal, () -> UUID.randomUUID().toString());
 		given(this.repository.findAll()).willReturn(Arrays.asList(trace));
 		this.mockMvc.perform(get("/actuator/httptrace")).andExpect(status().isOk())
 				.andDo(document("httptrace", responseFields(
-						fieldWithPath("traces").description(
-								"An array of traced HTTP request-response exchanges."),
-						fieldWithPath("traces.[].timestamp").description(
-								"Timestamp of when the traced exchange occurred."),
-						fieldWithPath("traces.[].principal")
-								.description("Principal of the exchange, if any.")
+						fieldWithPath("traces").description("An array of traced HTTP request-response exchanges."),
+						fieldWithPath("traces.[].timestamp")
+								.description("Timestamp of when the traced exchange occurred."),
+						fieldWithPath("traces.[].principal").description("Principal of the exchange, if any.")
 								.optional(),
-						fieldWithPath("traces.[].principal.name")
-								.description("Name of the principal.").optional(),
-						fieldWithPath("traces.[].request.method")
-								.description("HTTP method of the request."),
-						fieldWithPath("traces.[].request.remoteAddress").description(
-								"Remote address from which the request was received, if known.")
-								.optional().type(JsonFieldType.STRING),
-						fieldWithPath("traces.[].request.uri")
-								.description("URI of the request."),
-						fieldWithPath("traces.[].request.headers").description(
-								"Headers of the request, keyed by header name."),
-						fieldWithPath("traces.[].request.headers.*.[]")
-								.description("Values of the header"),
-						fieldWithPath("traces.[].response.status")
-								.description("Status of the response"),
-						fieldWithPath("traces.[].response.headers").description(
-								"Headers of the response, keyed by header name."),
-						fieldWithPath("traces.[].response.headers.*.[]")
-								.description("Values of the header"),
-						fieldWithPath("traces.[].session")
-								.description(
-										"Session associated with the exchange, if any.")
+						fieldWithPath("traces.[].principal.name").description("Name of the principal.").optional(),
+						fieldWithPath("traces.[].request.method").description("HTTP method of the request."),
+						fieldWithPath("traces.[].request.remoteAddress")
+								.description("Remote address from which the request was received, if known.").optional()
+								.type(JsonFieldType.STRING),
+						fieldWithPath("traces.[].request.uri").description("URI of the request."),
+						fieldWithPath("traces.[].request.headers")
+								.description("Headers of the request, keyed by header name."),
+						fieldWithPath("traces.[].request.headers.*.[]").description("Values of the header"),
+						fieldWithPath("traces.[].response.status").description("Status of the response"),
+						fieldWithPath("traces.[].response.headers")
+								.description("Headers of the response, keyed by header name."),
+						fieldWithPath("traces.[].response.headers.*.[]").description("Values of the header"),
+						fieldWithPath("traces.[].session").description("Session associated with the exchange, if any.")
 								.optional(),
-						fieldWithPath("traces.[].session.id")
-								.description("ID of the session."),
-						fieldWithPath("traces.[].timeTaken").description(
-								"Time, in milliseconds, taken to handle the exchange."))));
+						fieldWithPath("traces.[].session.id").description("ID of the session."),
+						fieldWithPath("traces.[].timeTaken")
+								.description("Time, in milliseconds, taken to handle the exchange."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

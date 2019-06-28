@@ -36,61 +36,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class JvmMetricsAutoConfigurationTests {
+class JvmMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple())
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(JvmMetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguresJvmMetrics() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-				.hasSingleBean(JvmThreadMetrics.class)
-				.hasSingleBean(ClassLoaderMetrics.class));
+	void autoConfiguresJvmMetrics() {
+		this.contextRunner.run(
+				(context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
+						.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
-	public void allowsCustomJvmGcMetricsToBeUsed() {
+	void allowsCustomJvmGcMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
-						.hasBean("customJvmGcMetrics")
-						.hasSingleBean(JvmMemoryMetrics.class)
-						.hasSingleBean(JvmThreadMetrics.class)
+				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class).hasBean("customJvmGcMetrics")
+						.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
 						.hasSingleBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
-	public void allowsCustomJvmMemoryMetricsToBeUsed() {
-		this.contextRunner
-				.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
+	void allowsCustomJvmMemoryMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
-						.hasSingleBean(JvmMemoryMetrics.class)
-						.hasBean("customJvmMemoryMetrics")
-						.hasSingleBean(JvmThreadMetrics.class)
-						.hasSingleBean(ClassLoaderMetrics.class));
+						.hasSingleBean(JvmMemoryMetrics.class).hasBean("customJvmMemoryMetrics")
+						.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
-	public void allowsCustomJvmThreadMetricsToBeUsed() {
-		this.contextRunner
-				.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
+	void allowsCustomJvmThreadMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
-						.hasSingleBean(JvmMemoryMetrics.class)
-						.hasSingleBean(JvmThreadMetrics.class)
-						.hasSingleBean(ClassLoaderMetrics.class)
-						.hasBean("customJvmThreadMetrics"));
+						.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
+						.hasSingleBean(ClassLoaderMetrics.class).hasBean("customJvmThreadMetrics"));
 	}
 
 	@Test
-	public void allowsCustomClassLoaderMetricsToBeUsed() {
-		this.contextRunner
-				.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
+	void allowsCustomClassLoaderMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
-						.hasSingleBean(JvmMemoryMetrics.class)
-						.hasSingleBean(JvmThreadMetrics.class)
-						.hasSingleBean(ClassLoaderMetrics.class)
-						.hasBean("customClassLoaderMetrics"));
+						.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
+						.hasSingleBean(ClassLoaderMetrics.class).hasBean("customClassLoaderMetrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

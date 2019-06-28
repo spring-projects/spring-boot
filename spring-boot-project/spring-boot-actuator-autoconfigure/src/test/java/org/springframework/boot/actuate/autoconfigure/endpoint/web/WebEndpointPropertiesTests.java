@@ -26,16 +26,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Madhura Bhave
  */
-public class WebEndpointPropertiesTests {
+class WebEndpointPropertiesTests {
 
 	@Test
-	public void defaultBasePathShouldBeApplication() {
+	void defaultBasePathShouldBeApplication() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		assertThat(properties.getBasePath()).isEqualTo("/actuator");
 	}
 
 	@Test
-	public void basePathShouldBeCleaned() {
+	void basePathShouldBeCleaned() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("/");
 		assertThat(properties.getBasePath()).isEqualTo("");
@@ -44,15 +44,14 @@ public class WebEndpointPropertiesTests {
 	}
 
 	@Test
-	public void basePathMustStartWithSlash() {
+	void basePathMustStartWithSlash() {
 		WebEndpointProperties properties = new WebEndpointProperties();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> properties.setBasePath("admin"))
+		assertThatIllegalArgumentException().isThrownBy(() -> properties.setBasePath("admin"))
 				.withMessageContaining("Base path must start with '/' or be empty");
 	}
 
 	@Test
-	public void basePathCanBeEmpty() {
+	void basePathCanBeEmpty() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("");
 		assertThat(properties.getBasePath()).isEqualTo("");

@@ -36,19 +36,19 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class EntityScanPackagesTests {
+class EntityScanPackagesTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void getWhenNoneRegisteredShouldReturnNone() {
+	void getWhenNoneRegisteredShouldReturnNone() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.refresh();
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
@@ -57,7 +57,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void getShouldReturnRegisterPackages() {
+	void getShouldReturnRegisterPackages() {
 		this.context = new AnnotationConfigApplicationContext();
 		EntityScanPackages.register(this.context, "a", "b");
 		EntityScanPackages.register(this.context, "b", "c");
@@ -67,49 +67,44 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void registerFromArrayWhenRegistryIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> EntityScanPackages.register(null))
+	void registerFromArrayWhenRegistryIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EntityScanPackages.register(null))
 				.withMessageContaining("Registry must not be null");
 
 	}
 
 	@Test
-	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
+	void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> EntityScanPackages.register(this.context, (String[]) null))
+				.isThrownBy(() -> EntityScanPackages.register(this.context, (String[]) null))
 				.withMessageContaining("PackageNames must not be null");
 	}
 
 	@Test
-	public void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
+	void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> EntityScanPackages.register(null, Collections.emptyList()))
+				.isThrownBy(() -> EntityScanPackages.register(null, Collections.emptyList()))
 				.withMessageContaining("Registry must not be null");
 	}
 
 	@Test
-	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
+	void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> EntityScanPackages.register(this.context,
-						(Collection<String>) null))
+				.isThrownBy(() -> EntityScanPackages.register(this.context, (Collection<String>) null))
 				.withMessageContaining("PackageNames must not be null");
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasValueAttributeShouldSetupPackages() {
-		this.context = new AnnotationConfigApplicationContext(
-				EntityScanValueConfig.class);
+	void entityScanAnnotationWhenHasValueAttributeShouldSetupPackages() {
+		this.context = new AnnotationConfigApplicationContext(EntityScanValueConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
 		assertThat(packages.getPackageNames()).containsExactly("a");
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasValueAttributeShouldSetupPackagesAsm() {
+	void entityScanAnnotationWhenHasValueAttributeShouldSetupPackagesAsm() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.registerBeanDefinition("entityScanValueConfig",
 				new RootBeanDefinition(EntityScanValueConfig.class.getName()));
@@ -119,40 +114,35 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasBasePackagesAttributeShouldSetupPackages() {
-		this.context = new AnnotationConfigApplicationContext(
-				EntityScanBasePackagesConfig.class);
+	void entityScanAnnotationWhenHasBasePackagesAttributeShouldSetupPackages() {
+		this.context = new AnnotationConfigApplicationContext(EntityScanBasePackagesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
 		assertThat(packages.getPackageNames()).containsExactly("b");
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow() {
+	void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow() {
 		assertThatExceptionOfType(AnnotationConfigurationException.class)
 				.isThrownBy(() -> this.context = new AnnotationConfigApplicationContext(
 						EntityScanValueAndBasePackagesConfig.class));
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasBasePackageClassesAttributeShouldSetupPackages() {
-		this.context = new AnnotationConfigApplicationContext(
-				EntityScanBasePackageClassesConfig.class);
+	void entityScanAnnotationWhenHasBasePackageClassesAttributeShouldSetupPackages() {
+		this.context = new AnnotationConfigApplicationContext(EntityScanBasePackageClassesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
-		assertThat(packages.getPackageNames())
-				.containsExactly(getClass().getPackage().getName());
+		assertThat(packages.getPackageNames()).containsExactly(getClass().getPackage().getName());
 	}
 
 	@Test
-	public void entityScanAnnotationWhenNoAttributesShouldSetupPackages() {
-		this.context = new AnnotationConfigApplicationContext(
-				EntityScanNoAttributesConfig.class);
+	void entityScanAnnotationWhenNoAttributesShouldSetupPackages() {
+		this.context = new AnnotationConfigApplicationContext(EntityScanNoAttributesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
-		assertThat(packages.getPackageNames())
-				.containsExactly(getClass().getPackage().getName());
+		assertThat(packages.getPackageNames()).containsExactly(getClass().getPackage().getName());
 	}
 
 	@Test
-	public void entityScanAnnotationWhenLoadingFromMultipleConfigsShouldCombinePackages() {
+	void entityScanAnnotationWhenLoadingFromMultipleConfigsShouldCombinePackages() {
 		this.context = new AnnotationConfigApplicationContext(EntityScanValueConfig.class,
 				EntityScanBasePackagesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);

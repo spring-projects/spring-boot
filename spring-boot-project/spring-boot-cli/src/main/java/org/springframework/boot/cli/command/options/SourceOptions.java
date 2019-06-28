@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,8 +103,7 @@ public class SourceOptions {
 				}
 			}
 		}
-		this.args = Collections.unmodifiableList(
-				nonOptionArguments.subList(sourceArgCount, nonOptionArguments.size()));
+		this.args = Collections.unmodifiableList(nonOptionArguments.subList(sourceArgCount, nonOptionArguments.size()));
 		Assert.isTrue(!sources.isEmpty(), "Please specify at least one file");
 		this.sources = Collections.unmodifiableList(sources);
 	}

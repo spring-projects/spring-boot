@@ -40,43 +40,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ImportsContextCustomizerTests {
+class ImportsContextCustomizerTests {
 
 	@Test
-	public void importSelectorsCouldUseAnyAnnotations() {
+	void importSelectorsCouldUseAnyAnnotations() {
 		assertThat(new ImportsContextCustomizer(FirstImportSelectorAnnotatedClass.class))
-				.isNotEqualTo(new ImportsContextCustomizer(
-						SecondImportSelectorAnnotatedClass.class));
+				.isNotEqualTo(new ImportsContextCustomizer(SecondImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
-	public void determinableImportSelector() {
-		assertThat(new ImportsContextCustomizer(
-				FirstDeterminableImportSelectorAnnotatedClass.class))
-						.isEqualTo(new ImportsContextCustomizer(
-								SecondDeterminableImportSelectorAnnotatedClass.class));
+	void determinableImportSelector() {
+		assertThat(new ImportsContextCustomizer(FirstDeterminableImportSelectorAnnotatedClass.class))
+				.isEqualTo(new ImportsContextCustomizer(SecondDeterminableImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
+	void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstKotlinAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(
-						SecondKotlinAnnotatedTestClass.class));
+				.isEqualTo(new ImportsContextCustomizer(SecondKotlinAnnotatedTestClass.class));
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
-		assertThat(
-				new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
-						.isEqualTo(new ImportsContextCustomizer(
-								SecondSpockFrameworkAnnotatedTestClass.class));
+	void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
+				.isEqualTo(new ImportsContextCustomizer(SecondSpockFrameworkAnnotatedTestClass.class));
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
+	void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(
-						SecondSpockLangAnnotatedTestClass.class));
+				.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)
@@ -152,8 +145,7 @@ public class ImportsContextCustomizerTests {
 
 	}
 
-	static class TestDeterminableImportSelector
-			implements ImportSelector, DeterminableImports {
+	static class TestDeterminableImportSelector implements ImportSelector, DeterminableImports {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata arg0) {

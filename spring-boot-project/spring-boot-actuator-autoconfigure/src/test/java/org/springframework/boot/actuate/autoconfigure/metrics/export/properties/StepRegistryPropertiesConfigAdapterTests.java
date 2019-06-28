@@ -37,29 +37,28 @@ public abstract class StepRegistryPropertiesConfigAdapterTests<P extends StepReg
 	protected abstract A createConfigAdapter(P properties);
 
 	@Test
-	public void whenPropertiesStepIsSetAdapterStepReturnsIt() {
+	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
 		P properties = createProperties();
 		properties.setStep(Duration.ofSeconds(42));
-		assertThat(createConfigAdapter(properties).step())
-				.isEqualTo(Duration.ofSeconds(42));
+		assertThat(createConfigAdapter(properties).step()).isEqualTo(Duration.ofSeconds(42));
 	}
 
 	@Test
-	public void whenPropertiesEnabledIsSetAdapterEnabledReturnsIt() {
+	void whenPropertiesEnabledIsSetAdapterEnabledReturnsIt() {
 		P properties = createProperties();
 		properties.setEnabled(false);
 		assertThat(createConfigAdapter(properties).enabled()).isFalse();
 	}
 
 	@Test
-	public void whenPropertiesNumThreadsIsSetAdapterNumThreadsReturnsIt() {
+	void whenPropertiesNumThreadsIsSetAdapterNumThreadsReturnsIt() {
 		P properties = createProperties();
 		properties.setNumThreads(42);
 		assertThat(createConfigAdapter(properties).numThreads()).isEqualTo(42);
 	}
 
 	@Test
-	public void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
+	void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
 		P properties = createProperties();
 		properties.setBatchSize(10042);
 		assertThat(createConfigAdapter(properties).batchSize()).isEqualTo(10042);

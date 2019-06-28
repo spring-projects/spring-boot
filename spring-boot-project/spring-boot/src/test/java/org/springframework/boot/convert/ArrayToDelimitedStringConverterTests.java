@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package org.springframework.boot.convert;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,71 +32,55 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(Parameterized.class)
-public class ArrayToDelimitedStringConverterTests {
+class ArrayToDelimitedStringConverterTests {
 
-	private final ConversionService conversionService;
-
-	public ArrayToDelimitedStringConverterTests(String name,
-			ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
-
-	@Test
-	public void convertListToStringShouldConvert() {
+	@ConversionServiceTest
+	void convertListToStringShouldConvert(ConversionService conversionService) {
 		String[] list = { "a", "b", "c" };
-		String converted = this.conversionService.convert(list, String.class);
+		String converted = conversionService.convert(list, String.class);
 		assertThat(converted).isEqualTo("a,b,c");
 	}
 
-	@Test
-	public void convertWhenHasDelimiterNoneShouldConvert() {
+	@ConversionServiceTest
+	void convertWhenHasDelimiterNoneShouldConvert(ConversionService conversionService) {
 		Data data = new Data();
 		data.none = new String[] { "1", "2", "3" };
-		String converted = (String) this.conversionService.convert(data.none,
+		String converted = (String) conversionService.convert(data.none,
 				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "none"), 0),
 				TypeDescriptor.valueOf(String.class));
 		assertThat(converted).isEqualTo("123");
 	}
 
-	@Test
-	public void convertWhenHasDelimiterDashShouldConvert() {
+	@ConversionServiceTest
+	void convertWhenHasDelimiterDashShouldConvert(ConversionService conversionService) {
 		Data data = new Data();
 		data.dash = new String[] { "1", "2", "3" };
-		String converted = (String) this.conversionService.convert(data.dash,
+		String converted = (String) conversionService.convert(data.dash,
 				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "dash"), 0),
 				TypeDescriptor.valueOf(String.class));
 		assertThat(converted).isEqualTo("1-2-3");
 	}
 
-	@Test
-	public void convertShouldConvertElements() {
-		if (this.conversionService instanceof ApplicationConversionService) {
-			Data data = new Data();
-			data.type = new int[] { 1, 2, 3 };
-			String converted = (String) this.conversionService.convert(
-					data.type, TypeDescriptor
-							.nested(ReflectionUtils.findField(Data.class, "type"), 0),
-					TypeDescriptor.valueOf(String.class));
-			assertThat(converted).isEqualTo("1.2.3");
-		}
-	}
-
-	@Test
-	public void convertShouldConvertNull() {
+	@ConversionServiceTest
+	void convertShouldConvertNull(ConversionService conversionService) {
 		String[] list = null;
-		String converted = this.conversionService.convert(list, String.class);
+		String converted = conversionService.convert(list, String.class);
 		assertThat(converted).isNull();
 	}
 
-	@Parameters(name = "{0}")
-	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(
-				ArrayToDelimitedStringConverterTests::addConverter);
+	@Test
+	void convertShouldConvertElements() {
+		Data data = new Data();
+		data.type = new int[] { 1, 2, 3 };
+		String converted = (String) new ApplicationConversionService().convert(data.type,
+				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "type"), 0),
+				TypeDescriptor.valueOf(String.class));
+		assertThat(converted).isEqualTo("1.2.3");
 	}
 
-	private static void addConverter(FormattingConversionService service) {
-		service.addConverter(new ArrayToDelimitedStringConverter(service));
+	static Stream<? extends Arguments> conversionServices() {
+		return ConversionServiceArguments
+				.with((service) -> service.addConverter(new ArrayToDelimitedStringConverter(service)));
 	}
 
 	static class Data {

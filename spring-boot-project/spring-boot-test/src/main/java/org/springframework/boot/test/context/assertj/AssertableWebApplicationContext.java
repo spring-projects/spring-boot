@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @see WebApplicationContext
  */
 public interface AssertableWebApplicationContext
-		extends ApplicationContextAssertProvider<ConfigurableWebApplicationContext>,
-		ConfigurableWebApplicationContext {
+		extends ApplicationContextAssertProvider<ConfigurableWebApplicationContext>, ConfigurableWebApplicationContext {
 
 	/**
 	 * Factory method to create a new {@link AssertableWebApplicationContext} instance.
@@ -45,8 +44,7 @@ public interface AssertableWebApplicationContext
 	 * fails to start.
 	 * @return a {@link AssertableWebApplicationContext} instance
 	 */
-	static AssertableWebApplicationContext get(
-			Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
+	static AssertableWebApplicationContext get(Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
 		return ApplicationContextAssertProvider.get(AssertableWebApplicationContext.class,
 				ConfigurableWebApplicationContext.class, contextSupplier);
 	}

@@ -42,12 +42,12 @@ import static org.mockito.Mockito.verify;
  * @author Mark Paluch
  * @author Stephane Nicoll
  */
-public class ReactiveMongoClientFactoryTests {
+class ReactiveMongoClientFactoryTests {
 
 	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void portCanBeCustomized() {
+	void portCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
 		MongoClient client = createMongoClient(properties);
@@ -57,7 +57,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void hostCanBeCustomized() {
+	void hostCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
 		MongoClient client = createMongoClient(properties);
@@ -67,7 +67,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void credentialsCanBeCustomized() {
+	void credentialsCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
@@ -76,7 +76,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void databaseCanBeCustomized() {
+	void databaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setDatabase("foo");
 		properties.setUsername("user");
@@ -86,7 +86,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void authenticationDatabaseCanBeCustomized() {
+	void authenticationDatabaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setAuthenticationDatabase("foo");
 		properties.setUsername("user");
@@ -96,10 +96,9 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCanBeCustomized() {
+	void uriCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
-				+ "mongo2.example.com:23456/test");
+		properties.setUri("mongodb://user:secret@mongo1.example.com:12345," + "mongo2.example.com:23456/test");
 		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(2);
@@ -110,7 +109,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void retryWritesIsPropagatedFromUri() {
+	void retryWritesIsPropagatedFromUri() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://localhost/test?retryWrites=true");
 		MongoClient client = createMongoClient(properties);
@@ -118,29 +117,27 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCannotBeSetWithCredentials() {
+	void uriCannotBeSetWithCredentials() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties))
-				.withMessageContaining("Invalid mongo configuration, "
-						+ "either uri or host/port/credentials must be specified");
+		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties)).withMessageContaining(
+				"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
 	}
 
 	@Test
-	public void uriCannotBeSetWithHostPort() {
+	void uriCannotBeSetWithHostPort() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setHost("localhost");
 		properties.setPort(4567);
-		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties))
-				.withMessageContaining("Invalid mongo configuration, "
-						+ "either uri or host/port/credentials must be specified");
+		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties)).withMessageContaining(
+				"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
 	}
 
 	@Test
-	public void uriIsIgnoredInEmbeddedMode() {
+	void uriIsIgnoredInEmbeddedMode() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo.example.com:1234/mydb");
 		this.environment.setProperty("local.mongo.port", "4000");
@@ -151,30 +148,27 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void customizerIsInvoked() {
+	void customizerIsInvoked() {
 		MongoProperties properties = new MongoProperties();
-		MongoClientSettingsBuilderCustomizer customizer = mock(
-				MongoClientSettingsBuilderCustomizer.class);
+		MongoClientSettingsBuilderCustomizer customizer = mock(MongoClientSettingsBuilderCustomizer.class);
 		createMongoClient(properties, this.environment, customizer);
 		verify(customizer).customize(any(MongoClientSettings.Builder.class));
 	}
 
 	@Test
-	public void customizerIsInvokedWhenHostIsSet() {
+	void customizerIsInvokedWhenHostIsSet() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("localhost");
-		MongoClientSettingsBuilderCustomizer customizer = mock(
-				MongoClientSettingsBuilderCustomizer.class);
+		MongoClientSettingsBuilderCustomizer customizer = mock(MongoClientSettingsBuilderCustomizer.class);
 		createMongoClient(properties, this.environment, customizer);
 		verify(customizer).customize(any(MongoClientSettings.Builder.class));
 	}
 
 	@Test
-	public void customizerIsInvokedForEmbeddedMongo() {
+	void customizerIsInvokedForEmbeddedMongo() {
 		MongoProperties properties = new MongoProperties();
 		this.environment.setProperty("local.mongo.port", "27017");
-		MongoClientSettingsBuilderCustomizer customizer = mock(
-				MongoClientSettingsBuilderCustomizer.class);
+		MongoClientSettingsBuilderCustomizer customizer = mock(MongoClientSettingsBuilderCustomizer.class);
 		createMongoClient(properties, this.environment, customizer);
 		verify(customizer).customize(any(MongoClientSettings.Builder.class));
 	}
@@ -183,11 +177,10 @@ public class ReactiveMongoClientFactoryTests {
 		return createMongoClient(properties, this.environment);
 	}
 
-	private MongoClient createMongoClient(MongoProperties properties,
-			Environment environment,
+	private MongoClient createMongoClient(MongoProperties properties, Environment environment,
 			MongoClientSettingsBuilderCustomizer... customizers) {
-		return new ReactiveMongoClientFactory(properties, environment,
-				Arrays.asList(customizers)).createMongoClient(null);
+		return new ReactiveMongoClientFactory(properties, environment, Arrays.asList(customizers))
+				.createMongoClient(null);
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
@@ -202,18 +195,16 @@ public class ReactiveMongoClientFactoryTests {
 
 	@SuppressWarnings("deprecation")
 	private MongoClientSettings getSettings(MongoClient client) {
-		return (MongoClientSettings) ReflectionTestUtils.getField(client.getSettings(),
-				"wrapped");
+		return (MongoClientSettings) ReflectionTestUtils.getField(client.getSettings(), "wrapped");
 	}
 
-	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
-			int expectedPort) {
+	private void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
 		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
 		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
 	}
 
-	private void assertMongoCredential(MongoCredential credentials,
-			String expectedUsername, String expectedPassword, String expectedSource) {
+	private void assertMongoCredential(MongoCredential credentials, String expectedUsername, String expectedPassword,
+			String expectedSource) {
 		assertThat(credentials.getUserName()).isEqualTo(expectedUsername);
 		assertThat(credentials.getPassword()).isEqualTo(expectedPassword.toCharArray());
 		assertThat(credentials.getSource()).isEqualTo(expectedSource);

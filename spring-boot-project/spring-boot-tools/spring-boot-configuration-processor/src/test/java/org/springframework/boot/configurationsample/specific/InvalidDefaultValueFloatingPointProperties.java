@@ -30,8 +30,7 @@ public class InvalidDefaultValueFloatingPointProperties {
 
 	private final Double ratio;
 
-	public InvalidDefaultValueFloatingPointProperties(
-			@DefaultValue("55.55.33") Double ratio) {
+	public InvalidDefaultValueFloatingPointProperties(@DefaultValue("55.55.33") Double ratio) {
 		this.ratio = ratio;
 	}
 

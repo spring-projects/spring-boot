@@ -25,12 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class PathRequestTests {
+class PathRequestTests {
 
 	@Test
-	public void toStaticResourcesShouldReturnStaticResourceRequest() {
-		assertThat(PathRequest.toStaticResources())
-				.isInstanceOf(StaticResourceRequest.class);
+	void toStaticResourcesShouldReturnStaticResourceRequest() {
+		assertThat(PathRequest.toStaticResources()).isInstanceOf(StaticResourceRequest.class);
 	}
 
 }

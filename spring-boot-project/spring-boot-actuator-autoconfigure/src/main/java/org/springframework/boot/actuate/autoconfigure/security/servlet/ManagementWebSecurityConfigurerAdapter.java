@@ -39,11 +39,8 @@ class ManagementWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapte
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.requestMatchers(
-						EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class))
-				.permitAll().anyRequest().authenticated().and().formLogin().and()
-				.httpBasic();
+		http.authorizeRequests().requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class))
+				.permitAll().anyRequest().authenticated().and().formLogin().and().httpBasic();
 	}
 
 }

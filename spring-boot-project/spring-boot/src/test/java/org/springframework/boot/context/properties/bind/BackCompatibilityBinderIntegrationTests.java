@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
@@ -32,29 +32,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class BackCompatibilityBinderIntegrationTests {
+class BackCompatibilityBinderIntegrationTests {
 
 	@Test
-	public void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore() {
+	void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore() {
 		// gh-10873
 		MockEnvironment environment = new MockEnvironment();
 		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("FOO_ZK_NODES", "foo"));
 		environment.getPropertySources().addFirst(propertySource);
-		ExampleCamelCaseBean result = Binder.get(environment)
-				.bind("foo", Bindable.of(ExampleCamelCaseBean.class)).get();
+		ExampleCamelCaseBean result = Binder.get(environment).bind("foo", Bindable.of(ExampleCamelCaseBean.class))
+				.get();
 		assertThat(result.getZkNodes()).isEqualTo("foo");
 	}
 
 	@Test
-	public void bindWhenUsingSystemEnvironmentToOverride() {
+	void bindWhenUsingSystemEnvironmentToOverride() {
 		MockEnvironment environment = new MockEnvironment();
-		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
-				"override", Collections.singletonMap("foo.password", "test"));
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource("override",
+				Collections.singletonMap("foo.password", "test"));
 		environment.getPropertySources().addFirst(propertySource);
-		PasswordProperties result = Binder.get(environment)
-				.bind("foo", Bindable.of(PasswordProperties.class)).get();
+		PasswordProperties result = Binder.get(environment).bind("foo", Bindable.of(PasswordProperties.class)).get();
 		assertThat(result.getPassword()).isEqualTo("test");
 	}
 

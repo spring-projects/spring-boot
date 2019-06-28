@@ -23,9 +23,9 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-public class SpringApplicationAdminMXBeanRegistrarTests {
+class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private static final String OBJECT_NAME = "org.springframework.boot:type=Test,name=SpringApplication";
 
@@ -54,20 +54,20 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private ConfigurableApplicationContext context;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
 	}
 
-	@After
-	public void closeContext() {
+	@AfterEach
+	void closeContext() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void validateReadyFlag() {
+	void validateReadyFlag() {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -76,8 +76,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 				assertThat(isApplicationReady(objectName)).isFalse();
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException(
-						"Could not contact spring application admin bean", ex);
+				throw new IllegalStateException("Could not contact spring application admin bean", ex);
 			}
 		});
 		this.context = application.run();
@@ -85,18 +84,14 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	public void eventsFromOtherContextsAreIgnored() throws MalformedObjectNameException {
-		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(
-				OBJECT_NAME);
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+	void eventsFromOtherContextsAreIgnored() throws MalformedObjectNameException {
+		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		registrar.setApplicationContext(context);
 		registrar.onApplicationReadyEvent(
-				new ApplicationReadyEvent(new SpringApplication(), null,
-						mock(ConfigurableApplicationContext.class)));
+				new ApplicationReadyEvent(new SpringApplication(), null, mock(ConfigurableApplicationContext.class)));
 		assertThat(isApplicationReady(registrar)).isFalse();
-		registrar.onApplicationReadyEvent(
-				new ApplicationReadyEvent(new SpringApplication(), null, context));
+		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null, context));
 		assertThat(isApplicationReady(registrar)).isTrue();
 	}
 
@@ -105,7 +100,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	public void environmentIsExposed() {
+	void environmentIsExposed() {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -117,7 +112,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	public void shutdownApp() throws InstanceNotFoundException {
+	void shutdownApp() throws InstanceNotFoundException {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -140,8 +135,8 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private String getProperty(ObjectName objectName, String key) {
 		try {
-			return (String) this.mBeanServer.invoke(objectName, "getProperty",
-					new Object[] { key }, new String[] { String.class.getName() });
+			return (String) this.mBeanServer.invoke(objectName, "getProperty", new Object[] { key },
+					new String[] { String.class.getName() });
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex.getMessage(), ex);

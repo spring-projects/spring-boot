@@ -29,44 +29,41 @@ import static org.mockito.Mockito.withSettings;
  *
  * @author Phillip Webb
  */
-public class MockResetTests {
+class MockResetTests {
 
 	@Test
-	public void noneAttachesReset() {
+	void noneAttachesReset() {
 		ExampleService mock = mock(ExampleService.class);
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.NONE);
 	}
 
 	@Test
-	public void withSettingsOfNoneAttachesReset() {
-		ExampleService mock = mock(ExampleService.class,
-				MockReset.withSettings(MockReset.NONE));
+	void withSettingsOfNoneAttachesReset() {
+		ExampleService mock = mock(ExampleService.class, MockReset.withSettings(MockReset.NONE));
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.NONE);
 	}
 
 	@Test
-	public void beforeAttachesReset() {
+	void beforeAttachesReset() {
 		ExampleService mock = mock(ExampleService.class, MockReset.before());
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
 	}
 
 	@Test
-	public void afterAttachesReset() {
+	void afterAttachesReset() {
 		ExampleService mock = mock(ExampleService.class, MockReset.after());
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.AFTER);
 	}
 
 	@Test
-	public void withSettingsAttachesReset() {
-		ExampleService mock = mock(ExampleService.class,
-				MockReset.withSettings(MockReset.BEFORE));
+	void withSettingsAttachesReset() {
+		ExampleService mock = mock(ExampleService.class, MockReset.withSettings(MockReset.BEFORE));
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
 	}
 
 	@Test
-	public void apply() {
-		ExampleService mock = mock(ExampleService.class,
-				MockReset.apply(MockReset.AFTER, withSettings()));
+	void apply() {
+		ExampleService mock = mock(ExampleService.class, MockReset.apply(MockReset.AFTER, withSettings()));
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.AFTER);
 	}
 

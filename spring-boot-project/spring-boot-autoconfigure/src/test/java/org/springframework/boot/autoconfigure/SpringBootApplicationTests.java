@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -29,22 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringBootApplicationTests {
+class SpringBootApplicationTests {
 
 	@Test
-	public void proxyBeanMethodsIsEnabledByDefault() {
+	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(DefaultSpringBootApplication.class,
-						Configuration.class);
+				.getMergedAnnotationAttributes(DefaultSpringBootApplication.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
 	}
 
 	@Test
-	public void proxyBeanMethodsCanBeDisabled() {
+	void proxyBeanMethodsCanBeDisabled() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(
-						NoBeanMethodProxyingSpringBootApplication.class,
-						Configuration.class);
+				.getMergedAnnotationAttributes(NoBeanMethodProxyingSpringBootApplication.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);
 	}
 

@@ -19,9 +19,9 @@ package org.springframework.boot.context.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -41,17 +41,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class AnsiOutputApplicationListenerTests {
+class AnsiOutputApplicationListenerTests {
 
 	private ConfigurableApplicationContext context;
 
-	@Before
-	public void resetAnsi() {
+	@BeforeEach
+	void resetAnsi() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 
-	@After
-	public void cleanUp() {
+	@AfterEach
+	void cleanUp() {
 		resetAnsi();
 		if (this.context != null) {
 			this.context.close();
@@ -59,7 +59,7 @@ public class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
-	public void enabled() {
+	void enabled() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		Map<String, Object> props = new HashMap<>();
@@ -70,7 +70,7 @@ public class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
-	public void disabled() {
+	void disabled() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		Map<String, Object> props = new HashMap<>();
@@ -81,10 +81,9 @@ public class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
-	public void disabledViaApplicationProperties() {
+	void disabledViaApplicationProperties() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
-				"spring.config.name=ansi");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "spring.config.name=ansi");
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setEnvironment(environment);
 		application.setWebApplicationType(WebApplicationType.NONE);

@@ -39,10 +39,10 @@ import org.springframework.mock.web.MockServletContext;
  *
  * @author Andy Wilkinson
  */
-public class SecurityFilterAutoConfigurationTests {
+class SecurityFilterAutoConfigurationTests {
 
 	@Test
-	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration() {
+	void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration() {
 		try (AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext()) {
 			context.setServletContext(new MockServletContext());
 			context.register(Config.class);
@@ -51,13 +51,10 @@ public class SecurityFilterAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class,
-			ConverterBean.class })
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebSecurity.class,
-			SecurityFilterAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ DeserializerBean.class, JacksonModuleBean.class, ExampleController.class, ConverterBean.class })
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class, WebSecurity.class,
+			SecurityFilterAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 
 	}

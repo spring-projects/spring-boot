@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.devtools.tests;
 
 import java.io.File;
 
-import org.junit.rules.TemporaryFolder;
-
 import org.springframework.boot.testsupport.BuildOutput;
 
 /**
@@ -31,9 +29,9 @@ class Directories {
 
 	private final BuildOutput buildOutput;
 
-	private final TemporaryFolder temp;
+	private final File temp;
 
-	Directories(BuildOutput buildOutput, TemporaryFolder temp) {
+	Directories(BuildOutput buildOutput, File temp) {
 		this.buildOutput = buildOutput;
 		this.temp = temp;
 	}
@@ -43,7 +41,7 @@ class Directories {
 	}
 
 	File getRemoteAppDirectory() {
-		return new File(this.temp.getRoot(), "remote");
+		return new File(this.temp, "remote");
 	}
 
 	File getDependenciesDirectory() {
@@ -51,7 +49,7 @@ class Directories {
 	}
 
 	File getAppDirectory() {
-		return new File(this.temp.getRoot(), "app");
+		return new File(this.temp, "app");
 	}
 
 }

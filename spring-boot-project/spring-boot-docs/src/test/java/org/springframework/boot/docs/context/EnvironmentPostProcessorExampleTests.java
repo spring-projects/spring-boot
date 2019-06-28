@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.StandardEnvironment;
@@ -28,15 +28,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class EnvironmentPostProcessorExampleTests {
+class EnvironmentPostProcessorExampleTests {
 
 	private final StandardEnvironment environment = new StandardEnvironment();
 
 	@Test
-	public void applyEnvironmentPostProcessor() {
+	void applyEnvironmentPostProcessor() {
 		assertThat(this.environment.containsProperty("test.foo.bar")).isFalse();
-		new EnvironmentPostProcessorExample().postProcessEnvironment(this.environment,
-				new SpringApplication());
+		new EnvironmentPostProcessorExample().postProcessEnvironment(this.environment, new SpringApplication());
 		assertThat(this.environment.containsProperty("test.foo.bar")).isTrue();
 		assertThat(this.environment.getProperty("test.foo.bar")).isEqualTo("value");
 	}

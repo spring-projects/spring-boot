@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.jta.atomikos;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -29,16 +29,15 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class AtomikosXADataSourceWrapperTests {
+class AtomikosXADataSourceWrapperTests {
 
 	@Test
-	public void wrap() throws Exception {
+	void wrap() throws Exception {
 		XADataSource dataSource = mock(XADataSource.class);
 		AtomikosXADataSourceWrapper wrapper = new AtomikosXADataSourceWrapper();
 		DataSource wrapped = wrapper.wrapDataSource(dataSource);
 		assertThat(wrapped).isInstanceOf(AtomikosDataSourceBean.class);
-		assertThat(((AtomikosDataSourceBean) wrapped).getXaDataSource())
-				.isSameAs(dataSource);
+		assertThat(((AtomikosDataSourceBean) wrapped).getXaDataSource()).isSameAs(dataSource);
 	}
 
 }

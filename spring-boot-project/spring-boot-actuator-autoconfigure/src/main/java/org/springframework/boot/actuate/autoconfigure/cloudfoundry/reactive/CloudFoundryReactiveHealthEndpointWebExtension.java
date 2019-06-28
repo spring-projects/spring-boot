@@ -39,8 +39,7 @@ public class CloudFoundryReactiveHealthEndpointWebExtension {
 
 	private final ReactiveHealthEndpointWebExtension delegate;
 
-	public CloudFoundryReactiveHealthEndpointWebExtension(
-			ReactiveHealthEndpointWebExtension delegate) {
+	public CloudFoundryReactiveHealthEndpointWebExtension(ReactiveHealthEndpointWebExtension delegate) {
 		this.delegate = delegate;
 	}
 

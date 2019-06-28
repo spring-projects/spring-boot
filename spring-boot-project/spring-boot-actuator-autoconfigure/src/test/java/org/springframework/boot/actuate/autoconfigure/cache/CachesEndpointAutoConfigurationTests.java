@@ -32,42 +32,36 @@ import static org.mockito.Mockito.mock;
  * @author Johannes Edmeier
  * @author Stephane Nicoll
  */
-public class CachesEndpointAutoConfigurationTests {
+class CachesEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(CachesEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(CachesEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
+	void runShouldHaveEndpointBean() {
 		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
 				.withPropertyValues("management.endpoints.web.exposure.include=caches")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(CachesEndpoint.class));
+				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
-	public void runWithoutCacheManagerShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=caches")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(CachesEndpoint.class));
+	void runWithoutCacheManagerShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=caches")
+				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CachesEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.caches.enabled:false")
 				.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.withBean(CacheManager.class, () -> mock(CacheManager.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CachesEndpoint.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
 	}
 
 }

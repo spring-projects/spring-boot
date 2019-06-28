@@ -37,41 +37,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.NONE,
-		properties = { "env.FOO=There", "foo=World" })
-public class MustacheStandaloneIntegrationTests {
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.FOO=There", "foo=World" })
+class MustacheStandaloneIntegrationTests {
 
 	@Autowired
 	private Mustache.Compiler compiler;
 
 	@Test
-	public void directCompilation() {
-		assertThat(this.compiler.compile("Hello: {{world}}")
-				.execute(Collections.singletonMap("world", "World")))
-						.isEqualTo("Hello: World");
+	void directCompilation() {
+		assertThat(this.compiler.compile("Hello: {{world}}").execute(Collections.singletonMap("world", "World")))
+				.isEqualTo("Hello: World");
 	}
 
 	@Test
-	public void environmentCollectorCompoundKey() {
-		assertThat(this.compiler.compile("Hello: {{env.foo}}").execute(new Object()))
+	void environmentCollectorCompoundKey() {
+		assertThat(this.compiler.compile("Hello: {{env.foo}}").execute(new Object())).isEqualTo("Hello: There");
+	}
+
+	@Test
+	void environmentCollectorCompoundKeyStandard() {
+		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}").execute(new Object()))
 				.isEqualTo("Hello: There");
 	}
 
 	@Test
-	public void environmentCollectorCompoundKeyStandard() {
-		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}")
-				.execute(new Object())).isEqualTo("Hello: There");
-	}
-
-	@Test
-	public void environmentCollectorSimpleKey() {
-		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object()))
-				.isEqualTo("Hello: World");
+	void environmentCollectorSimpleKey() {
+		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object())).isEqualTo("Hello: World");
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ MustacheAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ MustacheAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected static class Application {
 
 	}

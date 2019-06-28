@@ -31,10 +31,10 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class AuditListenerTests {
+class AuditListenerTests {
 
 	@Test
-	public void testStoredEvents() {
+	void testStoredEvents() {
 		AuditEventRepository repository = mock(AuditEventRepository.class);
 		AuditEvent event = new AuditEvent("principal", "type", Collections.emptyMap());
 		AuditListener listener = new AuditListener(repository);

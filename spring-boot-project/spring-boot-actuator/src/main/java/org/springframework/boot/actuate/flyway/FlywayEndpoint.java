@@ -57,11 +57,11 @@ public class FlywayEndpoint {
 		Map<String, ContextFlywayBeans> contextFlywayBeans = new HashMap<>();
 		while (target != null) {
 			Map<String, FlywayDescriptor> flywayBeans = new HashMap<>();
-			target.getBeansOfType(Flyway.class).forEach((name, flyway) -> flywayBeans
-					.put(name, new FlywayDescriptor(flyway.info().all())));
+			target.getBeansOfType(Flyway.class)
+					.forEach((name, flyway) -> flywayBeans.put(name, new FlywayDescriptor(flyway.info().all())));
 			ApplicationContext parent = target.getParent();
-			contextFlywayBeans.put(target.getId(), new ContextFlywayBeans(flywayBeans,
-					(parent != null) ? parent.getId() : null));
+			contextFlywayBeans.put(target.getId(),
+					new ContextFlywayBeans(flywayBeans, (parent != null) ? parent.getId() : null));
 			target = parent;
 		}
 		return new ApplicationFlywayBeans(contextFlywayBeans);
@@ -95,8 +95,7 @@ public class FlywayEndpoint {
 
 		private final String parentId;
 
-		private ContextFlywayBeans(Map<String, FlywayDescriptor> flywayBeans,
-				String parentId) {
+		private ContextFlywayBeans(Map<String, FlywayDescriptor> flywayBeans, String parentId) {
 			this.flywayBeans = flywayBeans;
 			this.parentId = parentId;
 		}
@@ -119,8 +118,7 @@ public class FlywayEndpoint {
 		private final List<FlywayMigration> migrations;
 
 		private FlywayDescriptor(MigrationInfo[] migrations) {
-			this.migrations = Stream.of(migrations).map(FlywayMigration::new)
-					.collect(Collectors.toList());
+			this.migrations = Stream.of(migrations).map(FlywayMigration::new).collect(Collectors.toList());
 		}
 
 		public FlywayDescriptor(List<FlywayMigration> migrations) {

@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class SignalFxPropertiesTests extends StepRegistryPropertiesTests {
+class SignalFxPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		SignalFxProperties properties = new SignalFxProperties();
 		SignalFxConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);

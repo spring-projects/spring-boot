@@ -42,18 +42,15 @@ class MongoDataConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext(ApplicationContext applicationContext,
-			MongoProperties properties, MongoCustomConversions conversions)
-			throws ClassNotFoundException {
+	public MongoMappingContext mongoMappingContext(ApplicationContext applicationContext, MongoProperties properties,
+			MongoCustomConversions conversions) throws ClassNotFoundException {
 		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		MongoMappingContext context = new MongoMappingContext();
 		mapper.from(properties.isAutoIndexCreation()).to(context::setAutoIndexCreation);
-		context.setInitialEntitySet(new EntityScanner(applicationContext)
-				.scan(Document.class, Persistent.class));
+		context.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class, Persistent.class));
 		Class<?> strategyClass = properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
-			context.setFieldNamingStrategy(
-					(FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
+			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
 		}
 		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;

@@ -56,8 +56,8 @@ import org.springframework.util.ObjectUtils;
  * @see ReactiveWebServerApplicationContext
  * @see AnnotationConfigApplicationContext
  */
-public class AnnotationConfigReactiveWebServerApplicationContext
-		extends ReactiveWebServerApplicationContext implements AnnotationConfigRegistry {
+public class AnnotationConfigReactiveWebServerApplicationContext extends ReactiveWebServerApplicationContext
+		implements AnnotationConfigRegistry {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
@@ -83,8 +83,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 */
-	public AnnotationConfigReactiveWebServerApplicationContext(
-			DefaultListableBeanFactory beanFactory) {
+	public AnnotationConfigReactiveWebServerApplicationContext(DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
@@ -97,8 +96,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * @param annotatedClasses one or more annotated classes, e.g. {@code @Configuration}
 	 * classes
 	 */
-	public AnnotationConfigReactiveWebServerApplicationContext(
-			Class<?>... annotatedClasses) {
+	public AnnotationConfigReactiveWebServerApplicationContext(Class<?>... annotatedClasses) {
 		this();
 		register(annotatedClasses);
 		refresh();
@@ -146,8 +144,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.reader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
-		this.getBeanFactory().registerSingleton(
-				AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+		this.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
 				beanNameGenerator);
 	}
 
@@ -179,8 +176,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 */
 	@Override
 	public final void register(Class<?>... annotatedClasses) {
-		Assert.notEmpty(annotatedClasses,
-				"At least one annotated class must be specified");
+		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
 		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 

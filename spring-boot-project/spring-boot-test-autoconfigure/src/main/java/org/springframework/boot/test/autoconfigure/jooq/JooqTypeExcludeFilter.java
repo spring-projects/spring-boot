@@ -24,8 +24,7 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  *
  * @author Michael Simons
  */
-class JooqTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<JooqTest> {
+class JooqTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<JooqTest> {
 
 	JooqTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);

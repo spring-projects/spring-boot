@@ -44,59 +44,42 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class JettyMetricsAutoConfigurationTests {
+class JettyMetricsAutoConfigurationTests {
 
 	@Test
-	public void autoConfiguresThreadPoolMetricsWithEmbeddedServletJetty() {
-		new WebApplicationContextRunner(
-				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(
-								AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-										ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(ServletWebServerConfiguration.class,
-								MeterRegistryConfiguration.class)
-						.run((context) -> {
-							context.publishEvent(
-									new ApplicationStartedEvent(new SpringApplication(),
-											null, context.getSourceApplicationContext()));
-							assertThat(context).hasSingleBean(
-									JettyServerThreadPoolMetricsBinder.class);
-							SimpleMeterRegistry registry = context
-									.getBean(SimpleMeterRegistry.class);
-							assertThat(registry.find("jetty.threads.config.min").meter())
-									.isNotNull();
-						});
+	void autoConfiguresThreadPoolMetricsWithEmbeddedServletJetty() {
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class))
+				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+				.run((context) -> {
+					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+							context.getSourceApplicationContext()));
+					assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class);
+					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+					assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
+				});
 	}
 
 	@Test
-	public void autoConfiguresThreadPoolMetricsWithEmbeddedReactiveJetty() {
-		new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(
-								AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-										ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(ReactiveWebServerConfiguration.class,
-								MeterRegistryConfiguration.class)
-						.run((context) -> {
-							context.publishEvent(
-									new ApplicationStartedEvent(new SpringApplication(),
-											null, context.getSourceApplicationContext()));
-							SimpleMeterRegistry registry = context
-									.getBean(SimpleMeterRegistry.class);
-							assertThat(registry.find("jetty.threads.config.min").meter())
-									.isNotNull();
-						});
+	void autoConfiguresThreadPoolMetricsWithEmbeddedReactiveJetty() {
+		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+						ReactiveWebServerFactoryAutoConfiguration.class))
+				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
+				.run((context) -> {
+					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+							context.getSourceApplicationContext()));
+					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+					assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
+				});
 	}
 
 	@Test
-	public void allowsCustomJettyServerThreadPoolMetricsBinderToBeUsed() {
-		new WebApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettyServerThreadPoolMetricsBinder.class,
-						MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(JettyServerThreadPoolMetricsBinder.class)
+	void allowsCustomJettyServerThreadPoolMetricsBinderToBeUsed() {
+		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
+				.withUserConfiguration(CustomJettyServerThreadPoolMetricsBinder.class, MeterRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class)
 						.hasBean("customJettyServerThreadPoolMetricsBinder"));
 	}
 

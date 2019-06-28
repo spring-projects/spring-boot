@@ -21,8 +21,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class RootUriTemplateHandlerTests {
+class RootUriTemplateHandlerTests {
 
 	private URI uri;
 
@@ -50,33 +50,30 @@ public class RootUriTemplateHandlerTests {
 
 	public UriTemplateHandler handler;
 
-	@Before
+	@BeforeEach
 	@SuppressWarnings("unchecked")
-	public void setup() throws URISyntaxException {
+	void setup() throws URISyntaxException {
 		MockitoAnnotations.initMocks(this);
 		this.uri = new URI("https://example.com/hello");
 		this.handler = new RootUriTemplateHandler("https://example.com", this.delegate);
 		given(this.delegate.expand(anyString(), any(Map.class))).willReturn(this.uri);
-		given(this.delegate.expand(anyString(), any(Object[].class)))
-				.willReturn(this.uri);
+		given(this.delegate.expand(anyString(), any(Object[].class))).willReturn(this.uri);
 	}
 
 	@Test
-	public void createWithNullRootUriShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RootUriTemplateHandler((String) null))
+	void createWithNullRootUriShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler((String) null))
 				.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
-	public void createWithNullHandlerShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RootUriTemplateHandler("https://example.com", null))
+	void createWithNullHandlerShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler("https://example.com", null))
 				.withMessageContaining("Handler must not be null");
 	}
 
 	@Test
-	public void expandMapVariablesShouldPrefixRoot() {
+	void expandMapVariablesShouldPrefixRoot() {
 		HashMap<String, Object> uriVariables = new HashMap<>();
 		URI expanded = this.handler.expand("/hello", uriVariables);
 		verify(this.delegate).expand("https://example.com/hello", uriVariables);
@@ -84,7 +81,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandMapVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() {
+	void expandMapVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() {
 		HashMap<String, Object> uriVariables = new HashMap<>();
 		URI expanded = this.handler.expand("https://spring.io/hello", uriVariables);
 		verify(this.delegate).expand("https://spring.io/hello", uriVariables);
@@ -92,7 +89,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandArrayVariablesShouldPrefixRoot() {
+	void expandArrayVariablesShouldPrefixRoot() {
 		Object[] uriVariables = new Object[0];
 		URI expanded = this.handler.expand("/hello", uriVariables);
 		verify(this.delegate).expand("https://example.com/hello", uriVariables);
@@ -100,7 +97,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandArrayVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() {
+	void expandArrayVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() {
 		Object[] uriVariables = new Object[0];
 		URI expanded = this.handler.expand("https://spring.io/hello", uriVariables);
 		verify(this.delegate).expand("https://spring.io/hello", uriVariables);
@@ -108,7 +105,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void applyShouldWrapExistingTemplate() {
+	void applyShouldWrapExistingTemplate() {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setUriTemplateHandler(this.delegate);
 		this.handler = RootUriTemplateHandler.addTo(restTemplate, "https://example.com");

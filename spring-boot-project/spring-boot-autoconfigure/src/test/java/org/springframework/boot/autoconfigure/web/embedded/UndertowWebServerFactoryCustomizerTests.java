@@ -51,9 +51,8 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Rafiullah Hamedy
- *
  */
-public class UndertowWebServerFactoryCustomizerTests {
+class UndertowWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;
 
@@ -62,24 +61,19 @@ public class UndertowWebServerFactoryCustomizerTests {
 	private UndertowWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new UndertowWebServerFactoryCustomizer(this.environment,
-				this.serverProperties);
+		this.customizer = new UndertowWebServerFactoryCustomizer(this.environment, this.serverProperties);
 	}
 
 	@Test
-	public void customizeUndertowAccessLog() {
-		bind("server.undertow.accesslog.enabled=true",
-				"server.undertow.accesslog.pattern=foo",
-				"server.undertow.accesslog.prefix=test_log",
-				"server.undertow.accesslog.suffix=txt",
-				"server.undertow.accesslog.dir=test-logs",
-				"server.undertow.accesslog.rotate=false");
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+	void customizeUndertowAccessLog() {
+		bind("server.undertow.accesslog.enabled=true", "server.undertow.accesslog.pattern=foo",
+				"server.undertow.accesslog.prefix=test_log", "server.undertow.accesslog.suffix=txt",
+				"server.undertow.accesslog.dir=test-logs", "server.undertow.accesslog.rotate=false");
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setAccessLogEnabled(true);
 		verify(factory).setAccessLogPattern("foo");
@@ -90,99 +84,96 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customMaxHttpHeaderSize() {
+	void customMaxHttpHeaderSize() {
 		bind("server.max-http-header-size=2048");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isEqualTo(2048);
 	}
 
 	@Test
-	public void customMaxHttpHeaderSizeIgnoredIfNegative() {
+	void customMaxHttpHeaderSizeIgnoredIfNegative() {
 		bind("server.max-http-header-size=-1");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
 	}
 
-	public void customMaxHttpHeaderSizeIgnoredIfZero() {
+	@Test
+	void customMaxHttpHeaderSizeIgnoredIfZero() {
 		bind("server.max-http-header-size=0");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
 	}
 
 	@Test
-	public void customMaxHttpPostSize() {
+	void customMaxHttpPostSize() {
 		bind("server.undertow.max-http-post-size=256");
 		assertThat(boundServerOption(UndertowOptions.MAX_ENTITY_SIZE)).isEqualTo(256);
 	}
 
 	@Test
-	public void customConnectionTimeout() {
+	void customConnectionTimeout() {
 		bind("server.connectionTimeout=100");
 		assertThat(boundServerOption(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(100);
 	}
 
 	@Test
-	public void customMaxParameters() {
+	void customMaxParameters() {
 		bind("server.undertow.max-parameters=4");
 		assertThat(boundServerOption(UndertowOptions.MAX_PARAMETERS)).isEqualTo(4);
 	}
 
 	@Test
-	public void customMaxHeaders() {
+	void customMaxHeaders() {
 		bind("server.undertow.max-headers=4");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADERS)).isEqualTo(4);
 	}
 
 	@Test
-	public void customMaxCookies() {
+	void customMaxCookies() {
 		bind("server.undertow.max-cookies=4");
 		assertThat(boundServerOption(UndertowOptions.MAX_COOKIES)).isEqualTo(4);
 	}
 
 	@Test
-	public void allowEncodedSlashes() {
+	void allowEncodedSlashes() {
 		bind("server.undertow.allow-encoded-slash=true");
 		assertThat(boundServerOption(UndertowOptions.ALLOW_ENCODED_SLASH)).isTrue();
 	}
 
 	@Test
-	public void disableUrlDecoding() {
+	void disableUrlDecoding() {
 		bind("server.undertow.decode-url=false");
 		assertThat(boundServerOption(UndertowOptions.DECODE_URL)).isFalse();
 	}
 
 	@Test
-	public void customUrlCharset() {
+	void customUrlCharset() {
 		bind("server.undertow.url-charset=UTF-16");
-		assertThat(boundServerOption(UndertowOptions.URL_CHARSET))
-				.isEqualTo(StandardCharsets.UTF_16.name());
+		assertThat(boundServerOption(UndertowOptions.URL_CHARSET)).isEqualTo(StandardCharsets.UTF_16.name());
 	}
 
 	@Test
-	public void disableAlwaysSetKeepAlive() {
+	void disableAlwaysSetKeepAlive() {
 		bind("server.undertow.always-set-keep-alive=false");
 		assertThat(boundServerOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
 	}
 
 	@Test
-	public void deduceUseForwardHeaders() {
+	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
 
 	@Test
-	public void defaultUseForwardHeaders() {
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+	void defaultUseForwardHeaders() {
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
 
 	@Test
-	public void setUseForwardHeaders() {
+	void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}
@@ -191,29 +182,24 @@ public class UndertowWebServerFactoryCustomizerTests {
 		Builder builder = Undertow.builder();
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
-		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder,
-				"serverOptions")).getMap();
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "serverOptions")).getMap();
 		return map.get(option);
 	}
 
 	private ConfigurableUndertowWebServerFactory mockFactory(Builder builder) {
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		willAnswer((invocation) -> {
 			Object argument = invocation.getArgument(0);
 			Arrays.stream((argument instanceof UndertowBuilderCustomizer)
-					? new UndertowBuilderCustomizer[] {
-							(UndertowBuilderCustomizer) argument }
-					: (UndertowBuilderCustomizer[]) argument)
-					.forEach((customizer) -> customizer.customize(builder));
+					? new UndertowBuilderCustomizer[] { (UndertowBuilderCustomizer) argument }
+					: (UndertowBuilderCustomizer[]) argument).forEach((customizer) -> customizer.customize(builder));
 			return null;
 		}).given(factory).addBuilderCustomizers(any());
 		return factory;
 	}
 
 	private void bind(String... inlinedProperties) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				inlinedProperties);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
 		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
 				Bindable.ofInstance(this.serverProperties));
 	}

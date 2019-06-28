@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.metrics.web.client;
 import java.io.IOException;
 
 import io.micrometer.core.instrument.Tag;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -35,56 +35,51 @@ import static org.mockito.Mockito.mock;
  * @author Nishant Raut
  * @author Brian Clozel
  */
-public class RestTemplateExchangeTagsTests {
+class RestTemplateExchangeTagsTests {
 
 	@Test
-	public void outcomeTagIsUnknownWhenResponseIsNull() {
+	void outcomeTagIsUnknownWhenResponseIsNull() {
 		Tag tag = RestTemplateExchangeTags.outcome(null);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 
 	@Test
-	public void outcomeTagIsInformationalWhenResponseIs1xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.CONTINUE);
+	void outcomeTagIsInformationalWhenResponseIs1xx() {
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.CONTINUE);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
 	}
 
 	@Test
-	public void outcomeTagIsSuccessWhenResponseIs2xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.OK);
+	void outcomeTagIsSuccessWhenResponseIs2xx() {
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.OK);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
 	@Test
-	public void outcomeTagIsRedirectionWhenResponseIs3xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.MOVED_PERMANENTLY);
+	void outcomeTagIsRedirectionWhenResponseIs3xx() {
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
 	}
 
 	@Test
-	public void outcomeTagIsClientErrorWhenResponseIs4xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.BAD_REQUEST);
+	void outcomeTagIsClientErrorWhenResponseIs4xx() {
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.BAD_REQUEST);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
-	public void outcomeTagIsServerErrorWhenResponseIs5xx() {
-		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(),
-				HttpStatus.BAD_GATEWAY);
+	void outcomeTagIsServerErrorWhenResponseIs5xx() {
+		ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.BAD_GATEWAY);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
 	}
 
 	@Test
-	public void outcomeTagIsUnknownWhenResponseThrowsIOException() throws Exception {
+	void outcomeTagIsUnknownWhenResponseThrowsIOException() throws Exception {
 		ClientHttpResponse response = mock(ClientHttpResponse.class);
 		given(response.getStatusCode()).willThrow(IOException.class);
 		Tag tag = RestTemplateExchangeTags.outcome(response);
@@ -92,7 +87,7 @@ public class RestTemplateExchangeTagsTests {
 	}
 
 	@Test
-	public void outcomeTagIsUnknownForCustomResponseStatus() throws Exception {
+	void outcomeTagIsUnknownForCustomResponseStatus() throws Exception {
 		ClientHttpResponse response = mock(ClientHttpResponse.class);
 		given(response.getStatusCode()).willThrow(IllegalArgumentException.class);
 		Tag tag = RestTemplateExchangeTags.outcome(response);

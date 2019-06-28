@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,20 +25,20 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.Executor;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,10 +50,8 @@ import static org.mockito.Mockito.verify;
  * @author Rob Winch
  * @author Andy Wilkinson
  */
-public class HttpTunnelConnectionTests {
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class HttpTunnelConnectionTests {
 
 	private String url;
 
@@ -66,8 +64,8 @@ public class HttpTunnelConnectionTests {
 
 	private MockClientHttpRequestFactory requestFactory = new MockClientHttpRequestFactory();
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.url = "http://localhost:12345";
 		this.incomingData = new ByteArrayOutputStream();
@@ -75,35 +73,32 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void urlMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
+	void urlMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void urlMustNotBeEmpty() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
+	void urlMustNotBeEmpty() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void urlMustNotBeMalformed() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
+	void urlMustNotBeMalformed() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
 				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
-	public void requestFactoryMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelConnection(this.url, null))
+	void requestFactoryMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection(this.url, null))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
-	public void closeTunnelChangesIsOpen() throws Exception {
+	void closeTunnelChangesIsOpen() throws Exception {
 		this.requestFactory.willRespondAfterDelay(1000, HttpStatus.GONE);
 		WritableByteChannel channel = openTunnel(false);
 		assertThat(channel.isOpen()).isTrue();
@@ -112,7 +107,7 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void closeTunnelCallsCloseableOnce() throws Exception {
+	void closeTunnelCallsCloseableOnce() throws Exception {
 		this.requestFactory.willRespondAfterDelay(1000, HttpStatus.GONE);
 		WritableByteChannel channel = openTunnel(false);
 		verify(this.closeable, never()).close();
@@ -122,7 +117,7 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void typicalTraffic() throws Exception {
+	void typicalTraffic() throws Exception {
 		this.requestFactory.willRespond("hi", "=2", "=3");
 		TunnelChannel channel = openTunnel(true);
 		write(channel, "hello");
@@ -132,7 +127,7 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void trafficWithLongPollTimeouts() throws Exception {
+	void trafficWithLongPollTimeouts() throws Exception {
 		for (int i = 0; i < 10; i++) {
 			this.requestFactory.willRespond(HttpStatus.NO_CONTENT);
 		}
@@ -144,12 +139,11 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void connectFailureLogsWarning() throws Exception {
+	void connectFailureLogsWarning(CapturedOutput capturedOutput) throws Exception {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
-		this.outputCapture.expect(containsString(
-				"Failed to connect to remote application at http://localhost:12345"));
+		assertThat(capturedOutput).contains("Failed to connect to remote application at http://localhost:12345");
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {
@@ -157,8 +151,8 @@ public class HttpTunnelConnectionTests {
 	}
 
 	private TunnelChannel openTunnel(boolean singleThreaded) throws Exception {
-		HttpTunnelConnection connection = new HttpTunnelConnection(this.url,
-				this.requestFactory, singleThreaded ? new CurrentThreadExecutor() : null);
+		HttpTunnelConnection connection = new HttpTunnelConnection(this.url, this.requestFactory,
+				singleThreaded ? new CurrentThreadExecutor() : null);
 		return connection.open(this.incomingChannel, this.closeable);
 	}
 

@@ -23,12 +23,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 
 /**
@@ -48,13 +51,24 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisSessionConfiguration {
 
+	@Bean
+	@ConditionalOnMissingBean
+	public ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
+		switch (redisSessionProperties.getConfigureAction()) {
+		case NOTIFY_KEYSPACE_EVENTS:
+			return new ConfigureNotifyKeyspaceEventsAction();
+		case NONE:
+			return ConfigureRedisAction.NO_OP;
+		}
+		throw new IllegalStateException(
+				"Unsupported redis configure action '" + redisSessionProperties.getConfigureAction() + "'.");
+	}
+
 	@Configuration
-	public static class SpringBootRedisHttpSessionConfiguration
-			extends RedisHttpSessionConfiguration {
+	public static class SpringBootRedisHttpSessionConfiguration extends RedisHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties,
-				RedisSessionProperties redisSessionProperties) {
+		public void customize(SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());

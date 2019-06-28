@@ -57,8 +57,7 @@ public class TestableAnnotationProcessor<T> extends AbstractProcessor {
 	}
 
 	@Override
-	public boolean process(Set<? extends TypeElement> annotations,
-			RoundEnvironment roundEnv) {
+	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		RoundEnvironmentTester tester = new RoundEnvironmentTester(roundEnv);
 		if (!roundEnv.getRootElements().isEmpty()) {
 			this.consumer.accept(tester, this.target);

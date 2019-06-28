@@ -33,33 +33,27 @@ import static org.mockito.Mockito.mock;
  *
  * @author Vedran Pavic
  */
-public class SessionsEndpointAutoConfigurationTests {
+class SessionsEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
 			.withUserConfiguration(SessionConfiguration.class);
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=sessions")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(SessionsEndpoint.class));
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=sessions")
+				.run((context) -> assertThat(context).hasSingleBean(SessionsEndpoint.class));
 	}
 
 	@Test
-	public void runWhenNotExposedShouldNotHaveEndpointBean() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.sessions.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(SessionsEndpoint.class));
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoint.sessions.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

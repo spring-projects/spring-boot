@@ -50,8 +50,7 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(SecurityProperties.class)
-@ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class,
-		SessionCreationPolicy.class })
+@ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class, SessionCreationPolicy.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class SecurityFilterAutoConfiguration {
 
@@ -68,14 +67,13 @@ public class SecurityFilterAutoConfiguration {
 		return registration;
 	}
 
-	private EnumSet<DispatcherType> getDispatcherTypes(
-			SecurityProperties securityProperties) {
+	private EnumSet<DispatcherType> getDispatcherTypes(SecurityProperties securityProperties) {
 		if (securityProperties.getFilter().getDispatcherTypes() == null) {
 			return null;
 		}
 		return securityProperties.getFilter().getDispatcherTypes().stream()
-				.map((type) -> DispatcherType.valueOf(type.name())).collect(Collectors
-						.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
+				.map((type) -> DispatcherType.valueOf(type.name()))
+				.collect(Collectors.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
 	}
 
 }

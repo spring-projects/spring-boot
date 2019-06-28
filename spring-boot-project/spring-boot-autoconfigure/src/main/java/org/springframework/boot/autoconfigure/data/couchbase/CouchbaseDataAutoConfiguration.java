@@ -42,11 +42,9 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Bucket.class, CouchbaseRepository.class })
-@AutoConfigureAfter({ CouchbaseAutoConfiguration.class,
-		ValidationAutoConfiguration.class })
+@AutoConfigureAfter({ CouchbaseAutoConfiguration.class, ValidationAutoConfiguration.class })
 @EnableConfigurationProperties(CouchbaseDataProperties.class)
-@Import({ CouchbaseConfigurerAdapterConfiguration.class,
-		SpringBootCouchbaseDataConfiguration.class })
+@Import({ CouchbaseConfigurerAdapterConfiguration.class, SpringBootCouchbaseDataConfiguration.class })
 public class CouchbaseDataAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -55,8 +53,7 @@ public class CouchbaseDataAutoConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(Validator.class)
-		public ValidatingCouchbaseEventListener validationEventListener(
-				Validator validator) {
+		public ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
 			return new ValidatingCouchbaseEventListener(validator);
 		}
 

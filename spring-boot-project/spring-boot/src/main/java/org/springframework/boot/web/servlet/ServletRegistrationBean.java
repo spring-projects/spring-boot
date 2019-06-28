@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ import org.springframework.util.StringUtils;
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
  */
-public class ServletRegistrationBean<T extends Servlet>
-		extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
+public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 
@@ -86,8 +85,7 @@ public class ServletRegistrationBean<T extends Servlet>
 	 * @param alwaysMapUrl if omitted URL mappings should be replaced with '/*'
 	 * @param urlMappings the URLs being mapped
 	 */
-	public ServletRegistrationBean(T servlet, boolean alwaysMapUrl,
-			String... urlMappings) {
+	public ServletRegistrationBean(T servlet, boolean alwaysMapUrl, String... urlMappings) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
 		this.servlet = servlet;
@@ -175,8 +173,7 @@ public class ServletRegistrationBean<T extends Servlet>
 	}
 
 	@Override
-	protected ServletRegistration.Dynamic addRegistration(String description,
-			ServletContext servletContext) {
+	protected ServletRegistration.Dynamic addRegistration(String description, ServletContext servletContext) {
 		String name = getServletName();
 		return servletContext.addServlet(name, this.servlet);
 	}

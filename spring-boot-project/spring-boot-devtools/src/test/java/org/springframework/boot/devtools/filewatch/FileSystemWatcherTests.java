@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
@@ -45,87 +45,77 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class FileSystemWatcherTests {
+class FileSystemWatcherTests {
 
 	private FileSystemWatcher watcher;
 
-	private List<Set<ChangedFiles>> changes = Collections
-			.synchronizedList(new ArrayList<>());
+	private List<Set<ChangedFiles>> changes = Collections.synchronizedList(new ArrayList<>());
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		setupWatcher(20, 10);
 	}
 
 	@Test
-	public void pollIntervalMustBePositive() {
+	void pollIntervalMustBePositive() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(0),
-						Duration.ofMillis(1)))
+				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(0), Duration.ofMillis(1)))
 				.withMessageContaining("PollInterval must be positive");
 	}
 
 	@Test
-	public void quietPeriodMustBePositive() {
+	void quietPeriodMustBePositive() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
-						Duration.ofMillis(0)))
+				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(0)))
 				.withMessageContaining("QuietPeriod must be positive");
 	}
 
 	@Test
-	public void pollIntervalMustBeGreaterThanQuietPeriod() {
+	void pollIntervalMustBeGreaterThanQuietPeriod() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
-						Duration.ofMillis(1)))
+				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(1)))
 				.withMessageContaining("PollInterval must be greater than QuietPeriod");
 	}
 
 	@Test
-	public void listenerMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.watcher.addListener(null))
+	void listenerMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addListener(null))
 				.withMessageContaining("FileChangeListener must not be null");
 	}
 
 	@Test
-	public void cannotAddListenerToStartedListener() {
+	void cannotAddListenerToStartedListener() {
 		this.watcher.start();
-		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> this.watcher.addListener(mock(FileChangeListener.class)))
+		assertThatIllegalStateException().isThrownBy(() -> this.watcher.addListener(mock(FileChangeListener.class)))
 				.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test
-	public void sourceFolderMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.watcher.addSourceFolder(null))
+	void sourceFolderMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceFolder(null))
 				.withMessageContaining("Folder must not be null");
 	}
 
 	@Test
-	public void sourceFolderMustNotBeAFile() {
+	void sourceFolderMustNotBeAFile() {
 		File folder = new File("pom.xml");
 		assertThat(folder.isFile()).isTrue();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.watcher.addSourceFolder(new File("pom.xml")))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceFolder(new File("pom.xml")))
 				.withMessageContaining("Folder 'pom.xml' must not be a file");
 	}
 
 	@Test
-	public void cannotAddSourceFolderToStartedListener() throws Exception {
+	void cannotAddSourceFolderToStartedListener() throws Exception {
 		this.watcher.start();
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.watcher.addSourceFolder(this.temp.newFolder()))
+		assertThatIllegalStateException().isThrownBy(() -> this.watcher.addSourceFolder(this.tempDir))
 				.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test
-	public void addFile() throws Exception {
+	void addFile() throws Exception {
 		File folder = startWithNewFolder();
 		File file = touch(new File(folder, "test.txt"));
 		this.watcher.stopAfter(1);
@@ -135,7 +125,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void addNestedFile() throws Exception {
+	void addNestedFile() throws Exception {
 		File folder = startWithNewFolder();
 		File file = touch(new File(new File(folder, "sub"), "text.txt"));
 		this.watcher.stopAfter(1);
@@ -145,8 +135,8 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void createSourceFolderAndAddFile() throws IOException {
-		File folder = new File(this.temp.getRoot(), "does/not/exist");
+	void createSourceFolderAndAddFile() throws IOException {
+		File folder = new File(this.tempDir, "does/not/exist");
 		assertThat(folder.exists()).isFalse();
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
@@ -159,7 +149,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void waitsForPollingInterval() throws Exception {
+	void waitsForPollingInterval() throws Exception {
 		setupWatcher(10, 1);
 		File folder = startWithNewFolder();
 		touch(new File(folder, "test1.txt"));
@@ -172,7 +162,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void waitsForQuietPeriod() throws Exception {
+	void waitsForQuietPeriod() throws Exception {
 		setupWatcher(300, 200);
 		File folder = startWithNewFolder();
 		for (int i = 0; i < 10; i++) {
@@ -185,8 +175,9 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void withExistingFiles() throws Exception {
-		File folder = this.temp.newFolder();
+	void withExistingFiles() throws Exception {
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		touch(new File(folder, "test.txt"));
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
@@ -198,9 +189,11 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void multipleSources() throws Exception {
-		File folder1 = this.temp.newFolder();
-		File folder2 = this.temp.newFolder();
+	void multipleSources() throws Exception {
+		File folder1 = new File(this.tempDir, UUID.randomUUID().toString());
+		folder1.mkdir();
+		File folder2 = new File(this.tempDir, UUID.randomUUID().toString());
+		folder2.mkdir();
 		this.watcher.addSourceFolder(folder1);
 		this.watcher.addSourceFolder(folder2);
 		this.watcher.start();
@@ -222,8 +215,9 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void multipleListeners() throws Exception {
-		File folder = this.temp.newFolder();
+	void multipleListeners() throws Exception {
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
 		this.watcher.addSourceFolder(folder);
 		this.watcher.addListener(listener2Changes::addAll);
@@ -237,8 +231,9 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void modifyDeleteAndAdd() throws Exception {
-		File folder = this.temp.newFolder();
+	void modifyDeleteAndAdd() throws Exception {
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		File modify = touch(new File(folder, "modify.txt"));
 		File delete = touch(new File(folder, "delete.txt"));
 		this.watcher.addSourceFolder(folder);
@@ -257,13 +252,13 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void withTriggerFilter() throws Exception {
-		File folder = this.temp.newFolder();
+	void withTriggerFilter() throws Exception {
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		File file = touch(new File(folder, "file.txt"));
 		File trigger = touch(new File(folder, "trigger.txt"));
 		this.watcher.addSourceFolder(folder);
-		this.watcher.setTriggerFilter(
-				(candidate) -> candidate.getName().equals("trigger.txt"));
+		this.watcher.setTriggerFilter((candidate) -> candidate.getName().equals("trigger.txt"));
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
 		Thread.sleep(100);
@@ -278,14 +273,13 @@ public class FileSystemWatcherTests {
 	}
 
 	private void setupWatcher(long pollingInterval, long quietPeriod) {
-		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval),
-				Duration.ofMillis(quietPeriod));
-		this.watcher.addListener(
-				(changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
+		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval), Duration.ofMillis(quietPeriod));
+		this.watcher.addListener((changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}
 
 	private File startWithNewFolder() throws IOException {
-		File folder = this.temp.newFolder();
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
 		return folder;

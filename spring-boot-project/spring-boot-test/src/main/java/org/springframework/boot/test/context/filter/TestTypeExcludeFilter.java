@@ -36,12 +36,11 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 			"org.junit.jupiter.api.extension.ExtendWith", "org.testng.annotations.Test" };
 
 	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test",
-			"org.junit.platform.commons.annotation.Testable",
-			"org.testng.annotations.Test" };
+			"org.junit.platform.commons.annotation.Testable", "org.testng.annotations.Test" };
 
 	@Override
-	public boolean match(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
 		if (isTestConfiguration(metadataReader)) {
 			return true;
 		}
@@ -51,8 +50,7 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 		String enclosing = metadataReader.getClassMetadata().getEnclosingClassName();
 		if (enclosing != null) {
 			try {
-				if (match(metadataReaderFactory.getMetadataReader(enclosing),
-						metadataReaderFactory)) {
+				if (match(metadataReaderFactory.getMetadataReader(enclosing), metadataReaderFactory)) {
 					return true;
 				}
 			}
@@ -64,8 +62,7 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 	}
 
 	private boolean isTestConfiguration(MetadataReader metadataReader) {
-		return (metadataReader.getAnnotationMetadata()
-				.isAnnotated(TestComponent.class.getName()));
+		return (metadataReader.getAnnotationMetadata().isAnnotated(TestComponent.class.getName()));
 	}
 
 	private boolean isTestClass(MetadataReader metadataReader) {

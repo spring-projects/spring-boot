@@ -79,348 +79,299 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
-	public void readOperation() {
+	void readOperation() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test").exchange().expectStatus().isOk()
+				.expectBody().jsonPath("All").isEqualTo(true));
+	}
+
+	@Test
+	void readOperationWithEndpointsMappedToTheRoot() {
+		load(TestEndpointConfiguration.class, "", (client) -> client.get().uri("/test").exchange().expectStatus().isOk()
+				.expectBody().jsonPath("All").isEqualTo(true));
+	}
+
+	@Test
+	void readOperationWithSelector() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test/one").exchange().expectStatus().isOk()
+				.expectBody().jsonPath("part").isEqualTo("one"));
+	}
+
+	@Test
+	void readOperationWithSelectorContainingADot() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test/foo.bar").exchange().expectStatus()
+				.isOk().expectBody().jsonPath("part").isEqualTo("foo.bar"));
+	}
+
+	@Test
+	void linksToOtherEndpointsAreProvided() {
 		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/test").exchange().expectStatus().isOk()
-						.expectBody().jsonPath("All").isEqualTo(true));
+				(client) -> client.get().uri("").exchange().expectStatus().isOk().expectBody()
+						.jsonPath("_links.length()").isEqualTo(3).jsonPath("_links.self.href").isNotEmpty()
+						.jsonPath("_links.self.templated").isEqualTo(false).jsonPath("_links.test.href").isNotEmpty()
+						.jsonPath("_links.test.templated").isEqualTo(false).jsonPath("_links.test-part.href")
+						.isNotEmpty().jsonPath("_links.test-part.templated").isEqualTo(true));
 	}
 
 	@Test
-	public void readOperationWithEndpointsMappedToTheRoot() {
-		load(TestEndpointConfiguration.class, "",
-				(client) -> client.get().uri("/test").exchange().expectStatus().isOk()
-						.expectBody().jsonPath("All").isEqualTo(true));
-	}
-
-	@Test
-	public void readOperationWithSelector() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/test/one").exchange().expectStatus().isOk()
-						.expectBody().jsonPath("part").isEqualTo("one"));
-	}
-
-	@Test
-	public void readOperationWithSelectorContainingADot() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/test/foo.bar").exchange().expectStatus()
-						.isOk().expectBody().jsonPath("part").isEqualTo("foo.bar"));
-	}
-
-	@Test
-	public void linksToOtherEndpointsAreProvided() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("").exchange().expectStatus().isOk()
-						.expectBody().jsonPath("_links.length()").isEqualTo(3)
-						.jsonPath("_links.self.href").isNotEmpty()
-						.jsonPath("_links.self.templated").isEqualTo(false)
-						.jsonPath("_links.test.href").isNotEmpty()
-						.jsonPath("_links.test.templated").isEqualTo(false)
-						.jsonPath("_links.test-part.href").isNotEmpty()
-						.jsonPath("_links.test-part.templated").isEqualTo(true));
-	}
-
-	@Test
-	public void linksMappingIsDisabledWhenEndpointPathIsEmpty() {
+	void linksMappingIsDisabledWhenEndpointPathIsEmpty() {
 		load(TestEndpointConfiguration.class, "",
 				(client) -> client.get().uri("").exchange().expectStatus().isNotFound());
 	}
 
 	@Test
-	public void operationWithTrailingSlashShouldMatch() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/test/").exchange().expectStatus().isOk()
-						.expectBody().jsonPath("All").isEqualTo(true));
+	void operationWithTrailingSlashShouldMatch() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test/").exchange().expectStatus().isOk()
+				.expectBody().jsonPath("All").isEqualTo(true));
 	}
 
 	@Test
-	public void readOperationWithSingleQueryParameters() {
-		load(QueryEndpointConfiguration.class,
-				(client) -> client.get().uri("/query?one=1&two=2").exchange()
-						.expectStatus().isOk().expectBody().jsonPath("query")
-						.isEqualTo("1 2"));
+	void readOperationWithSingleQueryParameters() {
+		load(QueryEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&two=2").exchange()
+				.expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1 2"));
 	}
 
 	@Test
-	public void readOperationWithSingleQueryParametersAndMultipleValues() {
-		load(QueryEndpointConfiguration.class,
-				(client) -> client.get().uri("/query?one=1&one=1&two=2").exchange()
-						.expectStatus().isOk().expectBody().jsonPath("query")
-						.isEqualTo("1,1 2"));
+	void readOperationWithSingleQueryParametersAndMultipleValues() {
+		load(QueryEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&one=1&two=2").exchange()
+				.expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1,1 2"));
 	}
 
 	@Test
-	public void readOperationWithListQueryParameterAndSingleValue() {
-		load(QueryWithListEndpointConfiguration.class,
-				(client) -> client.get().uri("/query?one=1&two=2").exchange()
-						.expectStatus().isOk().expectBody().jsonPath("query")
-						.isEqualTo("1 [2]"));
+	void readOperationWithListQueryParameterAndSingleValue() {
+		load(QueryWithListEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&two=2").exchange()
+				.expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1 [2]"));
 	}
 
 	@Test
-	public void readOperationWithListQueryParameterAndMultipleValues() {
-		load(QueryWithListEndpointConfiguration.class,
-				(client) -> client.get().uri("/query?one=1&two=2&two=2").exchange()
-						.expectStatus().isOk().expectBody().jsonPath("query")
-						.isEqualTo("1 [2, 2]"));
+	void readOperationWithListQueryParameterAndMultipleValues() {
+		load(QueryWithListEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&two=2&two=2")
+				.exchange().expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1 [2, 2]"));
 	}
 
 	@Test
-	public void readOperationWithMappingFailureProducesBadRequestResponse() {
+	void readOperationWithMappingFailureProducesBadRequestResponse() {
 		load(QueryEndpointConfiguration.class, (client) -> {
-			WebTestClient.BodyContentSpec body = client.get().uri("/query?two=two")
-					.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-					.isBadRequest().expectBody();
-			validateErrorBody(body, HttpStatus.BAD_REQUEST, "/endpoints/query",
-					"Missing parameters: one");
+			WebTestClient.BodyContentSpec body = client.get().uri("/query?two=two").accept(MediaType.APPLICATION_JSON)
+					.exchange().expectStatus().isBadRequest().expectBody();
+			validateErrorBody(body, HttpStatus.BAD_REQUEST, "/endpoints/query", "Missing parameters: one");
 		});
 	}
 
 	@Test
-	public void writeOperation() {
+	void writeOperation() {
 		load(TestEndpointConfiguration.class, (client) -> {
 			Map<String, Object> body = new HashMap<>();
 			body.put("foo", "one");
 			body.put("bar", "two");
-			client.post().uri("/test").syncBody(body).exchange().expectStatus()
-					.isNoContent().expectBody().isEmpty();
+			client.post().uri("/test").syncBody(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
 		});
 	}
 
 	@Test
-	public void writeOperationWithVoidResponse() {
+	void writeOperationWithVoidResponse() {
 		load(VoidWriteResponseEndpointConfiguration.class, (context, client) -> {
-			client.post().uri("/voidwrite").exchange().expectStatus().isNoContent()
-					.expectBody().isEmpty();
+			client.post().uri("/voidwrite").exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).write();
 		});
 	}
 
 	@Test
-	public void deleteOperation() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.delete().uri("/test/one").exchange().expectStatus()
-						.isOk().expectBody().jsonPath("part").isEqualTo("one"));
+	void deleteOperation() {
+		load(TestEndpointConfiguration.class, (client) -> client.delete().uri("/test/one").exchange().expectStatus()
+				.isOk().expectBody().jsonPath("part").isEqualTo("one"));
 	}
 
 	@Test
-	public void deleteOperationWithVoidResponse() {
+	void deleteOperationWithVoidResponse() {
 		load(VoidDeleteResponseEndpointConfiguration.class, (context, client) -> {
-			client.delete().uri("/voiddelete").exchange().expectStatus().isNoContent()
-					.expectBody().isEmpty();
+			client.delete().uri("/voiddelete").exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).delete();
 		});
 	}
 
 	@Test
-	public void nullIsPassedToTheOperationWhenArgumentIsNotFoundInPostRequestBody() {
+	void nullIsPassedToTheOperationWhenArgumentIsNotFoundInPostRequestBody() {
 		load(TestEndpointConfiguration.class, (context, client) -> {
 			Map<String, Object> body = new HashMap<>();
 			body.put("foo", "one");
-			client.post().uri("/test").syncBody(body).exchange().expectStatus()
-					.isNoContent().expectBody().isEmpty();
+			client.post().uri("/test").syncBody(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).write("one", null);
 		});
 	}
 
 	@Test
-	public void nullsArePassedToTheOperationWhenPostRequestHasNoBody() {
+	void nullsArePassedToTheOperationWhenPostRequestHasNoBody() {
 		load(TestEndpointConfiguration.class, (context, client) -> {
-			client.post().uri("/test").contentType(MediaType.APPLICATION_JSON).exchange()
-					.expectStatus().isNoContent().expectBody().isEmpty();
+			client.post().uri("/test").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isNoContent()
+					.expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).write(null, null);
 		});
 	}
 
 	@Test
-	public void nullResponseFromReadOperationResultsInNotFoundResponseStatus() {
-		load(NullReadResponseEndpointConfiguration.class, (context, client) -> client
-				.get().uri("/nullread").exchange().expectStatus().isNotFound());
+	void nullResponseFromReadOperationResultsInNotFoundResponseStatus() {
+		load(NullReadResponseEndpointConfiguration.class,
+				(context, client) -> client.get().uri("/nullread").exchange().expectStatus().isNotFound());
 	}
 
 	@Test
-	public void nullResponseFromDeleteOperationResultsInNoContentResponseStatus() {
-		load(NullDeleteResponseEndpointConfiguration.class, (context, client) -> client
-				.delete().uri("/nulldelete").exchange().expectStatus().isNoContent());
+	void nullResponseFromDeleteOperationResultsInNoContentResponseStatus() {
+		load(NullDeleteResponseEndpointConfiguration.class,
+				(context, client) -> client.delete().uri("/nulldelete").exchange().expectStatus().isNoContent());
 	}
 
 	@Test
-	public void nullResponseFromWriteOperationResultsInNoContentResponseStatus() {
-		load(NullWriteResponseEndpointConfiguration.class, (context, client) -> client
-				.post().uri("/nullwrite").exchange().expectStatus().isNoContent());
+	void nullResponseFromWriteOperationResultsInNoContentResponseStatus() {
+		load(NullWriteResponseEndpointConfiguration.class,
+				(context, client) -> client.post().uri("/nullwrite").exchange().expectStatus().isNoContent());
 	}
 
 	@Test
-	public void readOperationWithResourceResponse() {
+	void readOperationWithResourceResponse() {
 		load(ResourceEndpointConfiguration.class, (context, client) -> {
-			byte[] responseBody = client.get().uri("/resource").exchange().expectStatus()
-					.isOk().expectHeader().contentType(MediaType.APPLICATION_OCTET_STREAM)
-					.returnResult(byte[].class).getResponseBodyContent();
+			byte[] responseBody = client.get().uri("/resource").exchange().expectStatus().isOk().expectHeader()
+					.contentType(MediaType.APPLICATION_OCTET_STREAM).returnResult(byte[].class)
+					.getResponseBodyContent();
 			assertThat(responseBody).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 		});
 	}
 
 	@Test
-	public void readOperationWithResourceWebOperationResponse() {
-		load(ResourceWebEndpointResponseEndpointConfiguration.class,
-				(context, client) -> {
-					byte[] responseBody = client.get().uri("/resource").exchange()
-							.expectStatus().isOk().expectHeader()
-							.contentType(MediaType.APPLICATION_OCTET_STREAM)
-							.returnResult(byte[].class).getResponseBodyContent();
-					assertThat(responseBody).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8,
-							9);
-				});
-	}
-
-	@Test
-	public void readOperationWithMonoResponse() {
-		load(MonoResponseEndpointConfiguration.class,
-				(client) -> client.get().uri("/mono").exchange().expectStatus().isOk()
-						.expectBody().jsonPath("a").isEqualTo("alpha"));
-	}
-
-	@Test
-	public void readOperationWithCustomMediaType() {
-		load(CustomMediaTypesEndpointConfiguration.class,
-				(client) -> client.get().uri("/custommediatypes").exchange()
-						.expectStatus().isOk().expectHeader()
-						.valueMatches("Content-Type", "text/plain(;charset=.*)?"));
-	}
-
-	@Test
-	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() {
-		load(RequiredParameterEndpointConfiguration.class, (client) -> {
-			WebTestClient.BodyContentSpec body = client.get().uri("/requiredparameters")
-					.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-					.isBadRequest().expectBody();
-			validateErrorBody(body, HttpStatus.BAD_REQUEST,
-					"/endpoints/requiredparameters", "Missing parameters: foo");
+	void readOperationWithResourceWebOperationResponse() {
+		load(ResourceWebEndpointResponseEndpointConfiguration.class, (context, client) -> {
+			byte[] responseBody = client.get().uri("/resource").exchange().expectStatus().isOk().expectHeader()
+					.contentType(MediaType.APPLICATION_OCTET_STREAM).returnResult(byte[].class)
+					.getResponseBodyContent();
+			assertThat(responseBody).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 		});
 	}
 
 	@Test
-	public void readOperationWithMissingNullableParametersIsOk() {
-		load(RequiredParameterEndpointConfiguration.class, (client) -> client.get()
-				.uri("/requiredparameters?foo=hello").exchange().expectStatus().isOk());
+	void readOperationWithMonoResponse() {
+		load(MonoResponseEndpointConfiguration.class, (client) -> client.get().uri("/mono").exchange().expectStatus()
+				.isOk().expectBody().jsonPath("a").isEqualTo("alpha"));
 	}
 
 	@Test
-	public void endpointsProducePrimaryMediaTypeByDefault() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/test").exchange().expectStatus().isOk()
-						.expectHeader()
-						.valueMatches("Content-Type", ACTUATOR_MEDIA_TYPE_PATTERN));
+	void readOperationWithCustomMediaType() {
+		load(CustomMediaTypesEndpointConfiguration.class, (client) -> client.get().uri("/custommediatypes").exchange()
+				.expectStatus().isOk().expectHeader().valueMatches("Content-Type", "text/plain(;charset=.*)?"));
 	}
 
 	@Test
-	public void endpointsProduceSecondaryMediaTypeWhenRequested() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/test").accept(MediaType.APPLICATION_JSON)
-						.exchange().expectStatus().isOk().expectHeader()
-						.valueMatches("Content-Type", JSON_MEDIA_TYPE_PATTERN));
+	void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() {
+		load(RequiredParameterEndpointConfiguration.class, (client) -> {
+			WebTestClient.BodyContentSpec body = client.get().uri("/requiredparameters")
+					.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isBadRequest().expectBody();
+			validateErrorBody(body, HttpStatus.BAD_REQUEST, "/endpoints/requiredparameters", "Missing parameters: foo");
+		});
 	}
 
 	@Test
-	public void linksProducesPrimaryMediaTypeByDefault() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("").exchange().expectStatus().isOk()
-						.expectHeader()
-						.valueMatches("Content-Type", ACTUATOR_MEDIA_TYPE_PATTERN));
+	void readOperationWithMissingNullableParametersIsOk() {
+		load(RequiredParameterEndpointConfiguration.class,
+				(client) -> client.get().uri("/requiredparameters?foo=hello").exchange().expectStatus().isOk());
 	}
 
 	@Test
-	public void linksProducesSecondaryMediaTypeWhenRequested() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("").accept(MediaType.APPLICATION_JSON)
-						.exchange().expectStatus().isOk().expectHeader()
-						.valueMatches("Content-Type", JSON_MEDIA_TYPE_PATTERN));
+	void endpointsProducePrimaryMediaTypeByDefault() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test").exchange().expectStatus().isOk()
+				.expectHeader().valueMatches("Content-Type", ACTUATOR_MEDIA_TYPE_PATTERN));
 	}
 
 	@Test
-	public void principalIsNullWhenRequestHasNoPrincipal() {
+	void endpointsProduceSecondaryMediaTypeWhenRequested() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk().expectHeader().valueMatches("Content-Type", JSON_MEDIA_TYPE_PATTERN));
+	}
+
+	@Test
+	void linksProducesPrimaryMediaTypeByDefault() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("").exchange().expectStatus().isOk()
+				.expectHeader().valueMatches("Content-Type", ACTUATOR_MEDIA_TYPE_PATTERN));
+	}
+
+	@Test
+	void linksProducesSecondaryMediaTypeWhenRequested() {
+		load(TestEndpointConfiguration.class, (client) -> client.get().uri("").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk().expectHeader().valueMatches("Content-Type", JSON_MEDIA_TYPE_PATTERN));
+	}
+
+	@Test
+	void principalIsNullWhenRequestHasNoPrincipal() {
 		load(PrincipalEndpointConfiguration.class,
-				(client) -> client.get().uri("/principal")
-						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				(client) -> client.get().uri("/principal").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 						.isOk().expectBody(String.class).isEqualTo("None"));
 	}
 
 	@Test
-	public void principalIsAvailableWhenRequestHasAPrincipal() {
+	void principalIsAvailableWhenRequestHasAPrincipal() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(PrincipalEndpointConfiguration.class);
-		}, (client) -> client.get().uri("/principal").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("Alice"));
+		}, (client) -> client.get().uri("/principal").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isOk().expectBody(String.class).isEqualTo("Alice"));
 	}
 
 	@Test
-	public void operationWithAQueryNamedPrincipalCanBeAccessedWhenAuthenticated() {
+	void operationWithAQueryNamedPrincipalCanBeAccessedWhenAuthenticated() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(PrincipalQueryEndpointConfiguration.class);
-		}, (client) -> client.get().uri("/principalquery?principal=Zoe")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("Zoe"));
+		}, (client) -> client.get().uri("/principalquery?principal=Zoe").accept(MediaType.APPLICATION_JSON).exchange()
+				.expectStatus().isOk().expectBody(String.class).isEqualTo("Zoe"));
 	}
 
 	@Test
-	public void securityContextIsAvailableAndHasNullPrincipalWhenRequestHasNoPrincipal() {
+	void securityContextIsAvailableAndHasNullPrincipalWhenRequestHasNoPrincipal() {
 		load(SecurityContextEndpointConfiguration.class,
-				(client) -> client.get().uri("/securitycontext")
-						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-						.isOk().expectBody(String.class).isEqualTo("None"));
+				(client) -> client.get().uri("/securitycontext").accept(MediaType.APPLICATION_JSON).exchange()
+						.expectStatus().isOk().expectBody(String.class).isEqualTo("None"));
 	}
 
 	@Test
-	public void securityContextIsAvailableAndHasPrincipalWhenRequestHasPrincipal() {
+	void securityContextIsAvailableAndHasPrincipalWhenRequestHasPrincipal() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(SecurityContextEndpointConfiguration.class);
-		}, (client) -> client.get().uri("/securitycontext")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("Alice"));
+		}, (client) -> client.get().uri("/securitycontext").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isOk().expectBody(String.class).isEqualTo("Alice"));
 	}
 
 	@Test
-	public void userInRoleReturnsFalseWhenRequestHasNoPrincipal() {
+	void userInRoleReturnsFalseWhenRequestHasNoPrincipal() {
 		load(UserInRoleEndpointConfiguration.class,
-				(client) -> client.get().uri("/userinrole?role=ADMIN")
-						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-						.isOk().expectBody(String.class).isEqualTo("ADMIN: false"));
+				(client) -> client.get().uri("/userinrole?role=ADMIN").accept(MediaType.APPLICATION_JSON).exchange()
+						.expectStatus().isOk().expectBody(String.class).isEqualTo("ADMIN: false"));
 	}
 
 	@Test
-	public void userInRoleReturnsFalseWhenUserIsNotInRole() {
+	void userInRoleReturnsFalseWhenUserIsNotInRole() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(UserInRoleEndpointConfiguration.class);
-		}, (client) -> client.get().uri("/userinrole?role=ADMIN")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("ADMIN: false"));
+		}, (client) -> client.get().uri("/userinrole?role=ADMIN").accept(MediaType.APPLICATION_JSON).exchange()
+				.expectStatus().isOk().expectBody(String.class).isEqualTo("ADMIN: false"));
 	}
 
 	@Test
-	public void userInRoleReturnsTrueWhenUserIsInRole() {
+	void userInRoleReturnsTrueWhenUserIsInRole() {
 		load((context) -> {
 			this.authenticatedContextCustomizer.accept(context);
 			context.register(UserInRoleEndpointConfiguration.class);
-		}, (client) -> client.get().uri("/userinrole?role=ACTUATOR")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("ACTUATOR: true"));
+		}, (client) -> client.get().uri("/userinrole?role=ACTUATOR").accept(MediaType.APPLICATION_JSON).exchange()
+				.expectStatus().isOk().expectBody(String.class).isEqualTo("ACTUATOR: true"));
 	}
 
 	protected abstract int getPort(T context);
 
-	protected void validateErrorBody(WebTestClient.BodyContentSpec body,
-			HttpStatus status, String path, String message) {
-		body.jsonPath("status").isEqualTo(status.value()).jsonPath("error")
-				.isEqualTo(status.getReasonPhrase()).jsonPath("path").isEqualTo(path)
-				.jsonPath("message").isEqualTo(message);
+	protected void validateErrorBody(WebTestClient.BodyContentSpec body, HttpStatus status, String path,
+			String message) {
+		body.jsonPath("status").isEqualTo(status.value()).jsonPath("error").isEqualTo(status.getReasonPhrase())
+				.jsonPath("path").isEqualTo(path).jsonPath("message").isEqualTo(message);
 	}
 
-	private void load(Class<?> configuration,
-			BiConsumer<ApplicationContext, WebTestClient> consumer) {
+	private void load(Class<?> configuration, BiConsumer<ApplicationContext, WebTestClient> consumer) {
 		load((context) -> context.register(configuration), "/endpoints", consumer);
 	}
 
@@ -429,14 +380,11 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 				(context, client) -> clientConsumer.accept(client));
 	}
 
-	protected void load(Consumer<T> contextCustomizer,
-			Consumer<WebTestClient> clientConsumer) {
-		load(contextCustomizer, "/endpoints",
-				(context, client) -> clientConsumer.accept(client));
+	protected void load(Consumer<T> contextCustomizer, Consumer<WebTestClient> clientConsumer) {
+		load(contextCustomizer, "/endpoints", (context, client) -> clientConsumer.accept(client));
 	}
 
-	protected void load(Class<?> configuration, String endpointPath,
-			Consumer<WebTestClient> clientConsumer) {
+	protected void load(Class<?> configuration, String endpointPath, Consumer<WebTestClient> clientConsumer) {
 		load((context) -> context.register(configuration), endpointPath,
 				(context, client) -> clientConsumer.accept(client));
 	}
@@ -446,16 +394,13 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		T applicationContext = this.applicationContextSupplier.get();
 		contextCustomizer.accept(applicationContext);
 		applicationContext.getEnvironment().getPropertySources()
-				.addLast(new MapPropertySource("test",
-						Collections.singletonMap("endpointPath", endpointPath)));
+				.addLast(new MapPropertySource("test", Collections.singletonMap("endpointPath", endpointPath)));
 		applicationContext.refresh();
 		try {
-			InetSocketAddress address = new InetSocketAddress(
-					getPort(applicationContext));
-			String url = "http://" + address.getHostString() + ":" + address.getPort()
-					+ endpointPath;
-			consumer.accept(applicationContext, WebTestClient.bindToServer().baseUrl(url)
-					.responseTimeout(TIMEOUT).build());
+			InetSocketAddress address = new InetSocketAddress(getPort(applicationContext));
+			String url = "http://" + address.getHostString() + ":" + address.getPort() + endpointPath;
+			consumer.accept(applicationContext,
+					WebTestClient.bindToServer().baseUrl(url).responseTimeout(TIMEOUT).build());
 		}
 		finally {
 			applicationContext.close();
@@ -500,8 +445,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class VoidWriteResponseEndpointConfiguration {
 
 		@Bean
-		public VoidWriteResponseEndpoint voidWriteResponseEndpoint(
-				EndpointDelegate delegate) {
+		public VoidWriteResponseEndpoint voidWriteResponseEndpoint(EndpointDelegate delegate) {
 			return new VoidWriteResponseEndpoint(delegate);
 		}
 
@@ -512,8 +456,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class VoidDeleteResponseEndpointConfiguration {
 
 		@Bean
-		public VoidDeleteResponseEndpoint voidDeleteResponseEndpoint(
-				EndpointDelegate delegate) {
+		public VoidDeleteResponseEndpoint voidDeleteResponseEndpoint(EndpointDelegate delegate) {
 			return new VoidDeleteResponseEndpoint(delegate);
 		}
 
@@ -524,8 +467,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class NullWriteResponseEndpointConfiguration {
 
 		@Bean
-		public NullWriteResponseEndpoint nullWriteResponseEndpoint(
-				EndpointDelegate delegate) {
+		public NullWriteResponseEndpoint nullWriteResponseEndpoint(EndpointDelegate delegate) {
 			return new NullWriteResponseEndpoint(delegate);
 		}
 
@@ -692,8 +634,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@ReadOperation
-		public Map<String, String> queryWithParameterList(@Selector String list,
-				String one, List<String> two) {
+		public Map<String, String> queryWithParameterList(@Selector String list, String one, List<String> two) {
 			return Collections.singletonMap("query", list + " " + one + " " + two);
 		}
 
@@ -793,9 +734,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 		@ReadOperation
 		public WebEndpointResponse<Resource> read() {
-			return new WebEndpointResponse<>(
-					new ByteArrayResource(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }),
-					200);
+			return new WebEndpointResponse<>(new ByteArrayResource(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }), 200);
 		}
 
 	}

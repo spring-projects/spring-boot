@@ -40,43 +40,43 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class ServletWebServerServletContextListenerTests {
+class ServletWebServerServletContextListenerTests {
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByJetty() {
+	void registeredServletContextListenerBeanIsCalledByJetty() {
 		registeredServletContextListenerBeanIsCalled(JettyConfiguration.class);
 	}
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByTomcat() {
+	void registeredServletContextListenerBeanIsCalledByTomcat() {
 		registeredServletContextListenerBeanIsCalled(TomcatConfiguration.class);
 	}
 
 	@Test
-	public void registeredServletContextListenerBeanIsCalledByUndertow() {
+	void registeredServletContextListenerBeanIsCalledByUndertow() {
 		registeredServletContextListenerBeanIsCalled(UndertowConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByJetty() {
+	void servletContextListenerBeanIsCalledByJetty() {
 		servletContextListenerBeanIsCalled(JettyConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByTomcat() {
+	void servletContextListenerBeanIsCalledByTomcat() {
 		servletContextListenerBeanIsCalled(TomcatConfiguration.class);
 	}
 
 	@Test
-	public void servletContextListenerBeanIsCalledByUndertow() {
+	void servletContextListenerBeanIsCalledByUndertow() {
 		servletContextListenerBeanIsCalled(UndertowConfiguration.class);
 	}
 
 	private void servletContextListenerBeanIsCalled(Class<?> configuration) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletContextListenerBeanConfiguration.class, configuration);
-		ServletContextListener servletContextListener = context
-				.getBean("servletContextListener", ServletContextListener.class);
+		ServletContextListener servletContextListener = context.getBean("servletContextListener",
+				ServletContextListener.class);
 		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
@@ -85,8 +85,7 @@ public class ServletWebServerServletContextListenerTests {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletListenerRegistrationBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = (ServletContextListener) context
-				.getBean("registration", ServletListenerRegistrationBean.class)
-				.getListener();
+				.getBean("registration", ServletListenerRegistrationBean.class).getListener();
 		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}
@@ -136,8 +135,7 @@ public class ServletWebServerServletContextListenerTests {
 
 		@Bean
 		public ServletListenerRegistrationBean<ServletContextListener> registration() {
-			return new ServletListenerRegistrationBean<>(
-					mock(ServletContextListener.class));
+			return new ServletListenerRegistrationBean<>(mock(ServletContextListener.class));
 		}
 
 	}

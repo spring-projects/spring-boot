@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.info;
 
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.PropertySource;
 
@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  */
-public class InfoPropertiesTests {
+class InfoPropertiesTests {
 
 	@Test
-	public void inputIsImmutable() {
+	void inputIsImmutable() {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
@@ -43,7 +43,7 @@ public class InfoPropertiesTests {
 	}
 
 	@Test
-	public void iterator() {
+	void iterator() {
 		Properties p = new Properties();
 		p.put("one", "first");
 		p.put("two", "second");
@@ -56,16 +56,15 @@ public class InfoPropertiesTests {
 	}
 
 	@Test
-	public void removeNotSupported() {
+	void removeNotSupported() {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
-		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(infoProperties.iterator()::remove);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(infoProperties.iterator()::remove);
 	}
 
 	@Test
-	public void toPropertySources() {
+	void toPropertySources() {
 		Properties p = new Properties();
 		p.put("one", "first");
 		p.put("two", "second");

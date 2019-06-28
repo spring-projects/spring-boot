@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.validation;
 
 import javax.validation.Validator;
 
+import org.junit.After;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -41,7 +41,7 @@ public class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests
 
 	private AnnotationConfigApplicationContext context;
 
-	@AfterEach
+	@After
 	public void close() {
 		if (this.context != null) {
 			this.context.close();
@@ -50,11 +50,9 @@ public class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests
 
 	@Test
 	public void missingElDependencyIsTolerated() {
-		this.context = new AnnotationConfigApplicationContext(
-				ValidationAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(ValidationAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
 	}
 
 }

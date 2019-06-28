@@ -44,65 +44,52 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  * @author Madhura Bhave
  */
-public class AuditAutoConfigurationTests {
+class AuditAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(AuditAutoConfiguration.class));
 
 	@Test
-	public void autoConfigurationIsDisabledByDefault() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(AuditAutoConfiguration.class));
+	void autoConfigurationIsDisabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(AuditAutoConfiguration.class));
 	}
 
 	@Test
-	public void autoConfigurationIsEnabledWhenAuditEventRepositoryBeanPresent() {
-		this.contextRunner
-				.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getBean(AuditEventRepository.class)).isNotNull();
-					assertThat(context.getBean(AuthenticationAuditListener.class))
-							.isNotNull();
-					assertThat(context.getBean(AuthorizationAuditListener.class))
-							.isNotNull();
-				});
+	void autoConfigurationIsEnabledWhenAuditEventRepositoryBeanPresent() {
+		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class).run((context) -> {
+			assertThat(context.getBean(AuditEventRepository.class)).isNotNull();
+			assertThat(context.getBean(AuthenticationAuditListener.class)).isNotNull();
+			assertThat(context.getBean(AuthorizationAuditListener.class)).isNotNull();
+		});
 	}
 
 	@Test
-	public void ownAuthenticationAuditListener() {
-		this.contextRunner
-				.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withUserConfiguration(
-						CustomAuthenticationAuditListenerConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(AbstractAuthenticationAuditListener.class))
-								.isInstanceOf(TestAuthenticationAuditListener.class));
+	void ownAuthenticationAuditListener() {
+		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
+				.withUserConfiguration(CustomAuthenticationAuditListenerConfiguration.class)
+				.run((context) -> assertThat(context.getBean(AbstractAuthenticationAuditListener.class))
+						.isInstanceOf(TestAuthenticationAuditListener.class));
 	}
 
 	@Test
-	public void ownAuthorizationAuditListener() {
-		this.contextRunner
-				.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withUserConfiguration(
-						CustomAuthorizationAuditListenerConfiguration.class)
-				.run((context) -> assertThat(
-						context.getBean(AbstractAuthorizationAuditListener.class))
-								.isInstanceOf(TestAuthorizationAuditListener.class));
+	void ownAuthorizationAuditListener() {
+		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
+				.withUserConfiguration(CustomAuthorizationAuditListenerConfiguration.class)
+				.run((context) -> assertThat(context.getBean(AbstractAuthorizationAuditListener.class))
+						.isInstanceOf(TestAuthorizationAuditListener.class));
 	}
 
 	@Test
-	public void ownAuditListener() {
-		this.contextRunner
-				.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
+	void ownAuditListener() {
+		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
 				.withUserConfiguration(CustomAuditListenerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(AbstractAuditListener.class))
 						.isInstanceOf(TestAuditListener.class));
 	}
 
 	@Test
-	public void backsOffWhenDisabled() {
-		this.contextRunner
-				.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
+	void backsOffWhenDisabled() {
+		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
 				.withPropertyValues("management.auditevents.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(AuditListener.class)
 						.doesNotHaveBean(AuthenticationAuditListener.class)
@@ -133,8 +120,7 @@ public class AuditAutoConfigurationTests {
 
 	}
 
-	protected static class TestAuthenticationAuditListener
-			extends AbstractAuthenticationAuditListener {
+	protected static class TestAuthenticationAuditListener extends AbstractAuthenticationAuditListener {
 
 		@Override
 		public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
@@ -156,8 +142,7 @@ public class AuditAutoConfigurationTests {
 
 	}
 
-	protected static class TestAuthorizationAuditListener
-			extends AbstractAuthorizationAuditListener {
+	protected static class TestAuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 
 		@Override
 		public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {

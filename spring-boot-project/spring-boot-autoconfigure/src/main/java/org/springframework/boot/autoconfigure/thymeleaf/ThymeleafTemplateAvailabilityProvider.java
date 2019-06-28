@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,14 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @since 1.1.0
  */
-public class ThymeleafTemplateAvailabilityProvider
-		implements TemplateAvailabilityProvider {
+public class ThymeleafTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
-		if (ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine",
-				classLoader)) {
-			String prefix = environment.getProperty("spring.thymeleaf.prefix",
-					ThymeleafProperties.DEFAULT_PREFIX);
-			String suffix = environment.getProperty("spring.thymeleaf.suffix",
-					ThymeleafProperties.DEFAULT_SUFFIX);
+	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
+			ResourceLoader resourceLoader) {
+		if (ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine", classLoader)) {
+			String prefix = environment.getProperty("spring.thymeleaf.prefix", ThymeleafProperties.DEFAULT_PREFIX);
+			String suffix = environment.getProperty("spring.thymeleaf.suffix", ThymeleafProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}
 		return false;

@@ -21,9 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.Producer;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -35,7 +36,7 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.messaging.handler.annotation.Header;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,61 +47,63 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  */
-public class KafkaAutoConfigurationIntegrationTests {
+class KafkaAutoConfigurationIntegrationTests {
 
 	private static final String TEST_TOPIC = "testTopic";
 
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
-	@ClassRule
-	public static final EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, true,
-			TEST_TOPIC);
+	public static final EmbeddedKafkaBroker embeddedKafka = new EmbeddedKafkaBroker(1, true, TEST_TOPIC);
 
 	private AnnotationConfigApplicationContext context;
 
+	@BeforeAll
+	static void setUp() {
+		embeddedKafka.afterPropertiesSet();
+	}
+
 	@AfterEach
-	public void close() {
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
+	@AfterAll
+	static void tearDown() {
+		embeddedKafka.destroy();
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void testEndToEnd() throws Exception {
-		load(KafkaConfig.class,
-				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
-				"spring.kafka.consumer.group-id=testGroup",
-				"spring.kafka.consumer.auto-offset-reset=earliest");
-		KafkaTemplate<String, String> template = this.context
-				.getBean(KafkaTemplate.class);
+	void testEndToEnd() throws Exception {
+		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
+				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.consumer.auto-offset-reset=earliest");
+		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
 		template.send(TEST_TOPIC, "foo", "bar");
 		Listener listener = this.context.getBean(Listener.class);
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
 		assertThat(listener.key).isEqualTo("foo");
 		assertThat(listener.received).isEqualTo("bar");
 
-		DefaultKafkaProducerFactory producerFactory = this.context
-				.getBean(DefaultKafkaProducerFactory.class);
+		DefaultKafkaProducerFactory producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
 		Producer producer = producerFactory.createProducer();
 		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC).size()).isEqualTo(10);
 		producer.close();
 	}
 
 	@Test
-	public void testStreams() {
+	void testStreams() {
 		load(KafkaStreamsConfig.class, "spring.application.name:my-app",
 				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString());
-		assertThat(this.context.getBean(StreamsBuilderFactoryBean.class).isAutoStartup())
-				.isTrue();
+		assertThat(this.context.getBean(StreamsBuilderFactoryBean.class).isAutoStartup()).isTrue();
 	}
 
 	private void load(Class<?> config, String... environment) {
 		this.context = doLoad(new Class<?>[] { config }, environment);
 	}
 
-	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs,
-			String... environment) {
+	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(KafkaAutoConfiguration.class);
@@ -110,7 +113,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	}
 
 	private String getEmbeddedKafkaBrokersAsString() {
-		return embeddedKafka.getEmbeddedKafka().getBrokersAsString();
+		return embeddedKafka.getBrokersAsString();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -143,8 +146,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 		private volatile String key;
 
 		@KafkaListener(topics = TEST_TOPIC)
-		public void listen(String foo,
-				@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
+		public void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();

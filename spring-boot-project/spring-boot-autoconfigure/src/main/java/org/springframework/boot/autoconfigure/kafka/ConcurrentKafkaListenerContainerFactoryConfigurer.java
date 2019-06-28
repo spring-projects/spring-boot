@@ -84,8 +84,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link KafkaAwareTransactionManager} to use.
 	 * @param transactionManager the transaction manager
 	 */
-	void setTransactionManager(
-			KafkaAwareTransactionManager<Object, Object> transactionManager) {
+	void setTransactionManager(KafkaAwareTransactionManager<Object, Object> transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
@@ -118,8 +117,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link AfterRollbackProcessor} to use.
 	 * @param afterRollbackProcessor the after rollback processor
 	 */
-	void setAfterRollbackProcessor(
-			AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
+	void setAfterRollbackProcessor(AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
 		this.afterRollbackProcessor = afterRollbackProcessor;
 	}
 
@@ -130,16 +128,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * to configure
 	 * @param consumerFactory the {@link ConsumerFactory} to use
 	 */
-	public void configure(
-			ConcurrentKafkaListenerContainerFactory<Object, Object> listenerFactory,
+	public void configure(ConcurrentKafkaListenerContainerFactory<Object, Object> listenerFactory,
 			ConsumerFactory<Object, Object> consumerFactory) {
 		listenerFactory.setConsumerFactory(consumerFactory);
 		configureListenerFactory(listenerFactory);
 		configureContainer(listenerFactory.getContainerProperties());
 	}
 
-	private void configureListenerFactory(
-			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
+	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
@@ -162,13 +158,11 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::getClientId).to(container::setClientId);
 		map.from(properties::getAckCount).to(container::setAckCount);
 		map.from(properties::getAckTime).as(Duration::toMillis).to(container::setAckTime);
-		map.from(properties::getPollTimeout).as(Duration::toMillis)
-				.to(container::setPollTimeout);
+		map.from(properties::getPollTimeout).as(Duration::toMillis).to(container::setPollTimeout);
 		map.from(properties::getNoPollThreshold).to(container::setNoPollThreshold);
-		map.from(properties::getIdleEventInterval).as(Duration::toMillis)
-				.to(container::setIdleEventInterval);
-		map.from(properties::getMonitorInterval).as(Duration::getSeconds)
-				.as(Number::intValue).to(container::setMonitorInterval);
+		map.from(properties::getIdleEventInterval).as(Duration::toMillis).to(container::setIdleEventInterval);
+		map.from(properties::getMonitorInterval).as(Duration::getSeconds).as(Number::intValue)
+				.to(container::setMonitorInterval);
 		map.from(properties::getLogContainerConfig).to(container::setLogContainerConfig);
 		map.from(properties::isMissingTopicsFatal).to(container::setMissingTopicsFatal);
 		map.from(this.transactionManager).to(container::setTransactionManager);

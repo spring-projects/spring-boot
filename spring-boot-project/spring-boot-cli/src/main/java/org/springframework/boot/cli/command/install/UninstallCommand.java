@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.springframework.boot.cli.util.Log;
 public class UninstallCommand extends OptionParsingCommand {
 
 	public UninstallCommand() {
-		super("uninstall", "Uninstall dependencies from the lib/ext directory",
-				new UninstallOptionHandler());
+		super("uninstall", "Uninstall dependencies from the lib/ext directory", new UninstallOptionHandler());
 	}
 
 	@Override
@@ -62,8 +61,7 @@ public class UninstallCommand extends OptionParsingCommand {
 			try {
 				if (options.has(this.allOption)) {
 					if (!args.isEmpty()) {
-						throw new IllegalArgumentException(
-								"Please use --all without specifying any dependencies");
+						throw new IllegalArgumentException("Please use --all without specifying any dependencies");
 					}
 					new Installer(options, this).uninstallAll();
 				}

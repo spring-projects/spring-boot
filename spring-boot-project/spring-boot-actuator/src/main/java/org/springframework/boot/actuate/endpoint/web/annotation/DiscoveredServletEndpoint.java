@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,24 +32,22 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
-class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation>
-		implements ExposableServletEndpoint {
+class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation> implements ExposableServletEndpoint {
 
 	private final String rootPath;
 
 	private final EndpointServlet endpointServlet;
 
-	DiscoveredServletEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
-			EndpointId id, String rootPath, boolean enabledByDefault) {
+	DiscoveredServletEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
+			boolean enabledByDefault) {
 		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
 		String beanType = endpointBean.getClass().getName();
 		Assert.state(endpointBean instanceof Supplier,
 				() -> "ServletEndpoint bean " + beanType + " must be a supplier");
 		Object supplied = ((Supplier<?>) endpointBean).get();
-		Assert.state(supplied != null,
-				() -> "ServletEndpoint bean " + beanType + " must not supply null");
-		Assert.state(supplied instanceof EndpointServlet, () -> "ServletEndpoint bean "
-				+ beanType + " must supply an EndpointServlet");
+		Assert.state(supplied != null, () -> "ServletEndpoint bean " + beanType + " must not supply null");
+		Assert.state(supplied instanceof EndpointServlet,
+				() -> "ServletEndpoint bean " + beanType + " must supply an EndpointServlet");
 		this.endpointServlet = (EndpointServlet) supplied;
 		this.rootPath = rootPath;
 	}

@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Timer;
 import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 
-import org.springframework.boot.actuate.metrics.Autotime;
+import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -39,8 +39,8 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
  */
 public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 
-	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class
-			.getName() + ".START_TIME";
+	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class.getName()
+			+ ".START_TIME";
 
 	private final MeterRegistry meterRegistry;
 
@@ -48,7 +48,7 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 
 	private final String metricName;
 
-	private final Autotime autotime;
+	private final AutoTimer autoTimer;
 
 	/**
 	 * Create a new {@code MetricsWebClientFilterFunction}.
@@ -56,12 +56,12 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	 * @param tagProvider provider for metrics tags
 	 * @param metricName name of the metric to record
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsWebClientFilterFunction(MeterRegistry, WebClientExchangeTagsProvider, String, Autotime)}
+	 * {@link #MetricsWebClientFilterFunction(MeterRegistry, WebClientExchangeTagsProvider, String, AutoTimer)}
 	 */
 	@Deprecated
-	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName) {
-		this(meterRegistry, tagProvider, metricName, new Autotime());
+	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName) {
+		this(meterRegistry, tagProvider, metricName, AutoTimer.ENABLED);
 	}
 
 	/**
@@ -69,38 +69,40 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	 * @param meterRegistry the registry to which metrics are recorded
 	 * @param tagProvider provider for metrics tags
 	 * @param metricName name of the metric to record
-	 * @param autotime auto-timed request settings
+	 * @param autoTimer the auto-timer configuration or {@code null} to disable
 	 * @since 2.2.0
 	 */
-	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagProvider, String metricName,
-			Autotime autotime) {
+	public MetricsWebClientFilterFunction(MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagProvider,
+			String metricName, AutoTimer autoTimer) {
 		this.meterRegistry = meterRegistry;
 		this.tagProvider = tagProvider;
 		this.metricName = metricName;
-		this.autotime = (autotime != null) ? autotime : Autotime.disabled();
+		this.autoTimer = (autoTimer != null) ? autoTimer : AutoTimer.DISABLED;
 	}
 
 	@Override
-	public Mono<ClientResponse> filter(ClientRequest clientRequest,
-			ExchangeFunction exchangeFunction) {
-		return exchangeFunction.exchange(clientRequest).doOnEach((signal) -> {
-			if (!signal.isOnComplete() && this.autotime.isEnabled()) {
-				Long startTime = signal.getContext().get(METRICS_WEBCLIENT_START_TIME);
-				ClientResponse clientResponse = signal.get();
+	public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
+		if (!this.autoTimer.isEnabled()) {
+			return next.exchange(request);
+		}
+		return next.exchange(request).doOnEach((signal) -> {
+			if (!signal.isOnComplete()) {
+				Long startTime = getStartTime(signal.getContext());
+				ClientResponse response = signal.get();
 				Throwable throwable = signal.getThrowable();
-				Iterable<Tag> tags = this.tagProvider.tags(clientRequest, clientResponse,
-						throwable);
-				Timer.builder(this.metricName)
-						.publishPercentiles(this.autotime.getPercentiles())
-						.publishPercentileHistogram(
-								this.autotime.isPercentilesHistogram())
-						.tags(tags).description("Timer of WebClient operation")
-						.register(this.meterRegistry)
-						.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+				Iterable<Tag> tags = this.tagProvider.tags(request, response, throwable);
+				this.autoTimer.builder(this.metricName).tags(tags).description("Timer of WebClient operation")
+						.register(this.meterRegistry).record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
 			}
-		}).subscriberContext((context) -> context.put(METRICS_WEBCLIENT_START_TIME,
-				System.nanoTime()));
+		}).subscriberContext(this::putStartTime);
+	}
+
+	private Long getStartTime(Context context) {
+		return context.get(METRICS_WEBCLIENT_START_TIME);
+	}
+
+	private Context putStartTime(Context context) {
+		return context.put(METRICS_WEBCLIENT_START_TIME, System.nanoTime());
 	}
 
 }

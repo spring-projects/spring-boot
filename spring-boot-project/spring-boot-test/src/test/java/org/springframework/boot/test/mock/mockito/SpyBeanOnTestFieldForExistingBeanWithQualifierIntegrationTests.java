@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
  * @author Andreas Neiser
  */
 @ExtendWith(SpringExtension.class)
-public class SpyBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
+class SpyBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
 
 	@SpyBean
 	@CustomQualifier
@@ -53,16 +53,15 @@ public class SpyBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testMocking() throws Exception {
+	void testMocking() throws Exception {
 		this.caller.sayGreeting();
 		verify(this.service).greeting();
 	}
 
 	@Test
-	public void onlyQualifiedBeanIsReplaced() {
+	void onlyQualifiedBeanIsReplaced() {
 		assertThat(this.applicationContext.getBean("service")).isSameAs(this.service);
-		ExampleService anotherService = this.applicationContext.getBean("anotherService",
-				ExampleService.class);
+		ExampleService anotherService = this.applicationContext.getBean("anotherService", ExampleService.class);
 		assertThat(anotherService.greeting()).isEqualTo("Another");
 	}
 

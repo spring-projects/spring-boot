@@ -33,34 +33,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class KafkaMetricsAutoConfigurationTests {
+class KafkaMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withPropertyValues("spring.jmx.enabled=true")
-			.withConfiguration(
-					AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withPropertyValues("spring.jmx.enabled=true")
+			.withConfiguration(AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
 
 	@Test
-	public void whenThereIsNoMBeanServerAutoConfigurationBacksOff() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(KafkaConsumerMetrics.class));
+	void whenThereIsNoMBeanServerAutoConfigurationBacksOff() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(KafkaConsumerMetrics.class));
 	}
 
 	@Test
-	public void whenThereIsAnMBeanServerKafkaConsumerMetricsIsConfigured() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(KafkaConsumerMetrics.class));
+	void whenThereIsAnMBeanServerKafkaConsumerMetricsIsConfigured() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
+				.run((context) -> assertThat(context).hasSingleBean(KafkaConsumerMetrics.class));
 	}
 
 	@Test
-	public void allowsCustomKafkaConsumerMetricsToBeUsed() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
+	void allowsCustomKafkaConsumerMetricsToBeUsed() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
 				.withUserConfiguration(CustomKafkaConsumerMetricsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(KafkaConsumerMetrics.class)
+				.run((context) -> assertThat(context).hasSingleBean(KafkaConsumerMetrics.class)
 						.hasBean("customKafkaConsumerMetrics"));
 	}
 

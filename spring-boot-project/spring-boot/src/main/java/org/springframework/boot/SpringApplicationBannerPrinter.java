@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,8 +86,7 @@ class SpringApplicationBannerPrinter {
 	}
 
 	private Banner getTextBanner(Environment environment) {
-		String location = environment.getProperty(BANNER_LOCATION_PROPERTY,
-				DEFAULT_BANNER_LOCATION);
+		String location = environment.getProperty(BANNER_LOCATION_PROPERTY, DEFAULT_BANNER_LOCATION);
 		Resource resource = this.resourceLoader.getResource(location);
 		if (resource.exists()) {
 			return new ResourceBanner(resource);
@@ -110,8 +109,8 @@ class SpringApplicationBannerPrinter {
 		return null;
 	}
 
-	private String createStringFromBanner(Banner banner, Environment environment,
-			Class<?> mainApplicationClass) throws UnsupportedEncodingException {
+	private String createStringFromBanner(Banner banner, Environment environment, Class<?> mainApplicationClass)
+			throws UnsupportedEncodingException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		banner.printBanner(environment, mainApplicationClass, new PrintStream(baos));
 		String charset = environment.getProperty("spring.banner.charset", "UTF-8");
@@ -136,8 +135,7 @@ class SpringApplicationBannerPrinter {
 		}
 
 		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass,
-				PrintStream out) {
+		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 			for (Banner banner : this.banners) {
 				banner.printBanner(environment, sourceClass, out);
 			}
@@ -161,8 +159,7 @@ class SpringApplicationBannerPrinter {
 		}
 
 		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass,
-				PrintStream out) {
+		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 			sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
 			this.banner.printBanner(environment, sourceClass, out);
 		}

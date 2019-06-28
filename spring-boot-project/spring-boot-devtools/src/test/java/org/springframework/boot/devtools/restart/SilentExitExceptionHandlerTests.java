@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.devtools.restart;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link SilentExitExceptionHandler}.
@@ -29,10 +29,10 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class SilentExitExceptionHandlerTests {
+class SilentExitExceptionHandlerTests {
 
 	@Test
-	public void setupAndExit() throws Exception {
+	void setupAndExit() throws Exception {
 		TestThread testThread = new TestThread() {
 			@Override
 			public void run() {
@@ -46,7 +46,7 @@ public class SilentExitExceptionHandlerTests {
 	}
 
 	@Test
-	public void doesntInterfereWithOtherExceptions() throws Exception {
+	void doesntInterfereWithOtherExceptions() throws Exception {
 		TestThread testThread = new TestThread() {
 			@Override
 			public void run() {
@@ -59,7 +59,7 @@ public class SilentExitExceptionHandlerTests {
 	}
 
 	@Test
-	public void preventsNonZeroExitCodeWhenAllOtherThreadsAreDaemonThreads() {
+	void preventsNonZeroExitCodeWhenAllOtherThreadsAreDaemonThreads() {
 		try {
 			SilentExitExceptionHandler.exitCurrentThread();
 		}
@@ -81,8 +81,7 @@ public class SilentExitExceptionHandlerTests {
 		private Throwable thrown;
 
 		TestThread() {
-			setUncaughtExceptionHandler(
-					(thread, exception) -> TestThread.this.thrown = exception);
+			setUncaughtExceptionHandler((thread, exception) -> TestThread.this.thrown = exception);
 		}
 
 		public Throwable getThrown() {
@@ -96,8 +95,7 @@ public class SilentExitExceptionHandlerTests {
 
 	}
 
-	private static class TestSilentExitExceptionHandler
-			extends SilentExitExceptionHandler {
+	private static class TestSilentExitExceptionHandler extends SilentExitExceptionHandler {
 
 		private boolean nonZeroExitCodePrevented;
 

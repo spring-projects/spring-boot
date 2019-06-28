@@ -39,47 +39,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void metricNames() throws Exception {
-		this.mockMvc.perform(get("/actuator/metrics")).andExpect(status().isOk())
-				.andDo(document("metrics/names", responseFields(fieldWithPath("names")
-						.description("Names of the known metrics."))));
+	void metricNames() throws Exception {
+		this.mockMvc.perform(get("/actuator/metrics")).andExpect(status().isOk()).andDo(document("metrics/names",
+				responseFields(fieldWithPath("names").description("Names of the known metrics."))));
 	}
 
 	@Test
-	public void metric() throws Exception {
-		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max"))
-				.andExpect(status().isOk())
-				.andDo(document("metrics/metric", responseFields(
-						fieldWithPath("name").description("Name of the metric"),
-						fieldWithPath("description")
-								.description("Description of the metric"),
-						fieldWithPath("baseUnit").description("Base unit of the metric"),
-						fieldWithPath("measurements")
-								.description("Measurements of the metric"),
-						fieldWithPath("measurements[].statistic")
-								.description("Statistic of the measurement. ("
-										+ describeEnumValues(Statistic.class) + ")."),
-						fieldWithPath("measurements[].value")
-								.description("Value of the measurement."),
-						fieldWithPath("availableTags")
-								.description("Tags that are available for drill-down."),
-						fieldWithPath("availableTags[].tag")
-								.description("Name of the tag."),
-						fieldWithPath("availableTags[].values")
-								.description("Possible values of the tag."))));
+	void metric() throws Exception {
+		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max")).andExpect(status().isOk())
+				.andDo(document("metrics/metric",
+						responseFields(fieldWithPath("name").description("Name of the metric"),
+								fieldWithPath("description").description("Description of the metric"),
+								fieldWithPath("baseUnit").description("Base unit of the metric"),
+								fieldWithPath("measurements").description("Measurements of the metric"),
+								fieldWithPath("measurements[].statistic").description(
+										"Statistic of the measurement. (" + describeEnumValues(Statistic.class) + ")."),
+								fieldWithPath("measurements[].value").description("Value of the measurement."),
+								fieldWithPath("availableTags").description("Tags that are available for drill-down."),
+								fieldWithPath("availableTags[].tag").description("Name of the tag."),
+								fieldWithPath("availableTags[].values").description("Possible values of the tag."))));
 	}
 
 	@Test
-	public void metricWithTags() throws Exception {
-		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max")
-				.param("tag", "area:nonheap").param("tag", "id:Compressed Class Space"))
+	void metricWithTags() throws Exception {
+		this.mockMvc
+				.perform(get("/actuator/metrics/jvm.memory.max").param("tag", "area:nonheap").param("tag",
+						"id:Compressed Class Space"))
 				.andExpect(status().isOk())
-				.andDo(document("metrics/metric-with-tags",
-						requestParameters(parameterWithName("tag").description(
-								"A tag to use for drill-down in the form `name:value`."))));
+				.andDo(document("metrics/metric-with-tags", requestParameters(parameterWithName("tag")
+						.description("A tag to use for drill-down in the form `name:value`."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

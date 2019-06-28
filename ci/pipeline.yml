@@ -27,12 +27,11 @@ resources:
     username: ((github-username))
     password: ((github-password))
     branch: ((branch))
-    ignore_paths: ["ci/images/*"]
 - name: git-pull-request
   type: pull-request
   icon: source-pull
   source:
-    access_token: ((github-access-token))
+    access_token: ((github-ci-pull-request-token))
     repo: ((github-repo-name))
     base: ((branch))
     ignore_paths: ["ci/*"]
@@ -42,7 +41,7 @@ resources:
   source:
     owner: spring-projects
     repository: spring-boot
-    access_token: ((github-release-notes-access-token))
+    access_token: ((github-ci-release-token))
     pre_release: true
 - name: github-release
   type: github-release
@@ -50,7 +49,7 @@ resources:
   source:
     owner: spring-projects
     repository: spring-boot
-    access_token: ((github-release-notes-access-token))
+    access_token: ((github-ci-release-token))
     pre_release: false
 - name: ci-images-git-repo
   type: git
@@ -96,7 +95,7 @@ resources:
   icon: eye-check-outline
   source:
     repository: ((github-repo-name))
-    access_token: ((github-access-token))
+    access_token: ((github-ci-status-token))
     branch: ((branch))
     context: build
 - name: repo-status-jdk11-build
@@ -104,7 +103,7 @@ resources:
   icon: eye-check-outline
   source:
     repository: ((github-repo-name))
-    access_token: ((github-access-token))
+    access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk11-build
 - name: repo-status-jdk12-build
@@ -112,7 +111,7 @@ resources:
   icon: eye-check-outline
   source:
     repository: ((github-repo-name))
-    access_token: ((github-access-token))
+    access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk12-build
 - name: slack-alert
@@ -150,7 +149,7 @@ jobs:
   - get: every-wednesday
     trigger: true
   - get: spring-boot-ci-image
-  - aggregate:
+  - in_parallel:
     - task: detect-jdk8-update
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
@@ -193,11 +192,11 @@ jobs:
       timeout: 1h30m
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
-    - aggregate:
-      - task: build-samples
+    - in_parallel:
+      - task: build-smoke-tests
         timeout: 1h30m
         image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-samples.yml
+        file: git-repo/ci/tasks/build-smoke-tests.yml
       - task: build-integration-tests
         timeout: 1h30m
         image: spring-boot-ci-image
@@ -259,11 +258,11 @@ jobs:
       timeout: 1h30m
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-pr-project.yml
-    - aggregate:
-      - task: build-samples
+    - in_parallel:
+      - task: build-smoke-tests
         timeout: 1h30m
         image: spring-boot-ci-image
-        file: git-repo/ci/tasks/build-samples.yml
+        file: git-repo/ci/tasks/build-smoke-tests.yml
       - task: build-integration-tests
         timeout: 1h30m
         image: spring-boot-ci-image
@@ -297,11 +296,11 @@ jobs:
       timeout: 1h30m
       image: spring-boot-jdk11-ci-image
       file: git-repo/ci/tasks/build-project.yml
-    - aggregate:
-      - task: build-samples
+    - in_parallel:
+      - task: build-smoke-tests
         timeout: 1h30m
         image: spring-boot-jdk11-ci-image
-        file: git-repo/ci/tasks/build-samples.yml
+        file: git-repo/ci/tasks/build-smoke-tests.yml
       - task: build-integration-tests
         timeout: 1h30m
         image: spring-boot-jdk11-ci-image
@@ -343,11 +342,11 @@ jobs:
           timeout: 1h30m
           image: spring-boot-jdk12-ci-image
           file: git-repo/ci/tasks/build-project.yml
-        - aggregate:
-            - task: build-samples
+        - in_parallel:
+            - task: build-smoke-tests
               timeout: 1h30m
               image: spring-boot-jdk12-ci-image
-              file: git-repo/ci/tasks/build-samples.yml
+              file: git-repo/ci/tasks/build-smoke-tests.yml
             - task: build-integration-tests
               timeout: 1h30m
               image: spring-boot-jdk12-ci-image
@@ -453,7 +452,7 @@ jobs:
     params:
       RELEASE_TYPE: M
       GITHUB_USERNAME: ((github-username))
-      GITHUB_TOKEN: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-ci-release-token))
   - put: github-pre-release
     params:
       name: generated-release-notes/tag
@@ -484,7 +483,7 @@ jobs:
     params:
       RELEASE_TYPE: RC
       GITHUB_USERNAME: ((github-username))
-      GITHUB_TOKEN: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-ci-release-token))
   - put: github-pre-release
     params:
       name: generated-release-notes/tag
@@ -540,7 +539,7 @@ jobs:
     params:
       RELEASE_TYPE: RELEASE
       GITHUB_USERNAME: ((github-username))
-      GITHUB_TOKEN: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-ci-release-token))
   - put: github-release
     params:
       name: generated-release-notes/tag

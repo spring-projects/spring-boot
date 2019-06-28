@@ -27,30 +27,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class JmsPropertiesTests {
+class JmsPropertiesTests {
 
 	@Test
-	public void formatConcurrencyNull() {
+	void formatConcurrencyNull() {
 		JmsProperties properties = new JmsProperties();
 		assertThat(properties.getListener().formatConcurrency()).isNull();
 	}
 
 	@Test
-	public void formatConcurrencyOnlyLowerBound() {
+	void formatConcurrencyOnlyLowerBound() {
 		JmsProperties properties = new JmsProperties();
 		properties.getListener().setConcurrency(2);
 		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2");
 	}
 
 	@Test
-	public void formatConcurrencyOnlyHigherBound() {
+	void formatConcurrencyOnlyHigherBound() {
 		JmsProperties properties = new JmsProperties();
 		properties.getListener().setMaxConcurrency(5);
 		assertThat(properties.getListener().formatConcurrency()).isEqualTo("1-5");
 	}
 
 	@Test
-	public void formatConcurrencyBothBounds() {
+	void formatConcurrencyBothBounds() {
 		JmsProperties properties = new JmsProperties();
 		properties.getListener().setConcurrency(2);
 		properties.getListener().setMaxConcurrency(10);
@@ -58,21 +58,21 @@ public class JmsPropertiesTests {
 	}
 
 	@Test
-	public void setDeliveryModeEnablesQoS() {
+	void setDeliveryModeEnablesQoS() {
 		JmsProperties properties = new JmsProperties();
 		properties.getTemplate().setDeliveryMode(JmsProperties.DeliveryMode.PERSISTENT);
 		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();
 	}
 
 	@Test
-	public void setPriorityEnablesQoS() {
+	void setPriorityEnablesQoS() {
 		JmsProperties properties = new JmsProperties();
 		properties.getTemplate().setPriority(6);
 		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();
 	}
 
 	@Test
-	public void setTimeToLiveEnablesQoS() {
+	void setTimeToLiveEnablesQoS() {
 		JmsProperties properties = new JmsProperties();
 		properties.getTemplate().setTimeToLive(Duration.ofSeconds(5));
 		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();

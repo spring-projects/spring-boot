@@ -28,47 +28,44 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ObjectContentTests {
+class ObjectContentTests {
 
 	private static final ExampleObject OBJECT = new ExampleObject();
 
-	private static final ResolvableType TYPE = ResolvableType
-			.forClass(ExampleObject.class);
+	private static final ResolvableType TYPE = ResolvableType.forClass(ExampleObject.class);
 
 	@Test
-	public void createWhenObjectIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))
+	void createWhenObjectIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))
 				.withMessageContaining("Object must not be null");
 	}
 
 	@Test
-	public void createWhenTypeIsNullShouldCreateContent() {
+	void createWhenTypeIsNullShouldCreateContent() {
 		ObjectContent<ExampleObject> content = new ObjectContent<>(null, OBJECT);
 		assertThat(content).isNotNull();
 	}
 
 	@Test
-	public void assertThatShouldReturnObjectContentAssert() {
+	void assertThatShouldReturnObjectContentAssert() {
 		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE, OBJECT);
 		assertThat(content.assertThat()).isInstanceOf(ObjectContentAssert.class);
 	}
 
 	@Test
-	public void getObjectShouldReturnObject() {
+	void getObjectShouldReturnObject() {
 		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE, OBJECT);
 		assertThat(content.getObject()).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void toStringWhenHasTypeShouldReturnString() {
+	void toStringWhenHasTypeShouldReturnString() {
 		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE, OBJECT);
-		assertThat(content.toString())
-				.isEqualTo("ObjectContent " + OBJECT + " created from " + TYPE);
+		assertThat(content.toString()).isEqualTo("ObjectContent " + OBJECT + " created from " + TYPE);
 	}
 
 	@Test
-	public void toStringWhenHasNoTypeShouldReturnString() {
+	void toStringWhenHasNoTypeShouldReturnString() {
 		ObjectContent<ExampleObject> content = new ObjectContent<>(null, OBJECT);
 		assertThat(content.toString()).isEqualTo("ObjectContent " + OBJECT);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.springframework.boot.devtools.remote.client;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -39,7 +39,7 @@ import static org.mockito.BDDMockito.given;
  * @author Rob Winch
  * @since 1.3.0
  */
-public class HttpHeaderInterceptorTests {
+class HttpHeaderInterceptorTests {
 
 	private String name;
 
@@ -59,8 +59,8 @@ public class HttpHeaderInterceptorTests {
 
 	private MockHttpServletRequest httpRequest;
 
-	@Before
-	public void setup() throws Exception {
+	@BeforeEach
+	void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();
@@ -72,37 +72,32 @@ public class HttpHeaderInterceptorTests {
 	}
 
 	@Test
-	public void constructorNullHeaderName() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
+	void constructorNullHeaderName() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
-	public void constructorEmptyHeaderName() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
+	void constructorEmptyHeaderName() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
-	public void constructorNullHeaderValue() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
+	void constructorNullHeaderValue() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
 				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
-	public void constructorEmptyHeaderValue() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
+	void constructorEmptyHeaderValue() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
 				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
-	public void intercept() throws IOException {
-		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body,
-				this.execution);
+	void intercept() throws IOException {
+		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body, this.execution);
 		assertThat(this.request.getHeaders().getFirst(this.name)).isEqualTo(this.value);
 		assertThat(result).isEqualTo(this.response);
 	}

@@ -37,9 +37,8 @@ import javax.tools.Diagnostic.Kind;
  */
 class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 
-	ConstructorParameterPropertyDescriptor(TypeElement ownerElement,
-			ExecutableElement factoryMethod, VariableElement source, String name,
-			TypeMirror type, VariableElement field, ExecutableElement getter,
+	ConstructorParameterPropertyDescriptor(TypeElement ownerElement, ExecutableElement factoryMethod,
+			VariableElement source, String name, TypeMirror type, VariableElement field, ExecutableElement getter,
 			ExecutableElement setter) {
 		super(ownerElement, factoryMethod, source, name, type, field, getter, setter);
 	}
@@ -60,8 +59,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 		return getSource().asType().accept(DefaultPrimitiveTypeVisitor.INSTANCE, null);
 	}
 
-	private Object getDefaultValueFromAnnotation(
-			MetadataGenerationEnvironment environment, Element element) {
+	private Object getDefaultValueFromAnnotation(MetadataGenerationEnvironment environment, Element element) {
 		AnnotationMirror annotation = environment.getDefaultValueAnnotation(element);
 		List<String> defaultValue = getDefaultValue(environment, annotation);
 		if (defaultValue != null) {
@@ -70,21 +68,18 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 				if (defaultValue.size() == 1) {
 					return coerceValue(specificType, defaultValue.get(0));
 				}
-				return defaultValue.stream()
-						.map((value) -> coerceValue(specificType, value))
+				return defaultValue.stream().map((value) -> coerceValue(specificType, value))
 						.collect(Collectors.toList());
 			}
 			catch (IllegalArgumentException ex) {
-				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(),
-						element, annotation);
+				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(), element, annotation);
 			}
 		}
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<String> getDefaultValue(MetadataGenerationEnvironment environment,
-			AnnotationMirror annotation) {
+	private List<String> getDefaultValue(MetadataGenerationEnvironment environment, AnnotationMirror annotation) {
 		if (annotation == null) {
 			return null;
 		}
@@ -94,24 +89,20 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 	private TypeMirror determineSpecificType(MetadataGenerationEnvironment environment) {
 		TypeMirror candidate = getSource().asType();
-		TypeMirror elementCandidate = environment.getTypeUtils()
-				.extractElementType(candidate);
+		TypeMirror elementCandidate = environment.getTypeUtils().extractElementType(candidate);
 		if (elementCandidate != null) {
 			candidate = elementCandidate;
 		}
-		PrimitiveType primitiveType = environment.getTypeUtils()
-				.getPrimitiveType(candidate);
+		PrimitiveType primitiveType = environment.getTypeUtils().getPrimitiveType(candidate);
 		return (primitiveType != null) ? primitiveType : candidate;
 	}
 
 	private Object coerceValue(TypeMirror type, String value) {
-		Object coercedValue = type.accept(DefaultValueCoercionTypeVisitor.INSTANCE,
-				value);
+		Object coercedValue = type.accept(DefaultValueCoercionTypeVisitor.INSTANCE, value);
 		return (coercedValue != null) ? coercedValue : value;
 	}
 
-	private static class DefaultValueCoercionTypeVisitor
-			extends TypeKindVisitor8<Object, String> {
+	private static class DefaultValueCoercionTypeVisitor extends TypeKindVisitor8<Object, String> {
 
 		private static final DefaultValueCoercionTypeVisitor INSTANCE = new DefaultValueCoercionTypeVisitor();
 
@@ -120,8 +111,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 				return Integer.valueOf(value);
 			}
 			catch (NumberFormatException ex) {
-				throw new IllegalArgumentException(
-						String.format("Invalid number representation '%s'", value));
+				throw new IllegalArgumentException(String.format("Invalid number representation '%s'", value));
 			}
 		}
 
@@ -130,8 +120,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 				return Double.valueOf(value);
 			}
 			catch (NumberFormatException ex) {
-				throw new IllegalArgumentException(String
-						.format("Invalid floating point representation '%s'", value));
+				throw new IllegalArgumentException(String.format("Invalid floating point representation '%s'", value));
 			}
 		}
 
@@ -163,8 +152,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 		@Override
 		public Object visitPrimitiveAsChar(PrimitiveType t, String value) {
 			if (value.length() > 1) {
-				throw new IllegalArgumentException(
-						String.format("Invalid character representation '%s'", value));
+				throw new IllegalArgumentException(String.format("Invalid character representation '%s'", value));
 			}
 			return value;
 		}
@@ -181,8 +169,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 
 	}
 
-	private static class DefaultPrimitiveTypeVisitor
-			extends TypeKindVisitor8<Object, Void> {
+	private static class DefaultPrimitiveTypeVisitor extends TypeKindVisitor8<Object, Void> {
 
 		private static final DefaultPrimitiveTypeVisitor INSTANCE = new DefaultPrimitiveTypeVisitor();
 

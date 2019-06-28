@@ -51,9 +51,8 @@ abstract class PropertyDescriptor<S extends Element> {
 
 	private final ExecutableElement setter;
 
-	protected PropertyDescriptor(TypeElement ownerElement,
-			ExecutableElement factoryMethod, S source, String name, TypeMirror type,
-			VariableElement field, ExecutableElement getter, ExecutableElement setter) {
+	protected PropertyDescriptor(TypeElement ownerElement, ExecutableElement factoryMethod, S source, String name,
+			TypeMirror type, VariableElement field, ExecutableElement getter, ExecutableElement setter) {
 		this.ownerElement = ownerElement;
 		this.factoryMethod = factoryMethod;
 		this.source = source;
@@ -98,21 +97,17 @@ abstract class PropertyDescriptor<S extends Element> {
 
 	protected abstract boolean isProperty(MetadataGenerationEnvironment environment);
 
-	protected abstract Object resolveDefaultValue(
-			MetadataGenerationEnvironment environment);
+	protected abstract Object resolveDefaultValue(MetadataGenerationEnvironment environment);
 
-	protected ItemDeprecation resolveItemDeprecation(
-			MetadataGenerationEnvironment environment) {
-		boolean deprecated = environment.isDeprecated(getGetter())
-				|| environment.isDeprecated(getSetter())
+	protected ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
+		boolean deprecated = environment.isDeprecated(getGetter()) || environment.isDeprecated(getSetter())
 				|| environment.isDeprecated(getFactoryMethod());
 		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
 	}
 
 	protected boolean isNested(MetadataGenerationEnvironment environment) {
 		Element typeElement = environment.getTypeUtils().asElement(getType());
-		if (!(typeElement instanceof TypeElement)
-				|| typeElement.getKind() == ElementKind.ENUM) {
+		if (!(typeElement instanceof TypeElement) || typeElement.getKind() == ElementKind.ENUM) {
 			return false;
 		}
 		if (environment.getConfigurationPropertiesAnnotation(getGetter()) != null) {
@@ -127,8 +122,7 @@ abstract class PropertyDescriptor<S extends Element> {
 		return isParentTheSame(typeElement, getOwnerElement());
 	}
 
-	public ItemMetadata resolveItemMetadata(String prefix,
-			MetadataGenerationEnvironment environment) {
+	public ItemMetadata resolveItemMetadata(String prefix, MetadataGenerationEnvironment environment) {
 		if (isNested(environment)) {
 			return resolveItemMetadataGroup(prefix, environment);
 		}
@@ -138,19 +132,17 @@ abstract class PropertyDescriptor<S extends Element> {
 		return null;
 	}
 
-	private ItemMetadata resolveItemMetadataProperty(String prefix,
-			MetadataGenerationEnvironment environment) {
+	private ItemMetadata resolveItemMetadataProperty(String prefix, MetadataGenerationEnvironment environment) {
 		String dataType = resolveType(environment);
 		String ownerType = environment.getTypeUtils().getQualifiedName(getOwnerElement());
 		String description = resolveDescription(environment);
 		Object defaultValue = resolveDefaultValue(environment);
 		ItemDeprecation deprecation = resolveItemDeprecation(environment);
-		return ItemMetadata.newProperty(prefix, getName(), dataType, ownerType, null,
-				description, defaultValue, deprecation);
+		return ItemMetadata.newProperty(prefix, getName(), dataType, ownerType, null, description, defaultValue,
+				deprecation);
 	}
 
-	private ItemMetadata resolveItemMetadataGroup(String prefix,
-			MetadataGenerationEnvironment environment) {
+	private ItemMetadata resolveItemMetadataGroup(String prefix, MetadataGenerationEnvironment environment) {
 		Element propertyElement = environment.getTypeUtils().asElement(getType());
 		String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, getName());
 		String dataType = environment.getTypeUtils().getQualifiedName(propertyElement);

@@ -49,8 +49,7 @@ public class BindValidationException extends RuntimeException {
 		StringBuilder message = new StringBuilder("Binding validation errors");
 		if (errors != null) {
 			message.append(" on ").append(errors.getName());
-			errors.getAllErrors().forEach(
-					(error) -> message.append(String.format("%n   - %s", error)));
+			errors.getAllErrors().forEach((error) -> message.append(String.format("%n   - %s", error)));
 		}
 		return message.toString();
 	}

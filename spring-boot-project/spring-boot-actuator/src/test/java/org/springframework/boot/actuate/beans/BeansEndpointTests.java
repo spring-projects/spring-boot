@@ -42,10 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class BeansEndpointTests {
+class BeansEndpointTests {
 
 	@Test
-	public void beansAreFound() {
+	void beansAreFound() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
@@ -53,22 +53,20 @@ public class BeansEndpointTests {
 			ContextBeans descriptor = result.getContexts().get(context.getId());
 			assertThat(descriptor.getParentId()).isNull();
 			Map<String, BeanDescriptor> beans = descriptor.getBeans();
-			assertThat(beans.size())
-					.isLessThanOrEqualTo(context.getBeanDefinitionCount());
+			assertThat(beans.size()).isLessThanOrEqualTo(context.getBeanDefinitionCount());
 			assertThat(beans).containsKey("endpoint");
 		});
 	}
 
 	@Test
-	public void infrastructureBeansAreOmitted() {
+	void infrastructureBeansAreOmitted() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
 			ConfigurableListableBeanFactory factory = (ConfigurableListableBeanFactory) context
 					.getAutowireCapableBeanFactory();
 			List<String> infrastructureBeans = Stream.of(context.getBeanDefinitionNames())
-					.filter((name) -> BeanDefinition.ROLE_INFRASTRUCTURE == factory
-							.getBeanDefinition(name).getRole())
+					.filter((name) -> BeanDefinition.ROLE_INFRASTRUCTURE == factory.getBeanDefinition(name).getRole())
 					.collect(Collectors.toList());
 			ApplicationBeans result = context.getBean(BeansEndpoint.class).beans();
 			ContextBeans contextDescriptor = result.getContexts().get(context.getId());
@@ -80,10 +78,9 @@ public class BeansEndpointTests {
 	}
 
 	@Test
-	public void lazyBeansAreOmitted() {
+	void lazyBeansAreOmitted() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(EndpointConfiguration.class,
-						LazyBeanConfiguration.class);
+				.withUserConfiguration(EndpointConfiguration.class, LazyBeanConfiguration.class);
 		contextRunner.run((context) -> {
 			ApplicationBeans result = context.getBean(BeansEndpoint.class).beans();
 			ContextBeans contextDescriptor = result.getContexts().get(context.getId());
@@ -93,19 +90,15 @@ public class BeansEndpointTests {
 	}
 
 	@Test
-	public void beansInParentContextAreFound() {
+	void beansInParentContextAreFound() {
 		ApplicationContextRunner parentRunner = new ApplicationContextRunner()
 				.withUserConfiguration(BeanConfiguration.class);
 		parentRunner.run((parent) -> {
-			new ApplicationContextRunner()
-					.withUserConfiguration(EndpointConfiguration.class).withParent(parent)
+			new ApplicationContextRunner().withUserConfiguration(EndpointConfiguration.class).withParent(parent)
 					.run((child) -> {
-						ApplicationBeans result = child.getBean(BeansEndpoint.class)
-								.beans();
-						assertThat(result.getContexts().get(parent.getId()).getBeans())
-								.containsKey("bean");
-						assertThat(result.getContexts().get(child.getId()).getBeans())
-								.containsKey("endpoint");
+						ApplicationBeans result = child.getBean(BeansEndpoint.class).beans();
+						assertThat(result.getContexts().get(parent.getId()).getBeans()).containsKey("bean");
+						assertThat(result.getContexts().get(child.getId()).getBeans()).containsKey("endpoint");
 					});
 		});
 	}

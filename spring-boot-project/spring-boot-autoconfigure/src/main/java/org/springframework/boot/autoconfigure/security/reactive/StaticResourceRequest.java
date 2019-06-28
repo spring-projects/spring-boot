@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,7 @@ public final class StaticResourceRequest {
 	 * @param rest additional locations to include
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public StaticResourceServerWebExchange at(StaticResourceLocation first,
-			StaticResourceLocation... rest) {
+	public StaticResourceServerWebExchange at(StaticResourceLocation first, StaticResourceLocation... rest) {
 		return at(EnumSet.of(first, rest));
 	}
 
@@ -92,8 +91,7 @@ public final class StaticResourceRequest {
 	 * The server web exchange matcher used to match against resource
 	 * {@link StaticResourceLocation locations}.
 	 */
-	public static final class StaticResourceServerWebExchange
-			implements ServerWebExchangeMatcher {
+	public static final class StaticResourceServerWebExchange implements ServerWebExchangeMatcher {
 
 		private final Set<StaticResourceLocation> locations;
 
@@ -108,8 +106,7 @@ public final class StaticResourceRequest {
 		 * @param rest additional locations to exclude
 		 * @return a new {@link StaticResourceServerWebExchange}
 		 */
-		public StaticResourceServerWebExchange excluding(StaticResourceLocation first,
-				StaticResourceLocation... rest) {
+		public StaticResourceServerWebExchange excluding(StaticResourceLocation first, StaticResourceLocation... rest) {
 			return excluding(EnumSet.of(first, rest));
 		}
 
@@ -119,8 +116,7 @@ public final class StaticResourceRequest {
 		 * @param locations the locations to exclude
 		 * @return a new {@link StaticResourceServerWebExchange}
 		 */
-		public StaticResourceServerWebExchange excluding(
-				Set<StaticResourceLocation> locations) {
+		public StaticResourceServerWebExchange excluding(Set<StaticResourceLocation> locations) {
 			Assert.notNull(locations, "Locations must not be null");
 			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
@@ -128,8 +124,7 @@ public final class StaticResourceRequest {
 		}
 
 		private List<ServerWebExchangeMatcher> getDelegateMatchers() {
-			return getPatterns().map(PathPatternParserServerWebExchangeMatcher::new)
-					.collect(Collectors.toList());
+			return getPatterns().map(PathPatternParserServerWebExchangeMatcher::new).collect(Collectors.toList());
 		}
 
 		private Stream<String> getPatterns() {
@@ -138,8 +133,7 @@ public final class StaticResourceRequest {
 
 		@Override
 		public Mono<MatchResult> matches(ServerWebExchange exchange) {
-			OrServerWebExchangeMatcher matcher = new OrServerWebExchangeMatcher(
-					getDelegateMatchers());
+			OrServerWebExchangeMatcher matcher = new OrServerWebExchangeMatcher(getDelegateMatchers());
 			return matcher.matches(exchange);
 		}
 

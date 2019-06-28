@@ -46,12 +46,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
-@AutoConfigureAfter({ HealthEndpointAutoConfiguration.class,
-		InfoEndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-		OAuth2ClientAutoConfiguration.class,
+@AutoConfigureAfter({ HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+		WebEndpointAutoConfiguration.class, OAuth2ClientAutoConfiguration.class,
 		OAuth2ResourceServerAutoConfiguration.class })
-@Import({ ManagementWebSecurityConfigurerAdapter.class,
-		WebSecurityEnablerConfiguration.class })
+@Import({ ManagementWebSecurityConfigurerAdapter.class, WebSecurityEnablerConfiguration.class })
 public class ManagementWebSecurityAutoConfiguration {
 
 }

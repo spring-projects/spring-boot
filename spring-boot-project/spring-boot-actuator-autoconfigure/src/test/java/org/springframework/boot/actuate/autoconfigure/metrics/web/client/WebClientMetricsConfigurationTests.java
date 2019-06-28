@@ -22,7 +22,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -31,7 +31,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -50,18 +51,15 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
-public class WebClientMetricsConfigurationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class WebClientMetricsConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class,
-					HttpClientMetricsAutoConfiguration.class));
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+			.withConfiguration(
+					AutoConfigurations.of(WebClientAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class));
 
 	@Test
-	public void webClientCreatedWithBuilderIsInstrumented() {
+	void webClientCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
@@ -70,64 +68,51 @@ public class WebClientMetricsConfigurationTests {
 	}
 
 	@Test
-	public void shouldNotOverrideCustomTagsProvider() {
-		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class)
-				.run((context) -> assertThat(context)
-						.getBeans(WebClientExchangeTagsProvider.class).hasSize(1)
-						.containsKey("customTagsProvider"));
+	void shouldNotOverrideCustomTagsProvider() {
+		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class).run((context) -> assertThat(context)
+				.getBeans(WebClientExchangeTagsProvider.class).hasSize(1).containsKey("customTagsProvider"));
 	}
 
 	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.output.toString()).contains(
-							"Reached the maximum number of URI tags for 'http.client.requests'.")
-							.contains("Are you using 'uriVariables'?");
-				});
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
+		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
+			MeterRegistry registry = getInitializedMeterRegistry(context);
+			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
+			assertThat(capturedOutput).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+					.contains("Are you using 'uriVariables'?");
+		});
 	}
 
 	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.web.client.max-uri-tags=5")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.output.toString()).doesNotContain(
-							"Reached the maximum number of URI tags for 'http.client.requests'.")
-							.doesNotContain("Are you using 'uriVariables'?");
-				});
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
+		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
+			MeterRegistry registry = getInitializedMeterRegistry(context);
+			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
+			assertThat(capturedOutput)
+					.doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
+					.doesNotContain("Are you using 'uriVariables'?");
+		});
 	}
 
 	@Test
-	public void autoTimeRequestsCanBeConfigured() {
-		this.contextRunner.withPropertyValues(
-				"management.metrics.web.client.request.autotime.enabled=true",
+	void autoTimeRequestsCanBeConfigured() {
+		this.contextRunner.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
 				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
-				"management.metrics.web.client.request.autotime.percentiles-histogram=true")
-				.run((context) -> {
+				"management.metrics.web.client.request.autotime.percentiles-histogram=true").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					Timer timer = registry.get("http.client.requests").timer();
 					HistogramSnapshot snapshot = timer.takeSnapshot();
 					assertThat(snapshot.percentileValues()).hasSize(2);
-					assertThat(snapshot.percentileValues()[0].percentile())
-							.isEqualTo(0.5);
-					assertThat(snapshot.percentileValues()[1].percentile())
-							.isEqualTo(0.7);
+					assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
+					assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
 				});
 	}
 
-	private MeterRegistry getInitializedMeterRegistry(
-			AssertableApplicationContext context) {
+	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context) {
 		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
 		for (int i = 0; i < 3; i++) {
-			webClient.get().uri("https://example.org/projects/" + i).exchange()
-					.block(Duration.ofSeconds(30));
+			webClient.get().uri("https://example.org/projects/" + i).exchange().block(Duration.ofSeconds(30));
 		}
 		return registry;
 	}
@@ -135,16 +120,14 @@ public class WebClientMetricsConfigurationTests {
 	private void validateWebClient(WebClient.Builder builder, MeterRegistry registry) {
 		WebClient webClient = mockWebClient(builder);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
-		webClient.get().uri("https://example.org/projects/{project}", "spring-boot")
-				.exchange().block(Duration.ofSeconds(30));
-		assertThat(registry.find("http.client.requests")
-				.tags("uri", "/projects/{project}").meter()).isNotNull();
+		webClient.get().uri("https://example.org/projects/{project}", "spring-boot").exchange()
+				.block(Duration.ofSeconds(30));
+		assertThat(registry.find("http.client.requests").tags("uri", "/projects/{project}").meter()).isNotNull();
 	}
 
 	private WebClient mockWebClient(WebClient.Builder builder) {
 		ClientHttpConnector connector = mock(ClientHttpConnector.class);
-		given(connector.connect(any(), any(), any()))
-				.willReturn(Mono.just(new MockClientHttpResponse(HttpStatus.OK)));
+		given(connector.connect(any(), any(), any())).willReturn(Mono.just(new MockClientHttpResponse(HttpStatus.OK)));
 		return builder.clientConnector(connector).build();
 	}
 

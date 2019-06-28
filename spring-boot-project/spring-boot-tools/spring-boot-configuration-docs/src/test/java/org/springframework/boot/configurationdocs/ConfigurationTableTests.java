@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationdocs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 
@@ -27,12 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class ConfigurationTableTests {
+class ConfigurationTableTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	public void simpleTable() {
+	void simpleTable() {
 		ConfigurationTable table = new ConfigurationTable("test");
 		ConfigurationMetadataProperty first = new ConfigurationMetadataProperty();
 		first.setId("spring.test.prop");
@@ -46,14 +46,11 @@ public class ConfigurationTableTests {
 		second.setType("java.lang.String");
 		table.addEntry(new SingleConfigurationTableEntry(first));
 		table.addEntry(new SingleConfigurationTableEntry(second));
-		assertThat(table.toAsciidocTable())
-				.isEqualTo("[cols=\"1,1,2\", options=\"header\"]" + NEWLINE + "|==="
-						+ NEWLINE + "|Key|Default Value|Description" + NEWLINE + NEWLINE
-						+ "|`+spring.test.other+`" + NEWLINE + "|`+other value+`"
-						+ NEWLINE + "|+++This is another description.+++" + NEWLINE
-						+ NEWLINE + "|`+spring.test.prop+`" + NEWLINE + "|`+something+`"
-						+ NEWLINE + "|+++This is a description.+++" + NEWLINE + NEWLINE
-						+ "|===" + NEWLINE);
+		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"1,1,2\", options=\"header\"]" + NEWLINE + "|==="
+				+ NEWLINE + "|Key|Default Value|Description" + NEWLINE + NEWLINE + "|`+spring.test.other+`" + NEWLINE
+				+ "|`+other value+`" + NEWLINE + "|+++This is another description.+++" + NEWLINE + NEWLINE
+				+ "|`+spring.test.prop+`" + NEWLINE + "|`+something+`" + NEWLINE + "|+++This is a description.+++"
+				+ NEWLINE + NEWLINE + "|===" + NEWLINE);
 	}
 
 }

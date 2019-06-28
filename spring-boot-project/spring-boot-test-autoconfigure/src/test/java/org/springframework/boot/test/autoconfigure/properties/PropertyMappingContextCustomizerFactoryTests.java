@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -40,19 +40,16 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Phillip Webb
  */
-public class PropertyMappingContextCustomizerFactoryTests {
+class PropertyMappingContextCustomizerFactoryTests {
 
 	private PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
 
 	@Test
-	public void getContextCustomizerWhenHasNoMappingShouldNotAddPropertySource() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(NoMapping.class, null);
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+	void getContextCustomizerWhenHasNoMappingShouldNotAddPropertySource() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(NoMapping.class, null);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		ConfigurableEnvironment environment = mock(ConfigurableEnvironment.class);
-		ConfigurableListableBeanFactory beanFactory = mock(
-				ConfigurableListableBeanFactory.class);
+		ConfigurableListableBeanFactory beanFactory = mock(ConfigurableListableBeanFactory.class);
 		given(context.getEnvironment()).willReturn(environment);
 		given(context.getBeanFactory()).willReturn(beanFactory);
 		customizer.customizeContext(context, null);
@@ -60,50 +57,41 @@ public class PropertyMappingContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasTypeMappingShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(TypeMapping.class, null);
+	void getContextCustomizerWhenHasTypeMappingShouldReturnCustomizer() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(TypeMapping.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasAttributeMappingShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(AttributeMapping.class, null);
+	void getContextCustomizerWhenHasAttributeMappingShouldReturnCustomizer() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(AttributeMapping.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void hashCodeAndEqualsShouldBeBasedOnPropertyValues() {
-		ContextCustomizer customizer1 = this.factory
-				.createContextCustomizer(TypeMapping.class, null);
-		ContextCustomizer customizer2 = this.factory
-				.createContextCustomizer(AttributeMapping.class, null);
-		ContextCustomizer customizer3 = this.factory
-				.createContextCustomizer(OtherMapping.class, null);
+	void hashCodeAndEqualsShouldBeBasedOnPropertyValues() {
+		ContextCustomizer customizer1 = this.factory.createContextCustomizer(TypeMapping.class, null);
+		ContextCustomizer customizer2 = this.factory.createContextCustomizer(AttributeMapping.class, null);
+		ContextCustomizer customizer3 = this.factory.createContextCustomizer(OtherMapping.class, null);
 		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
-		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2)
-				.isNotEqualTo(customizer3);
+		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2).isNotEqualTo(customizer3);
 	}
 
 	@Test
-	public void prepareContextShouldAddPropertySource() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(AttributeMapping.class, null);
+	void prepareContextShouldAddPropertySource() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(AttributeMapping.class, null);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		customizer.customizeContext(context, null);
 		assertThat(context.getEnvironment().getProperty("mapped")).isEqualTo("Mapped");
 	}
 
 	@Test
-	public void propertyMappingShouldNotBeUsedWithComponent() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(AttributeMapping.class, null);
+	void propertyMappingShouldNotBeUsedWithComponent() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(AttributeMapping.class, null);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(ConfigMapping.class);
 		customizer.customizeContext(context, null);
-		assertThatExceptionOfType(BeanCreationException.class)
-				.isThrownBy(context::refresh)
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(context::refresh)
 				.withMessageContaining("The @PropertyMapping annotation "
 						+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
 						+ "cannot be used in combination with the @Component annotation @Configuration");

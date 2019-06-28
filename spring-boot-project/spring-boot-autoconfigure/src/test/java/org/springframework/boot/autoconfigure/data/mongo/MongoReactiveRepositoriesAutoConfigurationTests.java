@@ -46,65 +46,56 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  * @author Andy Wilkinson
  */
-public class MongoReactiveRepositoriesAutoConfigurationTests {
+class MongoReactiveRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
-					MongoDataAutoConfiguration.class,
-					MongoReactiveAutoConfiguration.class,
-					MongoReactiveDataAutoConfiguration.class,
-					MongoReactiveRepositoriesAutoConfiguration.class,
-					PropertyPlaceholderAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+					MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
+					MongoReactiveRepositoriesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveCityRepository.class);
-					assertThat(context).hasSingleBean(MongoClient.class);
-					MongoMappingContext mappingContext = context
-							.getBean(MongoMappingContext.class);
-					@SuppressWarnings("unchecked")
-					Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
-							.getField(mappingContext, "initialEntitySet");
-					assertThat(entities).hasSize(1);
-				});
+	void testDefaultRepositoryConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveCityRepository.class);
+			assertThat(context).hasSingleBean(MongoClient.class);
+			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
+			@SuppressWarnings("unchecked")
+			Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils.getField(mappingContext,
+					"initialEntitySet");
+			assertThat(entities).hasSize(1);
+		});
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ReactiveCityMongoDbRepository.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityMongoDbRepository.class));
 	}
 
 	@Test
-	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ReactiveCityRepository.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Test
-	public void enablingImperativeRepositoriesDisablesReactiveRepositories() {
+	void enablingImperativeRepositoriesDisablesReactiveRepositories() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.mongodb.repositories.type=imperative")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ReactiveCityRepository.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Test
-	public void enablingNoRepositoriesDisablesReactiveRepositories() {
+	void enablingNoRepositoriesDisablesReactiveRepositories() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.mongodb.repositories.type=none")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ReactiveCityRepository.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

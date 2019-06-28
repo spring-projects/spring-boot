@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,7 @@ public final class PathRequest {
 	/**
 	 * The request matcher used to match against h2 console path.
 	 */
-	public static final class H2ConsoleRequestMatcher
-			extends ApplicationContextRequestMatcher<H2ConsoleProperties> {
+	public static final class H2ConsoleRequestMatcher extends ApplicationContextRequestMatcher<H2ConsoleProperties> {
 
 		private volatile RequestMatcher delegate;
 
@@ -72,13 +71,11 @@ public final class PathRequest {
 
 		@Override
 		protected void initialized(Supplier<H2ConsoleProperties> h2ConsoleProperties) {
-			this.delegate = new AntPathRequestMatcher(
-					h2ConsoleProperties.get().getPath() + "/**");
+			this.delegate = new AntPathRequestMatcher(h2ConsoleProperties.get().getPath() + "/**");
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request,
-				Supplier<H2ConsoleProperties> context) {
+		protected boolean matches(HttpServletRequest request, Supplier<H2ConsoleProperties> context) {
 			return this.delegate.matches(request);
 		}
 

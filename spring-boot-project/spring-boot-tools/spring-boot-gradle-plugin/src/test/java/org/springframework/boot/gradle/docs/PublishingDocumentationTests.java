@@ -39,17 +39,14 @@ public class PublishingDocumentationTests {
 
 	@TestTemplate
 	public void mavenUpload() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven")
-				.build("deployerRepository").getOutput())
-						.contains("https://repo.example.com");
+		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven").build("deployerRepository").getOutput())
+				.contains("https://repo.example.com");
 	}
 
 	@TestTemplate
 	public void mavenPublish() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven-publish")
-				.build("publishingConfiguration").getOutput())
-						.contains("MavenPublication")
-						.contains("https://repo.example.com");
+		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven-publish").build("publishingConfiguration")
+				.getOutput()).contains("MavenPublication").contains("https://repo.example.com");
 	}
 
 }

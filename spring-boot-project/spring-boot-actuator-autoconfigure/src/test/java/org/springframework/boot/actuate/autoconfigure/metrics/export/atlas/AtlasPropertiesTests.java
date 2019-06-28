@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AtlasPropertiesTests {
+class AtlasPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		AtlasProperties properties = new AtlasProperties();
 		AtlasConfig config = (key) -> null;
 		assertThat(properties.getStep()).isEqualTo(config.step());
@@ -41,8 +41,7 @@ public class AtlasPropertiesTests {
 		assertThat(properties.getUri()).isEqualTo(config.uri());
 		assertThat(properties.getMeterTimeToLive()).isEqualTo(config.meterTTL());
 		assertThat(properties.isLwcEnabled()).isEqualTo(config.lwcEnabled());
-		assertThat(properties.getConfigRefreshFrequency())
-				.isEqualTo(config.configRefreshFrequency());
+		assertThat(properties.getConfigRefreshFrequency()).isEqualTo(config.configRefreshFrequency());
 		assertThat(properties.getConfigTimeToLive()).isEqualTo(config.configTTL());
 		assertThat(properties.getConfigUri()).isEqualTo(config.configUri());
 		assertThat(properties.getEvalUri()).isEqualTo(config.evalUri());

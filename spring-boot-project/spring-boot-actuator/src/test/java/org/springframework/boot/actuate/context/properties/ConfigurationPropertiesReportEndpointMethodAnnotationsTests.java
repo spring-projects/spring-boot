@@ -35,24 +35,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
+class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	@Test
-	public void testNaming() {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(Config.class)
+	void testNaming() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
 				.withPropertyValues("other.name:foo", "first.name:bar");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
-					.configurationProperties();
-			assertThat(applicationProperties.getContexts())
-					.containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties
-					.getContexts().get(context.getId());
-			ConfigurationPropertiesBeanDescriptor other = contextProperties.getBeans()
-					.get("other");
+			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
+			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
+			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ConfigurationPropertiesBeanDescriptor other = contextProperties.getBeans().get("other");
 			assertThat(other).isNotNull();
 			assertThat(other.getPrefix()).isEqualTo("other");
 			assertThat(other.getProperties()).isNotNull();
@@ -61,21 +56,16 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	}
 
 	@Test
-	public void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
+	void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(OverriddenPrefix.class)
-				.withPropertyValues("other.name:foo");
+				.withUserConfiguration(OverriddenPrefix.class).withPropertyValues("other.name:foo");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
-					.configurationProperties();
-			assertThat(applicationProperties.getContexts())
-					.containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties
-					.getContexts().get(context.getId());
-			ConfigurationPropertiesBeanDescriptor bar = contextProperties.getBeans()
-					.get("bar");
+			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
+			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
+			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ConfigurationPropertiesBeanDescriptor bar = contextProperties.getBeans().get("bar");
 			assertThat(bar).isNotNull();
 			assertThat(bar.getPrefix()).isEqualTo("other");
 			assertThat(bar.getProperties()).isNotNull();

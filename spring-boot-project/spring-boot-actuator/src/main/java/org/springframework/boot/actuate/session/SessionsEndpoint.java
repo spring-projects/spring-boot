@@ -44,15 +44,13 @@ public class SessionsEndpoint {
 	 * Create a new {@link SessionsEndpoint} instance.
 	 * @param sessionRepository the session repository
 	 */
-	public SessionsEndpoint(
-			FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
+	public SessionsEndpoint(FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
 		this.sessionRepository = sessionRepository;
 	}
 
 	@ReadOperation
 	public SessionsReport sessionsForUsername(String username) {
-		Map<String, ? extends Session> sessions = this.sessionRepository
-				.findByPrincipalName(username);
+		Map<String, ? extends Session> sessions = this.sessionRepository.findByPrincipalName(username);
 		return new SessionsReport(sessions);
 	}
 
@@ -79,8 +77,7 @@ public class SessionsEndpoint {
 		private final List<SessionDescriptor> sessions;
 
 		public SessionsReport(Map<String, ? extends Session> sessions) {
-			this.sessions = sessions.values().stream().map(SessionDescriptor::new)
-					.collect(Collectors.toList());
+			this.sessions = sessions.values().stream().map(SessionDescriptor::new).collect(Collectors.toList());
 		}
 
 		public List<SessionDescriptor> getSessions() {

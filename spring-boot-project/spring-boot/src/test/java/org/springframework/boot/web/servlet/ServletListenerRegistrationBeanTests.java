@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.util.EventListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Dave Syer
  */
-public class ServletListenerRegistrationBeanTests {
+class ServletListenerRegistrationBeanTests {
 
 	@Mock
 	private ServletContextListener listener;
@@ -44,13 +44,13 @@ public class ServletListenerRegistrationBeanTests {
 	@Mock
 	private ServletContext servletContext;
 
-	@Before
-	public void setupMocks() {
+	@BeforeEach
+	void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void startupWithDefaults() throws Exception {
+	void startupWithDefaults() throws Exception {
 		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.onStartup(this.servletContext);
@@ -58,19 +58,18 @@ public class ServletListenerRegistrationBeanTests {
 	}
 
 	@Test
-	public void disable() throws Exception {
+	void disable() throws Exception {
 		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, never())
-				.addListener(any(ServletContextListener.class));
+		verify(this.servletContext, never()).addListener(any(ServletContextListener.class));
 	}
 
 	@Test
-	public void cannotRegisterUnsupportedType() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new ServletListenerRegistrationBean<>(new EventListener() {
+	void cannotRegisterUnsupportedType() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ServletListenerRegistrationBean<>(new EventListener() {
 
 				})).withMessageContaining("Listener is not of a supported type");
 	}

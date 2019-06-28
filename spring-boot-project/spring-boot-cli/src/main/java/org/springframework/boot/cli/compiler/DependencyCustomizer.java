@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ public class DependencyCustomizer {
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.dependencyResolutionContext.getArtifactCoordinatesResolver()
-				.getVersion(artifactId);
+		String version = this.dependencyResolutionContext.getArtifactCoordinatesResolver().getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -219,22 +218,19 @@ public class DependencyCustomizer {
 	 * otherwise {@code false}
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
-	public DependencyCustomizer add(String module, String classifier, String type,
-			boolean transitive) {
+	public DependencyCustomizer add(String module, String classifier, String type, boolean transitive) {
 		if (canAdd()) {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
 					.getArtifactCoordinatesResolver();
-			this.classNode.addAnnotation(
-					createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
-							artifactCoordinatesResolver.getArtifactId(module),
-							artifactCoordinatesResolver.getVersion(module), classifier,
-							type, transitive));
+			this.classNode.addAnnotation(createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
+					artifactCoordinatesResolver.getArtifactId(module), artifactCoordinatesResolver.getVersion(module),
+					classifier, type, transitive));
 		}
 		return this;
 	}
 
-	private AnnotationNode createGrabAnnotation(String group, String module,
-			String version, String classifier, String type, boolean transitive) {
+	private AnnotationNode createGrabAnnotation(String group, String module, String version, String classifier,
+			String type, boolean transitive) {
 		AnnotationNode annotationNode = new AnnotationNode(new ClassNode(Grab.class));
 		annotationNode.addMember("group", new ConstantExpression(group));
 		annotationNode.addMember("module", new ConstantExpression(module));

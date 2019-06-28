@@ -17,12 +17,13 @@
 package org.springframework.boot.context;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.function.Consumer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -49,55 +50,53 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Tomasz Przybyla
  */
-public class ApplicationPidFileWriterTests {
+class ApplicationPidFileWriterTests {
 
-	private static final ApplicationPreparedEvent EVENT = new ApplicationPreparedEvent(
-			new SpringApplication(), new String[] {},
-			mock(ConfigurableApplicationContext.class));
+	private static final ApplicationPreparedEvent EVENT = new ApplicationPreparedEvent(new SpringApplication(),
+			new String[] {}, mock(ConfigurableApplicationContext.class));
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
-	@Before
-	@After
-	public void resetListener() {
+	@BeforeEach
+	@AfterEach
+	void resetListener() {
 		System.clearProperty("PIDFILE");
 		System.clearProperty("PID_FAIL_ON_WRITE_ERROR");
 		ApplicationPidFileWriter.reset();
 	}
 
 	@Test
-	public void createPidFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createPidFile() throws Exception {
+		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
 		assertThat(contentOf(file)).isNotEmpty();
 	}
 
 	@Test
-	public void overridePidFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
+	void overridePidFile() throws Exception {
+		File file = new File(this.tempDir, "pid");
+		System.setProperty("PIDFILE", new File(this.tempDir, "override").getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
 		assertThat(contentOf(new File(System.getProperty("PIDFILE")))).isNotEmpty();
 	}
 
 	@Test
-	public void overridePidFileWithSpring() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createPreparedEvent("spring.pid.file",
-				file.getAbsolutePath());
+	void overridePidFileWithSpring() throws Exception {
+		File file = new File(this.tempDir, "pid");
+		SpringApplicationEvent event = createPreparedEvent("spring.pid.file", file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(contentOf(file)).isNotEmpty();
 	}
 
 	@Test
-	public void tryEnvironmentPreparedEvent() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pid.file",
-				file.getAbsolutePath());
+	void tryEnvironmentPreparedEvent() throws Exception {
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
+		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pid.file", file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(contentOf(file)).isEmpty();
@@ -107,10 +106,10 @@ public class ApplicationPidFileWriterTests {
 	}
 
 	@Test
-	public void tryReadyEvent() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createReadyEvent("spring.pid.file",
-				file.getAbsolutePath());
+	void tryReadyEvent() throws Exception {
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
+		SpringApplicationEvent event = createReadyEvent("spring.pid.file", file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(contentOf(file)).isEmpty();
@@ -120,71 +119,72 @@ public class ApplicationPidFileWriterTests {
 	}
 
 	@Test
-	public void withNoEnvironment() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void withNoEnvironment() throws Exception {
+		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.setTriggerEventType(ApplicationStartingEvent.class);
-		listener.onApplicationEvent(
-				new ApplicationStartingEvent(new SpringApplication(), new String[] {}));
+		listener.onApplicationEvent(new ApplicationStartingEvent(new SpringApplication(), new String[] {}));
 		assertThat(contentOf(file)).isNotEmpty();
 	}
 
 	@Test
-	public void continueWhenPidFileIsReadOnly() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		file.setReadOnly();
-		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		listener.onApplicationEvent(EVENT);
-		assertThat(contentOf(file)).isEmpty();
+	void continueWhenPidFileIsReadOnly() throws Exception {
+		withReadOnlyPidFile((file) -> {
+			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+			listener.onApplicationEvent(EVENT);
+			assertThat(contentOf(file)).isEmpty();
+		});
 	}
 
 	@Test
-	public void throwWhenPidFileIsReadOnly() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		file.setReadOnly();
-		System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
-		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> listener.onApplicationEvent(EVENT))
-				.withMessageContaining("Cannot create pid file");
+	void throwWhenPidFileIsReadOnly() throws Exception {
+		withReadOnlyPidFile((file) -> {
+			System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
+			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+			assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(EVENT))
+					.withMessageContaining("Cannot create pid file");
+		});
 	}
 
 	@Test
-	public void throwWhenPidFileIsReadOnlyWithSpring() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void throwWhenPidFileIsReadOnlyWithSpring() throws Exception {
+		withReadOnlyPidFile((file) -> {
+			SpringApplicationEvent event = createPreparedEvent("spring.pid.fail-on-write-error", "true");
+			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+			assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(event))
+					.withMessageContaining("Cannot create pid file");
+		});
+	}
+
+	private void withReadOnlyPidFile(Consumer<File> consumer) throws IOException {
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
 		file.setReadOnly();
-		SpringApplicationEvent event = createPreparedEvent(
-				"spring.pid.fail-on-write-error", "true");
-		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> listener.onApplicationEvent(event))
-				.withMessageContaining("Cannot create pid file");
+		try {
+			consumer.accept(file);
+		}
+		finally {
+			file.setWritable(true);
+		}
 	}
 
-	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName,
-			String propValue) {
+	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		return new ApplicationEnvironmentPreparedEvent(new SpringApplication(),
-				new String[] {}, environment);
+		return new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[] {}, environment);
 	}
 
-	private SpringApplicationEvent createPreparedEvent(String propName,
-			String propValue) {
+	private SpringApplicationEvent createPreparedEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
-		return new ApplicationPreparedEvent(new SpringApplication(), new String[] {},
-				context);
+		return new ApplicationPreparedEvent(new SpringApplication(), new String[] {}, context);
 	}
 
 	private SpringApplicationEvent createReadyEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		ConfigurableApplicationContext context = mock(
-				ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
-		return new ApplicationReadyEvent(new SpringApplication(), new String[] {},
-				context);
+		return new ApplicationReadyEvent(new SpringApplication(), new String[] {}, context);
 	}
 
 	private ConfigurableEnvironment createEnvironment(String propName, String propValue) {

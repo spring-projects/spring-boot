@@ -40,13 +40,12 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class DataSourceInitializerTests {
+class DataSourceInitializerTests {
 
 	@Test
-	public void initializeEmbeddedByDefault() {
+	void initializeEmbeddedByDefault() {
 		try (HikariDataSource dataSource = createDataSource()) {
-			DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
-					new DataSourceProperties());
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties());
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 			assertThat(initializer.createSchema()).isTrue();
 			assertNumberOfRows(jdbcTemplate, 0);
@@ -56,12 +55,11 @@ public class DataSourceInitializerTests {
 	}
 
 	@Test
-	public void initializeWithModeAlways() {
+	void initializeWithModeAlways() {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.ALWAYS);
-			DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
-					properties);
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties);
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 			assertThat(initializer.createSchema()).isTrue();
 			assertNumberOfRows(jdbcTemplate, 0);
@@ -71,38 +69,34 @@ public class DataSourceInitializerTests {
 	}
 
 	private void assertNumberOfRows(JdbcTemplate jdbcTemplate, int count) {
-		assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
-				.isEqualTo(count);
+		assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from BAR", Integer.class)).isEqualTo(count);
 	}
 
 	@Test
-	public void initializeWithModeNever() {
+	void initializeWithModeNever() {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.NEVER);
-			DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
-					properties);
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties);
 			assertThat(initializer.createSchema()).isFalse();
 		}
 	}
 
 	@Test
-	public void initializeOnlyEmbeddedByDefault() throws SQLException {
+	void initializeOnlyEmbeddedByDefault() throws SQLException {
 		DatabaseMetaData metadata = mock(DatabaseMetaData.class);
 		given(metadata.getDatabaseProductName()).willReturn("MySQL");
 		Connection connection = mock(Connection.class);
 		given(connection.getMetaData()).willReturn(metadata);
 		DataSource dataSource = mock(DataSource.class);
 		given(dataSource.getConnection()).willReturn(connection);
-		DataSourceInitializer initializer = new DataSourceInitializer(dataSource,
-				new DataSourceProperties());
+		DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties());
 		assertThat(initializer.createSchema()).isFalse();
 		verify(dataSource).getConnection();
 	}
 
 	private HikariDataSource createDataSource() {
-		return DataSourceBuilder.create().type(HikariDataSource.class)
-				.url("jdbc:h2:mem:" + UUID.randomUUID()).build();
+		return DataSourceBuilder.create().type(HikariDataSource.class).url("jdbc:h2:mem:" + UUID.randomUUID()).build();
 	}
 
 }

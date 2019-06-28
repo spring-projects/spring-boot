@@ -57,60 +57,51 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ControllerEndpointHandlerMappingIntegrationTests {
+class ControllerEndpointHandlerMappingIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
-			AnnotationConfigServletWebServerApplicationContext::new)
-					.withUserConfiguration(EndpointConfiguration.class,
-							ExampleMvcEndpoint.class);
+			AnnotationConfigServletWebServerApplicationContext::new).withUserConfiguration(EndpointConfiguration.class,
+					ExampleMvcEndpoint.class);
 
 	@Test
-	public void get() {
-		this.contextRunner.run(withWebTestClient(
-				(webTestClient) -> webTestClient.get().uri("/actuator/example/one")
-						.accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk()
-						.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
-						.expectBody(String.class).isEqualTo("One")));
+	void get() {
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
+				.accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk().expectHeader()
+				.contentTypeCompatibleWith(MediaType.TEXT_PLAIN).expectBody(String.class).isEqualTo("One")));
 	}
 
 	@Test
-	public void getWithUnacceptableContentType() {
-		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get()
-				.uri("/actuator/example/one").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
+	void getWithUnacceptableContentType() {
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
 	}
 
 	@Test
-	public void post() {
-		this.contextRunner.run(withWebTestClient(
-				(webTestClient) -> webTestClient.post().uri("/actuator/example/two")
-						.syncBody(Collections.singletonMap("id", "test")).exchange()
-						.expectStatus().isCreated().expectHeader()
-						.valueEquals(HttpHeaders.LOCATION, "/example/test")));
+	void post() {
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.post().uri("/actuator/example/two")
+				.syncBody(Collections.singletonMap("id", "test")).exchange().expectStatus().isCreated().expectHeader()
+				.valueEquals(HttpHeaders.LOCATION, "/example/test")));
 	}
 
-	private ContextConsumer<AssertableWebApplicationContext> withWebTestClient(
-			Consumer<WebTestClient> webClient) {
+	private ContextConsumer<AssertableWebApplicationContext> withWebTestClient(Consumer<WebTestClient> webClient) {
 		return (context) -> {
-			int port = ((AnnotationConfigServletWebServerApplicationContext) context
-					.getSourceApplicationContext()).getWebServer().getPort();
+			int port = ((AnnotationConfigServletWebServerApplicationContext) context.getSourceApplicationContext())
+					.getWebServer().getPort();
 			WebTestClient webTestClient = createWebTestClient(port);
 			webClient.accept(webTestClient);
 		};
 	}
 
 	private WebTestClient createWebTestClient(int port) {
-		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(
-				"http://localhost:" + port);
+		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://localhost:" + port);
 		uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
-		return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory)
-				.responseTimeout(Duration.ofMinutes(2)).build();
+		return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory).responseTimeout(Duration.ofMinutes(2))
+				.build();
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class })
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
 	static class EndpointConfiguration {
 
 		@Bean
@@ -119,10 +110,8 @@ public class ControllerEndpointHandlerMappingIntegrationTests {
 		}
 
 		@Bean
-		public ControllerEndpointDiscoverer webEndpointDiscoverer(
-				ApplicationContext applicationContext) {
-			return new ControllerEndpointDiscoverer(applicationContext, null,
-					Collections.emptyList());
+		public ControllerEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext) {
+			return new ControllerEndpointDiscoverer(applicationContext, null, Collections.emptyList());
 		}
 
 		@Bean
@@ -144,8 +133,7 @@ public class ControllerEndpointHandlerMappingIntegrationTests {
 
 		@PostMapping("/two")
 		public ResponseEntity<String> two(@RequestBody Map<String, Object> content) {
-			return ResponseEntity.created(URI.create("/example/" + content.get("id")))
-					.build();
+			return ResponseEntity.created(URI.create("/example/" + content.get("id"))).build();
 		}
 
 	}

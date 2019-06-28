@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import org.assertj.core.internal.Objects;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class ObjectContentAssert<A>
-		extends AbstractObjectAssert<ObjectContentAssert<A>, A> {
+public class ObjectContentAssert<A> extends AbstractObjectAssert<ObjectContentAssert<A>, A> {
 
 	protected ObjectContentAssert(A actual) {
 		super(actual, ObjectContentAssert.class);

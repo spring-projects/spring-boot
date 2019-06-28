@@ -48,11 +48,9 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ApplicationContext applicationContext;
 
-	MeterRegistryPostProcessor(ObjectProvider<MeterBinder> meterBinders,
-			ObjectProvider<MeterFilter> meterFilters,
+	MeterRegistryPostProcessor(ObjectProvider<MeterBinder> meterBinders, ObjectProvider<MeterFilter> meterFilters,
 			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
-			ObjectProvider<MetricsProperties> metricsProperties,
-			ApplicationContext applicationContext) {
+			ObjectProvider<MetricsProperties> metricsProperties, ApplicationContext applicationContext) {
 		this.meterBinders = meterBinders;
 		this.meterFilters = meterFilters;
 		this.meterRegistryCustomizers = meterRegistryCustomizers;
@@ -61,8 +59,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof MeterRegistry) {
 			getConfigurer().configure((MeterRegistry) bean);
 		}
@@ -72,11 +69,9 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 	private MeterRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
 			boolean hasCompositeMeterRegistry = this.applicationContext
-					.getBeanNamesForType(CompositeMeterRegistry.class, false,
-							false).length != 0;
-			this.configurer = new MeterRegistryConfigurer(this.meterRegistryCustomizers,
-					this.meterFilters, this.meterBinders,
-					this.metricsProperties.getObject().isUseGlobalRegistry(),
+					.getBeanNamesForType(CompositeMeterRegistry.class, false, false).length != 0;
+			this.configurer = new MeterRegistryConfigurer(this.meterRegistryCustomizers, this.meterFilters,
+					this.meterBinders, this.metricsProperties.getObject().isUseGlobalRegistry(),
 					hasCompositeMeterRegistry);
 		}
 		return this.configurer;

@@ -46,12 +46,9 @@ public class BootRunIntegrationTests {
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput())
-				.contains("1. " + canonicalPathOf("build/classes/java/main"));
-		assertThat(result.getOutput())
-				.contains("2. " + canonicalPathOf("build/resources/main"));
-		assertThat(result.getOutput())
-				.doesNotContain(canonicalPathOf("src/main/resources"));
+		assertThat(result.getOutput()).contains("1. " + canonicalPathOf("build/classes/java/main"));
+		assertThat(result.getOutput()).contains("2. " + canonicalPathOf("build/resources/main"));
+		assertThat(result.getOutput()).doesNotContain(canonicalPathOf("src/main/resources"));
 	}
 
 	@TestTemplate
@@ -59,40 +56,31 @@ public class BootRunIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput())
-				.contains("1. " + canonicalPathOf("src/main/resources"));
-		assertThat(result.getOutput())
-				.contains("2. " + canonicalPathOf("build/classes/java/main"));
-		assertThat(result.getOutput())
-				.doesNotContain(canonicalPathOf("build/resources/main"));
+		assertThat(result.getOutput()).contains("1. " + canonicalPathOf("src/main/resources"));
+		assertThat(result.getOutput()).contains("2. " + canonicalPathOf("build/classes/java/main"));
+		assertThat(result.getOutput()).doesNotContain(canonicalPathOf("build/resources/main"));
 	}
 
 	@TestTemplate
 	public void springBootExtensionMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput())
-				.contains("Main class name = com.example.CustomMainClass");
+		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
 	}
 
 	@TestTemplate
 	public void applicationPluginMainClassNameIsUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput())
-				.contains("Main class name = com.example.CustomMainClass");
+		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
 	}
 
 	@TestTemplate
 	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains(
-				"Main class name = com.example.classpath.BootRunClasspathApplication");
+		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Main class name = com.example.classpath.BootRunClasspathApplication");
 	}
 
 	@TestTemplate
@@ -100,8 +88,7 @@ public class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("1. -Xverify:none")
-				.contains("2. -XX:TieredStopAtLevel=1");
+		assertThat(result.getOutput()).contains("1. -Xverify:none").contains("2. -XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate
@@ -109,8 +96,7 @@ public class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).doesNotContain("-Xverify:none")
-				.doesNotContain("-XX:TieredStopAtLevel=1");
+		assertThat(result.getOutput()).doesNotContain("-Xverify:none").doesNotContain("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate
@@ -118,9 +104,8 @@ public class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("1. -Dcom.bar=baz")
-				.contains("2. -Dcom.foo=bar").contains("3. -Xverify:none")
-				.contains("4. -XX:TieredStopAtLevel=1");
+		assertThat(result.getOutput()).contains("1. -Dcom.bar=baz").contains("2. -Dcom.foo=bar")
+				.contains("3. -Xverify:none").contains("4. -XX:TieredStopAtLevel=1");
 	}
 
 	private void copyClasspathApplication() throws IOException {
@@ -132,11 +117,9 @@ public class BootRunIntegrationTests {
 	}
 
 	private void copyApplication(String name) throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example/" + name);
+		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example/" + name);
 		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/" + name),
-				output);
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/" + name), output);
 	}
 
 	private String canonicalPathOf(String path) throws IOException {

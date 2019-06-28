@@ -33,27 +33,22 @@ import static org.mockito.Mockito.mock;
  *
  * @author Mikalai Lushchytski
  */
-public class CouchbaseReactiveHealthIndicatorAutoConfigurationTests {
+class CouchbaseReactiveHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(Cluster.class, () -> mock(Cluster.class))
-			.withConfiguration(AutoConfigurations.of(
-					CouchbaseReactiveHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+			.withBean(Cluster.class, () -> mock(Cluster.class)).withConfiguration(AutoConfigurations.of(
+					CouchbaseReactiveHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(CouchbaseReactiveHealthIndicator.class)
-				.doesNotHaveBean(CouchbaseHealthIndicator.class)
-				.doesNotHaveBean(ApplicationHealthIndicator.class));
+	void runShouldCreateIndicator() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CouchbaseReactiveHealthIndicator.class)
+				.doesNotHaveBean(CouchbaseHealthIndicator.class).doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 
