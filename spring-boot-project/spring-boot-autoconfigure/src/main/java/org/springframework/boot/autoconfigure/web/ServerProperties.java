@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1119,6 +1120,8 @@ public class ServerProperties {
 
 		private final Accesslog accesslog = new Accesslog();
 
+		private final Options options = new Options();
+
 		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
@@ -1227,6 +1230,10 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
+		public Options getOptions() {
+			return this.options;
+		}
+
 		/**
 		 * Undertow access log properties.
 		 */
@@ -1308,6 +1315,22 @@ public class ServerProperties {
 
 			public void setRotate(boolean rotate) {
 				this.rotate = rotate;
+			}
+
+		}
+
+		public static class Options {
+
+			private Map<String, String> socket = new LinkedHashMap<>();
+
+			private Map<String, String> server = new LinkedHashMap<>();
+
+			public Map<String, String> getServer() {
+				return this.server;
+			}
+
+			public Map<String, String> getSocket() {
+				return this.socket;
 			}
 
 		}
