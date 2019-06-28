@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  * The JSON web token provided with each request that originates from Cloud Foundry.
  *
  * @author Madhura Bhave
- * @since 2.0.0
+ * @since 1.5.22
  */
 public class Token {
 

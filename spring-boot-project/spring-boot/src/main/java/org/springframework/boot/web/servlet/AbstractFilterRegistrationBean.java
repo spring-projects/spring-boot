@@ -39,9 +39,9 @@ import org.springframework.util.StringUtils;
  * @param <T> the type of {@link Filter} to register
  * @author Phillip Webb
  * @author Brian Clozel
- * @since 2.0.1
+ * @since 1.5.22
  */
-public abstract class AbstractFilterRegistrationBean<T extends Filter> extends DynamicRegistrationBean<Dynamic> {
+public abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Filters that wrap the servlet request should be ordered less than or equal to this.
