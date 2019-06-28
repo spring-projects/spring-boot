@@ -43,15 +43,15 @@ public class OAuth2ResourceServerProperties {
 		return this.jwt;
 	}
 
-	private final OpaqueToken opaqueToken = new OpaqueToken();
+	private final Opaquetoken opaqueToken = new Opaquetoken();
 
-	public OpaqueToken getOpaqueToken() {
+	public Opaquetoken getOpaquetoken() {
 		return this.opaqueToken;
 	}
 
 	@PostConstruct
 	public void validate() {
-		if (this.getOpaqueToken().getIntrospectionUri() != null) {
+		if (this.getOpaquetoken().getIntrospectionUri() != null) {
 			if (this.getJwt().getJwkSetUri() != null) {
 				handleError("jwt.jwk-set-uri");
 			}
@@ -66,7 +66,7 @@ public class OAuth2ResourceServerProperties {
 
 	private void handleError(String property) {
 		throw new IllegalStateException(
-				"Only one of " + property + " and opaque-token.introspection-uri should be configured.");
+				"Only one of " + property + " and opaquetoken.introspection-uri should be configured.");
 	}
 
 	public static class Jwt {
@@ -137,7 +137,7 @@ public class OAuth2ResourceServerProperties {
 
 	}
 
-	public static class OpaqueToken {
+	public static class Opaquetoken {
 
 		/**
 		 * Client id used to authenticate with the token introspection endpoint.

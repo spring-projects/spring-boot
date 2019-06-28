@@ -3820,9 +3820,9 @@ to validate tokens via introspection:
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://example.com/check-token
-	spring.security.oauth2.resourceserver.opaque-token.client-id=my-client-id
-	spring.security.oauth2.resourceserver.opaque-token.client-secret-my-client-secret
+	spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
+	spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
+	spring.security.oauth2.resourceserver.opaquetoken.client-secret-my-client-secret
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
