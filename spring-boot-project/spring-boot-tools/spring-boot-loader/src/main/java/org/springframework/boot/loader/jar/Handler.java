@@ -50,7 +50,9 @@ public class Handler extends URLStreamHandler {
 
 	private static final String CURRENT_DIR = "/./";
 
-	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR);
+	private static final String CURRENT_DIR_REGEXP = "/\\./";
+
+	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR_REGEXP);
 
 	private static final String PARENT_DIR = "/../";
 
