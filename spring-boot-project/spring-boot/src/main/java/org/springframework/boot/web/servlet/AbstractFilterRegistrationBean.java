@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @since 1.5.22
  */
-public abstract class AbstractFilterRegistrationBean extends RegistrationBean {
+public abstract class AbstractFilterRegistrationBean<T extends Filter> extends DynamicRegistrationBean<Dynamic> {
 
 	/**
 	 * Filters that wrap the servlet request should be ordered less than or equal to this.
