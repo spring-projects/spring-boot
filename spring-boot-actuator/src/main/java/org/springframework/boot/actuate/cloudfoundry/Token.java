@@ -28,8 +28,9 @@ import org.springframework.util.StringUtils;
  * The JSON web token provided with each request that originates from Cloud Foundry.
  *
  * @author Madhura Bhave
+ * @since 1.5.22
  */
-class Token {
+public class Token {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 

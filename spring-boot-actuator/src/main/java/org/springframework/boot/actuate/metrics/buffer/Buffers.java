@@ -30,11 +30,15 @@ import org.springframework.lang.UsesJava8;
  * @author Dave Syer
  * @author Phillip Webb
  * @param <B> the buffer type
+ * @since 1.5.22
  */
 @UsesJava8
-abstract class Buffers<B extends Buffer<?>> {
+public abstract class Buffers<B extends Buffer<?>> {
 
 	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<String, B>();
+
+	Buffers() {
+	}
 
 	public void forEach(final Predicate<String> predicate, final BiConsumer<String, B> consumer) {
 		this.buffers.forEach(new BiConsumer<String, B>() {
