@@ -1487,7 +1487,14 @@
 										<icons>font</icons>
 										<stylesdir>css/</stylesdir>
 										<stylesheet>spring.css</stylesheet>
+										<attribute-missing>warn</attribute-missing>
 									</attributes>
+									<logHandler>
+										<outputToConsole>true</outputToConsole>
+										<failIf>
+											<severity>DEBUG</severity>
+										</failIf>
+									</logHandler>
 								</configuration>
 							</execution>
 							<execution>
