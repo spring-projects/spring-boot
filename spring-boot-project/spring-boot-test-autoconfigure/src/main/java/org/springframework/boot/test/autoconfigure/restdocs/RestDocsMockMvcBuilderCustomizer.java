@@ -28,8 +28,9 @@ import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
  * A {@link MockMvcBuilderCustomizer} that configures Spring REST Docs.
  *
  * @author Andy Wilkinson
+ * @since 1.5.22
  */
-class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockMvcBuilderCustomizer {
+public class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockMvcBuilderCustomizer {
 
 	private final RestDocsProperties properties;
 

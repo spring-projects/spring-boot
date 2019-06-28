@@ -40,7 +40,7 @@ import org.springframework.util.MultiValueMap;
  * Abstract base class for nested conditions.
  *
  * @author Phillip Webb
- * @since 2.0.1
+ * @since 1.5.22
  */
 public abstract class AbstractNestedCondition extends SpringBootCondition implements ConfigurationCondition {
 
