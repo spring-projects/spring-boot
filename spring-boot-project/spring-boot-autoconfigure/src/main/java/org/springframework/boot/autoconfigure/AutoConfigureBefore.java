@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
  * before other specified auto-configuration classes.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

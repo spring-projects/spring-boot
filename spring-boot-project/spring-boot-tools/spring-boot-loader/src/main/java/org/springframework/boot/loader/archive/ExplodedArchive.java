@@ -39,6 +39,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class ExplodedArchive implements Archive {
 

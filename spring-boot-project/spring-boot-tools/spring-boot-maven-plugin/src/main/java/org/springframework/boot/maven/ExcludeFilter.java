@@ -26,7 +26,7 @@ import org.apache.maven.artifact.Artifact;
  *
  * @author Stephane Nicoll
  * @author David Turanski
- * @since 1.1
+ * @since 1.1.0
  */
 public class ExcludeFilter extends DependencyFilter {
 

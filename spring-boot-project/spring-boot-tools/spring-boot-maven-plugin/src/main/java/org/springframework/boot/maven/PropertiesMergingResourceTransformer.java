@@ -33,6 +33,7 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class PropertiesMergingResourceTransformer implements ResourceTransformer {
 

@@ -32,7 +32,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Venil Noronha
- * @since 1.2.0
  */
 class ActiveMQConnectionFactoryFactory {
 

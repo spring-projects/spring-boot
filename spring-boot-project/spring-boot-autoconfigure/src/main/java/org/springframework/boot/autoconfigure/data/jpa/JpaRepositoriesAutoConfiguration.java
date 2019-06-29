@@ -57,6 +57,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  *
  * @author Phillip Webb
  * @author Josh Long
+ * @since 1.0.0
  * @see EnableJpaRepositories
  */
 @Configuration

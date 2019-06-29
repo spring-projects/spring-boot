@@ -58,6 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
+ * @since 1.5.0
  * @see AutoConfigureJdbc
  * @see AutoConfigureTestDatabase
  * @see AutoConfigureCache

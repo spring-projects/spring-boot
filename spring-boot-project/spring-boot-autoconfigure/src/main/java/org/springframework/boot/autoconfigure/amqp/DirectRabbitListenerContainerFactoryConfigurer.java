@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
  *
  * @author Gary Russell
  * @author Stephane Nicoll
- * @since 2.0
+ * @since 2.0.0
  */
 public final class DirectRabbitListenerContainerFactoryConfigurer
 		extends AbstractRabbitListenerContainerFactoryConfigurer<DirectRabbitListenerContainerFactory> {

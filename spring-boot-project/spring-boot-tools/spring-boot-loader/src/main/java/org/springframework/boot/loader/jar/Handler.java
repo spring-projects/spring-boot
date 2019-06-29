@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  * @see JarFile#registerUrlProtocolHandler()
  */
 public class Handler extends URLStreamHandler {

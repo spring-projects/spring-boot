@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * {@link TestEntityManager}.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see TestEntityManagerAutoConfiguration
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })

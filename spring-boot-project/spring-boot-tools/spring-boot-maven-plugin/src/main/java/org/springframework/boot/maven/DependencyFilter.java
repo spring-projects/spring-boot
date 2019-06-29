@@ -30,7 +30,7 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
  *
  * @author Stephane Nicoll
  * @author David Turanski
- * @since 1.2
+ * @since 1.2.0
  */
 public abstract class DependencyFilter extends AbstractArtifactsFilter {
 

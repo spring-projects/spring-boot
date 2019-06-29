@@ -34,6 +34,7 @@ import org.springframework.core.annotation.Order;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Order(DependencyAutoConfigurationTransformation.ORDER)
 public class DependencyAutoConfigurationTransformation implements ASTTransformation {

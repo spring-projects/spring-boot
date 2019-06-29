@@ -55,6 +55,7 @@ import org.springframework.context.annotation.Conditional;
  * another auto-configuration, make sure that the one using this condition runs after.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

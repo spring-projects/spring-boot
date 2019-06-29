@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
  * Servlets} registered with a {@link ServletContext}.
  *
  * @author Andy Wilkinson
- * @since 2.0
+ * @since 2.0.0
  */
 public class ServletsMappingDescriptionProvider implements MappingDescriptionProvider {
 

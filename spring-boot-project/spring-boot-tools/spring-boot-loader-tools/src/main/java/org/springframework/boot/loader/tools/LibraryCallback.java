@@ -23,6 +23,7 @@ import java.io.IOException;
  * Callback interface used to iterate {@link Libraries}.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface LibraryCallback {

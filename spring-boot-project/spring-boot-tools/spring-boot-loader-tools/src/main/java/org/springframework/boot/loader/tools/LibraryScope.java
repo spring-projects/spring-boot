@@ -22,6 +22,7 @@ package org.springframework.boot.loader.tools;
  * A custom {@link Layout} can handle additional scopes as required.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public interface LibraryScope {
 

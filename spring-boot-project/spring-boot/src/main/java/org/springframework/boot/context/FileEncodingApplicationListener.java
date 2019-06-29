@@ -43,6 +43,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *
  * @author Dave Syer
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 public class FileEncodingApplicationListener
 		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {

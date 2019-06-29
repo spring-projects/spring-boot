@@ -39,6 +39,7 @@ import org.springframework.boot.loader.jar.JarFile;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class JarFileArchive implements Archive {
 

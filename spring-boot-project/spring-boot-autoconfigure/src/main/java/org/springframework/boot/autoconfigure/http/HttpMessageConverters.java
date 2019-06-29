@@ -50,6 +50,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 2.0.0
  * @see #HttpMessageConverters(HttpMessageConverter...)
  * @see #HttpMessageConverters(Collection)
  * @see #getConverters()

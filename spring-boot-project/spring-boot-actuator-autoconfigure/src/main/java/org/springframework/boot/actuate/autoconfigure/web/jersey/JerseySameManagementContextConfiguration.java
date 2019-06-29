@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Import;
  * context is the same as the main application context.
  *
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 @ManagementContextConfiguration(ManagementContextType.SAME)
 @ConditionalOnMissingBean(ResourceConfig.class)

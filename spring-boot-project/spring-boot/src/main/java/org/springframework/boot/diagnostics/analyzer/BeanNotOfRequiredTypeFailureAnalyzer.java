@@ -29,6 +29,7 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * {@link BeanNotOfRequiredTypeException}.
  *
  * @author Andy Wilkinson
+ * @since 1.4.0
  */
 public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyzer<BeanNotOfRequiredTypeException> {
 

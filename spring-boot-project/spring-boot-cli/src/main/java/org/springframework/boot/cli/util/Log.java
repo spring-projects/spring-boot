@@ -20,6 +20,7 @@ package org.springframework.boot.cli.util;
  * Simple logger used by the CLI.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public abstract class Log {
 

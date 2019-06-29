@@ -30,6 +30,7 @@ import org.springframework.core.Ordered;
  * listeners that the context is available and has a parent.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class ParentContextApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {

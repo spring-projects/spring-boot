@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.security")
 public class SecurityProperties {

@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Matt Benson
+ * @since 1.0.0
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
 

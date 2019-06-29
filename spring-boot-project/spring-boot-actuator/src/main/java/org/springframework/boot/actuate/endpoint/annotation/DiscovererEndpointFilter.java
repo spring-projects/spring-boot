@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
  * the endpoint.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public abstract class DiscovererEndpointFilter implements EndpointFilter<DiscoveredEndpoint<?>> {
 

@@ -36,6 +36,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Josh Long
  * @author Manuel Doninger
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class, SessionImplementor.class })

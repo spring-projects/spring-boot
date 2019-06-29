@@ -25,6 +25,7 @@ import java.io.InputStream;
  * Implementations must allow concurrent reads in a thread-safe manner.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public interface RandomAccessData {
 

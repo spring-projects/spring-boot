@@ -46,6 +46,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })

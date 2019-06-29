@@ -25,6 +25,7 @@ import ch.qos.logback.core.CoreConstants;
  * trace.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class WhitespaceThrowableProxyConverter extends ThrowableProxyConverter {
 

@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Import;
  * management context with a web server running on a different port is required.
  *
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 @ManagementContextConfiguration(ManagementContextType.CHILD)
 @Import(JerseyManagementContextConfiguration.class)

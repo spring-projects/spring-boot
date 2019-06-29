@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  * {@link JerseyProperties} or the {@code @ApplicationPath} annotation.
  *
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 

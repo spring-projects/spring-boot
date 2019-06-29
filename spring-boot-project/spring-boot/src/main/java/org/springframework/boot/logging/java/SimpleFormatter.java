@@ -28,6 +28,7 @@ import org.springframework.boot.logging.LoggingSystemProperties;
  * Simple 'Java Logging' {@link Formatter}.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class SimpleFormatter extends Formatter {
 

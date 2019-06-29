@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
  * Caffeine cache configuration.
  *
  * @author Eddú Meléndez
- * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })

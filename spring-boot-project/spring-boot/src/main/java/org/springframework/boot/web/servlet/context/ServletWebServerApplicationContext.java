@@ -85,6 +85,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 2.0.0
  * @see AnnotationConfigServletWebServerApplicationContext
  * @see XmlServletWebServerApplicationContext
  * @see ServletWebServerFactory

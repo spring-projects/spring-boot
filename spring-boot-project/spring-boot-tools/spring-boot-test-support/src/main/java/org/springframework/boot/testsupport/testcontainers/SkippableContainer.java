@@ -32,6 +32,7 @@ import org.testcontainers.containers.GenericContainer;
  *
  * @param <T> type of the underlying container
  * @author Andy Wilkinson
+ * @since 2.1.0
  */
 public class SkippableContainer<T> implements TestRule {
 

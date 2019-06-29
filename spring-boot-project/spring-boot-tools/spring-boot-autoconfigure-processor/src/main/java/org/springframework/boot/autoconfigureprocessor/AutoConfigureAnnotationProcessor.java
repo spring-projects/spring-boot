@@ -49,6 +49,7 @@ import javax.tools.StandardLocation;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 1.5.0
  */
 @SupportedAnnotationTypes({ "org.springframework.context.annotation.Configuration",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",

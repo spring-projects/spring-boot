@@ -26,6 +26,7 @@ import java.util.Set;
  * by the {@link CommandRunner}.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class CommandException extends RuntimeException {
 

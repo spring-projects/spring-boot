@@ -36,4 +36,6 @@
 	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]spring-boot-samples[\\/]" checks="SpringJavadoc" message="\@since" />
 </suppressions>

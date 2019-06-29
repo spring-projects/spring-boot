@@ -42,7 +42,6 @@ import org.springframework.util.StringUtils;
  * Invokes the initializr service over HTTP.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class InitializrService {
 

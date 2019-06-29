@@ -26,6 +26,7 @@ import joptsimple.OptionSpec;
  *
  * @author Andy Wilkinson
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class CompilerOptionHandler extends OptionHandler {
 

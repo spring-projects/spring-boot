@@ -44,7 +44,6 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  * {@link ConfigurationClassPostProcessor} and Spring Boot.
  *
  * @author Phillip Webb
- * @since 1.4.0
  */
 class SharedMetadataReaderFactoryContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {

@@ -23,6 +23,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
  * {@code META-INF/services}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface SpringBootAstTransformation extends ASTTransformation {

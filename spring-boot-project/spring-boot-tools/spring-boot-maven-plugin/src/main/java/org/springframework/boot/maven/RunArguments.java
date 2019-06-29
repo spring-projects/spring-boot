@@ -27,7 +27,6 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
  * Parse and expose arguments specified in a single string.
  *
  * @author Stephane Nicoll
- * @since 1.1.0
  */
 class RunArguments {
 

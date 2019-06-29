@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @since 1.0.0
  */
 public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 

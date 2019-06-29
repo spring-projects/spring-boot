@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class MainMethodRunner {
 

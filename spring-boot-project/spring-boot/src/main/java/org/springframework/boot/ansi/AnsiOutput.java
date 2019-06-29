@@ -25,6 +25,7 @@ import org.springframework.util.Assert;
  * supports ANSI.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public abstract class AnsiOutput {
 

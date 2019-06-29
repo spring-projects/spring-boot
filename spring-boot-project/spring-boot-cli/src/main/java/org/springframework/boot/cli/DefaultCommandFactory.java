@@ -37,6 +37,7 @@ import org.springframework.boot.cli.command.run.RunCommand;
  * Default implementation of {@link CommandFactory}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class DefaultCommandFactory implements CommandFactory {
 

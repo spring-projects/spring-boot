@@ -22,6 +22,7 @@ package org.springframework.boot.loader.tools;
  * custom loader classes.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see Layouts
  * @see RepackagingLayout
  * @see CustomLoaderLayout

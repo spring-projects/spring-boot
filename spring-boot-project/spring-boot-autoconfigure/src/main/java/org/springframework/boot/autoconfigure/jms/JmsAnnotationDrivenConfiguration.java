@@ -38,7 +38,6 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 @Configuration
 @ConditionalOnClass(EnableJms.class)

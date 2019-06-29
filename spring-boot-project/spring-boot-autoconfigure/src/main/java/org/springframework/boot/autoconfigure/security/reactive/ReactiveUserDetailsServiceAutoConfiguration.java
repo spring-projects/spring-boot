@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })

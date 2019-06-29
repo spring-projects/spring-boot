@@ -31,6 +31,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public interface SpringApplicationRunListener {
 

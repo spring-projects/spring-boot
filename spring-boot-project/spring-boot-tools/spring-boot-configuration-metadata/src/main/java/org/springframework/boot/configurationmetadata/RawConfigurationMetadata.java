@@ -24,7 +24,6 @@ import java.util.List;
  * A raw metadata structure. Used to initialize a {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class RawConfigurationMetadata {
 

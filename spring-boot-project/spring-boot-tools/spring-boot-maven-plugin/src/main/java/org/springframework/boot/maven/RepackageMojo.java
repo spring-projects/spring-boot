@@ -59,6 +59,7 @@ import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningL
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Björn Lindström
+ * @since 1.0.0
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
@@ -69,35 +70,35 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The Maven project.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
 	/**
 	 * Maven project helper utils.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Component
 	private MavenProjectHelper projectHelper;
 
 	/**
 	 * Directory containing the generated archive.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
 	private File outputDirectory;
 
 	/**
 	 * Name of the generated archive.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
 	private String finalName;
 
 	/**
 	 * Skip the execution.
-	 * @since 1.2
+	 * @since 1.2.0
 	 */
 	@Parameter(property = "spring-boot.repackage.skip", defaultValue = "false")
 	private boolean skip;
@@ -112,14 +113,14 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * allows to deploy it alongside to the original one, see <a href=
 	 * "https://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter
 	private String classifier;
 
 	/**
 	 * Attach the repackaged archive to be installed and deployed.
-	 * @since 1.4
+	 * @since 1.4.0
 	 */
 	@Parameter(defaultValue = "true")
 	private boolean attach = true;
@@ -127,7 +128,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter
 	private String mainClass;
@@ -136,7 +137,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
 	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
 	 * archive type.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter
 	private LayoutType layout;
@@ -145,7 +146,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * The layout factory that will be used to create the executable archive if no
 	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
 	 * parties.
-	 * @since 1.5
+	 * @since 1.5.0
 	 */
 	@Parameter
 	private LayoutFactory layoutFactory;
@@ -154,7 +155,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
 	 * Specify each library as a {@code <dependency>} with a {@code <groupId>} and a
 	 * {@code <artifactId>} and they will be unpacked at runtime.
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter
 	private List<Dependency> requiresUnpack;
@@ -168,7 +169,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * or war that has been made fully-executable. It is recommended that you only enable
 	 * this option if you intend to execute it directly, rather than running it with
 	 * {@code java -jar} or deploying it to a servlet container.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter(defaultValue = "false")
 	private boolean executable;
@@ -176,28 +177,28 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * The embedded launch script to prepend to the front of the jar if it is fully
 	 * executable. If not specified the 'Spring Boot' default script will be used.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter
 	private File embeddedLaunchScript;
 
 	/**
 	 * Properties that should be expanded in the embedded launch script.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter
 	private Properties embeddedLaunchScriptProperties;
 
 	/**
 	 * Exclude Spring Boot devtools from the repackaged archive.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter(defaultValue = "true")
 	private boolean excludeDevtools = true;
 
 	/**
 	 * Include system scoped dependencies.
-	 * @since 1.4
+	 * @since 1.4.0
 	 */
 	@Parameter(defaultValue = "false")
 	public boolean includeSystemScope;

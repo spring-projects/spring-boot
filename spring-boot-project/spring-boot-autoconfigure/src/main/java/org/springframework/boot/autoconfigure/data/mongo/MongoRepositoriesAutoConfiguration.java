@@ -50,6 +50,7 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long
+ * @since 1.0.0
  * @see EnableMongoRepositories
  */
 @Configuration

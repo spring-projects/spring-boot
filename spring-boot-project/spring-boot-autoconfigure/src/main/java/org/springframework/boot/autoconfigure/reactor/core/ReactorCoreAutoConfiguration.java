@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Brian Clozel
  * @author Eddú Meléndez
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass({ Mono.class, Flux.class })

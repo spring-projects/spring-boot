@@ -23,7 +23,6 @@ import java.util.List;
  * A raw view of a hint used for parsing only.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class ConfigurationMetadataHint {
 

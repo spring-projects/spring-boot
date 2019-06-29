@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * Contains details of a servlet that is exposed as an actuator endpoint.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public final class EndpointServlet {
 

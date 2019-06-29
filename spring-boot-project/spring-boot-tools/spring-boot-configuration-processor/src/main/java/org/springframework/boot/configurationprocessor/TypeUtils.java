@@ -45,7 +45,6 @@ import javax.tools.Diagnostic.Kind;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.2.0
  */
 class TypeUtils {
 
