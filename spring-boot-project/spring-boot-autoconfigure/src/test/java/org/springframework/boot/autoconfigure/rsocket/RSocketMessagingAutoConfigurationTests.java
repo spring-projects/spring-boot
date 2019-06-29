@@ -72,7 +72,7 @@ class RSocketMessagingAutoConfigurationTests {
 		@Bean
 		public RSocketStrategies rSocketStrategies() {
 			return RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly()).build();
+					.decoder(StringDecoder.allMimeTypes()).build();
 		}
 
 	}
@@ -84,7 +84,7 @@ class RSocketMessagingAutoConfigurationTests {
 		public RSocketMessageHandler customMessageHandler() {
 			RSocketMessageHandler messageHandler = new RSocketMessageHandler();
 			RSocketStrategies strategies = RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly()).build();
+					.decoder(StringDecoder.allMimeTypes()).build();
 			messageHandler.setRSocketStrategies(strategies);
 			return messageHandler;
 		}

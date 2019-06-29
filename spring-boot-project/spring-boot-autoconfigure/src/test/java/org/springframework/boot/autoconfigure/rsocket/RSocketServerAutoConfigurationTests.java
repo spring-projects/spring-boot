@@ -101,7 +101,7 @@ class RSocketServerAutoConfigurationTests {
 		public RSocketMessageHandler messageHandler() {
 			RSocketMessageHandler messageHandler = new RSocketMessageHandler();
 			messageHandler.setRSocketStrategies(RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly()).build());
+					.decoder(StringDecoder.allMimeTypes()).build());
 			return messageHandler;
 		}
 

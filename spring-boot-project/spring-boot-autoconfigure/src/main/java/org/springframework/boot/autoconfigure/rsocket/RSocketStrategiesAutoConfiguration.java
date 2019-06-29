@@ -61,7 +61,7 @@ public class RSocketStrategiesAutoConfiguration {
 		RSocketStrategies.Builder builder = RSocketStrategies.builder();
 		builder.reactiveAdapterStrategy(ReactiveAdapterRegistry.getSharedInstance());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-		builder.decoder(StringDecoder.textPlainOnly());
+		builder.decoder(StringDecoder.allMimeTypes());
 		builder.encoder(CharSequenceEncoder.allMimeTypes());
 		builder.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT));
 		return builder.build();
