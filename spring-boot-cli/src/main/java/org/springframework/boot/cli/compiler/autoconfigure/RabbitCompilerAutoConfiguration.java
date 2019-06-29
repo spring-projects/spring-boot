@@ -29,6 +29,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

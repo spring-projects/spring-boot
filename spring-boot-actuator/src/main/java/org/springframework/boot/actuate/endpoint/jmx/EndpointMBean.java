@@ -31,6 +31,7 @@ import org.springframework.util.ObjectUtils;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  * @author Phillip Webb
+ * @since 1.0.0
  * @see JmxEndpoint
  * @see DataEndpointMBean
  */

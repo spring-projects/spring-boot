@@ -32,7 +32,6 @@ import java.util.TreeSet;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
- * @since 1.2.0
  */
 class ServiceCapabilitiesReportGenerator {
 

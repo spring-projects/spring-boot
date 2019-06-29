@@ -31,7 +31,6 @@ import org.springframework.util.StreamUtils;
  * Helper class used to generate the project.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class ProjectGenerator {
 

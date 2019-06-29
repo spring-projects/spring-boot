@@ -36,7 +36,6 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
- * @since 1.2.0
  */
 class GroovyGrabDependencyResolver implements DependencyResolver {
 

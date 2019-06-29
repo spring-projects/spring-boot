@@ -34,7 +34,6 @@ import org.springframework.core.type.AnnotationMetadata;
  * be registered via the inner {@link Registrar} class.
  *
  * @author Dave Syer
- * @since 1.1.2
  */
 class DataSourceInitializerPostProcessor implements BeanPostProcessor, Ordered {
 

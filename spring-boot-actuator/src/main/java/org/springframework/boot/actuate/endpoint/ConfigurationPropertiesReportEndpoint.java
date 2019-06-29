@@ -63,6 +63,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.configprops")
 public class ConfigurationPropertiesReportEndpoint extends AbstractEndpoint<Map<String, Object>>

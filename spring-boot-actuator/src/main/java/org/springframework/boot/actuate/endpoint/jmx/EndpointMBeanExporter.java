@@ -62,6 +62,7 @@ import org.springframework.util.ObjectUtils;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @since 1.0.0
  */
 public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle, ApplicationContextAware {
 

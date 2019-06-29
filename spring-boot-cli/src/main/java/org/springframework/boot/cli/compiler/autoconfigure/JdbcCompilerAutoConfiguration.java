@@ -27,6 +27,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for Spring JDBC.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class JdbcCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

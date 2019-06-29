@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Configuration
 @Conditional(JmxEnabledCondition.class)

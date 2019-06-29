@@ -121,6 +121,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Sébastien Deleuze
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnWebApplication

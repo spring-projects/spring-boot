@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 public class InMemoryMetricRepository implements MetricRepository {
 

@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  * {@link PublicMetrics} exposed from a {@link RichGaugeReader}.
  *
  * @author Johannes Edmeier
- * @since 1.2
+ * @since 1.2.0
  */
 public class RichGaugeReaderPublicMetrics implements PublicMetrics {
 

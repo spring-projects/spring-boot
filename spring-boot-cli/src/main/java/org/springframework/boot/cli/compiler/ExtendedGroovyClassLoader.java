@@ -46,6 +46,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 

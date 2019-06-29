@@ -45,6 +45,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Greg Turnquist
  * @author Josh Long
  * @author Toshiaki Maki
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class, MultipartConfigElement.class })

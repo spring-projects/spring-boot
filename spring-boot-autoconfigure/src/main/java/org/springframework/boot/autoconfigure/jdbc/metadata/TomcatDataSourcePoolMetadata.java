@@ -23,6 +23,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
  * {@link DataSourcePoolMetadata} for a Tomcat DataSource.
  *
  * @author Stephane Nicoll
+ * @since 1.2.0
  */
 public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DataSource> {
 

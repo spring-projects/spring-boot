@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * distinguish it from others that might be installed by the user).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Qualifier
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })

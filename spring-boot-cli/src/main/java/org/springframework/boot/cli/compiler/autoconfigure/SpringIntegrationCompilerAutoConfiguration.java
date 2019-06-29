@@ -28,6 +28,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  *
  * @author Dave Syer
  * @author Artem Bilan
+ * @since 1.0.0
  */
 public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

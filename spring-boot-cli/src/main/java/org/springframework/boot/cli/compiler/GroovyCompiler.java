@@ -70,6 +70,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class GroovyCompiler {
 

@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.metrics.Metric;
  * Default implementation of {@link GaugeService}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class DefaultGaugeService implements GaugeService {
 

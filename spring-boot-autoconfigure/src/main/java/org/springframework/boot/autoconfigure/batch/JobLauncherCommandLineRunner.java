@@ -60,6 +60,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Jean-Pierre Bergamin
+ * @since 1.0.0
  */
 public class JobLauncherCommandLineRunner implements CommandLineRunner, ApplicationEventPublisherAware {
 

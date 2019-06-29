@@ -39,6 +39,7 @@ import org.springframework.util.SystemPropertyUtils;
  * application.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see #main(String...)
  * @see CommandRunner
  */

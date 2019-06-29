@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
  * metrics with a common name prefix (their group name).
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public interface MultiMetricRepository extends PrefixMetricReader, PrefixMetricWriter {
 

@@ -38,7 +38,6 @@ import org.springframework.util.SystemPropertyUtils;
  * Shared logic for the {@link InstallCommand} and {@link UninstallCommand}.
  *
  * @author Andy Wilkinson
- * @since 1.2.0
  */
 class Installer {
 

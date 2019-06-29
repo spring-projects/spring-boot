@@ -28,6 +28,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

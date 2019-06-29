@@ -75,6 +75,7 @@ import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolv
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @since 1.0.0
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration

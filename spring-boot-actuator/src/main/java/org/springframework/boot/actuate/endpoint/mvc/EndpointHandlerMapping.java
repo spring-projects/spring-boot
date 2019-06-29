@@ -37,6 +37,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class EndpointHandlerMapping extends AbstractEndpointHandlerMapping<MvcEndpoint> {
 

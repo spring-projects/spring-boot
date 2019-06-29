@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link ManagementServerProperties} bean.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @Configuration
 @AutoConfigureAfter(ServerPropertiesAutoConfiguration.class)

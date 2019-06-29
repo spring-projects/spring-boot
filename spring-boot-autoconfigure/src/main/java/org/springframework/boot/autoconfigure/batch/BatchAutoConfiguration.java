@@ -60,6 +60,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })

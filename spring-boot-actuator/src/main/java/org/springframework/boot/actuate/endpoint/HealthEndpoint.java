@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.health")
 public class HealthEndpoint extends AbstractEndpoint<Health> {

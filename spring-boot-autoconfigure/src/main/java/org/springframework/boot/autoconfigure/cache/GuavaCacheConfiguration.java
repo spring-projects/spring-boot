@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
  * Guava cache configuration.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ CacheBuilder.class, GuavaCacheManager.class })

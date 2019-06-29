@@ -37,6 +37,7 @@ import org.springframework.core.env.Environment;
  * endpoints.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 

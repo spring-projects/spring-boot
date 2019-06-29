@@ -36,7 +36,7 @@ import org.springframework.kafka.core.ProducerFactory;
  * common properties to the producer and consumer.
  *
  * @author Gary Russell
- * @since 1.5
+ * @since 1.5.0
  */
 public class KafkaSpecialProducerConsumerConfigExample {
 

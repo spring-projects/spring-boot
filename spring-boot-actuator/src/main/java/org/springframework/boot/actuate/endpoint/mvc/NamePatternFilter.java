@@ -33,7 +33,6 @@ import java.util.regex.PatternSyntaxException;
  * @author Sergei Egorov
  * @author Andy Wilkinson
  * @author Dylian Bego
- * @since 1.3.0
  */
 abstract class NamePatternFilter<T> {
 

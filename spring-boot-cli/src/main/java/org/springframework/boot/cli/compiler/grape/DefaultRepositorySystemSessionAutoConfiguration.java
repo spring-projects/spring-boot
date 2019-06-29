@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * configuration, applies sensible defaults.
  *
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class DefaultRepositorySystemSessionAutoConfiguration implements RepositorySystemSessionAutoConfiguration {
 

@@ -49,6 +49,7 @@ import org.eclipse.aether.util.filter.DependencyFilterUtils;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
 public class AetherGrapeEngine implements GrapeEngine {

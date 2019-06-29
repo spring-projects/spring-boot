@@ -28,6 +28,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @param <T> the value type
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class Metric<T extends Number> {
 

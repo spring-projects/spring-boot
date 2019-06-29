@@ -41,6 +41,7 @@ import org.springframework.core.env.Environment;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Nasko Vasilev
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {

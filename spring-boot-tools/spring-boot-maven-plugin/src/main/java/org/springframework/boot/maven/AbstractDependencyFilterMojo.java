@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
  *
  * @author Stephane Nicoll
  * @author David Turanski
- * @since 1.1
+ * @since 1.1.0
  */
 public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
@@ -43,7 +43,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * Collection of artifact definitions to include. The {@link Include} element defines
 	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
 	 * {@code classifier} property.
-	 * @since 1.2
+	 * @since 1.2.0
 	 */
 	@Parameter
 	private List<Include> includes;
@@ -52,21 +52,21 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
 	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
 	 * {@code classifier} property.
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter
 	private List<Exclude> excludes;
 
 	/**
 	 * Comma separated list of groupId names to exclude (exact match).
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter(property = "excludeGroupIds", defaultValue = "")
 	private String excludeGroupIds;
 
 	/**
 	 * Comma separated list of artifact names to exclude (exact match).
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter(property = "excludeArtifactIds", defaultValue = "")
 	private String excludeArtifactIds;

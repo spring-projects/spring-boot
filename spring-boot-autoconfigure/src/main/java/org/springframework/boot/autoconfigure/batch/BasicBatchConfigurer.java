@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @since 1.0.0
  */
 public class BasicBatchConfigurer implements BatchConfigurer {
 

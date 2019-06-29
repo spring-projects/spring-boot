@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @since 1.0.0
  * @see #get(ClassLoader)
  */
 public enum EmbeddedDatabaseConnection {

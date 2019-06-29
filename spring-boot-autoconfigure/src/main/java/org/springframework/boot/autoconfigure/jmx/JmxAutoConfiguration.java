@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
  * To disable auto export of annotation beans set {@code spring.jmx.enabled: false}.
  *
  * @author Christian Dupuis
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })

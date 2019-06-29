@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * {@link Handler} that responds with a specific {@link HttpStatus}.
  *
  * @author Phillip Webb
+ * @since 1.3.0
  */
 public class HttpStatusHandler implements Handler {
 

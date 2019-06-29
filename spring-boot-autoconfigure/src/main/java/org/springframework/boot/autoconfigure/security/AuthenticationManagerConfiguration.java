@@ -61,6 +61,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Dave Syer
  * @author Rob Winch
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)

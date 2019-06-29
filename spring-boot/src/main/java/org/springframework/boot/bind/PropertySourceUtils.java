@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.core.env.PropertySources;
  * Convenience class for manipulating PropertySources.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see PropertySource
  * @see PropertySources
  */

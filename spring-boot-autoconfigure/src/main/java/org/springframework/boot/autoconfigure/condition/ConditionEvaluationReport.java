@@ -44,6 +44,7 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public final class ConditionEvaluationReport {
 

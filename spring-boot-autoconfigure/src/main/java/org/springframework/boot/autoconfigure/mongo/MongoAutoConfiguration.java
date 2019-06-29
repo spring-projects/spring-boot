@@ -38,6 +38,7 @@ import org.springframework.core.env.Environment;
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass(MongoClient.class)

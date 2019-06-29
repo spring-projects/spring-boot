@@ -60,6 +60,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Madhura Bhave
+ * @since 1.5.0
  */
 public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint> extends RequestMappingHandlerMapping {
 

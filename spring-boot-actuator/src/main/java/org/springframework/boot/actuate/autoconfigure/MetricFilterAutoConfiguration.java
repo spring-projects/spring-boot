@@ -40,6 +40,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Sebastian Kirsch
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })

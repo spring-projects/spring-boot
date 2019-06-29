@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.springframework.boot;
  * {@link SpringApplication}. Can be used on exceptions as well as directly on beans.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see SpringApplication#exit(org.springframework.context.ApplicationContext,
  * ExitCodeGenerator...)
  */

@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
  * names are stored as a zset under "keys." + {@code [prefix]}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class RedisMultiMetricRepository implements MultiMetricRepository {
 

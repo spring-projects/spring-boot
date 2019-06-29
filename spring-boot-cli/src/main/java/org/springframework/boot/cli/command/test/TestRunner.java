@@ -30,7 +30,8 @@ import org.springframework.util.ReflectionUtils;
  * Compile and run groovy based tests.
  *
  * @author Phillip Webb
- * @author Graeme Rocher
+ * @author Graeme Roche
+ * @since 1.0.0
  */
 public class TestRunner {
 

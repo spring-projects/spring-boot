@@ -59,6 +59,7 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnWebApplication

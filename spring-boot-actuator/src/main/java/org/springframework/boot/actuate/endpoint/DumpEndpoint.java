@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link Endpoint} to expose thread info.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.dump")
 public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {

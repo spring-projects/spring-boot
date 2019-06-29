@@ -38,6 +38,7 @@ import org.springframework.boot.cli.util.ResourceUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class SpringApplicationRunner {
 

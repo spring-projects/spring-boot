@@ -29,6 +29,7 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.0.0
  * @deprecated as of 1.5 in favor of
  * {@link org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration}
  */

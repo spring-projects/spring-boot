@@ -27,6 +27,7 @@ import org.springframework.jmx.export.annotation.ManagedOperation;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class ShutdownEndpointMBean extends EndpointMBean {
 

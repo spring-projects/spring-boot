@@ -54,6 +54,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Andy Wilkinson
  * @author Venil Noronha
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 

@@ -54,7 +54,6 @@ import org.springframework.util.StringUtils;
  * Cache configuration for JSR-107 compliant providers.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ Caching.class, JCacheCacheManager.class })

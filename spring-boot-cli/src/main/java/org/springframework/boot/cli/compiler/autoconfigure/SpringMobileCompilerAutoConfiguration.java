@@ -30,6 +30,7 @@ import org.springframework.boot.groovy.EnableDeviceResolver;
  *
  * @author Roy Clarkson
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class SpringMobileCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

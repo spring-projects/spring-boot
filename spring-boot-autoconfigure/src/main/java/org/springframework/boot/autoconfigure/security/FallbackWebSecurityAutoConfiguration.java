@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * defines an empty {@code @EnableWebSecurity}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 @ConditionalOnBean(WebSecurityConfigurerAdapter.class)

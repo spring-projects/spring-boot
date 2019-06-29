@@ -37,6 +37,7 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.mappings")
 public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {

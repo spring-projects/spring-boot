@@ -24,7 +24,6 @@ import java.util.Map;
  * Represent a project type that is supported by a service.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class ProjectType {
 

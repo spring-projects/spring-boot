@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Greg Turnquist
+ * @since 1.0.0
  */
 public abstract class SpringBootCondition implements Condition {
 

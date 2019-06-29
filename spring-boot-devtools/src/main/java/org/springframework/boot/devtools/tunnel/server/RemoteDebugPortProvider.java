@@ -26,6 +26,7 @@ import org.springframework.boot.lang.UsesUnsafeJava;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
 public class RemoteDebugPortProvider implements PortProvider {
 

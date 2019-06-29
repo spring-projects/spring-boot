@@ -33,7 +33,6 @@ import org.springframework.util.ReflectionUtils;
  * restarts.
  *
  * @author Andy Wilkinson
- * @since 1.3.0
  */
 class HateoasObjenesisCacheDisabler {
 

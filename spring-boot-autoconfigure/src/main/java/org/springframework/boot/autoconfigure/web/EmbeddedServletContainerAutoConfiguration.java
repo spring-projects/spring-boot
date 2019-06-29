@@ -59,6 +59,7 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @author Ivan Sopov
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration

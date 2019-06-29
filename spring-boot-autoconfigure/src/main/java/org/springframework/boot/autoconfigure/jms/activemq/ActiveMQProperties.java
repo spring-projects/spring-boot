@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
  * @author Venil Noronha
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {

@@ -62,7 +62,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.2.0
  */
 final class BeanTypeRegistry implements SmartInitializingSingleton {
 

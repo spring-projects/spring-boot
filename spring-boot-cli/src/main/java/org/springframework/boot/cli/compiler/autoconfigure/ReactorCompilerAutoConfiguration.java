@@ -27,6 +27,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for the Reactor.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

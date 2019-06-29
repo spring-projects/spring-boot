@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  * document</a>.
  *
  * @author Luke Taylor
+ * @since 1.0.0
  */
 public final class RichGauge {
 

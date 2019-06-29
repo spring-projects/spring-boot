@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
  * @param <T> the type to store
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class SimpleInMemoryRepository<T> {
 

@@ -43,6 +43,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ AuthenticationManager.class, GlobalAuthenticationConfigurerAdapter.class })

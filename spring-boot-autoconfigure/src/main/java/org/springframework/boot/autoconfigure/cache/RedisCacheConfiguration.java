@@ -33,7 +33,6 @@ import org.springframework.data.redis.core.RedisTemplate;
  * Redis cache configuration.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration.class)

@@ -29,6 +29,7 @@ import org.springframework.boot.cli.app.SpringApplicationLauncher;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public final class PackagedSpringApplicationLauncher {
 

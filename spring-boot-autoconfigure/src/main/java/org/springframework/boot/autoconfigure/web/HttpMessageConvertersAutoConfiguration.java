@@ -44,6 +44,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Andy Wilkinson
  * @author Sebastien Deleuze
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)

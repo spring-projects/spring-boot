@@ -45,6 +45,7 @@ import org.springframework.core.ResolvableType;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class AutoConfigurationReportLoggingInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {

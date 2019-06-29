@@ -42,6 +42,7 @@ import org.springframework.util.ReflectionUtils;
  * authentication filter and an authentication entry point.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @Conditional(EnableOAuth2SsoCondition.class)

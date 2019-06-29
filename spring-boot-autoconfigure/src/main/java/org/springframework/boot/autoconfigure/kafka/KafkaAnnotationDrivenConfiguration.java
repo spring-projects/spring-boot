@@ -29,7 +29,6 @@ import org.springframework.kafka.core.ConsumerFactory;
  * Configuration for Kafka annotation-driven support.
  *
  * @author Gary Russell
- * @since 1.5.0
  */
 @Configuration
 @ConditionalOnClass(EnableKafka.class)

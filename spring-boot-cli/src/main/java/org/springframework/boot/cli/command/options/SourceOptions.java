@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Greg Turnquist
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class SourceOptions {
 

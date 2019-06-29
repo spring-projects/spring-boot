@@ -52,6 +52,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Jay Anderson
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class DropwizardMetricServices implements CounterService, GaugeService {
 

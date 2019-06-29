@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @see ServerProperties
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
 public class ManagementServerProperties implements SecurityPrerequisite {

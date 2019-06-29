@@ -114,6 +114,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Matt Benson
+ * @since 1.0.0
  * @see ShellProperties
  * @deprecated as of 1.5 since CRaSH is not actively maintained
  */

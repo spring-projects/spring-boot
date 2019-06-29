@@ -73,6 +73,7 @@ import org.springframework.web.util.HtmlUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnWebApplication

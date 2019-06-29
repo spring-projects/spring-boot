@@ -41,6 +41,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke
+ * @since 1.0.0
  */
 public abstract class AbstractRepositoryConfigurationSourceSupport
 		implements BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {

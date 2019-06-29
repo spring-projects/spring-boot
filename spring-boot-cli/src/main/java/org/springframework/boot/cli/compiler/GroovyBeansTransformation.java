@@ -39,6 +39,7 @@ import org.springframework.core.annotation.Order;
  * interface.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @Order(GroovyBeansTransformation.ORDER)
 public class GroovyBeansTransformation implements ASTTransformation {

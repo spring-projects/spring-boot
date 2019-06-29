@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  * @param <T> the endpoint data type
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @since 1.0.0
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAware {
 

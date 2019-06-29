@@ -32,7 +32,6 @@ import org.springframework.util.StringUtils;
  * {@link Condition} that checks for JNDI locations.
  *
  * @author Phillip Webb
- * @since 1.2.0
  * @see ConditionalOnJndi
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)

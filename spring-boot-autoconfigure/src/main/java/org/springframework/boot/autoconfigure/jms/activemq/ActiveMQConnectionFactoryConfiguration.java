@@ -39,7 +39,6 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Aurélien Leboulanger
- * @since 1.1.0
  */
 @Configuration
 @ConditionalOnMissingBean(ConnectionFactory.class)

@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
  * {@link EndpointHandlerMapping}).
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see NamedMvcEndpoint
  */
 public interface MvcEndpoint {

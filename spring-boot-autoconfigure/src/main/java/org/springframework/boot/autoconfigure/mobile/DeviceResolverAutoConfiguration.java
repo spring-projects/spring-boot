@@ -39,6 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * {@link DeviceResolver}.
  *
  * @author Roy Clarkson
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ DeviceResolverHandlerInterceptor.class, DeviceHandlerMethodArgumentResolver.class })

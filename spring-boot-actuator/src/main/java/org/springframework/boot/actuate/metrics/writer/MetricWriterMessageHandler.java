@@ -29,6 +29,7 @@ import org.springframework.messaging.MessagingException;
  * {@link MetricWriter}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see MessageChannelMetricWriter
  */
 public final class MetricWriterMessageHandler implements MessageHandler {

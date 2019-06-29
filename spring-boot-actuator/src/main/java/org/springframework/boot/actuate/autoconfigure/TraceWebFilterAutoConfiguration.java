@@ -40,6 +40,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * tracing}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })

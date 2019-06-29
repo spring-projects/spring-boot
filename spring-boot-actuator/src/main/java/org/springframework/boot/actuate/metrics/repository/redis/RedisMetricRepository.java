@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * metrics).
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class RedisMetricRepository implements MetricRepository {
 

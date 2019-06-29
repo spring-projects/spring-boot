@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.apache.catalina.core.ApplicationContext;
 
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /**
@@ -28,10 +29,12 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * {@link AbstractEmbeddedServletContainerFactory} when possible.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see EmbeddedServletContainer
  * @see AbstractEmbeddedServletContainerFactory
  * @see JettyEmbeddedServletContainerFactory
  * @see TomcatEmbeddedServletContainerFactory
+ * @see UndertowEmbeddedServletContainerFactory
  */
 public interface EmbeddedServletContainerFactory {
 

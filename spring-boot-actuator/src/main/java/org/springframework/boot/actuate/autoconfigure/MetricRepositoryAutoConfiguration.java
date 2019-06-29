@@ -69,12 +69,13 @@ import org.springframework.messaging.MessageChannel;
  * application context via a {@link MetricCopyExporter} firing every 5 seconds (disable
  * this by setting {@code spring.metrics.export.enabled=false}).
  *
+ * @author Dave Syer
+ * @since 1.0.0
  * @see GaugeService
  * @see CounterService
  * @see MetricWriter
  * @see InMemoryMetricRepository
  * @see Exporter
- * @author Dave Syer
  */
 @Configuration
 public class MetricRepositoryAutoConfiguration {

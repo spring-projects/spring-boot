@@ -92,6 +92,7 @@ import org.springframework.util.StringUtils;
  * @author Quinten De Swaef
  * @author Venil Noronha
  * @author Aurélien Leboulanger
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, EnvironmentAware, Ordered {

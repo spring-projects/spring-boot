@@ -30,6 +30,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  *
  * @author Greg Turnquist
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class TestCommand extends OptionParsingCommand {
 

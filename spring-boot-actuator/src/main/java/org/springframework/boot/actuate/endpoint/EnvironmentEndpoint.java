@@ -39,6 +39,7 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.env")
 public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {

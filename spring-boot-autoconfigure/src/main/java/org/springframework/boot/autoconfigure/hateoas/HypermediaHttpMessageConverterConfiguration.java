@@ -41,6 +41,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * enabled.
  *
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
 @Configuration
 public class HypermediaHttpMessageConverterConfiguration {

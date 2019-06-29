@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "endpoints.beans")
 public class BeansEndpoint extends AbstractEndpoint<List<Object>> implements ApplicationContextAware {

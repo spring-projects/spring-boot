@@ -35,6 +35,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
  * {@link Command} to grab the dependencies of one or more Groovy scripts.
  *
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class GrabCommand extends OptionParsingCommand {
 

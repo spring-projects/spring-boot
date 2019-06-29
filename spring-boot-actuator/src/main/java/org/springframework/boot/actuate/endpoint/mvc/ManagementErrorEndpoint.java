@@ -32,6 +32,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * because of the way the handler mappings are set up it will not be detected.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @Controller
 public class ManagementErrorEndpoint {
