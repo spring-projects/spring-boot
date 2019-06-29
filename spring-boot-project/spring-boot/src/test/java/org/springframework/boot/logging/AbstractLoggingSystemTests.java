@@ -38,18 +38,18 @@ public abstract class AbstractLoggingSystemTests {
 	private String originalTempFolder;
 
 	@BeforeEach
-	public void configureTempDir(@TempDir Path temp) {
+	void configureTempDir(@TempDir Path temp) {
 		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
 		System.setProperty(JAVA_IO_TMPDIR, temp.toAbsolutePath().toString());
 	}
 
 	@AfterEach
-	public void reinstateTempDir() {
+	void reinstateTempDir() {
 		System.setProperty(JAVA_IO_TMPDIR, this.originalTempFolder);
 	}
 
 	@AfterEach
-	public void clear() {
+	void clear() {
 		System.clearProperty(LoggingSystemProperties.LOG_FILE);
 		System.clearProperty(LoggingSystemProperties.PID_KEY);
 	}
