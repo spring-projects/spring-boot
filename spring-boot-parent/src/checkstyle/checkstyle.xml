@@ -7,5 +7,9 @@
 			<property name="illegalPkgs" value="sun, org.apache.commons.(?!codec|dbcp|dbcp2|logging|pool|pool2).*, com.google.common.(?!cache).*, org.flywaydb.core.internal"/>
 			<property name="regexp" value="true"/>
 		</module>
+		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">
+			<property name="publicOnlySinceTags" value="true" />
+			<property name="requireSinceTag" value="true" />
+		</module>
 	</module>
 </module>

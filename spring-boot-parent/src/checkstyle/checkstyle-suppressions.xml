@@ -28,4 +28,5 @@
 	<suppress files="Rating\.java" checks="JavadocVariable" />
 	<suppress files="Direction\.java" checks="JavadocVariable" />
 	<suppress files="JooqExamples\.java" checks="AvoidStaticImport"/>
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 </suppressions>
