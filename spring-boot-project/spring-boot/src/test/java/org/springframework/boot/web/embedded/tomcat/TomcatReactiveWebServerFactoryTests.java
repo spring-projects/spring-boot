@@ -251,7 +251,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
-	public interface BlockedPortAction {
+	private interface BlockedPortAction {
 
 		void run(int port);
 
