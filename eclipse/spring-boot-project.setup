@@ -59,7 +59,7 @@
     <requirement
         name="org.eclipse.jdt.feature.group"/>
     <requirement
-        name="io.spring.javaformat.eclipse.feature.feature.group" versionRange="[0.0.14,0.0.15)"/>
+        name="io.spring.javaformat.eclipse.feature.feature.group" versionRange="[0.0.15,0.0.16)"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
     <requirement
