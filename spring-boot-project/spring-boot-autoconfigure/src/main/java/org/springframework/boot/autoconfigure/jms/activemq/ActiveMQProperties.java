@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
  * @author Venil Noronha
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {

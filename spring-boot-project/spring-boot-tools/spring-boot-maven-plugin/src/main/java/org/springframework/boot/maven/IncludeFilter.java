@@ -26,7 +26,7 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
  * {@link Include}.
  *
  * @author David Turanski
- * @since 1.2
+ * @since 1.2.0
  */
 public class IncludeFilter extends DependencyFilter {
 

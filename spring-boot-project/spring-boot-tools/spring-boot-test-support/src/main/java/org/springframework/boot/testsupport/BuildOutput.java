@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
  * Provides access to build output locations in a build system and IDE agnostic manner.
  *
  * @author Andy Wilkinson
+ * @since 2.2.0
  */
 public class BuildOutput {
 

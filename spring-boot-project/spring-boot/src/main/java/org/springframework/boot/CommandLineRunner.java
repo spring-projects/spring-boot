@@ -29,6 +29,7 @@ import org.springframework.core.annotation.Order;
  * consider using {@link ApplicationRunner}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see ApplicationRunner
  */
 @FunctionalInterface

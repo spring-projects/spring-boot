@@ -29,6 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * Docker is not available.
  *
  * @author Andy Wilkinson
+ * @since 2.2.0
  */
 @ExtendWith(DockerIsAvailableCondition.class)
 @Testcontainers

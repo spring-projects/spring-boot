@@ -49,6 +49,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author David Liu
  * @author Daniel Young
  * @author Dmytro Nosan
+ * @since 1.3.0
  * @see RunMojo
  * @see StartMojo
  */
@@ -58,7 +59,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The Maven project.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
@@ -69,14 +70,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * them to appear twice if {@code ClassLoader.getResources()} is called. Please
 	 * consider adding {@code spring-boot-devtools} to your project instead as it provides
 	 * this feature and many more.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.addResources", defaultValue = "false")
 	private boolean addResources = false;
 
 	/**
 	 * Path to agent jar. NOTE: a forked process is required to use this feature.
-	 * @since 1.0
+	 * @since 1.0.0
 	 * @deprecated since 2.2.0 in favor of {@code agents}
 	 */
 	@Deprecated
@@ -85,14 +86,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Path to agent jars. NOTE: a forked process is required to use this feature.
-	 * @since 2.2
+	 * @since 2.2.0
 	 */
 	@Parameter(property = "spring-boot.run.agents")
 	private File[] agents;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.noverify")
 	private boolean noverify = false;
@@ -100,7 +101,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Current working directory to use for the application. If not specified, basedir
 	 * will be used. NOTE: a forked process is required to use this feature.
-	 * @since 1.5
+	 * @since 1.5.0
 	 */
 	@Parameter(property = "spring-boot.run.workingDirectory")
 	private File workingDirectory;
@@ -109,7 +110,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * JVM arguments that should be associated with the forked process used to run the
 	 * application. On command line, make sure to wrap multiple values between quotes.
 	 * NOTE: a forked process is required to use this feature.
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.run.jvmArguments")
 	private String jvmArguments;
@@ -117,7 +118,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * List of JVM system properties to pass to the process. NOTE: a forked process is
 	 * required to use this feature.
-	 * @since 2.1
+	 * @since 2.1.0
 	 */
 	@Parameter
 	private Map<String, String> systemPropertyVariables;
@@ -126,7 +127,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * List of Environment variables that should be associated with the forked process
 	 * used to run the application. NOTE: a forked process is required to use this
 	 * feature.
-	 * @since 2.1
+	 * @since 2.1.0
 	 */
 	@Parameter
 	private Map<String, String> environmentVariables;
@@ -134,7 +135,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
 	 * separate multiple arguments.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.arguments")
 	private String[] arguments;
@@ -143,7 +144,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * The spring profiles to activate. Convenience shortcut of specifying the
 	 * 'spring.profiles.active' argument. On command line use commas to separate multiple
 	 * profiles.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.run.profiles")
 	private String[] profiles;
@@ -151,7 +152,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.main-class")
 	private String mainClass;
@@ -159,7 +160,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Additional folders besides the classes directory that should be added to the
 	 * classpath.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.folders")
 	private String[] folders;
@@ -167,7 +168,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
 	 * the archive.
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
 	private File classesDirectory;
@@ -176,14 +177,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * Flag to indicate if the run processes should be forked. Disabling forking will
 	 * disable some features such as an agent, custom JVM arguments, devtools or
 	 * specifying the working directory to use.
-	 * @since 1.2
+	 * @since 1.2.0
 	 */
 	@Parameter(property = "spring-boot.run.fork", defaultValue = "true")
 	private boolean fork;
 
 	/**
 	 * Flag to include the test classpath when running.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
 	private Boolean useTestClasspath;

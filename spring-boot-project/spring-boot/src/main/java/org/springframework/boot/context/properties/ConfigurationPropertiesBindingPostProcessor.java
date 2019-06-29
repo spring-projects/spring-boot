@@ -43,6 +43,7 @@ import org.springframework.validation.annotation.Validated;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 public class ConfigurationPropertiesBindingPostProcessor
 		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware, InitializingBean {

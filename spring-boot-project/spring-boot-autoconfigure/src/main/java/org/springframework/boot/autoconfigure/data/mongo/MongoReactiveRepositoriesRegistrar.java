@@ -29,7 +29,6 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * Repositories.
  *
  * @author Mark Paluch
- * @since 2.0.0
  */
 class MongoReactiveRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 

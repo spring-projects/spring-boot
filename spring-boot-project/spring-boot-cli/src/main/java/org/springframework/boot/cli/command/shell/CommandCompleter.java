@@ -39,6 +39,7 @@ import org.springframework.boot.cli.util.Log;
  *
  * @author Jon Brisbin
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class CommandCompleter extends StringsCompleter {
 

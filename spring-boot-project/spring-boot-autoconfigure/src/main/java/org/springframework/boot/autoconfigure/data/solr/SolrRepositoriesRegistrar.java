@@ -29,7 +29,6 @@ import org.springframework.data.solr.repository.config.SolrRepositoryConfigExten
  * repositories.
  *
  * @author Christoph Strobl
- * @since 1.1.0
  */
 class SolrRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 

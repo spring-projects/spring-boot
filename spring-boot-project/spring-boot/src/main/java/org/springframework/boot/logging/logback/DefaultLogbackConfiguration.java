@@ -47,7 +47,6 @@ import org.springframework.util.unit.DataSize;
  * @author Madhura Bhave
  * @author Vedran Pavic
  * @author Robert Thornton
- * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
 

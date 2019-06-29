@@ -26,6 +26,7 @@ import org.springframework.boot.cli.command.options.OptionHelp;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.0.0
  */
 public abstract class AbstractCommand implements Command {
 

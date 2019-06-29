@@ -28,6 +28,7 @@ import org.springframework.boot.loader.Launcher;
  * An archive that can be launched by the {@link Launcher}.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see JarFileArchive
  */
 public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {

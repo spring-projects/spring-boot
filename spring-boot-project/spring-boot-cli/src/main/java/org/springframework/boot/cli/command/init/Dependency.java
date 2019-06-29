@@ -20,7 +20,6 @@ package org.springframework.boot.cli.command.init;
  * Provide some basic information about a dependency.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 final class Dependency {
 

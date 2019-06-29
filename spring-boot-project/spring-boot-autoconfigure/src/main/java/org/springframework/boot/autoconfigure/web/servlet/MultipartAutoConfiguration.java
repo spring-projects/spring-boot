@@ -47,6 +47,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Greg Turnquist
  * @author Josh Long
  * @author Toshiaki Maki
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class, MultipartConfigElement.class })

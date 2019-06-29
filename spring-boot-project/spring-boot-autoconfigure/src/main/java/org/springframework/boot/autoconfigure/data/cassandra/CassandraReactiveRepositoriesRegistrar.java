@@ -29,7 +29,6 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * Reactive Repositories.
  *
  * @author Eddú Meléndez
- * @since 2.0.0
  */
 class CassandraReactiveRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 

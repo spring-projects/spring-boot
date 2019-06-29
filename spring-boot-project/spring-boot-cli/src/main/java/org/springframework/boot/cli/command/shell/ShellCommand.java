@@ -24,6 +24,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  * {@link Command} to start a nested REPL shell.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see Shell
  */
 public class ShellCommand extends AbstractCommand {

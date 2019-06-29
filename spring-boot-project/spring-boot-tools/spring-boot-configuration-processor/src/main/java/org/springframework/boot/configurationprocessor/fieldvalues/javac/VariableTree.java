@@ -25,7 +25,6 @@ import javax.lang.model.element.Modifier;
  * Reflection based access to {@code com.sun.source.tree.VariableTree}.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 class VariableTree extends ReflectionWrapper {
 

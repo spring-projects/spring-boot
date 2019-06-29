@@ -20,6 +20,7 @@ package org.springframework.boot.logging;
  * Logging levels supported by a {@link LoggingSystem}.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public enum LogLevel {
 

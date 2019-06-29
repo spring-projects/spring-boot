@@ -33,7 +33,6 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(JtaTransactionManager.class)

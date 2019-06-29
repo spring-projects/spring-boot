@@ -35,7 +35,6 @@ import org.springframework.util.Assert;
  * Allows programmatic configuration of logback which is usually faster than parsing XML.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 class LogbackConfigurator {
 

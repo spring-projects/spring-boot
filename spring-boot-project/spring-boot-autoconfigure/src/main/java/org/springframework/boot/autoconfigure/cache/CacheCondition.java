@@ -34,7 +34,6 @@ import org.springframework.core.type.ClassMetadata;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Madhura Bhave
- * @since 1.3.0
  */
 class CacheCondition extends SpringBootCondition {
 

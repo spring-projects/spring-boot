@@ -33,7 +33,6 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
  * Configuration for HTTP message converters that use Jackson.
  *
  * @author Andy Wilkinson
- * @since 1.2.2
  */
 @Configuration(proxyBeanMethods = false)
 class JacksonHttpMessageConvertersConfiguration {

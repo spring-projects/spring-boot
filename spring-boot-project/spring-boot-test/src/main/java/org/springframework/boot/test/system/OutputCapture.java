@@ -38,7 +38,6 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 2.2.0
  * @see OutputCaptureExtension
  * @see OutputCaptureRule
  */

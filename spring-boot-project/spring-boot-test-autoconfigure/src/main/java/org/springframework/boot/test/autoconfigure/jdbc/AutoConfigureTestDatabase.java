@@ -35,6 +35,7 @@ import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMappin
  * instead of any application defined or auto-configured {@link DataSource}.
  *
  * @author Phillip Webb
+ * @since 1.5.0
  * @see TestDatabaseAutoConfiguration
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })

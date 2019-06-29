@@ -20,7 +20,6 @@ package org.springframework.boot.configurationprocessor.fieldvalues.javac;
  * Reflection base alternative for {@code com.sun.source.tree.TreeVisitor}.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 interface TreeVisitor {
 

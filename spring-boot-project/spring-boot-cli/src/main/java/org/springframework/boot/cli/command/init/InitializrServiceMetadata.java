@@ -30,7 +30,6 @@ import org.json.JSONObject;
  * Define the metadata available for a particular service instance.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class InitializrServiceMetadata {
 

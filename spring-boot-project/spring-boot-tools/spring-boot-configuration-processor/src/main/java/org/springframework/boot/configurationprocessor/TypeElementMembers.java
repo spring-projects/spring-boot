@@ -37,7 +37,6 @@ import javax.lang.model.util.ElementFilter;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.2.0
  */
 class TypeElementMembers {
 

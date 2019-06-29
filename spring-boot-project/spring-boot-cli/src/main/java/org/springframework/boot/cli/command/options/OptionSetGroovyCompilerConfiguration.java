@@ -31,6 +31,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
  * {@link GroovyCompilerConfiguration}.
  *
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class OptionSetGroovyCompilerConfiguration implements GroovyCompilerConfiguration {
 

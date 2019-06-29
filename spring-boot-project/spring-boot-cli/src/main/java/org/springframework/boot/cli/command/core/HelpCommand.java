@@ -36,6 +36,7 @@ import org.springframework.boot.cli.util.Log;
  * Internal {@link Command} used for 'help' requests.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class HelpCommand extends AbstractCommand {
 

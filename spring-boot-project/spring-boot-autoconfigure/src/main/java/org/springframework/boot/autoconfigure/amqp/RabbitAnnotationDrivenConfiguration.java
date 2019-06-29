@@ -37,7 +37,6 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  * @author Josh Thornhill
- * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableRabbit.class)

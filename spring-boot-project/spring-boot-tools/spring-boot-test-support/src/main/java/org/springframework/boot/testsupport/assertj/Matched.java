@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  *
  * @param <T> the type of object that the condition accepts
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public final class Matched<T> extends Condition<T> {
 

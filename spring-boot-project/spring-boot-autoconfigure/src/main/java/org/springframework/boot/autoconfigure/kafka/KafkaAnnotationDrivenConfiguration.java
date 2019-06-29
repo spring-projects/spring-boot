@@ -42,7 +42,6 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  *
  * @author Gary Russell
  * @author Eddú Meléndez
- * @since 1.5.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableKafka.class)

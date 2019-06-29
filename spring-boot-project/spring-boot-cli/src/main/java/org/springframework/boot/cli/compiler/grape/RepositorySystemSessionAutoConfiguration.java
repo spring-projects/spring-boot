@@ -24,6 +24,7 @@ import org.eclipse.aether.RepositorySystem;
  * an {@link AetherGrapeEngine}.
  *
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface RepositorySystemSessionAutoConfiguration {

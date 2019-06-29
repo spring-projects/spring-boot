@@ -60,6 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @since 1.4.0
  * @see AutoConfigureDataJpa
  * @see AutoConfigureTestDatabase
  * @see AutoConfigureTestEntityManager

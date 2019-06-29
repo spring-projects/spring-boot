@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.audit.AuditEventRepository;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @since 1.0.0
  */
 public class AuditListener extends AbstractAuditListener {
 

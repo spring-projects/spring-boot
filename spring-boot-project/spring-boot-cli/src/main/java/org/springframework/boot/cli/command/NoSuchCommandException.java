@@ -20,6 +20,7 @@ package org.springframework.boot.cli.command;
  * Exception used when a command is not found.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class NoSuchCommandException extends CommandException {
 

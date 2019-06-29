@@ -25,7 +25,6 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
  * class with the same name is not already explicitly imported.
  *
  * @author Dave Syer
- * @since 1.1
  */
 class SmartImportCustomizer extends ImportCustomizer {
 

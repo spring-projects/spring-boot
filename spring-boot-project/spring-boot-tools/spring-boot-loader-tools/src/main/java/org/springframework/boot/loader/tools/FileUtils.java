@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public abstract class FileUtils {
 

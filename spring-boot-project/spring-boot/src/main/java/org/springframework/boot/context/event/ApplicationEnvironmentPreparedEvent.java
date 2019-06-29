@@ -25,6 +25,7 @@ import org.springframework.core.env.Environment;
  * {@link Environment} is first available for inspection and modification.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @SuppressWarnings("serial")
 public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {

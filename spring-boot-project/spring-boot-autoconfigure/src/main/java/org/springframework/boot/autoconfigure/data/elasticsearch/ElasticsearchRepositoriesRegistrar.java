@@ -30,7 +30,6 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  *
  * @author Artur Konczak
  * @author Mohsin Husen
- * @since 1.1.0
  */
 class ElasticsearchRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 

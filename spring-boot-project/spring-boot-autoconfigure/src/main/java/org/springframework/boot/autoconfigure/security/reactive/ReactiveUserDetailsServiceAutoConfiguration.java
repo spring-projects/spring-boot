@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * {@link ReactiveUserDetailsService} or {@link ReactiveAuthenticationManager}.
  *
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })

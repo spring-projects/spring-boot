@@ -25,6 +25,7 @@ import groovy.grape.GrapeEngine;
  * Utility to install a specific {@link Grape} engine with Groovy.
  *
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public abstract class GrapeEngineInstaller {
 

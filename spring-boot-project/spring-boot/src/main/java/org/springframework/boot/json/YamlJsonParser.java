@@ -26,6 +26,7 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author Dave Syer
  * @author Jean de Klerk
+ * @since 1.0.0
  * @see JsonParserFactory
  */
 public class YamlJsonParser extends AbstractJsonParser {

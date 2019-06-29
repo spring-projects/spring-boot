@@ -33,6 +33,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
  * Helpful utilities for working with Groovy {@link Template}s.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public abstract class GroovyTemplate {
 

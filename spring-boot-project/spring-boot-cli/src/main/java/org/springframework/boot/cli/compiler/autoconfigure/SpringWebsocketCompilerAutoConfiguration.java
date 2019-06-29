@@ -27,6 +27,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for Spring Websocket.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class SpringWebsocketCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

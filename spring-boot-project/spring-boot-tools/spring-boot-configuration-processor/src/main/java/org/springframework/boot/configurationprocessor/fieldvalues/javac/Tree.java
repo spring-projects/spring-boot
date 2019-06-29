@@ -24,7 +24,6 @@ import java.lang.reflect.Proxy;
  * Reflection based access to {@code com.sun.source.tree.Tree}.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 class Tree extends ReflectionWrapper {
 

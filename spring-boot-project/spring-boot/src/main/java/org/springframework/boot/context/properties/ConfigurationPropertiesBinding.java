@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * {@link ConfigurationProperties} (e.g. Converters).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Qualifier(ConfigurationPropertiesBinding.VALUE)
 @Target({ ElementType.TYPE, ElementType.METHOD })

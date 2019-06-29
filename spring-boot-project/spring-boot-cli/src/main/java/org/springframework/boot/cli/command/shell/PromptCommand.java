@@ -24,6 +24,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  * {@link Command} to change the {@link Shell} prompt.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class PromptCommand extends AbstractCommand {
 

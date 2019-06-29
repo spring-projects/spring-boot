@@ -21,7 +21,6 @@ package org.springframework.boot.configurationmetadata;
  * source.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class ConfigurationMetadataItem extends ConfigurationMetadataProperty {
 

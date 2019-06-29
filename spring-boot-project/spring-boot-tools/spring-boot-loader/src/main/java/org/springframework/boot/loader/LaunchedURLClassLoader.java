@@ -34,6 +34,7 @@ import org.springframework.boot.loader.jar.Handler;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 

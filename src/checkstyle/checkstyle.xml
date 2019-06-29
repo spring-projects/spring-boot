@@ -48,5 +48,9 @@
 				value="Please use BDDMockito imports." />
 			<property name="ignoreComments" value="true" />
 		</module>
+		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">
+			<property name="publicOnlySinceTags" value="true" />
+			<property name="requireSinceTag" value="true" />
+		</module>
 	</module>
 </module>

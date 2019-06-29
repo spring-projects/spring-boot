@@ -32,7 +32,6 @@ import org.springframework.context.annotation.Configuration;
  * context.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(Cache.class)

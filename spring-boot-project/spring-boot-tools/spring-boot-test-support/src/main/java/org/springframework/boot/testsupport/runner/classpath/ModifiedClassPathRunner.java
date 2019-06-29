@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
  * the thread context class loader while the test is being run.
  *
  * @author Andy Wilkinson
+ * @since 1.5.0
  */
 public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 

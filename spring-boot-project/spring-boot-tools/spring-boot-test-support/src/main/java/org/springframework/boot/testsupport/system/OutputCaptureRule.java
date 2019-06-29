@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.allOf;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 2.2.0
  */
 public class OutputCaptureRule implements TestRule {
 

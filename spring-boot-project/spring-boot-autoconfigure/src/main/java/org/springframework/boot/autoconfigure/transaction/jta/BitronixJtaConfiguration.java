@@ -51,7 +51,6 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
- * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JtaProperties.class)

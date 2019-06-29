@@ -92,7 +92,6 @@ public @interface JsonComponent {
 
 	/**
 	 * The various scopes under which a serializer/deserialzier can be registered.
-	 * @since 2.2.0
 	 */
 	enum Scope {
 

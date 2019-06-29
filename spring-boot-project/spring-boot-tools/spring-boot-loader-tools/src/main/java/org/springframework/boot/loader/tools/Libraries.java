@@ -22,6 +22,7 @@ import java.io.IOException;
  * Encapsulates information about libraries that may be packed into the archive.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface Libraries {

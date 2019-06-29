@@ -32,7 +32,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Oliver Gierke
  * @author Phillip Webb
  * @see ConditionalOnJava
- * @since 1.1.0
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnJavaCondition extends SpringBootCondition {

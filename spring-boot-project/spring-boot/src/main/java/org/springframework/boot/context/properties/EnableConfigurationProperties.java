@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Import;
  * directly on this annotation.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

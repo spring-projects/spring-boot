@@ -43,7 +43,7 @@ import org.springframework.util.unit.DataSize;
  * @author Josh Long
  * @author Toshiaki Maki
  * @author Stephane Nicoll
- * @since 1.1.0
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.servlet.multipart", ignoreUnknownFields = false)
 public class MultipartProperties {

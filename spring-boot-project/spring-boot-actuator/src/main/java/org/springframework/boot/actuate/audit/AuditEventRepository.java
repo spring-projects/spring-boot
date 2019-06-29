@@ -24,6 +24,7 @@ import java.util.List;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @since 1.0.0
  */
 public interface AuditEventRepository {
 

@@ -27,6 +27,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 1.3.0
  */
 public class JarCommand extends ArchiveCommand {
 

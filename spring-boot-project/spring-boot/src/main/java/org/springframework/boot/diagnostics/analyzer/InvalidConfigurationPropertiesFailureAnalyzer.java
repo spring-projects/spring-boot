@@ -25,6 +25,7 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * {@link InvalidConfigurationPropertiesException}.
  *
  * @author Madhura Bhave
+ * @since 2.2.0
  */
 public class InvalidConfigurationPropertiesFailureAnalyzer
 		extends AbstractFailureAnalyzer<InvalidConfigurationPropertiesException> {

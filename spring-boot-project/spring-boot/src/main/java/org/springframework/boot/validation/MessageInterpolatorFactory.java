@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * classpath.
  *
  * @author Phillip Webb
+ * @since 1.5.0
  */
 public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpolator> {
 

@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Abstract base class for {@code @Configuration} sanity checks.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public abstract class AbstractConfigurationClassTests {
 

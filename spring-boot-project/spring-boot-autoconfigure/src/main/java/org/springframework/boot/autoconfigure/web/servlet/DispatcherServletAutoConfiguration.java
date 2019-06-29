@@ -61,6 +61,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Brian Clozel
+ * @since 2.0.0
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration(proxyBeanMethods = false)

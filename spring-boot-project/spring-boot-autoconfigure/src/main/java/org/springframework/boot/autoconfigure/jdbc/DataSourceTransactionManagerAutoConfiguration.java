@@ -41,6 +41,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })

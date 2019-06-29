@@ -52,7 +52,7 @@ public class StopMojo extends AbstractMojo {
 	 * Flag to indicate if process to stop was forked. By default, the value is inherited
 	 * from the {@link MavenProject}. If it is set, it must match the value used to
 	 * {@link StartMojo start} the process.
-	 * @since 1.3
+	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.stop.fork")
 	private Boolean fork;

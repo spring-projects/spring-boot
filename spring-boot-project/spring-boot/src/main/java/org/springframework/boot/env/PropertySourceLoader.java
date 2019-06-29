@@ -29,6 +29,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public interface PropertySourceLoader {
 

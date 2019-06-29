@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @author Michael Stummvoll
  * @author Stephane Nicoll
+ * @since 1.0.0
  * @see ErrorAttributes
  * @see ErrorProperties
  */

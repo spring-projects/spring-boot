@@ -20,6 +20,7 @@ package org.springframework.boot.cli.command;
  * Exception used to when the help command is called without arguments.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class NoHelpCommandArgumentsException extends CommandException {
 

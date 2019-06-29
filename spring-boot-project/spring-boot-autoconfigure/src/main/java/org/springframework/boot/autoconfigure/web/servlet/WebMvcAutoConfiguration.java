@@ -134,6 +134,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Kristine Jetzke
  * @author Bruce Brouwer
  * @author Artsiom Yudovin
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)

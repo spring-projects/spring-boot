@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
  * Simplest cache configuration, usually used as a fallback.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(CacheManager.class)

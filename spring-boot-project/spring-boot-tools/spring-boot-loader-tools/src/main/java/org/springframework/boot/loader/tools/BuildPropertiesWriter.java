@@ -32,6 +32,7 @@ import org.springframework.core.CollectionFactory;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 public final class BuildPropertiesWriter {
 

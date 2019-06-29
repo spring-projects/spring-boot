@@ -53,7 +53,6 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ AtomikosProperties.class, JtaProperties.class })

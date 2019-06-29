@@ -61,6 +61,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @since 1.0.0
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
