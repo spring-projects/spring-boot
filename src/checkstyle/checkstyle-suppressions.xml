@@ -42,8 +42,6 @@
 	<suppress files="ModifiedClassPathRunnerExclusionsTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
-	<suppress files="JavaLoggingSystemTests" checks="SpringJUnit5" />
-	<suppress files="Log4J2LoggingSystemTests" checks="SpringJUnit5" />
 	<suppress files="RestClientTestWithComponentIntegrationTests" checks="SpringJUnit5" />
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
