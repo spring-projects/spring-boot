@@ -72,7 +72,7 @@ public class RedisProperties {
 	private Duration timeout;
 
 	/**
-	 * Configure a clientName to be set with CLIENT SETNAME.
+	 * Client name to be set on connections with CLIENT SETNAME.
 	 */
 	private String clientName;
 
