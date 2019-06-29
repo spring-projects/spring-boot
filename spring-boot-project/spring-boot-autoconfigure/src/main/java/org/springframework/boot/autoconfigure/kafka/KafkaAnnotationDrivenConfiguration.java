@@ -31,6 +31,7 @@ import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ErrorHandler;
+import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.MessageConverter;
@@ -65,6 +66,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
+	private final RecordInterceptor<Object, Object> recordInterceptor;
+
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> messageConverter,
 			ObjectProvider<BatchMessageConverter> batchMessageConverter,
@@ -72,7 +75,8 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
 			ObjectProvider<ConsumerAwareRebalanceListener> rebalanceListener, ObjectProvider<ErrorHandler> errorHandler,
 			ObjectProvider<BatchErrorHandler> batchErrorHandler,
-			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor) {
+			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor,
+			ObjectProvider<RecordInterceptor<Object, Object>> recordInterceptor) {
 		this.properties = properties;
 		this.messageConverter = messageConverter.getIfUnique();
 		this.batchMessageConverter = batchMessageConverter
@@ -83,6 +87,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.errorHandler = errorHandler.getIfUnique();
 		this.batchErrorHandler = batchErrorHandler.getIfUnique();
 		this.afterRollbackProcessor = afterRollbackProcessor.getIfUnique();
+		this.recordInterceptor = recordInterceptor.getIfUnique();
 	}
 
 	@Bean
@@ -99,6 +104,7 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setErrorHandler(this.errorHandler);
 		configurer.setBatchErrorHandler(this.batchErrorHandler);
 		configurer.setAfterRollbackProcessor(this.afterRollbackProcessor);
+		configurer.setRecordInterceptor(this.recordInterceptor);
 		return configurer;
 	}
 

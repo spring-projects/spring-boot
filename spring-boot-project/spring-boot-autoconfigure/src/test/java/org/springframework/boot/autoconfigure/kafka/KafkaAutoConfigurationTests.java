@@ -58,6 +58,7 @@ import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -538,6 +539,15 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomRecordInterceptor() {
+		this.contextRunner.withUserConfiguration(RecordInterceptorConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("recordInterceptor", context.getBean("recordInterceptor"));
+		});
+	}
+
+	@Test
 	void testConcurrentKafkaListenerContainerFactoryWithCustomRebalanceListener() {
 		this.contextRunner.withUserConfiguration(RebalanceListenerConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -617,6 +627,16 @@ class KafkaAutoConfigurationTests {
 			return (records, consumer, ex, recoverable) -> {
 				// no-op
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class RecordInterceptorConfiguration {
+
+		@Bean
+		public RecordInterceptor<Object, Object> recordInterceptor() {
+			return (record) -> record;
 		}
 
 	}
