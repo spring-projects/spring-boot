@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EmbeddedKafka(topics = KafkaAutoConfigurationIntegrationTests.TEST_TOPIC)
 class KafkaAutoConfigurationIntegrationTests {
 
-	public static final String TEST_TOPIC = "testTopic";
+	static final String TEST_TOPIC = "testTopic";
 
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
