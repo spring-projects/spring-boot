@@ -40,7 +40,7 @@ class DebugLogbackConfigurator extends LogbackConfigurator {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public void conversionRule(String conversionWord, Class<? extends Converter> converterClass) {
-		info("Adding conversion rule of type '" + converterClass.getName() + "' for word '" + conversionWord);
+		info("Adding conversion rule of type '" + converterClass.getName() + "' for word '" + conversionWord + "'");
 		super.conversionRule(conversionWord, converterClass);
 	}
 
