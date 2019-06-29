@@ -275,6 +275,17 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	}
 
 	@Test
+	public void redisCacheWithRedisCacheManagerBuilderCustomizer() {
+		this.contextRunner.withUserConfiguration(RedisWithRedisCacheManagerBuilderCustomizerConfiguration.class)
+				.withPropertyValues("spring.cache.type=redis", "spring.cache.redis.time-to-live=15000")
+				.run((context) -> {
+					RedisCacheManager cacheManager = getCacheManager(context, RedisCacheManager.class);
+					RedisCacheConfiguration redisCacheConfiguration = getDefaultRedisCacheConfiguration(cacheManager);
+					assertThat(redisCacheConfiguration.getTtl()).isEqualTo(java.time.Duration.ofSeconds(10));
+				});
+	}
+
+	@Test
 	public void redisCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(RedisWithCustomizersConfiguration.class)
 				.withPropertyValues("spring.cache.type=" + "redis")
@@ -751,6 +762,18 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 		public org.springframework.data.redis.cache.RedisCacheConfiguration customRedisCacheConfiguration() {
 			return org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig()
 					.entryTtl(java.time.Duration.ofSeconds(30)).prefixKeysWith("bar");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(RedisConfiguration.class)
+	static class RedisWithRedisCacheManagerBuilderCustomizerConfiguration {
+
+		@Bean
+		public RedisCacheManagerBuilderCustomizer ttlRedisCacheManagerBuilderCustomizer() {
+			return (builder) -> builder.cacheDefaults(
+					RedisCacheConfiguration.defaultCacheConfig().entryTtl(java.time.Duration.ofSeconds(10)));
 		}
 
 	}
