@@ -36,6 +36,7 @@ import org.springframework.util.ClassUtils;
  * executable JARs.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class SpringPackageScanClassResolver extends DefaultPackageScanClassResolver {
 

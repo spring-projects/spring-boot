@@ -21,6 +21,7 @@ package org.springframework.boot.autoconfigure.security;
  * configuration is evaluated.
  *
  * @author Dave Syer
+ * @since 1.2.1
  * @deprecated since 2.0.6 since security prerequisites are not supported in Spring Boot 2
  */
 @Deprecated

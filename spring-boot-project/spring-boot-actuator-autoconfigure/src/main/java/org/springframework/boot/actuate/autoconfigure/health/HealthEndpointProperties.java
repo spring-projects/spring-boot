@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for {@link HealthEndpoint}.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
 @ConfigurationProperties("management.endpoint.health")
 public class HealthEndpointProperties {

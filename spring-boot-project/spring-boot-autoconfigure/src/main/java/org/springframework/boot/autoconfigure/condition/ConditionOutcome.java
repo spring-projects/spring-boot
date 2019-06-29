@@ -23,6 +23,7 @@ import org.springframework.util.ObjectUtils;
  * Outcome for a condition match, including log message.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see ConditionMessage
  */
 public class ConditionOutcome {

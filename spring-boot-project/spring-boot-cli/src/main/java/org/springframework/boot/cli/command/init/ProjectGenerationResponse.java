@@ -22,7 +22,6 @@ import org.apache.http.entity.ContentType;
  * Represent the response of a {@link ProjectGenerationRequest}.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class ProjectGenerationResponse {
 

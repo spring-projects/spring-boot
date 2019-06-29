@@ -32,7 +32,6 @@ import org.json.JSONObject;
  * Read standard json metadata format as {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class JsonReader {
 

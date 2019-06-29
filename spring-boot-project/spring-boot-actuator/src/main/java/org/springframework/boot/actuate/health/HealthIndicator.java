@@ -20,6 +20,7 @@ package org.springframework.boot.actuate.health;
  * Strategy interface used to provide an indication of application health.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see ApplicationHealthIndicator
  */
 @FunctionalInterface

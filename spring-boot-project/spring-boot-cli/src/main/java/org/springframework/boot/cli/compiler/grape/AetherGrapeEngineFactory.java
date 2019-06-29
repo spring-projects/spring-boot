@@ -39,6 +39,7 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
  * Utility class to create a pre-configured {@link AetherGrapeEngine}.
  *
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public abstract class AetherGrapeEngineFactory {
 

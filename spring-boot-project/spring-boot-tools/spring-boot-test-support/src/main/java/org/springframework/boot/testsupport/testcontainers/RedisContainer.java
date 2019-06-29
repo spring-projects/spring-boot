@@ -23,6 +23,7 @@ import org.testcontainers.containers.GenericContainer;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class RedisContainer extends Container {
 

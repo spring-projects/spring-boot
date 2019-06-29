@@ -40,7 +40,6 @@ import javax.lang.model.util.Types;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.2.0
  */
 class TypeUtils {
 

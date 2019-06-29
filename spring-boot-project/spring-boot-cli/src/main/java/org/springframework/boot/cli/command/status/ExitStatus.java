@@ -20,9 +20,9 @@ package org.springframework.boot.cli.command.status;
  * Encapsulation of the outcome of a command.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see ExitStatus#OK
  * @see ExitStatus#ERROR
- *
  */
 public final class ExitStatus {
 

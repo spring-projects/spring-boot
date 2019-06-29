@@ -27,6 +27,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for Spring Security.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfiguration {
 

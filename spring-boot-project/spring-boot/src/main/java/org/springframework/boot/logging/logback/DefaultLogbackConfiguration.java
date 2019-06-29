@@ -45,7 +45,6 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Vedran Pavic
- * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
 

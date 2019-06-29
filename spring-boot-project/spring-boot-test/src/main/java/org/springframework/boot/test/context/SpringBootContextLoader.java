@@ -73,6 +73,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @since 1.4.0
  * @see SpringBootTest
  */
 public class SpringBootContextLoader extends AbstractContextLoader {

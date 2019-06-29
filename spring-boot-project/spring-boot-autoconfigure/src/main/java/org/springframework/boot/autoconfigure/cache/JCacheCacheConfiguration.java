@@ -54,7 +54,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ Caching.class, JCacheCacheManager.class })

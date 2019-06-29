@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @version 2.0.0
+ * @since 2.0.0
  */
 public class LdapHealthIndicator extends AbstractHealthIndicator {
 

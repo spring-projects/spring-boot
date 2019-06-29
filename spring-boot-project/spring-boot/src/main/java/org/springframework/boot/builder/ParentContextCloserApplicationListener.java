@@ -35,6 +35,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Dave Syer
  * @author Eric Bottard
+ * @since 1.0.0
  */
 public class ParentContextCloserApplicationListener
 		implements ApplicationListener<ParentContextAvailableEvent>, ApplicationContextAware, Ordered {

@@ -47,6 +47,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @since 1.5.0
  */
 @Configuration
 @ConditionalOnMissingBean(value = MessageSource.class, search = SearchStrategy.CURRENT)

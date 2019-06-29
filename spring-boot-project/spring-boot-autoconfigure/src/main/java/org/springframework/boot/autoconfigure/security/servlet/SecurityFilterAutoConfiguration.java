@@ -45,7 +45,7 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  * @author Rob Winch
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.3
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)

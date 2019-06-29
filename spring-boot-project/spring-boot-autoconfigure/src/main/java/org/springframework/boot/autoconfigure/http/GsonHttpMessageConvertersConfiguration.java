@@ -35,7 +35,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
- * @since 1.2.2
  */
 @Configuration
 @ConditionalOnClass(Gson.class)

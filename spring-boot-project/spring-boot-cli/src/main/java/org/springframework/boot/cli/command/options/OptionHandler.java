@@ -43,6 +43,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  * Delegate used by {@link OptionParsingCommand} to parse options and run the command.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see OptionParsingCommand
  * @see #run(OptionSet)
  */

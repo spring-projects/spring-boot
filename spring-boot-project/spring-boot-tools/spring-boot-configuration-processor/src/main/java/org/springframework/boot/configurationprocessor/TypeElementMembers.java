@@ -40,7 +40,6 @@ import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesPa
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.2.0
  */
 class TypeElementMembers {
 

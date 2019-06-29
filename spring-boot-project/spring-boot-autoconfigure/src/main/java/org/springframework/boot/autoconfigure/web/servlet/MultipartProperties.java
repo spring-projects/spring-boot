@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Josh Long
  * @author Toshiaki Maki
- * @since 1.1.0
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.servlet.multipart", ignoreUnknownFields = false)
 public class MultipartProperties {

@@ -47,6 +47,7 @@ import org.springframework.util.ClassUtils;
  * @author Josh Long
  * @author Manuel Doninger
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class })

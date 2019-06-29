@@ -32,7 +32,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
- * @since 1.2.0
  */
 class ProjectGenerationRequest {
 

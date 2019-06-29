@@ -54,7 +54,6 @@ import org.springframework.util.ClassUtils;
  * @author Manuel Doninger
  * @author Andy Wilkinson
  * @author Stephane Nicoll
- * @since 2.0.0
  */
 @Configuration
 @ConditionalOnSingleCandidate(DataSource.class)

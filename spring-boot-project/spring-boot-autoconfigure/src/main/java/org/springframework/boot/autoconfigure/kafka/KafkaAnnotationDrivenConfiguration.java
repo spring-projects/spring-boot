@@ -33,7 +33,6 @@ import org.springframework.kafka.support.converter.RecordMessageConverter;
  *
  * @author Gary Russell
  * @author Eddú Meléndez
- * @since 1.5.0
  */
 @Configuration
 @ConditionalOnClass(EnableKafka.class)

@@ -52,6 +52,7 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 

@@ -31,6 +31,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @since 1.0.0
  */
 public class AuthenticationAuditListener extends AbstractAuthenticationAuditListener {
 

@@ -39,7 +39,6 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Phillip Webb
  * @author Aurélien Leboulanger
- * @since 1.2.0
  */
 @Configuration
 @ConditionalOnClass(TransactionManager.class)

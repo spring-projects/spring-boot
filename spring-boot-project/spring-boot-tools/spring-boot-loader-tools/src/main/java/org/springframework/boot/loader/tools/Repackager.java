@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 public class Repackager {
 

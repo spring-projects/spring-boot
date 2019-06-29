@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Thin wrapper to adapt Jackson 2 {@link ObjectMapper} to {@link JsonParser}.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see JsonParserFactory
  */
 public class JacksonJsonParser extends AbstractJsonParser {

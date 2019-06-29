@@ -29,6 +29,7 @@ import org.springframework.security.access.event.AuthorizationFailureEvent;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @since 1.0.0
  */
 public class AuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 

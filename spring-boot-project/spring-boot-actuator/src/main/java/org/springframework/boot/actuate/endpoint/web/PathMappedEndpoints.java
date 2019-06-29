@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
  * A collection of {@link PathMappedEndpoint path mapped endpoints}.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 

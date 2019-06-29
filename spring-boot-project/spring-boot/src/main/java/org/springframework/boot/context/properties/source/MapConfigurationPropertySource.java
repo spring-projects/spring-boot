@@ -26,11 +26,12 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.Assert;
 
 /**
- * An {@link ConfigurationPropertySource} backed by a {@link Map} and using standard name
+ * A {@link ConfigurationPropertySource} backed by a {@link Map} and using standard name
  * mapping rules.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class MapConfigurationPropertySource implements IterableConfigurationPropertySource {
 

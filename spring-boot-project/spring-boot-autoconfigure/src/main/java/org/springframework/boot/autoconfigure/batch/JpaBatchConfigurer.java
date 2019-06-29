@@ -30,6 +30,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * A {@link BasicBatchConfigurer} tailored for JPA.
  *
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
 public class JpaBatchConfigurer extends BasicBatchConfigurer {
 

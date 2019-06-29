@@ -30,6 +30,7 @@ import org.springframework.util.StreamUtils;
  * Simple example Servlet used for testing.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
 @SuppressWarnings("serial")
 public class ExampleServlet extends GenericServlet {

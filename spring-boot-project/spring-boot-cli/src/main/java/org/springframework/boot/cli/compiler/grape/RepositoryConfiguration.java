@@ -24,6 +24,7 @@ import org.springframework.util.ObjectUtils;
  * The configuration of a repository.
  *
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public final class RepositoryConfiguration {
 

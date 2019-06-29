@@ -25,7 +25,6 @@ import java.util.List;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class ExpressionTree extends ReflectionWrapper {
 

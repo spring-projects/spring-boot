@@ -26,7 +26,7 @@ import org.springframework.web.server.ServerWebExchange;
  * Provides access to error attributes which can be logged or presented to the user.
  *
  * @author Brian Clozel
- * @since 2.0
+ * @since 2.0.0
  * @see DefaultErrorAttributes
  */
 public interface ErrorAttributes {

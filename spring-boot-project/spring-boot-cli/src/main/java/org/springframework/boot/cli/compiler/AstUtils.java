@@ -44,6 +44,7 @@ import org.springframework.util.PatternMatchUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist
+ * @since 1.0.0
  */
 public abstract class AstUtils {
 

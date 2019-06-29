@@ -133,6 +133,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Stephane Nicoll
  * @author Kristine Jetzke
  * @author Bruce Brouwer
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)

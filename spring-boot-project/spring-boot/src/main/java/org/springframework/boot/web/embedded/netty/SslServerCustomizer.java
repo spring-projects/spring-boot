@@ -36,6 +36,7 @@ import org.springframework.util.ResourceUtils;
  * instance.
  *
  * @author Brian Clozel
+ * @since 2.0.0
  */
 public class SslServerCustomizer implements NettyServerCustomizer {
 

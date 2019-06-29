@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  * @author Brian Clozel
- * @since 1.2.0
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.http.encoding")
 public class HttpEncodingProperties {

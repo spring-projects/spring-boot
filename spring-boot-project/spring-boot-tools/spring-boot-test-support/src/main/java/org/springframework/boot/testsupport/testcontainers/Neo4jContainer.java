@@ -31,6 +31,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @since 2.0.0
  */
 public class Neo4jContainer extends Container {
 

@@ -40,7 +40,6 @@ import org.springframework.context.annotation.Configuration;
  * default {@link HazelcastInstance} is still made, using the same defaults.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
 @Configuration

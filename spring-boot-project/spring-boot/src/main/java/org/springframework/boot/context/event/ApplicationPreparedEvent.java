@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
  * will be loaded and the {@link Environment} is ready for use at this stage.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @SuppressWarnings("serial")
 public class ApplicationPreparedEvent extends SpringApplicationEvent {

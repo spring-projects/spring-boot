@@ -37,7 +37,6 @@ import org.springframework.web.util.UriTemplateHandler;
  *
  * @author Jon Schneider
  * @author Phillip Webb
- * @since 2.0.0
  */
 class MetricsClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 

@@ -23,7 +23,6 @@ import org.apache.maven.plugins.annotations.Parameter;
  *
  * @author Stephane Nicoll
  * @author David Turanski
- * @since 1.2
  */
 abstract class FilterableDependency {
 

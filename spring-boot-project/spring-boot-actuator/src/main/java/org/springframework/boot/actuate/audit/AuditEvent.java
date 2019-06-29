@@ -40,6 +40,7 @@ import org.springframework.util.Assert;
  * (wrappers for AuditEvent).
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see AuditEventRepository
  */
 @JsonInclude(Include.NON_EMPTY)

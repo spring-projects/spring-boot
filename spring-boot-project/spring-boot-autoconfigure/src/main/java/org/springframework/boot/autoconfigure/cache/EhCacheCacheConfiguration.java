@@ -36,7 +36,6 @@ import org.springframework.core.io.Resource;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ Cache.class, EhCacheCacheManager.class })

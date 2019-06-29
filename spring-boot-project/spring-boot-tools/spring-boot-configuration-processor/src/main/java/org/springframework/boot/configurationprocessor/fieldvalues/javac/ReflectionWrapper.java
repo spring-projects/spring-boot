@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
  * needing tools.jar on the classpath.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 class ReflectionWrapper {
 

@@ -68,6 +68,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  * @author Eddú Meléndez
+ * @since 1.0.0
  */
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)

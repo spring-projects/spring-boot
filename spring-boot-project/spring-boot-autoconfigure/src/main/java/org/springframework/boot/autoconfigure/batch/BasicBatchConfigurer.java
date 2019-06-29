@@ -38,6 +38,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 public class BasicBatchConfigurer implements BatchConfigurer {
 

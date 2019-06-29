@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Nasko Vasilev
  * @author Mark Paluch
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {

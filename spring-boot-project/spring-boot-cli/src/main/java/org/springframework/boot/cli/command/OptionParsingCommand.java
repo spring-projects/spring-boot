@@ -27,6 +27,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.0.0
  * @see OptionHandler
  */
 public abstract class OptionParsingCommand extends AbstractCommand {

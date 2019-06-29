@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  * @author Dave Syer
+ * @since 1.0.0
  */
 public final class RepositoryConfigurationFactory {
 

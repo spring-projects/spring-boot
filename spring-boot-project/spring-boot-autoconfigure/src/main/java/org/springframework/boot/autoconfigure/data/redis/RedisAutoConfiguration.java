@@ -42,6 +42,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * @author Stephane Nicoll
  * @author Marco Aust
  * @author Mark Paluch
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass(RedisOperations.class)

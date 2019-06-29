@@ -83,6 +83,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })

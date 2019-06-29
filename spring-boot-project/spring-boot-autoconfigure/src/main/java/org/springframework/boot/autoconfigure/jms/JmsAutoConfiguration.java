@@ -44,6 +44,7 @@ import org.springframework.jms.support.destination.DestinationResolver;
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({ Message.class, JmsTemplate.class })
