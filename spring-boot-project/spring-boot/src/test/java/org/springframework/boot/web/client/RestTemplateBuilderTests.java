@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -33,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -319,6 +321,16 @@ class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
 		ClientHttpRequest request = requestFactory.createRequest(URI.create("http://localhost"), HttpMethod.GET);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("boot")));
+	}
+
+	@Test
+	void defaultHeaderAddsHeaderValues() throws IOException {
+		String name = HttpHeaders.ACCEPT;
+		String[] values = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE };
+		RestTemplate template = this.builder.defaultHeader(name, values).build();
+		ClientHttpRequestFactory requestFactory = template.getRequestFactory();
+		ClientHttpRequest request = requestFactory.createRequest(URI.create("http://localhost"), HttpMethod.GET);
+		assertThat(request.getHeaders()).contains(entry(name, Arrays.asList(values)));
 	}
 
 	@Test

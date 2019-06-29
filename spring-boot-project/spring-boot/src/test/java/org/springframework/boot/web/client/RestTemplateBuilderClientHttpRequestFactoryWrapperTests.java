@@ -18,9 +18,11 @@ package org.springframework.boot.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -80,16 +82,16 @@ public class RestTemplateBuilderClientHttpRequestFactoryWrapperTests {
 	@Test
 	void createRequestWhenHasDefaultHeadersAddsMissing() throws IOException {
 		this.headers.add("one", "existing");
-		Map<String, String> defaultHeaders = new LinkedHashMap<>();
-		defaultHeaders.put("one", "1");
-		defaultHeaders.put("two", "2");
-		defaultHeaders.put("three", "3");
+		Map<String, List<String>> defaultHeaders = new LinkedHashMap<>();
+		defaultHeaders.put("one", Collections.singletonList("1"));
+		defaultHeaders.put("two", Arrays.asList("2", "3"));
+		defaultHeaders.put("three", Collections.singletonList("4"));
 		this.requestFactory = new RestTemplateBuilderClientHttpRequestFactoryWrapper(this.requestFactory, null,
 				defaultHeaders, Collections.emptySet());
 		ClientHttpRequest request = createRequest();
 		assertThat(request.getHeaders().get("one")).containsExactly("existing");
-		assertThat(request.getHeaders().get("two")).containsExactly("2");
-		assertThat(request.getHeaders().get("three")).containsExactly("3");
+		assertThat(request.getHeaders().get("two")).containsExactly("2", "3");
+		assertThat(request.getHeaders().get("three")).containsExactly("4");
 	}
 
 	@Test

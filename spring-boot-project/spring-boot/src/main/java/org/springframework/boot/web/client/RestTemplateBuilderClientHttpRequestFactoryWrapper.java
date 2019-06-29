@@ -18,6 +18,7 @@ package org.springframework.boot.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,12 +40,12 @@ class RestTemplateBuilderClientHttpRequestFactoryWrapper extends AbstractClientH
 
 	private final BasicAuthentication basicAuthentication;
 
-	private final Map<String, String> defaultHeaders;
+	private final Map<String, List<String>> defaultHeaders;
 
 	private final Set<RestTemplateRequestCustomizer<?>> requestCustomizers;
 
 	RestTemplateBuilderClientHttpRequestFactoryWrapper(ClientHttpRequestFactory requestFactory,
-			BasicAuthentication basicAuthentication, Map<String, String> defaultHeaders,
+			BasicAuthentication basicAuthentication, Map<String, List<String>> defaultHeaders,
 			Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		super(requestFactory);
 		this.basicAuthentication = basicAuthentication;
@@ -61,7 +62,7 @@ class RestTemplateBuilderClientHttpRequestFactoryWrapper extends AbstractClientH
 		if (this.basicAuthentication != null) {
 			this.basicAuthentication.applyTo(headers);
 		}
-		this.defaultHeaders.forEach(headers::addIfAbsent);
+		this.defaultHeaders.forEach(headers::putIfAbsent);
 		LambdaSafe.callbacks(RestTemplateRequestCustomizer.class, this.requestCustomizers, request)
 				.invoke((customizer) -> customizer.customize(request));
 		return request;
