@@ -468,7 +468,6 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LogFile logFile = getLogFile(file.getPath(), null);
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		String output = this.output.toString().trim();
-		System.out.println(output);
 		assertThat(output).doesNotContain("LevelChangePropagator").doesNotContain("SizeAndTimeBasedFNATP");
 	}
 
