@@ -56,7 +56,7 @@ class InvalidConfigurationPropertiesFailureAnalyzerTests {
 
 	@ConfigurationProperties
 	@Component
-	private static class TestProperties {
+	static class TestProperties {
 
 	}
 

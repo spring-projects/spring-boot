@@ -107,12 +107,12 @@ class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrat
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
+		WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
 			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,

@@ -195,15 +195,15 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			this.timerSample = timerSample;
 		}
 
-		public Timer.Sample getTimerSample() {
+		Timer.Sample getTimerSample() {
 			return this.timerSample;
 		}
 
-		public void attachTo(HttpServletRequest request) {
+		void attachTo(HttpServletRequest request) {
 			request.setAttribute(ATTRIBUTE, this);
 		}
 
-		public static TimingContext get(HttpServletRequest request) {
+		static TimingContext get(HttpServletRequest request) {
 			return (TimingContext) request.getAttribute(ATTRIBUTE);
 		}
 

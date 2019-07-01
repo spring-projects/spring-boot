@@ -100,11 +100,11 @@ class DataSourceHealthIndicatorAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	protected static class DataSourceConfig {
+	static class DataSourceConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.test")
-		public DataSource testDataSource() {
+		DataSource testDataSource() {
 			return DataSourceBuilder.create().type(org.apache.tomcat.jdbc.pool.DataSource.class)
 					.driverClassName("org.hsqldb.jdbc.JDBCDriver").url("jdbc:hsqldb:mem:test").username("sa").build();
 		}
@@ -112,7 +112,7 @@ class DataSourceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class RoutingDatasourceConfig {
+	static class RoutingDatasourceConfig {
 
 		@Bean
 		AbstractRoutingDataSource routingDataSource() {

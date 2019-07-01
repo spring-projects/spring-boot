@@ -332,12 +332,12 @@ class HealthEndpointWebExtensionTests {
 	static class HealthIndicatorsConfiguration {
 
 		@Bean
-		public HealthIndicator simpleHealthIndicator() {
+		HealthIndicator simpleHealthIndicator() {
 			return () -> Health.up().withDetail("counter", 42).build();
 		}
 
 		@Bean
-		public HealthIndicator compositeHealthIndicator(HealthIndicator healthIndicator) {
+		HealthIndicator compositeHealthIndicator(HealthIndicator healthIndicator) {
 			Map<String, HealthIndicator> nestedIndicators = new HashMap<>();
 			nestedIndicators.put("one", healthIndicator);
 			nestedIndicators.put("two", () -> Health.up().build());

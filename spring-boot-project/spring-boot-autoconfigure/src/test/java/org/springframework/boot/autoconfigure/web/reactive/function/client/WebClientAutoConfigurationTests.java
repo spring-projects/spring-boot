@@ -119,7 +119,7 @@ class WebClientAutoConfigurationTests {
 	static class CodecConfiguration {
 
 		@Bean
-		public CodecCustomizer myCodecCustomizer() {
+		CodecCustomizer myCodecCustomizer() {
 			return mock(CodecCustomizer.class);
 		}
 
@@ -129,7 +129,7 @@ class WebClientAutoConfigurationTests {
 	static class WebClientCustomizerConfig {
 
 		@Bean
-		public WebClientCustomizer webClientCustomizer() {
+		WebClientCustomizer webClientCustomizer() {
 			return mock(WebClientCustomizer.class);
 		}
 
@@ -139,7 +139,7 @@ class WebClientAutoConfigurationTests {
 	static class CustomWebClientBuilderConfig {
 
 		@Bean
-		public MyWebClientBuilder myWebClientBuilder() {
+		MyWebClientBuilder myWebClientBuilder() {
 			return mock(MyWebClientBuilder.class);
 		}
 

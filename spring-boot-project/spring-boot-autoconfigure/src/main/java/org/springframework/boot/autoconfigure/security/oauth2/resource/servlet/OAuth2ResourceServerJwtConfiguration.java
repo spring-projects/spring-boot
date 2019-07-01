@@ -59,14 +59,14 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-		public JwtDecoder jwtDecoderByJwkKeySetUri() {
+		JwtDecoder jwtDecoderByJwkKeySetUri() {
 			return NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
 					.jwsAlgorithm(SignatureAlgorithm.from(this.properties.getJwsAlgorithm())).build();
 		}
 
 		@Bean
 		@Conditional(KeyValueCondition.class)
-		public JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
+		JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 			return NimbusJwtDecoder.withPublicKey(publicKey).build();
@@ -79,7 +79,7 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@Conditional(IssuerUriCondition.class)
-		public JwtDecoder jwtDecoderByIssuerUri() {
+		JwtDecoder jwtDecoderByIssuerUri() {
 			return JwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
 		}
 
@@ -91,7 +91,7 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JwtDecoder.class)
-		public WebSecurityConfigurerAdapter jwtDecoderWebSecurityConfigurerAdapter() {
+		WebSecurityConfigurerAdapter jwtDecoderWebSecurityConfigurerAdapter() {
 			return new WebSecurityConfigurerAdapter() {
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {

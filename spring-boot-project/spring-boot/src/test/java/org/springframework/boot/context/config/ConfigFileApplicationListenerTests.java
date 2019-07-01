@@ -1005,55 +1005,55 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class Config {
+	static class Config {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/specificlocation.properties")
-	protected static class WithPropertySource {
+	static class WithPropertySource {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/${source.location}.properties")
-	protected static class WithPropertySourcePlaceholders {
+	static class WithPropertySourcePlaceholders {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource(value = "classpath:/specificlocation.properties", name = "foo")
-	protected static class WithPropertySourceAndName {
+	static class WithPropertySourceAndName {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/enableprofile.properties")
-	protected static class WithPropertySourceInProfile {
+	static class WithPropertySourceInProfile {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/enableprofile-myprofile.properties")
 	@Profile("myprofile")
-	protected static class WithPropertySourceAndProfile {
+	static class WithPropertySourceAndProfile {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource({ "classpath:/specificlocation.properties", "classpath:/moreproperties.properties" })
-	protected static class WithPropertySourceMultipleLocations {
+	static class WithPropertySourceMultipleLocations {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource(value = { "classpath:/specificlocation.properties", "classpath:/moreproperties.properties" },
 			name = "foo")
-	protected static class WithPropertySourceMultipleLocationsAndName {
+	static class WithPropertySourceMultipleLocationsAndName {
 
 	}
 
-	private static class TestConfigFileApplicationListener extends ConfigFileApplicationListener {
+	static class TestConfigFileApplicationListener extends ConfigFileApplicationListener {
 
 		@Override
 		List<EnvironmentPostProcessor> loadPostProcessors() {
@@ -1063,7 +1063,7 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class LowestPrecedenceEnvironmentPostProcessor implements EnvironmentPostProcessor {
+	static class LowestPrecedenceEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
 		@Override
 		public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {

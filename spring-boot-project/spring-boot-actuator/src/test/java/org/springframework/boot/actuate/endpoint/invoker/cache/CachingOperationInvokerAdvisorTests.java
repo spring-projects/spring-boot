@@ -134,21 +134,21 @@ class CachingOperationInvokerAdvisorTests {
 		return new OperationMethod(method, OperationType.READ);
 	}
 
-	public static class TestOperations {
+	static class TestOperations {
 
-		public String get() {
+		String get() {
 			return "";
 		}
 
-		public String getWithParameters(@Nullable String foo, String bar) {
+		String getWithParameters(@Nullable String foo, String bar) {
 			return "";
 		}
 
-		public String getWithAllOptionalParameters(@Nullable String foo, @Nullable String bar) {
+		String getWithAllOptionalParameters(@Nullable String foo, @Nullable String bar) {
 			return "";
 		}
 
-		public String getWithSecurityContext(SecurityContext securityContext, @Nullable String bar) {
+		String getWithSecurityContext(SecurityContext securityContext, @Nullable String bar) {
 			return "";
 		}
 

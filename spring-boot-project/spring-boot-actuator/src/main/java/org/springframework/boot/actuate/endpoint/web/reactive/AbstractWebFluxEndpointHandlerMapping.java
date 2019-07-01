@@ -299,13 +299,13 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			return this::emptySecurityContext;
 		}
 
-		public Mono<? extends SecurityContext> springSecurityContext() {
+		Mono<? extends SecurityContext> springSecurityContext() {
 			return ReactiveSecurityContextHolder.getContext()
 					.map((securityContext) -> new ReactiveSecurityContext(securityContext.getAuthentication()))
 					.switchIfEmpty(Mono.just(new ReactiveSecurityContext(null)));
 		}
 
-		public Mono<SecurityContext> emptySecurityContext() {
+		Mono<SecurityContext> emptySecurityContext() {
 			return Mono.just(SecurityContext.NONE);
 		}
 
@@ -369,7 +369,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
-		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
+		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(exchange, body);
 		}
@@ -388,7 +388,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
-		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
+		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return this.operation.handle(exchange, null);
 		}
 

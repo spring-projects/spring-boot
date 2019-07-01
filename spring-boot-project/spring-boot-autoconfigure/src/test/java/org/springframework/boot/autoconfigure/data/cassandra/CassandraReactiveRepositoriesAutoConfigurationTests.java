@@ -112,7 +112,7 @@ class CassandraReactiveRepositoriesAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public Session Session() {
+		Session Session() {
 			return mock(Session.class);
 		}
 

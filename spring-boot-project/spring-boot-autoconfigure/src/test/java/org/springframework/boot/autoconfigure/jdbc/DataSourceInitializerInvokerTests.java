@@ -243,20 +243,20 @@ class DataSourceInitializerInvokerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class OneDataSource {
+	static class OneDataSource {
 
 		@Bean
-		public DataSource oneDataSource() {
+		DataSource oneDataSource() {
 			return new TestDataSource();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TwoDataSources extends OneDataSource {
+	static class TwoDataSources extends OneDataSource {
 
 		@Bean
-		public DataSource twoDataSource() {
+		DataSource twoDataSource() {
 			return new TestDataSource();
 		}
 
@@ -266,7 +266,7 @@ class DataSourceInitializerInvokerTests {
 	 * {@link ResourcePatternResolver} used to ensure consistently wrong resource
 	 * ordering.
 	 */
-	private static class ReverseOrderResourceLoader implements ResourcePatternResolver {
+	static class ReverseOrderResourceLoader implements ResourcePatternResolver {
 
 		private final ResourcePatternResolver resolver;
 

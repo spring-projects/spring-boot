@@ -59,7 +59,7 @@ class ConfigurationPropertiesReportEndpointDocumentationTests extends MockMvcEnd
 	static class TestConfiguration {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 

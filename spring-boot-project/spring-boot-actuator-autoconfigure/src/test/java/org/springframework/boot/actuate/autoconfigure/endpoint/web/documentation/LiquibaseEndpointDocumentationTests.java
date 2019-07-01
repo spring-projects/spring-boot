@@ -82,7 +82,7 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	static class TestConfiguration {
 
 		@Bean
-		public LiquibaseEndpoint endpoint(ApplicationContext context) {
+		LiquibaseEndpoint endpoint(ApplicationContext context) {
 			return new LiquibaseEndpoint(context);
 		}
 

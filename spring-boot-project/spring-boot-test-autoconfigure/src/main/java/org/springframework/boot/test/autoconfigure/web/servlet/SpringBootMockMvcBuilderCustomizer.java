@@ -174,7 +174,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				super(new Printer());
 			}
 
-			public void write(LinesWriter writer) {
+			void write(LinesWriter writer) {
 				writer.write(((Printer) getPrinter()).getLines());
 			}
 
@@ -196,7 +196,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 					this.lines.add(String.format("%17s = %s", label, value));
 				}
 
-				public List<String> getLines() {
+				List<String> getLines() {
 					return this.lines;
 				}
 
@@ -240,11 +240,11 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			this.lines.addAll(lines);
 		}
 
-		public void writeDeferredResult() {
+		void writeDeferredResult() {
 			this.delegate.write(this.lines);
 		}
 
-		public static DeferredLinesWriter get(ApplicationContext applicationContext) {
+		static DeferredLinesWriter get(ApplicationContext applicationContext) {
 			try {
 				return applicationContext.getBean(BEAN_NAME, DeferredLinesWriter.class);
 			}

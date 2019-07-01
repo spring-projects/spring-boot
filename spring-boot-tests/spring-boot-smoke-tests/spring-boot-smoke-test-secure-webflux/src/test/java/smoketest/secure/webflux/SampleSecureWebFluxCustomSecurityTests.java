@@ -105,7 +105,7 @@ class SampleSecureWebFluxCustomSecurityTests {
 
 		@SuppressWarnings("deprecation")
 		@Bean
-		public MapReactiveUserDetailsService userDetailsService() {
+		MapReactiveUserDetailsService userDetailsService() {
 			return new MapReactiveUserDetailsService(
 					User.withDefaultPasswordEncoder().username("user").password("password").authorities("ROLE_USER")
 							.build(),
@@ -114,7 +114,7 @@ class SampleSecureWebFluxCustomSecurityTests {
 		}
 
 		@Bean
-		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info")).permitAll()
 					.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
 					.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().pathMatchers("/login")

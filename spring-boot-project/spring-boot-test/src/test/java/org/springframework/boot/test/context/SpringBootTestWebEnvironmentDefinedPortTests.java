@@ -36,7 +36,7 @@ public class SpringBootTestWebEnvironmentDefinedPortTests extends AbstractSpring
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@RestController
-	protected static class Config extends AbstractConfig {
+	static class Config extends AbstractConfig {
 
 	}
 

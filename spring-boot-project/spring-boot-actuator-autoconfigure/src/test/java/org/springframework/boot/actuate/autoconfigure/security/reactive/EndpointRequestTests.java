@@ -224,7 +224,7 @@ class EndpointRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final StaticApplicationContext context;
 
@@ -269,7 +269,7 @@ class EndpointRequestTests {
 
 	}
 
-	private static class TestHttpWebHandlerAdapter extends HttpWebHandlerAdapter {
+	static class TestHttpWebHandlerAdapter extends HttpWebHandlerAdapter {
 
 		TestHttpWebHandlerAdapter(WebHandler delegate) {
 			super(delegate);
@@ -283,12 +283,12 @@ class EndpointRequestTests {
 	}
 
 	@Endpoint(id = "foo")
-	private static class FooEndpoint {
+	static class FooEndpoint {
 
 	}
 
 	@ServletEndpoint(id = "baz")
-	private static class BazServletEndpoint {
+	static class BazServletEndpoint {
 
 	}
 

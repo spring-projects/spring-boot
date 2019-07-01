@@ -238,12 +238,12 @@ public class DevToolsIntegrationTests {
 			this.classesDirectory = classesDirectory;
 		}
 
-		public ControllerBuilder withRequestMapping(String mapping) {
+		ControllerBuilder withRequestMapping(String mapping) {
 			this.mappings.add(mapping);
 			return this;
 		}
 
-		public void build() throws Exception {
+		void build() throws Exception {
 			Builder<Object> builder = new ByteBuddy().subclass(Object.class).name(this.name)
 					.annotateType(AnnotationDescription.Builder.ofType(RestController.class).build());
 			for (String mapping : this.mappings) {

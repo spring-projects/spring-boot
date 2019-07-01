@@ -57,10 +57,10 @@ class CassandraHealthIndicatorAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@AutoConfigureBefore(CassandraHealthIndicatorAutoConfiguration.class)
-	protected static class CassandraConfiguration {
+	static class CassandraConfiguration {
 
 		@Bean
-		public CassandraOperations cassandraOperations() {
+		CassandraOperations cassandraOperations() {
 			return mock(CassandraOperations.class);
 		}
 

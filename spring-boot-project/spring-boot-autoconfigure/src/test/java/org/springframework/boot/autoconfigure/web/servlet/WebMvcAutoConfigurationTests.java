@@ -835,10 +835,10 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ViewConfig {
+	static class ViewConfig {
 
 		@Bean
-		public View jsonView() {
+		View jsonView() {
 			return new AbstractView() {
 
 				@Override
@@ -853,7 +853,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class WebJars implements WebMvcConfigurer {
+	static class WebJars implements WebMvcConfigurer {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -863,7 +863,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class AllResources implements WebMvcConfigurer {
+	static class AllResources implements WebMvcConfigurer {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -873,41 +873,41 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return webServerFactory;
 		}
 
 		@Bean
-		public WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
+		WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
 			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomViewResolver {
+	static class CustomViewResolver {
 
 		@Bean
-		public ViewResolver viewResolver() {
+		ViewResolver viewResolver() {
 			return new MyViewResolver();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomContentNegotiatingViewResolver {
+	static class CustomContentNegotiatingViewResolver {
 
 		@Bean
-		public ContentNegotiatingViewResolver myViewResolver() {
+		ContentNegotiatingViewResolver myViewResolver() {
 			return new ContentNegotiatingViewResolver();
 		}
 
 	}
 
-	private static class MyViewResolver implements ViewResolver {
+	static class MyViewResolver implements ViewResolver {
 
 		@Override
 		public View resolveViewName(String viewName, Locale locale) {
@@ -920,14 +920,14 @@ class WebMvcAutoConfigurationTests {
 	static class CustomConfigurableWebBindingInitializer {
 
 		@Bean
-		public ConfigurableWebBindingInitializer customConfigurableWebBindingInitializer() {
+		ConfigurableWebBindingInitializer customConfigurableWebBindingInitializer() {
 			return new CustomWebBindingInitializer();
 
 		}
 
 	}
 
-	private static class CustomWebBindingInitializer extends ConfigurableWebBindingInitializer {
+	static class CustomWebBindingInitializer extends ConfigurableWebBindingInitializer {
 
 	}
 
@@ -935,7 +935,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomFormContentFilter {
 
 		@Bean
-		public FormContentFilter customFormContentFilter() {
+		FormContentFilter customFormContentFilter() {
 			return new FormContentFilter();
 		}
 
@@ -945,7 +945,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomRequestMappingHandlerMapping {
 
 		@Bean
-		public WebMvcRegistrations webMvcRegistrationsHandlerMapping() {
+		WebMvcRegistrations webMvcRegistrationsHandlerMapping() {
 			return new WebMvcRegistrations() {
 
 				@Override
@@ -958,7 +958,7 @@ class WebMvcAutoConfigurationTests {
 
 	}
 
-	private static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
+	static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
 	}
 
@@ -966,7 +966,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomRequestMappingHandlerAdapter {
 
 		@Bean
-		public WebMvcRegistrations webMvcRegistrationsHandlerAdapter() {
+		WebMvcRegistrations webMvcRegistrationsHandlerAdapter() {
 			return new WebMvcRegistrations() {
 
 				@Override
@@ -979,7 +979,7 @@ class WebMvcAutoConfigurationTests {
 
 	}
 
-	private static class MyRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
+	static class MyRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
 
 	}
 
@@ -990,7 +990,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MvcValidator implements WebMvcConfigurer {
+	static class MvcValidator implements WebMvcConfigurer {
 
 		private final Validator validator = mock(Validator.class);
 
@@ -1002,7 +1002,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MvcJsr303Validator implements WebMvcConfigurer {
+	static class MvcJsr303Validator implements WebMvcConfigurer {
 
 		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
@@ -1017,7 +1017,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomJsr303Validator {
 
 		@Bean
-		public javax.validation.Validator customJsr303Validator() {
+		javax.validation.Validator customJsr303Validator() {
 			return mock(javax.validation.Validator.class);
 		}
 
@@ -1027,7 +1027,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomSpringValidator {
 
 		@Bean
-		public Validator customSpringValidator() {
+		Validator customSpringValidator() {
 			return mock(Validator.class);
 		}
 
@@ -1037,7 +1037,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomHttpMessageConverter {
 
 		@Bean
-		public HttpMessageConverter<?> customHttpMessageConverter(ConversionService conversionService) {
+		HttpMessageConverter<?> customHttpMessageConverter(ConversionService conversionService) {
 			return mock(HttpMessageConverter.class);
 		}
 
@@ -1057,7 +1057,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomApplicationTaskExecutorConfig {
 
 		@Bean
-		public Executor applicationTaskExecutor() {
+		Executor applicationTaskExecutor() {
 			return mock(Executor.class);
 		}
 
@@ -1067,7 +1067,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomAsyncTaskExecutorConfig {
 
 		@Bean
-		public AsyncTaskExecutor customTaskExecutor() {
+		AsyncTaskExecutor customTaskExecutor() {
 			return mock(AsyncTaskExecutor.class);
 		}
 
@@ -1089,7 +1089,7 @@ class WebMvcAutoConfigurationTests {
 	static class RequestContextFilterConfiguration {
 
 		@Bean
-		public RequestContextFilter customRequestContextFilter() {
+		RequestContextFilter customRequestContextFilter() {
 			return new RequestContextFilter();
 		}
 
@@ -1099,7 +1099,7 @@ class WebMvcAutoConfigurationTests {
 	static class RequestContextFilterRegistrationConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<RequestContextFilter> customRequestContextFilterRegistration() {
+		FilterRegistrationBean<RequestContextFilter> customRequestContextFilterRegistration() {
 			return new FilterRegistrationBean<>(new RequestContextFilter());
 		}
 
@@ -1109,7 +1109,7 @@ class WebMvcAutoConfigurationTests {
 	static class PrinterConfiguration {
 
 		@Bean
-		public Printer<Example> examplePrinter() {
+		Printer<Example> examplePrinter() {
 			return new ExamplePrinter();
 		}
 
@@ -1119,7 +1119,7 @@ class WebMvcAutoConfigurationTests {
 	static class ParserConfiguration {
 
 		@Bean
-		public Parser<Example> exampleParser() {
+		Parser<Example> exampleParser() {
 			return new ExampleParser();
 		}
 
@@ -1133,13 +1133,13 @@ class WebMvcAutoConfigurationTests {
 			this.name = name;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
 	}
 
-	private static class ExamplePrinter implements Printer<Example> {
+	static class ExamplePrinter implements Printer<Example> {
 
 		@Override
 		public String print(Example example, Locale locale) {
@@ -1148,7 +1148,7 @@ class WebMvcAutoConfigurationTests {
 
 	}
 
-	private static class ExampleParser implements Parser<Example> {
+	static class ExampleParser implements Parser<Example> {
 
 		@Override
 		public Example parse(String source, Locale locale) {

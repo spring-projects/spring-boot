@@ -64,7 +64,7 @@ class TestDatabaseAutoConfigurationTests {
 	static class ExistingDataSourceConfiguration {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).build();
 		}
 

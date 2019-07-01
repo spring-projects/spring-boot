@@ -254,10 +254,10 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(name = { "property1", "property2" })
-	protected static class MultiplePropertiesRequiredConfiguration {
+	static class MultiplePropertiesRequiredConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -265,10 +265,10 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.", name = "the-relaxed-property")
-	protected static class RelaxedPropertiesRequiredConfiguration {
+	static class RelaxedPropertiesRequiredConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -276,10 +276,10 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring", name = "property")
-	protected static class RelaxedPropertiesRequiredConfigurationWithShortPrefix {
+	static class RelaxedPropertiesRequiredConfigurationWithShortPrefix {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -291,7 +291,7 @@ class ConditionalOnPropertyTests {
 	static class EnabledIfNotConfiguredOtherwiseConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -303,7 +303,7 @@ class ConditionalOnPropertyTests {
 	static class DisabledIfNotConfiguredOtherwiseConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -314,7 +314,7 @@ class ConditionalOnPropertyTests {
 	static class SimpleValueConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -325,7 +325,7 @@ class ConditionalOnPropertyTests {
 	static class DefaultValueConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -336,7 +336,7 @@ class ConditionalOnPropertyTests {
 	static class PrefixValueConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -347,7 +347,7 @@ class ConditionalOnPropertyTests {
 	static class MultiValuesConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -355,10 +355,10 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty("some.property")
-	protected static class ValueAttribute {
+	static class ValueAttribute {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -366,10 +366,10 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty
-	protected static class NoNameOrValueAttribute {
+	static class NoNameOrValueAttribute {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -377,10 +377,10 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(value = "x", name = "y")
-	protected static class NameAndValueAttribute {
+	static class NameAndValueAttribute {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -388,10 +388,10 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMyFeature
-	protected static class MetaAnnotation {
+	static class MetaAnnotation {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -400,10 +400,10 @@ class ConditionalOnPropertyTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMyFeature
 	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
-	protected static class MetaAnnotationAndDirectAnnotation {
+	static class MetaAnnotationAndDirectAnnotation {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -412,7 +412,7 @@ class ConditionalOnPropertyTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@ConditionalOnProperty(prefix = "my.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
-	public @interface ConditionalOnMyFeature {
+	@interface ConditionalOnMyFeature {
 
 	}
 

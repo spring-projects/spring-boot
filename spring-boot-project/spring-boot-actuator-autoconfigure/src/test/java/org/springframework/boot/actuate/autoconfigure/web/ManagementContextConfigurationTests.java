@@ -46,12 +46,12 @@ class ManagementContextConfigurationTests {
 	}
 
 	@ManagementContextConfiguration
-	private static class DefaultManagementContextConfiguration {
+	static class DefaultManagementContextConfiguration {
 
 	}
 
 	@ManagementContextConfiguration(proxyBeanMethods = false)
-	private static class NoBeanMethodProxyingManagementContextConfiguration {
+	static class NoBeanMethodProxyingManagementContextConfiguration {
 
 	}
 

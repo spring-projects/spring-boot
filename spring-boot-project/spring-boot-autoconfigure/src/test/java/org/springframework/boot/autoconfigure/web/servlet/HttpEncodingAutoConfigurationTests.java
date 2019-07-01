@@ -184,7 +184,7 @@ class HttpEncodingAutoConfigurationTests {
 	static class FilterConfiguration {
 
 		@Bean
-		public CharacterEncodingFilter myCharacterEncodingFilter() {
+		CharacterEncodingFilter myCharacterEncodingFilter() {
 			CharacterEncodingFilter filter = new CharacterEncodingFilter();
 			filter.setEncoding("US-ASCII");
 			filter.setForceEncoding(false);
@@ -197,12 +197,12 @@ class HttpEncodingAutoConfigurationTests {
 	static class OrderedConfiguration {
 
 		@Bean
-		public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+		OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 			return new OrderedHiddenHttpMethodFilter();
 		}
 
 		@Bean
-		public OrderedFormContentFilter formContentFilter() {
+		OrderedFormContentFilter formContentFilter() {
 			return new OrderedFormContentFilter();
 		}
 
@@ -212,12 +212,12 @@ class HttpEncodingAutoConfigurationTests {
 	static class MinimalWebAutoConfiguration {
 
 		@Bean
-		public MockServletWebServerFactory MockServletWebServerFactory() {
+		MockServletWebServerFactory MockServletWebServerFactory() {
 			return new MockServletWebServerFactory();
 		}
 
 		@Bean
-		public WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
+		WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
 			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 

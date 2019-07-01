@@ -95,7 +95,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	static class TestConfiguration {
 
 		@Bean
-		public CachesEndpoint endpoint() {
+		CachesEndpoint endpoint() {
 			Map<String, CacheManager> cacheManagers = new HashMap<>();
 			cacheManagers.put("cacheManager", new ConcurrentMapCacheManager("countries", "cities"));
 			cacheManagers.put("anotherCacheManager", new ConcurrentMapCacheManager("countries"));
@@ -103,7 +103,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		}
 
 		@Bean
-		public CachesEndpointWebExtension endpointWebExtension(CachesEndpoint endpoint) {
+		CachesEndpointWebExtension endpointWebExtension(CachesEndpoint endpoint) {
 			return new CachesEndpointWebExtension(endpoint);
 		}
 

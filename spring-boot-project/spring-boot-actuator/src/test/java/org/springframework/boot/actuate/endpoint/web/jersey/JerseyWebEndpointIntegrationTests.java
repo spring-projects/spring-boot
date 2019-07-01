@@ -93,17 +93,17 @@ public class JerseyWebEndpointIntegrationTests
 	static class JerseyConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public ServletRegistrationBean<ServletContainer> servletContainer(ResourceConfig resourceConfig) {
+		ServletRegistrationBean<ServletContainer> servletContainer(ResourceConfig resourceConfig) {
 			return new ServletRegistrationBean<>(new ServletContainer(resourceConfig), "/*");
 		}
 
 		@Bean
-		public ResourceConfig resourceConfig(Environment environment, WebEndpointDiscoverer endpointDiscoverer,
+		ResourceConfig resourceConfig(Environment environment, WebEndpointDiscoverer endpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes) {
 			ResourceConfig resourceConfig = new ResourceConfig();
 			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
@@ -121,7 +121,7 @@ public class JerseyWebEndpointIntegrationTests
 	static class AuthenticatedConfiguration {
 
 		@Bean
-		public Filter securityFilter() {
+		Filter securityFilter() {
 			return new OncePerRequestFilter() {
 
 				@Override

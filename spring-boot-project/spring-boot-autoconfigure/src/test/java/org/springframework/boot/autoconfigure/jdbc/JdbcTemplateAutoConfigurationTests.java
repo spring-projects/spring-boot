@@ -201,12 +201,12 @@ class JdbcTemplateAutoConfigurationTests {
 	static class CustomConfiguration {
 
 		@Bean
-		public JdbcOperations customJdbcOperations(DataSource dataSource) {
+		JdbcOperations customJdbcOperations(DataSource dataSource) {
 			return new JdbcTemplate(dataSource);
 		}
 
 		@Bean
-		public NamedParameterJdbcOperations customNamedParameterJdbcOperations(DataSource dataSource) {
+		NamedParameterJdbcOperations customNamedParameterJdbcOperations(DataSource dataSource) {
 			return new NamedParameterJdbcTemplate(dataSource);
 		}
 
@@ -216,7 +216,7 @@ class JdbcTemplateAutoConfigurationTests {
 	static class TestDataSourceConfiguration {
 
 		@Bean
-		public DataSource customDataSource() {
+		DataSource customDataSource() {
 			return new TestDataSource();
 		}
 
@@ -226,12 +226,12 @@ class JdbcTemplateAutoConfigurationTests {
 	static class MultiJdbcTemplateConfiguration {
 
 		@Bean
-		public JdbcTemplate test1Template() {
+		JdbcTemplate test1Template() {
 			return mock(JdbcTemplate.class);
 		}
 
 		@Bean
-		public JdbcTemplate test2Template() {
+		JdbcTemplate test2Template() {
 			return mock(JdbcTemplate.class);
 		}
 
@@ -242,12 +242,12 @@ class JdbcTemplateAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public JdbcTemplate test1Template() {
+		JdbcTemplate test1Template() {
 			return mock(JdbcTemplate.class);
 		}
 
 		@Bean
-		public JdbcTemplate test2Template() {
+		JdbcTemplate test2Template() {
 			return mock(JdbcTemplate.class);
 		}
 

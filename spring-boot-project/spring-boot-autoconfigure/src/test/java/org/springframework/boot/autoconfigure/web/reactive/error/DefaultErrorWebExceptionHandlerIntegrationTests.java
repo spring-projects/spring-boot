@@ -289,35 +289,35 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Application {
+	static class Application {
 
 		@RestController
-		protected static class ErrorController {
+		static class ErrorController {
 
 			@GetMapping("/")
-			public String home() {
+			String home() {
 				throw new IllegalStateException("Expected!");
 			}
 
 			@GetMapping("/badRequest")
-			public Mono<String> badRequest() {
+			Mono<String> badRequest() {
 				return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
 			}
 
 			@GetMapping("/commit")
-			public Mono<Void> commit(ServerWebExchange exchange) {
+			Mono<Void> commit(ServerWebExchange exchange) {
 				return exchange.getResponse().setComplete()
 						.then(Mono.error(new IllegalStateException("already committed!")));
 			}
 
 			@GetMapping("/html")
-			public String htmlEscape() {
+			String htmlEscape() {
 				throw new IllegalStateException("<script>");
 			}
 
 			@PostMapping(path = "/bind", produces = "application/json")
 			@ResponseBody
-			public String bodyValidation(@Valid @RequestBody DummyBody body) {
+			String bodyValidation(@Valid @RequestBody DummyBody body) {
 				return body.getContent();
 			}
 

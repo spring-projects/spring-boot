@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
 class NoOpCacheConfiguration {
 
 	@Bean
-	public NoOpCacheManager cacheManager() {
+	NoOpCacheManager cacheManager() {
 		return new NoOpCacheManager();
 	}
 

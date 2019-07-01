@@ -43,7 +43,7 @@ class BasicAuthentication {
 		this.charset = charset;
 	}
 
-	public void applyTo(HttpHeaders headers) {
+	void applyTo(HttpHeaders headers) {
 		if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
 			headers.setBasicAuth(this.username, this.password, this.charset);
 		}

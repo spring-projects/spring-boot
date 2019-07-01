@@ -49,14 +49,14 @@ class MockBeanWithAsyncInterfaceMethodIntegrationTests {
 		assertThat(this.service.transform("foo")).isEqualTo("bar");
 	}
 
-	private interface Transformer {
+	interface Transformer {
 
 		@Async
 		String transform(String input);
 
 	}
 
-	private static class MyService {
+	static class MyService {
 
 		private final Transformer transformer;
 
@@ -64,7 +64,7 @@ class MockBeanWithAsyncInterfaceMethodIntegrationTests {
 			this.transformer = transformer;
 		}
 
-		public String transform(String input) {
+		String transform(String input) {
 			return this.transformer.transform(input);
 		}
 
@@ -75,7 +75,7 @@ class MockBeanWithAsyncInterfaceMethodIntegrationTests {
 	static class MyConfiguration {
 
 		@Bean
-		public MyService myService(Transformer transformer) {
+		MyService myService(Transformer transformer) {
 			return new MyService(transformer);
 		}
 

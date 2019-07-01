@@ -92,7 +92,7 @@ class CentralDirectoryEndRecord {
 	 * @param data the source data
 	 * @return the offset within the data where the archive begins
 	 */
-	public long getStartOfArchive(RandomAccessData data) {
+	long getStartOfArchive(RandomAccessData data) {
 		long length = Bytes.littleEndianValue(this.block, this.offset + 12, 4);
 		long specifiedOffset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
 		long actualOffset = data.getSize() - this.size - length;
@@ -105,7 +105,7 @@ class CentralDirectoryEndRecord {
 	 * @param data the source data
 	 * @return the central directory data
 	 */
-	public RandomAccessData getCentralDirectory(RandomAccessData data) {
+	RandomAccessData getCentralDirectory(RandomAccessData data) {
 		long offset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
 		long length = Bytes.littleEndianValue(this.block, this.offset + 12, 4);
 		return data.getSubsection(offset, length);
@@ -115,7 +115,7 @@ class CentralDirectoryEndRecord {
 	 * Return the number of ZIP entries in the file.
 	 * @return the number of records in the zip
 	 */
-	public int getNumberOfRecords() {
+	int getNumberOfRecords() {
 		long numberOfRecords = Bytes.littleEndianValue(this.block, this.offset + 10, 2);
 		if (numberOfRecords == 0xFFFF) {
 			throw new IllegalStateException("Zip64 archives are not supported");

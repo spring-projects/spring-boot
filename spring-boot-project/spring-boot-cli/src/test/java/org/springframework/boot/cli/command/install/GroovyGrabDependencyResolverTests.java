@@ -121,7 +121,7 @@ class GroovyGrabDependencyResolverTests {
 				"hamcrest-core-2.1.jar", "hamcrest-2.1.jar");
 	}
 
-	public Set<String> getNames(Collection<File> files) {
+	Set<String> getNames(Collection<File> files) {
 		Set<String> names = new HashSet<>(files.size());
 		for (File file : files) {
 			names.add(file.getName());

@@ -44,18 +44,18 @@ class MockBeanWithInjectedFieldIntegrationTests {
 		assertThat(this.myService.getCount()).isEqualTo(5);
 	}
 
-	private static class MyService {
+	static class MyService {
 
 		@Autowired
 		private MyRepository repository;
 
-		public int getCount() {
+		int getCount() {
 			return this.repository.findAll().size();
 		}
 
 	}
 
-	private interface MyRepository {
+	interface MyRepository {
 
 		List<Object> findAll();
 

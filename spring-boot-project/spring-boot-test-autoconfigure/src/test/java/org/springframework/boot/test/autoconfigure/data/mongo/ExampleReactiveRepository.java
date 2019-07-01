@@ -23,6 +23,6 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
  *
  * @author Stephane Nicoll
  */
-public interface ExampleReactiveRepository extends ReactiveMongoRepository<ExampleDocument, String> {
+interface ExampleReactiveRepository extends ReactiveMongoRepository<ExampleDocument, String> {
 
 }

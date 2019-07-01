@@ -131,7 +131,7 @@ class HibernateMetricsAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public SimpleMeterRegistry simpleMeterRegistry() {
+		SimpleMeterRegistry simpleMeterRegistry() {
 			return new SimpleMeterRegistry();
 		}
 
@@ -153,12 +153,12 @@ class HibernateMetricsAutoConfigurationTests {
 
 		@Primary
 		@Bean
-		public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(DataSource ds) {
+		LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(DataSource ds) {
 			return createSessionFactory(ds);
 		}
 
 		@Bean
-		public LocalContainerEntityManagerFactoryBean secondOne(DataSource ds) {
+		LocalContainerEntityManagerFactoryBean secondOne(DataSource ds) {
 			return createSessionFactory(ds);
 		}
 
@@ -175,7 +175,7 @@ class HibernateMetricsAutoConfigurationTests {
 	static class NonHibernateEntityManagerFactoryConfiguration {
 
 		@Bean
-		public EntityManagerFactory entityManagerFactory() {
+		EntityManagerFactory entityManagerFactory() {
 			EntityManagerFactory mockedFactory = mock(EntityManagerFactory.class);
 			// enforces JPA contract
 			given(mockedFactory.unwrap(ArgumentMatchers.<Class<SessionFactory>>any()))

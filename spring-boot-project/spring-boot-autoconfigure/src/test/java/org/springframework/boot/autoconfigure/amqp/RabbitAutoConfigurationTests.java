@@ -680,12 +680,12 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration2 {
+	static class TestConfiguration2 {
 
 		@Bean
 		ConnectionFactory aDifferentConnectionFactory() {
@@ -695,7 +695,7 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration3 {
+	static class TestConfiguration3 {
 
 		@Bean
 		RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
@@ -705,14 +705,14 @@ class RabbitAutoConfigurationTests {
 		}
 
 		@Bean
-		public MessageConverter testMessageConverter() {
+		MessageConverter testMessageConverter() {
 			return mock(MessageConverter.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration4 {
+	static class TestConfiguration4 {
 
 		@Bean
 		RabbitMessagingTemplate messagingTemplate(RabbitTemplate rabbitTemplate) {
@@ -724,7 +724,7 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration5 {
+	static class TestConfiguration5 {
 
 		@Bean
 		RabbitListenerContainerFactory<?> rabbitListenerContainerFactory() {
@@ -734,58 +734,58 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MessageConvertersConfiguration {
+	static class MessageConvertersConfiguration {
 
 		@Bean
 		@Primary
-		public MessageConverter myMessageConverter() {
+		MessageConverter myMessageConverter() {
 			return mock(MessageConverter.class);
 		}
 
 		@Bean
-		public MessageConverter anotherMessageConverter() {
+		MessageConverter anotherMessageConverter() {
 			return mock(MessageConverter.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MessageRecoverersConfiguration {
+	static class MessageRecoverersConfiguration {
 
 		@Bean
 		@Primary
-		public MessageRecoverer myMessageRecoverer() {
+		MessageRecoverer myMessageRecoverer() {
 			return mock(MessageRecoverer.class);
 		}
 
 		@Bean
-		public MessageRecoverer anotherMessageRecoverer() {
+		MessageRecoverer anotherMessageRecoverer() {
 			return mock(MessageRecoverer.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ConnectionNameStrategyConfiguration {
+	static class ConnectionNameStrategyConfiguration {
 
 		private final AtomicInteger counter = new AtomicInteger();
 
 		@Bean
-		public ConnectionNameStrategy myConnectionNameStrategy() {
+		ConnectionNameStrategy myConnectionNameStrategy() {
 			return (connectionFactory) -> "test#" + this.counter.getAndIncrement();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class RabbitRetryTemplateCustomizerConfiguration {
+	static class RabbitRetryTemplateCustomizerConfiguration {
 
 		private final BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
 
 		private final RetryPolicy retryPolicy = new NeverRetryPolicy();
 
 		@Bean
-		public RabbitRetryTemplateCustomizer rabbitTemplateRetryTemplateCustomizer() {
+		RabbitRetryTemplateCustomizer rabbitTemplateRetryTemplateCustomizer() {
 			return (target, template) -> {
 				if (target.equals(RabbitRetryTemplateCustomizer.Target.SENDER)) {
 					template.setBackOffPolicy(this.backOffPolicy);
@@ -794,7 +794,7 @@ class RabbitAutoConfigurationTests {
 		}
 
 		@Bean
-		public RabbitRetryTemplateCustomizer rabbitListenerRetryTemplateCustomizer() {
+		RabbitRetryTemplateCustomizer rabbitListenerRetryTemplateCustomizer() {
 			return (target, template) -> {
 				if (target.equals(RabbitRetryTemplateCustomizer.Target.LISTENER)) {
 					template.setRetryPolicy(this.retryPolicy);
@@ -806,12 +806,12 @@ class RabbitAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableRabbit
-	protected static class EnableRabbitConfiguration {
+	static class EnableRabbitConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class NoEnableRabbitConfiguration {
+	static class NoEnableRabbitConfiguration {
 
 	}
 

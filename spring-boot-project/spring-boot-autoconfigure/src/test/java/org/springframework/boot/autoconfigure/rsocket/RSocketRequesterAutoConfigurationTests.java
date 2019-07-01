@@ -63,7 +63,7 @@ class RSocketRequesterAutoConfigurationTests {
 	static class CustomRSocketRequesterBuilder {
 
 		@Bean
-		public MyRSocketRequesterBuilder myRSocketRequesterBuilder() {
+		MyRSocketRequesterBuilder myRSocketRequesterBuilder() {
 			return mock(MyRSocketRequesterBuilder.class);
 		}
 

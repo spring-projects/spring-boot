@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class ConnectionInputStream extends FilterInputStream {
 	 * @return the HTTP header
 	 * @throws IOException in case of I/O errors
 	 */
-	public String readHeader() throws IOException {
+	String readHeader() throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
 		StringBuilder content = new StringBuilder(BUFFER_SIZE);
 		while (content.indexOf(HEADER_END) == -1) {
@@ -60,7 +60,7 @@ class ConnectionInputStream extends FilterInputStream {
 	 * @param length the amount of data to read
 	 * @throws IOException in case of I/O errors
 	 */
-	public void readFully(byte[] buffer, int offset, int length) throws IOException {
+	void readFully(byte[] buffer, int offset, int length) throws IOException {
 		while (length > 0) {
 			int amountRead = checkedRead(buffer, offset, length);
 			offset += amountRead;
@@ -74,7 +74,7 @@ class ConnectionInputStream extends FilterInputStream {
 	 * @return the content
 	 * @throws IOException in case of I/O errors
 	 */
-	public int checkedRead() throws IOException {
+	int checkedRead() throws IOException {
 		int b = read();
 		if (b == -1) {
 			throw new IOException("End of stream");
@@ -91,7 +91,7 @@ class ConnectionInputStream extends FilterInputStream {
 	 * @return the amount of data read
 	 * @throws IOException in case of I/O errors
 	 */
-	public int checkedRead(byte[] buffer, int offset, int length) throws IOException {
+	int checkedRead(byte[] buffer, int offset, int length) throws IOException {
 		int amountRead = read(buffer, offset, length);
 		if (amountRead == -1) {
 			throw new IOException("End of stream");

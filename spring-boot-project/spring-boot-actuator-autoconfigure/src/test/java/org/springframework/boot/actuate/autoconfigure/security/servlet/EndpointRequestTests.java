@@ -259,7 +259,7 @@ class EndpointRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final WebApplicationContext context;
 
@@ -270,7 +270,7 @@ class EndpointRequestTests {
 			this.matcher = matcher;
 		}
 
-		public void matches(String servletPath) {
+		void matches(String servletPath) {
 			matches(mockRequest(servletPath));
 		}
 
@@ -278,7 +278,7 @@ class EndpointRequestTests {
 			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
-		public void doesNotMatch(String servletPath) {
+		void doesNotMatch(String servletPath) {
 			doesNotMatch(mockRequest(servletPath));
 		}
 
@@ -307,12 +307,12 @@ class EndpointRequestTests {
 	}
 
 	@Endpoint(id = "foo")
-	private static class FooEndpoint {
+	static class FooEndpoint {
 
 	}
 
 	@ServletEndpoint(id = "baz")
-	private static class BazServletEndpoint {
+	static class BazServletEndpoint {
 
 	}
 

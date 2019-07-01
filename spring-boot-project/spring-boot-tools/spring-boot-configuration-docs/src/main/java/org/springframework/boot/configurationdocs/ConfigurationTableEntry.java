@@ -25,11 +25,11 @@ abstract class ConfigurationTableEntry implements Comparable<ConfigurationTableE
 
 	protected String key;
 
-	public String getKey() {
+	String getKey() {
 		return this.key;
 	}
 
-	public abstract void write(AsciidocBuilder builder);
+	abstract void write(AsciidocBuilder builder);
 
 	@Override
 	public boolean equals(Object obj) {

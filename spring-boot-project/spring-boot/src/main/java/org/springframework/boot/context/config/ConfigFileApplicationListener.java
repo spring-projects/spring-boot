@@ -319,7 +319,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					getClass().getClassLoader());
 		}
 
-		public void load() {
+		void load() {
 			FilteredPropertySource.apply(this.environment, DEFAULT_PROPERTIES, LOAD_FILTERED_PROPERTY,
 					(defaultProperties) -> {
 						this.profiles = new LinkedList<>();
@@ -735,11 +735,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.defaultProfile = defaultProfile;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public boolean isDefaultProfile() {
+		boolean isDefaultProfile() {
 			return this.defaultProfile;
 		}
 
@@ -820,19 +820,19 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.includeProfiles = includeProfiles;
 		}
 
-		public PropertySource<?> getPropertySource() {
+		PropertySource<?> getPropertySource() {
 			return this.propertySource;
 		}
 
-		public String[] getProfiles() {
+		String[] getProfiles() {
 			return this.profiles;
 		}
 
-		public Set<Profile> getActiveProfiles() {
+		Set<Profile> getActiveProfiles() {
 			return this.activeProfiles;
 		}
 
-		public Set<Profile> getIncludeProfiles() {
+		Set<Profile> getIncludeProfiles() {
 			return this.includeProfiles;
 		}
 

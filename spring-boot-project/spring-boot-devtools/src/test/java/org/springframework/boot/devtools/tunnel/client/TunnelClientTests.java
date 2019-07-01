@@ -107,7 +107,7 @@ class TunnelClientTests {
 		verify(listener).onClose(any(SocketChannel.class));
 	}
 
-	private static class MockTunnelConnection implements TunnelConnection {
+	static class MockTunnelConnection implements TunnelConnection {
 
 		private final ByteArrayOutputStream written = new ByteArrayOutputStream();
 
@@ -122,22 +122,22 @@ class TunnelClientTests {
 			return new TunnelChannel(incomingChannel, closeable);
 		}
 
-		public void verifyWritten(String expected) {
+		void verifyWritten(String expected) {
 			verifyWritten(expected.getBytes());
 		}
 
-		public void verifyWritten(byte[] expected) {
+		void verifyWritten(byte[] expected) {
 			synchronized (this.written) {
 				assertThat(this.written.toByteArray()).isEqualTo(expected);
 				this.written.reset();
 			}
 		}
 
-		public boolean isOpen() {
+		boolean isOpen() {
 			return this.open;
 		}
 
-		public int getOpenedTimes() {
+		int getOpenedTimes() {
 			return this.openedTimes;
 		}
 

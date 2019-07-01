@@ -53,7 +53,7 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 	}
 
 	@Override
-	public void write(AsciidocBuilder builder) {
+	void write(AsciidocBuilder builder) {
 		builder.appendln("|`+", this.key, "+`");
 		writeDefaultValue(builder);
 		writeDescription(builder);

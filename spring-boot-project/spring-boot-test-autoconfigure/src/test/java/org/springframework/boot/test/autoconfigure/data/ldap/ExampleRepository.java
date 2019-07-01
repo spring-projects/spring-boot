@@ -23,6 +23,6 @@ import org.springframework.data.ldap.repository.LdapRepository;
  *
  * @author Eddú Meléndez
  */
-public interface ExampleRepository extends LdapRepository<ExampleEntry> {
+interface ExampleRepository extends LdapRepository<ExampleEntry> {
 
 }

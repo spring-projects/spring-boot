@@ -33,12 +33,12 @@ class MultiDataSourceUsingPrimaryConfiguration {
 
 	@Bean
 	@Primary
-	public DataSource test1DataSource() {
+	DataSource test1DataSource() {
 		return new TestDataSource("test1");
 	}
 
 	@Bean
-	public DataSource test2DataSource() {
+	DataSource test2DataSource() {
 		return new TestDataSource("test2");
 	}
 

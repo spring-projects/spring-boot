@@ -72,16 +72,16 @@ class HeapDumpWebEndpointWebIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public HeapDumpWebEndpoint endpoint() {
+		HeapDumpWebEndpoint endpoint() {
 			return new TestHeapDumpWebEndpoint();
 		}
 
 	}
 
-	private static class TestHeapDumpWebEndpoint extends HeapDumpWebEndpoint {
+	static class TestHeapDumpWebEndpoint extends HeapDumpWebEndpoint {
 
 		private boolean available;
 
@@ -94,7 +94,7 @@ class HeapDumpWebEndpointWebIntegrationTests {
 			reset();
 		}
 
-		public void reset() {
+		void reset() {
 			this.available = true;
 		}
 
@@ -112,7 +112,7 @@ class HeapDumpWebEndpointWebIntegrationTests {
 			};
 		}
 
-		public void setAvailable(boolean available) {
+		void setAvailable(boolean available) {
 			this.available = available;
 		}
 

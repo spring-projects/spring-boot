@@ -96,12 +96,12 @@ class FilterOrderingIntegrationTests {
 	static class MockWebServerConfiguration {
 
 		@Bean
-		public MockServletWebServerFactory webServerFactory() {
+		MockServletWebServerFactory webServerFactory() {
 			return new MockServletWebServerFactory();
 		}
 
 		@Bean
-		public WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
+		WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
 			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
@@ -112,7 +112,7 @@ class FilterOrderingIntegrationTests {
 	static class TestSessionConfiguration {
 
 		@Bean
-		public MapSessionRepository mapSessionRepository() {
+		MapSessionRepository mapSessionRepository() {
 			return new MapSessionRepository(new ConcurrentHashMap<>());
 		}
 
@@ -122,7 +122,7 @@ class FilterOrderingIntegrationTests {
 	static class TestRedisConfiguration {
 
 		@Bean
-		public RedisConnectionFactory redisConnectionFactory() {
+		RedisConnectionFactory redisConnectionFactory() {
 			RedisConnectionFactory connectionFactory = mock(RedisConnectionFactory.class);
 			RedisConnection connection = mock(RedisConnection.class);
 			given(connectionFactory.getConnection()).willReturn(connection);

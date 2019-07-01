@@ -50,10 +50,10 @@ class AutoConfigureCacheWithExistingCacheManagerIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public ConcurrentMapCacheManager existingCacheManager() {
+		ConcurrentMapCacheManager existingCacheManager() {
 			return new ConcurrentMapCacheManager();
 		}
 

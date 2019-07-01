@@ -83,7 +83,7 @@ class SocketTargetServerConnectionTests {
 				});
 	}
 
-	private static class MockServer {
+	static class MockServer {
 
 		private ServerSocketChannel serverSocket;
 
@@ -106,29 +106,29 @@ class SocketTargetServerConnectionTests {
 			return this.serverSocket.socket().getLocalPort();
 		}
 
-		public void delay(int delay) {
+		void delay(int delay) {
 			this.delay = delay;
 		}
 
-		public void willSend(byte[] send) {
+		void willSend(byte[] send) {
 			this.send = send;
 		}
 
-		public void expect(byte[] expect) {
+		void expect(byte[] expect) {
 			this.expect = expect;
 		}
 
-		public void start() {
+		void start() {
 			this.thread = new ServerThread();
 			this.thread.start();
 		}
 
-		public void closeAndVerify() throws InterruptedException {
+		void closeAndVerify() throws InterruptedException {
 			close();
 			assertThat(this.actualRead.array()).isEqualTo(this.expect);
 		}
 
-		public void close() throws InterruptedException {
+		void close() throws InterruptedException {
 			while (this.thread.isAlive()) {
 				Thread.sleep(10);
 			}

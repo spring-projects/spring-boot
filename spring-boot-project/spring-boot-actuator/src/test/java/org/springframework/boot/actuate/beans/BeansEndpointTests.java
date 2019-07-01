@@ -104,10 +104,10 @@ class BeansEndpointTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class EndpointConfiguration {
+	static class EndpointConfiguration {
 
 		@Bean
-		public BeansEndpoint endpoint(ConfigurableApplicationContext context) {
+		BeansEndpoint endpoint(ConfigurableApplicationContext context) {
 			return new BeansEndpoint(context);
 		}
 
@@ -117,7 +117,7 @@ class BeansEndpointTests {
 	static class BeanConfiguration {
 
 		@Bean
-		public String bean() {
+		String bean() {
 			return "bean";
 		}
 
@@ -128,7 +128,7 @@ class BeansEndpointTests {
 
 		@Lazy
 		@Bean
-		public String lazyBean() {
+		String lazyBean() {
 			return "lazyBean";
 		}
 

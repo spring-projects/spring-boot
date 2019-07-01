@@ -99,7 +99,7 @@ class WebMvcMetricsFilterAutoTimedTests {
 		}
 
 		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context, MeterRegistry registry) {
+		WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context, MeterRegistry registry) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
 					(builder) -> builder.publishPercentiles(0.5, 0.95).publishPercentileHistogram(true));
 		}
@@ -111,7 +111,7 @@ class WebMvcMetricsFilterAutoTimedTests {
 	static class Controller {
 
 		@GetMapping("/{id}")
-		public String successful(@PathVariable Long id) {
+		String successful(@PathVariable Long id) {
 			return id.toString();
 		}
 

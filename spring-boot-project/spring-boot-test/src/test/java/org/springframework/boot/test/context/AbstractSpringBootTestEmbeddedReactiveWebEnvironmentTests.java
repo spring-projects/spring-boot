@@ -59,7 +59,7 @@ abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	public ReactiveWebApplicationContext getContext() {
+	ReactiveWebApplicationContext getContext() {
 		return this.context;
 	}
 
@@ -86,30 +86,30 @@ abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 		assertThat(this.value).isEqualTo(123);
 	}
 
-	protected abstract static class AbstractConfig {
+	static class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 		}
 
 		@Bean
-		public ReactiveWebServerFactory webServerFactory() {
+		ReactiveWebServerFactory webServerFactory() {
 			TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
 			factory.setPort(this.port);
 			return factory;
 		}
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 		@RequestMapping("/")
-		public Mono<String> home() {
+		Mono<String> home() {
 			return Mono.just("Hello World");
 		}
 

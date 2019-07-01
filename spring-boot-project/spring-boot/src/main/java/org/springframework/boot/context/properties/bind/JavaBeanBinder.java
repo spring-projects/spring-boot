@@ -174,12 +174,12 @@ class JavaBeanBinder implements DataObjectBinder {
 			}
 		}
 
-		public Map<String, BeanProperty> getProperties() {
+		Map<String, BeanProperty> getProperties() {
 			return this.properties;
 		}
 
 		@SuppressWarnings("unchecked")
-		public BeanSupplier<T> getSupplier(Bindable<T> target) {
+		BeanSupplier<T> getSupplier(Bindable<T> target) {
 			return new BeanSupplier<>(() -> {
 				T instance = null;
 				if (target.getValue() != null) {
@@ -193,7 +193,7 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		public static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
+		static <T> Bean<T> get(Bindable<T> bindable, boolean canCallGetValue) {
 			ResolvableType type = bindable.getType();
 			Class<?> resolvedType = type.resolve(Object.class);
 			Supplier<T> value = bindable.getValue();
@@ -275,13 +275,13 @@ class JavaBeanBinder implements DataObjectBinder {
 			this.declaringClassType = declaringClassType;
 		}
 
-		public void addGetter(Method getter) {
+		void addGetter(Method getter) {
 			if (this.getter == null) {
 				this.getter = getter;
 			}
 		}
 
-		public void addSetter(Method setter) {
+		void addSetter(Method setter) {
 			if (this.setter == null || isBetterSetter(setter)) {
 				this.setter = setter;
 			}
@@ -291,17 +291,17 @@ class JavaBeanBinder implements DataObjectBinder {
 			return this.getter != null && this.getter.getReturnType().equals(setter.getParameterTypes()[0]);
 		}
 
-		public void addField(Field field) {
+		void addField(Field field) {
 			if (this.field == null) {
 				this.field = field;
 			}
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public ResolvableType getType() {
+		ResolvableType getType() {
 			if (this.setter != null) {
 				MethodParameter methodParameter = new MethodParameter(this.setter, 0);
 				return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
@@ -310,7 +310,7 @@ class JavaBeanBinder implements DataObjectBinder {
 			return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
 		}
 
-		public Annotation[] getAnnotations() {
+		Annotation[] getAnnotations() {
 			try {
 				return (this.field != null) ? this.field.getDeclaredAnnotations() : null;
 			}
@@ -319,7 +319,7 @@ class JavaBeanBinder implements DataObjectBinder {
 			}
 		}
 
-		public Supplier<Object> getValue(Supplier<?> instance) {
+		Supplier<Object> getValue(Supplier<?> instance) {
 			if (this.getter == null) {
 				return null;
 			}
@@ -334,11 +334,11 @@ class JavaBeanBinder implements DataObjectBinder {
 			};
 		}
 
-		public boolean isSettable() {
+		boolean isSettable() {
 			return this.setter != null;
 		}
 
-		public void setValue(Supplier<?> instance, Object value) {
+		void setValue(Supplier<?> instance, Object value) {
 			try {
 				this.setter.setAccessible(true);
 				this.setter.invoke(instance.get(), value);

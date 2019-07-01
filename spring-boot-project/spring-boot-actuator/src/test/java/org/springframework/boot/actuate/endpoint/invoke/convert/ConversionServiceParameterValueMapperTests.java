@@ -81,7 +81,7 @@ class ConversionServiceParameterValueMapperTests {
 				.mapParameterValue(new TestOperationParameter(OffsetDateTime.class), "2011-12-03T10:15:30+01:00"));
 	}
 
-	private static class TestOperationParameter implements OperationParameter {
+	static class TestOperationParameter implements OperationParameter {
 
 		private final Class<?> type;
 

@@ -207,12 +207,12 @@ class ReactiveHealthEndpointWebExtensionTests {
 	static class HealthIndicatorsConfiguration {
 
 		@Bean
-		public HealthIndicator firstHealthIndicator() {
+		HealthIndicator firstHealthIndicator() {
 			return () -> Health.up().build();
 		}
 
 		@Bean
-		public ReactiveHealthIndicator secondHealthIndicator() {
+		ReactiveHealthIndicator secondHealthIndicator() {
 			return () -> Mono.just(Health.up().build());
 		}
 

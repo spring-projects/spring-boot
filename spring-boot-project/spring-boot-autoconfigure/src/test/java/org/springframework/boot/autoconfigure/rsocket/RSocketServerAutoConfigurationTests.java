@@ -98,7 +98,7 @@ class RSocketServerAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public RSocketMessageHandler messageHandler() {
+		RSocketMessageHandler messageHandler() {
 			RSocketMessageHandler messageHandler = new RSocketMessageHandler();
 			messageHandler.setRSocketStrategies(RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
 					.decoder(StringDecoder.allMimeTypes()).build());
@@ -111,7 +111,7 @@ class RSocketServerAutoConfigurationTests {
 	static class CustomServerBootstrapConfig {
 
 		@Bean
-		public RSocketServerBootstrap customServerBootstrap() {
+		RSocketServerBootstrap customServerBootstrap() {
 			return mock(RSocketServerBootstrap.class);
 		}
 

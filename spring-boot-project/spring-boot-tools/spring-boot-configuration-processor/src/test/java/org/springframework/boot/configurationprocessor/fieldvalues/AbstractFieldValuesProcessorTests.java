@@ -132,7 +132,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 			return false;
 		}
 
-		public Map<String, Object> getValues() {
+		Map<String, Object> getValues() {
 			return this.values;
 		}
 

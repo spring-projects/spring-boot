@@ -99,7 +99,7 @@ class CassandraReactiveDataAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public Session session() {
+		Session session() {
 			return mock(Session.class);
 		}
 

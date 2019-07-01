@@ -146,7 +146,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 		return adapter;
 	}
 
-	private static class TestHttpWebHandlerAdapter extends HttpWebHandlerAdapter {
+	static class TestHttpWebHandlerAdapter extends HttpWebHandlerAdapter {
 
 		TestHttpWebHandlerAdapter(WebHandler delegate) {
 			super(delegate);
@@ -163,7 +163,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	static class CustomSecurityConfiguration {
 
 		@Bean
-		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			return http.authorizeExchange().pathMatchers("/foo").permitAll().anyExchange().authenticated().and()
 					.formLogin().and().build();
 		}
@@ -174,17 +174,17 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	static class WebFilterChainProxyConfiguration {
 
 		@Bean
-		public ReactiveAuthenticationManager authenticationManager() {
+		ReactiveAuthenticationManager authenticationManager() {
 			return mock(ReactiveAuthenticationManager.class);
 		}
 
 		@Bean
-		public WebFilterChainProxy webFilterChainProxy(ServerHttpSecurity http) {
+		WebFilterChainProxy webFilterChainProxy(ServerHttpSecurity http) {
 			return new WebFilterChainProxy(getFilterChains(http));
 		}
 
 		@Bean
-		public TestServerHttpSecurity http(ReactiveAuthenticationManager authenticationManager) {
+		TestServerHttpSecurity http(ReactiveAuthenticationManager authenticationManager) {
 			TestServerHttpSecurity httpSecurity = new TestServerHttpSecurity();
 			httpSecurity.authenticationManager(authenticationManager);
 			return httpSecurity;
@@ -195,7 +195,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 					http.authorizeExchange().anyExchange().authenticated().and().formLogin().and().build());
 		}
 
-		private static class TestServerHttpSecurity extends ServerHttpSecurity implements ApplicationContextAware {
+		static class TestServerHttpSecurity extends ServerHttpSecurity implements ApplicationContextAware {
 
 			@Override
 			public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

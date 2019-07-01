@@ -87,7 +87,7 @@ class JettyMetricsAutoConfigurationTests {
 	static class MeterRegistryConfiguration {
 
 		@Bean
-		public SimpleMeterRegistry meterRegistry() {
+		SimpleMeterRegistry meterRegistry() {
 			return new SimpleMeterRegistry();
 		}
 
@@ -97,7 +97,7 @@ class JettyMetricsAutoConfigurationTests {
 	static class ServletWebServerConfiguration {
 
 		@Bean
-		public JettyServletWebServerFactory jettyFactory() {
+		JettyServletWebServerFactory jettyFactory() {
 			return new JettyServletWebServerFactory(0);
 		}
 
@@ -107,12 +107,12 @@ class JettyMetricsAutoConfigurationTests {
 	static class ReactiveWebServerConfiguration {
 
 		@Bean
-		public JettyReactiveWebServerFactory jettyFactory() {
+		JettyReactiveWebServerFactory jettyFactory() {
 			return new JettyReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return mock(HttpHandler.class);
 		}
 
@@ -122,8 +122,7 @@ class JettyMetricsAutoConfigurationTests {
 	static class CustomJettyServerThreadPoolMetricsBinder {
 
 		@Bean
-		public JettyServerThreadPoolMetricsBinder customJettyServerThreadPoolMetricsBinder(
-				MeterRegistry meterRegistry) {
+		JettyServerThreadPoolMetricsBinder customJettyServerThreadPoolMetricsBinder(MeterRegistry meterRegistry) {
 			return new JettyServerThreadPoolMetricsBinder(meterRegistry);
 		}
 

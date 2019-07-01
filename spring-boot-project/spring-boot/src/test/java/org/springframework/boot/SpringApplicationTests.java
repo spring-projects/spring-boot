@@ -1123,14 +1123,14 @@ class SpringApplicationTests {
 	}
 
 	@Configuration
-	protected static class InaccessibleConfiguration {
+	static class InaccessibleConfiguration {
 
 		private InaccessibleConfiguration() {
 		}
 
 	}
 
-	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
+	static class SpyApplicationContext extends AnnotationConfigApplicationContext {
 
 		ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
 
@@ -1139,7 +1139,7 @@ class SpringApplicationTests {
 			this.applicationContext.registerShutdownHook();
 		}
 
-		public ConfigurableApplicationContext getApplicationContext() {
+		ConfigurableApplicationContext getApplicationContext() {
 			return this.applicationContext;
 		}
 
@@ -1150,7 +1150,7 @@ class SpringApplicationTests {
 
 	}
 
-	private static class TestSpringApplication extends SpringApplication {
+	static class TestSpringApplication extends SpringApplication {
 
 		private BeanDefinitionLoader loader;
 
@@ -1166,7 +1166,7 @@ class SpringApplicationTests {
 			super(resourceLoader, primarySources);
 		}
 
-		public void setUseMockLoader(boolean useMockLoader) {
+		void setUseMockLoader(boolean useMockLoader) {
 			this.useMockLoader = useMockLoader;
 		}
 
@@ -1181,7 +1181,7 @@ class SpringApplicationTests {
 			return this.loader;
 		}
 
-		public BeanDefinitionLoader getLoader() {
+		BeanDefinitionLoader getLoader() {
 			return this.loader;
 		}
 
@@ -1191,7 +1191,7 @@ class SpringApplicationTests {
 			this.bannerMode = bannerMode;
 		}
 
-		public Banner.Mode getBannerMode() {
+		Banner.Mode getBannerMode() {
 			return this.bannerMode;
 		}
 
@@ -1201,7 +1201,7 @@ class SpringApplicationTests {
 	static class ExampleConfig {
 
 		@Bean
-		public String someBean() {
+		String someBean() {
 			return "test";
 		}
 
@@ -1211,7 +1211,7 @@ class SpringApplicationTests {
 	static class OverrideConfig {
 
 		@Bean
-		public String someBean() {
+		String someBean() {
 			return "override";
 		}
 
@@ -1221,14 +1221,14 @@ class SpringApplicationTests {
 	static class BrokenPostConstructConfig {
 
 		@Bean
-		public Thing thing() {
+		Thing thing() {
 			return new Thing();
 		}
 
 		static class Thing {
 
 			@PostConstruct
-			public void boom() {
+			void boom() {
 				throw new IllegalStateException();
 			}
 
@@ -1240,7 +1240,7 @@ class SpringApplicationTests {
 	static class ListenerConfig {
 
 		@Bean
-		public ApplicationListener<?> testApplicationListener() {
+		ApplicationListener<?> testApplicationListener() {
 			return mock(ApplicationListener.class);
 		}
 
@@ -1250,7 +1250,7 @@ class SpringApplicationTests {
 	static class Multicaster {
 
 		@Bean(name = AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME)
-		public ApplicationEventMulticaster applicationEventMulticaster() {
+		ApplicationEventMulticaster applicationEventMulticaster() {
 			return spy(new SimpleApplicationEventMulticaster());
 		}
 
@@ -1260,7 +1260,7 @@ class SpringApplicationTests {
 	static class ExampleWebConfig {
 
 		@Bean
-		public TomcatServletWebServerFactory webServer() {
+		TomcatServletWebServerFactory webServer() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
@@ -1270,12 +1270,12 @@ class SpringApplicationTests {
 	static class ExampleReactiveWebConfig {
 
 		@Bean
-		public NettyReactiveWebServerFactory webServerFactory() {
+		NettyReactiveWebServerFactory webServerFactory() {
 			return new NettyReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
 		}
 
@@ -1285,7 +1285,7 @@ class SpringApplicationTests {
 	static class FailingConfig {
 
 		@Bean
-		public Object fail() {
+		Object fail() {
 			throw new RuntimeException("ExpectedError");
 		}
 
@@ -1295,17 +1295,17 @@ class SpringApplicationTests {
 	static class CommandLineRunConfig {
 
 		@Bean
-		public TestCommandLineRunner runnerC() {
+		TestCommandLineRunner runnerC() {
 			return new TestCommandLineRunner(Ordered.LOWEST_PRECEDENCE, "runnerB", "runnerA");
 		}
 
 		@Bean
-		public TestApplicationRunner runnerB() {
+		TestApplicationRunner runnerB() {
 			return new TestApplicationRunner(Ordered.LOWEST_PRECEDENCE - 1, "runnerA");
 		}
 
 		@Bean
-		public TestCommandLineRunner runnerA() {
+		TestCommandLineRunner runnerA() {
 			return new TestCommandLineRunner(Ordered.HIGHEST_PRECEDENCE);
 		}
 
@@ -1315,7 +1315,7 @@ class SpringApplicationTests {
 	static class ExitCodeCommandLineRunConfig {
 
 		@Bean
-		public CommandLineRunner runner() {
+		CommandLineRunner runner() {
 			return (args) -> {
 				throw new IllegalStateException(new ExitStatusException());
 			};
@@ -1327,14 +1327,14 @@ class SpringApplicationTests {
 	static class MappedExitCodeCommandLineRunConfig {
 
 		@Bean
-		public CommandLineRunner runner() {
+		CommandLineRunner runner() {
 			return (args) -> {
 				throw new IllegalStateException();
 			};
 		}
 
 		@Bean
-		public ExitCodeExceptionMapper exceptionMapper() {
+		ExitCodeExceptionMapper exceptionMapper() {
 			return (exception) -> {
 				if (exception instanceof IllegalStateException) {
 					return 11;
@@ -1349,7 +1349,7 @@ class SpringApplicationTests {
 	static class RefreshFailureConfig {
 
 		@PostConstruct
-		public void fail() {
+		void fail() {
 			throw new RefreshFailureException();
 		}
 
@@ -1359,12 +1359,12 @@ class SpringApplicationTests {
 	static class LazyInitializationConfig {
 
 		@Bean
-		public AtomicInteger counter() {
+		AtomicInteger counter() {
 			return new AtomicInteger(0);
 		}
 
 		@Bean
-		public LazyBean lazyBean(AtomicInteger counter) {
+		LazyBean lazyBean(AtomicInteger counter) {
 			return new LazyBean(counter);
 		}
 
@@ -1382,13 +1382,13 @@ class SpringApplicationTests {
 	static class NotLazyInitializationConfig {
 
 		@Bean
-		public AtomicInteger counter() {
+		AtomicInteger counter() {
 			return new AtomicInteger(0);
 		}
 
 		@Bean
 		@Lazy(false)
-		public NotLazyBean NotLazyBean(AtomicInteger counter) {
+		NotLazyBean NotLazyBean(AtomicInteger counter) {
 			return new NotLazyBean(counter);
 		}
 
@@ -1440,7 +1440,7 @@ class SpringApplicationTests {
 			return this.order;
 		}
 
-		public void markAsRan() {
+		void markAsRan() {
 			this.run = true;
 			for (String name : this.expectedBefore) {
 				AbstractTestRunner bean = this.applicationContext.getBean(name, AbstractTestRunner.class);
@@ -1448,13 +1448,13 @@ class SpringApplicationTests {
 			}
 		}
 
-		public boolean hasRun() {
+		boolean hasRun() {
 			return this.run;
 		}
 
 	}
 
-	private static class TestCommandLineRunner extends AbstractTestRunner implements CommandLineRunner {
+	static class TestCommandLineRunner extends AbstractTestRunner implements CommandLineRunner {
 
 		TestCommandLineRunner(int order, String... expectedBefore) {
 			super(order, expectedBefore);
@@ -1467,7 +1467,7 @@ class SpringApplicationTests {
 
 	}
 
-	private static class TestApplicationRunner extends AbstractTestRunner implements ApplicationRunner {
+	static class TestApplicationRunner extends AbstractTestRunner implements ApplicationRunner {
 
 		TestApplicationRunner(int order, String... expectedBefore) {
 			super(order, expectedBefore);
@@ -1480,7 +1480,7 @@ class SpringApplicationTests {
 
 	}
 
-	private static class ExitCodeListener implements ApplicationListener<ExitCodeEvent> {
+	static class ExitCodeListener implements ApplicationListener<ExitCodeEvent> {
 
 		private Integer exitCode;
 
@@ -1489,17 +1489,17 @@ class SpringApplicationTests {
 			this.exitCode = event.getExitCode();
 		}
 
-		public Integer getExitCode() {
+		Integer getExitCode() {
 			return this.exitCode;
 		}
 
 	}
 
-	private static class MockResourceLoader implements ResourceLoader {
+	static class MockResourceLoader implements ResourceLoader {
 
 		private final Map<String, Resource> resources = new HashMap<>();
 
-		public void addResource(String source, String path) {
+		void addResource(String source, String path) {
 			this.resources.put(source, new ClassPathResource(path, getClass()));
 		}
 

@@ -291,7 +291,7 @@ class WebMvcMetricsFilterTests {
 	@Target({ ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Timed(percentiles = 0.95)
-	public @interface Timed95 {
+	@interface Timed95 {
 
 	}
 
@@ -375,14 +375,14 @@ class WebMvcMetricsFilterTests {
 
 		@Timed(extraTags = { "public", "true" })
 		@GetMapping("/{id}")
-		public String successfulWithExtraTags(@PathVariable Long id) {
+		String successfulWithExtraTags(@PathVariable Long id) {
 			return id.toString();
 		}
 
 		@Timed
 		@Timed(value = "my.long.request", extraTags = { "region", "test" }, longTask = true)
 		@GetMapping("/callable/{id}")
-		public Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
+		Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
 			this.callableBarrier.await();
 			return () -> {
 				try {
@@ -420,31 +420,31 @@ class WebMvcMetricsFilterTests {
 		}
 
 		@GetMapping("/untimed/{id}")
-		public String successfulButUntimed(@PathVariable Long id) {
+		String successfulButUntimed(@PathVariable Long id) {
 			return id.toString();
 		}
 
 		@Timed
 		@GetMapping("/error/{id}")
-		public String alwaysThrowsException(@PathVariable Long id) {
+		String alwaysThrowsException(@PathVariable Long id) {
 			throw new IllegalStateException("Boom on " + id + "!");
 		}
 
 		@Timed
 		@GetMapping("/anonymousError/{id}")
-		public String alwaysThrowsAnonymousException(@PathVariable Long id) throws Exception {
+		String alwaysThrowsAnonymousException(@PathVariable Long id) throws Exception {
 			throw new Exception("this exception won't have a simple class name") {
 			};
 		}
 
 		@Timed
 		@GetMapping("/unhandledError/{id}")
-		public String alwaysThrowsUnhandledException(@PathVariable Long id) {
+		String alwaysThrowsUnhandledException(@PathVariable Long id) {
 			throw new RuntimeException("Boom on " + id + "!");
 		}
 
 		@GetMapping("/streamingError")
-		public ResponseBodyEmitter streamingError() {
+		ResponseBodyEmitter streamingError() {
 			ResponseBodyEmitter emitter = new ResponseBodyEmitter();
 			emitter.completeWithError(new IOException("error while writing to the response"));
 			return emitter;
@@ -452,25 +452,25 @@ class WebMvcMetricsFilterTests {
 
 		@Timed
 		@GetMapping("/regex/{id:\\.[a-z]+}")
-		public String successfulRegex(@PathVariable String id) {
+		String successfulRegex(@PathVariable String id) {
 			return id;
 		}
 
 		@Timed(percentiles = { 0.50, 0.95 })
 		@GetMapping("/percentiles/{id}")
-		public String percentiles(@PathVariable String id) {
+		String percentiles(@PathVariable String id) {
 			return id;
 		}
 
 		@Timed(histogram = true)
 		@GetMapping("/histogram/{id}")
-		public String histogram(@PathVariable String id) {
+		String histogram(@PathVariable String id) {
 			return id;
 		}
 
 		@Timed95
 		@GetMapping("/metaTimed/{id}")
-		public String meta(@PathVariable String id) {
+		String meta(@PathVariable String id) {
 			return id;
 		}
 
@@ -488,7 +488,7 @@ class WebMvcMetricsFilterTests {
 	static class Controller2 {
 
 		@GetMapping("/{id}")
-		public String successful(@PathVariable Long id) {
+		String successful(@PathVariable Long id) {
 			return id.toString();
 		}
 

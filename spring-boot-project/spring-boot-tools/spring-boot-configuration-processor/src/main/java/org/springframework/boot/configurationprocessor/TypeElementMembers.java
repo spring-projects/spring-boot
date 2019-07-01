@@ -133,15 +133,15 @@ class TypeElementMembers {
 		}
 	}
 
-	public Map<String, VariableElement> getFields() {
+	Map<String, VariableElement> getFields() {
 		return Collections.unmodifiableMap(this.fields);
 	}
 
-	public Map<String, ExecutableElement> getPublicGetters() {
+	Map<String, ExecutableElement> getPublicGetters() {
 		return Collections.unmodifiableMap(this.publicGetters);
 	}
 
-	public ExecutableElement getPublicGetter(String name, TypeMirror type) {
+	ExecutableElement getPublicGetter(String name, TypeMirror type) {
 		ExecutableElement candidate = this.publicGetters.get(name);
 		if (candidate != null) {
 			TypeMirror returnType = candidate.getReturnType();
@@ -156,7 +156,7 @@ class TypeElementMembers {
 		return null;
 	}
 
-	public ExecutableElement getPublicSetter(String name, TypeMirror type) {
+	ExecutableElement getPublicSetter(String name, TypeMirror type) {
 		List<ExecutableElement> candidates = this.publicSetters.get(name);
 		if (candidates != null) {
 			ExecutableElement matching = getMatchingSetter(candidates, type);

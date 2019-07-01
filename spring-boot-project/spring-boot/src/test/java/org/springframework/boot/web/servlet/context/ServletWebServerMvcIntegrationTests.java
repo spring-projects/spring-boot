@@ -104,16 +104,16 @@ class ServletWebServerMvcIntegrationTests {
 
 	// Simple main method for testing in a browser
 	@SuppressWarnings("resource")
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		new AnnotationConfigServletWebServerApplicationContext(JettyServletWebServerFactory.class, Config.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Config.class)
-	public static class TomcatConfig {
+	static class TomcatConfig {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
@@ -121,10 +121,10 @@ class ServletWebServerMvcIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Config.class)
-	public static class JettyConfig {
+	static class JettyConfig {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new JettyServletWebServerFactory(0);
 		}
 
@@ -132,10 +132,10 @@ class ServletWebServerMvcIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Config.class)
-	public static class UndertowConfig {
+	static class UndertowConfig {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new UndertowServletWebServerFactory(0);
 		}
 
@@ -143,10 +143,10 @@ class ServletWebServerMvcIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 			// Alternatively you can use ServletContextInitializer beans including
 			// ServletRegistration and FilterRegistration. Read the
@@ -154,7 +154,7 @@ class ServletWebServerMvcIntegrationTests {
 		}
 
 		@Bean
-		public HelloWorldController helloWorldController() {
+		HelloWorldController helloWorldController() {
 			return new HelloWorldController();
 		}
 
@@ -163,7 +163,7 @@ class ServletWebServerMvcIntegrationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@PropertySource("classpath:/org/springframework/boot/web/servlet/context/conf.properties")
-	public static class AdvancedConfig {
+	static class AdvancedConfig {
 
 		private final Environment env;
 
@@ -172,39 +172,39 @@ class ServletWebServerMvcIntegrationTests {
 		}
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
 			factory.setContextPath(this.env.getProperty("context"));
 			return factory;
 		}
 
 		@Bean
-		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(DispatcherServlet dispatcherServlet) {
+		ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(DispatcherServlet dispatcherServlet) {
 			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet);
 			registration.addUrlMappings("/spring/*");
 			return registration;
 		}
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			// Can configure dispatcher servlet here as would usually do via init-params
 			return dispatcherServlet;
 		}
 
 		@Bean
-		public HelloWorldController helloWorldController() {
+		HelloWorldController helloWorldController() {
 			return new HelloWorldController();
 		}
 
 	}
 
 	@Controller
-	public static class HelloWorldController {
+	static class HelloWorldController {
 
 		@RequestMapping("/hello")
 		@ResponseBody
-		public String sayHello() {
+		String sayHello() {
 			return "Hello World";
 		}
 

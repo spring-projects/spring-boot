@@ -50,7 +50,7 @@ class ShutdownEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 	static class TestConfiguration {
 
 		@Bean
-		public ShutdownEndpoint endpoint(Environment environment) {
+		ShutdownEndpoint endpoint(Environment environment) {
 			ShutdownEndpoint endpoint = new ShutdownEndpoint();
 			endpoint.setApplicationContext(new AnnotationConfigApplicationContext());
 			return endpoint;

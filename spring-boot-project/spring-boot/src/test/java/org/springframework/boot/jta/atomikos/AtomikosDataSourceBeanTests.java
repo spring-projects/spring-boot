@@ -43,7 +43,7 @@ class AtomikosDataSourceBeanTests {
 	}
 
 	@SuppressWarnings("serial")
-	private static class MockAtomikosDataSourceBean extends AtomikosDataSourceBean {
+	static class MockAtomikosDataSourceBean extends AtomikosDataSourceBean {
 
 		@Override
 		public synchronized void init() {

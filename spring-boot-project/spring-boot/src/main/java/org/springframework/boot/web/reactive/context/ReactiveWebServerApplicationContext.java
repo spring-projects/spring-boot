@@ -240,19 +240,19 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			return this.handler.handle(request, response);
 		}
 
-		public HttpHandler getHandler() {
+		HttpHandler getHandler() {
 			return this.handler;
 		}
 
-		public static ServerManager get(ReactiveWebServerFactory factory, boolean lazyInit) {
+		static ServerManager get(ReactiveWebServerFactory factory, boolean lazyInit) {
 			return new ServerManager(factory, lazyInit);
 		}
 
-		public static WebServer getWebServer(ServerManager manager) {
+		static WebServer getWebServer(ServerManager manager) {
 			return (manager != null) ? manager.server : null;
 		}
 
-		public static void start(ServerManager manager, Supplier<HttpHandler> handlerSupplier) {
+		static void start(ServerManager manager, Supplier<HttpHandler> handlerSupplier) {
 			if (manager != null && manager.server != null) {
 				manager.handler = manager.lazyInit ? new LazyHttpHandler(Mono.fromSupplier(handlerSupplier))
 						: handlerSupplier.get();
@@ -260,7 +260,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			}
 		}
 
-		public static void stop(ServerManager manager) {
+		static void stop(ServerManager manager) {
 			if (manager != null && manager.server != null) {
 				try {
 					manager.server.stop();

@@ -99,7 +99,7 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -110,7 +110,7 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public GraphiteConfig customConfig() {
+		GraphiteConfig customConfig() {
 			return (key) -> {
 				if ("Graphite.apiKey".equals(key)) {
 					return "12345";
@@ -126,7 +126,7 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public GraphiteMeterRegistry customRegistry(GraphiteConfig config, Clock clock) {
+		GraphiteMeterRegistry customRegistry(GraphiteConfig config, Clock clock) {
 			return new GraphiteMeterRegistry(config, clock);
 		}
 

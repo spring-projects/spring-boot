@@ -93,22 +93,22 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public TestEndpoint1 endpoint1() {
+		TestEndpoint1 endpoint1() {
 			return new TestEndpoint1();
 		}
 
 		@Bean
-		public TestEndpoint2 endpoint2() {
+		TestEndpoint2 endpoint2() {
 			return new TestEndpoint2();
 		}
 
 		@Bean
-		public TestEndpoint3 endpoint3() {
+		TestEndpoint3 endpoint3() {
 			return new TestEndpoint3();
 		}
 
 		@Bean
-		public PathMappedEndpoints pathMappedEndpoints() {
+		PathMappedEndpoints pathMappedEndpoints() {
 			List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
 			endpoints.add(mockEndpoint("e1"));
 			endpoints.add(mockEndpoint("e2"));
@@ -129,7 +129,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class TestEndpoint1 {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return "endpoint 1";
 		}
 
@@ -139,7 +139,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class TestEndpoint2 {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return "endpoint 2";
 		}
 
@@ -149,7 +149,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class TestEndpoint3 {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -163,7 +163,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
+		WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
 			return new WebSecurityConfigurerAdapter() {
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {

@@ -39,7 +39,7 @@ class JsonReader {
 
 	private final SentenceExtractor sentenceExtractor = new SentenceExtractor();
 
-	public RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
+	RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
 		try {
 			JSONObject json = readJson(in, charset);
 			List<ConfigurationMetadataSource> groups = parseAllSources(json);

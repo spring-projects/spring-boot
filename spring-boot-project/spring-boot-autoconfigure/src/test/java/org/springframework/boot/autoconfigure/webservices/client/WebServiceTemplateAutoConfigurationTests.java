@@ -105,7 +105,7 @@ class WebServiceTemplateAutoConfigurationTests {
 	static class DirtyWebServiceTemplateConfig {
 
 		@Bean
-		public WebServiceTemplate webServiceTemplateOne(WebServiceTemplateBuilder builder) {
+		WebServiceTemplate webServiceTemplateOne(WebServiceTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}
@@ -115,7 +115,7 @@ class WebServiceTemplateAutoConfigurationTests {
 		}
 
 		@Bean
-		public WebServiceTemplate webServiceTemplateTwo(WebServiceTemplateBuilder builder) {
+		WebServiceTemplate webServiceTemplateTwo(WebServiceTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}
@@ -138,7 +138,7 @@ class WebServiceTemplateAutoConfigurationTests {
 		private static final Marshaller marshaller = new Jaxb2Marshaller();
 
 		@Bean
-		public WebServiceTemplateBuilder webServiceTemplateBuilder() {
+		WebServiceTemplateBuilder webServiceTemplateBuilder() {
 			return new WebServiceTemplateBuilder().setMarshaller(marshaller);
 		}
 
@@ -150,7 +150,7 @@ class WebServiceTemplateAutoConfigurationTests {
 		private static final Unmarshaller unmarshaller = new Jaxb2Marshaller();
 
 		@Bean
-		public WebServiceTemplateCustomizer webServiceTemplateCustomizer() {
+		WebServiceTemplateCustomizer webServiceTemplateCustomizer() {
 			return (ws) -> ws.setUnmarshaller(unmarshaller);
 		}
 

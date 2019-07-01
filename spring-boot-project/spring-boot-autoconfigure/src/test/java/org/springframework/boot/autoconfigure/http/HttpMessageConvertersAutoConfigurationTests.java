@@ -263,35 +263,35 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class JacksonObjectMapperConfig {
+	static class JacksonObjectMapperConfig {
 
 		@Bean
-		public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class JacksonObjectMapperBuilderConfig {
+	static class JacksonObjectMapperBuilderConfig {
 
 		@Bean
-		public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
 
 		@Bean
-		public Jackson2ObjectMapperBuilder builder() {
+		Jackson2ObjectMapperBuilder builder() {
 			return new Jackson2ObjectMapperBuilder();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class JacksonConverterConfig {
+	static class JacksonConverterConfig {
 
 		@Bean
-		public MappingJackson2HttpMessageConverter customJacksonMessageConverter(ObjectMapper objectMapper) {
+		MappingJackson2HttpMessageConverter customJacksonMessageConverter(ObjectMapper objectMapper) {
 			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 			converter.setObjectMapper(objectMapper);
 			return converter;
@@ -300,10 +300,10 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class GsonConverterConfig {
+	static class GsonConverterConfig {
 
 		@Bean
-		public GsonHttpMessageConverter customGsonMessageConverter(Gson gson) {
+		GsonHttpMessageConverter customGsonMessageConverter(Gson gson) {
 			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
 			converter.setGson(gson);
 			return converter;
@@ -312,10 +312,10 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class JsonbConverterConfig {
+	static class JsonbConverterConfig {
 
 		@Bean
-		public JsonbHttpMessageConverter customJsonbMessageConverter(Jsonb jsonb) {
+		JsonbHttpMessageConverter customJsonbMessageConverter(Jsonb jsonb) {
 			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
 			converter.setJsonb(jsonb);
 			return converter;
@@ -324,20 +324,20 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class StringConverterConfig {
+	static class StringConverterConfig {
 
 		@Bean
-		public StringHttpMessageConverter customStringMessageConverter() {
+		StringHttpMessageConverter customStringMessageConverter() {
 			return new StringHttpMessageConverter();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TypeConstrainedConverterConfiguration {
+	static class TypeConstrainedConverterConfiguration {
 
 		@Bean
-		public TypeConstrainedMappingJackson2HttpMessageConverter typeConstrainedConverter() {
+		TypeConstrainedMappingJackson2HttpMessageConverter typeConstrainedConverter() {
 			return new TypeConstrainedMappingJackson2HttpMessageConverter(RepresentationModel.class);
 		}
 

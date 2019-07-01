@@ -119,10 +119,10 @@ class WebFluxMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomWebFluxTagsProviderConfig {
+	static class CustomWebFluxTagsProviderConfig {
 
 		@Bean
-		public WebFluxTagsProvider customWebFluxTagsProvider() {
+		WebFluxTagsProvider customWebFluxTagsProvider() {
 			return mock(WebFluxTagsProvider.class);
 		}
 

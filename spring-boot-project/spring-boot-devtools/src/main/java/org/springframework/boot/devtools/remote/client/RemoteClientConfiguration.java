@@ -148,13 +148,13 @@ public class RemoteClientConfiguration implements InitializingBean {
 		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
-		public LiveReloadServer liveReloadServer() {
+		LiveReloadServer liveReloadServer() {
 			return new LiveReloadServer(this.properties.getLivereload().getPort(),
 					Restarter.getInstance().getThreadFactory());
 		}
 
 		@Bean
-		public ApplicationListener<ClassPathChangedEvent> liveReloadTriggeringClassPathChangedEventListener(
+		ApplicationListener<ClassPathChangedEvent> liveReloadTriggeringClassPathChangedEventListener(
 				OptionalLiveReloadServer optionalLiveReloadServer) {
 			return (event) -> {
 				String url = this.remoteUrl + this.properties.getRemote().getContextPath();
@@ -164,7 +164,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		}
 
 		@Bean
-		public OptionalLiveReloadServer optionalLiveReloadServer() {
+		OptionalLiveReloadServer optionalLiveReloadServer() {
 			return new OptionalLiveReloadServer(this.liveReloadServer);
 		}
 
@@ -188,7 +188,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		private String remoteUrl;
 
 		@Bean
-		public ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
+		ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 				ClassPathRestartStrategy classPathRestartStrategy) {
 			DefaultRestartInitializer restartInitializer = new DefaultRestartInitializer();
 			URL[] urls = restartInitializer.getInitialUrls(Thread.currentThread());
@@ -199,7 +199,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		}
 
 		@Bean
-		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+		FileSystemWatcherFactory getFileSystemWatcherFactory() {
 			return this::newFileSystemWatcher;
 		}
 
@@ -215,12 +215,12 @@ public class RemoteClientConfiguration implements InitializingBean {
 		}
 
 		@Bean
-		public ClassPathRestartStrategy classPathRestartStrategy() {
+		ClassPathRestartStrategy classPathRestartStrategy() {
 			return new PatternClassPathRestartStrategy(this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean
-		public ClassPathChangeUploader classPathChangeUploader(ClientHttpRequestFactory requestFactory) {
+		ClassPathChangeUploader classPathChangeUploader(ClientHttpRequestFactory requestFactory) {
 			String url = this.remoteUrl + this.properties.getRemote().getContextPath() + "/restart";
 			return new ClassPathChangeUploader(url, requestFactory);
 		}

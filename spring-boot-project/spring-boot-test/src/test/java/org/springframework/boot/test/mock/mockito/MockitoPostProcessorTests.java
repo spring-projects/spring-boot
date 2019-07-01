@@ -128,7 +128,7 @@ class MockitoPostProcessorTests {
 	static class MockedFactoryBean {
 
 		@Bean
-		public TestFactoryBean testFactoryBean() {
+		TestFactoryBean testFactoryBean() {
 			return new TestFactoryBean();
 		}
 
@@ -139,12 +139,12 @@ class MockitoPostProcessorTests {
 	static class MultipleBeans {
 
 		@Bean
-		public ExampleService example1() {
+		ExampleService example1() {
 			return new FailingExampleService();
 		}
 
 		@Bean
-		public ExampleService example2() {
+		ExampleService example2() {
 			return new FailingExampleService();
 		}
 
@@ -159,18 +159,18 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService example1() {
+		ExampleService example1() {
 			return new FailingExampleService();
 		}
 
 		@Bean
-		public ExampleService example2() {
+		ExampleService example2() {
 			return new FailingExampleService();
 		}
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService example3() {
+		ExampleService example3() {
 			return new FailingExampleService();
 		}
 
@@ -184,13 +184,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
@@ -205,13 +205,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
@@ -225,13 +225,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
@@ -246,13 +246,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 

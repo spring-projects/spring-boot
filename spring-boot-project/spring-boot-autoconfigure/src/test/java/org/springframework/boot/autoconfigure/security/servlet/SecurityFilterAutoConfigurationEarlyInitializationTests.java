@@ -78,7 +78,7 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	static class Config {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(0);
 			return factory;
@@ -86,20 +86,20 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	}
 
-	public static class SourceType {
+	static class SourceType {
 
 		public String foo;
 
 	}
 
-	public static class DestinationType {
+	static class DestinationType {
 
 		public String bar;
 
 	}
 
 	@Component
-	public static class JacksonModuleBean extends SimpleModule {
+	static class JacksonModuleBean extends SimpleModule {
 
 		private static final long serialVersionUID = 1L;
 
@@ -110,7 +110,7 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	}
 
 	@Component
-	public static class DeserializerBean extends StdDeserializer<SourceType> {
+	static class DeserializerBean extends StdDeserializer<SourceType> {
 
 		@Autowired
 		ConversionService conversionService;
@@ -127,20 +127,20 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	}
 
 	@RestController
-	public static class ExampleController {
+	static class ExampleController {
 
 		@Autowired
 		private ConversionService conversionService;
 
 		@RequestMapping("/")
-		public void convert() {
+		void convert() {
 			this.conversionService.convert(new SourceType(), DestinationType.class);
 		}
 
 	}
 
 	@Component
-	public static class ConverterBean implements Converter<SourceType, DestinationType> {
+	static class ConverterBean implements Converter<SourceType, DestinationType> {
 
 		@Override
 		public DestinationType convert(SourceType source) {

@@ -341,7 +341,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	}
 
-	protected static class CompressionDetectionHandler extends ChannelInboundHandlerAdapter {
+	static class CompressionDetectionHandler extends ChannelInboundHandlerAdapter {
 
 		@Override
 		public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -357,7 +357,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	}
 
-	protected static class CharsHandler implements HttpHandler {
+	static class CharsHandler implements HttpHandler {
 
 		private static final DefaultDataBufferFactory factory = new DefaultDataBufferFactory();
 
@@ -365,7 +365,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 		private final MediaType mediaType;
 
-		public CharsHandler(int contentSize, MediaType mediaType) {
+		CharsHandler(int contentSize, MediaType mediaType) {
 			char[] chars = new char[contentSize];
 			Arrays.fill(chars, 'F');
 			this.bytes = factory.wrap(new String(chars).getBytes(StandardCharsets.UTF_8));
@@ -382,7 +382,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	}
 
-	protected static class XForwardedHandler implements HttpHandler {
+	static class XForwardedHandler implements HttpHandler {
 
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {

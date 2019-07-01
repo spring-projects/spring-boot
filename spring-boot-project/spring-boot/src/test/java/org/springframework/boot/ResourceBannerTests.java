@@ -120,7 +120,7 @@ class ResourceBannerTests {
 		return out.toString();
 	}
 
-	private static class MockResourceBanner extends ResourceBanner {
+	static class MockResourceBanner extends ResourceBanner {
 
 		private final String bootVersion;
 

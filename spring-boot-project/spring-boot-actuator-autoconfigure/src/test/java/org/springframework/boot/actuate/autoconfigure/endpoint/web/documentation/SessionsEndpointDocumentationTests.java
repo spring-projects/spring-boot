@@ -125,7 +125,7 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 	static class TestConfiguration {
 
 		@Bean
-		public SessionsEndpoint endpoint(FindByIndexNameSessionRepository<?> sessionRepository) {
+		SessionsEndpoint endpoint(FindByIndexNameSessionRepository<?> sessionRepository) {
 			return new SessionsEndpoint(sessionRepository);
 		}
 

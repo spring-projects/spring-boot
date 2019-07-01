@@ -47,7 +47,7 @@ class SpyDefinition extends Definition {
 
 	}
 
-	public ResolvableType getTypeToSpy() {
+	ResolvableType getTypeToSpy() {
 		return this.typeToSpy;
 	}
 
@@ -78,12 +78,12 @@ class SpyDefinition extends Definition {
 				.append("reset", getReset()).toString();
 	}
 
-	public <T> T createSpy(Object instance) {
+	<T> T createSpy(Object instance) {
 		return createSpy(getName(), instance);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T createSpy(String name, Object instance) {
+	<T> T createSpy(String name, Object instance) {
 		Assert.notNull(instance, "Instance must not be null");
 		Assert.isInstanceOf(this.typeToSpy.resolve(), instance);
 		if (Mockito.mockingDetails(instance).isSpy()) {

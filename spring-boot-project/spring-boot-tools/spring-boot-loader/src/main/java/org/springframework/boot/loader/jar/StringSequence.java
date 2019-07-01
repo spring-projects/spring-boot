@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ final class StringSequence implements CharSequence {
 		this.end = end;
 	}
 
-	public StringSequence subSequence(int start) {
+	StringSequence subSequence(int start) {
 		return subSequence(start, length());
 	}
 
@@ -72,7 +72,7 @@ final class StringSequence implements CharSequence {
 		return new StringSequence(this.source, subSequenceStart, subSequenceEnd);
 	}
 
-	public boolean isEmpty() {
+	boolean isEmpty() {
 		return length() == 0;
 	}
 
@@ -86,23 +86,23 @@ final class StringSequence implements CharSequence {
 		return this.source.charAt(this.start + index);
 	}
 
-	public int indexOf(char ch) {
+	int indexOf(char ch) {
 		return this.source.indexOf(ch, this.start) - this.start;
 	}
 
-	public int indexOf(String str) {
+	int indexOf(String str) {
 		return this.source.indexOf(str, this.start) - this.start;
 	}
 
-	public int indexOf(String str, int fromIndex) {
+	int indexOf(String str, int fromIndex) {
 		return this.source.indexOf(str, this.start + fromIndex) - this.start;
 	}
 
-	public boolean startsWith(CharSequence prefix) {
+	boolean startsWith(CharSequence prefix) {
 		return startsWith(prefix, 0);
 	}
 
-	public boolean startsWith(CharSequence prefix, int offset) {
+	boolean startsWith(CharSequence prefix, int offset) {
 		int prefixLength = prefix.length();
 		if (length() - prefixLength - offset < 0) {
 			return false;

@@ -171,7 +171,7 @@ class Neo4jPropertiesTests {
 		}
 	}
 
-	public Neo4jProperties load(boolean embeddedAvailable, String... environment) {
+	Neo4jProperties load(boolean embeddedAvailable, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (!embeddedAvailable) {
 			ctx.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));

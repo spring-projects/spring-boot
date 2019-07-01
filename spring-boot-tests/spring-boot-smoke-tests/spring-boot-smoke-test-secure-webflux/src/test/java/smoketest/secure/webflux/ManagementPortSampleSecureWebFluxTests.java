@@ -91,7 +91,7 @@ class ManagementPortSampleSecureWebFluxTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info")).permitAll()
 					.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
 					.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().pathMatchers("/login")

@@ -57,7 +57,7 @@ class ConcurrentReferenceCachingMetadataReaderFactoryTests {
 		verify(factory, times(2)).createMetadataReader(any(Resource.class));
 	}
 
-	private static class TestConcurrentReferenceCachingMetadataReaderFactory
+	static class TestConcurrentReferenceCachingMetadataReaderFactory
 			extends ConcurrentReferenceCachingMetadataReaderFactory {
 
 		@Override

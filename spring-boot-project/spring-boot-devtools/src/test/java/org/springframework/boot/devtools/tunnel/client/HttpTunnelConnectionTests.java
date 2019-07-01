@@ -156,7 +156,7 @@ class HttpTunnelConnectionTests {
 		return connection.open(this.incomingChannel, this.closeable);
 	}
 
-	private static class CurrentThreadExecutor implements Executor {
+	static class CurrentThreadExecutor implements Executor {
 
 		@Override
 		public void execute(Runnable command) {

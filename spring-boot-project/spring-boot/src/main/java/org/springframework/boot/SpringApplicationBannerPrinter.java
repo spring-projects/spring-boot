@@ -55,7 +55,7 @@ class SpringApplicationBannerPrinter {
 		this.fallbackBanner = fallbackBanner;
 	}
 
-	public Banner print(Environment environment, Class<?> sourceClass, Log logger) {
+	Banner print(Environment environment, Class<?> sourceClass, Log logger) {
 		Banner banner = getBanner(environment);
 		try {
 			logger.info(createStringFromBanner(banner, environment, sourceClass));
@@ -66,7 +66,7 @@ class SpringApplicationBannerPrinter {
 		return new PrintedBanner(banner, sourceClass);
 	}
 
-	public Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
+	Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
 		Banner banner = getBanner(environment);
 		banner.printBanner(environment, sourceClass, out);
 		return new PrintedBanner(banner, sourceClass);
@@ -124,13 +124,13 @@ class SpringApplicationBannerPrinter {
 
 		private final List<Banner> banners = new ArrayList<>();
 
-		public void addIfNotNull(Banner banner) {
+		void addIfNotNull(Banner banner) {
 			if (banner != null) {
 				this.banners.add(banner);
 			}
 		}
 
-		public boolean hasAtLeastOneBanner() {
+		boolean hasAtLeastOneBanner() {
 			return !this.banners.isEmpty();
 		}
 

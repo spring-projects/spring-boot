@@ -163,23 +163,23 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			this.key = key;
 		}
 
-		public boolean hasKeyEqualTo(CacheKey key) {
+		boolean hasKeyEqualTo(CacheKey key) {
 			return this.key.equals(key);
 		}
 
-		public List<ConfigurationPropertyName> getNames() {
+		List<ConfigurationPropertyName> getNames() {
 			return this.names;
 		}
 
-		public void setNames(List<ConfigurationPropertyName> names) {
+		void setNames(List<ConfigurationPropertyName> names) {
 			this.names = names;
 		}
 
-		public PropertyMapping[] getMappings() {
+		PropertyMapping[] getMappings() {
 			return this.mappings;
 		}
 
-		public void setMappings(PropertyMapping[] mappings) {
+		void setMappings(PropertyMapping[] mappings) {
 			this.mappings = mappings;
 		}
 
@@ -195,7 +195,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			this.key = key;
 		}
 
-		public CacheKey copy() {
+		CacheKey copy() {
 			if (this == IMMUTABLE_PROPERTY_SOURCE) {
 				return IMMUTABLE_PROPERTY_SOURCE;
 			}
@@ -226,7 +226,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return this.key.hashCode();
 		}
 
-		public static CacheKey get(EnumerablePropertySource<?> source) {
+		static CacheKey get(EnumerablePropertySource<?> source) {
 			if (isImmutable(source)) {
 				return IMMUTABLE_PROPERTY_SOURCE;
 			}

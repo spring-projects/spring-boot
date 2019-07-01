@@ -102,7 +102,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	static class TestConfiguration {
 
 		@Bean
-		public LoggersEndpoint endpoint(LoggingSystem loggingSystem) {
+		LoggersEndpoint endpoint(LoggingSystem loggingSystem) {
 			return new LoggersEndpoint(loggingSystem);
 		}
 

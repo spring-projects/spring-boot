@@ -319,7 +319,7 @@ class ThymeleafServletAutoConfigurationTests {
 	static class LayoutDialectConfiguration {
 
 		@Bean
-		public LayoutDialect layoutDialect() {
+		LayoutDialect layoutDialect() {
 			return new LayoutDialect(new GroupingRespectLayoutTitleStrategy());
 		}
 
@@ -329,7 +329,7 @@ class ThymeleafServletAutoConfigurationTests {
 	static class FilterRegistrationResourceConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<ResourceUrlEncodingFilter> filterRegistration() {
+		FilterRegistrationBean<ResourceUrlEncodingFilter> filterRegistration() {
 			FilterRegistrationBean<ResourceUrlEncodingFilter> bean = new FilterRegistrationBean<>(
 					new ResourceUrlEncodingFilter());
 			bean.setDispatcherTypes(EnumSet.of(DispatcherType.INCLUDE));
@@ -342,7 +342,7 @@ class ThymeleafServletAutoConfigurationTests {
 	static class FilterRegistrationOtherConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegistration() {
+		FilterRegistrationBean<OrderedCharacterEncodingFilter> filterRegistration() {
 			return new FilterRegistrationBean<>(new OrderedCharacterEncodingFilter());
 		}
 

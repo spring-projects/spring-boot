@@ -259,7 +259,7 @@ public class UndertowWebServer implements WebServer {
 			this.protocol = protocol;
 		}
 
-		public int getNumber() {
+		int getNumber() {
 			return this.number;
 		}
 

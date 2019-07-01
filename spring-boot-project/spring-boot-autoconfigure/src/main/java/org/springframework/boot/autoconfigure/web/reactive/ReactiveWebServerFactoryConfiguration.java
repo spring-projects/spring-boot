@@ -60,12 +60,12 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactorResourceFactory reactorServerResourceFactory() {
+		ReactorResourceFactory reactorServerResourceFactory() {
 			return new ReactorResourceFactory();
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(ReactorResourceFactory resourceFactory,
+		NettyReactiveWebServerFactory nettyReactiveWebServerFactory(ReactorResourceFactory resourceFactory,
 				ObjectProvider<NettyRouteProvider> routes) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory();
 			serverFactory.setResourceFactory(resourceFactory);
@@ -81,7 +81,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedTomcat {
 
 		@Bean
-		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
+		TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
 				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
@@ -104,12 +104,12 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public JettyResourceFactory jettyServerResourceFactory() {
+		JettyResourceFactory jettyServerResourceFactory() {
 			return new JettyResourceFactory();
 		}
 
 		@Bean
-		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory,
+		JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory,
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyReactiveWebServerFactory serverFactory = new JettyReactiveWebServerFactory();
 			serverFactory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
@@ -125,7 +125,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedUndertow {
 
 		@Bean
-		public UndertowReactiveWebServerFactory undertowReactiveWebServerFactory(
+		UndertowReactiveWebServerFactory undertowReactiveWebServerFactory(
 				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
 				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
 			UndertowReactiveWebServerFactory factory = new UndertowReactiveWebServerFactory();

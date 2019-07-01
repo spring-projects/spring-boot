@@ -165,7 +165,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -176,7 +176,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public PrometheusConfig customConfig() {
+		PrometheusConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -187,7 +187,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public PrometheusMeterRegistry customRegistry(PrometheusConfig config, CollectorRegistry collectorRegistry,
+		PrometheusMeterRegistry customRegistry(PrometheusConfig config, CollectorRegistry collectorRegistry,
 				Clock clock) {
 			return new PrometheusMeterRegistry(config, collectorRegistry, clock);
 		}
@@ -199,7 +199,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomCollectorRegistryConfiguration {
 
 		@Bean
-		public CollectorRegistry customCollectorRegistry() {
+		CollectorRegistry customCollectorRegistry() {
 			return new CollectorRegistry();
 		}
 
@@ -210,7 +210,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomEndpointConfiguration {
 
 		@Bean
-		public PrometheusScrapeEndpoint customEndpoint(CollectorRegistry collectorRegistry) {
+		PrometheusScrapeEndpoint customEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
 

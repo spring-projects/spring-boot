@@ -98,11 +98,11 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			this.cycleStart = cycleStart;
 		}
 
-		public List<BeanInCycle> getBeansInCycle() {
+		List<BeanInCycle> getBeansInCycle() {
 			return this.beansInCycle;
 		}
 
-		public int getCycleStart() {
+		int getCycleStart() {
 			return this.cycleStart;
 		}
 
@@ -158,7 +158,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			return this.name + this.description;
 		}
 
-		public static BeanInCycle get(Throwable ex) {
+		static BeanInCycle get(Throwable ex) {
 			if (ex instanceof BeanCreationException) {
 				return get((BeanCreationException) ex);
 			}

@@ -100,7 +100,7 @@ class SpringBootTestWithTestPropertySourceTests {
 		private String propertySourceInlinedOverridesBootTestInlined;
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 

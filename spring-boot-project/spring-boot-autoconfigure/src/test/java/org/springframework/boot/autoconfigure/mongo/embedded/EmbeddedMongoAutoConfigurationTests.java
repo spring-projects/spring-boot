@@ -232,7 +232,7 @@ class EmbeddedMongoAutoConfigurationTests {
 	static class MongoClientConfiguration {
 
 		@Bean
-		public MongoClient mongoClient(@Value("${local.mongo.port}") int port) {
+		MongoClient mongoClient(@Value("${local.mongo.port}") int port) {
 			return new MongoClient("localhost", port);
 		}
 
@@ -242,7 +242,7 @@ class EmbeddedMongoAutoConfigurationTests {
 	static class DownloadConfigBuilderCustomizerConfiguration {
 
 		@Bean
-		public DownloadConfigBuilderCustomizer testDownloadConfigBuilderCustomizer() {
+		DownloadConfigBuilderCustomizer testDownloadConfigBuilderCustomizer() {
 			return (downloadConfigBuilder) -> downloadConfigBuilder.userAgent("Test User Agent");
 		}
 

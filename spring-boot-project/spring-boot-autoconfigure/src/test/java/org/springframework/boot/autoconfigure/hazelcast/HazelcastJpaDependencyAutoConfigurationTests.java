@@ -97,7 +97,7 @@ class HazelcastJpaDependencyAutoConfigurationTests {
 	static class HazelcastConfiguration {
 
 		@Bean
-		public HazelcastInstance hazelcastInstance() {
+		HazelcastInstance hazelcastInstance() {
 			return mock(HazelcastInstance.class);
 		}
 
@@ -107,7 +107,7 @@ class HazelcastJpaDependencyAutoConfigurationTests {
 	static class HazelcastCustomNameConfiguration {
 
 		@Bean
-		public HazelcastInstance myHazelcastInstance() {
+		HazelcastInstance myHazelcastInstance() {
 			return mock(HazelcastInstance.class);
 		}
 

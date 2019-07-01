@@ -79,17 +79,17 @@ class ServletEndpointManagementContextConfigurationTests {
 	static class TestConfig {
 
 		@Bean
-		public ServletEndpointsSupplier servletEndpointsSupplier() {
+		ServletEndpointsSupplier servletEndpointsSupplier() {
 			return Collections::emptyList;
 		}
 
 		@Bean
-		public DispatcherServletPath dispatcherServletPath() {
+		DispatcherServletPath dispatcherServletPath() {
 			return () -> "/test";
 		}
 
 		@Bean
-		public JerseyApplicationPath jerseyApplicationPath() {
+		JerseyApplicationPath jerseyApplicationPath() {
 			return () -> "/jersey";
 		}
 

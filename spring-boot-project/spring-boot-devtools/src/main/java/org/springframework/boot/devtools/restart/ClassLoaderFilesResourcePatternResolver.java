@@ -195,7 +195,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	 */
 	private static class ResourcePatternResolverFactory {
 
-		public ResourcePatternResolver getResourcePatternResolver(ApplicationContext applicationContext,
+		ResourcePatternResolver getResourcePatternResolver(ApplicationContext applicationContext,
 				ResourceLoader resourceLoader) {
 			if (resourceLoader == null) {
 				resourceLoader = new DefaultResourceLoader();

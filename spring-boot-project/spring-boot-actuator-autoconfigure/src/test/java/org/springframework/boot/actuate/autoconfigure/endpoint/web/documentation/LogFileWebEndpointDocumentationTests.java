@@ -55,7 +55,7 @@ class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 	static class TestConfiguration {
 
 		@Bean
-		public LogFileWebEndpoint endpoint(Environment environment) {
+		LogFileWebEndpoint endpoint(Environment environment) {
 			return new LogFileWebEndpoint(environment);
 		}
 

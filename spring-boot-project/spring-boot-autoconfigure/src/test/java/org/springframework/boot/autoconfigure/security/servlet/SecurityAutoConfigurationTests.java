@@ -166,7 +166,7 @@ class SecurityAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class EntityConfiguration {
+	static class EntityConfiguration {
 
 	}
 
@@ -174,7 +174,7 @@ class SecurityAutoConfigurationTests {
 	static class AuthenticationEventPublisherConfiguration {
 
 		@Bean
-		public AuthenticationEventPublisher authenticationEventPublisher() {
+		AuthenticationEventPublisher authenticationEventPublisher() {
 			return new TestAuthenticationEventPublisher();
 		}
 

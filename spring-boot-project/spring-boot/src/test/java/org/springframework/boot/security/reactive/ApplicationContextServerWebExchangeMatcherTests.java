@@ -119,7 +119,7 @@ class ApplicationContextServerWebExchangeMatcherTests {
 			this.bean = bean;
 		}
 
-		public ExistingBean getBean() {
+		ExistingBean getBean() {
 			return this.bean;
 		}
 

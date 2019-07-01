@@ -165,18 +165,18 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	static class CloudFoundryReactiveConfiguration {
 
 		@Bean
-		public CloudFoundrySecurityInterceptor interceptor() {
+		CloudFoundrySecurityInterceptor interceptor() {
 			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
 		@Bean
-		public EndpointMediaTypes EndpointMediaTypes() {
+		EndpointMediaTypes EndpointMediaTypes() {
 			return new EndpointMediaTypes(Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 		}
 
 		@Bean
-		public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
+		CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 				WebEndpointDiscoverer webEndpointDiscoverer, EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -188,7 +188,7 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 		}
 
 		@Bean
-		public WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext,
+		WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext,
 				EndpointMediaTypes endpointMediaTypes) {
 			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
@@ -197,7 +197,7 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 		}
 
 		@Bean
-		public EndpointDelegate endpointDelegate() {
+		EndpointDelegate endpointDelegate() {
 			return mock(EndpointDelegate.class);
 		}
 
@@ -213,17 +213,17 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 		}
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 		@ReadOperation
-		public Map<String, Object> readPart(@Selector String part) {
+		Map<String, Object> readPart(@Selector String part) {
 			return Collections.singletonMap("part", part);
 		}
 
 		@WriteOperation
-		public void write(String foo, String bar) {
+		void write(String foo, String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
 
@@ -233,7 +233,7 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	static class TestEnvEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
@@ -243,7 +243,7 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	static class TestInfoEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
@@ -251,26 +251,26 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(CloudFoundryReactiveConfiguration.class)
-	protected static class TestEndpointConfiguration {
+	static class TestEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
+		TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
 			return new TestEndpoint(endpointDelegate);
 		}
 
 		@Bean
-		public TestInfoEndpoint testInfoEnvEndpoint() {
+		TestInfoEndpoint testInfoEnvEndpoint() {
 			return new TestInfoEndpoint();
 		}
 
 		@Bean
-		public TestEnvEndpoint testEnvEndpoint() {
+		TestEnvEndpoint testEnvEndpoint() {
 			return new TestEnvEndpoint();
 		}
 
 	}
 
-	public interface EndpointDelegate {
+	interface EndpointDelegate {
 
 		void write();
 

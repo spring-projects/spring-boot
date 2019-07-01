@@ -69,16 +69,16 @@ class JerseyAutoConfigurationWithoutApplicationPathTests {
 		@Value("${message:World}")
 		private String msg;
 
+		Application() {
+			register(Application.class);
+		}
+
 		@GET
 		public String message() {
 			return "Hello " + this.msg;
 		}
 
-		Application() {
-			register(Application.class);
-		}
-
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(Application.class, args);
 		}
 

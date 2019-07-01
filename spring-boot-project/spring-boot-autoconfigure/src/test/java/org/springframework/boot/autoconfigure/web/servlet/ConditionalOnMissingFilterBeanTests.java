@@ -111,7 +111,7 @@ class ConditionalOnMissingFilterBeanTests {
 	static class WithTestFilterConfig {
 
 		@Bean
-		public TestFilter myTestFilter() {
+		TestFilter myTestFilter() {
 			return new TestFilter();
 		}
 
@@ -121,7 +121,7 @@ class ConditionalOnMissingFilterBeanTests {
 	static class WithoutTestFilterConfig {
 
 		@Bean
-		public OtherFilter myOtherFilter() {
+		OtherFilter myOtherFilter() {
 			return new OtherFilter();
 		}
 
@@ -131,7 +131,7 @@ class ConditionalOnMissingFilterBeanTests {
 	static class WithoutTestFilterRegistrationConfig {
 
 		@Bean
-		public FilterRegistrationBean<OtherFilter> myOtherFilter() {
+		FilterRegistrationBean<OtherFilter> myOtherFilter() {
 			return new FilterRegistrationBean<>(new OtherFilter());
 		}
 
@@ -141,7 +141,7 @@ class ConditionalOnMissingFilterBeanTests {
 	static class WithTestFilterRegistrationConfig {
 
 		@Bean
-		public FilterRegistrationBean<TestFilter> myTestFilter() {
+		FilterRegistrationBean<TestFilter> myTestFilter() {
 			return new FilterRegistrationBean<>(new TestFilter());
 		}
 
@@ -152,7 +152,7 @@ class ConditionalOnMissingFilterBeanTests {
 
 		@Bean
 		@ConditionalOnMissingFilterBean(TestFilter.class)
-		public TestFilter testFilter() {
+		TestFilter testFilter() {
 			return new TestFilter();
 		}
 
@@ -163,7 +163,7 @@ class ConditionalOnMissingFilterBeanTests {
 
 		@Bean
 		@ConditionalOnMissingFilterBean
-		public TestFilter testFilter() {
+		TestFilter testFilter() {
 			return new TestFilter();
 		}
 
@@ -174,7 +174,7 @@ class ConditionalOnMissingFilterBeanTests {
 
 		@Bean
 		@ConditionalOnMissingFilterBean
-		public FilterRegistrationBean<TestFilter> testFilter() {
+		FilterRegistrationBean<TestFilter> testFilter() {
 			return new FilterRegistrationBean<>(new TestFilter());
 		}
 

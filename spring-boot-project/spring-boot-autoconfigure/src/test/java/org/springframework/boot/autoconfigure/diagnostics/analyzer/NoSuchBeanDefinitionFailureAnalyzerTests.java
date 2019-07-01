@@ -231,57 +231,57 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(StringHandler.class)
-	protected static class StringPropertyTypeConfiguration {
+	static class StringPropertyTypeConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(NumberHandler.class)
-	protected static class IntegerPropertyTypeConfiguration {
+	static class IntegerPropertyTypeConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestTypeClassAutoConfiguration.class)
 	@Import(StringHandler.class)
-	protected static class MissingClassOnAutoConfigurationConfiguration {
+	static class MissingClassOnAutoConfigurationConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ TestPropertyAutoConfiguration.class, TestTypeClassAutoConfiguration.class })
 	@Import(StringHandler.class)
-	protected static class SeveralAutoConfigurationTypeConfiguration {
+	static class SeveralAutoConfigurationTypeConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestMissingBeanAutoConfiguration.class)
 	@Import(StringNameHandler.class)
-	protected static class StringMissingBeanNameConfiguration {
+	static class StringMissingBeanNameConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(TestNullBeanConfiguration.class)
 	@Import(StringHandler.class)
-	protected static class StringNullBeanConfiguration {
+	static class StringNullBeanConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestPropertyAutoConfiguration {
+	static class TestPropertyAutoConfiguration {
 
 		@ConditionalOnProperty("spring.string.enabled")
 		@Bean
-		public String string() {
+		String string() {
 			return "Test";
 		}
 
 		@ConditionalOnProperty("spring.integer.enabled")
 		@Bean
-		public Integer integer() {
+		Integer integer() {
 			return 42;
 		}
 
@@ -289,46 +289,46 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.example.FooBar")
-	public static class TestTypeClassAutoConfiguration {
+	static class TestTypeClassAutoConfiguration {
 
 		@Bean
-		public String string() {
+		String string() {
 			return "Test";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestMissingBeanAutoConfiguration {
+	static class TestMissingBeanAutoConfiguration {
 
 		@ConditionalOnBean(Integer.class)
 		@Bean(name = "test-string")
-		public String string() {
+		String string() {
 			return "Test";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestNullBeanConfiguration {
+	static class TestNullBeanConfiguration {
 
 		@Bean
-		public String string() {
+		String string() {
 			return null;
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class QualifiedBeanConfiguration {
+	static class QualifiedBeanConfiguration {
 
 		@Bean
-		public String consumer(@Qualifier("alpha") Thing thing) {
+		String consumer(@Qualifier("alpha") Thing thing) {
 			return "consumer";
 		}
 
 		@Bean
-		public Thing producer() {
+		Thing producer() {
 			return new Thing();
 		}
 
@@ -338,23 +338,23 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	}
 
-	protected static class StringHandler {
+	static class StringHandler {
 
-		public StringHandler(String foo) {
+		StringHandler(String foo) {
 		}
 
 	}
 
-	protected static class NumberHandler {
+	static class NumberHandler {
 
-		public NumberHandler(Number foo) {
+		NumberHandler(Number foo) {
 		}
 
 	}
 
-	protected static class StringNameHandler {
+	static class StringNameHandler {
 
-		public StringNameHandler(BeanFactory beanFactory) {
+		StringNameHandler(BeanFactory beanFactory) {
 			beanFactory.getBean("test-string");
 		}
 

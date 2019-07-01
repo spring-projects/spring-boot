@@ -60,12 +60,12 @@ class TestRestTemplateContextCustomizerWithOverrideIntegrationTests {
 	static class TestConfig {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public TestRestTemplate template() {
+		TestRestTemplate template() {
 			return new CustomTestRestTemplate();
 		}
 

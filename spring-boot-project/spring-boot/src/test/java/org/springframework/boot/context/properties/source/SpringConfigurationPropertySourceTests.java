@@ -150,8 +150,10 @@ class SpringConfigurationPropertySourceTests {
 
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
+	 *
+	 * @param <T> The source type
 	 */
-	private static class OriginCapablePropertySource<T> extends PropertySource<T> implements OriginLookup<String> {
+	static class OriginCapablePropertySource<T> extends PropertySource<T> implements OriginLookup<String> {
 
 		private final PropertySource<T> propertySource;
 

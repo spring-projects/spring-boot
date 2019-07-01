@@ -165,7 +165,7 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 	static class TestConfiguration {
 
 		@Bean
-		public ThreadDumpEndpoint endpoint() {
+		ThreadDumpEndpoint endpoint() {
 			return new ThreadDumpEndpoint();
 		}
 

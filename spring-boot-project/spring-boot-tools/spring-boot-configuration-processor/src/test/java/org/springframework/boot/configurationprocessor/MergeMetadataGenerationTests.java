@@ -286,7 +286,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		}
 	}
 
-	private static class AdditionalMetadata {
+	static class AdditionalMetadata {
 
 	}
 

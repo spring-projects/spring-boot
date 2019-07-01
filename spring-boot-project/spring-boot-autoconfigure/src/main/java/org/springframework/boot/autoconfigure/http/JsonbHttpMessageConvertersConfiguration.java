@@ -42,11 +42,11 @@ class JsonbHttpMessageConvertersConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Jsonb.class)
 	@Conditional(PreferJsonbOrMissingJacksonAndGsonCondition.class)
-	protected static class JsonbHttpMessageConverterConfiguration {
+	static class JsonbHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public JsonbHttpMessageConverter jsonbHttpMessageConverter(Jsonb jsonb) {
+		JsonbHttpMessageConverter jsonbHttpMessageConverter(Jsonb jsonb) {
 			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
 			converter.setJsonb(jsonb);
 			return converter;

@@ -200,7 +200,7 @@ class JobLauncherCommandLineRunnerTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class BatchConfiguration implements BatchConfigurer {
+	static class BatchConfiguration implements BatchConfigurer {
 
 		private ResourcelessTransactionManager transactionManager = new ResourcelessTransactionManager();
 
@@ -209,11 +209,11 @@ class JobLauncherCommandLineRunnerTests {
 		private MapJobRepositoryFactoryBean jobRepositoryFactory = new MapJobRepositoryFactoryBean(
 				this.transactionManager);
 
-		public BatchConfiguration() throws Exception {
+		BatchConfiguration() throws Exception {
 			this.jobRepository = this.jobRepositoryFactory.getObject();
 		}
 
-		public void clear() {
+		void clear() {
 			this.jobRepositoryFactory.clear();
 		}
 

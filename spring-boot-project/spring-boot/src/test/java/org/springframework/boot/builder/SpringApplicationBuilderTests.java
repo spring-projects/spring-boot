@@ -279,7 +279,7 @@ class SpringApplicationBuilderTests {
 
 	}
 
-	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
+	static class SpyApplicationContext extends AnnotationConfigApplicationContext {
 
 		private final ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
 
@@ -292,7 +292,7 @@ class SpringApplicationBuilderTests {
 			this.applicationContext.setParent(parent);
 		}
 
-		public ConfigurableApplicationContext getApplicationContext() {
+		ConfigurableApplicationContext getApplicationContext() {
 			return this.applicationContext;
 		}
 
@@ -302,7 +302,7 @@ class SpringApplicationBuilderTests {
 			this.resourceLoader = resourceLoader;
 		}
 
-		public ResourceLoader getResourceLoader() {
+		ResourceLoader getResourceLoader() {
 			return this.resourceLoader;
 		}
 
@@ -312,7 +312,7 @@ class SpringApplicationBuilderTests {
 			this.registeredShutdownHook = true;
 		}
 
-		public boolean getRegisteredShutdownHook() {
+		boolean getRegisteredShutdownHook() {
 			return this.registeredShutdownHook;
 		}
 

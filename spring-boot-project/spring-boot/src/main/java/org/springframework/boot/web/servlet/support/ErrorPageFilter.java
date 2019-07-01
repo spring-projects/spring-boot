@@ -350,11 +350,11 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 			}
 		}
 
-		public String getMessage() {
+		String getMessage() {
 			return this.message;
 		}
 
-		public boolean hasErrorToSend() {
+		boolean hasErrorToSend() {
 			return this.hasErrorToSend;
 		}
 

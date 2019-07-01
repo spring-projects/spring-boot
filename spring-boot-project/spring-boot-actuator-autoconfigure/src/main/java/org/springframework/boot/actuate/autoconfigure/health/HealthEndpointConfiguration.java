@@ -38,7 +38,7 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthEndpoint healthEndpoint(HealthAggregator healthAggregator, HealthIndicatorRegistry registry) {
+	HealthEndpoint healthEndpoint(HealthAggregator healthAggregator, HealthIndicatorRegistry registry) {
 		return new HealthEndpoint(new CompositeHealthIndicator(healthAggregator, registry));
 	}
 

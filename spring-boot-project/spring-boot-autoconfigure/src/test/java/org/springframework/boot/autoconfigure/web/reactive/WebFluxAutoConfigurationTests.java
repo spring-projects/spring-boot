@@ -396,68 +396,68 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomArgumentResolvers {
+	static class CustomArgumentResolvers {
 
 		@Bean
-		public HandlerMethodArgumentResolver firstResolver() {
+		HandlerMethodArgumentResolver firstResolver() {
 			return mock(HandlerMethodArgumentResolver.class);
 		}
 
 		@Bean
-		public HandlerMethodArgumentResolver secondResolver() {
+		HandlerMethodArgumentResolver secondResolver() {
 			return mock(HandlerMethodArgumentResolver.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomCodecCustomizers {
+	static class CustomCodecCustomizers {
 
 		@Bean
-		public CodecCustomizer firstCodecCustomizer() {
+		CodecCustomizer firstCodecCustomizer() {
 			return mock(CodecCustomizer.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ViewResolvers {
+	static class ViewResolvers {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		public ViewResolver aViewResolver() {
+		ViewResolver aViewResolver() {
 			return mock(ViewResolver.class);
 		}
 
 		@Bean
-		public ViewResolver anotherViewResolver() {
+		ViewResolver anotherViewResolver() {
 			return mock(ViewResolver.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class Config {
+	static class Config {
 
 		@Bean
-		public MockReactiveWebServerFactory mockReactiveWebServerFactory() {
+		MockReactiveWebServerFactory mockReactiveWebServerFactory() {
 			return mockReactiveWebServerFactory;
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomHttpHandler {
+	static class CustomHttpHandler {
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> null;
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ValidatorWebFluxConfigurer implements WebFluxConfigurer {
+	static class ValidatorWebFluxConfigurer implements WebFluxConfigurer {
 
 		private final Validator validator = mock(Validator.class);
 
@@ -469,7 +469,7 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ValidatorJsr303WebFluxConfigurer implements WebFluxConfigurer {
+	static class ValidatorJsr303WebFluxConfigurer implements WebFluxConfigurer {
 
 		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
@@ -484,7 +484,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomJsr303Validator {
 
 		@Bean
-		public javax.validation.Validator customValidator() {
+		javax.validation.Validator customValidator() {
 			return mock(javax.validation.Validator.class);
 		}
 
@@ -494,7 +494,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomSpringValidator {
 
 		@Bean
-		public Validator customValidator() {
+		Validator customValidator() {
 			return mock(Validator.class);
 		}
 
@@ -504,7 +504,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomHiddenHttpMethodFilter {
 
 		@Bean
-		public HiddenHttpMethodFilter customHiddenHttpMethodFilter() {
+		HiddenHttpMethodFilter customHiddenHttpMethodFilter() {
 			return mock(HiddenHttpMethodFilter.class);
 		}
 
@@ -514,7 +514,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomRequestMappingHandlerAdapter {
 
 		@Bean
-		public WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
+		WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
 			return new WebFluxRegistrations() {
 
 				@Override
@@ -527,7 +527,7 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
-	private static class MyRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
+	static class MyRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
 
 	}
 
@@ -542,7 +542,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomRequestMappingHandlerMapping {
 
 		@Bean
-		public WebFluxRegistrations webFluxRegistrationsHandlerMapping() {
+		WebFluxRegistrations webFluxRegistrationsHandlerMapping() {
 			return new WebFluxRegistrations() {
 
 				@Override
@@ -555,7 +555,7 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
-	private static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
+	static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
 	}
 
@@ -563,7 +563,7 @@ class WebFluxAutoConfigurationTests {
 	static class PrinterConfiguration {
 
 		@Bean
-		public Printer<Example> examplePrinter() {
+		Printer<Example> examplePrinter() {
 			return new ExamplePrinter();
 		}
 
@@ -573,7 +573,7 @@ class WebFluxAutoConfigurationTests {
 	static class ParserConfiguration {
 
 		@Bean
-		public Parser<Example> exampleParser() {
+		Parser<Example> exampleParser() {
 			return new ExampleParser();
 		}
 
@@ -587,13 +587,13 @@ class WebFluxAutoConfigurationTests {
 			this.name = name;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
 	}
 
-	private static class ExamplePrinter implements Printer<Example> {
+	static class ExamplePrinter implements Printer<Example> {
 
 		@Override
 		public String print(Example example, Locale locale) {
@@ -602,7 +602,7 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
-	private static class ExampleParser implements Parser<Example> {
+	static class ExampleParser implements Parser<Example> {
 
 		@Override
 		public Example parse(String source, Locale locale) {

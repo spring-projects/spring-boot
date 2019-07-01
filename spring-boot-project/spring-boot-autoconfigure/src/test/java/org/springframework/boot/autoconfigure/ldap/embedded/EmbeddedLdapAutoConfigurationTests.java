@@ -150,7 +150,7 @@ class EmbeddedLdapAutoConfigurationTests {
 	static class LdapClientConfiguration {
 
 		@Bean
-		public LDAPConnection ldapConnection(@Value("${local.ldap.port}") int port) throws LDAPException {
+		LDAPConnection ldapConnection(@Value("${local.ldap.port}") int port) throws LDAPException {
 			LDAPConnection con = new LDAPConnection();
 			con.connect("localhost", port);
 			return con;

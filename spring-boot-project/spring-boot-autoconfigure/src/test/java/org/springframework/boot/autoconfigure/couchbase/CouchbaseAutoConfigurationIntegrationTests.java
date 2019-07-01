@@ -66,12 +66,12 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	static class CustomConfiguration {
 
 		@Bean
-		public Cluster myCustomCouchbaseCluster() {
+		Cluster myCustomCouchbaseCluster() {
 			return mock(Cluster.class);
 		}
 
 		@Bean
-		public Bucket myCustomCouchbaseClient() {
+		Bucket myCustomCouchbaseClient() {
 			return mock(CouchbaseBucket.class);
 		}
 

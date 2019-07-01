@@ -84,12 +84,12 @@ class XADataSourceAutoConfigurationTests {
 	static class WrapExisting {
 
 		@Bean
-		public MockXADataSourceWrapper wrapper() {
+		MockXADataSourceWrapper wrapper() {
 			return new MockXADataSourceWrapper();
 		}
 
 		@Bean
-		public XADataSource xaDataSource() {
+		XADataSource xaDataSource() {
 			return mock(XADataSource.class);
 		}
 
@@ -99,13 +99,13 @@ class XADataSourceAutoConfigurationTests {
 	static class FromProperties {
 
 		@Bean
-		public MockXADataSourceWrapper wrapper() {
+		MockXADataSourceWrapper wrapper() {
 			return new MockXADataSourceWrapper();
 		}
 
 	}
 
-	private static class MockXADataSourceWrapper implements XADataSourceWrapper {
+	static class MockXADataSourceWrapper implements XADataSourceWrapper {
 
 		private XADataSource dataSource;
 
@@ -115,7 +115,7 @@ class XADataSourceAutoConfigurationTests {
 			return mock(DataSource.class);
 		}
 
-		public XADataSource getXaDataSource() {
+		XADataSource getXaDataSource() {
 			return this.dataSource;
 		}
 

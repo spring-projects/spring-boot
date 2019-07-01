@@ -116,11 +116,11 @@ class MetadataGenerationEnvironment {
 		}
 	}
 
-	public TypeUtils getTypeUtils() {
+	TypeUtils getTypeUtils() {
 		return this.typeUtils;
 	}
 
-	public Messager getMessager() {
+	Messager getMessager() {
 		return this.messager;
 	}
 
@@ -131,11 +131,11 @@ class MetadataGenerationEnvironment {
 	 * @return the default value or {@code null} if the field does not exist or no default
 	 * value has been detected
 	 */
-	public Object getFieldDefaultValue(TypeElement type, String name) {
+	Object getFieldDefaultValue(TypeElement type, String name) {
 		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues).get(name);
 	}
 
-	public boolean isExcluded(TypeMirror type) {
+	boolean isExcluded(TypeMirror type) {
 		if (type == null) {
 			return false;
 		}
@@ -146,7 +146,7 @@ class MetadataGenerationEnvironment {
 		return TYPE_EXCLUDES.contains(typeName);
 	}
 
-	public boolean isDeprecated(Element element) {
+	boolean isDeprecated(Element element) {
 		if (isElementDeprecated(element)) {
 			return true;
 		}
@@ -156,7 +156,7 @@ class MetadataGenerationEnvironment {
 		return false;
 	}
 
-	public ItemDeprecation resolveItemDeprecation(Element element) {
+	ItemDeprecation resolveItemDeprecation(Element element) {
 		AnnotationMirror annotation = getAnnotation(element, this.deprecatedConfigurationPropertyAnnotation);
 		String reason = null;
 		String replacement = null;
@@ -170,11 +170,11 @@ class MetadataGenerationEnvironment {
 		return new ItemDeprecation(reason, replacement);
 	}
 
-	public boolean hasAnnotation(Element element, String type) {
+	boolean hasAnnotation(Element element, String type) {
 		return getAnnotation(element, type) != null;
 	}
 
-	public AnnotationMirror getAnnotation(Element element, String type) {
+	AnnotationMirror getAnnotation(Element element, String type) {
 		if (element != null) {
 			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
 				if (type.equals(annotation.getAnnotationType().toString())) {
@@ -185,7 +185,7 @@ class MetadataGenerationEnvironment {
 		return null;
 	}
 
-	public Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
+	Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
 		Map<String, Object> values = new LinkedHashMap<>();
 		annotation.getElementValues()
 				.forEach((name, value) -> values.put(name.getSimpleName().toString(), getAnnotationValue(value)));
@@ -202,31 +202,31 @@ class MetadataGenerationEnvironment {
 		return value;
 	}
 
-	public TypeElement getConfigurationPropertiesAnnotationElement() {
+	TypeElement getConfigurationPropertiesAnnotationElement() {
 		return this.elements.getTypeElement(this.configurationPropertiesAnnotation);
 	}
 
-	public AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
+	AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
 		return getAnnotation(element, this.configurationPropertiesAnnotation);
 	}
 
-	public AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {
+	AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {
 		return getAnnotation(element, this.nestedConfigurationPropertyAnnotation);
 	}
 
-	public AnnotationMirror getDefaultValueAnnotation(Element element) {
+	AnnotationMirror getDefaultValueAnnotation(Element element) {
 		return getAnnotation(element, this.defaultValueAnnotation);
 	}
 
-	public TypeElement getEndpointAnnotationElement() {
+	TypeElement getEndpointAnnotationElement() {
 		return this.elements.getTypeElement(this.endpointAnnotation);
 	}
 
-	public AnnotationMirror getReadOperationAnnotation(Element element) {
+	AnnotationMirror getReadOperationAnnotation(Element element) {
 		return getAnnotation(element, this.readOperationAnnotation);
 	}
 
-	public boolean hasNullableAnnotation(Element element) {
+	boolean hasNullableAnnotation(Element element) {
 		return getAnnotation(element, NULLABLE_ANNOTATION) != null;
 	}
 

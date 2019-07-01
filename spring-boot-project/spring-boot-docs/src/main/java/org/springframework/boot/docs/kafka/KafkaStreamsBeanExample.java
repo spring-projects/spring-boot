@@ -37,7 +37,7 @@ public class KafkaStreamsBeanExample {
 	// tag::configuration[]
 	@Configuration(proxyBeanMethods = false)
 	@EnableKafkaStreams
-	static class KafkaStreamsExampleConfiguration {
+	public static class KafkaStreamsExampleConfiguration {
 
 		@Bean
 		public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {

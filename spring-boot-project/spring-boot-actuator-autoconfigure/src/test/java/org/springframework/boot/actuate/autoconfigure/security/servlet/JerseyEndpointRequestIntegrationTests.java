@@ -110,17 +110,17 @@ class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestInteg
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public ResourceConfig resourceConfig() {
+		ResourceConfig resourceConfig() {
 			return new ResourceConfig();
 		}
 
 		@Bean
-		public ResourceConfigCustomizer webEndpointRegistrar() {
+		ResourceConfigCustomizer webEndpointRegistrar() {
 			return this::customize;
 		}
 

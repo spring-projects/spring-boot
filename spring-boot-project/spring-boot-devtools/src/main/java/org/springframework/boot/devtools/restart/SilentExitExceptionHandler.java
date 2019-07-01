@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		System.exit(0);
 	}
 
-	public static void setup(Thread thread) {
+	static void setup(Thread thread) {
 		UncaughtExceptionHandler handler = thread.getUncaughtExceptionHandler();
 		if (!(handler instanceof SilentExitExceptionHandler)) {
 			handler = new SilentExitExceptionHandler(handler);
@@ -86,7 +86,7 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		}
 	}
 
-	public static void exitCurrentThread() {
+	static void exitCurrentThread() {
 		throw new SilentExitException();
 	}
 

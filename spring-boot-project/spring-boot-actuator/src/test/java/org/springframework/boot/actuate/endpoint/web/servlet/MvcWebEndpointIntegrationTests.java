@@ -135,12 +135,12 @@ class MvcWebEndpointIntegrationTests
 	static class WebMvcConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public WebMvcEndpointHandlerMapping webEndpointHandlerMapping(Environment environment,
+		WebMvcEndpointHandlerMapping webEndpointHandlerMapping(Environment environment,
 				WebEndpointDiscoverer endpointDiscoverer, EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
@@ -156,7 +156,7 @@ class MvcWebEndpointIntegrationTests
 	static class AuthenticatedConfiguration {
 
 		@Bean
-		public Filter securityFilter() {
+		Filter securityFilter() {
 			return new OncePerRequestFilter() {
 
 				@Override

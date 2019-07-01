@@ -106,7 +106,7 @@ class CassandraDataAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Session.class)).isEmpty();
 	}
 
-	public void load(Class<?>... config) {
+	void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test").applyTo(ctx);
 		if (!ObjectUtils.isEmpty(config)) {
@@ -128,7 +128,7 @@ class CassandraDataAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public Session getObject() {
+		Session getObject() {
 			return mock(Session.class);
 		}
 
@@ -144,13 +144,13 @@ class CassandraDataAutoConfigurationTests {
 	static class CustomConversionConfig {
 
 		@Bean
-		public CassandraCustomConversions myCassandraCustomConversions() {
+		CassandraCustomConversions myCassandraCustomConversions() {
 			return new CassandraCustomConversions(Collections.singletonList(new MyConverter()));
 		}
 
 	}
 
-	private static class MyConverter implements Converter<Person, String> {
+	static class MyConverter implements Converter<Person, String> {
 
 		@Override
 		public String convert(Person o) {
@@ -159,7 +159,7 @@ class CassandraDataAutoConfigurationTests {
 
 	}
 
-	private static class Person {
+	static class Person {
 
 	}
 

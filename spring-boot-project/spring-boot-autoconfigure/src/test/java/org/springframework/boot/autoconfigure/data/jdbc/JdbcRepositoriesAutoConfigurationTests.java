@@ -103,19 +103,19 @@ class JdbcRepositoriesAutoConfigurationTests {
 	}
 
 	@TestAutoConfigurationPackage(City.class)
-	private static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	protected static class EmptyConfiguration {
+	static class EmptyConfiguration {
 
 	}
 
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	@EnableJdbcRepositories(basePackageClasses = City.class)
-	private static class EnableRepositoriesConfiguration {
+	static class EnableRepositoriesConfiguration {
 
 	}
 

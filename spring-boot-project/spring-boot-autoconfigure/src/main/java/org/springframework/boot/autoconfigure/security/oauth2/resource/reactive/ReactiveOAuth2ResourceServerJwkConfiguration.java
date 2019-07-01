@@ -58,13 +58,13 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-		public ReactiveJwtDecoder jwtDecoder() {
+		ReactiveJwtDecoder jwtDecoder() {
 			return new NimbusReactiveJwtDecoder(this.properties.getJwkSetUri());
 		}
 
 		@Bean
 		@Conditional(KeyValueCondition.class)
-		public NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
+		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 			return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
@@ -77,7 +77,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		@Bean
 		@Conditional(IssuerUriCondition.class)
-		public ReactiveJwtDecoder jwtDecoderByIssuerUri() {
+		ReactiveJwtDecoder jwtDecoderByIssuerUri() {
 			return ReactiveJwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
 		}
 
@@ -89,8 +89,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ReactiveJwtDecoder.class)
-		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
-				ReactiveJwtDecoder jwtDecoder) {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ReactiveJwtDecoder jwtDecoder) {
 			http.authorizeExchange().anyExchange().authenticated().and().oauth2ResourceServer().jwt()
 					.jwtDecoder(jwtDecoder);
 			return http.build();

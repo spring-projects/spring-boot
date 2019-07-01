@@ -226,31 +226,31 @@ class ConditionalOnAvailableEndpointTests {
 
 		@Bean
 		@ConditionalOnAvailableEndpoint
-		public HealthEndpoint health() {
+		HealthEndpoint health() {
 			return new HealthEndpoint();
 		}
 
 		@Bean
 		@ConditionalOnAvailableEndpoint
-		public InfoEndpoint info() {
+		InfoEndpoint info() {
 			return new InfoEndpoint();
 		}
 
 		@Bean
 		@ConditionalOnAvailableEndpoint
-		public SpringEndpoint spring() {
+		SpringEndpoint spring() {
 			return new SpringEndpoint();
 		}
 
 		@Bean
 		@ConditionalOnAvailableEndpoint
-		public TestEndpoint test() {
+		TestEndpoint test() {
 			return new TestEndpoint();
 		}
 
 		@Bean
 		@ConditionalOnAvailableEndpoint
-		public ShutdownEndpoint shutdown() {
+		ShutdownEndpoint shutdown() {
 			return new ShutdownEndpoint();
 		}
 
@@ -261,13 +261,13 @@ class ConditionalOnAvailableEndpointTests {
 
 		@Bean
 		@ConditionalOnAvailableEndpoint(endpoint = SpringEndpoint.class)
-		public String springComponent() {
+		String springComponent() {
 			return "springComponent";
 		}
 
 		@Bean
 		@ConditionalOnAvailableEndpoint
-		public SpringEndpointExtension springExtension() {
+		SpringEndpointExtension springExtension() {
 			return new SpringEndpointExtension();
 		}
 
@@ -278,7 +278,7 @@ class ConditionalOnAvailableEndpointTests {
 
 		@Bean
 		@ConditionalOnAvailableEndpoint
-		public String springcomp() {
+		String springcomp() {
 			return "springcomp";
 		}
 

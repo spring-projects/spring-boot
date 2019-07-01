@@ -60,13 +60,13 @@ class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegrationTests {
 	static class Config {
 
 		@Bean
-		public SimpleExampleStringGenericService one() {
+		SimpleExampleStringGenericService one() {
 			return new SimpleExampleStringGenericService("one");
 		}
 
 		@Bean
 		@Primary
-		public SimpleExampleStringGenericService two() {
+		SimpleExampleStringGenericService two() {
 			return new SimpleExampleStringGenericService("two");
 		}
 

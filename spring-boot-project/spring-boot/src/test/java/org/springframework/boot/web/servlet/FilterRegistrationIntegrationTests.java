@@ -66,7 +66,7 @@ class FilterRegistrationIntegrationTests {
 	static class ContainerConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
@@ -76,7 +76,7 @@ class FilterRegistrationIntegrationTests {
 	static class ScopedTargetFilterConfiguration {
 
 		@Bean(name = "scopedTarget.myFilter")
-		public Filter myFilter() {
+		Filter myFilter() {
 			return new MockFilter();
 		}
 
@@ -86,7 +86,7 @@ class FilterRegistrationIntegrationTests {
 	static class FilterConfiguration {
 
 		@Bean
-		public Filter myFilter() {
+		Filter myFilter() {
 			return new MockFilter();
 		}
 

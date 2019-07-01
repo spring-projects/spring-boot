@@ -120,7 +120,7 @@ class ConfigurationWarningsApplicationContextInitializerTests {
 	/**
 	 * Testable version of {@link ConfigurationWarningsApplicationContextInitializer}.
 	 */
-	public static class TestConfigurationWarningsApplicationContextInitializer
+	static class TestConfigurationWarningsApplicationContextInitializer
 			extends ConfigurationWarningsApplicationContextInitializer {
 
 		@Override

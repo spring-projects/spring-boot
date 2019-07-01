@@ -59,7 +59,7 @@ class DefinitionsParser {
 		}
 	}
 
-	public void parse(Class<?> source) {
+	void parse(Class<?> source) {
 		parseElement(source);
 		ReflectionUtils.doWithFields(source, this::parseElement);
 	}
@@ -119,11 +119,11 @@ class DefinitionsParser {
 		return types;
 	}
 
-	public Set<Definition> getDefinitions() {
+	Set<Definition> getDefinitions() {
 		return Collections.unmodifiableSet(this.definitions);
 	}
 
-	public Field getField(Definition definition) {
+	Field getField(Definition definition) {
 		return this.definitionFields.get(definition);
 	}
 

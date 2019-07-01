@@ -115,9 +115,9 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 
 		};
 
-		public abstract boolean matches(String className, ClassLoader classLoader);
+		abstract boolean matches(String className, ClassLoader classLoader);
 
-		public static boolean isPresent(String className, ClassLoader classLoader) {
+		static boolean isPresent(String className, ClassLoader classLoader) {
 			if (classLoader == null) {
 				classLoader = ClassUtils.getDefaultClassLoader();
 			}

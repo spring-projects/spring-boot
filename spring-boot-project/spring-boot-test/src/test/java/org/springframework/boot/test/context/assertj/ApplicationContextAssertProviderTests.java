@@ -193,13 +193,11 @@ class ApplicationContextAssertProviderTests {
 				ApplicationContext.class, contextSupplier);
 	}
 
-	private interface TestAssertProviderApplicationContext
-			extends ApplicationContextAssertProvider<ApplicationContext> {
+	interface TestAssertProviderApplicationContext extends ApplicationContextAssertProvider<ApplicationContext> {
 
 	}
 
-	private abstract static class TestAssertProviderApplicationContextClass
-			implements TestAssertProviderApplicationContext {
+	abstract static class TestAssertProviderApplicationContextClass implements TestAssertProviderApplicationContext {
 
 	}
 

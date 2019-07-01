@@ -699,12 +699,12 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class GenericCacheConfiguration {
 
 		@Bean
-		public Cache firstCache() {
+		Cache firstCache() {
 			return new ConcurrentMapCache("first");
 		}
 
 		@Bean
-		public Cache secondCache() {
+		Cache secondCache() {
 			return new ConcurrentMapCache("second");
 		}
 
@@ -728,7 +728,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class CouchbaseCacheConfiguration {
 
 		@Bean
-		public Bucket bucket() {
+		Bucket bucket() {
 			BucketManager bucketManager = mock(BucketManager.class);
 			Bucket bucket = mock(Bucket.class);
 			given(bucket.bucketManager()).willReturn(bucketManager);
@@ -748,7 +748,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class RedisConfiguration {
 
 		@Bean
-		public RedisConnectionFactory redisConnectionFactory() {
+		RedisConnectionFactory redisConnectionFactory() {
 			return mock(RedisConnectionFactory.class);
 		}
 
@@ -759,7 +759,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class RedisWithCacheConfigurationConfiguration {
 
 		@Bean
-		public org.springframework.data.redis.cache.RedisCacheConfiguration customRedisCacheConfiguration() {
+		org.springframework.data.redis.cache.RedisCacheConfiguration customRedisCacheConfiguration() {
 			return org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig()
 					.entryTtl(java.time.Duration.ofSeconds(30)).prefixKeysWith("bar");
 		}
@@ -771,7 +771,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class RedisWithRedisCacheManagerBuilderCustomizerConfiguration {
 
 		@Bean
-		public RedisCacheManagerBuilderCustomizer ttlRedisCacheManagerBuilderCustomizer() {
+		RedisCacheManagerBuilderCustomizer ttlRedisCacheManagerBuilderCustomizer() {
 			return (builder) -> builder.cacheDefaults(
 					RedisCacheConfiguration.defaultCacheConfig().entryTtl(java.time.Duration.ofSeconds(10)));
 		}
@@ -789,7 +789,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class JCacheCustomConfiguration {
 
 		@Bean
-		public CompleteConfiguration<?, ?> defaultCacheConfiguration() {
+		CompleteConfiguration<?, ?> defaultCacheConfiguration() {
 			return mock(CompleteConfiguration.class);
 		}
 
@@ -800,7 +800,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class JCacheCustomCacheManager {
 
 		@Bean
-		public javax.cache.CacheManager customJCacheCacheManager() {
+		javax.cache.CacheManager customJCacheCacheManager() {
 			javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
 			given(cacheManager.getCacheNames()).willReturn(Collections.emptyList());
 			return cacheManager;
@@ -830,7 +830,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class EhCacheCustomCacheManager {
 
 		@Bean
-		public net.sf.ehcache.CacheManager customEhCacheCacheManager() {
+		net.sf.ehcache.CacheManager customEhCacheCacheManager() {
 			net.sf.ehcache.CacheManager cacheManager = mock(net.sf.ehcache.CacheManager.class);
 			given(cacheManager.getStatus()).willReturn(Status.STATUS_ALIVE);
 			given(cacheManager.getCacheNames()).willReturn(new String[0]);
@@ -844,7 +844,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class HazelcastCustomHazelcastInstance {
 
 		@Bean
-		public HazelcastInstance customHazelcastInstance() {
+		HazelcastInstance customHazelcastInstance() {
 			return mock(HazelcastInstance.class);
 		}
 
@@ -855,7 +855,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class InfinispanCustomConfiguration {
 
 		@Bean
-		public ConfigurationBuilder configurationBuilder() {
+		ConfigurationBuilder configurationBuilder() {
 			ConfigurationBuilder builder = mock(ConfigurationBuilder.class);
 			given(builder.build()).willReturn(new ConfigurationBuilder().build());
 			return builder;
@@ -868,7 +868,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class CustomCacheManagerConfiguration {
 
 		@Bean
-		public CacheManager cacheManager() {
+		CacheManager cacheManager() {
 			return new ConcurrentMapCacheManager("custom1");
 		}
 
@@ -880,8 +880,8 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 		@Override
 		@Bean
-		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheManager cacheManager() {
+			// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 			return new ConcurrentMapCacheManager("custom1");
 		}
 
@@ -893,10 +893,9 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 
 		@Override
 		@Bean
-		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheResolver cacheResolver() {
+			// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 			return (context) -> Collections.singleton(mock(Cache.class));
-
 		}
 
 	}
@@ -906,7 +905,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class SpecificCacheResolverConfiguration {
 
 		@Bean
-		public CacheResolver myCacheResolver() {
+		CacheResolver myCacheResolver() {
 			return mock(CacheResolver.class);
 		}
 
@@ -939,13 +938,13 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	static class CacheManagerPostProcessorConfiguration {
 
 		@Bean
-		public static BeanPostProcessor cacheManagerBeanPostProcessor() {
+		static BeanPostProcessor cacheManagerBeanPostProcessor() {
 			return new CacheManagerPostProcessor();
 		}
 
 	}
 
-	private static class CacheManagerPostProcessor implements BeanPostProcessor {
+	static class CacheManagerPostProcessor implements BeanPostProcessor {
 
 		private final List<CacheManager> cacheManagers = new ArrayList<>();
 

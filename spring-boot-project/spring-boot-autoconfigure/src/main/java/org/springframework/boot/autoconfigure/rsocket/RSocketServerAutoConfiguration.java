@@ -66,7 +66,7 @@ public class RSocketServerAutoConfiguration {
 	static class WebFluxServerAutoConfiguration {
 
 		@Bean
-		public RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
+		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
 				RSocketMessageHandler messageHandler) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
 					messageHandler.serverAcceptor());
@@ -80,14 +80,14 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactorResourceFactory reactorResourceFactory() {
+		ReactorResourceFactory reactorResourceFactory() {
 			return new ReactorResourceFactory();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RSocketServerFactory rSocketServerFactory(RSocketProperties properties,
-				ReactorResourceFactory resourceFactory, ObjectProvider<ServerRSocketFactoryCustomizer> customizers) {
+		RSocketServerFactory rSocketServerFactory(RSocketProperties properties, ReactorResourceFactory resourceFactory,
+				ObjectProvider<ServerRSocketFactoryCustomizer> customizers) {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -99,7 +99,7 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RSocketServerBootstrap rSocketServerBootstrap(RSocketServerFactory rSocketServerFactory,
+		RSocketServerBootstrap rSocketServerBootstrap(RSocketServerFactory rSocketServerFactory,
 				RSocketMessageHandler rSocketMessageHandler) {
 			return new RSocketServerBootstrap(rSocketServerFactory, rSocketMessageHandler.serverAcceptor());
 		}

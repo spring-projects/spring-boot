@@ -80,63 +80,63 @@ abstract class AbstractCacheAutoConfigurationTests {
 	static class CacheManagerCustomizersConfiguration {
 
 		@Bean
-		public CacheManagerCustomizer<CacheManager> allCacheManagerCustomizer() {
+		CacheManagerCustomizer<CacheManager> allCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<ConcurrentMapCacheManager> simpleCacheManagerCustomizer() {
+		CacheManagerCustomizer<ConcurrentMapCacheManager> simpleCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<ConcurrentMapCacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
+		CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SimpleCacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
+		CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CouchbaseCacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<RedisCacheManager> redisCacheManagerCustomizer() {
+		CacheManagerCustomizer<RedisCacheManager> redisCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<RedisCacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<EhCacheCacheManager> ehcacheCacheManagerCustomizer() {
+		CacheManagerCustomizer<EhCacheCacheManager> ehcacheCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<EhCacheCacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
+		CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<HazelcastCacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
+		CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() {
 
 			};
 		}
 
 		@Bean
-		public CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
+		CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
 
 			};

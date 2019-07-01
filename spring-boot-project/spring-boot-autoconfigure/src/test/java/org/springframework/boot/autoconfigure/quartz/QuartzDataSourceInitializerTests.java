@@ -64,7 +64,7 @@ class QuartzDataSourceInitializerTests {
 	static class TestConfiguration {
 
 		@Bean
-		public QuartzDataSourceInitializer initializer(DataSource dataSource, ResourceLoader resourceLoader,
+		QuartzDataSourceInitializer initializer(DataSource dataSource, ResourceLoader resourceLoader,
 				QuartzProperties properties) {
 			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
 		}

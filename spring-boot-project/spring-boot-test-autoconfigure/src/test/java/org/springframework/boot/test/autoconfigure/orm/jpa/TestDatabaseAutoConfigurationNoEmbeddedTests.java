@@ -68,7 +68,7 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 	static class ExistingDataSourceConfiguration {
 
 		@Bean
-		public DataSource myCustomDataSource() {
+		DataSource myCustomDataSource() {
 			return mock(DataSource.class);
 		}
 

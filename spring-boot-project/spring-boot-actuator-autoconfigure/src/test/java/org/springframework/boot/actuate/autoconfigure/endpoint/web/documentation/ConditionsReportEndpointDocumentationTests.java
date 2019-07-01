@@ -97,7 +97,7 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 	static class TestConfiguration {
 
 		@Bean
-		public ConditionsReportEndpoint autoConfigurationReportEndpoint(ConfigurableApplicationContext context) {
+		ConditionsReportEndpoint autoConfigurationReportEndpoint(ConfigurableApplicationContext context) {
 			ConditionEvaluationReport conditionEvaluationReport = ConditionEvaluationReport
 					.get(context.getBeanFactory());
 			conditionEvaluationReport

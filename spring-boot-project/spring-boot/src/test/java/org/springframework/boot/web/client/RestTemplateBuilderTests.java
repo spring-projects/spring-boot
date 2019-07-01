@@ -589,7 +589,7 @@ class RestTemplateBuilderTests {
 		assertThat(template.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
-	public static class RestTemplateSubclass extends RestTemplate {
+	static class RestTemplateSubclass extends RestTemplate {
 
 	}
 

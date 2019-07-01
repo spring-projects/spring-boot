@@ -189,11 +189,11 @@ class JsonObjectDeserializerTests {
 			return null;
 		}
 
-		public <D> D testNullSafeValue(JsonNode jsonNode, Class<D> type) {
+		<D> D testNullSafeValue(JsonNode jsonNode, Class<D> type) {
 			return nullSafeValue(jsonNode, type);
 		}
 
-		public JsonNode testGetRequiredNode(JsonNode tree, String fieldName) {
+		JsonNode testGetRequiredNode(JsonNode tree, String fieldName) {
 			return getRequiredNode(tree, fieldName);
 		}
 

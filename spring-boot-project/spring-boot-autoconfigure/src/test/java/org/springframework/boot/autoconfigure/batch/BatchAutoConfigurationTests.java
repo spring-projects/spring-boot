@@ -234,19 +234,19 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class EmptyConfiguration {
+	static class EmptyConfiguration {
 
 	}
 
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestCustomConfiguration implements BatchConfigurer {
+	static class TestCustomConfiguration implements BatchConfigurer {
 
 		private JobRepository jobRepository;
 
@@ -284,7 +284,7 @@ class BatchAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class NamedJobConfigurationWithRegisteredJob {
+	static class NamedJobConfigurationWithRegisteredJob {
 
 		@Autowired
 		private JobRegistry jobRegistry;
@@ -293,14 +293,14 @@ class BatchAutoConfigurationTests {
 		private JobRepository jobRepository;
 
 		@Bean
-		public JobRegistryBeanPostProcessor registryProcessor() {
+		JobRegistryBeanPostProcessor registryProcessor() {
 			JobRegistryBeanPostProcessor processor = new JobRegistryBeanPostProcessor();
 			processor.setJobRegistry(this.jobRegistry);
 			return processor;
 		}
 
 		@Bean
-		public Job discreteJob() {
+		Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteRegisteredJob") {
 
 				@Override
@@ -326,13 +326,13 @@ class BatchAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class NamedJobConfigurationWithLocalJob {
+	static class NamedJobConfigurationWithLocalJob {
 
 		@Autowired
 		private JobRepository jobRepository;
 
 		@Bean
-		public Job discreteJob() {
+		Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteLocalJob") {
 
 				@Override
@@ -358,13 +358,13 @@ class BatchAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	protected static class JobConfiguration {
+	static class JobConfiguration {
 
 		@Autowired
 		private JobRepository jobRepository;
 
 		@Bean
-		public Job job() {
+		Job job() {
 			AbstractJob job = new AbstractJob() {
 
 				@Override

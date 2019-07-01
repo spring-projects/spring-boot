@@ -62,10 +62,10 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 		return (getWebServer() != null) ? getWebServer().getRegisteredFilters(index) : null;
 	}
 
-	public static class MockServletWebServer
-			extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer implements WebServer {
+	static class MockServletWebServer extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer
+			implements WebServer {
 
-		public MockServletWebServer(ServletContextInitializer[] initializers, int port) {
+		MockServletWebServer(ServletContextInitializer[] initializers, int port) {
 			super(Arrays.stream(initializers).map((initializer) -> (Initializer) initializer::onStartup)
 					.toArray(Initializer[]::new), port);
 		}

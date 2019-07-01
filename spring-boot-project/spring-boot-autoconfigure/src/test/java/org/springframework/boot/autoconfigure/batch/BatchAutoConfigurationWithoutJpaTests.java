@@ -89,7 +89,7 @@ public class BatchAutoConfigurationWithoutJpaTests {
 
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
-	protected static class DefaultConfiguration {
+	static class DefaultConfiguration {
 
 	}
 

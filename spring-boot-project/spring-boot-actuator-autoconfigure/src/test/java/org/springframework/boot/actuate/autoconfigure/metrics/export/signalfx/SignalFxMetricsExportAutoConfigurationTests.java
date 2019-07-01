@@ -98,7 +98,7 @@ class SignalFxMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock customClock() {
+		Clock customClock() {
 			return Clock.SYSTEM;
 		}
 
@@ -109,7 +109,7 @@ class SignalFxMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public SignalFxConfig customConfig() {
+		SignalFxConfig customConfig() {
 			return (key) -> {
 				if ("signalfx.accessToken".equals(key)) {
 					return "abcde";
@@ -125,7 +125,7 @@ class SignalFxMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public SignalFxMeterRegistry customRegistry(SignalFxConfig config, Clock clock) {
+		SignalFxMeterRegistry customRegistry(SignalFxConfig config, Clock clock) {
 			return new SignalFxMeterRegistry(config, clock);
 		}
 

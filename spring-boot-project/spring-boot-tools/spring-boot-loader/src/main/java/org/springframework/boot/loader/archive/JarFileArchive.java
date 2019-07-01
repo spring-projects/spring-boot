@@ -207,7 +207,7 @@ public class JarFileArchive implements Archive {
 			this.jarEntry = jarEntry;
 		}
 
-		public JarEntry getJarEntry() {
+		JarEntry getJarEntry() {
 			return this.jarEntry;
 		}
 

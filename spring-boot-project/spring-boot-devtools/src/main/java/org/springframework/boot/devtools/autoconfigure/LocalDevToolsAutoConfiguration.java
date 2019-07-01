@@ -68,18 +68,18 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
-		public LiveReloadServer liveReloadServer(DevToolsProperties properties) {
+		LiveReloadServer liveReloadServer(DevToolsProperties properties) {
 			return new LiveReloadServer(properties.getLivereload().getPort(),
 					Restarter.getInstance().getThreadFactory());
 		}
 
 		@Bean
-		public OptionalLiveReloadServer optionalLiveReloadServer(LiveReloadServer liveReloadServer) {
+		OptionalLiveReloadServer optionalLiveReloadServer(LiveReloadServer liveReloadServer) {
 			return new OptionalLiveReloadServer(liveReloadServer);
 		}
 
 		@Bean
-		public LiveReloadServerEventListener liveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
+		LiveReloadServerEventListener liveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
 			return new LiveReloadServerEventListener(liveReloadServer);
 		}
 
@@ -100,7 +100,7 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		public ApplicationListener<ClassPathChangedEvent> restartingClassPathChangedEventListener(
+		ApplicationListener<ClassPathChangedEvent> restartingClassPathChangedEventListener(
 				FileSystemWatcherFactory fileSystemWatcherFactory) {
 			return (event) -> {
 				if (event.isRestartRequired()) {
@@ -111,7 +111,7 @@ public class LocalDevToolsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
+		ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 				ClassPathRestartStrategy classPathRestartStrategy) {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
 			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(fileSystemWatcherFactory,
@@ -122,19 +122,19 @@ public class LocalDevToolsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ClassPathRestartStrategy classPathRestartStrategy() {
+		ClassPathRestartStrategy classPathRestartStrategy() {
 			return new PatternClassPathRestartStrategy(this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean
-		public FileSystemWatcherFactory fileSystemWatcherFactory() {
+		FileSystemWatcherFactory fileSystemWatcherFactory() {
 			return this::newFileSystemWatcher;
 		}
 
 		@Bean
 		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta",
 				matchIfMissing = true)
-		public ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
+		ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
 			return new ConditionEvaluationDeltaLoggingListener();
 		}
 

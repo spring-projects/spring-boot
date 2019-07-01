@@ -43,7 +43,7 @@ class SpringBootTestCustomPortTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class Config {
+	static class Config {
 
 	}
 

@@ -538,7 +538,7 @@ class JavaBeanBinderTests {
 		assertThat(bean.getProperty()).isEqualTo("test");
 	}
 
-	public static class ExampleValueBean {
+	static class ExampleValueBean {
 
 		private int intValue;
 
@@ -548,220 +548,220 @@ class JavaBeanBinderTests {
 
 		private ExampleEnum enumValue;
 
-		public int getIntValue() {
+		int getIntValue() {
 			return this.intValue;
 		}
 
-		public void setIntValue(int intValue) {
+		void setIntValue(int intValue) {
 			this.intValue = intValue;
 		}
 
-		public long getLongValue() {
+		long getLongValue() {
 			return this.longValue;
 		}
 
-		public void setLongValue(long longValue) {
+		void setLongValue(long longValue) {
 			this.longValue = longValue;
 		}
 
-		public String getStringValue() {
+		String getStringValue() {
 			return this.stringValue;
 		}
 
-		public void setStringValue(String stringValue) {
+		void setStringValue(String stringValue) {
 			this.stringValue = stringValue;
 		}
 
-		public ExampleEnum getEnumValue() {
+		ExampleEnum getEnumValue() {
 			return this.enumValue;
 		}
 
-		public void setEnumValue(ExampleEnum enumValue) {
+		void setEnumValue(ExampleEnum enumValue) {
 			this.enumValue = enumValue;
 		}
 
 	}
 
-	public static class ExampleDefaultsBean {
+	static class ExampleDefaultsBean {
 
 		private int foo = 123;
 
 		private int bar = 456;
 
-		public int getFoo() {
+		int getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(int foo) {
+		void setFoo(int foo) {
 			this.foo = foo;
 		}
 
-		public int getBar() {
+		int getBar() {
 			return this.bar;
 		}
 
-		public void setBar(int bar) {
+		void setBar(int bar) {
 			this.bar = bar;
 		}
 
 	}
 
-	public static class ExampleMapBean {
+	static class ExampleMapBean {
 
 		private Map<ExampleEnum, Integer> map;
 
-		public Map<ExampleEnum, Integer> getMap() {
+		Map<ExampleEnum, Integer> getMap() {
 			return this.map;
 		}
 
-		public void setMap(Map<ExampleEnum, Integer> map) {
+		void setMap(Map<ExampleEnum, Integer> map) {
 			this.map = map;
 		}
 
 	}
 
-	public static class ExampleListBean {
+	static class ExampleListBean {
 
 		private List<ExampleEnum> list;
 
-		public List<ExampleEnum> getList() {
+		List<ExampleEnum> getList() {
 			return this.list;
 		}
 
-		public void setList(List<ExampleEnum> list) {
+		void setList(List<ExampleEnum> list) {
 			this.list = list;
 		}
 
 	}
 
-	public static class ExampleSetBean {
+	static class ExampleSetBean {
 
 		private Set<ExampleEnum> set;
 
-		public Set<ExampleEnum> getSet() {
+		Set<ExampleEnum> getSet() {
 			return this.set;
 		}
 
-		public void setSet(Set<ExampleEnum> set) {
+		void setSet(Set<ExampleEnum> set) {
 			this.set = set;
 		}
 
 	}
 
-	public static class ExampleCollectionBean {
+	static class ExampleCollectionBean {
 
 		private Collection<ExampleEnum> collection;
 
-		public Collection<ExampleEnum> getCollection() {
+		Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
-		public void setCollection(Collection<ExampleEnum> collection) {
+		void setCollection(Collection<ExampleEnum> collection) {
 			this.collection = collection;
 		}
 
 	}
 
-	public static class ExampleMapBeanWithoutSetter {
+	static class ExampleMapBeanWithoutSetter {
 
 		private Map<ExampleEnum, Integer> map = new LinkedHashMap<>();
 
-		public Map<ExampleEnum, Integer> getMap() {
+		Map<ExampleEnum, Integer> getMap() {
 			return this.map;
 		}
 
 	}
 
-	public static class ExampleListBeanWithoutSetter {
+	static class ExampleListBeanWithoutSetter {
 
 		private List<ExampleEnum> list = new ArrayList<>();
 
-		public List<ExampleEnum> getList() {
+		List<ExampleEnum> getList() {
 			return this.list;
 		}
 
 	}
 
-	public static class ExampleSetBeanWithoutSetter {
+	static class ExampleSetBeanWithoutSetter {
 
 		private Set<ExampleEnum> set = new LinkedHashSet<>();
 
-		public Set<ExampleEnum> getSet() {
+		Set<ExampleEnum> getSet() {
 			return this.set;
 		}
 
 	}
 
-	public static class ExampleCollectionBeanWithoutSetter {
+	static class ExampleCollectionBeanWithoutSetter {
 
 		private Collection<ExampleEnum> collection = new ArrayList<>();
 
-		public Collection<ExampleEnum> getCollection() {
+		Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
 	}
 
-	public static class ExampleCollectionBeanWithDelimiter {
+	static class ExampleCollectionBeanWithDelimiter {
 
 		@Delimiter("|")
 		private Collection<ExampleEnum> collection;
 
-		public Collection<ExampleEnum> getCollection() {
+		Collection<ExampleEnum> getCollection() {
 			return this.collection;
 		}
 
-		public void setCollection(Collection<ExampleEnum> collection) {
+		void setCollection(Collection<ExampleEnum> collection) {
 			this.collection = collection;
 		}
 
 	}
 
-	public static class ExampleNestedBean {
+	static class ExampleNestedBean {
 
 		private ExampleValueBean valueBean;
 
-		public ExampleValueBean getValueBean() {
+		ExampleValueBean getValueBean() {
 			return this.valueBean;
 		}
 
-		public void setValueBean(ExampleValueBean valueBean) {
+		void setValueBean(ExampleValueBean valueBean) {
 			this.valueBean = valueBean;
 		}
 
 	}
 
-	public static class ExampleNestedBeanWithoutSetter {
+	static class ExampleNestedBeanWithoutSetter {
 
 		private ExampleValueBean valueBean = new ExampleValueBean();
 
-		public ExampleValueBean getValueBean() {
+		ExampleValueBean getValueBean() {
 			return this.valueBean;
 		}
 
 	}
 
-	public static class ExampleNestedBeanWithoutSetterOrType {
+	static class ExampleNestedBeanWithoutSetterOrType {
 
 		private ExampleValueBean valueBean = new ExampleValueBean();
 
-		public Object getValueBean() {
+		Object getValueBean() {
 			return this.valueBean;
 		}
 
 	}
 
-	public static class ExampleImmutableNestedBeanWithoutSetter {
+	static class ExampleImmutableNestedBeanWithoutSetter {
 
 		private NestedImmutable nested = new NestedImmutable();
 
-		public NestedImmutable getNested() {
+		NestedImmutable getNested() {
 			return this.nested;
 		}
 
-		public static class NestedImmutable {
+		static class NestedImmutable {
 
-			public String getFoo() {
+			String getFoo() {
 				return "foo";
 			}
 
@@ -769,7 +769,7 @@ class JavaBeanBinderTests {
 
 	}
 
-	public static class ExampleWithNonDefaultConstructor {
+	static class ExampleWithNonDefaultConstructor {
 
 		private String value;
 
@@ -777,145 +777,145 @@ class JavaBeanBinderTests {
 			this.value = value;
 		}
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
 	}
 
-	public abstract static class ExampleSuperClassBean {
+	static class ExampleSuperClassBean {
 
 		private int intValue;
 
-		public int getIntValue() {
+		int getIntValue() {
 			return this.intValue;
 		}
 
-		public void setIntValue(int intValue) {
+		void setIntValue(int intValue) {
 			this.intValue = intValue;
 		}
 
 	}
 
-	public static class ExampleSubclassBean extends ExampleSuperClassBean {
+	static class ExampleSubclassBean extends ExampleSuperClassBean {
 
 		private long longValue;
 
-		public long getLongValue() {
+		long getLongValue() {
 			return this.longValue;
 		}
 
-		public void setLongValue(long longValue) {
+		void setLongValue(long longValue) {
 			this.longValue = longValue;
 		}
 
 	}
 
-	public static class ExampleMismatchBean {
+	static class ExampleMismatchBean {
 
 		private int value;
 
-		public String getValue() {
+		String getValue() {
 			return String.valueOf(this.value);
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class ExampleWithThrowingGetters {
+	static class ExampleWithThrowingGetters {
 
 		private int value;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
-		public List<String> getNames() {
+		List<String> getNames() {
 			throw new RuntimeException();
 		}
 
-		public ExampleValueBean getNested() {
+		ExampleValueBean getNested() {
 			throw new RuntimeException();
 		}
 
 	}
 
-	public static class ExampleWithSelfReference {
+	static class ExampleWithSelfReference {
 
 		private int value;
 
 		private ExampleWithSelfReference self;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
-		public ExampleWithSelfReference getSelf() {
+		ExampleWithSelfReference getSelf() {
 			return this.self;
 		}
 
-		public void setSelf(ExampleWithSelfReference self) {
+		void setSelf(ExampleWithSelfReference self) {
 			this.self = self;
 		}
 
 	}
 
-	public static class ExampleWithInvalidAccessors {
+	static class ExampleWithInvalidAccessors {
 
 		private String name;
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 
-		public String get() {
+		String get() {
 			throw new IllegalArgumentException("should not be invoked");
 		}
 
-		public boolean is() {
+		boolean is() {
 			throw new IllegalArgumentException("should not be invoked");
 		}
 
 	}
 
-	public static class ExampleWithStaticAccessors {
+	static class ExampleWithStaticAccessors {
 
 		private static String name;
 
 		private int counter;
 
-		public static String getName() {
+		static String getName() {
 			return name;
 		}
 
-		public static void setName(String name) {
+		static void setName(String name) {
 			ExampleWithStaticAccessors.name = name;
 		}
 
-		public int getCounter() {
+		int getCounter() {
 			return this.counter;
 		}
 
-		public void setCounter(int counter) {
+		void setCounter(int counter) {
 			this.counter = counter;
 		}
 
@@ -929,102 +929,102 @@ class JavaBeanBinderTests {
 
 	}
 
-	public static class ConverterAnnotatedExampleBean {
+	static class ConverterAnnotatedExampleBean {
 
 		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 		private LocalDate date;
 
-		public LocalDate getDate() {
+		LocalDate getDate() {
 			return this.date;
 		}
 
-		public void setDate(LocalDate date) {
+		void setDate(LocalDate date) {
 			this.date = date;
 		}
 
 	}
 
-	public static class ExampleWithPropertyEditorType {
+	static class ExampleWithPropertyEditorType {
 
 		private Class<? extends Throwable> value;
 
-		public Class<? extends Throwable> getValue() {
+		Class<? extends Throwable> getValue() {
 			return this.value;
 		}
 
-		public void setValue(Class<? extends Throwable> value) {
+		void setValue(Class<? extends Throwable> value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class ExampleWithGenericMap {
+	static class ExampleWithGenericMap {
 
 		private final Map<String, GenericValue<Integer>> integers = new LinkedHashMap<>();
 
 		private final Map<String, GenericValue<Boolean>> booleans = new LinkedHashMap<>();
 
-		public Map<String, GenericValue<Integer>> getIntegers() {
+		Map<String, GenericValue<Integer>> getIntegers() {
 			return this.integers;
 		}
 
-		public Map<String, GenericValue<Boolean>> getBooleans() {
+		Map<String, GenericValue<Boolean>> getBooleans() {
 			return this.booleans;
 		}
 
 	}
 
-	public static class GenericValue<T> {
+	static class GenericValue<T> {
 
 		private T value;
 
-		public T getValue() {
+		T getValue() {
 			return this.value;
 		}
 
-		public void setValue(T value) {
+		void setValue(T value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class PropertyWithOverloadedSetter {
+	static class PropertyWithOverloadedSetter {
 
 		private String property;
 
-		public void setProperty(int property) {
+		void setProperty(int property) {
 			this.property = String.valueOf(property);
 		}
 
-		public void setProperty(String property) {
+		void setProperty(String property) {
 			this.property = property;
 		}
 
-		public String getProperty() {
+		String getProperty() {
 			return this.property;
 		}
 
 	}
 
-	public static class NestedJavaBean {
+	static class NestedJavaBean {
 
 		private ExampleDefaultsBean nested = new ExampleDefaultsBean();
 
-		public ExampleDefaultsBean getNested() {
+		ExampleDefaultsBean getNested() {
 			return this.nested;
 		}
 
-		public void setNested(ExampleDefaultsBean nested) {
+		void setNested(ExampleDefaultsBean nested) {
 			this.nested = nested;
 		}
 
 	}
 
-	public static class PackagePrivateSetterBean {
+	static class PackagePrivateSetterBean {
 
 		private String property;
 
-		public String getProperty() {
+		String getProperty() {
 			return this.property;
 		}
 

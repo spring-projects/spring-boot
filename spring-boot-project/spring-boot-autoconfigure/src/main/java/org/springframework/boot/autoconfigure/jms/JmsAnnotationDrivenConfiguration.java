@@ -62,7 +62,7 @@ class JmsAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
+	DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
 		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
 		configurer.setTransactionManager(this.transactionManager.getIfUnique());
@@ -74,7 +74,7 @@ class JmsAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnSingleCandidate(ConnectionFactory.class)
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
-	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+	DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
 			DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
@@ -84,17 +84,17 @@ class JmsAnnotationDrivenConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@EnableJms
 	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
-	protected static class EnableJmsConfiguration {
+	static class EnableJmsConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJndi
-	protected static class JndiConfiguration {
+	static class JndiConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(DestinationResolver.class)
-		public JndiDestinationResolver destinationResolver() {
+		JndiDestinationResolver destinationResolver() {
 			JndiDestinationResolver resolver = new JndiDestinationResolver();
 			resolver.setFallbackToDynamicDestination(true);
 			return resolver;

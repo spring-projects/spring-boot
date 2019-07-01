@@ -71,7 +71,7 @@ class MockDefinition extends Definition {
 	 * Return the type that should be mocked.
 	 * @return the type to mock; never {@code null}
 	 */
-	public ResolvableType getTypeToMock() {
+	ResolvableType getTypeToMock() {
 		return this.typeToMock;
 	}
 
@@ -79,7 +79,7 @@ class MockDefinition extends Definition {
 	 * Return the extra interfaces.
 	 * @return the extra interfaces or an empty set
 	 */
-	public Set<Class<?>> getExtraInterfaces() {
+	Set<Class<?>> getExtraInterfaces() {
 		return this.extraInterfaces;
 	}
 
@@ -87,7 +87,7 @@ class MockDefinition extends Definition {
 	 * Return the answers mode.
 	 * @return the answers mode; never {@code null}
 	 */
-	public Answers getAnswer() {
+	Answers getAnswer() {
 		return this.answer;
 	}
 
@@ -95,7 +95,7 @@ class MockDefinition extends Definition {
 	 * Return if the mock is serializable.
 	 * @return if the mock is serializable
 	 */
-	public boolean isSerializable() {
+	boolean isSerializable() {
 		return this.serializable;
 	}
 
@@ -133,12 +133,12 @@ class MockDefinition extends Definition {
 				.append("serializable", this.serializable).append("reset", getReset()).toString();
 	}
 
-	public <T> T createMock() {
+	<T> T createMock() {
 		return createMock(getName());
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T createMock(String name) {
+	<T> T createMock(String name) {
 		MockSettings settings = MockReset.withSettings(getReset());
 		if (StringUtils.hasLength(name)) {
 			settings.name(name);

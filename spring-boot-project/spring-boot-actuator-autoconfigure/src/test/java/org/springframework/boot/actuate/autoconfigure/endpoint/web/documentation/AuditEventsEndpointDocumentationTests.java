@@ -90,7 +90,7 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	static class TestConfiguration {
 
 		@Bean
-		public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository repository) {
+		AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository repository) {
 			return new AuditEventsEndpoint(repository);
 		}
 

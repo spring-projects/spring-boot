@@ -77,7 +77,7 @@ public class OnBeanConditionTypeDeductionFailureTests {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
 

@@ -60,11 +60,11 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	public WebApplicationContext getContext() {
+	WebApplicationContext getContext() {
 		return this.context;
 	}
 
-	public TestRestTemplate getRestTemplate() {
+	TestRestTemplate getRestTemplate() {
 		return this.restTemplate;
 	}
 
@@ -91,30 +91,30 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 		assertThat(this.context).isSameAs(WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
-	protected abstract static class AbstractConfig {
+	static class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(this.port);
 			return factory;
 		}
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 		@RequestMapping("/")
-		public String home() {
+		String home() {
 			return "Hello World";
 		}
 

@@ -429,46 +429,46 @@ class CollectionBinderTests {
 		assertThat(result.getValues().get(0)).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
 	}
 
-	public static class ExampleCollectionBean {
+	static class ExampleCollectionBean {
 
 		private List<String> items = new ArrayList<>();
 
 		private Set<String> itemsSet = new HashSet<>();
 
-		public List<String> getItems() {
+		List<String> getItems() {
 			return this.items;
 		}
 
-		public void setItems(List<String> items) {
+		void setItems(List<String> items) {
 			this.items.add("d");
 		}
 
-		public Set<String> getItemsSet() {
+		Set<String> getItemsSet() {
 			return this.itemsSet;
 		}
 
-		public void setItemsSet(Set<String> itemsSet) {
+		void setItemsSet(Set<String> itemsSet) {
 			this.itemsSet = itemsSet;
 		}
 
 	}
 
-	public static class ExampleCustomNoDefaultConstructorBean {
+	static class ExampleCustomNoDefaultConstructorBean {
 
 		private MyCustomNoDefaultConstructorList items = new MyCustomNoDefaultConstructorList(
 				Collections.singletonList("foo"));
 
-		public MyCustomNoDefaultConstructorList getItems() {
+		MyCustomNoDefaultConstructorList getItems() {
 			return this.items;
 		}
 
-		public void setItems(MyCustomNoDefaultConstructorList items) {
+		void setItems(MyCustomNoDefaultConstructorList items) {
 			this.items = items;
 		}
 
 	}
 
-	public static class MyCustomNoDefaultConstructorList extends ArrayList<String> {
+	static class MyCustomNoDefaultConstructorList extends ArrayList<String> {
 
 		MyCustomNoDefaultConstructorList(List<String> items) {
 			addAll(items);
@@ -476,86 +476,86 @@ class CollectionBinderTests {
 
 	}
 
-	public static class ExampleCustomWithDefaultConstructorBean {
+	static class ExampleCustomWithDefaultConstructorBean {
 
 		private MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
 
-		public MyCustomWithDefaultConstructorList getItems() {
+		MyCustomWithDefaultConstructorList getItems() {
 			return this.items;
 		}
 
-		public void setItems(MyCustomWithDefaultConstructorList items) {
+		void setItems(MyCustomWithDefaultConstructorList items) {
 			this.items.clear();
 			this.items.addAll(items);
 		}
 
 	}
 
-	public static class MyCustomWithDefaultConstructorList extends ArrayList<String> {
+	static class MyCustomWithDefaultConstructorList extends ArrayList<String> {
 
 	}
 
-	public static class BeanWithNestedCollection {
+	static class BeanWithNestedCollection {
 
 		private String value;
 
 		private List<BeanWithNestedCollection> foos;
 
-		public List<BeanWithNestedCollection> getFoos() {
+		List<BeanWithNestedCollection> getFoos() {
 			return this.foos;
 		}
 
-		public void setFoos(List<BeanWithNestedCollection> foos) {
+		void setFoos(List<BeanWithNestedCollection> foos) {
 			this.foos = foos;
 		}
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class ClonedArrayBean {
+	static class ClonedArrayBean {
 
 		private String[] bar;
 
-		public String[] getBar() {
+		String[] getBar() {
 			return this.bar.clone();
 		}
 
-		public void setBar(String[] bar) {
+		void setBar(String[] bar) {
 			this.bar = bar;
 		}
 
 	}
 
-	public static class BeanWithGetterException {
+	static class BeanWithGetterException {
 
 		private List<String> values;
 
-		public void setValues(List<String> values) {
+		void setValues(List<String> values) {
 			this.values = values;
 		}
 
-		public List<String> getValues() {
+		List<String> getValues() {
 			return Collections.unmodifiableList(this.values);
 		}
 
 	}
 
-	public static class BeanWithEnumSetCollection {
+	static class BeanWithEnumSetCollection {
 
 		private List<EnumSet<ExampleEnum>> values;
 
-		public void setValues(List<EnumSet<ExampleEnum>> values) {
+		void setValues(List<EnumSet<ExampleEnum>> values) {
 			this.values = values;
 		}
 
-		public List<EnumSet<ExampleEnum>> getValues() {
+		List<EnumSet<ExampleEnum>> getValues() {
 			return this.values;
 		}
 

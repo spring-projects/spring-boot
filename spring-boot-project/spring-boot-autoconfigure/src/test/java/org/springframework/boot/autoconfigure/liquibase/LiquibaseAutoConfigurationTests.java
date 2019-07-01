@@ -322,13 +322,13 @@ class LiquibaseAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public DataSource normalDataSource() {
+		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
 		}
 
 		@LiquibaseDataSource
 		@Bean
-		public DataSource liquibaseDataSource() {
+		DataSource liquibaseDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:liquibasetest").username("sa").build();
 		}
 

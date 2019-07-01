@@ -46,12 +46,12 @@ class SpringBootConfigurationTests {
 	}
 
 	@SpringBootConfiguration
-	private static class DefaultSpringBootConfiguration {
+	static class DefaultSpringBootConfiguration {
 
 	}
 
 	@SpringBootConfiguration(proxyBeanMethods = false)
-	private static class NoBeanMethodProxyingSpringBootConfiguration {
+	static class NoBeanMethodProxyingSpringBootConfiguration {
 
 	}
 

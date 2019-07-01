@@ -60,7 +60,7 @@ public class ValidationExceptionFailureAnalyzerTests {
 
 	@ConfigurationProperties("test")
 	@Validated
-	private static class TestProperties {
+	static class TestProperties {
 
 	}
 
@@ -73,7 +73,7 @@ public class ValidationExceptionFailureAnalyzerTests {
 	}
 
 	@ConfigurationProperties("test")
-	private static class NonValidatedTestProperties {
+	static class NonValidatedTestProperties {
 
 	}
 

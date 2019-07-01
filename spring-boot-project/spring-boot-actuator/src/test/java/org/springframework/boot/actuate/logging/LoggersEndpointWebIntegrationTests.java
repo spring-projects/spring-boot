@@ -150,12 +150,12 @@ class LoggersEndpointWebIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public LoggingSystem loggingSystem() {
+		LoggingSystem loggingSystem() {
 			return mock(LoggingSystem.class);
 		}
 
 		@Bean
-		public LoggersEndpoint endpoint(LoggingSystem loggingSystem) {
+		LoggersEndpoint endpoint(LoggingSystem loggingSystem) {
 			return new LoggersEndpoint(loggingSystem);
 		}
 

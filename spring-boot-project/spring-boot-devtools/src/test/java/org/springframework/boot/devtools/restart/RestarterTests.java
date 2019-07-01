@@ -171,26 +171,26 @@ class RestarterTests {
 
 	@Component
 	@EnableScheduling
-	public static class SampleApplication {
+	static class SampleApplication {
 
 		private int count = 0;
 
 		private static volatile boolean quit = false;
 
 		@Scheduled(fixedDelay = 200)
-		public void tickBean() {
+		void tickBean() {
 			System.out.println("Tick " + this.count++ + " " + Thread.currentThread());
 		}
 
 		@Scheduled(initialDelay = 500, fixedDelay = 500)
-		public void restart() {
+		void restart() {
 			System.out.println("Restart " + Thread.currentThread());
 			if (!SampleApplication.quit) {
 				Restarter.getInstance().restart();
 			}
 		}
 
-		public static void main(String... args) {
+		static void main(String... args) {
 			Restarter.initialize(args, false, new MockRestartInitializer(), true);
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 					SampleApplication.class);
@@ -212,7 +212,7 @@ class RestarterTests {
 
 	}
 
-	private static class CloseCountingApplicationListener implements ApplicationListener<ContextClosedEvent> {
+	static class CloseCountingApplicationListener implements ApplicationListener<ContextClosedEvent> {
 
 		static int closed = 0;
 
@@ -223,7 +223,7 @@ class RestarterTests {
 
 	}
 
-	private static class TestableRestarter extends Restarter {
+	static class TestableRestarter extends Restarter {
 
 		private ClassLoader relaunchClassLoader;
 
@@ -257,7 +257,7 @@ class RestarterTests {
 		protected void stop() {
 		}
 
-		public ClassLoader getRelaunchClassLoader() {
+		ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
 		}
 

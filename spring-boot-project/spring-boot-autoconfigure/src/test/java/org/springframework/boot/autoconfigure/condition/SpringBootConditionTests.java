@@ -49,22 +49,22 @@ class SpringBootConditionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(AlwaysThrowsCondition.class)
-	public static class ErrorOnClass {
+	static class ErrorOnClass {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class ErrorOnMethod {
+	static class ErrorOnMethod {
 
 		@Bean
 		@Conditional(AlwaysThrowsCondition.class)
-		public String myBean() {
+		String myBean() {
 			return "bean";
 		}
 
 	}
 
-	public static class AlwaysThrowsCondition extends SpringBootCondition {
+	static class AlwaysThrowsCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {

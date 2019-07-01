@@ -146,12 +146,12 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 	static class MultipleMBeanExportersConfiguration {
 
 		@Bean
-		public MBeanExporter firstMBeanExporter() {
+		MBeanExporter firstMBeanExporter() {
 			return new MBeanExporter();
 		}
 
 		@Bean
-		public MBeanExporter secondMBeanExporter() {
+		MBeanExporter secondMBeanExporter() {
 			return new MBeanExporter();
 		}
 

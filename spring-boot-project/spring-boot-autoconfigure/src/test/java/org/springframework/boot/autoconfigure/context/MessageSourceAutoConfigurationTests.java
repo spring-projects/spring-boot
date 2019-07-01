@@ -191,31 +191,31 @@ class MessageSourceAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/switch-messages.properties")
-	protected static class Config {
+	static class Config {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomMessageSourceConfiguration {
+	static class CustomMessageSourceConfiguration {
 
 		@Bean
-		public MessageSource messageSource() {
+		MessageSource messageSource() {
 			return new TestMessageSource();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomBeanNameMessageSourceConfiguration {
+	static class CustomBeanNameMessageSourceConfiguration {
 
 		@Bean
-		public MessageSource codeReturningMessageSource() {
+		MessageSource codeReturningMessageSource() {
 			return new TestMessageSource();
 		}
 
 	}
 
-	private static class TestMessageSource implements MessageSource {
+	static class TestMessageSource implements MessageSource {
 
 		@Override
 		public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {

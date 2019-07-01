@@ -44,11 +44,11 @@ class DocumentRoot {
 		this.logger = logger;
 	}
 
-	public File getDirectory() {
+	File getDirectory() {
 		return this.directory;
 	}
 
-	public void setDirectory(File directory) {
+	void setDirectory(File directory) {
 		this.directory = directory;
 	}
 
@@ -57,7 +57,7 @@ class DocumentRoot {
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
-	public final File getValidDirectory() {
+	final File getValidDirectory() {
 		File file = this.directory;
 		file = (file != null) ? file : getWarFileDocumentRoot();
 		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
@@ -120,7 +120,7 @@ class DocumentRoot {
 		}
 	}
 
-	public final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
+	final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + codeSourceFile);
 		}

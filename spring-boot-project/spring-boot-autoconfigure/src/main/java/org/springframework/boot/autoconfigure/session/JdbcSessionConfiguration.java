@@ -51,16 +51,16 @@ class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
+	JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
 		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
 	}
 
 	@Configuration
-	public static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
+	static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
+		void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());

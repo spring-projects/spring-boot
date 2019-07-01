@@ -188,32 +188,32 @@ class ValidationBindHandlerTests {
 		throw new IllegalStateException("Did not throw");
 	}
 
-	public static class ExampleNonValidatedBean {
+	static class ExampleNonValidatedBean {
 
 		@Min(5)
 		private int age;
 
-		public int getAge() {
+		int getAge() {
 			return this.age;
 		}
 
-		public void setAge(int age) {
+		void setAge(int age) {
 			this.age = age;
 		}
 
 	}
 
 	@Validated
-	public static class ExampleValidatedBean {
+	static class ExampleValidatedBean {
 
 		@Min(5)
 		private int age;
 
-		public int getAge() {
+		int getAge() {
 			return this.age;
 		}
 
-		public void setAge(int age) {
+		void setAge(int age) {
 			this.age = age;
 		}
 
@@ -221,6 +221,8 @@ class ValidationBindHandlerTests {
 
 	@Validated
 	public static class ExampleValidatedWithNestedBean {
+
+		// Needs to be public due to validator (see gh-17394)
 
 		@Valid
 		private ExampleNested nested = new ExampleNested();
@@ -236,6 +238,8 @@ class ValidationBindHandlerTests {
 	}
 
 	public static class ExampleNested {
+
+		// Needs to be public due to validator (see gh-17394)
 
 		private String name;
 
@@ -272,9 +276,9 @@ class ValidationBindHandlerTests {
 	}
 
 	@Validated
-	public static class ExampleValidatedBeanWithGetterException {
+	static class ExampleValidatedBeanWithGetterException {
 
-		public int getAge() {
+		int getAge() {
 			throw new RuntimeException();
 		}
 

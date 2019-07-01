@@ -97,30 +97,30 @@ class AuditAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomAuditEventRepositoryConfiguration {
+	static class CustomAuditEventRepositoryConfiguration {
 
 		@Bean
-		public TestAuditEventRepository testAuditEventRepository() {
+		TestAuditEventRepository testAuditEventRepository() {
 			return new TestAuditEventRepository();
 		}
 
 	}
 
-	public static class TestAuditEventRepository extends InMemoryAuditEventRepository {
+	static class TestAuditEventRepository extends InMemoryAuditEventRepository {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomAuthenticationAuditListenerConfiguration {
+	static class CustomAuthenticationAuditListenerConfiguration {
 
 		@Bean
-		public TestAuthenticationAuditListener authenticationAuditListener() {
+		TestAuthenticationAuditListener authenticationAuditListener() {
 			return new TestAuthenticationAuditListener();
 		}
 
 	}
 
-	protected static class TestAuthenticationAuditListener extends AbstractAuthenticationAuditListener {
+	static class TestAuthenticationAuditListener extends AbstractAuthenticationAuditListener {
 
 		@Override
 		public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
@@ -133,16 +133,16 @@ class AuditAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomAuthorizationAuditListenerConfiguration {
+	static class CustomAuthorizationAuditListenerConfiguration {
 
 		@Bean
-		public TestAuthorizationAuditListener authorizationAuditListener() {
+		TestAuthorizationAuditListener authorizationAuditListener() {
 			return new TestAuthorizationAuditListener();
 		}
 
 	}
 
-	protected static class TestAuthorizationAuditListener extends AbstractAuthorizationAuditListener {
+	static class TestAuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 
 		@Override
 		public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
@@ -155,16 +155,16 @@ class AuditAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomAuditListenerConfiguration {
+	static class CustomAuditListenerConfiguration {
 
 		@Bean
-		public TestAuditListener testAuditListener() {
+		TestAuditListener testAuditListener() {
 			return new TestAuditListener();
 		}
 
 	}
 
-	protected static class TestAuditListener extends AbstractAuditListener {
+	static class TestAuditListener extends AbstractAuditListener {
 
 		@Override
 		protected void onAuditEvent(AuditEvent event) {

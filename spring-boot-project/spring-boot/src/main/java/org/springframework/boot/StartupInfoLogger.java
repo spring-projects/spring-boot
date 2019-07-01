@@ -50,13 +50,13 @@ class StartupInfoLogger {
 		this.sourceClass = sourceClass;
 	}
 
-	public void logStarting(Log applicationLog) {
+	void logStarting(Log applicationLog) {
 		Assert.notNull(applicationLog, "Log must not be null");
 		applicationLog.info(LogMessage.of(this::getStartingMessage));
 		applicationLog.debug(LogMessage.of(this::getRunningMessage));
 	}
 
-	public void logStarted(Log applicationLog, StopWatch stopWatch) {
+	void logStarted(Log applicationLog, StopWatch stopWatch) {
 		if (applicationLog.isInfoEnabled()) {
 			applicationLog.info(getStartedMessage(stopWatch));
 		}

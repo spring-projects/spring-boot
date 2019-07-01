@@ -271,40 +271,40 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class HttpHandlerConfiguration {
+	static class HttpHandlerConfiguration {
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return Mockito.mock(HttpHandler.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TooManyHttpHandlers {
+	static class TooManyHttpHandlers {
 
 		@Bean
-		public HttpHandler additionalHttpHandler() {
+		HttpHandler additionalHttpHandler() {
 			return Mockito.mock(HttpHandler.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ReactiveWebServerCustomization {
+	static class ReactiveWebServerCustomization {
 
 		@Bean
-		public WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> reactiveWebServerCustomizer() {
+		WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> reactiveWebServerCustomizer() {
 			return (factory) -> factory.setPort(9000);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class MockWebServerConfiguration {
+	static class MockWebServerConfiguration {
 
 		@Bean
-		public MockReactiveWebServerFactory mockReactiveWebServerFactory() {
+		MockReactiveWebServerFactory mockReactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
@@ -314,7 +314,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class TomcatConnectorCustomizerConfiguration {
 
 		@Bean
-		public TomcatConnectorCustomizer connectorCustomizer() {
+		TomcatConnectorCustomizer connectorCustomizer() {
 			return mock(TomcatConnectorCustomizer.class);
 		}
 
@@ -326,12 +326,12 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 		private final TomcatConnectorCustomizer customizer = mock(TomcatConnectorCustomizer.class);
 
 		@Bean
-		public TomcatConnectorCustomizer connectorCustomizer() {
+		TomcatConnectorCustomizer connectorCustomizer() {
 			return this.customizer;
 		}
 
 		@Bean
-		public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
+		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
 			return (tomcat) -> tomcat.addConnectorCustomizers(this.customizer);
 		}
 
@@ -341,7 +341,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class TomcatContextCustomizerConfiguration {
 
 		@Bean
-		public TomcatContextCustomizer contextCustomizer() {
+		TomcatContextCustomizer contextCustomizer() {
 			return mock(TomcatContextCustomizer.class);
 		}
 
@@ -353,12 +353,12 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 		private final TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
 
 		@Bean
-		public TomcatContextCustomizer contextCustomizer() {
+		TomcatContextCustomizer contextCustomizer() {
 			return this.customizer;
 		}
 
 		@Bean
-		public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
+		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
 			return (tomcat) -> tomcat.addContextCustomizers(this.customizer);
 		}
 
@@ -368,7 +368,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class TomcatProtocolHandlerCustomizerConfiguration {
 
 		@Bean
-		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
+		TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
 			return mock(TomcatProtocolHandlerCustomizer.class);
 		}
 
@@ -380,12 +380,12 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 		private final TomcatProtocolHandlerCustomizer<?> customizer = mock(TomcatProtocolHandlerCustomizer.class);
 
 		@Bean
-		public TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
+		TomcatProtocolHandlerCustomizer<?> protocolHandlerCustomizer() {
 			return this.customizer;
 		}
 
 		@Bean
-		public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
+		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
 			return (tomcat) -> tomcat.addProtocolHandlerCustomizers(this.customizer);
 		}
 
@@ -395,9 +395,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class JettyServerCustomizerConfiguration {
 
 		@Bean
-		public JettyServerCustomizer serverCustomizer() {
+		JettyServerCustomizer serverCustomizer() {
 			return (server) -> {
-
 			};
 		}
 
@@ -407,9 +406,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class UndertowBuilderCustomizerConfiguration {
 
 		@Bean
-		public UndertowBuilderCustomizer builderCustomizer() {
+		UndertowBuilderCustomizer builderCustomizer() {
 			return (builder) -> {
-
 			};
 		}
 
@@ -419,9 +417,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class UndertowDeploymentInfoCustomizerConfiguration {
 
 		@Bean
-		public UndertowDeploymentInfoCustomizer deploymentInfoCustomizer() {
+		UndertowDeploymentInfoCustomizer deploymentInfoCustomizer() {
 			return (deploymentInfo) -> {
-
 			};
 		}
 
@@ -431,7 +428,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	static class ForwardedHeaderTransformerConfiguration {
 
 		@Bean
-		public ForwardedHeaderTransformer testForwardedHeaderTransformer() {
+		ForwardedHeaderTransformer testForwardedHeaderTransformer() {
 			return new ForwardedHeaderTransformer();
 		}
 

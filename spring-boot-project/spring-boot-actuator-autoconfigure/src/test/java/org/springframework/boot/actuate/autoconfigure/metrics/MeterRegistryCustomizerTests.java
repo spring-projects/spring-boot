@@ -74,17 +74,17 @@ class MeterRegistryCustomizerTests {
 	static class MeterRegistryCustomizerConfiguration {
 
 		@Bean
-		public MeterRegistryCustomizer<MeterRegistry> commonTags() {
+		MeterRegistryCustomizer<MeterRegistry> commonTags() {
 			return (registry) -> registry.config().commonTags("region", "us-east-1");
 		}
 
 		@Bean
-		public MeterRegistryCustomizer<PrometheusMeterRegistry> prometheusOnlyCommonTags() {
+		MeterRegistryCustomizer<PrometheusMeterRegistry> prometheusOnlyCommonTags() {
 			return (registry) -> registry.config().commonTags("job", "myjob");
 		}
 
 		@Bean
-		public MyThing myThing(MeterRegistry registry) {
+		MyThing myThing(MeterRegistry registry) {
 			registry.gauge("my.thing", 0);
 			return new MyThing();
 		}

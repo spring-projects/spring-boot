@@ -221,7 +221,7 @@ class BindResultTests {
 			this.value = value;
 		}
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 

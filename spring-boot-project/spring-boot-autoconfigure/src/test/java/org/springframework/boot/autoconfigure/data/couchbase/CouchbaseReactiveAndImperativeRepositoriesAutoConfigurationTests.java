@@ -68,17 +68,17 @@ class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(CouchbaseAutoConfiguration.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityRepository.class)
 	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityRepository.class)
-	protected static class ImperativeAndReactiveConfiguration {
+	static class ImperativeAndReactiveConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import({ CouchbaseTestConfigurer.class, Registrar.class })
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 	}
 
-	protected static class Registrar implements ImportSelector {
+	static class Registrar implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {

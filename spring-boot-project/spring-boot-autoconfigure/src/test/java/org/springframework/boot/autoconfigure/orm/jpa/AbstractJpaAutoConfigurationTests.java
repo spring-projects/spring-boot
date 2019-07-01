@@ -228,15 +228,15 @@ abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestTwoDataSourcesConfiguration {
+	static class TestTwoDataSourcesConfiguration {
 
 		@Bean
-		public DataSource firstDataSource() {
+		DataSource firstDataSource() {
 			return createRandomDataSource();
 		}
 
 		@Bean
-		public DataSource secondDataSource() {
+		DataSource secondDataSource() {
 			return createRandomDataSource();
 		}
 
@@ -252,12 +252,12 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public DataSource firstDataSource() {
+		DataSource firstDataSource() {
 			return createRandomDataSource();
 		}
 
 		@Bean
-		public DataSource secondDataSource() {
+		DataSource secondDataSource() {
 			return createRandomDataSource();
 		}
 
@@ -270,16 +270,16 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestFilterConfiguration {
+	static class TestFilterConfiguration {
 
 		@Bean
-		public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
+		OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
 			return new OpenEntityManagerInViewFilter();
 		}
 
@@ -287,10 +287,10 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestFilterRegistrationConfiguration {
+	static class TestFilterRegistrationConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<OpenEntityManagerInViewFilter> OpenEntityManagerInViewFilterFilterRegistrationBean() {
+		FilterRegistrationBean<OpenEntityManagerInViewFilter> OpenEntityManagerInViewFilterFilterRegistrationBean() {
 			return new FilterRegistrationBean<>();
 		}
 
@@ -298,25 +298,24 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestInterceptorManualConfiguration {
+	static class TestInterceptorManualConfiguration {
 
 		@Bean
-		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+		OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
 			return new ManualOpenEntityManagerInViewInterceptor();
 		}
 
-		protected static class ManualOpenEntityManagerInViewInterceptor extends OpenEntityManagerInViewInterceptor {
+		static class ManualOpenEntityManagerInViewInterceptor extends OpenEntityManagerInViewInterceptor {
 
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean extends TestConfiguration {
+	static class TestConfigurationWithLocalContainerEntityManagerFactoryBean extends TestConfiguration {
 
 		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
-				JpaVendorAdapter adapter) {
+		LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter adapter) {
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
@@ -331,10 +330,10 @@ abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfigurationWithEntityManagerFactory extends TestConfiguration {
+	static class TestConfigurationWithEntityManagerFactory extends TestConfiguration {
 
 		@Bean
-		public EntityManagerFactory entityManagerFactory(DataSource dataSource, JpaVendorAdapter adapter) {
+		EntityManagerFactory entityManagerFactory(DataSource dataSource, JpaVendorAdapter adapter) {
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
@@ -348,7 +347,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 		}
 
 		@Bean
-		public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+		PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
 			JpaTransactionManager transactionManager = new JpaTransactionManager();
 			transactionManager.setEntityManagerFactory(emf);
 			return transactionManager;
@@ -358,10 +357,10 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfigurationWithTransactionManager {
+	static class TestConfigurationWithTransactionManager {
 
 		@Bean
-		public PlatformTransactionManager transactionManager() {
+		PlatformTransactionManager transactionManager() {
 			return new CustomJpaTransactionManager();
 		}
 
@@ -369,7 +368,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
-	public static class TestConfigurationWithCustomPersistenceUnitManager {
+	static class TestConfigurationWithCustomPersistenceUnitManager {
 
 		private final DataSource dataSource;
 
@@ -378,7 +377,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 		}
 
 		@Bean
-		public PersistenceUnitManager persistenceUnitManager() {
+		PersistenceUnitManager persistenceUnitManager() {
 			DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
 			persistenceUnitManager.setDefaultDataSource(this.dataSource);
 			persistenceUnitManager.setPackagesToScan(City.class.getPackage().getName());

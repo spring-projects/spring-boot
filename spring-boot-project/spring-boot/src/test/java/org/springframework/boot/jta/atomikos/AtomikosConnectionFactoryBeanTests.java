@@ -43,7 +43,7 @@ class AtomikosConnectionFactoryBeanTests {
 	}
 
 	@SuppressWarnings("serial")
-	private static class MockAtomikosConnectionFactoryBean extends AtomikosConnectionFactoryBean {
+	static class MockAtomikosConnectionFactoryBean extends AtomikosConnectionFactoryBean {
 
 		@Override
 		public synchronized void init() {

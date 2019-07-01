@@ -45,17 +45,17 @@ class PrometheusScrapeEndpointIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public PrometheusScrapeEndpoint prometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
+		PrometheusScrapeEndpoint prometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
 
 		@Bean
-		public CollectorRegistry collectorRegistry() {
+		CollectorRegistry collectorRegistry() {
 			return new CollectorRegistry(true);
 		}
 
 		@Bean
-		public MeterRegistry registry(CollectorRegistry registry) {
+		MeterRegistry registry(CollectorRegistry registry) {
 			return new PrometheusMeterRegistry((k) -> null, registry, Clock.SYSTEM);
 		}
 

@@ -84,7 +84,7 @@ class AtlasMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -95,7 +95,7 @@ class AtlasMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public AtlasConfig customConfig() {
+		AtlasConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -106,7 +106,7 @@ class AtlasMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public AtlasMeterRegistry customRegistry(AtlasConfig config, Clock clock) {
+		AtlasMeterRegistry customRegistry(AtlasConfig config, Clock clock) {
 			return new AtlasMeterRegistry(config, clock);
 		}
 

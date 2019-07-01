@@ -29,22 +29,22 @@ class AsciidocBuilder {
 		this.content = new StringBuilder();
 	}
 
-	public AsciidocBuilder appendKey(Object... items) {
+	AsciidocBuilder appendKey(Object... items) {
 		for (Object item : items) {
 			appendln("`+", item, "+` +");
 		}
 		return this;
 	}
 
-	public AsciidocBuilder newLine() {
+	AsciidocBuilder newLine() {
 		return append(System.lineSeparator());
 	}
 
-	public AsciidocBuilder appendln(Object... items) {
+	AsciidocBuilder appendln(Object... items) {
 		return append(items).newLine();
 	}
 
-	public AsciidocBuilder append(Object... items) {
+	AsciidocBuilder append(Object... items) {
 		for (Object item : items) {
 			this.content.append(item);
 		}

@@ -52,7 +52,7 @@ final class UndertowCompressionConfigurer {
 	 * @param httpHandler the HTTP handler to wrap
 	 * @return the wrapped HTTP handler if compression is enabled, or the handler itself
 	 */
-	public static HttpHandler configureCompression(Compression compression, HttpHandler httpHandler) {
+	static HttpHandler configureCompression(Compression compression, HttpHandler httpHandler) {
 		if (compression == null || !compression.getEnabled()) {
 			return httpHandler;
 		}

@@ -213,7 +213,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	static class SessionRepositoryConfiguration {
 
 		@Bean
-		public MapSessionRepository mySessionRepository() {
+		MapSessionRepository mySessionRepository() {
 			return new MapSessionRepository(Collections.emptyMap());
 		}
 
@@ -229,7 +229,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	static class UserProvidedCookieSerializerConfiguration extends SessionRepositoryConfiguration {
 
 		@Bean
-		public DefaultCookieSerializer myCookieSerializer() {
+		DefaultCookieSerializer myCookieSerializer() {
 			return new DefaultCookieSerializer();
 		}
 
@@ -240,7 +240,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	static class UserProvidedCookieHttpSessionStrategyConfiguration extends SessionRepositoryConfiguration {
 
 		@Bean
-		public CookieHttpSessionIdResolver httpSessionStrategy() {
+		CookieHttpSessionIdResolver httpSessionStrategy() {
 			return new CookieHttpSessionIdResolver();
 		}
 
@@ -251,7 +251,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	static class UserProvidedHeaderHttpSessionStrategyConfiguration extends SessionRepositoryConfiguration {
 
 		@Bean
-		public HeaderHttpSessionIdResolver httpSessionStrategy() {
+		HeaderHttpSessionIdResolver httpSessionStrategy() {
 			return HeaderHttpSessionIdResolver.xAuthToken();
 		}
 
@@ -262,7 +262,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	static class UserProvidedCustomHttpSessionStrategyConfiguration extends SessionRepositoryConfiguration {
 
 		@Bean
-		public HttpSessionIdResolver httpSessionStrategy() {
+		HttpSessionIdResolver httpSessionStrategy() {
 			return mock(HttpSessionIdResolver.class);
 		}
 
@@ -273,7 +273,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	static class SpringSessionRememberMeServicesConfiguration extends SessionRepositoryConfiguration {
 
 		@Bean
-		public SpringSessionRememberMeServices rememberMeServices() {
+		SpringSessionRememberMeServices rememberMeServices() {
 			return new SpringSessionRememberMeServices();
 		}
 

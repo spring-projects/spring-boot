@@ -137,39 +137,39 @@ class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumen
 	static class TestConfiguration {
 
 		@Bean
-		public NettyReactiveWebServerFactory netty() {
+		NettyReactiveWebServerFactory netty() {
 			return new NettyReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherHandlersMappingDescriptionProvider dispatcherHandlersMappingDescriptionProvider() {
+		DispatcherHandlersMappingDescriptionProvider dispatcherHandlersMappingDescriptionProvider() {
 			return new DispatcherHandlersMappingDescriptionProvider();
 		}
 
 		@Bean
-		public MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
+		MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
 				ConfigurableApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
 		}
 
 		@Bean
-		public RouterFunction<ServerResponse> exampleRouter() {
+		RouterFunction<ServerResponse> exampleRouter() {
 			return route(GET("/foo"), (request) -> ServerResponse.ok().build());
 		}
 
 		@Bean
-		public ExampleController exampleController() {
+		ExampleController exampleController() {
 			return new ExampleController();
 		}
 
 	}
 
 	@RestController
-	private static class ExampleController {
+	static class ExampleController {
 
 		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
 				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
-		public String example() {
+		String example() {
 			return "Hello World";
 		}
 

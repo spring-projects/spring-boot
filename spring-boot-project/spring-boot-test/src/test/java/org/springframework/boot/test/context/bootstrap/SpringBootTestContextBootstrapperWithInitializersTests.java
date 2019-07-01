@@ -53,7 +53,7 @@ class SpringBootTestContextBootstrapperWithInitializersTests {
 
 	// gh-8483
 
-	public static class CustomInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class CustomInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {

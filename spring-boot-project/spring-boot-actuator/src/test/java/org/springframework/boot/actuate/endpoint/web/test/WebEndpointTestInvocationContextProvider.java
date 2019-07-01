@@ -127,7 +127,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 
 	}
 
-	private static class WebEndpointsInvocationContext
+	static class WebEndpointsInvocationContext
 			implements TestTemplateInvocationContext, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
 		private static final Duration TIMEOUT = Duration.ofMinutes(6);
@@ -219,17 +219,17 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public ResourceConfig resourceConfig() {
+		ResourceConfig resourceConfig() {
 			return new ResourceConfig();
 		}
 
 		@Bean
-		public ResourceConfigCustomizer webEndpointRegistrar() {
+		ResourceConfigCustomizer webEndpointRegistrar() {
 			return this::customize;
 		}
 
@@ -261,12 +261,12 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory netty() {
+		NettyReactiveWebServerFactory netty() {
 			return new NettyReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public PortHolder portHolder() {
+		PortHolder portHolder() {
 			return this.portHolder;
 		}
 
@@ -276,12 +276,12 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 		}
 
 		@Bean
-		public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
+		WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
 			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
@@ -305,12 +305,12 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
+		WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
 			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,

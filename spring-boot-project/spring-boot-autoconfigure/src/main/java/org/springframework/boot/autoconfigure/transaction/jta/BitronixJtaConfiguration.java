@@ -61,7 +61,7 @@ class BitronixJtaConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConfigurationProperties(prefix = "spring.jta.bitronix.properties")
-	public bitronix.tm.Configuration bitronixConfiguration(JtaProperties jtaProperties) {
+	bitronix.tm.Configuration bitronixConfiguration(JtaProperties jtaProperties) {
 		bitronix.tm.Configuration config = TransactionManagerServices.getConfiguration();
 		if (StringUtils.hasText(jtaProperties.getTransactionManagerId())) {
 			config.setServerId(jtaProperties.getTransactionManagerId());
@@ -83,26 +83,25 @@ class BitronixJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(TransactionManager.class)
-	public BitronixTransactionManager bitronixTransactionManager(bitronix.tm.Configuration configuration) {
+	BitronixTransactionManager bitronixTransactionManager(bitronix.tm.Configuration configuration) {
 		// Inject configuration to force ordering
 		return TransactionManagerServices.getTransactionManager();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(XADataSourceWrapper.class)
-	public BitronixXADataSourceWrapper xaDataSourceWrapper() {
+	BitronixXADataSourceWrapper xaDataSourceWrapper() {
 		return new BitronixXADataSourceWrapper();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public static BitronixDependentBeanFactoryPostProcessor bitronixDependentBeanFactoryPostProcessor() {
+	static BitronixDependentBeanFactoryPostProcessor bitronixDependentBeanFactoryPostProcessor() {
 		return new BitronixDependentBeanFactoryPostProcessor();
 	}
 
 	@Bean
-	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
-			TransactionManager transactionManager,
+	JtaTransactionManager transactionManager(UserTransaction userTransaction, TransactionManager transactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
 		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(jtaTransactionManager));
@@ -115,7 +114,7 @@ class BitronixJtaConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(XAConnectionFactoryWrapper.class)
-		public BitronixXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
+		BitronixXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
 			return new BitronixXAConnectionFactoryWrapper();
 		}
 

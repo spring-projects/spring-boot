@@ -90,7 +90,7 @@ class ElasticsearchAutoConfigurationTests {
 	static class CustomConfiguration {
 
 		@Bean
-		public Client myClient() {
+		Client myClient() {
 			return mock(Client.class);
 		}
 

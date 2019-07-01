@@ -154,7 +154,7 @@ class RestTemplateAutoConfigurationTests {
 	static class RestTemplateConfig {
 
 		@Bean
-		public RestTemplate restTemplate(RestTemplateBuilder builder) {
+		RestTemplate restTemplate(RestTemplateBuilder builder) {
 			return builder.build();
 		}
 
@@ -164,7 +164,7 @@ class RestTemplateAutoConfigurationTests {
 	static class DirtyRestTemplateConfig {
 
 		@Bean
-		public RestTemplate restTemplateOne(RestTemplateBuilder builder) {
+		RestTemplate restTemplateOne(RestTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}
@@ -174,7 +174,7 @@ class RestTemplateAutoConfigurationTests {
 		}
 
 		@Bean
-		public RestTemplate restTemplateTwo(RestTemplateBuilder builder) {
+		RestTemplate restTemplateTwo(RestTemplateBuilder builder) {
 			try {
 				return builder.build();
 			}
@@ -195,7 +195,7 @@ class RestTemplateAutoConfigurationTests {
 	static class CustomRestTemplateBuilderConfig {
 
 		@Bean
-		public RestTemplateBuilder restTemplateBuilder() {
+		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().messageConverters(new CustomHttpMessageConverter());
 		}
 
@@ -205,7 +205,7 @@ class RestTemplateAutoConfigurationTests {
 	static class RestTemplateCustomizerConfig {
 
 		@Bean
-		public RestTemplateCustomizer restTemplateCustomizer() {
+		RestTemplateCustomizer restTemplateCustomizer() {
 			return mock(RestTemplateCustomizer.class);
 		}
 
@@ -215,7 +215,7 @@ class RestTemplateAutoConfigurationTests {
 	static class RestTemplateRequestCustomizerConfig {
 
 		@Bean
-		public RestTemplateRequestCustomizer<?> restTemplateRequestCustomizer() {
+		RestTemplateRequestCustomizer<?> restTemplateRequestCustomizer() {
 			return (request) -> request.getHeaders().add("spring", "boot");
 		}
 

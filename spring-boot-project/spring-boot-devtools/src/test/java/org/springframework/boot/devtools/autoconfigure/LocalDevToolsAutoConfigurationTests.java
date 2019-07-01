@@ -268,17 +268,17 @@ class LocalDevToolsAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@Import({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
 			ThymeleafAutoConfiguration.class })
-	public static class Config {
+	static class Config {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
 			ThymeleafAutoConfiguration.class })
-	public static class ConfigWithMockLiveReload {
+	static class ConfigWithMockLiveReload {
 
 		@Bean
-		public LiveReloadServer liveReloadServer() {
+		LiveReloadServer liveReloadServer() {
 			return mock(LiveReloadServer.class);
 		}
 
@@ -287,15 +287,15 @@ class LocalDevToolsAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@Import({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
 			ResourceProperties.class })
-	public static class WebResourcesConfig {
+	static class WebResourcesConfig {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class SessionRedisTemplateConfig {
+	static class SessionRedisTemplateConfig {
 
 		@Bean
-		public RedisTemplate<Object, Object> sessionRedisTemplate() {
+		RedisTemplate<Object, Object> sessionRedisTemplate() {
 			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;

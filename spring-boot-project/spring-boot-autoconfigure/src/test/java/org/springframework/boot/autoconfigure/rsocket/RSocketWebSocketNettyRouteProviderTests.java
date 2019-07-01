@@ -93,12 +93,12 @@ class RSocketWebSocketNettyRouteProviderTests {
 	static class WebConfiguration {
 
 		@Bean
-		public WebController webController() {
+		WebController webController() {
 			return new WebController();
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory customServerFactory(RSocketWebSocketNettyRouteProvider routeProvider) {
+		NettyReactiveWebServerFactory customServerFactory(RSocketWebSocketNettyRouteProvider routeProvider) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(0);
 			serverFactory.addRouteProviders(routeProvider);
 			return serverFactory;
@@ -111,18 +111,18 @@ class RSocketWebSocketNettyRouteProviderTests {
 
 		@GetMapping(path = "/protocol", produces = MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody
-		public TestProtocol testWebEndpoint() {
+		TestProtocol testWebEndpoint() {
 			return new TestProtocol("http");
 		}
 
 		@MessageMapping("websocket")
-		public TestProtocol testRSocketEndpoint() {
+		TestProtocol testRSocketEndpoint() {
 			return new TestProtocol("rsocket");
 		}
 
 	}
 
-	static class TestProtocol {
+	public static class TestProtocol {
 
 		private String name;
 

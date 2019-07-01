@@ -73,26 +73,26 @@ import org.springframework.util.StringUtils;
 class ServletManagementChildContextConfiguration {
 
 	@Bean
-	public ServletManagementWebServerFactoryCustomizer servletManagementWebServerFactoryCustomizer(
+	ServletManagementWebServerFactoryCustomizer servletManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
 		return new ServletManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "io.undertow.Undertow")
-	public UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer() {
+	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer() {
 		return new UndertowAccessLogCustomizer();
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
-	public TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer() {
+	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer() {
 		return new TomcatAccessLogCustomizer();
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
-	public JettyAccessLogCustomizer jettyManagementAccessLogCustomizer() {
+	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer() {
 		return new JettyAccessLogCustomizer();
 	}
 
@@ -102,7 +102,7 @@ class ServletManagementChildContextConfiguration {
 	static class ServletManagementContextSecurityConfiguration {
 
 		@Bean
-		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
+		Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		}

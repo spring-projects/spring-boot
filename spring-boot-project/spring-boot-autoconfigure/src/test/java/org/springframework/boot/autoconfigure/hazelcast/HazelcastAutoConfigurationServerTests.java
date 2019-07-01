@@ -163,7 +163,7 @@ public class HazelcastAutoConfigurationServerTests {
 	static class HazelcastConfigWithName {
 
 		@Bean
-		public Config myHazelcastConfig() {
+		Config myHazelcastConfig() {
 			return new Config("my-test-instance");
 		}
 
@@ -173,7 +173,7 @@ public class HazelcastAutoConfigurationServerTests {
 	static class HazelcastConfigNoName {
 
 		@Bean
-		public Config anotherHazelcastConfig() {
+		Config anotherHazelcastConfig() {
 			Config config = new Config();
 			config.addQueueConfig(new QueueConfig("another-queue"));
 			return config;

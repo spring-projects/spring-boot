@@ -159,40 +159,40 @@ class ScheduledTasksEndpointTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public ScheduledTasksEndpoint endpoint(Collection<ScheduledTaskHolder> scheduledTaskHolders) {
+		ScheduledTasksEndpoint endpoint(Collection<ScheduledTaskHolder> scheduledTaskHolders) {
 			return new ScheduledTasksEndpoint(scheduledTaskHolders);
 		}
 
 	}
 
-	private static class FixedDelayScheduledMethod {
+	static class FixedDelayScheduledMethod {
 
 		@Scheduled(fixedDelay = 1, initialDelay = 2)
-		public void fixedDelay() {
+		void fixedDelay() {
 
 		}
 
 	}
 
-	private static class FixedRateScheduledMethod {
+	static class FixedRateScheduledMethod {
 
 		@Scheduled(fixedRate = 3, initialDelay = 4)
-		public void fixedRate() {
+		void fixedRate() {
 
 		}
 
 	}
 
-	private static class CronScheduledMethod {
+	static class CronScheduledMethod {
 
 		@Scheduled(cron = "0 0 0/3 1/1 * ?")
-		public void cron() {
+		void cron() {
 
 		}
 
 	}
 
-	private static class FixedDelayTriggerTask implements SchedulingConfigurer {
+	static class FixedDelayTriggerTask implements SchedulingConfigurer {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -203,7 +203,7 @@ class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class FixedRateTriggerTask implements SchedulingConfigurer {
+	static class FixedRateTriggerTask implements SchedulingConfigurer {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -215,7 +215,7 @@ class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CronTriggerTask implements SchedulingConfigurer {
+	static class CronTriggerTask implements SchedulingConfigurer {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -224,7 +224,7 @@ class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CustomTriggerTask implements SchedulingConfigurer {
+	static class CustomTriggerTask implements SchedulingConfigurer {
 
 		private static final Trigger trigger = (context) -> new Date();
 
@@ -235,7 +235,7 @@ class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CronTriggerRunnable implements Runnable {
+	static class CronTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {
@@ -244,7 +244,7 @@ class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class FixedDelayTriggerRunnable implements Runnable {
+	static class FixedDelayTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {
@@ -253,7 +253,7 @@ class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class FixedRateTriggerRunnable implements Runnable {
+	static class FixedRateTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {
@@ -262,7 +262,7 @@ class ScheduledTasksEndpointTests {
 
 	}
 
-	private static class CustomTriggerRunnable implements Runnable {
+	static class CustomTriggerRunnable implements Runnable {
 
 		@Override
 		public void run() {

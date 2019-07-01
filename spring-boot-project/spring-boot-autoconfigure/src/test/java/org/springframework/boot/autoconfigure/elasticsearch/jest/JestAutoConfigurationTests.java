@@ -135,7 +135,7 @@ class JestAutoConfigurationTests {
 	static class CustomJestClient {
 
 		@Bean
-		public JestClient customJestClient() {
+		JestClient customJestClient() {
 			return mock(JestClient.class);
 		}
 
@@ -145,7 +145,7 @@ class JestAutoConfigurationTests {
 	static class CustomGson {
 
 		@Bean
-		public Gson customGson() {
+		Gson customGson() {
 			return new Gson();
 		}
 
@@ -158,7 +158,7 @@ class JestAutoConfigurationTests {
 		private final Gson gson = new Gson();
 
 		@Bean
-		public HttpClientConfigBuilderCustomizer customizer() {
+		HttpClientConfigBuilderCustomizer customizer() {
 			return (builder) -> builder.gson(BuilderCustomizer.this.gson);
 		}
 

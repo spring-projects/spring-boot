@@ -77,7 +77,7 @@ class LogFileWebEndpointWebIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public LogFileWebEndpoint logFileEndpoint(Environment environment) {
+		LogFileWebEndpoint logFileEndpoint(Environment environment) {
 			return new LogFileWebEndpoint(environment);
 		}
 

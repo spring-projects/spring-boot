@@ -196,10 +196,8 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
-
 			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
 			Assert.isTrue(nonOptionArguments.size() <= 1, "Only the target location may be specified");
-
 			ProjectGenerationRequest request = new ProjectGenerationRequest();
 			request.setServiceUrl(options.valueOf(this.target));
 			if (options.has(this.bootVersion)) {

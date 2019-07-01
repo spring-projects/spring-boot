@@ -79,10 +79,10 @@ class ConditionalOnExpressionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("false")
-	protected static class MissingConfiguration {
+	static class MissingConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -90,10 +90,10 @@ class ConditionalOnExpressionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("true")
-	protected static class BasicConfiguration {
+	static class BasicConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -101,10 +101,10 @@ class ConditionalOnExpressionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("true ? null : false")
-	protected static class NullConfiguration {
+	static class NullConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

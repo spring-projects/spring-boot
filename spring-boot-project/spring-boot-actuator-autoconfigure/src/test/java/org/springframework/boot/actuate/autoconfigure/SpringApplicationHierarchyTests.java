@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Test for application hierarchies created using {@link SpringApplicationBuilder}.
@@ -64,6 +65,7 @@ class SpringApplicationHierarchyTests {
 		this.context = builder.run("--server.port=0", "--management.metrics.use-global-registry=false");
 	}
 
+	@Configuration
 	@EnableAutoConfiguration(
 			exclude = { ElasticsearchDataAutoConfiguration.class, ElasticsearchRepositoriesAutoConfiguration.class,
 					CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
@@ -73,10 +75,11 @@ class SpringApplicationHierarchyTests {
 					FlywayAutoConfiguration.class, MetricsAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
-	public static class Child {
+	static class Parent {
 
 	}
 
+	@Configuration
 	@EnableAutoConfiguration(
 			exclude = { ElasticsearchDataAutoConfiguration.class, ElasticsearchRepositoriesAutoConfiguration.class,
 					CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
@@ -86,7 +89,7 @@ class SpringApplicationHierarchyTests {
 					FlywayAutoConfiguration.class, MetricsAutoConfiguration.class },
 			excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
-	public static class Parent {
+	static class Child {
 
 	}
 

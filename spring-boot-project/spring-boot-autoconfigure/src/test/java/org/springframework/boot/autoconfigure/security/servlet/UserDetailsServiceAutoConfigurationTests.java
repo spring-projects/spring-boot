@@ -147,12 +147,12 @@ class UserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestAuthenticationManagerConfiguration {
+	static class TestAuthenticationManagerConfiguration {
 
 		private AuthenticationManager authenticationManager;
 
 		@Bean
-		public AuthenticationManager myAuthenticationManager() {
+		AuthenticationManager myAuthenticationManager() {
 			AuthenticationProvider authenticationProvider = new TestingAuthenticationProvider();
 			this.authenticationManager = new ProviderManager(Collections.singletonList(authenticationProvider));
 			return this.authenticationManager;
@@ -161,20 +161,20 @@ class UserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestUserDetailsServiceConfiguration {
+	static class TestUserDetailsServiceConfiguration {
 
 		@Bean
-		public InMemoryUserDetailsManager myUserDetailsManager() {
+		InMemoryUserDetailsManager myUserDetailsManager() {
 			return new InMemoryUserDetailsManager(User.withUsername("foo").password("bar").roles("USER").build());
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestAuthenticationProviderConfiguration {
+	static class TestAuthenticationProviderConfiguration {
 
 		@Bean
-		public AuthenticationProvider myAuthenticationProvider() {
+		AuthenticationProvider myAuthenticationProvider() {
 			return new TestingAuthenticationProvider();
 		}
 
@@ -183,16 +183,16 @@ class UserDetailsServiceAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	@EnableConfigurationProperties(SecurityProperties.class)
-	protected static class TestSecurityConfiguration {
+	static class TestSecurityConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
-	protected static class TestConfigWithPasswordEncoder {
+	static class TestConfigWithPasswordEncoder {
 
 		@Bean
-		public PasswordEncoder passwordEncoder() {
+		PasswordEncoder passwordEncoder() {
 			return mock(PasswordEncoder.class);
 		}
 
@@ -200,10 +200,10 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
-	protected static class TestConfigWithClientRegistrationRepository {
+	static class TestConfigWithClientRegistrationRepository {
 
 		@Bean
-		public ClientRegistrationRepository clientRegistrationRepository() {
+		ClientRegistrationRepository clientRegistrationRepository() {
 			return mock(ClientRegistrationRepository.class);
 		}
 
@@ -211,10 +211,10 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
-	protected static class TestConfigWithAuthenticationManagerBuilder {
+	static class TestConfigWithAuthenticationManagerBuilder {
 
 		@Bean
-		public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
+		WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
 			return new WebSecurityConfigurerAdapter() {
 				@Override
 				protected void configure(AuthenticationManagerBuilder auth) throws Exception {

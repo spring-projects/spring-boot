@@ -67,7 +67,7 @@ class MustacheStandaloneIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import({ MustacheAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
-	protected static class Application {
+	static class Application {
 
 	}
 

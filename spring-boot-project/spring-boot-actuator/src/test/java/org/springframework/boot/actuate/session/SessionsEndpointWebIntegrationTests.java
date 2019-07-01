@@ -73,10 +73,10 @@ class SessionsEndpointWebIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public SessionsEndpoint sessionsEndpoint() {
+		SessionsEndpoint sessionsEndpoint() {
 			return new SessionsEndpoint(repository);
 		}
 

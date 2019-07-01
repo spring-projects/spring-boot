@@ -250,15 +250,15 @@ public class DeferredLog implements Log {
 			this.throwable = throwable;
 		}
 
-		public LogLevel getLevel() {
+		LogLevel getLevel() {
 			return this.level;
 		}
 
-		public Object getMessage() {
+		Object getMessage() {
 			return this.message;
 		}
 
-		public Throwable getThrowable() {
+		Throwable getThrowable() {
 			return this.throwable;
 		}
 

@@ -43,7 +43,7 @@ class SpringBootTestCustomConfigNameTests {
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
-		public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 

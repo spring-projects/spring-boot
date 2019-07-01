@@ -32,7 +32,7 @@ class MustacheServletWebConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
+	MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
 		mustache.applyToMvcViewResolver(resolver);
 		resolver.setCharset(mustache.getCharsetName());

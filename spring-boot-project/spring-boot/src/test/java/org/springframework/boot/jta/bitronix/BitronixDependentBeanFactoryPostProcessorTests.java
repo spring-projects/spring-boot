@@ -56,22 +56,22 @@ class BitronixDependentBeanFactoryPostProcessorTests {
 	static class Config {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
 		@Bean
-		public ConnectionFactory connectionFactory() {
+		ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
 
 		@Bean
-		public BitronixTransactionManager bitronixTransactionManager() {
+		BitronixTransactionManager bitronixTransactionManager() {
 			return mock(BitronixTransactionManager.class);
 		}
 
 		@Bean
-		public static BitronixDependentBeanFactoryPostProcessor bitronixPostProcessor() {
+		static BitronixDependentBeanFactoryPostProcessor bitronixPostProcessor() {
 			return new BitronixDependentBeanFactoryPostProcessor();
 		}
 

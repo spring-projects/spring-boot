@@ -69,20 +69,20 @@ class Neo4jHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class Neo4jConfiguration {
+	static class Neo4jConfiguration {
 
 		@Bean
-		public SessionFactory sessionFactory() {
+		SessionFactory sessionFactory() {
 			return mock(SessionFactory.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomIndicatorConfiguration {
+	static class CustomIndicatorConfiguration {
 
 		@Bean
-		public Neo4jHealthIndicator neo4jHealthIndicator(SessionFactory sessionFactory) {
+		Neo4jHealthIndicator neo4jHealthIndicator(SessionFactory sessionFactory) {
 			return new Neo4jHealthIndicator(sessionFactory) {
 
 				@Override

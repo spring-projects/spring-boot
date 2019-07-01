@@ -171,7 +171,7 @@ class ReproTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 	}
 

@@ -102,19 +102,19 @@ public class RemoteDevToolsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public SourceFolderUrlFilter remoteRestartSourceFolderUrlFilter() {
+		SourceFolderUrlFilter remoteRestartSourceFolderUrlFilter() {
 			return new DefaultSourceFolderUrlFilter();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public HttpRestartServer remoteRestartHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
+		HttpRestartServer remoteRestartHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
 			return new HttpRestartServer(sourceFolderUrlFilter);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteRestartHandlerMapper")
-		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server, ServerProperties serverProperties,
+		UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server, ServerProperties serverProperties,
 				DevToolsProperties properties) {
 			Servlet servlet = serverProperties.getServlet();
 			RemoteDevToolsProperties remote = properties.getRemote();

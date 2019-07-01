@@ -155,7 +155,7 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	static class IgnoredPathsSecurityConfiguration {
 
 		@Bean
-		public WebFilterChainPostProcessor webFilterChainPostProcessor() {
+		WebFilterChainPostProcessor webFilterChainPostProcessor() {
 			return new WebFilterChainPostProcessor();
 		}
 

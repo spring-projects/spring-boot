@@ -136,12 +136,12 @@ class HazelcastAutoConfigurationClientTests {
 	static class HazelcastServerAndClientConfig {
 
 		@Bean
-		public Config config() {
+		Config config() {
 			return new Config();
 		}
 
 		@Bean
-		public ClientConfig clientConfig() {
+		ClientConfig clientConfig() {
 			return new ClientConfig();
 		}
 

@@ -99,10 +99,10 @@ class LiquibaseEndpointTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public LiquibaseEndpoint endpoint(ApplicationContext context) {
+		LiquibaseEndpoint endpoint(ApplicationContext context) {
 			return new LiquibaseEndpoint(context);
 		}
 

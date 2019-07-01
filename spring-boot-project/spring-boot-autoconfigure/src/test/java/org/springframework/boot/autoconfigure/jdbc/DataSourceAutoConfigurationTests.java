@@ -213,7 +213,7 @@ class DataSourceAutoConfigurationTests {
 		private BasicDataSource pool;
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			this.pool = new BasicDataSource();
 			this.pool.setDriverClassName("org.hsqldb.jdbcDriver");
 			this.pool.setUrl("jdbc:hsqldb:mem:overridedb");
@@ -229,7 +229,7 @@ class DataSourceAutoConfigurationTests {
 		private boolean called;
 
 		@Autowired
-		public void validateDataSourceIsInitialized(DataSource dataSource) {
+		void validateDataSourceIsInitialized(DataSource dataSource) {
 			// Inject the datasource to validate it is initialized at the injection point
 			JdbcTemplate template = new JdbcTemplate(dataSource);
 			assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class)).isEqualTo(1);
@@ -278,7 +278,7 @@ class DataSourceAutoConfigurationTests {
 
 	}
 
-	private static class DisableEmbeddedDatabaseClassLoader extends URLClassLoader {
+	static class DisableEmbeddedDatabaseClassLoader extends URLClassLoader {
 
 		DisableEmbeddedDatabaseClassLoader() {
 			super(new URL[0], DisableEmbeddedDatabaseClassLoader.class.getClassLoader());

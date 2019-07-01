@@ -309,7 +309,7 @@ class HttpExchangeTracerTests {
 		return output.toString();
 	}
 
-	private static class RequestHeadersFilterHttpExchangeTracer extends HttpExchangeTracer {
+	static class RequestHeadersFilterHttpExchangeTracer extends HttpExchangeTracer {
 
 		RequestHeadersFilterHttpExchangeTracer() {
 			super(EnumSet.of(Include.REQUEST_HEADERS));

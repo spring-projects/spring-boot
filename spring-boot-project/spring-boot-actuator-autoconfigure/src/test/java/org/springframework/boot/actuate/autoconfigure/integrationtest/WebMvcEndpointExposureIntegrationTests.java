@@ -184,7 +184,7 @@ class WebMvcEndpointExposureIntegrationTests {
 	static class CustomMvcEndpoint {
 
 		@GetMapping("/")
-		public String main() {
+		String main() {
 			return "test";
 		}
 
@@ -208,20 +208,20 @@ class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class HttpTraceRepositoryConfiguration {
+	static class HttpTraceRepositoryConfiguration {
 
 		@Bean
-		public InMemoryHttpTraceRepository httpTraceRepository() {
+		InMemoryHttpTraceRepository httpTraceRepository() {
 			return new InMemoryHttpTraceRepository();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class AuditEventRepositoryConfiguration {
+	static class AuditEventRepositoryConfiguration {
 
 		@Bean
-		public InMemoryAuditEventRepository auditEventRepository() {
+		InMemoryAuditEventRepository auditEventRepository() {
 			return new InMemoryAuditEventRepository();
 		}
 

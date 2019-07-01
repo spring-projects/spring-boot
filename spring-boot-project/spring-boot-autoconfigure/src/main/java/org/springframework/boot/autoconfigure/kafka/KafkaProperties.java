@@ -1153,11 +1153,11 @@ public class KafkaProperties {
 	@SuppressWarnings("serial")
 	private static class Properties extends HashMap<String, Object> {
 
-		public <V> java.util.function.Consumer<V> in(String key) {
+		<V> java.util.function.Consumer<V> in(String key) {
 			return (value) -> put(key, value);
 		}
 
-		public Properties with(Ssl ssl, Map<String, String> properties) {
+		Properties with(Ssl ssl, Map<String, String> properties) {
 			putAll(ssl.buildProperties());
 			putAll(properties);
 			return this;

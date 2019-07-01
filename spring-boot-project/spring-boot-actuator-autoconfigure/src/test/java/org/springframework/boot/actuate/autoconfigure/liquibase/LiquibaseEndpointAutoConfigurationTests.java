@@ -82,7 +82,7 @@ class LiquibaseEndpointAutoConfigurationTests {
 	static class DataSourceClosingLiquibaseConfiguration {
 
 		@Bean
-		public SpringLiquibase liquibase() {
+		SpringLiquibase liquibase() {
 			return new DataSourceClosingSpringLiquibase() {
 
 				private boolean propertiesSet = false;

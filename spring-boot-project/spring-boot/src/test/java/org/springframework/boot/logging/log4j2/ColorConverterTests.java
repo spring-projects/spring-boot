@@ -146,7 +146,7 @@ class ColorConverterTests {
 		assertThat(output.toString()).isEqualTo("\033[32min\033[0;39m");
 	}
 
-	private static class TestLogEvent extends AbstractLogEvent {
+	static class TestLogEvent extends AbstractLogEvent {
 
 		private Level level;
 
@@ -155,7 +155,7 @@ class ColorConverterTests {
 			return this.level;
 		}
 
-		public void setLevel(Level level) {
+		void setLevel(Level level) {
 			this.level = level;
 		}
 

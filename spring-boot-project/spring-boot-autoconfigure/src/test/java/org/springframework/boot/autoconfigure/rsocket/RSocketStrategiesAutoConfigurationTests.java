@@ -84,7 +84,7 @@ class RSocketStrategiesAutoConfigurationTests {
 	static class UserStrategies {
 
 		@Bean
-		public RSocketStrategies customRSocketStrategies() {
+		RSocketStrategies customRSocketStrategies() {
 			return RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
 					.decoder(StringDecoder.textPlainOnly()).build();
 		}
@@ -95,7 +95,7 @@ class RSocketStrategiesAutoConfigurationTests {
 	static class StrategiesCustomizer {
 
 		@Bean
-		public RSocketStrategiesCustomizer myCustomizer() {
+		RSocketStrategiesCustomizer myCustomizer() {
 			return (strategies) -> strategies.encoder(new ByteArrayEncoder()).decoder(new ByteArrayDecoder());
 		}
 

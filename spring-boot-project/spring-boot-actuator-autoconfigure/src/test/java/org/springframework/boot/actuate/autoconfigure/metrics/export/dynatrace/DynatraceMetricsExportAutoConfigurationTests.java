@@ -103,7 +103,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -114,7 +114,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public DynatraceConfig customConfig() {
+		DynatraceConfig customConfig() {
 			return (key) -> {
 				if ("dynatrace.uri".equals(key)) {
 					return "https://dynatrace.example.com";
@@ -136,7 +136,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public DynatraceMeterRegistry customRegistry(DynatraceConfig config, Clock clock) {
+		DynatraceMeterRegistry customRegistry(DynatraceConfig config, Clock clock) {
 			return new DynatraceMeterRegistry(config, clock);
 		}
 

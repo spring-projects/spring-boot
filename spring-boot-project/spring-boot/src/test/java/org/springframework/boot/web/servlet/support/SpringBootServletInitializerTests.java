@@ -136,7 +136,7 @@ class SpringBootServletInitializerTests {
 		}
 	}
 
-	private static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
+	static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
 
 		@Override
 		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -191,7 +191,7 @@ class SpringBootServletInitializerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WithErrorPageFilterNotRegistered extends SpringBootServletInitializer {
+	static class WithErrorPageFilterNotRegistered extends SpringBootServletInitializer {
 
 		WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);
@@ -200,21 +200,21 @@ class SpringBootServletInitializerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class ExecutableWar extends SpringBootServletInitializer {
+	static class ExecutableWar extends SpringBootServletInitializer {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new UndertowServletWebServerFactory(0);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 	}
 
-	private static class CustomSpringApplicationBuilder extends SpringApplicationBuilder {
+	static class CustomSpringApplicationBuilder extends SpringApplicationBuilder {
 
 		private boolean built;
 

@@ -127,30 +127,30 @@ class ControllerEndpointHandlerMappingTests {
 	}
 
 	@ControllerEndpoint(id = "first")
-	private static class FirstTestMvcEndpoint {
+	static class FirstTestMvcEndpoint {
 
 		@GetMapping("/")
-		public String get() {
+		String get() {
 			return "test";
 		}
 
 	}
 
 	@ControllerEndpoint(id = "second")
-	private static class SecondTestMvcEndpoint {
+	static class SecondTestMvcEndpoint {
 
 		@PostMapping("/")
-		public void save() {
+		void save() {
 
 		}
 
 	}
 
 	@ControllerEndpoint(id = "pathless")
-	private static class PathlessControllerEndpoint {
+	static class PathlessControllerEndpoint {
 
 		@GetMapping
-		public String get() {
+		String get() {
 			return "test";
 		}
 

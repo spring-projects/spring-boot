@@ -33,7 +33,7 @@ abstract class DataObjectPropertyName {
 	 * @param name the source name
 	 * @return the dashed from
 	 */
-	public static String toDashedForm(String name) {
+	static String toDashedForm(String name) {
 		StringBuilder result = new StringBuilder();
 		String replaced = name.replace('_', '-');
 		for (int i = 0; i < replaced.length(); i++) {

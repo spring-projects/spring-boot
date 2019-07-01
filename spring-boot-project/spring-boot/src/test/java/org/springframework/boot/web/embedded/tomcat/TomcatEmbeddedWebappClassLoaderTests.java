@@ -106,7 +106,7 @@ class TomcatEmbeddedWebappClassLoaderTests {
 		}
 	}
 
-	private interface ClassLoaderConsumer {
+	interface ClassLoaderConsumer {
 
 		void accept(ClassLoader classLoader) throws Exception;
 

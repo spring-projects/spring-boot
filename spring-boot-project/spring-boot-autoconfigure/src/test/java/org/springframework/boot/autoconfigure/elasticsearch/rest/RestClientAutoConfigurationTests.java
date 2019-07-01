@@ -122,7 +122,7 @@ class RestClientAutoConfigurationTests {
 	static class CustomRestClientConfiguration {
 
 		@Bean
-		public RestClient customRestClient() {
+		RestClient customRestClient() {
 			return mock(RestClient.class);
 		}
 
@@ -132,7 +132,7 @@ class RestClientAutoConfigurationTests {
 	static class BuilderCustomizerConfiguration {
 
 		@Bean
-		public RestClientBuilderCustomizer myCustomizer() {
+		RestClientBuilderCustomizer myCustomizer() {
 			return (builder) -> builder.setPathPrefix("/test");
 		}
 

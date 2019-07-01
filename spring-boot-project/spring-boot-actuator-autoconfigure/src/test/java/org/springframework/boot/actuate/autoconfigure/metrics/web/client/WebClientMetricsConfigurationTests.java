@@ -135,7 +135,7 @@ class WebClientMetricsConfigurationTests {
 	static class CustomTagsProviderConfig {
 
 		@Bean
-		public WebClientExchangeTagsProvider customTagsProvider() {
+		WebClientExchangeTagsProvider customTagsProvider() {
 			return mock(WebClientExchangeTagsProvider.class);
 		}
 

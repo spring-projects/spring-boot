@@ -148,11 +148,11 @@ class BindFailureAnalyzerTests {
 		@Min(value = 5, message = "at least five")
 		private int value;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
@@ -163,11 +163,11 @@ class BindFailureAnalyzerTests {
 
 		private List<String> listValue;
 
-		public List<String> getListValue() {
+		List<String> getListValue() {
 			return this.listValue;
 		}
 
-		public void setListValue(List<String> listValue) {
+		void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
 
@@ -178,11 +178,11 @@ class BindFailureAnalyzerTests {
 
 		private int value;
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
@@ -193,11 +193,11 @@ class BindFailureAnalyzerTests {
 
 		private Set<Fruit> fruit;
 
-		public Set<Fruit> getFruit() {
+		Set<Fruit> getFruit() {
 			return this.fruit;
 		}
 
-		public void setFruit(Set<Fruit> fruit) {
+		void setFruit(Set<Fruit> fruit) {
 			this.fruit = fruit;
 		}
 
@@ -208,11 +208,11 @@ class BindFailureAnalyzerTests {
 
 		private String value;
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			throw new RuntimeException("This is a failure");
 		}
 

@@ -60,7 +60,7 @@ public class ConditionalOnMissingBeanWithFilteredClasspathTests {
 		@Bean
 		@ConditionalOnMissingBean(
 				type = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanWithFilteredClasspathTests.TestCacheManager")
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

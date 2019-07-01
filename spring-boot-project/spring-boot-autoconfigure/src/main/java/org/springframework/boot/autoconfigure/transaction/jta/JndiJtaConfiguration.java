@@ -42,7 +42,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 class JndiJtaConfiguration {
 
 	@Bean
-	public JtaTransactionManager transactionManager(
+	JtaTransactionManager transactionManager(
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManagerFactoryBean().getObject();
 		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(jtaTransactionManager));

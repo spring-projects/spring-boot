@@ -95,22 +95,22 @@ class HttpTunnelIntegrationTests {
 	static class ServerConfiguration {
 
 		@Bean
-		public ServletWebServerFactory container() {
+		ServletWebServerFactory container() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
 		@Bean
-		public MyController myController() {
+		MyController myController() {
 			return new MyController();
 		}
 
 		@Bean
-		public DispatcherFilter filter(AnnotationConfigServletWebServerApplicationContext context) {
+		DispatcherFilter filter(AnnotationConfigServletWebServerApplicationContext context) {
 			TargetServerConnection connection = new SocketTargetServerConnection(
 					() -> context.getWebServer().getPort());
 			HttpTunnelServer server = new HttpTunnelServer(connection);
@@ -126,7 +126,7 @@ class HttpTunnelIntegrationTests {
 	static class TunnelConfiguration {
 
 		@Bean
-		public TunnelClient tunnelClient(@Value("${server.port}") int serverPort) {
+		TunnelClient tunnelClient(@Value("${server.port}") int serverPort) {
 			String url = "http://localhost:" + serverPort + "/httptunnel";
 			TunnelConnection connection = new HttpTunnelConnection(url, new SimpleClientHttpRequestFactory());
 			return new TestTunnelClient(0, connection);
@@ -154,7 +154,7 @@ class HttpTunnelIntegrationTests {
 	static class MyController {
 
 		@RequestMapping("/hello")
-		public String hello() {
+		String hello() {
 			return "Hello World";
 		}
 

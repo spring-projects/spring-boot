@@ -144,33 +144,33 @@ class JmxAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableIntegrationMBeanExport(defaultDomain = "foo.my")
-	public static class CustomJmxDomainConfiguration {
+	static class CustomJmxDomainConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public Counter counter() {
+		Counter counter() {
 			return new Counter();
 		}
 
-		@ManagedResource
-		public static class Counter {
+	}
 
-			private int counter = 0;
+	@ManagedResource
+	public static class Counter {
 
-			@ManagedAttribute
-			public int get() {
-				return this.counter;
-			}
+		private int counter = 0;
 
-			@ManagedOperation
-			public void increment() {
-				this.counter++;
-			}
+		@ManagedAttribute
+		public int get() {
+			return this.counter;
+		}
 
+		@ManagedOperation
+		public void increment() {
+			this.counter++;
 		}
 
 	}

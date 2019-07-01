@@ -415,11 +415,11 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			this.filter = getFilter(this.bean.getClass());
 		}
 
-		public void addExtension(ExtensionBean extensionBean) {
+		void addExtension(ExtensionBean extensionBean) {
 			this.extensions.add(extensionBean);
 		}
 
-		public Set<ExtensionBean> getExtensions() {
+		Set<ExtensionBean> getExtensions() {
 			return this.extensions;
 		}
 
@@ -428,23 +428,23 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 					.getValue(MergedAnnotation.VALUE, Class.class).orElse(null);
 		}
 
-		public String getBeanName() {
+		String getBeanName() {
 			return this.beanName;
 		}
 
-		public Object getBean() {
+		Object getBean() {
 			return this.bean;
 		}
 
-		public EndpointId getId() {
+		EndpointId getId() {
 			return this.id;
 		}
 
-		public boolean isEnabledByDefault() {
+		boolean isEnabledByDefault() {
 			return this.enabledByDefault;
 		}
 
-		public Class<?> getFilter() {
+		Class<?> getFilter() {
 			return this.filter;
 		}
 
@@ -477,19 +477,19 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			this.filter = extensionAnnotation.getClass("filter");
 		}
 
-		public String getBeanName() {
+		String getBeanName() {
 			return this.beanName;
 		}
 
-		public Object getBean() {
+		Object getBean() {
 			return this.bean;
 		}
 
-		public EndpointId getEndpointId() {
+		EndpointId getEndpointId() {
 			return this.endpointId;
 		}
 
-		public Class<?> getFilter() {
+		Class<?> getFilter() {
 			return this.filter;
 		}
 

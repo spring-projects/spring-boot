@@ -86,7 +86,7 @@ class HumioMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -97,7 +97,7 @@ class HumioMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public HumioConfig customConfig() {
+		HumioConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -108,7 +108,7 @@ class HumioMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public HumioMeterRegistry customRegistry(HumioConfig config, Clock clock) {
+		HumioMeterRegistry customRegistry(HumioConfig config, Clock clock) {
 			return new HumioMeterRegistry(config, clock);
 		}
 

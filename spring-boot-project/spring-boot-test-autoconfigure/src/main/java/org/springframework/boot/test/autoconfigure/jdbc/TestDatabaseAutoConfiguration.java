@@ -170,7 +170,7 @@ public class TestDatabaseAutoConfiguration {
 			this.environment = environment;
 		}
 
-		public EmbeddedDatabase getEmbeddedDatabase() {
+		EmbeddedDatabase getEmbeddedDatabase() {
 			EmbeddedDatabaseConnection connection = this.environment.getProperty("spring.test.database.connection",
 					EmbeddedDatabaseConnection.class, EmbeddedDatabaseConnection.NONE);
 			if (EmbeddedDatabaseConnection.NONE.equals(connection)) {

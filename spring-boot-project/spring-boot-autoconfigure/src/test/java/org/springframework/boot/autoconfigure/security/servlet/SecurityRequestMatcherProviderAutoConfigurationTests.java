@@ -98,7 +98,7 @@ class SecurityRequestMatcherProviderAutoConfigurationTests {
 	static class TestMvcConfiguration {
 
 		@Bean
-		public HandlerMappingIntrospector introspector() {
+		HandlerMappingIntrospector introspector() {
 			return new HandlerMappingIntrospector();
 		}
 
@@ -108,7 +108,7 @@ class SecurityRequestMatcherProviderAutoConfigurationTests {
 	static class TestJerseyConfiguration {
 
 		@Bean
-		public JerseyApplicationPath jerseyApplicationPath() {
+		JerseyApplicationPath jerseyApplicationPath() {
 			return () -> "/admin";
 		}
 

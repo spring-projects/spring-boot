@@ -52,7 +52,7 @@ class AutoConfigurationSorter {
 		this.autoConfigurationMetadata = autoConfigurationMetadata;
 	}
 
-	public List<String> getInPriorityOrder(Collection<String> classNames) {
+	List<String> getInPriorityOrder(Collection<String> classNames) {
 		AutoConfigurationClasses classes = new AutoConfigurationClasses(this.metadataReaderFactory,
 				this.autoConfigurationMetadata, classNames);
 		List<String> orderedClassNames = new ArrayList<>(classNames);
@@ -107,7 +107,7 @@ class AutoConfigurationSorter {
 			addToClasses(metadataReaderFactory, autoConfigurationMetadata, classNames, true);
 		}
 
-		public Set<String> getAllNames() {
+		Set<String> getAllNames() {
 			return this.classes.keySet();
 		}
 
@@ -131,11 +131,11 @@ class AutoConfigurationSorter {
 			}
 		}
 
-		public AutoConfigurationClass get(String className) {
+		AutoConfigurationClass get(String className) {
 			return this.classes.get(className);
 		}
 
-		public Set<String> getClassesRequestedAfter(String className) {
+		Set<String> getClassesRequestedAfter(String className) {
 			Set<String> classesRequestedAfter = new LinkedHashSet<>();
 			classesRequestedAfter.addAll(get(className).getAfter());
 			this.classes.forEach((name, autoConfigurationClass) -> {
@@ -169,7 +169,7 @@ class AutoConfigurationSorter {
 			this.autoConfigurationMetadata = autoConfigurationMetadata;
 		}
 
-		public boolean isAvailable() {
+		boolean isAvailable() {
 			try {
 				if (!wasProcessed()) {
 					getAnnotationMetadata();
@@ -181,7 +181,7 @@ class AutoConfigurationSorter {
 			}
 		}
 
-		public Set<String> getBefore() {
+		Set<String> getBefore() {
 			if (this.before == null) {
 				this.before = (wasProcessed() ? this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureBefore", Collections.emptySet()) : getAnnotationValue(AutoConfigureBefore.class));
@@ -189,7 +189,7 @@ class AutoConfigurationSorter {
 			return this.before;
 		}
 
-		public Set<String> getAfter() {
+		Set<String> getAfter() {
 			if (this.after == null) {
 				this.after = (wasProcessed() ? this.autoConfigurationMetadata.getSet(this.className,
 						"AutoConfigureAfter", Collections.emptySet()) : getAnnotationValue(AutoConfigureAfter.class));

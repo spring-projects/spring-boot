@@ -184,7 +184,7 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 	 */
 	private static class JmxType {
 
-		public static Class<?> get(Class<?> source) {
+		static Class<?> get(Class<?> source) {
 			if (source.isEnum()) {
 				return String.class;
 			}

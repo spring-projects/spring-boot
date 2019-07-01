@@ -90,27 +90,27 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	static class TestConfiguration {
 
 		@Bean
-		public ScheduledTasksEndpoint endpoint(Collection<ScheduledTaskHolder> holders) {
+		ScheduledTasksEndpoint endpoint(Collection<ScheduledTaskHolder> holders) {
 			return new ScheduledTasksEndpoint(holders);
 		}
 
 		@Scheduled(cron = "0 0 0/3 1/1 * ?")
-		public void processOrders() {
+		void processOrders() {
 
 		}
 
 		@Scheduled(fixedDelay = 5000, initialDelay = 5000)
-		public void purge() {
+		void purge() {
 
 		}
 
 		@Scheduled(fixedRate = 3000, initialDelay = 10000)
-		public void retrieveIssues() {
+		void retrieveIssues() {
 
 		}
 
 		@Bean
-		public SchedulingConfigurer schedulingConfigurer() {
+		SchedulingConfigurer schedulingConfigurer() {
 			return (registrar) -> registrar.addTriggerTask(new CustomTriggeredRunnable(), new CustomTrigger());
 		}
 

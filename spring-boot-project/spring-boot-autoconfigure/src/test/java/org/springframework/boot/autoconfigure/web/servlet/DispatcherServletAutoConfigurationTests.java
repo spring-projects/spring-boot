@@ -169,10 +169,10 @@ class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MultipartConfiguration {
+	static class MultipartConfiguration {
 
 		@Bean
-		public MultipartConfigElement multipartConfig() {
+		MultipartConfigElement multipartConfig() {
 			MultipartConfigFactory factory = new MultipartConfigFactory();
 			factory.setMaxFileSize(DataSize.ofKilobytes(128));
 			factory.setMaxRequestSize(DataSize.ofKilobytes(128));
@@ -182,30 +182,30 @@ class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomDispatcherServletDifferentName {
+	static class CustomDispatcherServletDifferentName {
 
 		@Bean
-		public DispatcherServlet customDispatcherServlet() {
+		DispatcherServlet customDispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomDispatcherServletPath {
+	static class CustomDispatcherServletPath {
 
 		@Bean
-		public DispatcherServletPath dispatcherServletPath() {
+		DispatcherServletPath dispatcherServletPath() {
 			return mock(DispatcherServletPath.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomAutowiredRegistration {
+	static class CustomAutowiredRegistration {
 
 		@Bean
-		public ServletRegistrationBean<?> dispatcherServletRegistration(DispatcherServlet dispatcherServlet) {
+		ServletRegistrationBean<?> dispatcherServletRegistration(DispatcherServlet dispatcherServlet) {
 			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
 					"/foo");
 			registration.setName("customDispatcher");
@@ -213,48 +213,47 @@ class DispatcherServletAutoConfigurationTests {
 		}
 
 		@Bean
-		public DispatcherServletPath dispatcherServletPath() {
+		DispatcherServletPath dispatcherServletPath() {
 			return mock(DispatcherServletPath.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class NonServletConfiguration {
+	static class NonServletConfiguration {
 
 		@Bean
-		public String dispatcherServlet() {
+		String dispatcherServlet() {
 			return "spring";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MultipartResolverConfiguration {
+	static class MultipartResolverConfiguration {
 
 		@Bean
-		public MultipartResolver getMultipartResolver() {
+		MultipartResolver getMultipartResolver() {
 			return new MockMultipartResolver();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomDispatcherServletSameName {
+	static class CustomDispatcherServletSameName {
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomDispatcherServletRegistration {
+	static class CustomDispatcherServletRegistration {
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-		public ServletRegistrationBean<DispatcherServlet> dispatcherServletRegistration(
-				DispatcherServlet dispatcherServlet) {
+		ServletRegistrationBean<DispatcherServlet> dispatcherServletRegistration(DispatcherServlet dispatcherServlet) {
 			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
 					"/foo");
 			registration.setName("customDispatcher");
@@ -263,7 +262,7 @@ class DispatcherServletAutoConfigurationTests {
 
 	}
 
-	private static class MockMultipartResolver implements MultipartResolver {
+	static class MockMultipartResolver implements MultipartResolver {
 
 		@Override
 		public boolean isMultipart(HttpServletRequest request) {

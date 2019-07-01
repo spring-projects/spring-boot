@@ -615,11 +615,11 @@ public class LoggingApplicationListenerTests {
 		environment.getPropertySources().addFirst(propertySource);
 	}
 
-	public static class TestShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
+	static class TestShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
 
 		private static CountDownLatch shutdownLatch;
 
-		public TestShutdownHandlerLoggingSystem(ClassLoader classLoader) {
+		TestShutdownHandlerLoggingSystem(ClassLoader classLoader) {
 			super(classLoader);
 			TestShutdownHandlerLoggingSystem.shutdownLatch = new CountDownLatch(1);
 		}
@@ -659,7 +659,7 @@ public class LoggingApplicationListenerTests {
 
 	}
 
-	public static class TestLoggingApplicationListener extends LoggingApplicationListener {
+	static class TestLoggingApplicationListener extends LoggingApplicationListener {
 
 		private Thread shutdownHook;
 

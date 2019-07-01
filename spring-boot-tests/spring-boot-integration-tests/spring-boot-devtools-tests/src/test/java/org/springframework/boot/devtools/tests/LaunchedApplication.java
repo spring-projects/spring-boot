@@ -48,7 +48,7 @@ class LaunchedApplication {
 		this.remoteProcessRestarter = remoteProcessRestarter;
 	}
 
-	public void restartRemote(int port) throws InterruptedException {
+	void restartRemote(int port) throws InterruptedException {
 		if (this.remoteProcessRestarter != null) {
 			stop(this.remoteProcess);
 			this.remoteProcess = this.remoteProcessRestarter.apply(port, this.classesDirectory);

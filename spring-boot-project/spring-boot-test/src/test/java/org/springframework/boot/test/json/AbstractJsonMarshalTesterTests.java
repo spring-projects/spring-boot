@@ -185,7 +185,7 @@ abstract class AbstractJsonMarshalTesterTests {
 	/**
 	 * Access to field backed by {@link ResolvableType}.
 	 */
-	public static class ResolvableTypes {
+	static class ResolvableTypes {
 
 		public List<ExampleObject> listOfExampleObject;
 
@@ -193,7 +193,7 @@ abstract class AbstractJsonMarshalTesterTests {
 
 		public Map<String, ExampleObject> mapOfExampleObject;
 
-		public static ResolvableType get(String name) {
+		static ResolvableType get(String name) {
 			Field field = ReflectionUtils.findField(ResolvableTypes.class, name);
 			return ResolvableType.forField(field);
 		}

@@ -109,7 +109,7 @@ public class JerseySameManagementContextConfigurationTests {
 	static class ConfigWithJerseyApplicationPath {
 
 		@Bean
-		public JerseyApplicationPath testJerseyApplicationPath() {
+		JerseyApplicationPath testJerseyApplicationPath() {
 			return mock(JerseyApplicationPath.class);
 		}
 
@@ -119,7 +119,7 @@ public class JerseySameManagementContextConfigurationTests {
 	static class ConfigWithResourceConfig {
 
 		@Bean
-		public ResourceConfig customResourceConfig() {
+		ResourceConfig customResourceConfig() {
 			return new ResourceConfig();
 		}
 

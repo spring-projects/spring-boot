@@ -85,7 +85,7 @@ class StatsdMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -96,7 +96,7 @@ class StatsdMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public StatsdConfig customConfig() {
+		StatsdConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -107,7 +107,7 @@ class StatsdMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public StatsdMeterRegistry customRegistry(StatsdConfig config, Clock clock) {
+		StatsdMeterRegistry customRegistry(StatsdConfig config, Clock clock) {
 			return new StatsdMeterRegistry(config, clock);
 		}
 

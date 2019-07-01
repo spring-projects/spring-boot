@@ -75,7 +75,7 @@ class CacheManagerCustomizersTests {
 
 	}
 
-	private static class TestCustomizer<T extends CacheManager> implements CacheManagerCustomizer<T> {
+	static class TestCustomizer<T extends CacheManager> implements CacheManagerCustomizer<T> {
 
 		private int count;
 
@@ -84,13 +84,13 @@ class CacheManagerCustomizersTests {
 			this.count++;
 		}
 
-		public int getCount() {
+		int getCount() {
 			return this.count;
 		}
 
 	}
 
-	private static class TestConcurrentMapCacheManagerCustomizer extends TestCustomizer<ConcurrentMapCacheManager> {
+	static class TestConcurrentMapCacheManagerCustomizer extends TestCustomizer<ConcurrentMapCacheManager> {
 
 	}
 

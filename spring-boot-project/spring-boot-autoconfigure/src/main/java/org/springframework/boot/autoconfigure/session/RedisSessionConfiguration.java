@@ -53,7 +53,7 @@ class RedisSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
+	ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
 		switch (redisSessionProperties.getConfigureAction()) {
 		case NOTIFY_KEYSPACE_EVENTS:
 			return new ConfigureNotifyKeyspaceEventsAction();

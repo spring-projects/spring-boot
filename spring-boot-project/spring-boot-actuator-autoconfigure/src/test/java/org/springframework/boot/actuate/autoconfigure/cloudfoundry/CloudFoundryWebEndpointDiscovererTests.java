@@ -99,27 +99,27 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public TestEndpointWebExtension testEndpointWebExtension() {
+		TestEndpointWebExtension testEndpointWebExtension() {
 			return new TestEndpointWebExtension();
 		}
 
 		@Bean
-		public HealthEndpoint healthEndpoint() {
+		HealthEndpoint healthEndpoint() {
 			return new HealthEndpoint(mock(HealthIndicator.class));
 		}
 
 		@Bean
-		public HealthEndpointWebExtension healthEndpointWebExtension() {
+		HealthEndpointWebExtension healthEndpointWebExtension() {
 			return new HealthEndpointWebExtension();
 		}
 
 		@Bean
-		public TestHealthEndpointCloudFoundryExtension testHealthEndpointCloudFoundryExtension() {
+		TestHealthEndpointCloudFoundryExtension testHealthEndpointCloudFoundryExtension() {
 			return new TestHealthEndpointCloudFoundryExtension();
 		}
 
@@ -129,7 +129,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class TestEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -139,7 +139,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class TestEndpointWebExtension {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -149,7 +149,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class HealthEndpointWebExtension {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -159,7 +159,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class TestHealthEndpointCloudFoundryExtension {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return "cf";
 		}
 

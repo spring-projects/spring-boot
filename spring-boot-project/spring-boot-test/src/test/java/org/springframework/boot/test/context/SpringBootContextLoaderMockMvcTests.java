@@ -78,10 +78,10 @@ class SpringBootContextLoaderMockMvcTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@RestController
-	protected static class Config {
+	static class Config {
 
 		@RequestMapping("/")
-		public String home() {
+		String home() {
 			return "Hello World";
 		}
 

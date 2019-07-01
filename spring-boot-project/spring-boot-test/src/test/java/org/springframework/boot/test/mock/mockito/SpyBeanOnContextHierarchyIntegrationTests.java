@@ -78,7 +78,7 @@ class SpyBeanOnContextHierarchyIntegrationTests {
 			this.context = applicationContext;
 		}
 
-		public ApplicationContext getContext() {
+		ApplicationContext getContext() {
 			return this.context;
 		}
 

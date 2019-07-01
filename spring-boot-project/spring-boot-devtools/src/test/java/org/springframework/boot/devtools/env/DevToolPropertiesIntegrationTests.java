@@ -138,7 +138,7 @@ class DevToolPropertiesIntegrationTests {
 
 		@Bean
 		@ConditionalOnProperty("spring.h2.console.enabled")
-		public MyBean myBean() {
+		MyBean myBean() {
 			return new MyBean();
 		}
 

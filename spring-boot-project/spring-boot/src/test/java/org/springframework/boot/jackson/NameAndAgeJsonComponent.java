@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 @JsonComponent
 public class NameAndAgeJsonComponent {
 
-	public static class Serializer extends JsonObjectSerializer<NameAndAge> {
+	static class Serializer extends JsonObjectSerializer<NameAndAge> {
 
 		@Override
 		protected void serializeObject(NameAndAge value, JsonGenerator jgen, SerializerProvider provider)
@@ -44,7 +44,7 @@ public class NameAndAgeJsonComponent {
 
 	}
 
-	public static class Deserializer extends JsonObjectDeserializer<NameAndAge> {
+	static class Deserializer extends JsonObjectDeserializer<NameAndAge> {
 
 		@Override
 		protected NameAndAge deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,

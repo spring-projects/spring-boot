@@ -66,7 +66,7 @@ class OnEnabledDevToolsConditionTests {
 
 		@Bean
 		@Conditional(OnEnabledDevToolsCondition.class)
-		public String test() {
+		String test() {
 			return "hello";
 		}
 

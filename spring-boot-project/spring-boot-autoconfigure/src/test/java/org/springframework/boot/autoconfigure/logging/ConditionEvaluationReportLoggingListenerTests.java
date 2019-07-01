@@ -172,7 +172,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 	static class ErrorConfig {
 
 		@Bean
-		public String iBreak() {
+		String iBreak() {
 			throw new RuntimeException();
 		}
 

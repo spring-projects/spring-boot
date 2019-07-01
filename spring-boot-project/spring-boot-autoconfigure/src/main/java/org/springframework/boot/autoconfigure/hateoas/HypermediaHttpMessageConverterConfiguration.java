@@ -65,7 +65,7 @@ public class HypermediaHttpMessageConverterConfiguration {
 		private volatile BeanFactory beanFactory;
 
 		@PostConstruct
-		public void configureHttpMessageConverters() {
+		void configureHttpMessageConverters() {
 			if (this.beanFactory instanceof ListableBeanFactory) {
 				configureHttpMessageConverters(((ListableBeanFactory) this.beanFactory)
 						.getBeansOfType(RequestMappingHandlerAdapter.class).values());

@@ -83,10 +83,10 @@ class ConditionalOnClassTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ConditionalOnClassTests.class)
-	protected static class BasicConfiguration {
+	static class BasicConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -94,20 +94,20 @@ class ConditionalOnClassTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "FOO")
-	protected static class MissingConfiguration {
+	static class MissingConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class FooConfiguration {
+	static class FooConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -115,14 +115,14 @@ class ConditionalOnClassTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
-	protected static class XmlConfiguration {
+	static class XmlConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BasicConfiguration.class)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
-	protected static class CombinedXmlConfiguration {
+	static class CombinedXmlConfiguration {
 
 	}
 

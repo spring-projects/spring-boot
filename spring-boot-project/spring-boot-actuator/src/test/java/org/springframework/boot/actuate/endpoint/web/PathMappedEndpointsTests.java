@@ -137,11 +137,11 @@ class PathMappedEndpointsTests {
 		return endpoint;
 	}
 
-	interface TestEndpoint extends ExposableEndpoint<Operation> {
+	public interface TestEndpoint extends ExposableEndpoint<Operation> {
 
 	}
 
-	interface TestPathMappedEndpoint extends ExposableEndpoint<Operation>, PathMappedEndpoint {
+	public interface TestPathMappedEndpoint extends ExposableEndpoint<Operation>, PathMappedEndpoint {
 
 	}
 

@@ -60,7 +60,7 @@ import org.springframework.context.annotation.Bean;
 class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
-	public ResourceConfigCustomizer webEndpointRegistrar(WebEndpointsSupplier webEndpointsSupplier,
+	ResourceConfigCustomizer webEndpointRegistrar(WebEndpointsSupplier webEndpointsSupplier,
 			ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();

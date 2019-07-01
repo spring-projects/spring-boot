@@ -79,7 +79,7 @@ class SystemMetricsAutoConfigurationTests {
 	static class CustomUptimeMetricsConfiguration {
 
 		@Bean
-		public UptimeMetrics customUptimeMetrics() {
+		UptimeMetrics customUptimeMetrics() {
 			return new UptimeMetrics();
 		}
 
@@ -89,7 +89,7 @@ class SystemMetricsAutoConfigurationTests {
 	static class CustomProcessorMetricsConfiguration {
 
 		@Bean
-		public ProcessorMetrics customProcessorMetrics() {
+		ProcessorMetrics customProcessorMetrics() {
 			return new ProcessorMetrics();
 		}
 
@@ -99,7 +99,7 @@ class SystemMetricsAutoConfigurationTests {
 	static class CustomFileDescriptorMetricsConfiguration {
 
 		@Bean
-		public FileDescriptorMetrics customFileDescriptorMetrics() {
+		FileDescriptorMetrics customFileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
 		}
 

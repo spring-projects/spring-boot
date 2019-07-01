@@ -97,7 +97,7 @@ class DefaultRestartInitializerTests {
 		assertThat(initializer.getInitialUrls(thread)).isEqualTo(null);
 	}
 
-	private static class MockAppClassLoader extends ClassLoader {
+	static class MockAppClassLoader extends ClassLoader {
 
 		MockAppClassLoader(ClassLoader parent) {
 			super(parent);
@@ -105,7 +105,7 @@ class DefaultRestartInitializerTests {
 
 	}
 
-	private static class MockLauncherClassLoader extends ClassLoader {
+	static class MockLauncherClassLoader extends ClassLoader {
 
 		MockLauncherClassLoader(ClassLoader parent) {
 			super(parent);

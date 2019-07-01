@@ -170,10 +170,10 @@ class OAuth2WebSecurityConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
-	protected static class TestConfig {
+	static class TestConfig {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
@@ -184,7 +184,7 @@ class OAuth2WebSecurityConfigurationTests {
 	static class ClientRegistrationRepositoryConfiguration {
 
 		@Bean
-		public ClientRegistrationRepository clientRegistrationRepository() {
+		ClientRegistrationRepository clientRegistrationRepository() {
 			List<ClientRegistration> registrations = new ArrayList<>();
 			registrations.add(getClientRegistration("first", "https://user-info-uri.com"));
 			registrations.add(getClientRegistration("second", "https://other-user-info"));
@@ -216,7 +216,7 @@ class OAuth2WebSecurityConfigurationTests {
 	static class OAuth2AuthorizedClientServiceConfiguration {
 
 		@Bean
-		public OAuth2AuthorizedClientService testAuthorizedClientService(
+		OAuth2AuthorizedClientService testAuthorizedClientService(
 				ClientRegistrationRepository clientRegistrationRepository) {
 			return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
 		}
@@ -228,7 +228,7 @@ class OAuth2WebSecurityConfigurationTests {
 	static class OAuth2AuthorizedClientRepositoryConfiguration {
 
 		@Bean
-		public OAuth2AuthorizedClientRepository testAuthorizedClientRepository(
+		OAuth2AuthorizedClientRepository testAuthorizedClientRepository(
 				OAuth2AuthorizedClientService authorizedClientService) {
 			return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
 		}

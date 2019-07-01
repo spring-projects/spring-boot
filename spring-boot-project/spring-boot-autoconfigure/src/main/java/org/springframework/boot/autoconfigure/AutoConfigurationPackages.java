@@ -141,7 +141,7 @@ public abstract class AutoConfigurationPackages {
 			this.packageName = ClassUtils.getPackageName(metadata.getClassName());
 		}
 
-		public String getPackageName() {
+		String getPackageName() {
 			return this.packageName;
 		}
 
@@ -184,7 +184,7 @@ public abstract class AutoConfigurationPackages {
 			this.packages = packages;
 		}
 
-		public List<String> get() {
+		List<String> get() {
 			if (!this.loggedBasePackageInfo) {
 				if (this.packages.isEmpty()) {
 					if (logger.isWarnEnabled()) {

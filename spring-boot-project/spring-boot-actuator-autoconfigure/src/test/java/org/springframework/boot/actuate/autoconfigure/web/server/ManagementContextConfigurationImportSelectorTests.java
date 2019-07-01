@@ -75,17 +75,17 @@ class ManagementContextConfigurationImportSelectorTests {
 	}
 
 	@Order(1)
-	private static class A {
+	static class A {
 
 	}
 
 	@Order(2)
-	private static class B {
+	static class B {
 
 	}
 
 	@Order(3)
-	private static class C {
+	static class C {
 
 	}
 

@@ -109,11 +109,11 @@ class TomcatDataSourceConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	@EnableMBeanExport
-	protected static class TomcatDataSourceConfiguration {
+	static class TomcatDataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return DataSourceBuilder.create().type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 

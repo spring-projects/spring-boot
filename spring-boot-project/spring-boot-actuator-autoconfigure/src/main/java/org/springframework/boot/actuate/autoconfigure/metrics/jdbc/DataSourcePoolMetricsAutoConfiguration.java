@@ -66,7 +66,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 		private static final String DATASOURCE_SUFFIX = "dataSource";
 
 		@Autowired
-		public void bindDataSourcesToRegistry(Map<String, DataSource> dataSources, MeterRegistry registry,
+		void bindDataSourcesToRegistry(Map<String, DataSource> dataSources, MeterRegistry registry,
 				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 			List<DataSourcePoolMetadataProvider> metadataProvidersList = metadataProviders.stream()
 					.collect(Collectors.toList());
@@ -109,7 +109,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 		}
 
 		@Autowired
-		public void bindMetricsRegistryToHikariDataSources(Collection<DataSource> dataSources) {
+		void bindMetricsRegistryToHikariDataSources(Collection<DataSource> dataSources) {
 			for (DataSource dataSource : dataSources) {
 				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
 				if (hikariDataSource != null) {

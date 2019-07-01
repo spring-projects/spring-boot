@@ -464,17 +464,16 @@ public class SysVinitLaunchScriptIT {
 			this.file = file;
 		}
 
-		public String getContainer() {
+		String getContainer() {
 			return this.container;
 		}
 
-		public File getFile() {
+		File getFile() {
 			return this.file;
 		}
 
 		@Override
 		public void close() {
-
 		}
 
 	}

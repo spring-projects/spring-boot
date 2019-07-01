@@ -92,7 +92,7 @@ class KafkaAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
+	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
 		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
 		configurer.setKafkaProperties(this.properties);
 		MessageConverter messageConverterToUse = (this.properties.getListener().getType().equals(Type.BATCH))
@@ -110,7 +110,7 @@ class KafkaAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
-	public ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
+	ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
 			ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
 			ConsumerFactory<Object, Object> kafkaConsumerFactory) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
@@ -121,7 +121,7 @@ class KafkaAnnotationDrivenConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@EnableKafka
 	@ConditionalOnMissingBean(name = KafkaListenerConfigUtils.KAFKA_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
-	protected static class EnableKafkaConfiguration {
+	static class EnableKafkaConfiguration {
 
 	}
 

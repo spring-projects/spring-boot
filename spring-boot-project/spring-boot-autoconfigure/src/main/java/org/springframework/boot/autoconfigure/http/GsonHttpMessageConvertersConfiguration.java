@@ -43,11 +43,11 @@ class GsonHttpMessageConvertersConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Gson.class)
 	@Conditional(PreferGsonOrJacksonAndJsonbUnavailableCondition.class)
-	protected static class GsonHttpMessageConverterConfiguration {
+	static class GsonHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
+		GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
 			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
 			converter.setGson(gson);
 			return converter;

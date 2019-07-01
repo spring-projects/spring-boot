@@ -47,7 +47,7 @@ class MongoReactiveSessionConfiguration {
 	static class SpringBootReactiveMongoWebSessionConfiguration extends ReactiveMongoWebSessionConfiguration {
 
 		@Autowired
-		public void customize(SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties) {
+		void customize(SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties) {
 			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());

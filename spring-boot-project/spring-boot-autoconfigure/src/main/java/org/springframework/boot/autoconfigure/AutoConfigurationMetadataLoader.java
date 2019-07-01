@@ -38,7 +38,7 @@ final class AutoConfigurationMetadataLoader {
 	private AutoConfigurationMetadataLoader() {
 	}
 
-	public static AutoConfigurationMetadata loadMetadata(ClassLoader classLoader) {
+	static AutoConfigurationMetadata loadMetadata(ClassLoader classLoader) {
 		return loadMetadata(classLoader, PATH);
 	}
 

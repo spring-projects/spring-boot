@@ -43,7 +43,7 @@ class PropertySourcesDeducer {
 		this.applicationContext = applicationContext;
 	}
 
-	public PropertySources getPropertySources() {
+	PropertySources getPropertySources() {
 		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
 		if (configurer != null) {
 			return configurer.getAppliedPropertySources();

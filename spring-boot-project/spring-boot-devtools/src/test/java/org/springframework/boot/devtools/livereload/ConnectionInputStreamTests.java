@@ -71,7 +71,7 @@ class ConnectionInputStreamTests {
 				.withMessageContaining("End of stream");
 	}
 
-	private static class LimitedInputStream extends FilterInputStream {
+	static class LimitedInputStream extends FilterInputStream {
 
 		private final int max;
 

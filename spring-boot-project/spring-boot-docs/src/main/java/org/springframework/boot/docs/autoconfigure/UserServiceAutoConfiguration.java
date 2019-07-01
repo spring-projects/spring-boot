@@ -41,7 +41,7 @@ public class UserServiceAutoConfiguration {
 	}
 
 	@ConfigurationProperties("user")
-	static class UserProperties {
+	public static class UserProperties {
 
 		private String name = "test";
 

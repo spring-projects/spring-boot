@@ -198,7 +198,7 @@ class DefaultErrorAttributesTests {
 
 	@Test
 	void extractBindingResultErrors() throws Exception {
-		Method method = getClass().getMethod("method", String.class);
+		Method method = getClass().getDeclaredMethod("method", String.class);
 		MethodParameter stringParam = new MethodParameter(method, 0);
 		BindingResult bindingResult = new MapBindingResult(Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
@@ -208,7 +208,7 @@ class DefaultErrorAttributesTests {
 				false);
 		assertThat(attributes.get("message")).asString()
 				.startsWith("Validation failed for argument at index 0 in method: "
-						+ "public int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
+						+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
 						+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 	}
@@ -219,17 +219,17 @@ class DefaultErrorAttributesTests {
 		return ServerRequest.create(exchange, this.readers);
 	}
 
-	public int method(String firstParam) {
+	int method(String firstParam) {
 		return 42;
 	}
 
 	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
-	private static class CustomException extends RuntimeException {
+	static class CustomException extends RuntimeException {
 
 	}
 
 	@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT, reason = "Nope!")
-	private static class Custom2Exception extends RuntimeException {
+	static class Custom2Exception extends RuntimeException {
 
 	}
 

@@ -56,12 +56,12 @@ class WebMvcEndpointChildContextConfiguration {
 	 */
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	public ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
+	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
 		return new ManagementErrorEndpoint(errorAttributes);
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-	public DispatcherServlet dispatcherServlet() {
+	DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 		// Ensure the parent configuration does not leak down to us
 		dispatcherServlet.setDetectAllHandlerAdapters(false);
@@ -72,28 +72,28 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-	public DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
+	DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
 		return new DispatcherServletRegistrationBean(dispatcherServlet, "/");
 	}
 
 	@Bean(name = DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
-	public CompositeHandlerMapping compositeHandlerMapping() {
+	CompositeHandlerMapping compositeHandlerMapping() {
 		return new CompositeHandlerMapping();
 	}
 
 	@Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
-	public CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
+	CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		return new CompositeHandlerAdapter(beanFactory);
 	}
 
 	@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-	public CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
+	CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
 		return new CompositeHandlerExceptionResolver();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
-	public RequestContextFilter requestContextFilter() {
+	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
 	}
 

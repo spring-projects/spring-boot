@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class FilteredPropertySourceTests {
 
 	}
 
-	private static class TestOperation implements Consumer<PropertySource<?>> {
+	static class TestOperation implements Consumer<PropertySource<?>> {
 
 		private boolean called;
 
@@ -90,11 +90,11 @@ class FilteredPropertySourceTests {
 			}
 		}
 
-		public boolean isCalled() {
+		boolean isCalled() {
 			return this.called;
 		}
 
-		public PropertySource<?> getOriginal() {
+		PropertySource<?> getOriginal() {
 			return this.original;
 		}
 

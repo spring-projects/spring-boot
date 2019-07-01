@@ -141,16 +141,16 @@ class HealthEndpointWebIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public HealthIndicatorRegistry healthIndicatorFactory(Map<String, HealthIndicator> healthIndicators) {
+		HealthIndicatorRegistry healthIndicatorFactory(Map<String, HealthIndicator> healthIndicators) {
 			return new HealthIndicatorRegistryFactory().createHealthIndicatorRegistry(healthIndicators);
 		}
 
 		@Bean
 		@ConditionalOnWebApplication(type = Type.REACTIVE)
-		public ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
+		ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
 				Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 				Map<String, HealthIndicator> healthIndicators) {
 			return new ReactiveHealthIndicatorRegistryFactory()
@@ -158,21 +158,21 @@ class HealthEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public HealthEndpoint healthEndpoint(HealthIndicatorRegistry registry) {
+		HealthEndpoint healthEndpoint(HealthIndicatorRegistry registry) {
 			return new HealthEndpoint(new CompositeHealthIndicator(new OrderedHealthAggregator(), registry));
 		}
 
 		@Bean
 		@ConditionalOnWebApplication(type = Type.SERVLET)
-		public HealthEndpointWebExtension healthWebEndpointExtension(HealthEndpoint healthEndpoint) {
+		HealthEndpointWebExtension healthWebEndpointExtension(HealthEndpoint healthEndpoint) {
 			return new HealthEndpointWebExtension(healthEndpoint, new HealthWebEndpointResponseMapper(
 					new HealthStatusHttpMapper(), ShowDetails.ALWAYS, new HashSet<>(Arrays.asList("ACTUATOR"))));
 		}
 
 		@Bean
 		@ConditionalOnWebApplication(type = Type.REACTIVE)
-		public ReactiveHealthEndpointWebExtension reactiveHealthWebEndpointExtension(
-				ReactiveHealthIndicatorRegistry registry, HealthEndpoint healthEndpoint) {
+		ReactiveHealthEndpointWebExtension reactiveHealthWebEndpointExtension(ReactiveHealthIndicatorRegistry registry,
+				HealthEndpoint healthEndpoint) {
 			return new ReactiveHealthEndpointWebExtension(
 					new CompositeReactiveHealthIndicator(new OrderedHealthAggregator(), registry),
 					new HealthWebEndpointResponseMapper(new HealthStatusHttpMapper(), ShowDetails.ALWAYS,
@@ -180,12 +180,12 @@ class HealthEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public HealthIndicator alphaHealthIndicator() {
+		HealthIndicator alphaHealthIndicator() {
 			return () -> Health.up().build();
 		}
 
 		@Bean
-		public HealthIndicator bravoHealthIndicator() {
+		HealthIndicator bravoHealthIndicator() {
 			return () -> Health.up().build();
 		}
 

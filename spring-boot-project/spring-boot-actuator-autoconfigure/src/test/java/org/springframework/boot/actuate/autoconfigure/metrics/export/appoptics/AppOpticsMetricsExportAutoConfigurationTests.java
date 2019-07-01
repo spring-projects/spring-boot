@@ -89,7 +89,7 @@ class AppOpticsMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -100,7 +100,7 @@ class AppOpticsMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public AppOpticsConfig customConfig() {
+		AppOpticsConfig customConfig() {
 			return (key) -> "appoptics.apiToken".equals(key) ? "abcde" : null;
 		}
 
@@ -111,7 +111,7 @@ class AppOpticsMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public AppOpticsMeterRegistry customRegistry(AppOpticsConfig config, Clock clock) {
+		AppOpticsMeterRegistry customRegistry(AppOpticsConfig config, Clock clock) {
 			return new AppOpticsMeterRegistry(config, clock);
 		}
 

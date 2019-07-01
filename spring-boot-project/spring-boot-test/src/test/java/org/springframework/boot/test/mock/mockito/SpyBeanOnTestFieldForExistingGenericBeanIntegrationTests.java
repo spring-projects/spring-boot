@@ -61,7 +61,7 @@ class SpyBeanOnTestFieldForExistingGenericBeanIntegrationTests {
 	static class SpyBeanOnTestFieldForExistingBeanConfig {
 
 		@Bean
-		public ExampleGenericService<String> simpleExampleStringGenericService() {
+		ExampleGenericService<String> simpleExampleStringGenericService() {
 			// In order to trigger issue we need a method signature that returns the
 			// generic type not the actual implementation class
 			return new SimpleExampleStringGenericService();

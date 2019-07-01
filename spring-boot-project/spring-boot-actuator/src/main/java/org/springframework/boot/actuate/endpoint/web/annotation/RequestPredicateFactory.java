@@ -51,7 +51,7 @@ class RequestPredicateFactory {
 		this.endpointMediaTypes = endpointMediaTypes;
 	}
 
-	public WebOperationRequestPredicate getRequestPredicate(EndpointId endpointId, String rootPath,
+	WebOperationRequestPredicate getRequestPredicate(EndpointId endpointId, String rootPath,
 			DiscoveredOperationMethod operationMethod) {
 		Method method = operationMethod.getMethod();
 		String path = getPath(rootPath, method);

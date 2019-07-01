@@ -116,7 +116,7 @@ class WebTestClientAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public WebHandler webHandler() {
+		WebHandler webHandler() {
 			return mock(WebHandler.class);
 		}
 
@@ -127,7 +127,7 @@ class WebTestClientAutoConfigurationTests {
 	static class CodecConfiguration {
 
 		@Bean
-		public CodecCustomizer myCodecCustomizer() {
+		CodecCustomizer myCodecCustomizer() {
 			return mock(CodecCustomizer.class);
 		}
 

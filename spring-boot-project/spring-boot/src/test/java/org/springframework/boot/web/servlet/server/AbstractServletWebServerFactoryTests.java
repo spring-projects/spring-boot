@@ -956,7 +956,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 			}
 			cause = cause.getCause();
 		}
-
 		fail("Exception did not wrap FailingServletException");
 	}
 
@@ -1181,14 +1180,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 			return new GZIPInputStream(in);
 		}
 
-		public boolean wasCompressionUsed() {
+		boolean wasCompressionUsed() {
 			return this.requested.get();
 		}
 
 	}
 
 	@SuppressWarnings("serial")
-	private static class InitCountingServlet extends GenericServlet {
+	static class InitCountingServlet extends GenericServlet {
 
 		private int initCount;
 
@@ -1201,13 +1200,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 		public void service(ServletRequest req, ServletResponse res) {
 		}
 
-		public int getInitCount() {
+		int getInitCount() {
 			return this.initCount;
 		}
 
 	}
 
-	public interface BlockedPortAction {
+	interface BlockedPortAction {
 
 		void run(int port);
 
@@ -1251,7 +1250,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	}
 
-	private static class FailingServletException extends RuntimeException {
+	static class FailingServletException extends RuntimeException {
 
 		FailingServletException() {
 			super("Init Failure");

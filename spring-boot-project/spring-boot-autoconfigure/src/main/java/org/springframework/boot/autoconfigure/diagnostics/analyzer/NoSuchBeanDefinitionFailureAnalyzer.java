@@ -203,11 +203,11 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 			this.methodName = (tokens.length != 2) ? null : tokens[1];
 		}
 
-		public String getClassName() {
+		String getClassName() {
 			return this.className;
 		}
 
-		public String getMethodName() {
+		String getMethodName() {
 			return this.methodName;
 		}
 

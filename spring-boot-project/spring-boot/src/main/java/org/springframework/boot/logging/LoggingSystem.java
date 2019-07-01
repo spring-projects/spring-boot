@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
@@ -162,7 +163,9 @@ public abstract class LoggingSystem {
 	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
 		try {
 			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
-			return (LoggingSystem) systemClass.getConstructor(ClassLoader.class).newInstance(classLoader);
+			Constructor<?> constructor = systemClass.getDeclaredConstructor(ClassLoader.class);
+			constructor.setAccessible(true);
+			return (LoggingSystem) constructor.newInstance(classLoader);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

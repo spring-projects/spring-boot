@@ -60,10 +60,10 @@ class ConditionalOnResourceTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnResource(resources = "foo")
-	protected static class MissingConfiguration {
+	static class MissingConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -71,10 +71,10 @@ class ConditionalOnResourceTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnResource(resources = "schema.sql")
-	protected static class BasicConfiguration {
+	static class BasicConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -82,10 +82,10 @@ class ConditionalOnResourceTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnResource(resources = "${schema}")
-	protected static class PlaceholderConfiguration {
+	static class PlaceholderConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

@@ -108,7 +108,7 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	// Not this package or its parent
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
@@ -117,7 +117,7 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class MixedConfiguration {
+	static class MixedConfiguration {
 
 	}
 
@@ -125,7 +125,7 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class JpaConfiguration {
+	static class JpaConfiguration {
 
 	}
 
@@ -134,7 +134,7 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CityRepository.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class OverlapConfiguration {
+	static class OverlapConfiguration {
 
 	}
 

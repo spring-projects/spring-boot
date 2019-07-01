@@ -120,7 +120,7 @@ class TomcatMetricsAutoConfigurationTests {
 	static class MeterRegistryConfiguration {
 
 		@Bean
-		public SimpleMeterRegistry meterRegistry() {
+		SimpleMeterRegistry meterRegistry() {
 			return new SimpleMeterRegistry();
 		}
 
@@ -130,7 +130,7 @@ class TomcatMetricsAutoConfigurationTests {
 	static class ServletWebServerConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcatFactory() {
+		TomcatServletWebServerFactory tomcatFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
@@ -140,12 +140,12 @@ class TomcatMetricsAutoConfigurationTests {
 	static class ReactiveWebServerConfiguration {
 
 		@Bean
-		public TomcatReactiveWebServerFactory tomcatFactory() {
+		TomcatReactiveWebServerFactory tomcatFactory() {
 			return new TomcatReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return mock(HttpHandler.class);
 		}
 
@@ -155,7 +155,7 @@ class TomcatMetricsAutoConfigurationTests {
 	static class CustomTomcatMetrics {
 
 		@Bean
-		public TomcatMetrics customTomcatMetrics() {
+		TomcatMetrics customTomcatMetrics() {
 			return new TomcatMetrics(null, Collections.emptyList());
 		}
 
@@ -165,7 +165,7 @@ class TomcatMetricsAutoConfigurationTests {
 	static class CustomTomcatMetricsBinder {
 
 		@Bean
-		public TomcatMetricsBinder customTomcatMetricsBinder(MeterRegistry meterRegistry) {
+		TomcatMetricsBinder customTomcatMetricsBinder(MeterRegistry meterRegistry) {
 			return new TomcatMetricsBinder(meterRegistry);
 		}
 

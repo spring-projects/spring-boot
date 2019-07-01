@@ -51,12 +51,12 @@ class TomcatLegacyCookieProcessorExampleTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcatFactory() {
+		TomcatServletWebServerFactory tomcatFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public WebServerFactoryCustomizerBeanPostProcessor postProcessor() {
+		WebServerFactoryCustomizerBeanPostProcessor postProcessor() {
 			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 

@@ -59,12 +59,12 @@ class ReactiveManagementContextFactoryTests {
 	static class ParentConfiguration {
 
 		@Bean
-		public ReactiveWebServerFactory reactiveWebServerFactory() {
+		ReactiveWebServerFactory reactiveWebServerFactory() {
 			return mock(ReactiveWebServerFactory.class);
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return mock(HttpHandler.class);
 		}
 
@@ -74,7 +74,7 @@ class ReactiveManagementContextFactoryTests {
 	static class TestConfiguration1 {
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return mock(HttpHandler.class);
 		}
 

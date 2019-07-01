@@ -46,23 +46,20 @@ public class ConfigurationPropertiesScanConfiguration {
 	}
 
 	@ConfigurationProperties(prefix = "bar")
-	public static class BarProperties {
+	static class BarProperties {
 
-		public BarProperties(String foo) {
-
+		BarProperties(String foo) {
 		}
 
 	}
 
 	@ConfigurationProperties(prefix = "bing")
-	public static class BingProperties {
+	static class BingProperties {
 
-		public BingProperties() {
-
+		BingProperties() {
 		}
 
-		public BingProperties(String foo) {
-
+		BingProperties(String foo) {
 		}
 
 	}

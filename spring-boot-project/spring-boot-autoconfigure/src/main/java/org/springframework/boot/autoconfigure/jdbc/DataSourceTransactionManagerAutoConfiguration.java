@@ -55,7 +55,7 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(PlatformTransactionManager.class)
-		public DataSourceTransactionManager transactionManager(DataSource dataSource,
+		DataSourceTransactionManager transactionManager(DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
 			transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));

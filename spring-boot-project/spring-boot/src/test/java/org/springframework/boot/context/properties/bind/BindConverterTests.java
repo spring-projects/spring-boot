@@ -206,7 +206,7 @@ class BindConverterTests {
 
 		private String text;
 
-		public String getText() {
+		String getText() {
 			return this.text;
 		}
 
@@ -238,7 +238,7 @@ class BindConverterTests {
 
 		private String text;
 
-		public String getText() {
+		String getText() {
 			return this.text;
 		}
 
@@ -258,7 +258,7 @@ class BindConverterTests {
 	/**
 	 * {@link ConversionService} that always throws an {@link AssertionError}.
 	 */
-	private static class ThrowingConversionService implements ConversionService {
+	static class ThrowingConversionService implements ConversionService {
 
 		@Override
 		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {

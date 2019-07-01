@@ -73,15 +73,15 @@ final class ChangeableUrls implements Iterable<URL> {
 		return this.urls.iterator();
 	}
 
-	public int size() {
+	int size() {
 		return this.urls.size();
 	}
 
-	public URL[] toArray() {
+	URL[] toArray() {
 		return this.urls.toArray(new URL[0]);
 	}
 
-	public List<URL> toList() {
+	List<URL> toList() {
 		return Collections.unmodifiableList(this.urls);
 	}
 
@@ -90,7 +90,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		return this.urls.toString();
 	}
 
-	public static ChangeableUrls fromClassLoader(ClassLoader classLoader) {
+	static ChangeableUrls fromClassLoader(ClassLoader classLoader) {
 		List<URL> urls = new ArrayList<>();
 		for (URL url : urlsFromClassLoader(classLoader)) {
 			urls.add(url);
@@ -171,11 +171,11 @@ final class ChangeableUrls implements Iterable<URL> {
 		return urls;
 	}
 
-	public static ChangeableUrls fromUrls(Collection<URL> urls) {
+	static ChangeableUrls fromUrls(Collection<URL> urls) {
 		return fromUrls(new ArrayList<>(urls).toArray(new URL[urls.size()]));
 	}
 
-	public static ChangeableUrls fromUrls(URL... urls) {
+	static ChangeableUrls fromUrls(URL... urls) {
 		return new ChangeableUrls(urls);
 	}
 

@@ -163,7 +163,7 @@ class OutputCaptureTests {
 		assertThat(this.output.getOut()).isEqualTo("AC");
 	}
 
-	private static class TestPrintStream extends PrintStream {
+	static class TestPrintStream extends PrintStream {
 
 		TestPrintStream() {
 			super(new ByteArrayOutputStream());

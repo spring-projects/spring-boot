@@ -169,7 +169,7 @@ class WebMvcMetricsAutoConfigurationTests {
 	static class TagsProviderConfiguration {
 
 		@Bean
-		public TestWebMvcTagsProvider tagsProvider() {
+		TestWebMvcTagsProvider tagsProvider() {
 			return new TestWebMvcTagsProvider();
 		}
 

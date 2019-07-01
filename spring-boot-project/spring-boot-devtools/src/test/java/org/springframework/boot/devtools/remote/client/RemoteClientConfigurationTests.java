@@ -155,16 +155,16 @@ class RemoteClientConfigurationTests {
 	static class Config {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherFilter dispatcherFilter() throws IOException {
+		DispatcherFilter dispatcherFilter() throws IOException {
 			return new DispatcherFilter(dispatcher());
 		}
 
-		public Dispatcher dispatcher() throws IOException {
+		Dispatcher dispatcher() throws IOException {
 			Dispatcher dispatcher = mock(Dispatcher.class);
 			ServerHttpRequest anyRequest = any(ServerHttpRequest.class);
 			ServerHttpResponse anyResponse = any(ServerHttpResponse.class);
@@ -178,7 +178,7 @@ class RemoteClientConfigurationTests {
 	static class ClientConfig {
 
 		@Bean
-		public LiveReloadServer liveReloadServer() {
+		LiveReloadServer liveReloadServer() {
 			return mock(LiveReloadServer.class);
 		}
 

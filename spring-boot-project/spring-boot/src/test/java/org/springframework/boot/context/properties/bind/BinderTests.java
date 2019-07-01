@@ -304,55 +304,55 @@ class BinderTests {
 		assertThat(value).isInstanceOf(JavaBean.class);
 	}
 
-	public static class JavaBean {
+	static class JavaBean {
 
 		private String value;
 
 		private List<String> items = Collections.emptyList();
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
-		public List<String> getItems() {
+		List<String> getItems() {
 			return this.items;
 		}
 
 	}
 
-	public static class NestedJavaBean {
+	static class NestedJavaBean {
 
 		private DefaultValuesBean valuesBean = new DefaultValuesBean();
 
-		public DefaultValuesBean getValuesBean() {
+		DefaultValuesBean getValuesBean() {
 			return this.valuesBean;
 		}
 
-		public void setValuesBean(DefaultValuesBean valuesBean) {
+		void setValuesBean(DefaultValuesBean valuesBean) {
 			this.valuesBean = valuesBean;
 		}
 
 	}
 
-	public static class DefaultValuesBean {
+	static class DefaultValuesBean {
 
 		private String value = "hello";
 
 		private List<String> items = Collections.emptyList();
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
-		public List<String> getItems() {
+		List<String> getItems() {
 			return this.items;
 		}
 
@@ -365,63 +365,63 @@ class BinderTests {
 	}
 
 	@Validated
-	public static class ResourceBean {
+	static class ResourceBean {
 
 		private Resource resource;
 
-		public Resource getResource() {
+		Resource getResource() {
 			return this.resource;
 		}
 
-		public void setResource(Resource resource) {
+		void setResource(Resource resource) {
 			this.resource = resource;
 		}
 
 	}
 
-	public static class CycleBean1 {
+	static class CycleBean1 {
 
 		private CycleBean2 two;
 
-		public CycleBean2 getTwo() {
+		CycleBean2 getTwo() {
 			return this.two;
 		}
 
-		public void setTwo(CycleBean2 two) {
+		void setTwo(CycleBean2 two) {
 			this.two = two;
 		}
 
 	}
 
-	public static class CycleBean2 {
+	static class CycleBean2 {
 
 		private CycleBean1 one;
 
-		public CycleBean1 getOne() {
+		CycleBean1 getOne() {
 			return this.one;
 		}
 
-		public void setOne(CycleBean1 one) {
+		void setOne(CycleBean1 one) {
 			this.one = one;
 		}
 
 	}
 
-	public static class GenericBean<T> {
+	static class GenericBean<T> {
 
 		private T bar;
 
-		public T getBar() {
+		T getBar() {
 			return this.bar;
 		}
 
-		public void setBar(T bar) {
+		void setBar(T bar) {
 			this.bar = bar;
 		}
 
 	}
 
-	public static class JavaBeanPropertyEditor extends PropertyEditorSupport {
+	static class JavaBeanPropertyEditor extends PropertyEditorSupport {
 
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {

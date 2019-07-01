@@ -105,7 +105,7 @@ class WebMvcMetricsIntegrationTests {
 		}
 
 		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
+		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
 					AutoTimer.ENABLED);
 		}
@@ -117,17 +117,17 @@ class WebMvcMetricsIntegrationTests {
 		static class Controller1 {
 
 			@Bean
-			public CustomExceptionHandler controllerAdvice() {
+			CustomExceptionHandler controllerAdvice() {
 				return new CustomExceptionHandler();
 			}
 
 			@GetMapping("/handledError")
-			public String handledError() {
+			String handledError() {
 				throw new Exception1();
 			}
 
 			@GetMapping("/rethrownError")
-			public String rethrownError() {
+			String rethrownError() {
 				throw new Exception2();
 			}
 

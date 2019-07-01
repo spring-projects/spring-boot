@@ -166,16 +166,15 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 		return ((MockWebServerFactoryCustomizer<?>) beans.get(name)).wasCalled();
 	}
 
-	private interface WebServerFactoryOne extends WebServerFactory {
+	interface WebServerFactoryOne extends WebServerFactory {
 
 	}
 
-	private interface WebServerFactoryTwo extends WebServerFactory {
+	interface WebServerFactoryTwo extends WebServerFactory {
 
 	}
 
-	private static class MockWebServerFactoryCustomizer<T extends WebServerFactory>
-			implements WebServerFactoryCustomizer<T> {
+	static class MockWebServerFactoryCustomizer<T extends WebServerFactory> implements WebServerFactoryCustomizer<T> {
 
 		private boolean called;
 
@@ -184,21 +183,21 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 			this.called = true;
 		}
 
-		public boolean wasCalled() {
+		boolean wasCalled() {
 			return this.called;
 		}
 
 	}
 
-	private static class WebServerFactoryOneCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryOne> {
+	static class WebServerFactoryOneCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryOne> {
 
 	}
 
-	private static class WebServerFactoryTwoCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryTwo> {
+	static class WebServerFactoryTwoCustomizer extends MockWebServerFactoryCustomizer<WebServerFactoryTwo> {
 
 	}
 
-	private static class WebServerFactoryAllCustomizer extends MockWebServerFactoryCustomizer<WebServerFactory> {
+	static class WebServerFactoryAllCustomizer extends MockWebServerFactoryCustomizer<WebServerFactory> {
 
 	}
 

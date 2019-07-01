@@ -113,7 +113,7 @@ class CustomContainerWebSocketsApplicationTests {
 		}
 
 		@Bean
-		public WebSocketConnectionManager wsConnectionManager() {
+		WebSocketConnectionManager wsConnectionManager() {
 
 			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(), handler(), this.webSocketUri);
 			manager.setAutoStartup(true);
@@ -122,17 +122,17 @@ class CustomContainerWebSocketsApplicationTests {
 		}
 
 		@Bean
-		public StandardWebSocketClient client() {
+		StandardWebSocketClient client() {
 			return new StandardWebSocketClient();
 		}
 
 		@Bean
-		public SimpleClientWebSocketHandler handler() {
+		SimpleClientWebSocketHandler handler() {
 			return new SimpleClientWebSocketHandler(greetingService(), this.latch, this.messagePayload);
 		}
 
 		@Bean
-		public GreetingService greetingService() {
+		GreetingService greetingService() {
 			return new SimpleGreetingService();
 		}
 

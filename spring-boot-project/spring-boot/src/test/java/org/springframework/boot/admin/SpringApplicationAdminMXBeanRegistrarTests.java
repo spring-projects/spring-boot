@@ -176,8 +176,7 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 	static class Config {
 
 		@Bean
-		public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar()
-				throws MalformedObjectNameException {
+		SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar() throws MalformedObjectNameException {
 			return new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
 		}
 

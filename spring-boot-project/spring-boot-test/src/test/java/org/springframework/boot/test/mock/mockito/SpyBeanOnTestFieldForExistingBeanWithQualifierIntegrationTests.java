@@ -69,17 +69,17 @@ class SpyBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
 	static class TestConfig {
 
 		@Bean
-		public CustomQualifierExampleService service() {
+		CustomQualifierExampleService service() {
 			return new CustomQualifierExampleService();
 		}
 
 		@Bean
-		public ExampleService anotherService() {
+		ExampleService anotherService() {
 			return new RealExampleService("Another");
 		}
 
 		@Bean
-		public ExampleServiceCaller controller(@CustomQualifier ExampleService service) {
+		ExampleServiceCaller controller(@CustomQualifier ExampleService service) {
 			return new ExampleServiceCaller(service);
 		}
 

@@ -56,7 +56,7 @@ class ArtemisConnectionFactoryFactory {
 		this.properties = properties;
 	}
 
-	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			startEmbeddedJms();
 			return doCreateConnectionFactory(factoryClass);

@@ -224,7 +224,7 @@ class Neo4jDataAutoConfigurationTests {
 	static class CustomSessionFactory {
 
 		@Bean
-		public SessionFactory customSessionFactory() {
+		SessionFactory customSessionFactory() {
 			return mock(SessionFactory.class);
 		}
 
@@ -234,7 +234,7 @@ class Neo4jDataAutoConfigurationTests {
 	static class CustomConfiguration {
 
 		@Bean
-		public org.neo4j.ogm.config.Configuration myConfiguration() {
+		org.neo4j.ogm.config.Configuration myConfiguration() {
 			return new org.neo4j.ogm.config.Configuration.Builder().uri("http://localhost:12345").build();
 		}
 
@@ -250,12 +250,12 @@ class Neo4jDataAutoConfigurationTests {
 	static class EventListenerConfiguration {
 
 		@Bean
-		public EventListener eventListenerOne() {
+		EventListener eventListenerOne() {
 			return mock(EventListener.class);
 		}
 
 		@Bean
-		public EventListener eventListenerTwo() {
+		EventListener eventListenerTwo() {
 			return mock(EventListener.class);
 		}
 

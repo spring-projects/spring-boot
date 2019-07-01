@@ -105,7 +105,7 @@ class HealthIndicatorAutoConfigurationTests {
 
 		@Bean
 		@ConditionalOnEnabledHealthIndicator("custom")
-		public HealthIndicator customHealthIndicator() {
+		HealthIndicator customHealthIndicator() {
 			return new CustomHealthIndicator();
 		}
 
@@ -124,7 +124,7 @@ class HealthIndicatorAutoConfigurationTests {
 	static class CustomHealthAggregatorConfiguration {
 
 		@Bean
-		public HealthAggregator healthAggregator() {
+		HealthAggregator healthAggregator() {
 			return (healths) -> Health.down().build();
 		}
 

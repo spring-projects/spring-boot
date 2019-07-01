@@ -75,22 +75,22 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "first")
-		public Foo foo() {
+		Foo foo() {
 			return new Foo();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "other")
-		public Foo other() {
+		Foo other() {
 			return new Foo();
 		}
 
@@ -98,16 +98,16 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class OverriddenPrefix {
+	static class OverriddenPrefix {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "other")
-		public Bar bar() {
+		Bar bar() {
 			return new Bar();
 		}
 

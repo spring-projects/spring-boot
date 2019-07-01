@@ -112,7 +112,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebFluxSecurity
 	@EnableConfigurationProperties(SecurityProperties.class)
-	protected static class TestSecurityConfiguration {
+	static class TestSecurityConfiguration {
 
 	}
 
@@ -120,7 +120,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	static class UserConfig {
 
 		@Bean
-		public MapReactiveUserDetailsService userDetailsService() {
+		MapReactiveUserDetailsService userDetailsService() {
 			UserDetails foo = User.withUsername("foo").password("foo").roles("USER").build();
 			UserDetails admin = User.withUsername("admin").password("admin").roles("USER", "ADMIN").build();
 			return new MapReactiveUserDetailsService(foo, admin);
@@ -132,7 +132,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	static class AuthenticationManagerConfig {
 
 		@Bean
-		public ReactiveAuthenticationManager reactiveAuthenticationManager() {
+		ReactiveAuthenticationManager reactiveAuthenticationManager() {
 			return (authentication) -> null;
 		}
 
@@ -140,10 +140,10 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
-	protected static class TestConfigWithPasswordEncoder {
+	static class TestConfigWithPasswordEncoder {
 
 		@Bean
-		public PasswordEncoder passwordEncoder() {
+		PasswordEncoder passwordEncoder() {
 			return mock(PasswordEncoder.class);
 		}
 

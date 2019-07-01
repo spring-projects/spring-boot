@@ -680,7 +680,7 @@ class RepackagerTests {
 		return entryNames;
 	}
 
-	private static class MockLauncherScript implements LaunchScript {
+	static class MockLauncherScript implements LaunchScript {
 
 		private final byte[] bytes;
 
@@ -695,7 +695,7 @@ class RepackagerTests {
 
 	}
 
-	public static class TestLayoutFactory implements LayoutFactory {
+	static class TestLayoutFactory implements LayoutFactory {
 
 		@Override
 		public Layout getLayout(File source) {
@@ -704,7 +704,7 @@ class RepackagerTests {
 
 	}
 
-	private static class TestLayout extends Layouts.Jar implements CustomLoaderLayout {
+	static class TestLayout extends Layouts.Jar implements CustomLoaderLayout {
 
 		@Override
 		public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {

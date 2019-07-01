@@ -48,7 +48,7 @@ class AutoConfigureCacheIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
-	public static class Config {
+	static class Config {
 
 	}
 

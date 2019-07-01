@@ -410,7 +410,7 @@ class ErrorPageFilterTests {
 		return this.request.getDispatcher(path).getRequestAttributes();
 	}
 
-	private static class TestFilterChain extends MockFilterChain {
+	static class TestFilterChain extends MockFilterChain {
 
 		private final FilterHandler handler;
 
@@ -433,7 +433,7 @@ class ErrorPageFilterTests {
 	}
 
 	@FunctionalInterface
-	private interface FilterHandler {
+	interface FilterHandler {
 
 		void handle(HttpServletRequest request, HttpServletResponse response, Chain chain)
 				throws IOException, ServletException;
@@ -441,7 +441,7 @@ class ErrorPageFilterTests {
 	}
 
 	@FunctionalInterface
-	private interface Chain {
+	interface Chain {
 
 		void call() throws IOException, ServletException;
 

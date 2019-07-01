@@ -199,7 +199,7 @@ class RemoteDevToolsAutoConfigurationTests {
 	static class Config {
 
 		@Bean
-		public HttpRestartServer remoteRestartHttpRestartServer() {
+		HttpRestartServer remoteRestartHttpRestartServer() {
 			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
 		}

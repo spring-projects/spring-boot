@@ -54,13 +54,13 @@ class AutoConfigurationReproTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportResource("classpath:/early-init-test.xml")
-	public static class EarlyInitConfig {
+	static class EarlyInitConfig {
 
 	}
 

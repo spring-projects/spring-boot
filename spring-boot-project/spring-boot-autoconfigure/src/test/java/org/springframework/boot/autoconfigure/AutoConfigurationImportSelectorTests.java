@@ -224,13 +224,13 @@ class AutoConfigurationImportSelectorTests {
 			return Collections.singletonList((event) -> this.lastEvent = event);
 		}
 
-		public AutoConfigurationImportEvent getLastEvent() {
+		AutoConfigurationImportEvent getLastEvent() {
 			return this.lastEvent;
 		}
 
 	}
 
-	private static class TestAutoConfigurationImportFilter implements AutoConfigurationImportFilter, BeanFactoryAware {
+	static class TestAutoConfigurationImportFilter implements AutoConfigurationImportFilter, BeanFactoryAware {
 
 		private final Set<String> nonMatching = new HashSet<>();
 
@@ -256,7 +256,7 @@ class AutoConfigurationImportSelectorTests {
 			this.beanFactory = beanFactory;
 		}
 
-		public BeanFactory getBeanFactory() {
+		BeanFactory getBeanFactory() {
 			return this.beanFactory;
 		}
 

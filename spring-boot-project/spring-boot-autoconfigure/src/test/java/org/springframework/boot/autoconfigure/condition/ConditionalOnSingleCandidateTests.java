@@ -150,10 +150,10 @@ class ConditionalOnSingleCandidateTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(String.class)
-	protected static class OnBeanSingleCandidateConfiguration {
+	static class OnBeanSingleCandidateConfiguration {
 
 		@Bean
-		public String baz(String s) {
+		String baz(String s) {
 			return s;
 		}
 
@@ -161,10 +161,10 @@ class ConditionalOnSingleCandidateTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(value = String.class, search = SearchStrategy.ANCESTORS)
-	protected static class OnBeanSingleCandidateInAncestorsConfiguration {
+	static class OnBeanSingleCandidateInAncestorsConfiguration {
 
 		@Bean
-		public String baz(String s) {
+		String baz(String s) {
 			return s;
 		}
 
@@ -172,53 +172,53 @@ class ConditionalOnSingleCandidateTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(value = String.class, type = "java.lang.String")
-	protected static class OnBeanSingleCandidateTwoTypesConfiguration {
+	static class OnBeanSingleCandidateTwoTypesConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate
-	protected static class OnBeanSingleCandidateNoTypeConfiguration {
+	static class OnBeanSingleCandidateNoTypeConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class FooConfiguration {
+	static class FooConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class FooPrimaryConfiguration {
+	static class FooPrimaryConfiguration {
 
 		@Bean
 		@Primary
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BarConfiguration {
+	static class BarConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BarPrimaryConfiguration {
+	static class BarPrimaryConfiguration {
 
 		@Bean
 		@Primary
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 

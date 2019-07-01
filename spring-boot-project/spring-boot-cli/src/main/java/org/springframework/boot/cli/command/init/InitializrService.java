@@ -84,7 +84,7 @@ class InitializrService {
 	 * @return an entity defining the project
 	 * @throws IOException if generation fails
 	 */
-	public ProjectGenerationResponse generate(ProjectGenerationRequest request) throws IOException {
+	ProjectGenerationResponse generate(ProjectGenerationRequest request) throws IOException {
 		Log.info("Using service at " + request.getServiceUrl());
 		InitializrServiceMetadata metadata = loadMetadata(request.getServiceUrl());
 		URI url = request.generateUrl(metadata);
@@ -100,7 +100,7 @@ class InitializrService {
 	 * @return the metadata describing the service
 	 * @throws IOException if the service's metadata cannot be loaded
 	 */
-	public InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
+	InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
 		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(serviceUrl);
 		validateResponse(httpResponse, serviceUrl);
 		return parseJsonMetadata(httpResponse.getEntity());
@@ -115,7 +115,7 @@ class InitializrService {
 	 * {@link InitializrServiceMetadata} describing the service
 	 * @throws IOException if the service capabilities cannot be loaded
 	 */
-	public Object loadServiceCapabilities(String serviceUrl) throws IOException {
+	Object loadServiceCapabilities(String serviceUrl) throws IOException {
 		HttpGet request = new HttpGet(serviceUrl);
 		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
 		CloseableHttpResponse httpResponse = execute(request, serviceUrl, "retrieve help");

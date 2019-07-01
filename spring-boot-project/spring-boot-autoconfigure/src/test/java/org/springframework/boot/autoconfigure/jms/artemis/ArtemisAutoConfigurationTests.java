@@ -391,15 +391,15 @@ class ArtemisAutoConfigurationTests {
 			this.destinationResolver = new DynamicDestinationResolver();
 		}
 
-		public void checkQueue(String name, boolean shouldExist) {
+		void checkQueue(String name, boolean shouldExist) {
 			checkDestination(name, false, shouldExist);
 		}
 
-		public void checkTopic(String name, boolean shouldExist) {
+		void checkTopic(String name, boolean shouldExist) {
 			checkDestination(name, true, shouldExist);
 		}
 
-		public void checkDestination(String name, final boolean pubSub, final boolean shouldExist) {
+		void checkDestination(String name, final boolean pubSub, final boolean shouldExist) {
 			this.jmsTemplate.execute((SessionCallback<Void>) (session) -> {
 				try {
 					Destination destination = this.destinationResolver.resolveDestinationName(session, name, pubSub);
@@ -421,12 +421,12 @@ class ArtemisAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class EmptyConfiguration {
+	static class EmptyConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class DestinationConfiguration {
+	static class DestinationConfiguration {
 
 		@Bean
 		JMSQueueConfiguration sampleQueueConfiguration() {
@@ -449,10 +449,10 @@ class ArtemisAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomJmsConfiguration {
+	static class CustomJmsConfiguration {
 
 		@Bean
-		public JMSConfiguration myJmsConfiguration() {
+		JMSConfiguration myJmsConfiguration() {
 			JMSConfiguration config = new JMSConfigurationImpl();
 			JMSQueueConfiguration jmsQueueConfiguration = new JMSQueueConfigurationImpl();
 			jmsQueueConfiguration.setName("custom");
@@ -464,10 +464,10 @@ class ArtemisAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomArtemisConfiguration {
+	static class CustomArtemisConfiguration {
 
 		@Bean
-		public ArtemisConfigurationCustomizer myArtemisCustomize() {
+		ArtemisConfigurationCustomizer myArtemisCustomize() {
 			return (configuration) -> {
 				configuration.setClusterPassword("Foobar");
 				configuration.setName("customFooBar");

@@ -104,7 +104,7 @@ class RestartServerTests {
 		assertThat(FileCopyUtils.copyToByteArray(classFile)).isEqualTo("def".getBytes());
 	}
 
-	private static class MockRestartServer extends RestartServer {
+	static class MockRestartServer extends RestartServer {
 
 		MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter, ClassLoader classLoader) {
 			super(sourceFolderUrlFilter, classLoader);

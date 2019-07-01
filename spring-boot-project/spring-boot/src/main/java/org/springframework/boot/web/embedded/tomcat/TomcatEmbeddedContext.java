@@ -60,7 +60,7 @@ class TomcatEmbeddedContext extends StandardContext {
 		super.setManager(manager);
 	}
 
-	public void deferredLoadOnStartup() throws LifecycleException {
+	void deferredLoadOnStartup() throws LifecycleException {
 		doWithThreadContextClassLoader(getLoader().getClassLoader(),
 				() -> getLoadOnStartupWrappers(findChildren()).forEach(this::load));
 	}
@@ -113,11 +113,11 @@ class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	public void setStarter(TomcatStarter starter) {
+	void setStarter(TomcatStarter starter) {
 		this.starter = starter;
 	}
 
-	public TomcatStarter getStarter() {
+	TomcatStarter getStarter() {
 		return this.starter;
 	}
 

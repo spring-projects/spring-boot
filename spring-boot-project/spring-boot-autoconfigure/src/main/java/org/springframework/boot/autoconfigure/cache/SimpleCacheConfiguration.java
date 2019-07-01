@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 class SimpleCacheConfiguration {
 
 	@Bean
-	public ConcurrentMapCacheManager cacheManager(CacheProperties cacheProperties,
+	ConcurrentMapCacheManager cacheManager(CacheProperties cacheProperties,
 			CacheManagerCustomizers cacheManagerCustomizers) {
 		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
 		List<String> cacheNames = cacheProperties.getCacheNames();

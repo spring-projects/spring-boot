@@ -78,7 +78,7 @@ class CompositeHandlerExceptionResolverTests {
 	static class BaseConfiguration {
 
 		@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-		public CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
+		CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
 			return new CompositeHandlerExceptionResolver();
 		}
 
@@ -89,7 +89,7 @@ class CompositeHandlerExceptionResolverTests {
 	static class TestConfiguration {
 
 		@Bean
-		public HandlerExceptionResolver testResolver() {
+		HandlerExceptionResolver testResolver() {
 			return new TestHandlerExceptionResolver();
 		}
 

@@ -77,7 +77,7 @@ public class HealthIndicatorAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
+		ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
 				Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 				Map<String, HealthIndicator> healthIndicators) {
 			return new ReactiveHealthIndicatorRegistryFactory()

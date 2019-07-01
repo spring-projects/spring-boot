@@ -139,7 +139,9 @@ class BindValidationFailureAnalyzerTests {
 
 	@ConfigurationProperties("test.foo")
 	@Validated
-	static class FieldValidationFailureProperties {
+	public static class FieldValidationFailureProperties {
+
+		// Needs to be public due to validator (see gh-17394)
 
 		@NotNull
 		private String foo;
@@ -174,7 +176,7 @@ class BindValidationFailureAnalyzerTests {
 			this.nested = nested;
 		}
 
-		static class Nested {
+		public static class Nested {
 
 			@NotNull
 			private String bar;

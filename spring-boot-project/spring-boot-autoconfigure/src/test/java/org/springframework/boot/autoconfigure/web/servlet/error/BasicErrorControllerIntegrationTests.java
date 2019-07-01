@@ -244,12 +244,12 @@ class BasicErrorControllerIntegrationTests {
 	public static class TestConfiguration {
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(TestConfiguration.class, args);
 		}
 
 		@Bean
-		public View error() {
+		View error() {
 			return new AbstractView() {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
@@ -260,58 +260,58 @@ class BasicErrorControllerIntegrationTests {
 		}
 
 		@RestController
-		protected static class Errors {
+		public static class Errors {
 
 			public String getFoo() {
 				return "foo";
 			}
 
 			@RequestMapping("/")
-			public String home() {
+			String home() {
 				throw new IllegalStateException("Expected!");
 			}
 
 			@RequestMapping("/annotated")
-			public String annotated() {
+			String annotated() {
 				throw new ExpectedException();
 			}
 
 			@RequestMapping("/annotatedNoReason")
-			public String annotatedNoReason() {
+			String annotatedNoReason() {
 				throw new NoReasonExpectedException("Expected message");
 			}
 
 			@RequestMapping("/bind")
-			public String bind() throws Exception {
+			String bind() throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
 				throw error;
 			}
 
 			@PostMapping(path = "/bodyValidation", produces = "application/json")
-			public String bodyValidation(@Valid @RequestBody DummyBody body) {
+			String bodyValidation(@Valid @RequestBody DummyBody body) {
 				return body.content;
 			}
 
 			@RequestMapping(path = "/noStorage")
-			public String noStorage() {
+			String noStorage() {
 				throw new InsufficientStorageException();
 			}
 
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")
 			@SuppressWarnings("serial")
-			private static class ExpectedException extends RuntimeException {
+			static class ExpectedException extends RuntimeException {
 
 			}
 
 			@ResponseStatus(HttpStatus.INSUFFICIENT_STORAGE)
-			private static class InsufficientStorageException extends RuntimeException {
+			static class InsufficientStorageException extends RuntimeException {
 
 			}
 
 			@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 			@SuppressWarnings("serial")
-			private static class NoReasonExpectedException extends RuntimeException {
+			static class NoReasonExpectedException extends RuntimeException {
 
 				NoReasonExpectedException(String message) {
 					super(message);
@@ -324,11 +324,11 @@ class BasicErrorControllerIntegrationTests {
 				@NotNull
 				private String content;
 
-				public String getContent() {
+				String getContent() {
 					return this.content;
 				}
 
-				public void setContent(String content) {
+				void setContent(String content) {
 					this.content = content;
 				}
 

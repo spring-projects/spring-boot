@@ -42,7 +42,7 @@ class ProjectGenerator {
 		this.initializrService = initializrService;
 	}
 
-	public void generateProject(ProjectGenerationRequest request, boolean force) throws IOException {
+	void generateProject(ProjectGenerationRequest request, boolean force) throws IOException {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
 		String fileName = (request.getOutput() != null) ? request.getOutput() : response.getFileName();
 		if (shouldExtract(request, response)) {

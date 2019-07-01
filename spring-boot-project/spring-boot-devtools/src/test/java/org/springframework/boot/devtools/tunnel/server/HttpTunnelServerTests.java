@@ -320,7 +320,7 @@ class HttpTunnelServerTests {
 	/**
 	 * Mock {@link ByteChannel} used to simulate the server connection.
 	 */
-	private static class MockServerChannel implements ByteChannel {
+	static class MockServerChannel implements ByteChannel {
 
 		private static final ByteBuffer DISCONNECT = ByteBuffer.wrap(NO_DATA);
 
@@ -332,27 +332,27 @@ class HttpTunnelServerTests {
 
 		private AtomicBoolean open = new AtomicBoolean(true);
 
-		public void setTimeout(int timeout) {
+		void setTimeout(int timeout) {
 			this.timeout = timeout;
 		}
 
-		public void send(String content) {
+		void send(String content) {
 			send(content.getBytes());
 		}
 
-		public void send(byte[] bytes) {
+		void send(byte[] bytes) {
 			this.outgoing.addLast(ByteBuffer.wrap(bytes));
 		}
 
-		public void disconnect() {
+		void disconnect() {
 			this.outgoing.addLast(DISCONNECT);
 		}
 
-		public void verifyReceived(String expected) {
+		void verifyReceived(String expected) {
 			verifyReceived(expected.getBytes());
 		}
 
-		public void verifyReceived(byte[] expected) {
+		void verifyReceived(byte[] expected) {
 			synchronized (this.written) {
 				assertThat(this.written.toByteArray()).isEqualTo(expected);
 				this.written.reset();
@@ -405,7 +405,7 @@ class HttpTunnelServerTests {
 	/**
 	 * Mock {@link HttpConnection}.
 	 */
-	private static class MockHttpConnection extends HttpConnection {
+	static class MockHttpConnection extends HttpConnection {
 
 		MockHttpConnection() {
 			super(new ServletServerHttpRequest(new MockHttpServletRequest()),
@@ -431,22 +431,22 @@ class HttpTunnelServerTests {
 			getServletResponse().setCommitted(true);
 		}
 
-		public MockHttpServletRequest getServletRequest() {
+		MockHttpServletRequest getServletRequest() {
 			return (MockHttpServletRequest) ((ServletServerHttpRequest) getRequest()).getServletRequest();
 		}
 
-		public MockHttpServletResponse getServletResponse() {
+		MockHttpServletResponse getServletResponse() {
 			return (MockHttpServletResponse) ((ServletServerHttpResponse) getResponse()).getServletResponse();
 		}
 
-		public void verifyReceived(String expectedContent, int expectedSeq) throws Exception {
+		void verifyReceived(String expectedContent, int expectedSeq) throws Exception {
 			waitForServletResponse();
 			MockHttpServletResponse resp = getServletResponse();
 			assertThat(resp.getContentAsString()).isEqualTo(expectedContent);
 			assertThat(resp.getHeader(SEQ_HEADER)).isEqualTo(String.valueOf(expectedSeq));
 		}
 
-		public void waitForServletResponse() throws InterruptedException {
+		void waitForServletResponse() throws InterruptedException {
 			while (!getServletResponse().isCommitted()) {
 				Thread.sleep(10);
 			}

@@ -198,7 +198,7 @@ class ActiveMQAutoConfigurationTests {
 	static class CustomConnectionFactoryConfiguration {
 
 		@Bean
-		public ConnectionFactory connectionFactory() {
+		ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
 
@@ -208,7 +208,7 @@ class ActiveMQAutoConfigurationTests {
 	static class CustomizerConfiguration {
 
 		@Bean
-		public ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
+		ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
 			return (factory) -> {
 				factory.setBrokerURL("vm://localhost?useJmx=false&broker.persistent=false");
 				factory.setUserName("foobar");

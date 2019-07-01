@@ -92,23 +92,23 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	static class TestConfiguration {
 
 		@Bean
-		public HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
+		HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpoint(new CompositeHealthIndicator(new OrderedHealthAggregator(),
 					new HealthIndicatorRegistryFactory().createHealthIndicatorRegistry(healthIndicators)));
 		}
 
 		@Bean
-		public DiskSpaceHealthIndicator diskSpaceHealthIndicator() {
+		DiskSpaceHealthIndicator diskSpaceHealthIndicator() {
 			return new DiskSpaceHealthIndicator(new File("."), DataSize.ofMegabytes(10));
 		}
 
 		@Bean
-		public DataSourceHealthIndicator dbHealthIndicator(DataSource dataSource) {
+		DataSourceHealthIndicator dbHealthIndicator(DataSource dataSource) {
 			return new DataSourceHealthIndicator(dataSource);
 		}
 
 		@Bean
-		public CompositeHealthIndicator brokerHealthIndicator() {
+		CompositeHealthIndicator brokerHealthIndicator() {
 			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 			indicators.put("us1", () -> Health.up().withDetail("version", "1.0.2").build());
 			indicators.put("us2", () -> Health.up().withDetail("version", "1.0.4").build());

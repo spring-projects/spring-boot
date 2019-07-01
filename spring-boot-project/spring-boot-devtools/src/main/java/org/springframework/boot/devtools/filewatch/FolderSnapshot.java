@@ -73,7 +73,7 @@ class FolderSnapshot {
 		}
 	}
 
-	public ChangedFiles getChangedFiles(FolderSnapshot snapshot, FileFilter triggerFilter) {
+	ChangedFiles getChangedFiles(FolderSnapshot snapshot, FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
 		File folder = this.folder;
 		Assert.isTrue(snapshot.folder.equals(folder), () -> "Snapshot source folder must be '" + folder + "'");
@@ -124,7 +124,7 @@ class FolderSnapshot {
 		return super.equals(obj);
 	}
 
-	public boolean equals(FolderSnapshot other, FileFilter filter) {
+	boolean equals(FolderSnapshot other, FileFilter filter) {
 		if (this.folder.equals(other.folder)) {
 			Set<FileSnapshot> ourFiles = filter(this.files, filter);
 			Set<FileSnapshot> otherFiles = filter(other.files, filter);
@@ -157,7 +157,7 @@ class FolderSnapshot {
 	 * Return the source folder of this snapshot.
 	 * @return the source folder
 	 */
-	public File getFolder() {
+	File getFolder() {
 		return this.folder;
 	}
 

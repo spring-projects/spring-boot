@@ -86,7 +86,7 @@ class ElasticMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -97,7 +97,7 @@ class ElasticMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public ElasticConfig customConfig() {
+		ElasticConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -108,7 +108,7 @@ class ElasticMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public ElasticMeterRegistry customRegistry(ElasticConfig config, Clock clock) {
+		ElasticMeterRegistry customRegistry(ElasticConfig config, Clock clock) {
 			return new ElasticMeterRegistry(config, clock);
 		}
 

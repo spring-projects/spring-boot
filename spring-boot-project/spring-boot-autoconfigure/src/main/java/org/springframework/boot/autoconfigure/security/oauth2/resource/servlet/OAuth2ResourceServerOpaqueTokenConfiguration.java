@@ -42,8 +42,7 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
-		public NimbusOAuth2TokenIntrospectionClient oAuth2TokenIntrospectionClient(
-				OAuth2ResourceServerProperties properties) {
+		NimbusOAuth2TokenIntrospectionClient oAuth2TokenIntrospectionClient(OAuth2ResourceServerProperties properties) {
 			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
 			return new NimbusOAuth2TokenIntrospectionClient(opaqueToken.getIntrospectionUri(),
 					opaqueToken.getClientId(), opaqueToken.getClientSecret());
@@ -57,7 +56,7 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 
 		@Bean
 		@ConditionalOnBean(OAuth2TokenIntrospectionClient.class)
-		public WebSecurityConfigurerAdapter opaqueTokenWebSecurityConfigurerAdapter() {
+		WebSecurityConfigurerAdapter opaqueTokenWebSecurityConfigurerAdapter() {
 			return new WebSecurityConfigurerAdapter() {
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {

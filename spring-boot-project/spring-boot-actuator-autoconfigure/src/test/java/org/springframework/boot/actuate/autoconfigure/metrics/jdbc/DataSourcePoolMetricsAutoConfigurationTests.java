@@ -189,7 +189,7 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public SimpleMeterRegistry simpleMeterRegistry() {
+		SimpleMeterRegistry simpleMeterRegistry() {
 			return new SimpleMeterRegistry();
 		}
 
@@ -199,12 +199,12 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	static class TwoDataSourcesConfiguration {
 
 		@Bean
-		public DataSource firstDataSource() {
+		DataSource firstDataSource() {
 			return createDataSource();
 		}
 
 		@Bean
-		public DataSource secondOne() {
+		DataSource secondOne() {
 			return createDataSource();
 		}
 
@@ -219,12 +219,12 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	static class TwoHikariDataSourcesConfiguration {
 
 		@Bean
-		public DataSource firstDataSource() {
+		DataSource firstDataSource() {
 			return createHikariDataSource("firstDataSource");
 		}
 
 		@Bean
-		public DataSource secondOne() {
+		DataSource secondOne() {
 			return createHikariDataSource("secondOne");
 		}
 
@@ -234,12 +234,12 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	static class ProxiedHikariDataSourcesConfiguration {
 
 		@Bean
-		public DataSource proxiedDataSource() {
+		DataSource proxiedDataSource() {
 			return (DataSource) new ProxyFactory(createHikariDataSource("firstDataSource")).getProxy();
 		}
 
 		@Bean
-		public DataSource delegateDataSource() {
+		DataSource delegateDataSource() {
 			return new DelegatingDataSource(createHikariDataSource("secondOne"));
 		}
 
@@ -249,7 +249,7 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	static class OneHikariDataSourceConfiguration {
 
 		@Bean
-		public DataSource hikariDataSource() {
+		DataSource hikariDataSource() {
 			return createHikariDataSource("hikariDataSource");
 		}
 
@@ -259,12 +259,12 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	static class MixedDataSourcesConfiguration {
 
 		@Bean
-		public DataSource firstDataSource() {
+		DataSource firstDataSource() {
 			return createHikariDataSource("firstDataSource");
 		}
 
 		@Bean
-		public DataSource secondOne() {
+		DataSource secondOne() {
 			return createTomcatDataSource();
 		}
 
@@ -287,7 +287,7 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	static class HikariSealingConfiguration {
 
 		@Bean
-		public static HikariSealer hikariSealer() {
+		static HikariSealer hikariSealer() {
 			return new HikariSealer();
 		}
 

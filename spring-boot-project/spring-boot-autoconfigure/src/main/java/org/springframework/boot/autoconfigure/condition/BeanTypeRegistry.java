@@ -92,7 +92,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 * @return the names of beans (or objects created by FactoryBeans) matching the given
 	 * object type (including subclasses), or an empty set if none
 	 */
-	public Set<String> getNamesForType(Class<?> type, TypeExtractor typeExtractor) {
+	Set<String> getNamesForType(Class<?> type, TypeExtractor typeExtractor) {
 		updateTypesIfNecessary();
 		return this.beanTypes.entrySet().stream().filter((entry) -> {
 			Class<?> beanType = extractType(entry.getValue(), typeExtractor);
@@ -113,7 +113,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 * @return the names of beans (or objects created by FactoryBeans) annotated with the
 	 * given annotation, or an empty set if none
 	 */
-	public Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
+	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
 		updateTypesIfNecessary();
 		return this.beanTypes.entrySet().stream()
 				.filter((entry) -> entry.getValue() != null && MergedAnnotations

@@ -86,7 +86,7 @@ class ClassPathFileSystemWatcherTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 		public final Environment environment;
 
@@ -95,25 +95,25 @@ class ClassPathFileSystemWatcherTests {
 		}
 
 		@Bean
-		public ClassPathFileSystemWatcher watcher(ClassPathRestartStrategy restartStrategy) {
+		ClassPathFileSystemWatcher watcher(ClassPathRestartStrategy restartStrategy) {
 			FileSystemWatcher watcher = new FileSystemWatcher(false, Duration.ofMillis(100), Duration.ofMillis(10));
 			URL[] urls = this.environment.getProperty("urls", URL[].class);
 			return new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(watcher), restartStrategy, urls);
 		}
 
 		@Bean
-		public ClassPathRestartStrategy restartStrategy() {
+		ClassPathRestartStrategy restartStrategy() {
 			return (file) -> false;
 		}
 
 		@Bean
-		public Listener listener() {
+		Listener listener() {
 			return new Listener();
 		}
 
 	}
 
-	public static class Listener implements ApplicationListener<ClassPathChangedEvent> {
+	static class Listener implements ApplicationListener<ClassPathChangedEvent> {
 
 		private List<ClassPathChangedEvent> events = new ArrayList<>();
 
@@ -122,13 +122,13 @@ class ClassPathFileSystemWatcherTests {
 			this.events.add(event);
 		}
 
-		public List<ClassPathChangedEvent> getEvents() {
+		List<ClassPathChangedEvent> getEvents() {
 			return this.events;
 		}
 
 	}
 
-	private static class MockFileSystemWatcherFactory implements FileSystemWatcherFactory {
+	static class MockFileSystemWatcherFactory implements FileSystemWatcherFactory {
 
 		private final FileSystemWatcher watcher;
 

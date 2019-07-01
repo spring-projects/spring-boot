@@ -52,13 +52,13 @@ class Neo4jBookmarkManagementConfiguration {
 	@Bean(BOOKMARK_MANAGER_BEAN_NAME)
 	@ConditionalOnWebApplication
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.INTERFACES)
-	public BookmarkManager requestScopedBookmarkManager() {
+	BookmarkManager requestScopedBookmarkManager() {
 		return new CaffeineBookmarkManager();
 	}
 
 	@Bean(BOOKMARK_MANAGER_BEAN_NAME)
 	@ConditionalOnNotWebApplication
-	public BookmarkManager singletonScopedBookmarkManager() {
+	BookmarkManager singletonScopedBookmarkManager() {
 		return new CaffeineBookmarkManager();
 	}
 

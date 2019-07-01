@@ -57,15 +57,15 @@ class HttpHandlerAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomHttpHandler {
+	static class CustomHttpHandler {
 
 		@Bean
-		public HttpHandler customHttpHandler() {
+		HttpHandler customHttpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> null;
 		}
 
 		@Bean
-		public RouterFunction<ServerResponse> routerFunction() {
+		RouterFunction<ServerResponse> routerFunction() {
 			return route(GET("/test"), (serverRequest) -> null);
 		}
 

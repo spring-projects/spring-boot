@@ -68,7 +68,7 @@ class MainMethodTests {
 				.withMessageContaining("Unable to find main method");
 	}
 
-	private static class TestThread extends Thread {
+	static class TestThread extends Thread {
 
 		private final Runnable runnable;
 
@@ -80,7 +80,7 @@ class MainMethodTests {
 			this.runnable = runnable;
 		}
 
-		public MainMethod test() throws InterruptedException {
+		MainMethod test() throws InterruptedException {
 			start();
 			join();
 			if (this.exception != null) {
@@ -122,9 +122,9 @@ class MainMethodTests {
 
 	}
 
-	private static class NonStaticMain {
+	public static class NonStaticMain {
 
-		public void main(String... args) {
+		void main(String... args) {
 			mainMethod.set(new MainMethod());
 		}
 

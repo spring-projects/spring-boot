@@ -38,8 +38,7 @@ import org.springframework.core.io.Resource;
 class HazelcastJCacheCustomizationConfiguration {
 
 	@Bean
-	public HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(
-			ObjectProvider<HazelcastInstance> hazelcastInstance) {
+	HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(ObjectProvider<HazelcastInstance> hazelcastInstance) {
 		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique());
 	}
 

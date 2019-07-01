@@ -355,7 +355,7 @@ class TestRestTemplateTests {
 
 	}
 
-	private interface TestRestTemplateCallback {
+	interface TestRestTemplateCallback {
 
 		void doWithTestRestTemplate(TestRestTemplate testRestTemplate, URI relativeUri);
 

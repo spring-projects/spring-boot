@@ -55,7 +55,7 @@ class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTests {
 	static class Config {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.H2).build();
 		}
 

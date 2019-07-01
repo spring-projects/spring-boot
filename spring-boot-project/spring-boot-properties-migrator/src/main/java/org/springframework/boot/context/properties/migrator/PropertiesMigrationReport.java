@@ -39,7 +39,7 @@ class PropertiesMigrationReport {
 	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that should be renamed
 	 */
-	public String getWarningReport() {
+	String getWarningReport() {
 		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getRenamed);
 		if (content.isEmpty()) {
 			return null;
@@ -61,7 +61,7 @@ class PropertiesMigrationReport {
 	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that are no longer supported
 	 */
-	public String getErrorReport() {
+	String getErrorReport() {
 		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getUnsupported);
 		if (content.isEmpty()) {
 			return null;
@@ -115,11 +115,11 @@ class PropertiesMigrationReport {
 			this.properties = new ArrayList<>(properties);
 		}
 
-		public List<PropertyMigration> getRenamed() {
+		List<PropertyMigration> getRenamed() {
 			return this.properties.stream().filter(PropertyMigration::isCompatibleType).collect(Collectors.toList());
 		}
 
-		public List<PropertyMigration> getUnsupported() {
+		List<PropertyMigration> getUnsupported() {
 			return this.properties.stream().filter((property) -> !property.isCompatibleType())
 					.collect(Collectors.toList());
 		}

@@ -95,7 +95,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -106,7 +106,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public DatadogConfig customConfig() {
+		DatadogConfig customConfig() {
 			return (key) -> {
 				if ("datadog.apiKey".equals(key)) {
 					return "12345";
@@ -122,7 +122,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
+		DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
 			return new DatadogMeterRegistry(config, clock);
 		}
 

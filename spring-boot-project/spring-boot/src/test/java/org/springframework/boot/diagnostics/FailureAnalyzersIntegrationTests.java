@@ -50,7 +50,7 @@ class FailureAnalyzersIntegrationTests {
 	static class TestConfiguration {
 
 		@PostConstruct
-		public void fail() {
+		void fail() {
 			throw new PortInUseException(8080);
 		}
 

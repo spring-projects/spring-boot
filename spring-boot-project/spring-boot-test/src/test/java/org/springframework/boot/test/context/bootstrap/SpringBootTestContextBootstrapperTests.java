@@ -63,13 +63,13 @@ class SpringBootTestContextBootstrapperTests {
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 	@WebAppConfiguration
-	private static class SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration {
+	static class SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration {
 
 	}
 
 	@SpringBootTest
 	@WebAppConfiguration
-	private static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
+	static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
 
 	}
 

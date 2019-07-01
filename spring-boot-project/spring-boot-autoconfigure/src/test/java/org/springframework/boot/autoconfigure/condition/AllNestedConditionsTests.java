@@ -70,10 +70,10 @@ class AllNestedConditionsTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(OnPropertyAAndBCondition.class)
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public String myBean() {
+		String myBean() {
 			return "myBean";
 		}
 

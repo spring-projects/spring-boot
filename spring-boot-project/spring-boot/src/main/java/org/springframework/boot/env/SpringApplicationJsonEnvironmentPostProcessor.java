@@ -182,15 +182,15 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 			this.json = json;
 		}
 
-		public String getJson() {
+		String getJson() {
 			return this.json;
 		}
 
-		public Origin getOrigin() {
+		Origin getOrigin() {
 			return PropertySourceOrigin.get(this.propertySource, this.propertyName);
 		}
 
-		public static JsonPropertyValue get(PropertySource<?> propertySource) {
+		static JsonPropertyValue get(PropertySource<?> propertySource) {
 			for (String candidate : CANDIDATES) {
 				Object value = propertySource.getProperty(candidate);
 				if (value != null && value instanceof String && StringUtils.hasLength((String) value)) {

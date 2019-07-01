@@ -85,13 +85,13 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
-	public <T> BindResult<T> bind(Bindable<T> target) {
+	<T> BindResult<T> bind(Bindable<T> target) {
 		ConfigurationProperties annotation = getAnnotation(target);
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	public <T> T bindOrCreate(Bindable<T> target) {
+	<T> T bindOrCreate(Bindable<T> target) {
 		ConfigurationProperties annotation = getAnnotation(target);
 		BindHandler bindHandler = getBindHandler(target, annotation);
 		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);

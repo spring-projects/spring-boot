@@ -59,7 +59,7 @@ class MissingRequiredConfigurationFailureAnalyzerTests {
 	static class MissingAccountIdConfiguration {
 
 		@Bean
-		public NewRelicMeterRegistry meterRegistry() {
+		NewRelicMeterRegistry meterRegistry() {
 			return new NewRelicMeterRegistry((key) -> null, Clock.SYSTEM);
 		}
 

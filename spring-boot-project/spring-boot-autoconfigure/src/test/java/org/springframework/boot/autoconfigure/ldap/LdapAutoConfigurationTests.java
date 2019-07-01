@@ -107,7 +107,7 @@ class LdapAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public PooledContextSource pooledContextSource(LdapContextSource ldapContextSource) {
+		PooledContextSource pooledContextSource(LdapContextSource ldapContextSource) {
 			PooledContextSource pooledContextSource = new PooledContextSource(new PoolConfig());
 			pooledContextSource.setContextSource(ldapContextSource);
 			return pooledContextSource;

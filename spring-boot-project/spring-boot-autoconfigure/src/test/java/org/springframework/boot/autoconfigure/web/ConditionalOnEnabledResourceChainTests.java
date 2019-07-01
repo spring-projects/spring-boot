@@ -81,7 +81,7 @@ class ConditionalOnEnabledResourceChainTests {
 
 		@Bean
 		@ConditionalOnEnabledResourceChain
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

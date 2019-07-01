@@ -726,15 +726,15 @@ public class RestTemplateBuilder {
 			this.bufferRequestBody = bufferRequestBody;
 		}
 
-		public RequestFactoryCustomizer connectTimeout(Duration connectTimeout) {
+		RequestFactoryCustomizer connectTimeout(Duration connectTimeout) {
 			return new RequestFactoryCustomizer(connectTimeout, this.readTimeout, this.bufferRequestBody);
 		}
 
-		public RequestFactoryCustomizer readTimeout(Duration readTimeout) {
+		RequestFactoryCustomizer readTimeout(Duration readTimeout) {
 			return new RequestFactoryCustomizer(this.connectTimeout, readTimeout, this.bufferRequestBody);
 		}
 
-		public RequestFactoryCustomizer bufferRequestBody(boolean bufferRequestBody) {
+		RequestFactoryCustomizer bufferRequestBody(boolean bufferRequestBody) {
 			return new RequestFactoryCustomizer(this.connectTimeout, this.readTimeout, bufferRequestBody);
 		}
 

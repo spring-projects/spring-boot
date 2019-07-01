@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ class Consumer {
 	private final List<SampleMessage> messages = new CopyOnWriteArrayList<>();
 
 	@KafkaListener(topics = "testTopic")
-	public void processMessage(SampleMessage message) {
+	void processMessage(SampleMessage message) {
 		this.messages.add(message);
 		System.out.println("Received sample message [" + message + "]");
 	}

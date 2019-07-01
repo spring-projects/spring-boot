@@ -263,36 +263,36 @@ class QuartzAutoConfigurationTests {
 
 	@Import(ComponentThatUsesScheduler.class)
 	@Configuration(proxyBeanMethods = false)
-	protected static class BaseQuartzConfiguration {
+	static class BaseQuartzConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class QuartzJobsConfiguration extends BaseQuartzConfiguration {
+	static class QuartzJobsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
-		public JobDetail fooJob() {
+		JobDetail fooJob() {
 			return JobBuilder.newJob().ofType(FooJob.class).withIdentity("fooJob").storeDurably().build();
 		}
 
 		@Bean
-		public JobDetail barJob() {
+		JobDetail barJob() {
 			return JobBuilder.newJob().ofType(FooJob.class).withIdentity("barJob").storeDurably().build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class QuartzFullConfiguration extends BaseQuartzConfiguration {
+	static class QuartzFullConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
-		public JobDetail fooJob() {
+		JobDetail fooJob() {
 			return JobBuilder.newJob().ofType(FooJob.class).withIdentity("fooJob")
 					.usingJobData("jobDataKey", "jobDataValue").storeDurably().build();
 		}
 
 		@Bean
-		public Trigger fooTrigger(JobDetail jobDetail) {
+		Trigger fooTrigger(JobDetail jobDetail) {
 			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(10)
 					.repeatForever();
 
@@ -304,10 +304,10 @@ class QuartzAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(QuartzFullConfiguration.class)
-	protected static class OverwriteTriggerConfiguration extends BaseQuartzConfiguration {
+	static class OverwriteTriggerConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
-		public Trigger anotherFooTrigger(JobDetail fooJob) {
+		Trigger anotherFooTrigger(JobDetail fooJob) {
 			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(30)
 					.repeatForever();
 
@@ -318,62 +318,62 @@ class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class QuartzCalendarsConfiguration extends BaseQuartzConfiguration {
+	static class QuartzCalendarsConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
-		public Calendar weekly() {
+		Calendar weekly() {
 			return new WeeklyCalendar();
 		}
 
 		@Bean
-		public Calendar monthly() {
+		Calendar monthly() {
 			return new MonthlyCalendar();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MockExecutorConfiguration extends BaseQuartzConfiguration {
+	static class MockExecutorConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
-		public Executor executor() {
+		Executor executor() {
 			return mock(Executor.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class QuartzCustomConfiguration extends BaseQuartzConfiguration {
+	static class QuartzCustomConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
-		public SchedulerFactoryBeanCustomizer customizer() {
+		SchedulerFactoryBeanCustomizer customizer() {
 			return (schedulerFactoryBean) -> schedulerFactoryBean.setSchedulerName("fooScheduler");
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ManualSchedulerConfiguration {
+	static class ManualSchedulerConfiguration {
 
 		@Bean
-		public SchedulerFactoryBean quartzScheduler() {
+		SchedulerFactoryBean quartzScheduler() {
 			return new SchedulerFactoryBean();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MultipleDataSourceConfiguration extends BaseQuartzConfiguration {
+	static class MultipleDataSourceConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		@Primary
-		public DataSource applicationDataSource() throws Exception {
+		DataSource applicationDataSource() throws Exception {
 			return createTestDataSource();
 		}
 
 		@QuartzDataSource
 		@Bean
-		public DataSource quartzDataSource() throws Exception {
+		DataSource quartzDataSource() throws Exception {
 			return createTestDataSource();
 		}
 
@@ -386,7 +386,7 @@ class QuartzAutoConfigurationTests {
 
 	}
 
-	public static class ComponentThatUsesScheduler {
+	static class ComponentThatUsesScheduler {
 
 		ComponentThatUsesScheduler(Scheduler scheduler) {
 			Assert.notNull(scheduler, "Scheduler must not be null");

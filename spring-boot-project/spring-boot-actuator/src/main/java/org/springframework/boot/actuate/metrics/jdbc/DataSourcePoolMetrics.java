@@ -94,8 +94,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 			this.metadataProvider = metadataProvider;
 		}
 
-		public <N extends Number> Function<DataSource, N> getValueFunction(
-				Function<DataSourcePoolMetadata, N> function) {
+		<N extends Number> Function<DataSource, N> getValueFunction(Function<DataSourcePoolMetadata, N> function) {
 			return (dataSource) -> function.apply(getDataSourcePoolMetadata(dataSource));
 		}
 

@@ -48,7 +48,7 @@ class ConfigFileApplicationContextInitializerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 	}
 

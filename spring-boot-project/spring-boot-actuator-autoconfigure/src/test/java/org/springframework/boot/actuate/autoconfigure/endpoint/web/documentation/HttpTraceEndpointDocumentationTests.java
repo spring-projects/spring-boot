@@ -106,7 +106,7 @@ class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	static class TestConfiguration {
 
 		@Bean
-		public HttpTraceEndpoint httpTraceEndpoint(HttpTraceRepository repository) {
+		HttpTraceEndpoint httpTraceEndpoint(HttpTraceRepository repository) {
 			return new HttpTraceEndpoint(repository);
 		}
 

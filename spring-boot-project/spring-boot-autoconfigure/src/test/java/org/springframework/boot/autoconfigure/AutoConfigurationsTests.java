@@ -37,11 +37,11 @@ class AutoConfigurationsTests {
 	}
 
 	@AutoConfigureAfter(AutoConfigureB.class)
-	public static class AutoConfigureA {
+	static class AutoConfigureA {
 
 	}
 
-	public static class AutoConfigureB {
+	static class AutoConfigureB {
 
 	}
 

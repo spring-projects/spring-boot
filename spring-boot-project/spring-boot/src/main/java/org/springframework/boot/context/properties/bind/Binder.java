@@ -518,11 +518,11 @@ public class Binder {
 			this.configurationProperty = null;
 		}
 
-		public PlaceholdersResolver getPlaceholdersResolver() {
+		PlaceholdersResolver getPlaceholdersResolver() {
 			return Binder.this.placeholdersResolver;
 		}
 
-		public BindConverter getConverter() {
+		BindConverter getConverter() {
 			return this.converter;
 		}
 

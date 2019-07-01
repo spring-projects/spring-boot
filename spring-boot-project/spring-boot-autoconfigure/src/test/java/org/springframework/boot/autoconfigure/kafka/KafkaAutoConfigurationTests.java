@@ -568,51 +568,51 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MessageConverterConfiguration {
+	static class MessageConverterConfiguration {
 
 		@Bean
-		public RecordMessageConverter myMessageConverter() {
+		RecordMessageConverter myMessageConverter() {
 			return mock(RecordMessageConverter.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BatchMessageConverterConfiguration {
+	static class BatchMessageConverterConfiguration {
 
 		@Bean
-		public BatchMessageConverter myBatchMessageConverter() {
+		BatchMessageConverter myBatchMessageConverter() {
 			return mock(BatchMessageConverter.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ErrorHandlerConfiguration {
+	static class ErrorHandlerConfiguration {
 
 		@Bean
-		public SeekToCurrentErrorHandler errorHandler() {
+		SeekToCurrentErrorHandler errorHandler() {
 			return new SeekToCurrentErrorHandler();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BatchErrorHandlerConfiguration {
+	static class BatchErrorHandlerConfiguration {
 
 		@Bean
-		public SeekToCurrentBatchErrorHandler batchErrorHandler() {
+		SeekToCurrentBatchErrorHandler batchErrorHandler() {
 			return new SeekToCurrentBatchErrorHandler();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TransactionManagerConfiguration {
+	static class TransactionManagerConfiguration {
 
 		@Bean
 		@Primary
-		public PlatformTransactionManager chainedTransactionManager(
+		PlatformTransactionManager chainedTransactionManager(
 				KafkaTransactionManager<String, String> kafkaTransactionManager) {
 			return new ChainedKafkaTransactionManager<String, String>(kafkaTransactionManager);
 		}
@@ -620,10 +620,10 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class AfterRollbackProcessorConfiguration {
+	static class AfterRollbackProcessorConfiguration {
 
 		@Bean
-		public AfterRollbackProcessor<Object, Object> afterRollbackProcessor() {
+		AfterRollbackProcessor<Object, Object> afterRollbackProcessor() {
 			return (records, consumer, ex, recoverable) -> {
 				// no-op
 			};
@@ -632,20 +632,20 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class RecordInterceptorConfiguration {
+	static class RecordInterceptorConfiguration {
 
 		@Bean
-		public RecordInterceptor<Object, Object> recordInterceptor() {
+		RecordInterceptor<Object, Object> recordInterceptor() {
 			return (record) -> record;
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class RebalanceListenerConfiguration {
+	static class RebalanceListenerConfiguration {
 
 		@Bean
-		public ConsumerAwareRebalanceListener rebalanceListener() {
+		ConsumerAwareRebalanceListener rebalanceListener() {
 			return mock(ConsumerAwareRebalanceListener.class);
 		}
 
@@ -653,15 +653,15 @@ class KafkaAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableKafkaStreams
-	protected static class EnableKafkaStreamsConfiguration {
+	static class EnableKafkaStreamsConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestKafkaStreamsConfiguration {
+	static class TestKafkaStreamsConfiguration {
 
 		@Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-		public KafkaStreamsConfiguration kafkaStreamsConfiguration() {
+		KafkaStreamsConfiguration kafkaStreamsConfiguration() {
 			Map<String, Object> streamsProperties = new HashMap<>();
 			streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9094, localhost:9095");
 			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-id");
@@ -672,15 +672,15 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestStreamsBuilderFactoryBeanConfiguration {
+	static class TestStreamsBuilderFactoryBeanConfiguration {
 
 		@Bean
-		public StreamsBuilderFactoryBean firstStreamsBuilderFactoryBean() {
+		StreamsBuilderFactoryBean firstStreamsBuilderFactoryBean() {
 			return mock(StreamsBuilderFactoryBean.class);
 		}
 
 		@Bean
-		public StreamsBuilderFactoryBean secondStreamsBuilderFactoryBean() {
+		StreamsBuilderFactoryBean secondStreamsBuilderFactoryBean() {
 			return mock(StreamsBuilderFactoryBean.class);
 		}
 

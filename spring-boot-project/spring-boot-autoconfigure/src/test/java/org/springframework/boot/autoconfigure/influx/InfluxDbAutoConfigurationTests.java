@@ -87,7 +87,7 @@ class InfluxDbAutoConfigurationTests {
 	static class CustomOkHttpClientBuilderProviderConfig {
 
 		@Bean
-		public InfluxDbOkHttpClientBuilderProvider influxDbOkHttpClientBuilderProvider() {
+		InfluxDbOkHttpClientBuilderProvider influxDbOkHttpClientBuilderProvider() {
 			return () -> new OkHttpClient.Builder().readTimeout(40, TimeUnit.SECONDS);
 		}
 

@@ -455,7 +455,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			return this.mockitoPostProcessor.createSpyIfNecessary(bean, beanName);
 		}
 
-		public static void register(BeanDefinitionRegistry registry) {
+		static void register(BeanDefinitionRegistry registry) {
 			if (!registry.containsBeanDefinition(BEAN_NAME)) {
 				RootBeanDefinition definition = new RootBeanDefinition(SpyPostProcessor.class);
 				definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);

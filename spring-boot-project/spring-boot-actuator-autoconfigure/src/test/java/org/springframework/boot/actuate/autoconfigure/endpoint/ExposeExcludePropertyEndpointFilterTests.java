@@ -162,11 +162,11 @@ class ExposeExcludePropertyEndpointFilterTests {
 		return ((EndpointFilter) this.filter).match(endpoint);
 	}
 
-	private abstract static class TestExposableWebEndpoint implements ExposableWebEndpoint {
+	abstract static class TestExposableWebEndpoint implements ExposableWebEndpoint {
 
 	}
 
-	private abstract static class DifferentTestExposableWebEndpoint implements ExposableWebEndpoint {
+	abstract static class DifferentTestExposableWebEndpoint implements ExposableWebEndpoint {
 
 	}
 

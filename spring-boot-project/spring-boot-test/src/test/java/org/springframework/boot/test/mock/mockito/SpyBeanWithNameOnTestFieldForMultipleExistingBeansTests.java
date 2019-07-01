@@ -52,12 +52,12 @@ class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 	static class Config {
 
 		@Bean
-		public SimpleExampleStringGenericService one() {
+		SimpleExampleStringGenericService one() {
 			return new SimpleExampleStringGenericService("one");
 		}
 
 		@Bean
-		public SimpleExampleStringGenericService two() {
+		SimpleExampleStringGenericService two() {
 			return new SimpleExampleStringGenericService("two");
 		}
 

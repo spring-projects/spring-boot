@@ -210,7 +210,7 @@ class ElasticsearchHealthIndicatorTests {
 
 	}
 
-	private static class TestActionFuture extends PlainActionFuture<ClusterHealthResponse> {
+	static class TestActionFuture extends PlainActionFuture<ClusterHealthResponse> {
 
 		private long getTimeout = -1L;
 

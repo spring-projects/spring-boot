@@ -78,7 +78,7 @@ class JerseyAutoConfigurationDefaultServletPathTests {
 			return "Hello " + this.msg;
 		}
 
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(Application.class, args);
 		}
 

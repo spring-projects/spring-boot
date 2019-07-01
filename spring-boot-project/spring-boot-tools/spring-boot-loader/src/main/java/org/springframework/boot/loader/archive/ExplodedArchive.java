@@ -225,7 +225,7 @@ public class ExplodedArchive implements Archive {
 			this.file = file;
 		}
 
-		public File getFile() {
+		File getFile() {
 			return this.file;
 		}
 

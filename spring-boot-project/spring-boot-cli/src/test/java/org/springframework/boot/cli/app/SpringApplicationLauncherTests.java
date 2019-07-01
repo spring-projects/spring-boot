@@ -92,7 +92,7 @@ class SpringApplicationLauncherTests {
 		return classLoader.classes;
 	}
 
-	private static class TestClassLoader extends ClassLoader {
+	static class TestClassLoader extends ClassLoader {
 
 		private Set<String> classes = new HashSet<>();
 

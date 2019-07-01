@@ -110,7 +110,7 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock customClock() {
+		Clock customClock() {
 			return Clock.SYSTEM;
 		}
 
@@ -121,7 +121,7 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public NewRelicConfig customConfig() {
+		NewRelicConfig customConfig() {
 			return (key) -> {
 				if ("newrelic.accountId".equals(key)) {
 					return "abcde";
@@ -140,7 +140,7 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public NewRelicMeterRegistry customRegistry(NewRelicConfig config, Clock clock) {
+		NewRelicMeterRegistry customRegistry(NewRelicConfig config, Clock clock) {
 			return new NewRelicMeterRegistry(config, clock);
 		}
 

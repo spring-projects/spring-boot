@@ -240,10 +240,10 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Base {
+	static class Base {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
@@ -251,11 +251,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class FooConfig {
+	static class FooConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo")
-		public Foo foo() {
+		Foo foo() {
 			return new Foo();
 		}
 
@@ -263,11 +263,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class SelfReferentialConfig {
+	static class SelfReferentialConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo")
-		public SelfReferential foo() {
+		SelfReferential foo() {
 			return new SelfReferential();
 		}
 
@@ -275,11 +275,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class MetadataCycleConfig {
+	static class MetadataCycleConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "bar")
-		public SelfReferential foo() {
+		SelfReferential foo() {
 			return new SelfReferential();
 		}
 
@@ -287,11 +287,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class MapConfig {
+	static class MapConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo")
-		public MapHolder foo() {
+		MapHolder foo() {
 			return new MapHolder();
 		}
 
@@ -299,11 +299,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class ListConfig {
+	static class ListConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo")
-		public ListHolder foo() {
+		ListHolder foo() {
 			return new ListHolder();
 		}
 
@@ -311,11 +311,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class MetadataMapConfig {
+	static class MetadataMapConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spam")
-		public MapHolder foo() {
+		MapHolder foo() {
 			return new MapHolder();
 		}
 
@@ -323,11 +323,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class AddressedConfig {
+	static class AddressedConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo")
-		public Addressed foo() {
+		Addressed foo() {
 			return new Addressed();
 		}
 
@@ -335,11 +335,11 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Base.class)
-	public static class InitializedMapAndListPropertiesConfig {
+	static class InitializedMapAndListPropertiesConfig {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo")
-		public InitializedMapAndListProperties foo() {
+		InitializedMapAndListProperties foo() {
 			return new InitializedMapAndListProperties();
 		}
 
@@ -464,7 +464,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	static class Cycle {
+	public static class Cycle {
 
 		private final Alpha alpha = new Alpha(this);
 
@@ -472,7 +472,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 			return this.alpha;
 		}
 
-		static class Alpha {
+		public static class Alpha {
 
 			private final Cycle cycle;
 
@@ -495,7 +495,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 		@Bean
 		// gh-11037
 		@ConfigurationProperties(prefix = "cycle")
-		public Cycle cycle() {
+		Cycle cycle() {
 			return new Cycle();
 		}
 
@@ -506,13 +506,13 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class HikariDataSourceConfig {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
+		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "test.datasource")
-		public HikariDataSource hikariDataSource() {
+		HikariDataSource hikariDataSource() {
 			return new HikariDataSource();
 		}
 

@@ -113,7 +113,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	static class CustomTransportTemplate {
 
 		@Bean
-		public ElasticsearchTemplate elasticsearchTemplate() {
+		ElasticsearchTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchTemplate.class);
 		}
 
@@ -123,7 +123,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	static class CustomRestTemplate {
 
 		@Bean
-		public ElasticsearchRestTemplate elasticsearchTemplate() {
+		ElasticsearchRestTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchRestTemplate.class);
 		}
 
@@ -133,7 +133,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	static class CustomReactiveRestTemplate {
 
 		@Bean
-		public ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
+		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
 			return mock(ReactiveElasticsearchTemplate.class);
 		}
 

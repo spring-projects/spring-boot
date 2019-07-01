@@ -199,73 +199,73 @@ class AutoConfigurationSorterTests {
 	}
 
 	@AutoConfigureOrder
-	public static class OrderUnspecified {
+	static class OrderUnspecified {
 
 	}
 
 	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-	public static class OrderLowest {
+	static class OrderLowest {
 
 	}
 
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-	public static class OrderHighest {
+	static class OrderHighest {
 
 	}
 
 	@AutoConfigureAfter(AutoConfigureB.class)
-	public static class AutoConfigureA {
+	static class AutoConfigureA {
 
 	}
 
 	@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
-	public static class AutoConfigureA2 {
+	static class AutoConfigureA2 {
 
 	}
 
 	@AutoConfigureAfter({ AutoConfigureC.class, AutoConfigureD.class, AutoConfigureE.class })
-	public static class AutoConfigureB {
+	static class AutoConfigureB {
 
 	}
 
-	public static class AutoConfigureC {
+	static class AutoConfigureC {
 
 	}
 
 	@AutoConfigureAfter(AutoConfigureA.class)
-	public static class AutoConfigureD {
+	static class AutoConfigureD {
 
 	}
 
-	public static class AutoConfigureE {
+	static class AutoConfigureE {
 
 	}
 
 	@AutoConfigureBefore(AutoConfigureB.class)
-	public static class AutoConfigureW {
+	static class AutoConfigureW {
 
 	}
 
 	@AutoConfigureBefore(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
-	public static class AutoConfigureW2 {
+	static class AutoConfigureW2 {
 
 	}
 
-	public static class AutoConfigureX {
+	static class AutoConfigureX {
 
 	}
 
 	@AutoConfigureBefore(AutoConfigureX.class)
-	public static class AutoConfigureY {
+	static class AutoConfigureY {
 
 	}
 
 	@AutoConfigureBefore(AutoConfigureY.class)
-	public static class AutoConfigureZ {
+	static class AutoConfigureZ {
 
 	}
 
-	private static class SkipCycleMetadataReaderFactory extends CachingMetadataReaderFactory {
+	static class SkipCycleMetadataReaderFactory extends CachingMetadataReaderFactory {
 
 		@Override
 		public MetadataReader getMetadataReader(String className) throws IOException {

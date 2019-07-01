@@ -207,7 +207,7 @@ class PropertyMapperTests {
 		assertThat(result).isEqualTo("123");
 	}
 
-	private static class Count<T> implements Supplier<T> {
+	static class Count<T> implements Supplier<T> {
 
 		private final Supplier<T> source;
 
@@ -223,13 +223,13 @@ class PropertyMapperTests {
 			return this.source.get();
 		}
 
-		public int getCount() {
+		int getCount() {
 			return this.count;
 		}
 
 	}
 
-	private static class ExampleSource {
+	static class ExampleSource {
 
 		private final String name;
 
@@ -237,21 +237,21 @@ class PropertyMapperTests {
 			this.name = name;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
 	}
 
-	private static class ExampleDest {
+	static class ExampleDest {
 
 		private String name;
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 

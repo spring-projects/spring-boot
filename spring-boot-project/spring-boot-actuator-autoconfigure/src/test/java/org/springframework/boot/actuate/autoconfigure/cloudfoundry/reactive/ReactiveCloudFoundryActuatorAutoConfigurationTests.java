@@ -311,7 +311,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	static class TestEndpoint {
 
 		@ReadOperation
-		public String hello() {
+		String hello() {
 			return "hello world";
 		}
 
@@ -321,7 +321,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	static class WebClientCustomizerConfig {
 
 		@Bean
-		public WebClientCustomizer webClientCustomizer() {
+		WebClientCustomizer webClientCustomizer() {
 			return mock(WebClientCustomizer.class);
 		}
 

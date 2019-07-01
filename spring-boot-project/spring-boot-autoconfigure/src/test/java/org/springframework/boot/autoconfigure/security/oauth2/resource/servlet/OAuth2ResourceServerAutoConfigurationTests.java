@@ -336,7 +336,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	static class JwtDecoderConfig {
 
 		@Bean
-		public JwtDecoder decoder() {
+		JwtDecoder decoder() {
 			return mock(JwtDecoder.class);
 		}
 
@@ -347,7 +347,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	static class OAuth2TokenIntrospectionClientConfig {
 
 		@Bean
-		public OAuth2TokenIntrospectionClient decoder() {
+		OAuth2TokenIntrospectionClient decoder() {
 			return mock(OAuth2TokenIntrospectionClient.class);
 		}
 

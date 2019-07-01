@@ -226,7 +226,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 	static class LayoutDialectConfiguration {
 
 		@Bean
-		public LayoutDialect layoutDialect() {
+		LayoutDialect layoutDialect() {
 			return new LayoutDialect(new GroupingRespectLayoutTitleStrategy());
 		}
 

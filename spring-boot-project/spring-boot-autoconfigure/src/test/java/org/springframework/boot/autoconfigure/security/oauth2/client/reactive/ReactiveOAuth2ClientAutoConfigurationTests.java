@@ -151,7 +151,7 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	static class ReactiveClientRepositoryConfiguration {
 
 		@Bean
-		public ReactiveClientRegistrationRepository clientRegistrationRepository() {
+		ReactiveClientRegistrationRepository clientRegistrationRepository() {
 			List<ClientRegistration> registrations = new ArrayList<>();
 			registrations.add(getClientRegistration("first", "https://user-info-uri.com"));
 			registrations.add(getClientRegistration("second", "https://other-user-info"));
@@ -177,7 +177,7 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	static class ReactiveOAuth2AuthorizedClientServiceConfiguration {
 
 		@Bean
-		public ReactiveOAuth2AuthorizedClientService testAuthorizedClientService(
+		ReactiveOAuth2AuthorizedClientService testAuthorizedClientService(
 				ReactiveClientRegistrationRepository clientRegistrationRepository) {
 			return new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
 		}
@@ -189,7 +189,7 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	static class ReactiveOAuth2AuthorizedClientRepositoryConfiguration {
 
 		@Bean
-		public ServerOAuth2AuthorizedClientRepository testAuthorizedClientRepository(
+		ServerOAuth2AuthorizedClientRepository testAuthorizedClientRepository(
 				ReactiveOAuth2AuthorizedClientService authorizedClientService) {
 			return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
 		}

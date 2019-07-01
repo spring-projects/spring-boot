@@ -155,7 +155,7 @@ class WelcomePageHandlerMappingTests {
 	static class HandlerMappingConfiguration {
 
 		@Bean
-		public WelcomePageHandlerMapping handlerMapping(ApplicationContext applicationContext,
+		WelcomePageHandlerMapping handlerMapping(ApplicationContext applicationContext,
 				ObjectProvider<TemplateAvailabilityProviders> templateAvailabilityProviders,
 				ObjectProvider<Resource> staticIndexPage,
 				@Value("${static-path-pattern:/**}") String staticPathPattern) {
@@ -172,7 +172,7 @@ class WelcomePageHandlerMappingTests {
 	static class StaticResourceConfiguration {
 
 		@Bean
-		public Resource staticIndexPage() {
+		Resource staticIndexPage() {
 			return new FileSystemResource("src/test/resources/welcome-page/index.html");
 		}
 
@@ -182,13 +182,13 @@ class WelcomePageHandlerMappingTests {
 	static class TemplateConfiguration {
 
 		@Bean
-		public TemplateAvailabilityProviders templateAvailabilityProviders() {
+		TemplateAvailabilityProviders templateAvailabilityProviders() {
 			return new TestTemplateAvailabilityProviders(
 					(view, environment, classLoader, resourceLoader) -> view.equals("index"));
 		}
 
 		@Bean
-		public ViewResolver viewResolver() {
+		ViewResolver viewResolver() {
 			return (name, locale) -> {
 				if (name.startsWith("forward:")) {
 					return new InternalResourceView(name.substring("forward:".length()));
@@ -207,7 +207,7 @@ class WelcomePageHandlerMappingTests {
 
 	}
 
-	private static class TestTemplateAvailabilityProviders extends TemplateAvailabilityProviders {
+	static class TestTemplateAvailabilityProviders extends TemplateAvailabilityProviders {
 
 		TestTemplateAvailabilityProviders(TemplateAvailabilityProvider provider) {
 			super(Collections.singletonList(provider));

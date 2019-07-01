@@ -70,7 +70,7 @@ class BeanNotOfRequiredTypeFailureAnalyzerTests {
 	static class JdkProxyConfiguration {
 
 		@Bean
-		public AsyncBean asyncBean() {
+		AsyncBean asyncBean() {
 			return new AsyncBean();
 		}
 
@@ -80,7 +80,7 @@ class BeanNotOfRequiredTypeFailureAnalyzerTests {
 	static class UserConfiguration {
 
 		@Bean
-		public AsyncBeanUser user(AsyncBean bean) {
+		AsyncBeanUser user(AsyncBean bean) {
 			return new AsyncBeanUser(bean);
 		}
 
@@ -89,7 +89,7 @@ class BeanNotOfRequiredTypeFailureAnalyzerTests {
 	static class AsyncBean implements SomeInterface {
 
 		@Async
-		public void foo() {
+		void foo() {
 
 		}
 

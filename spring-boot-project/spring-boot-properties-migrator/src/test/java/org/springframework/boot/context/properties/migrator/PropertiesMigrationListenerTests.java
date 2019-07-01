@@ -58,7 +58,7 @@ class PropertiesMigrationListenerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestApplication {
+	static class TestApplication {
 
 	}
 

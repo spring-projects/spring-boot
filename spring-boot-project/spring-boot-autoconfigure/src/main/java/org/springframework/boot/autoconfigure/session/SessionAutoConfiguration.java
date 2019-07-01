@@ -92,7 +92,7 @@ public class SessionAutoConfiguration {
 
 		@Bean
 		@Conditional(DefaultCookieSerializerCondition.class)
-		public DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties) {
+		DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -139,7 +139,7 @@ public class SessionAutoConfiguration {
 	 */
 	static class RememberMeServicesCookieSerializerCustomizer {
 
-		public void apply(DefaultCookieSerializer cookieSerializer) {
+		void apply(DefaultCookieSerializer cookieSerializer) {
 			cookieSerializer.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 		}
 
@@ -229,7 +229,7 @@ public class SessionAutoConfiguration {
 		}
 
 		@PostConstruct
-		public void checkAvailableImplementations() {
+		void checkAvailableImplementations() {
 			List<Class<?>> availableCandidates = new ArrayList<>();
 			for (String candidate : this.candidates) {
 				addCandidateIfAvailable(availableCandidates, candidate);
@@ -304,7 +304,7 @@ public class SessionAutoConfiguration {
 		}
 
 		@PostConstruct
-		public void checkSessionRepository() {
+		void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE && this.sessionRepositoryProvider.getIfAvailable() == null
 					&& storeType != null) {

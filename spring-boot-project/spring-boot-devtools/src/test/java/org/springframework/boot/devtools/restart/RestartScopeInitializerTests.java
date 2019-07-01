@@ -60,17 +60,17 @@ class RestartScopeInitializerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 		@Bean
 		@RestartScope
-		public ScopeTestBean scopeTestBean() {
+		ScopeTestBean scopeTestBean() {
 			return new ScopeTestBean();
 		}
 
 	}
 
-	public static class ScopeTestBean implements ApplicationListener<ContextRefreshedEvent> {
+	static class ScopeTestBean implements ApplicationListener<ContextRefreshedEvent> {
 
 		ScopeTestBean() {
 			createCount.incrementAndGet();

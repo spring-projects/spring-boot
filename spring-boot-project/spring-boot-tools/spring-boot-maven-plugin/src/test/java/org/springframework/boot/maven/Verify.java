@@ -159,7 +159,7 @@ public final class Verify {
 
 	}
 
-	private abstract static class AbstractArchiveVerification {
+	public abstract static class AbstractArchiveVerification {
 
 		private final File file;
 

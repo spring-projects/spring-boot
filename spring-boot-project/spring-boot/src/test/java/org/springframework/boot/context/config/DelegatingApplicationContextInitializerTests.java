@@ -90,7 +90,7 @@ class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private static class MockInitA implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class MockInitA implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -100,7 +100,7 @@ class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class MockInitB implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	static class MockInitB implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -110,7 +110,7 @@ class DelegatingApplicationContextInitializerTests {
 
 	}
 
-	private static class NotSuitableInit implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
+	static class NotSuitableInit implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableWebApplicationContext applicationContext) {

@@ -23,6 +23,6 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
  *
  * @author Eddú Meléndez
  */
-public interface ExampleRepository extends Neo4jRepository<ExampleGraph, Long> {
+interface ExampleRepository extends Neo4jRepository<ExampleGraph, Long> {
 
 }

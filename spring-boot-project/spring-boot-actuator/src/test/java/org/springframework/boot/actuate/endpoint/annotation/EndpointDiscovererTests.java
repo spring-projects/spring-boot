@@ -331,7 +331,7 @@ class EndpointDiscovererTests {
 	static class TestEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
@@ -341,7 +341,7 @@ class EndpointDiscovererTests {
 	static class TestEndpointSubclassConfiguration {
 
 		@Bean
-		public TestEndpointSubclass testEndpointSubclass() {
+		TestEndpointSubclass testEndpointSubclass() {
 			return new TestEndpointSubclass();
 		}
 
@@ -351,12 +351,12 @@ class EndpointDiscovererTests {
 	static class ClashingEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpointTwo() {
+		TestEndpoint testEndpointTwo() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public TestEndpoint testEndpointOne() {
+		TestEndpoint testEndpointOne() {
 			return new TestEndpoint();
 		}
 
@@ -366,12 +366,12 @@ class EndpointDiscovererTests {
 	static class ScopedTargetEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean(name = "scopedTarget.testEndpoint")
-		public TestEndpoint scopedTargetTestEndpoint() {
+		TestEndpoint scopedTargetTestEndpoint() {
 			return new TestEndpoint();
 		}
 
@@ -391,26 +391,26 @@ class EndpointDiscovererTests {
 	static class TestEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		public Object getOne(@Selector String id) {
+		Object getOne(@Selector String id) {
 			return null;
 		}
 
 		@WriteOperation
-		public void update(String foo, String bar) {
+		void update(String foo, String bar) {
 
 		}
 
 		@DeleteOperation
-		public void deleteOne(@Selector String id) {
+		void deleteOne(@Selector String id) {
 
 		}
 
-		public void someOtherMethod() {
+		void someOtherMethod() {
 
 		}
 
@@ -419,7 +419,7 @@ class EndpointDiscovererTests {
 	static class TestEndpointSubclass extends TestEndpoint {
 
 		@WriteOperation
-		public void updateWithMoreArguments(String foo, String bar, String baz) {
+		void updateWithMoreArguments(String foo, String bar, String baz) {
 
 		}
 
@@ -430,7 +430,7 @@ class EndpointDiscovererTests {
 	@Documented
 	@Endpoint
 	@FilteredEndpoint(SpecializedEndpointFilter.class)
-	public @interface SpecializedEndpoint {
+	@interface SpecializedEndpoint {
 
 		@AliasFor(annotation = Endpoint.class)
 		String id();
@@ -438,10 +438,10 @@ class EndpointDiscovererTests {
 	}
 
 	@EndpointExtension(endpoint = SpecializedTestEndpoint.class, filter = SpecializedEndpointFilter.class)
-	public static class SpecializedExtension {
+	static class SpecializedExtension {
 
 		@ReadOperation
-		public Object getSpecial() {
+		Object getSpecial() {
 			return null;
 		}
 
@@ -459,7 +459,7 @@ class EndpointDiscovererTests {
 	static class SpecializedTestEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -468,7 +468,7 @@ class EndpointDiscovererTests {
 	static class SubSpecializedTestEndpoint extends SpecializedTestEndpoint {
 
 		@ReadOperation
-		public Object getSpecialOne(@Selector String id) {
+		Object getSpecialOne(@Selector String id) {
 			return null;
 		}
 
@@ -575,7 +575,7 @@ class EndpointDiscovererTests {
 			this.invoker = invoker;
 		}
 
-		public OperationInvoker getInvoker() {
+		OperationInvoker getInvoker() {
 			return this.invoker;
 		}
 

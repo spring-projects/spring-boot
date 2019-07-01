@@ -55,7 +55,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
-	public JedisConnectionFactory redisConnectionFactory(
+	JedisConnectionFactory redisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) throws UnknownHostException {
 		return createJedisConnectionFactory(builderCustomizers);
 	}

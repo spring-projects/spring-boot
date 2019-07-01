@@ -50,13 +50,13 @@ final class SessionStoreMappings {
 	private SessionStoreMappings() {
 	}
 
-	public static String getConfigurationClass(WebApplicationType webApplicationType, StoreType sessionStoreType) {
+	static String getConfigurationClass(WebApplicationType webApplicationType, StoreType sessionStoreType) {
 		Configurations configurations = MAPPINGS.get(sessionStoreType);
 		Assert.state(configurations != null, () -> "Unknown session store type " + sessionStoreType);
 		return configurations.getConfiguration(webApplicationType);
 	}
 
-	public static StoreType getType(WebApplicationType webApplicationType, String configurationClass) {
+	static StoreType getType(WebApplicationType webApplicationType, String configurationClass) {
 		return MAPPINGS.entrySet().stream()
 				.filter((entry) -> ObjectUtils.nullSafeEquals(configurationClass,
 						entry.getValue().getConfiguration(webApplicationType)))
@@ -75,7 +75,7 @@ final class SessionStoreMappings {
 			this.reactiveConfiguration = reactiveConfiguration;
 		}
 
-		public String getConfiguration(WebApplicationType webApplicationType) {
+		String getConfiguration(WebApplicationType webApplicationType) {
 			switch (webApplicationType) {
 			case SERVLET:
 				return getName(this.servletConfiguration);
@@ -85,7 +85,7 @@ final class SessionStoreMappings {
 			return null;
 		}
 
-		private String getName(Class<?> configuration) {
+		String getName(Class<?> configuration) {
 			return (configuration != null) ? configuration.getName() : null;
 		}
 

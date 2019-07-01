@@ -61,7 +61,7 @@ class MockBeanForBeanFactoryIntegrationTests {
 	static class Config {
 
 		@Bean
-		public TestFactoryBean testFactoryBean() {
+		TestFactoryBean testFactoryBean() {
 			return new TestFactoryBean();
 		}
 

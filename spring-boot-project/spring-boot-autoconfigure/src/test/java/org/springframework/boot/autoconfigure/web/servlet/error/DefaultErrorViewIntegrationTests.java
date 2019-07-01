@@ -98,7 +98,7 @@ class DefaultErrorViewIntegrationTests {
 		assertThat(content).doesNotContain("injection");
 	}
 
-	public static String injectCall() {
+	static String injectCall() {
 		return "injection";
 	}
 
@@ -114,10 +114,10 @@ class DefaultErrorViewIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(TestConfiguration.class, args);
 		}
 

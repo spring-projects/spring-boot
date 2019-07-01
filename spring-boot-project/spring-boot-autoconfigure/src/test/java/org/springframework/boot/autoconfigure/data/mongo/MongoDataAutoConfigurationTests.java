@@ -194,7 +194,7 @@ class MongoDataAutoConfigurationTests {
 	static class CustomConversionsConfig {
 
 		@Bean
-		public MongoCustomConversions customConversions() {
+		MongoCustomConversions customConversions() {
 			return new MongoCustomConversions(Arrays.asList(new MyConverter()));
 		}
 
@@ -216,7 +216,7 @@ class MongoDataAutoConfigurationTests {
 
 	}
 
-	private static class MyConverter implements Converter<MongoClient, Boolean> {
+	static class MyConverter implements Converter<MongoClient, Boolean> {
 
 		@Override
 		public Boolean convert(MongoClient source) {

@@ -83,7 +83,7 @@ class ServletComponentScanIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 

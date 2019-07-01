@@ -85,19 +85,19 @@ class SampleAtmosphereApplicationTests {
 		}
 
 		@Bean
-		public WebSocketConnectionManager wsConnectionManager() {
+		WebSocketConnectionManager wsConnectionManager() {
 			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(), handler(), this.webSocketUri);
 			manager.setAutoStartup(true);
 			return manager;
 		}
 
 		@Bean
-		public StandardWebSocketClient client() {
+		StandardWebSocketClient client() {
 			return new StandardWebSocketClient();
 		}
 
 		@Bean
-		public TextWebSocketHandler handler() {
+		TextWebSocketHandler handler() {
 			return new TextWebSocketHandler() {
 
 				@Override

@@ -278,7 +278,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		verify(listener, times(4)).propertyChange(any(PropertyChangeEvent.class));
 	}
 
-	private static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
+	static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
 		private List<String> availableClasses = new ArrayList<>();
 
@@ -286,7 +286,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			super(TestLog4J2LoggingSystem.class.getClassLoader());
 		}
 
-		public Configuration getConfiguration() {
+		Configuration getConfiguration() {
 			return ((org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false)).getConfiguration();
 		}
 

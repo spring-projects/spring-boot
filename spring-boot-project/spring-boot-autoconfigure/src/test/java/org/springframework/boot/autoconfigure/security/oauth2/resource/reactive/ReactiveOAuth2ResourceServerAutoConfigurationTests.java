@@ -345,7 +345,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	static class TestConfig {
 
 		@Bean
-		public MapReactiveUserDetailsService userDetailsService() {
+		MapReactiveUserDetailsService userDetailsService() {
 			return mock(MapReactiveUserDetailsService.class);
 		}
 
@@ -355,7 +355,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	static class JwtDecoderConfig {
 
 		@Bean
-		public ReactiveJwtDecoder decoder() {
+		ReactiveJwtDecoder decoder() {
 			return mock(ReactiveJwtDecoder.class);
 		}
 
@@ -365,7 +365,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	static class OAuth2TokenIntrospectionClientConfig {
 
 		@Bean
-		public ReactiveOAuth2TokenIntrospectionClient decoder() {
+		ReactiveOAuth2TokenIntrospectionClient decoder() {
 			return mock(ReactiveOAuth2TokenIntrospectionClient.class);
 		}
 

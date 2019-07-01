@@ -49,7 +49,7 @@ class SpringBootTestWebEnvironmentRandomPortCustomPortTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	protected static class Config extends AbstractConfig {
+	static class Config extends AbstractConfig {
 
 	}
 

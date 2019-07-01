@@ -1034,14 +1034,14 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			this.jsonPath = JsonPath.compile(this.expression);
 		}
 
-		public void assertHasEmptyValue() {
+		void assertHasEmptyValue() {
 			if (ObjectUtils.isEmpty(getValue(false)) || isIndefiniteAndEmpty()) {
 				return;
 			}
 			failWithMessage(getExpectedValueMessage("an empty value"));
 		}
 
-		public void assertDoesNotHaveEmptyValue() {
+		void assertDoesNotHaveEmptyValue() {
 			if (!ObjectUtils.isEmpty(getValue(false))) {
 				return;
 			}
@@ -1049,7 +1049,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 		}
 
-		public void assertHasValue(Class<?> type, String expectedDescription) {
+		void assertHasValue(Class<?> type, String expectedDescription) {
 			Object value = getValue(true);
 			if (value == null || isIndefiniteAndEmpty()) {
 				failWithMessage(getNoValueMessage());
@@ -1059,7 +1059,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			}
 		}
 
-		public void assertDoesNotHaveValue() {
+		void assertDoesNotHaveValue() {
 			if (getValue(false) == null || isIndefiniteAndEmpty()) {
 				return;
 			}
@@ -1078,7 +1078,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			return ObjectUtils.isEmpty(getValue(false));
 		}
 
-		public Object getValue(boolean required) {
+		Object getValue(boolean required) {
 			try {
 				CharSequence json = JsonContentAssert.this.actual;
 				return this.jsonPath.read((json != null) ? json.toString() : null,

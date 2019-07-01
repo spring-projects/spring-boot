@@ -76,7 +76,7 @@ class SilentExitExceptionHandlerTests {
 
 	}
 
-	private abstract static class TestThread extends Thread {
+	static class TestThread extends Thread {
 
 		private Throwable thrown;
 
@@ -84,18 +84,18 @@ class SilentExitExceptionHandlerTests {
 			setUncaughtExceptionHandler((thread, exception) -> TestThread.this.thrown = exception);
 		}
 
-		public Throwable getThrown() {
+		Throwable getThrown() {
 			return this.thrown;
 		}
 
-		public void startAndJoin() throws InterruptedException {
+		void startAndJoin() throws InterruptedException {
 			start();
 			join();
 		}
 
 	}
 
-	private static class TestSilentExitExceptionHandler extends SilentExitExceptionHandler {
+	static class TestSilentExitExceptionHandler extends SilentExitExceptionHandler {
 
 		private boolean nonZeroExitCodePrevented;
 

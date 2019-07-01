@@ -469,38 +469,38 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class FlywayDataSourceConfiguration {
+	static class FlywayDataSourceConfiguration {
 
 		@Bean
 		@Primary
-		public DataSource normalDataSource() {
+		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
 		}
 
 		@FlywayDataSource
 		@Bean
-		public DataSource flywayDataSource() {
+		DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ResourceLoaderConfiguration {
+	static class ResourceLoaderConfiguration {
 
 		@Bean
 		@Primary
-		public ResourceLoader customClassLoader() {
+		ResourceLoader customClassLoader() {
 			return new DefaultResourceLoader(new CustomClassLoader(getClass().getClassLoader()));
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomFlywayMigrationInitializer {
+	static class CustomFlywayMigrationInitializer {
 
 		@Bean
-		public FlywayMigrationInitializer flywayMigrationInitializer(Flyway flyway) {
+		FlywayMigrationInitializer flywayMigrationInitializer(Flyway flyway) {
 			FlywayMigrationInitializer initializer = new FlywayMigrationInitializer(flyway);
 			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return initializer;
@@ -509,7 +509,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomFlywayWithJpaConfiguration {
+	static class CustomFlywayWithJpaConfiguration {
 
 		private final DataSource dataSource;
 
@@ -518,12 +518,12 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@Bean
-		public Flyway flyway() {
+		Flyway flyway() {
 			return new Flyway();
 		}
 
 		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
 			Map<String, Object> properties = new HashMap<>();
 			properties.put("configured", "manually");
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
@@ -534,7 +534,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Component
-	protected static class MockFlywayMigrationStrategy implements FlywayMigrationStrategy {
+	static class MockFlywayMigrationStrategy implements FlywayMigrationStrategy {
 
 		private boolean called = false;
 
@@ -543,7 +543,7 @@ class FlywayAutoConfigurationTests {
 			this.called = true;
 		}
 
-		public void assertCalled() {
+		void assertCalled() {
 			assertThat(this.called).isTrue();
 		}
 
@@ -554,13 +554,13 @@ class FlywayAutoConfigurationTests {
 
 		@Bean
 		@Order(1)
-		public Callback callbackOne() {
+		Callback callbackOne() {
 			return mockCallback();
 		}
 
 		@Bean
 		@Order(0)
-		public Callback callbackTwo() {
+		Callback callbackTwo() {
 			return mockCallback();
 		}
 
@@ -577,13 +577,13 @@ class FlywayAutoConfigurationTests {
 
 		@Bean
 		@Order(1)
-		public FlywayCallback legacyCallbackOne() {
+		FlywayCallback legacyCallbackOne() {
 			return mock(FlywayCallback.class);
 		}
 
 		@Bean
 		@Order(0)
-		public FlywayCallback legacyCallbackTwo() {
+		FlywayCallback legacyCallbackTwo() {
 			return mock(FlywayCallback.class);
 		}
 
@@ -594,19 +594,19 @@ class FlywayAutoConfigurationTests {
 
 		@Bean
 		@Order(1)
-		public FlywayConfigurationCustomizer customizerOne() {
+		FlywayConfigurationCustomizer customizerOne() {
 			return (configuration) -> configuration.connectRetries(5).ignorePendingMigrations(true);
 		}
 
 		@Bean
 		@Order(0)
-		public FlywayConfigurationCustomizer customizerTwo() {
+		FlywayConfigurationCustomizer customizerTwo() {
 			return (configuration) -> configuration.connectRetries(10).ignoreMissingMigrations(true);
 		}
 
 	}
 
-	private static final class CustomClassLoader extends ClassLoader {
+	static final class CustomClassLoader extends ClassLoader {
 
 		private CustomClassLoader(ClassLoader parent) {
 			super(parent);

@@ -152,12 +152,12 @@ class ProjectInfoAutoConfigurationTests {
 	static class CustomInfoPropertiesConfiguration {
 
 		@Bean
-		public GitProperties customGitProperties() {
+		GitProperties customGitProperties() {
 			return new GitProperties(new Properties());
 		}
 
 		@Bean
-		public BuildProperties customBuildProperties() {
+		BuildProperties customBuildProperties() {
 			return new BuildProperties(new Properties());
 		}
 

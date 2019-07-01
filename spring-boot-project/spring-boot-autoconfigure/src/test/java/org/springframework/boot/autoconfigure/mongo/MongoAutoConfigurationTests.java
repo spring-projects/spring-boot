@@ -84,7 +84,7 @@ class MongoAutoConfigurationTests {
 	static class OptionsConfig {
 
 		@Bean
-		public MongoClientOptions mongoOptions() {
+		MongoClientOptions mongoOptions() {
 			return MongoClientOptions.builder().socketTimeout(300).build();
 		}
 
@@ -94,12 +94,12 @@ class MongoAutoConfigurationTests {
 	static class SslOptionsConfig {
 
 		@Bean
-		public MongoClientOptions mongoClientOptions(SocketFactory socketFactory) {
+		MongoClientOptions mongoClientOptions(SocketFactory socketFactory) {
 			return MongoClientOptions.builder().sslEnabled(true).socketFactory(socketFactory).build();
 		}
 
 		@Bean
-		public SocketFactory mySocketFactory() {
+		SocketFactory mySocketFactory() {
 			return mock(SocketFactory.class);
 		}
 

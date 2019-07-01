@@ -36,7 +36,7 @@ class ConfigurationTable {
 		this.entries = new TreeSet<>();
 	}
 
-	public String getId() {
+	String getId() {
 		return this.id;
 	}
 

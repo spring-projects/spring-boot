@@ -152,44 +152,44 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherServletsMappingDescriptionProvider dispatcherServletsMappingDescriptionProvider() {
+		DispatcherServletsMappingDescriptionProvider dispatcherServletsMappingDescriptionProvider() {
 			return new DispatcherServletsMappingDescriptionProvider();
 		}
 
 		@Bean
-		public ServletsMappingDescriptionProvider servletsMappingDescriptionProvider() {
+		ServletsMappingDescriptionProvider servletsMappingDescriptionProvider() {
 			return new ServletsMappingDescriptionProvider();
 		}
 
 		@Bean
-		public FiltersMappingDescriptionProvider filtersMappingDescriptionProvider() {
+		FiltersMappingDescriptionProvider filtersMappingDescriptionProvider() {
 			return new FiltersMappingDescriptionProvider();
 		}
 
 		@Bean
-		public MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
+		MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
 				ConfigurableApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
 		}
 
 		@Bean
-		public ExampleController exampleController() {
+		ExampleController exampleController() {
 			return new ExampleController();
 		}
 
 	}
 
 	@RestController
-	private static class ExampleController {
+	static class ExampleController {
 
 		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
 				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
-		public String example() {
+		String example() {
 			return "Hello World";
 		}
 

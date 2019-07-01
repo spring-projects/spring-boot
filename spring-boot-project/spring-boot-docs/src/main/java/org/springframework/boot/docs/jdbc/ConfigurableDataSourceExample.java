@@ -38,7 +38,7 @@ public class ConfigurableDataSourceExample {
 	 * {@link DataSourceProperties}.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	static class ConfigurableDataSourceConfiguration {
+	public static class ConfigurableDataSourceConfiguration {
 
 		// tag::configuration[]
 		@Bean

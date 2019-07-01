@@ -42,7 +42,7 @@ class MongoDataConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext(ApplicationContext applicationContext, MongoProperties properties,
+	MongoMappingContext mongoMappingContext(ApplicationContext applicationContext, MongoProperties properties,
 			MongoCustomConversions conversions) throws ClassNotFoundException {
 		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		MongoMappingContext context = new MongoMappingContext();
@@ -58,7 +58,7 @@ class MongoDataConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoCustomConversions mongoCustomConversions() {
+	MongoCustomConversions mongoCustomConversions() {
 		return new MongoCustomConversions(Collections.emptyList());
 	}
 

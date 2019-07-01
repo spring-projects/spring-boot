@@ -68,17 +68,17 @@ class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	@EnableMongoRepositories(basePackageClasses = ReactiveCityRepository.class)
 	@EnableReactiveMongoRepositories(basePackageClasses = ReactiveCityRepository.class)
-	protected static class BlockingAndReactiveConfiguration {
+	static class BlockingAndReactiveConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Registrar.class)
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 	}
 
-	protected static class Registrar implements ImportSelector {
+	static class Registrar implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {

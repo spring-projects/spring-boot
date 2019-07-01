@@ -255,7 +255,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 	static class TestEndpoint {
 
 		@ReadOperation
-		public String hello() {
+		String hello() {
 			return "hello world";
 		}
 

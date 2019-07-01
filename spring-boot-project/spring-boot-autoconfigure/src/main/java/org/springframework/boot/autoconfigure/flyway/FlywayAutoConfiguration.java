@@ -352,7 +352,7 @@ public class FlywayAutoConfiguration {
 			this.dataSource = dataSource;
 		}
 
-		public List<String> resolveLocations(List<String> locations) {
+		List<String> resolveLocations(List<String> locations) {
 			if (usesVendorLocation(locations)) {
 				DatabaseDriver databaseDriver = getDatabaseDriver();
 				return replaceVendorLocations(locations, databaseDriver);

@@ -62,7 +62,7 @@ class KafkaMetricsAutoConfigurationTests {
 	static class CustomKafkaConsumerMetricsConfiguration {
 
 		@Bean
-		public KafkaConsumerMetrics customKafkaConsumerMetrics() {
+		KafkaConsumerMetrics customKafkaConsumerMetrics() {
 			return new KafkaConsumerMetrics();
 		}
 

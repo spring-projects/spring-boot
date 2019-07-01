@@ -23,7 +23,7 @@ import org.springframework.data.repository.Repository;
  *
  * @author Phillip Webb
  */
-public interface ExampleRepository extends Repository<ExampleEntity, Long> {
+interface ExampleRepository extends Repository<ExampleEntity, Long> {
 
 	ExampleEntity findByReference(String reference);
 

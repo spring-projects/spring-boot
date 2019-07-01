@@ -208,7 +208,7 @@ class GsonAutoConfigurationTests {
 	static class GsonBuilderCustomizerConfig {
 
 		@Bean
-		public GsonBuilderCustomizer customSerializationExclusionStrategy() {
+		GsonBuilderCustomizer customSerializationExclusionStrategy() {
 			return (gsonBuilder) -> gsonBuilder.addSerializationExclusionStrategy(new ExclusionStrategy() {
 				@Override
 				public boolean shouldSkipField(FieldAttributes fieldAttributes) {
@@ -228,7 +228,7 @@ class GsonAutoConfigurationTests {
 	static class GsonBuilderConfig {
 
 		@Bean
-		public GsonBuilder customGsonBuilder() {
+		GsonBuilder customGsonBuilder() {
 			return new GsonBuilder().serializeNulls();
 		}
 

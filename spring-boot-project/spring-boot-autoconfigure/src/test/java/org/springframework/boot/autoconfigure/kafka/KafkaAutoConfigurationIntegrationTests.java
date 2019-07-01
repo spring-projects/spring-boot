@@ -109,12 +109,12 @@ class KafkaAutoConfigurationIntegrationTests {
 	static class KafkaConfig {
 
 		@Bean
-		public Listener listener() {
+		Listener listener() {
 			return new Listener();
 		}
 
 		@Bean
-		public NewTopic adminCreated() {
+		NewTopic adminCreated() {
 			return TopicBuilder.name(ADMIN_CREATED_TOPIC).partitions(10).replicas(1).build();
 		}
 
@@ -126,7 +126,7 @@ class KafkaAutoConfigurationIntegrationTests {
 
 	}
 
-	public static class Listener {
+	static class Listener {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
@@ -135,7 +135,7 @@ class KafkaAutoConfigurationIntegrationTests {
 		private volatile String key;
 
 		@KafkaListener(topics = TEST_TOPIC)
-		public void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
+		void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();

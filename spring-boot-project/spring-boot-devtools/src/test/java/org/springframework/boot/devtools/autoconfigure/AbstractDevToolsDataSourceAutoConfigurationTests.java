@@ -127,7 +127,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	static class SingleDataSourceConfiguration {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
@@ -137,12 +137,12 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	static class MultipleDataSourcesConfiguration {
 
 		@Bean
-		public DataSource dataSourceOne() {
+		DataSource dataSourceOne() {
 			return mock(DataSource.class);
 		}
 
 		@Bean
-		public DataSource dataSourceTwo() {
+		DataSource dataSourceTwo() {
 			return mock(DataSource.class);
 		}
 
@@ -152,13 +152,13 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	static class DataSourceSpyConfiguration {
 
 		@Bean
-		public DataSourceSpyBeanPostProcessor dataSourceSpyBeanPostProcessor() {
+		DataSourceSpyBeanPostProcessor dataSourceSpyBeanPostProcessor() {
 			return new DataSourceSpyBeanPostProcessor();
 		}
 
 	}
 
-	private static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
+	static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {

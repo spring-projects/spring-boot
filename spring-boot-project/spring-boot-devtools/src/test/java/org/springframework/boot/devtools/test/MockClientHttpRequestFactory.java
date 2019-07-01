@@ -115,7 +115,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 			this.status = status;
 		}
 
-		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
+		ClientHttpResponse asHttpResponse(AtomicLong seq) {
 			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
 					(this.payload != null) ? this.payload : NO_DATA, this.status);
 			waitForDelay();

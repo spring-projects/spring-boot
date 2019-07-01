@@ -66,10 +66,10 @@ class OnPropertyListConditionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(TestPropertyListCondition.class)
-	protected static class TestConfig {
+	static class TestConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

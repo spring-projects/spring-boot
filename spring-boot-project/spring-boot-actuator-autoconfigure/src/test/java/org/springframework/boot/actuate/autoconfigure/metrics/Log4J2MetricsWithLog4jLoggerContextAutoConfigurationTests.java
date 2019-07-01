@@ -62,7 +62,7 @@ public class Log4J2MetricsWithLog4jLoggerContextAutoConfigurationTests {
 	static class CustomLog4J2MetricsConfiguration {
 
 		@Bean
-		public Log4j2Metrics customLog4J2Metrics() {
+		Log4j2Metrics customLog4J2Metrics() {
 			return new Log4j2Metrics();
 		}
 

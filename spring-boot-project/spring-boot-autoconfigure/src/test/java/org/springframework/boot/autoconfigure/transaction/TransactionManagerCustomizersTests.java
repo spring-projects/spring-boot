@@ -51,7 +51,7 @@ class TransactionManagerCustomizersTests {
 		assertThat(list.get(1).getCount()).isEqualTo(1);
 	}
 
-	private static class TestCustomizer<T extends PlatformTransactionManager>
+	static class TestCustomizer<T extends PlatformTransactionManager>
 			implements PlatformTransactionManagerCustomizer<T> {
 
 		private int count;
@@ -61,13 +61,13 @@ class TransactionManagerCustomizersTests {
 			this.count++;
 		}
 
-		public int getCount() {
+		int getCount() {
 			return this.count;
 		}
 
 	}
 
-	private static class TestJtaCustomizer extends TestCustomizer<JtaTransactionManager> {
+	static class TestJtaCustomizer extends TestCustomizer<JtaTransactionManager> {
 
 	}
 

@@ -102,7 +102,7 @@ class JolokiaEndpointAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext) {
+		ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext) {
 			return new ServletEndpointDiscoverer(applicationContext, null, Collections.emptyList());
 		}
 

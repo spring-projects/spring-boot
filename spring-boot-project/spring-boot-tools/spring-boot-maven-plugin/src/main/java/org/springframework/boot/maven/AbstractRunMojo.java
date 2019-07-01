@@ -518,7 +518,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 		}
 
-		public void rethrowUncaughtException() throws MojoExecutionException {
+		void rethrowUncaughtException() throws MojoExecutionException {
 			synchronized (this.monitor) {
 				if (this.exception != null) {
 					throw new MojoExecutionException(
@@ -572,7 +572,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	static class SystemPropertyFormatter {
 
-		public static String format(String key, String value) {
+		static String format(String key, String value) {
 			if (key == null) {
 				return "";
 			}

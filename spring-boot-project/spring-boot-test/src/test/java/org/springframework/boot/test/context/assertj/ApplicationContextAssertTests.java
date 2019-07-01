@@ -406,11 +406,11 @@ class ApplicationContextAssertTests {
 		});
 	}
 
-	private static class Foo {
+	static class Foo {
 
 	}
 
-	private static class Bar extends Foo {
+	static class Bar extends Foo {
 
 	}
 
@@ -418,13 +418,13 @@ class ApplicationContextAssertTests {
 	static class PrimaryFooConfig {
 
 		@Bean
-		public Foo foo() {
+		Foo foo() {
 			return new Foo();
 		}
 
 		@Bean
 		@Primary
-		public Bar bar() {
+		Bar bar() {
 			return new Bar();
 		}
 

@@ -53,7 +53,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-	public KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
+	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
 		Map<String, Object> streamsProperties = this.properties.buildStreamsProperties();
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
@@ -67,7 +67,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	}
 
 	@Bean
-	public KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
+	KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
 			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean) {
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}

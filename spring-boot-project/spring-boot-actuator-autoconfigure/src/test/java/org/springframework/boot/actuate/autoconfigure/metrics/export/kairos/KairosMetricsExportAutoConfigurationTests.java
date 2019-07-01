@@ -84,7 +84,7 @@ class KairosMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -95,7 +95,7 @@ class KairosMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public KairosConfig customConfig() {
+		KairosConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -106,7 +106,7 @@ class KairosMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public KairosMeterRegistry customRegistry(KairosConfig config, Clock clock) {
+		KairosMeterRegistry customRegistry(KairosConfig config, Clock clock) {
 			return new KairosMeterRegistry(config, clock);
 		}
 

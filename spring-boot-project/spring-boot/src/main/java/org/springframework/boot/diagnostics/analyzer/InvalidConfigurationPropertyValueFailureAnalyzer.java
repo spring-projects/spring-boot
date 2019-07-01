@@ -133,15 +133,15 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			this.origin = origin;
 		}
 
-		public String getPropertySource() {
+		String getPropertySource() {
 			return this.propertySource;
 		}
 
-		public Object getValue() {
+		Object getValue() {
 			return this.value;
 		}
 
-		public void appendOrigin(StringBuilder message) {
+		void appendOrigin(StringBuilder message) {
 			if (this.origin != null) {
 				message.append(" (originating from '").append(this.origin).append("')");
 			}

@@ -37,7 +37,7 @@ final class HealthIndicatorRegistryBeans {
 	private HealthIndicatorRegistryBeans() {
 	}
 
-	public static HealthIndicatorRegistry get(ApplicationContext applicationContext) {
+	static HealthIndicatorRegistry get(ApplicationContext applicationContext) {
 		Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 		indicators.putAll(applicationContext.getBeansOfType(HealthIndicator.class));
 		if (ClassUtils.isPresent("reactor.core.publisher.Flux", null)) {
@@ -49,7 +49,7 @@ final class HealthIndicatorRegistryBeans {
 
 	private static class ReactiveHealthIndicators {
 
-		public Map<String, HealthIndicator> get(ApplicationContext applicationContext) {
+		Map<String, HealthIndicator> get(ApplicationContext applicationContext) {
 			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 			applicationContext.getBeansOfType(ReactiveHealthIndicator.class)
 					.forEach((name, indicator) -> indicators.put(name, adapt(indicator)));

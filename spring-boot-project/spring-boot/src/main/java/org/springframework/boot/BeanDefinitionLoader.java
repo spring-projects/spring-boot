@@ -92,7 +92,7 @@ class BeanDefinitionLoader {
 	 * Set the bean name generator to be used by the underlying readers and scanner.
 	 * @param beanNameGenerator the bean name generator
 	 */
-	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
+	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
 		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
@@ -102,7 +102,7 @@ class BeanDefinitionLoader {
 	 * Set the resource loader to be used by the underlying readers and scanner.
 	 * @param resourceLoader the resource loader
 	 */
-	public void setResourceLoader(ResourceLoader resourceLoader) {
+	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 		this.xmlReader.setResourceLoader(resourceLoader);
 		this.scanner.setResourceLoader(resourceLoader);
@@ -112,7 +112,7 @@ class BeanDefinitionLoader {
 	 * Set the environment to be used by the underlying readers and scanner.
 	 * @param environment the environment
 	 */
-	public void setEnvironment(ConfigurableEnvironment environment) {
+	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
 		this.xmlReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
@@ -122,7 +122,7 @@ class BeanDefinitionLoader {
 	 * Load the sources into the reader.
 	 * @return the number of loaded beans
 	 */
-	public int load() {
+	int load() {
 		int count = 0;
 		for (Object source : this.sources) {
 			count += load(source);

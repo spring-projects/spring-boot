@@ -109,11 +109,11 @@ class UnboundConfigurationPropertyFailureAnalyzerTests {
 
 		private List<String> listValue;
 
-		public List<String> getListValue() {
+		List<String> getListValue() {
 			return this.listValue;
 		}
 
-		public void setListValue(List<String> listValue) {
+		void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
 

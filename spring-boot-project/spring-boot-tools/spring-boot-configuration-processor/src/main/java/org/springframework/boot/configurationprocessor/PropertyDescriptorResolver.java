@@ -49,7 +49,7 @@ class PropertyDescriptorResolver {
 	 * or {@code null}
 	 * @return the candidate properties for metadata generation
 	 */
-	public Stream<PropertyDescriptor<?>> resolve(TypeElement type, ExecutableElement factoryMethod) {
+	Stream<PropertyDescriptor<?>> resolve(TypeElement type, ExecutableElement factoryMethod) {
 		TypeElementMembers members = new TypeElementMembers(this.environment, type);
 		ExecutableElement constructor = resolveConstructor(type);
 		if (constructor != null) {
@@ -60,7 +60,7 @@ class PropertyDescriptorResolver {
 		}
 	}
 
-	public Stream<PropertyDescriptor<?>> resolveConstructorProperties(TypeElement type, ExecutableElement factoryMethod,
+	Stream<PropertyDescriptor<?>> resolveConstructorProperties(TypeElement type, ExecutableElement factoryMethod,
 			TypeElementMembers members, ExecutableElement constructor) {
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
 		constructor.getParameters().forEach((parameter) -> {
@@ -75,7 +75,7 @@ class PropertyDescriptorResolver {
 		return candidates.values().stream();
 	}
 
-	public Stream<PropertyDescriptor<?>> resolveJavaBeanProperties(TypeElement type, ExecutableElement factoryMethod,
+	Stream<PropertyDescriptor<?>> resolveJavaBeanProperties(TypeElement type, ExecutableElement factoryMethod,
 			TypeElementMembers members) {
 		// First check if we have regular java bean properties there
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();

@@ -89,13 +89,13 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	static class TestConfiguration {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
 					.setType(EmbeddedDatabaseConnection.get(getClass().getClassLoader()).getType()).build();
 		}
 
 		@Bean
-		public FlywayEndpoint endpoint(ApplicationContext context) {
+		FlywayEndpoint endpoint(ApplicationContext context) {
 			return new FlywayEndpoint(context);
 		}
 

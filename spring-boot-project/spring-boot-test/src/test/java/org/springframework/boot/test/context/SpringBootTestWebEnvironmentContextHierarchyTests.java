@@ -58,14 +58,14 @@ class SpringBootTestWebEnvironmentContextHierarchyTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ParentConfiguration extends AbstractConfig {
+	static class ParentConfiguration extends AbstractConfig {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@RestController
-	protected static class ChildConfiguration extends AbstractConfig {
+	static class ChildConfiguration extends AbstractConfig {
 
 	}
 

@@ -193,7 +193,7 @@ public class Shell {
 			super(null);
 		}
 
-		public void addAliases(String command, String... aliases) {
+		void addAliases(String command, String... aliases) {
 			for (String alias : aliases) {
 				this.aliases.put(alias, command);
 			}
@@ -219,7 +219,7 @@ public class Shell {
 		protected void afterRun(Command command) {
 		}
 
-		public boolean handleSigInt() {
+		boolean handleSigInt() {
 			Command command = this.lastCommand;
 			if (command != null && command instanceof RunProcessCommand) {
 				return ((RunProcessCommand) command).handleSigInt();

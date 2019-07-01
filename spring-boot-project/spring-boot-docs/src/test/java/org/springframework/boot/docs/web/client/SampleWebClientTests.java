@@ -56,7 +56,7 @@ class SampleWebClientTests {
 	static class Config {
 
 		@Bean
-		public RestTemplateBuilder restTemplateBuilder() {
+		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(1))
 					.setReadTimeout(Duration.ofSeconds(1));
 		}

@@ -154,7 +154,7 @@ class InfoContributorAutoConfigurationTests {
 	static class GitPropertiesConfiguration {
 
 		@Bean
-		public GitProperties gitProperties() {
+		GitProperties gitProperties() {
 			Properties properties = new Properties();
 			properties.put("branch", "master");
 			properties.put("commit.id", "abcdefg");
@@ -168,7 +168,7 @@ class InfoContributorAutoConfigurationTests {
 	static class BuildPropertiesConfiguration {
 
 		@Bean
-		public BuildProperties buildProperties() {
+		BuildProperties buildProperties() {
 			Properties properties = new Properties();
 			properties.put("group", "com.example");
 			properties.put("artifact", "demo");
@@ -182,7 +182,7 @@ class InfoContributorAutoConfigurationTests {
 	static class CustomInfoContributorConfiguration {
 
 		@Bean
-		public InfoContributor customInfoContributor() {
+		InfoContributor customInfoContributor() {
 			return (builder) -> {
 			};
 		}
@@ -193,7 +193,7 @@ class InfoContributorAutoConfigurationTests {
 	static class CustomGitInfoContributorConfiguration {
 
 		@Bean
-		public GitInfoContributor customGitInfoContributor() {
+		GitInfoContributor customGitInfoContributor() {
 			return new GitInfoContributor(new GitProperties(new Properties()));
 		}
 
@@ -203,7 +203,7 @@ class InfoContributorAutoConfigurationTests {
 	static class CustomBuildInfoContributorConfiguration {
 
 		@Bean
-		public BuildInfoContributor customBuildInfoContributor() {
+		BuildInfoContributor customBuildInfoContributor() {
 			return new BuildInfoContributor(new BuildProperties(new Properties()));
 		}
 

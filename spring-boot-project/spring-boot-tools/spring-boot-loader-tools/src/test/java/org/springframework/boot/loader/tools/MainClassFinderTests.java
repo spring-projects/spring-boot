@@ -181,7 +181,7 @@ class MainClassFinderTests {
 		}
 	}
 
-	private static class ClassNameCollector implements MainClassCallback<Object> {
+	static class ClassNameCollector implements MainClassCallback<Object> {
 
 		private final List<String> classNames = new ArrayList<>();
 
@@ -191,7 +191,7 @@ class MainClassFinderTests {
 			return null;
 		}
 
-		public List<String> getClassNames() {
+		List<String> getClassNames() {
 			return this.classNames;
 		}
 

@@ -70,7 +70,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
-	public List<Map<String, Object>> load() {
+	List<Map<String, Object>> load() {
 		final List<Map<String, Object>> result = new ArrayList<>();
 		process((properties, map) -> result.add(getFlattenedMap(map)));
 		return result;
@@ -124,7 +124,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(), node.getScalarStyle());
 		}
 
-		public static NodeTuple get(NodeTuple nodeTuple) {
+		static NodeTuple get(NodeTuple nodeTuple) {
 			Node keyNode = nodeTuple.getKeyNode();
 			Node valueNode = nodeTuple.getValueNode();
 			return new NodeTuple(KeyScalarNode.get(keyNode), valueNode);

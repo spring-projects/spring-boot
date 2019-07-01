@@ -187,7 +187,7 @@ public class EmbeddedMongoAutoConfiguration {
 	static class RuntimeConfigConfiguration {
 
 		@Bean
-		public IRuntimeConfig embeddedMongoRuntimeConfig(
+		IRuntimeConfig embeddedMongoRuntimeConfig(
 				ObjectProvider<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
 			Logger logger = LoggerFactory.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
 			ProcessOutput processOutput = new ProcessOutput(Processors.logTo(logger, Slf4jLevel.INFO),

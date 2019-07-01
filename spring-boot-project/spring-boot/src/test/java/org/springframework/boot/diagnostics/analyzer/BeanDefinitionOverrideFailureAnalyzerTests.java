@@ -73,7 +73,7 @@ class BeanDefinitionOverrideFailureAnalyzerTests {
 	static class FirstConfiguration {
 
 		@Bean
-		public String testBean() {
+		String testBean() {
 			return "test";
 		}
 
@@ -83,7 +83,7 @@ class BeanDefinitionOverrideFailureAnalyzerTests {
 	static class SecondConfiguration {
 
 		@Bean
-		public String testBean() {
+		String testBean() {
 			return "test";
 		}
 

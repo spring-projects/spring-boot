@@ -69,14 +69,14 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	@Bean
-	public JCacheCacheManager cacheManager(CacheManagerCustomizers customizers, CacheManager jCacheCacheManager) {
+	JCacheCacheManager cacheManager(CacheManagerCustomizers customizers, CacheManager jCacheCacheManager) {
 		JCacheCacheManager cacheManager = new JCacheCacheManager(jCacheCacheManager);
 		return customizers.customize(cacheManager);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CacheManager jCacheCacheManager(CacheProperties cacheProperties,
+	CacheManager jCacheCacheManager(CacheProperties cacheProperties,
 			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfiguration,
 			ObjectProvider<JCacheManagerCustomizer> cacheManagerCustomizers,
 			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers) throws IOException {

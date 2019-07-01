@@ -299,7 +299,7 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		public RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
+		RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
 			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
 				pattern.append(part);

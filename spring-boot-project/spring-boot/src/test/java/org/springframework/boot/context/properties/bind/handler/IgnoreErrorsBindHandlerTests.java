@@ -63,15 +63,15 @@ class IgnoreErrorsBindHandlerTests {
 		assertThat(bound.getFoo()).isEqualTo(0);
 	}
 
-	public static class Example {
+	static class Example {
 
 		private int foo;
 
-		public int getFoo() {
+		int getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(int foo) {
+		void setFoo(int foo) {
 			this.foo = foo;
 		}
 

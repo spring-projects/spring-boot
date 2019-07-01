@@ -84,7 +84,7 @@ class DefaultLogbackConfiguration {
 		return environment;
 	}
 
-	public void apply(LogbackConfigurator config) {
+	void apply(LogbackConfigurator config) {
 		synchronized (config.getConfigurationLock()) {
 			base(config);
 			Appender<ILoggingEvent> consoleAppender = consoleAppender(config);

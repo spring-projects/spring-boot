@@ -140,7 +140,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	static class CyclicBeanMethodsConfiguration {
 
 		@Bean
-		public BeanThree three(BeanOne one) {
+		BeanThree three(BeanOne one) {
 			return new BeanThree();
 		}
 
@@ -148,7 +148,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		static class InnerConfiguration {
 
 			@Bean
-			public BeanTwo two(BeanThree three) {
+			BeanTwo two(BeanThree three) {
 				return new BeanTwo();
 			}
 
@@ -156,7 +156,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 			static class InnerInnerConfiguration {
 
 				@Bean
-				public BeanOne one(BeanTwo two) {
+				BeanOne one(BeanTwo two) {
 					return new BeanOne();
 				}
 
@@ -170,17 +170,17 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	static class CycleReferencedViaOtherBeansConfiguration {
 
 		@Bean
-		public BeanOne one(BeanTwo two) {
+		BeanOne one(BeanTwo two) {
 			return new BeanOne();
 		}
 
 		@Bean
-		public BeanTwo two(BeanThree three) {
+		BeanTwo two(BeanThree three) {
 			return new BeanTwo();
 		}
 
 		@Bean
-		public BeanThree three(BeanOne beanOne) {
+		BeanThree three(BeanOne beanOne) {
 			return new BeanThree();
 		}
 
@@ -188,7 +188,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		static class InnerConfiguration {
 
 			@Bean
-			public RefererTwo refererTwo() {
+			RefererTwo refererTwo() {
 				return new RefererTwo();
 			}
 
@@ -196,7 +196,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 			static class InnerInnerConfiguration {
 
 				@Bean
-				public RefererOne refererOne() {
+				RefererOne refererOne() {
 					return new RefererOne();
 				}
 
@@ -207,32 +207,32 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
-	public static class CycleWithAutowiredFields {
+	static class CycleWithAutowiredFields {
 
 		@Bean
-		public BeanOne one(BeanTwo two) {
+		BeanOne one(BeanTwo two) {
 			return new BeanOne();
 		}
 
 		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
-		public static class BeanTwoConfiguration {
+		static class BeanTwoConfiguration {
 
 			@SuppressWarnings("unused")
 			@Autowired
 			private BeanThree three;
 
 			@Bean
-			public BeanTwo two() {
+			BeanTwo two() {
 				return new BeanTwo();
 			}
 
 		}
 
 		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
-		public static class BeanThreeConfiguration {
+		static class BeanThreeConfiguration {
 
 			@Bean
-			public BeanThree three(BeanOne one) {
+			BeanThree three(BeanOne one) {
 				return new BeanThree();
 			}
 
