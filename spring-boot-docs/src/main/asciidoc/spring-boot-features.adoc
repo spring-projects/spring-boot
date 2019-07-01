@@ -2382,7 +2382,7 @@ Common server settings include:
 
 * Network settings: listen port for incoming HTTP requests (`server.port`), interface
 address to bind to `server.address`, etc.
-* Session settings: whether the session is persistent (`server.session.persistence`),
+* Session settings: whether the session is persistent (`server.session.persistent`),
 session timeout (`server.session.timeout`), location of session data
 (`server.session.store-dir`) and session-cookie configuration (`server.session.cookie.*`).
 * Error management: location of the error page (`server.error.path`), etc.
