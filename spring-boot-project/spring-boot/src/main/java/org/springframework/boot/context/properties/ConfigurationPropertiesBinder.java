@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -47,6 +48,7 @@ import org.springframework.validation.annotation.Validated;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Jurrian Fahner
  */
 class ConfigurationPropertiesBinder {
 
@@ -73,7 +75,7 @@ class ConfigurationPropertiesBinder {
 	public void bind(Bindable<?> target) {
 		ConfigurationProperties annotation = target.getAnnotation(ConfigurationProperties.class);
 		Assert.state(annotation != null, () -> "Missing @ConfigurationProperties on " + target);
-		List<Validator> validators = getValidators(target);
+		List<Validator> validators = getValidators(annotation, target);
 		BindHandler bindHandler = getBindHandler(annotation, validators);
 		getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
@@ -86,7 +88,7 @@ class ConfigurationPropertiesBinder {
 		return null;
 	}
 
-	private List<Validator> getValidators(Bindable<?> target) {
+	private List<Validator> getValidators(ConfigurationProperties annotation, Bindable<?> target) {
 		List<Validator> validators = new ArrayList<>(3);
 		if (this.configurationPropertiesValidator != null) {
 			validators.add(this.configurationPropertiesValidator);
@@ -96,6 +98,10 @@ class ConfigurationPropertiesBinder {
 		}
 		if (target.getValue() != null && target.getValue().get() instanceof Validator) {
 			validators.add((Validator) target.getValue().get());
+		}
+		for (Class<? extends Validator> validatorClass : annotation.validators()) {
+			Validator validator = BeanUtils.instantiateClass(validatorClass);
+			validators.add(validator);
 		}
 		return validators;
 	}

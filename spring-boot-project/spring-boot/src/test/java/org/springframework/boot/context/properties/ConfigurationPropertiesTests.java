@@ -100,6 +100,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Jurrian Fahner
  */
 public class ConfigurationPropertiesTests {
 
@@ -734,6 +735,20 @@ public class ConfigurationPropertiesTests {
 		assertThat(x.get(-1).getB()).isEqualTo(0);
 		assertThat(x.get(1).getA()).isEqualTo("bar");
 		assertThat(x.get(1).getB()).isEqualTo(1);
+	}
+
+	@Test
+	public void loadWhenValidatorIsConfiguredInAnnotation() {
+		load(CustomValidator1Properties.class, "test.name=John");
+		CustomValidator1Properties bean = this.context.getBean(CustomValidator1Properties.class);
+		assertThat(bean.getName()).isEqualTo("John");
+	}
+
+	@Test
+	public void loadWhenValidatorIsConfiguredInAnnotationShouldFail() {
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(CustomValidator1Properties.class))
+				.withRootCauseInstanceOf(BindValidationException.class);
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -1688,6 +1703,42 @@ public class ConfigurationPropertiesTests {
 
 		public void setAnotherSize(DataSize anotherSize) {
 			this.anotherSize = anotherSize;
+		}
+
+	}
+
+	static class Example1Validator implements Validator {
+
+		@Override
+		public boolean supports(Class<?> clazz) {
+			return CustomValidator1Properties.class.isAssignableFrom(clazz);
+		}
+
+		@Override
+		public void validate(Object target, Errors errors) {
+			CustomValidator1Properties properties = (CustomValidator1Properties) target;
+			if (properties.getName() == null) {
+				errors.reject("example1", "name should be not-null");
+			}
+			else if (!properties.getName().startsWith("J")) {
+				errors.reject("example1", "for this example a name should always start with the letter 'J'");
+			}
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test", validators = Example1Validator.class)
+	static class CustomValidator1Properties {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 	}

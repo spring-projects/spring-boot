@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.validation.Validator;
 
 /**
  * Annotation for externalized configuration. Add this to a class definition or a
@@ -33,6 +34,7 @@ import org.springframework.core.annotation.AliasFor;
  * values are externalized.
  *
  * @author Dave Syer
+ * @author Jurrian Fahner
  * @since 1.0.0
  * @see ConfigurationPropertiesBindingPostProcessor
  * @see EnableConfigurationProperties
@@ -59,6 +61,13 @@ public @interface ConfigurationProperties {
 	 */
 	@AliasFor("value")
 	String prefix() default "";
+
+	/**
+	 * Convenient way to register extra validators to be applied on this object. These
+	 * classes needs to implement the {@link Validator} interface.
+	 * @return the validators to use on this object
+	 */
+	Class<? extends Validator>[] validators() default {};
 
 	/**
 	 * Flag to indicate that when binding to this object invalid fields should be ignored.
