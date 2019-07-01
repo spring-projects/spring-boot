@@ -1451,7 +1451,8 @@
 								</resource>
 							</resources>
 							<attributes>
-								<sources-root>${project.basedir}/src/</sources-root>
+								<sources-root>${project.basedir}/src</sources-root>
+								<asciidoc-sources-root>${project.basedir}/src/main/asciidoc</asciidoc-sources-root>
 								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
 								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
 								<github-tag>${github-tag}</github-tag>

@@ -1,6 +1,9 @@
 [appendix]
 [[configuration-metadata]]
 == Configuration Metadata
+
+include::{asciidoc-sources-root}/attributes.adoc[]
+
 Spring Boot jars include metadata files that provide details of all supported
 configuration properties. The files are designed to let IDE developers offer
 contextual help and "`code completion`" as users are working with `application.properties`
