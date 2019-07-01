@@ -460,9 +460,9 @@ variable or system property).
 . A `RandomValuePropertySource` that has properties only in `+random.*+`.
 . <<boot-features-external-config-profile-specific-properties,Profile-specific
 application properties>> outside of your packaged jar
-(`application-{profile}.properties` and YAML variants).
+(`application-\{profile}.properties` and YAML variants).
 . <<boot-features-external-config-profile-specific-properties,Profile-specific
-application properties>> packaged inside your jar (`application-{profile}.properties`
+application properties>> packaged inside your jar (`application-\{profile}.properties`
 and YAML variants).
 . Application properties outside of your packaged jar (`application.properties` and YAML
 variants).
@@ -656,7 +656,7 @@ environment variables or system properties.
 [[boot-features-external-config-profile-specific-properties]]
 === Profile-specific Properties
 In addition to `application.properties` files, profile-specific properties can also be
-defined by using the following naming convention: `application-{profile}.properties`. The
+defined by using the following naming convention: `application-\{profile}.properties`. The
 `Environment` has a set of default profiles (by default, `[default]`) that are used if no
 active profiles are set. In other words, if no profiles are explicitly activated, then
 properties from `application-default.properties` are loaded.
@@ -901,7 +901,7 @@ to using only one of them.
 
 [[boot-features-external-config-typesafe-configuration-properties]]
 === Type-safe Configuration Properties
-Using the `@Value("${property}")` annotation to inject configuration properties can
+Using the `@Value("$\{property}")` annotation to inject configuration properties can
 sometimes be cumbersome, especially if you are working with multiple properties or your
 data is hierarchical in nature. Spring Boot provides an alternative method of working
 with properties that lets strongly typed beans govern and validate the configuration of
@@ -2072,7 +2072,7 @@ as the delimiter between a property name and its default value and not use `:-`.
 
 You can add MDC and other ad-hoc content to log lines by overriding only the
 `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with Logback). For example, if you use
-`logging.pattern.level=user:%X{user} %5p`, then the default log format contains an MDC
+`logging.pattern.level=user:%X\{user} %5p`, then the default log format contains an MDC
 entry for "user", if it exists, as shown in the following example.
 
 ----
@@ -2256,17 +2256,17 @@ The following code shows a typical `@RestController` that serves JSON data:
 	@RequestMapping(value="/users")
 	public class MyRestController {
 
-		@RequestMapping(value="/{user}", method=RequestMethod.GET)
+		@RequestMapping(value="/\{user}", method=RequestMethod.GET)
 		public User getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/{user}/customers", method=RequestMethod.GET)
+		@RequestMapping(value="/\{user}/customers", method=RequestMethod.GET)
 		List<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/{user}", method=RequestMethod.DELETE)
+		@RequestMapping(value="/\{user}", method=RequestMethod.DELETE)
 		public User deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2857,17 +2857,17 @@ following example:
 	@RequestMapping("/users")
 	public class MyRestController {
 
-		@GetMapping("/{user}")
+		@GetMapping("/\{user}")
 		public Mono<User> getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@GetMapping("/{user}/customers")
+		@GetMapping("/\{user}/customers")
 		public Flux<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@DeleteMapping("/{user}")
+		@DeleteMapping("/\{user}")
 		public Mono<User> deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2885,9 +2885,9 @@ actual handling of the requests, as shown in the following example:
 
 		@Bean
 		public RouterFunction<ServerResponse> monoRouterFunction(UserHandler userHandler) {
-			return route(GET("/{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
-					.andRoute(GET("/{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
-					.andRoute(DELETE("/{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
+			return route(GET("/\{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
+					.andRoute(GET("/\{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
+					.andRoute(DELETE("/\{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
 		}
 
 	}

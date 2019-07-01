@@ -206,7 +206,7 @@ properties (System properties, environment variables, manifest entries, or
 |Key |Purpose
 
 |`loader.path`
-|Comma-separated Classpath, such as `lib,${HOME}/app/lib`. Earlier entries take
+|Comma-separated Classpath, such as `lib,$\{HOME}/app/lib`. Earlier entries take
  precedence, like a regular `-classpath` on the `javac` command line.
 
 |`loader.home`
