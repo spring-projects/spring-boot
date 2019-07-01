@@ -21,8 +21,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSslConnectionFactory;
 
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties.Packages;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties.Ssl;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -51,12 +53,35 @@ class ActiveMQConnectionFactoryFactory {
 	}
 
 	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+		T factory;
 		try {
-			return doCreateConnectionFactory(factoryClass);
+			factory = doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create " + "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException("Unable to create [" + factoryClass + "] instance", ex);
 		}
+		customize(factory);
+		return factory;
+	}
+
+	<T extends ActiveMQSslConnectionFactory> T createSslConnectionFactory(Class<T> factoryClass) {
+		Ssl ssl = this.properties.getSsl();
+		T factory;
+		try {
+			factory = doCreateConnectionFactory(factoryClass);
+			factory.setTrustStore(ssl.getTrustStore());
+			factory.setTrustStoreType(ssl.getTrustStoreType());
+			factory.setTrustStorePassword(ssl.getTrustStorePassword());
+			factory.setKeyStore(ssl.getKeyStore());
+			factory.setKeyStoreType(ssl.getKeyStoreType());
+			factory.setKeyStorePassword(ssl.getKeyStorePassword());
+			factory.setKeyStoreKeyPassword(ssl.getKeyStoreKeyPassword());
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable to create [" + factoryClass + "] instance", ex);
+		}
+		customize(factory);
+		return factory;
 	}
 
 	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
@@ -75,7 +100,6 @@ class ActiveMQConnectionFactoryFactory {
 		if (!packages.getTrusted().isEmpty()) {
 			factory.setTrustedPackages(packages.getTrusted());
 		}
-		customize(factory);
 		return factory;
 	}
 
@@ -84,11 +108,12 @@ class ActiveMQConnectionFactoryFactory {
 		String brokerUrl = determineBrokerUrl();
 		String user = this.properties.getUser();
 		String password = this.properties.getPassword();
+		T factory = factoryClass.getConstructor(String.class).newInstance(brokerUrl);
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
-			return factoryClass.getConstructor(String.class, String.class, String.class).newInstance(user, password,
-					brokerUrl);
+			factory.setUserName(user);
+			factory.setPassword(password);
 		}
-		return factoryClass.getConstructor(String.class).newInstance(brokerUrl);
+		return factory;
 	}
 
 	private void customize(ActiveMQConnectionFactory connectionFactory) {

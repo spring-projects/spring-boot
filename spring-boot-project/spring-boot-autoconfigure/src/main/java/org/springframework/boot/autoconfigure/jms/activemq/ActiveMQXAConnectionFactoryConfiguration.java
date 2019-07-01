@@ -16,13 +16,17 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.XAConnectionFactory;
 import javax.transaction.TransactionManager;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.ActiveMQXAConnectionFactory;
+import org.apache.activemq.ActiveMQXASslConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -46,25 +50,47 @@ import org.springframework.context.annotation.Primary;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQXAConnectionFactoryConfiguration {
 
+	private final ActiveMQProperties properties;
+
+	private final List<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers;
+
+	ActiveMQXAConnectionFactoryConfiguration(ActiveMQProperties properties,
+			ObjectProvider<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers) {
+		this.properties = properties;
+		this.connectionFactoryCustomizers = connectionFactoryCustomizers.orderedStream().collect(Collectors.toList());
+	}
+
+	private static XAConnectionFactory createXAConnectionFactory(ActiveMQProperties properties,
+			List<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers) {
+		boolean ssl = properties.getSsl().isEnabled();
+		ActiveMQConnectionFactoryFactory factory = new ActiveMQConnectionFactoryFactory(properties,
+				connectionFactoryCustomizers);
+		return ssl ? factory.createSslConnectionFactory(ActiveMQXASslConnectionFactory.class)
+				: factory.createConnectionFactory(ActiveMQXAConnectionFactory.class);
+	}
+
+	private static ActiveMQConnectionFactory createConnectionFactory(ActiveMQProperties properties,
+			List<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers) {
+		boolean ssl = properties.getSsl().isEnabled();
+		ActiveMQConnectionFactoryFactory factory = new ActiveMQConnectionFactoryFactory(properties,
+				connectionFactoryCustomizers);
+		return ssl ? factory.createSslConnectionFactory(ActiveMQSslConnectionFactory.class)
+				: factory.createConnectionFactory(ActiveMQConnectionFactory.class);
+	}
+
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
-	ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper)
-			throws Exception {
-		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
-						.createConnectionFactory(ActiveMQXAConnectionFactory.class);
-		return wrapper.wrapConnectionFactory(connectionFactory);
+	ConnectionFactory jmsConnectionFactory(XAConnectionFactoryWrapper wrapper) throws Exception {
+		XAConnectionFactory xaConnectionFactory = createXAConnectionFactory(this.properties,
+				this.connectionFactoryCustomizers);
+		return wrapper.wrapConnectionFactory(xaConnectionFactory);
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
 			matchIfMissing = true)
-	ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
-		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
-						.createConnectionFactory(ActiveMQConnectionFactory.class);
+	ActiveMQConnectionFactory nonXaJmsConnectionFactory() {
+		return createConnectionFactory(this.properties, this.connectionFactoryCustomizers);
 	}
 
 }

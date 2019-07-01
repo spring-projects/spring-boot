@@ -19,11 +19,14 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSslConnectionFactory;
+import org.apache.activemq.ActiveMQXASslConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -187,6 +190,82 @@ class ActiveMQAutoConfigurationTests {
 					context.getSourceApplicationContext().close();
 					assertThat(factory.createConnection()).isNull();
 				});
+	}
+
+	@Test
+	void sslConnectionFactoryUsingPoolIsApplied() {
+		this.contextRunner.withPropertyValues("spring.activemq.pool.enabled=true", "spring.activemq.ssl.enabled=true",
+				"spring.activemq.ssl.trust-store-type=JKS", "spring.activemq.ssl.trust-store=truststore",
+				"spring.activemq.ssl.trust-store-password=spring-boot", "spring.activemq.ssl.key-store-type=JKS",
+				"spring.activemq.ssl.key-store=keystore", "spring.activemq.ssl.key-store-password=spring-boot",
+				"spring.activemq.ssl.key-store-key-password=boot-spring").run((context) -> {
+					assertThat(context).hasSingleBean(JmsPoolConnectionFactory.class);
+					JmsPoolConnectionFactory poolConnectionFactory = context.getBean(JmsPoolConnectionFactory.class);
+					Object connectionFactory = poolConnectionFactory.getConnectionFactory();
+					assertThat(connectionFactory).isInstanceOf(ActiveMQSslConnectionFactory.class);
+					assertSslConfiguration(((ActiveMQSslConnectionFactory) connectionFactory));
+				});
+	}
+
+	@Test
+	void sslConnectionFactoryUsingCacheIsApplied() {
+		this.contextRunner.withPropertyValues("spring.jms.cache.enabled=true", "spring.activemq.ssl.enabled=true",
+				"spring.activemq.ssl.trust-store-type=JKS", "spring.activemq.ssl.trust-store=truststore",
+				"spring.activemq.ssl.trust-store-password=spring-boot", "spring.activemq.ssl.key-store-type=JKS",
+				"spring.activemq.ssl.key-store=keystore", "spring.activemq.ssl.key-store-password=spring-boot",
+				"spring.activemq.ssl.key-store-key-password=boot-spring").run((context) -> {
+					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+					CachingConnectionFactory cachingConnectionFactory = context.getBean(CachingConnectionFactory.class);
+					ConnectionFactory connectionFactory = cachingConnectionFactory.getTargetConnectionFactory();
+					assertThat(connectionFactory).isInstanceOf(ActiveMQSslConnectionFactory.class);
+					assertSslConfiguration(((ActiveMQSslConnectionFactory) connectionFactory));
+				});
+	}
+
+	@Test
+	void sslConnectionFactoryIsApplied() {
+		this.contextRunner.withPropertyValues("spring.jms.cache.enabled=false", "spring.activemq.ssl.enabled=true",
+				"spring.activemq.ssl.trust-store-type=JKS", "spring.activemq.ssl.trust-store=truststore",
+				"spring.activemq.ssl.trust-store-password=spring-boot", "spring.activemq.ssl.key-store-type=JKS",
+				"spring.activemq.ssl.key-store=keystore", "spring.activemq.ssl.key-store-password=spring-boot",
+				"spring.activemq.ssl.key-store-key-password=boot-spring")
+				.run((context) -> assertSslConfiguration(context.getBean(ActiveMQSslConnectionFactory.class)));
+	}
+
+	@Test
+	void sslConnectionFactoryIsAppliedXaConfiguration() {
+		this.contextRunner.withUserConfiguration(XAConfiguration.class)
+				.withPropertyValues("spring.jms.cache.enabled=false", "spring.activemq.ssl.enabled=true",
+						"spring.activemq.ssl.trust-store-type=JKS", "spring.activemq.ssl.trust-store=truststore",
+						"spring.activemq.ssl.trust-store-password=spring-boot",
+						"spring.activemq.ssl.key-store-type=JKS", "spring.activemq.ssl.key-store=keystore",
+						"spring.activemq.ssl.key-store-password=spring-boot",
+						"spring.activemq.ssl.key-store-key-password=boot-spring")
+				.run((context) -> {
+					assertSslConfiguration(context.getBean(ActiveMQXASslConnectionFactory.class));
+					assertSslConfiguration(
+							context.getBean("nonXaJmsConnectionFactory", ActiveMQSslConnectionFactory.class));
+				});
+	}
+
+	private static void assertSslConfiguration(ActiveMQSslConnectionFactory factory) {
+		assertThat(factory.getKeyStore()).isEqualTo("keystore");
+		assertThat(factory.getKeyStoreType()).isEqualTo("JKS");
+		assertThat(factory.getKeyStoreKeyPassword()).isEqualTo("boot-spring");
+		assertThat(factory.getKeyStorePassword()).isEqualTo("spring-boot");
+		assertThat(factory.getTrustStore()).isEqualTo("truststore");
+		assertThat(factory.getTrustStorePassword()).isEqualTo("spring-boot");
+		assertThat(factory.getTrustStoreType()).isEqualTo("JKS");
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class XAConfiguration {
+
+		@Bean
+		XAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
+			return (connectionFactory) -> ((ConnectionFactory) connectionFactory);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

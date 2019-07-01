@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,11 @@ public class ActiveMQProperties {
 
 	private final Packages packages = new Packages();
 
+	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
+
 	public String getBrokerUrl() {
 		return this.brokerUrl;
 	}
@@ -142,6 +147,10 @@ public class ActiveMQProperties {
 		return this.packages;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	public static class Packages {
 
 		/**
@@ -169,6 +178,114 @@ public class ActiveMQProperties {
 
 		public void setTrusted(List<String> trusted) {
 			this.trusted = trusted;
+		}
+
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Path to the key store that holds the SSL certificate.
+		 */
+		private String keyStore;
+
+		/**
+		 * Password to match the key from the key store.
+		 */
+		private String keyStoreKeyPassword;
+
+		/**
+		 * Key store type.
+		 */
+		private String keyStoreType = "JKS";
+
+		/**
+		 * Password used to access the key store.
+		 */
+		private String keyStorePassword;
+
+		/**
+		 * Trust store that holds SSL certificates.
+		 */
+		private String trustStore;
+
+		/**
+		 * Trust store type.
+		 */
+		private String trustStoreType = "JKS";
+
+		/**
+		 * Password used to access the trust store.
+		 */
+		private String trustStorePassword;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getKeyStore() {
+			return this.keyStore;
+		}
+
+		public void setKeyStore(String keyStore) {
+			this.keyStore = keyStore;
+		}
+
+		public String getKeyStoreKeyPassword() {
+			return this.keyStoreKeyPassword;
+		}
+
+		public void setKeyStoreKeyPassword(String keyStoreKeyPassword) {
+			this.keyStoreKeyPassword = keyStoreKeyPassword;
+		}
+
+		public String getKeyStoreType() {
+			return this.keyStoreType;
+		}
+
+		public void setKeyStoreType(String keyStoreType) {
+			this.keyStoreType = keyStoreType;
+		}
+
+		public String getKeyStorePassword() {
+			return this.keyStorePassword;
+		}
+
+		public void setKeyStorePassword(String keyStorePassword) {
+			this.keyStorePassword = keyStorePassword;
+		}
+
+		public String getTrustStore() {
+			return this.trustStore;
+		}
+
+		public void setTrustStore(String trustStore) {
+			this.trustStore = trustStore;
+		}
+
+		public String getTrustStoreType() {
+			return this.trustStoreType;
+		}
+
+		public void setTrustStoreType(String trustStoreType) {
+			this.trustStoreType = trustStoreType;
+		}
+
+		public String getTrustStorePassword() {
+			return this.trustStorePassword;
+		}
+
+		public void setTrustStorePassword(String trustStorePassword) {
+			this.trustStorePassword = trustStorePassword;
 		}
 
 	}
