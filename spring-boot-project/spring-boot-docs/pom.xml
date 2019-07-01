@@ -1451,16 +1451,17 @@
 								</resource>
 							</resources>
 							<attributes>
-								<spring-boot-docs-version>${revision}</spring-boot-docs-version>
-								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-								<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
-								<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
-								<github-tag>${github-tag}</github-tag>
-								<spring-version>${spring-framework.version}</spring-version>
-								<spring-docs-version>${spring-framework.version}</spring-docs-version>
-								<spring-boot-version>${revision}</spring-boot-version>
 								<sources-root>${project.basedir}/src/</sources-root>
 								<generated-resources-root>${project.basedir}/target/generated-resources</generated-resources-root>
+								<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+								<github-tag>${github-tag}</github-tag>
+								<jooq-version>${jooq.version}</jooq-version>
+								<spring-boot-docs-version>${revision}</spring-boot-docs-version>
+								<spring-boot-version>${revision}</spring-boot-version>
+								<spring-docs-version>${spring-framework.version}</spring-docs-version>
+								<spring-framework-version>${spring-framework.version}</spring-framework-version>
+								<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
+								<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
 							</attributes>
 						</configuration>
 						<executions>
