@@ -2,14 +2,11 @@
 = Spring Boot Features
 include::attributes.adoc[]
 
-[partintro]
---
 This section dives into the details of Spring Boot. Here you can learn about the key
 features that you may want to use and customize. If you have not already done so, you
 might want to read the "<<getting-started.adoc#getting-started>>" and
 "<<using-spring-boot.adoc#using-boot>>" sections, so that you have a good grounding of the
 basics.
---
 
 
 

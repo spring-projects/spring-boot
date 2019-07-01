@@ -2,8 +2,6 @@
 = Using Spring Boot
 include::attributes.adoc[]
 
-[partintro]
---
 This section goes into more detail about how you should use Spring Boot. It covers topics
 such as build systems, auto-configuration, and how to run your applications. We also
 cover some Spring Boot best practices. Although there is nothing particularly special
@@ -13,7 +11,6 @@ recommendations that, when followed, make your development process a little easi
 If you are starting out with Spring Boot, you should probably read the
 _<<getting-started.adoc#getting-started, Getting Started>>_ guide before diving into this
 section.
---
 
 
 

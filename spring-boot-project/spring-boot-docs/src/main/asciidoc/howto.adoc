@@ -2,8 +2,6 @@
 = "`How-to`" Guides
 include::attributes.adoc[]
 
-[partintro]
---
 This section provides answers to some common '`how do I do that...`' questions
 that often arise when using Spring Boot. Its coverage is not exhaustive, but it
 does cover quite a lot.
@@ -15,7 +13,6 @@ the `spring-boot` tag).
 
 We are also more than happy to extend this section. If you want to add a '`how-to`',
 send us a {github-code}[pull request].
---
 
 
 
