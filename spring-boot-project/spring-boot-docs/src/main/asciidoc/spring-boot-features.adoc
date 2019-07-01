@@ -3471,7 +3471,7 @@ The following code shows a typical `@Controller`:
 			// ...
 		}
 
-		@MessageMapping("users.{user}.info")
+		@MessageMapping("users.\{user}.info")
 		Mono<ChatUserInfo> getUserInfo(@DestinationVariable String user) {
 			// ...
 		}
