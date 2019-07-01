@@ -68,7 +68,7 @@ include::{generated-resources-root}/config-docs/security.adoc[]
 
 === RSocket properties
 
-include::../../../target/generated-resources/config-docs/rsocket.adoc[]
+include::{generated-resources-root}/config-docs/rsocket.adoc[]
 
 === Actuator properties
 
