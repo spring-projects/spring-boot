@@ -2229,6 +2229,24 @@
       ]
     },
     {
+      "name": "spring.kafka.consumer.isolation-level",
+      "values": [
+        {
+          "value": "read_committed",
+          "description": "Only consume transactional messages that have been committed."
+        },
+        {
+          "value": "read_uncommitted",
+          "description": "Consume all transactional messages (even those that have been aborted)."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
       "name": "spring.kafka.producer.key-serializer",
       "providers": [
         {

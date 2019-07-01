@@ -267,6 +267,13 @@ public class KafkaProperties {
 		private Duration heartbeatInterval;
 
 		/**
+		 * Controls how transactional messages are returned when polling the broker
+		 * (non-transactional messages will be unconditionally returned, regardless of
+		 * this setting).
+		 */
+		private String isolationLevel;
+
+		/**
 		 * Deserializer class for keys.
 		 */
 		private Class<?> keyDeserializer = StringDeserializer.class;
@@ -362,6 +369,14 @@ public class KafkaProperties {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
+		public String getIsolationLevel() {
+			return this.isolationLevel;
+		}
+
+		public void setIsolationLevel(String isolationLevel) {
+			this.isolationLevel = isolationLevel;
+		}
+
 		public Class<?> getKeyDeserializer() {
 			return this.keyDeserializer;
 		}
@@ -406,6 +421,7 @@ public class KafkaProperties {
 			map.from(this::getGroupId).to(properties.in(ConsumerConfig.GROUP_ID_CONFIG));
 			map.from(this::getHeartbeatInterval).asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG));
+			map.from(this::getIsolationLevel).to(properties.in(ConsumerConfig.ISOLATION_LEVEL_CONFIG));
 			map.from(this::getKeyDeserializer).to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
