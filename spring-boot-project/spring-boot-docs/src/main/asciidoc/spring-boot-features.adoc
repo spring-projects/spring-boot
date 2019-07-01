@@ -3325,7 +3325,7 @@ Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface
 address to bind to `server.address`, and so on.
-* Session settings: Whether the session is persistent (`server.servlet.session.persistence`),
+* Session settings: Whether the session is persistent (`server.servlet.session.persistent`),
 session timeout (`server.servlet.session.timeout`), location of session data
 (`server.servlet.session.store-dir`), and session-cookie configuration
 (`server.servlet.session.cookie.*`).
