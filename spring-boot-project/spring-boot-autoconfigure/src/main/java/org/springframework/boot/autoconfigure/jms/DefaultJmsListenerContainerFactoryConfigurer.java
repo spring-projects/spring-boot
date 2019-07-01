@@ -109,8 +109,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		if (concurrency != null) {
 			factory.setConcurrency(concurrency);
 		}
-		JmsProperties.Template template = this.jmsProperties.getTemplate();
-		Duration receiveTimeout = template.getReceiveTimeout();
+		Duration receiveTimeout = listener.getReceiveTimeout();
 		if (receiveTimeout != null) {
 			factory.setReceiveTimeout(receiveTimeout.toMillis());
 		}
