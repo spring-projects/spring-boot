@@ -49,10 +49,12 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -231,6 +233,37 @@ class BatchAutoConfigurationTests {
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 				});
+	}
+
+	@Test
+	void testBatchDataSource() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, BatchDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(BatchConfigurer.class)
+							.hasSingleBean(BatchDataSourceInitializer.class).hasBean("batchDataSource");
+					DataSource batchDataSource = context.getBean("batchDataSource", DataSource.class);
+					assertThat(context.getBean(BatchConfigurer.class)).hasFieldOrPropertyWithValue("dataSource",
+							batchDataSource);
+					assertThat(context.getBean(BatchDataSourceInitializer.class))
+							.hasFieldOrPropertyWithValue("dataSource", batchDataSource);
+				});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	protected static class BatchDataSourceConfiguration {
+
+		@Bean
+		@Primary
+		public DataSource normalDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
+		}
+
+		@BatchDataSource
+		@Bean
+		public DataSource batchDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:batchdatasource").username("sa").build();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
