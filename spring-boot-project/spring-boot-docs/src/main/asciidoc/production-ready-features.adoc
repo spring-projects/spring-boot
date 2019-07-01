@@ -1099,7 +1099,7 @@ management endpoint, as shown in the following example:
 ----
 
 The preceding `application.properties` example changes the endpoint from
-`/actuator/{id}` to `/manage/{id}` (for example, `/manage/info`).
+`/actuator/\{id}` to `/manage/\{id}` (for example, `/manage/info`).
 
 NOTE: Unless the management port has been configured to
 <<production-ready-customizing-management-server-port,expose endpoints by using a
@@ -1376,7 +1376,7 @@ https://micrometer.io/docs[reference documentation], in particular the
 === Getting started
 Spring Boot auto-configures a composite `MeterRegistry` and adds a registry to the
 composite for each of the supported implementations that it finds on the classpath. Having
-a dependency on `micrometer-registry-{system}` in your runtime classpath is enough for
+a dependency on `micrometer-registry-\{system}` in your runtime classpath is enough for
 Spring Boot to configure the registry.
 
 Most registries share common features. For instance, you can disable a particular registry
@@ -1846,7 +1846,7 @@ By default, Spring MVC-related metrics are tagged with the following information
 
 |`uri`
 |Request's URI template prior to variable substitution, if possible (for example,
-`/api/person/{id}`)
+`/api/person/\{id}`)
 
 |===
 
@@ -1883,7 +1883,7 @@ By default, WebFlux-related metrics are tagged with the following information:
 
 |`uri`
 |Request's URI template prior to variable substitution, if possible (for example,
-`/api/person/{id}`)
+`/api/person/\{id}`)
 
 |===
 
@@ -1940,7 +1940,7 @@ By default, Jersey server metrics are tagged with the following information:
 
 |`uri`
 |Request's URI template prior to variable substitution, if possible (for example,
-`/api/person/{id}`)
+`/api/person/\{id}`)
 
 |===
 
@@ -1968,7 +1968,7 @@ following information:
 
 * `method`, the request's method (for example, `GET` or `POST`).
 * `uri`,  the request's URI template prior to variable substitution, if possible (for
-example, `/api/person/{id}`).
+example, `/api/person/\{id}`).
 * `status`, the response's HTTP status code (for example, `200` or `500`).
 * `clientName`, the host portion of the URI.
 
