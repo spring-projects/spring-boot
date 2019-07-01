@@ -30,7 +30,7 @@ include::{snippets}health/response-fields.adoc[]
 [[health-retrieving-component]]
 == Retrieving the Health of a component
 To retrieve the health of a particular component of the application, make a `GET` request
-to `/actuator/health/{component}`, as shown in the following curl-based example:
+to `/actuator/health/\{component}`, as shown in the following curl-based example:
 
 include::{snippets}health/component/curl-request.adoc[]
 
@@ -54,7 +54,7 @@ include::{snippets}health/component/response-fields.adoc[]
 == Retrieving the Health of a component instance
 If a particular component consists of multiple instances (as the `broker` indicator in
 the example above), the health of a particular instance of that component can be retrieved
-by issuing a `GET` request to `/actuator/health/{component}/{instance}`, as shown in the
+by issuing a `GET` request to `/actuator/health/\{component}/\{instance}`, as shown in the
 following curl-based example:
 
 include::{snippets}health/instance/curl-request.adoc[]
