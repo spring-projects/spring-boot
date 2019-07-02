@@ -29,9 +29,9 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.boot.gradle.testkit.GradleBuildExtension;
 
 /**
- * {@link Extension} that runs {@link TestTemplate templated tests} against multiple
- * versions of Gradle. Test classes using the extension must have non-private and
- * non-final {@link GradleBuild} field named {@code gradleBuild}.
+ * {@link Extension} that runs {@link org.junit.jupiter.api.TestTemplate templated tests}
+ * against multiple versions of Gradle. Test classes using the extension must have a
+ * non-private and non-final {@link GradleBuild} field named {@code gradleBuild}.
  *
  * @author Andy Wilkinson
  */
