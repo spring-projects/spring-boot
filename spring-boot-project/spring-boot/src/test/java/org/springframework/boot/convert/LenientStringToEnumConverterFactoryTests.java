@@ -26,11 +26,11 @@ import org.springframework.core.convert.ConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link StringToEnumIgnoringCaseConverterFactory}.
+ * Tests for {@link LenientStringToEnumConverterFactory}.
  *
  * @author Phillip Webb
  */
-class StringToEnumIgnoringCaseConverterFactoryTests {
+class LenientStringToEnumConverterFactoryTests {
 
 	@ConversionServiceTest
 	void canConvertFromStringToEnumShouldReturnTrue(ConversionService conversionService) {
@@ -75,14 +75,43 @@ class StringToEnumIgnoringCaseConverterFactoryTests {
 		}
 	}
 
+	@ConversionServiceTest
+	void convertFromStringToEnumWhenYamlBooleanShouldConvertValue(ConversionService conversionService) {
+		assertThat(conversionService.convert("one", TestOnOffEnum.class)).isEqualTo(TestOnOffEnum.ONE);
+		assertThat(conversionService.convert("two", TestOnOffEnum.class)).isEqualTo(TestOnOffEnum.TWO);
+		assertThat(conversionService.convert("true", TestOnOffEnum.class)).isEqualTo(TestOnOffEnum.ON);
+		assertThat(conversionService.convert("false", TestOnOffEnum.class)).isEqualTo(TestOnOffEnum.OFF);
+		assertThat(conversionService.convert("TRUE", TestOnOffEnum.class)).isEqualTo(TestOnOffEnum.ON);
+		assertThat(conversionService.convert("FALSE", TestOnOffEnum.class)).isEqualTo(TestOnOffEnum.OFF);
+		assertThat(conversionService.convert("fA_lsE", TestOnOffEnum.class)).isEqualTo(TestOnOffEnum.OFF);
+		assertThat(conversionService.convert("one", TestTrueFalseEnum.class)).isEqualTo(TestTrueFalseEnum.ONE);
+		assertThat(conversionService.convert("two", TestTrueFalseEnum.class)).isEqualTo(TestTrueFalseEnum.TWO);
+		assertThat(conversionService.convert("true", TestTrueFalseEnum.class)).isEqualTo(TestTrueFalseEnum.TRUE);
+		assertThat(conversionService.convert("false", TestTrueFalseEnum.class)).isEqualTo(TestTrueFalseEnum.FALSE);
+		assertThat(conversionService.convert("TRUE", TestTrueFalseEnum.class)).isEqualTo(TestTrueFalseEnum.TRUE);
+		assertThat(conversionService.convert("FALSE", TestTrueFalseEnum.class)).isEqualTo(TestTrueFalseEnum.FALSE);
+	}
+
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory()));
+				.with((service) -> service.addConverterFactory(new LenientStringToEnumConverterFactory()));
 	}
 
 	enum TestEnum {
 
 		ONE, TWO, THREE_AND_FOUR
+
+	}
+
+	enum TestOnOffEnum {
+
+		ONE, TWO, ON, OFF
+
+	}
+
+	enum TestTrueFalseEnum {
+
+		ONE, TWO, TRUE, FALSE, ON, OFF
 
 	}
 

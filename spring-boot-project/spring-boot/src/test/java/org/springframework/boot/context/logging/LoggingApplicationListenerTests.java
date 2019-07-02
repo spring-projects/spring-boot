@@ -44,6 +44,7 @@ import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
@@ -69,6 +70,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -369,9 +371,8 @@ public class LoggingApplicationListenerTests {
 	public void parseLevelsFails() {
 		this.logger.setLevel(Level.INFO);
 		addPropertiesToEnvironment(this.context, "logging.level.org.springframework.boot=GARBAGE");
-		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		this.logger.debug("testatdebug");
-		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug").contains("Cannot set level 'GARBAGE'");
+		assertThatExceptionOfType(BindException.class).isThrownBy(
+				() -> this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
 	}
 
 	@Test

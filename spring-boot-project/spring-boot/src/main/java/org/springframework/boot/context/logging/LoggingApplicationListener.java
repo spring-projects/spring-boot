@@ -19,7 +19,6 @@ package org.springframework.boot.context.logging;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -93,7 +92,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private static final ConfigurationPropertyName LOGGING_GROUP = ConfigurationPropertyName.of("logging.group");
 
-	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable.mapOf(String.class, String.class);
+	private static final Bindable<Map<String, LogLevel>> STRING_LOGLEVEL_MAP = Bindable.mapOf(String.class,
+			LogLevel.class);
 
 	private static final Bindable<Map<String, String[]>> STRING_STRINGS_MAP = Bindable.mapOf(String.class,
 			String[].class);
@@ -326,7 +326,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		Binder binder = Binder.get(environment);
 		Map<String, String[]> groups = getGroups();
 		binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP.withExistingValue(groups));
-		Map<String, String> levels = binder.bind(LOGGING_LEVEL, STRING_STRING_MAP).orElseGet(Collections::emptyMap);
+		Map<String, LogLevel> levels = binder.bind(LOGGING_LEVEL, STRING_LOGLEVEL_MAP).orElseGet(Collections::emptyMap);
 		levels.forEach((name, level) -> {
 			String[] groupedNames = groups.get(name);
 			if (ObjectUtils.isEmpty(groupedNames)) {
@@ -344,28 +344,20 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		return groups;
 	}
 
-	private void setLogLevel(LoggingSystem system, String[] names, String level) {
+	private void setLogLevel(LoggingSystem system, String[] names, LogLevel level) {
 		for (String name : names) {
 			setLogLevel(system, name, level);
 		}
 	}
 
-	private void setLogLevel(LoggingSystem system, String name, String level) {
+	private void setLogLevel(LoggingSystem system, String name, LogLevel level) {
 		try {
 			name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
-			system.setLogLevel(name, coerceLogLevel(level));
+			system.setLogLevel(name, level);
 		}
 		catch (RuntimeException ex) {
 			this.logger.error("Cannot set level '" + level + "' for '" + name + "'");
 		}
-	}
-
-	private LogLevel coerceLogLevel(String level) {
-		String trimmedLevel = level.trim();
-		if ("false".equalsIgnoreCase(trimmedLevel)) {
-			return LogLevel.OFF;
-		}
-		return LogLevel.valueOf(trimmedLevel.toUpperCase(Locale.ENGLISH));
 	}
 
 	private void registerShutdownHookIfNecessary(Environment environment, LoggingSystem loggingSystem) {
