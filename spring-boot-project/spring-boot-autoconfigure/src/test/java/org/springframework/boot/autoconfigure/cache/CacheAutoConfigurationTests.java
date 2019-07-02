@@ -39,7 +39,7 @@ import com.hazelcast.spring.cache.HazelcastCacheManager;
 import net.sf.ehcache.Status;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
-import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
+import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

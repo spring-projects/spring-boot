@@ -23,7 +23,7 @@ import java.util.Map;
 
 import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
-import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
+import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
