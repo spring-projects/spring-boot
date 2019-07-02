@@ -46,6 +46,7 @@
 		<module>spring-boot-smoke-test-devtools</module>
 		<module>spring-boot-smoke-test-flyway</module>
 		<module>spring-boot-smoke-test-hateoas</module>
+		<module>spring-boot-smoke-test-hibernate52</module>
 		<module>spring-boot-smoke-test-integration</module>
 		<module>spring-boot-smoke-test-jersey</module>
 		<module>spring-boot-smoke-test-jetty</module>

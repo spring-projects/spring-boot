@@ -3,12 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
+		<!-- Your own application should inherit from spring-boot-starter-parent -->
+		<artifactId>spring-boot-smoke-tests</artifactId>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-integration-tests</artifactId>
 		<version>${revision}</version>
 	</parent>
-	<artifactId>spring-boot-hibernate52-tests</artifactId>
-	<name>Spring Boot Hibernate 5.2 tests</name>
+	<artifactId>spring-boot-smoke-test-hibernate52</artifactId>
+	<name>Spring Boot Hibernate 5.2 Smoke Tests</name>
 	<description>${project.name}</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
