@@ -529,6 +529,15 @@ class JavaBeanBinderTests {
 		assertThat(result.getNested().getBar()).isEqualTo(456);
 	}
 
+	@Test
+	void bindWhenHasPackagePrivateSetterShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.property", "test");
+		this.sources.add(source);
+		PackagePrivateSetterBean bean = this.binder.bind("foo", Bindable.of(PackagePrivateSetterBean.class)).get();
+		assertThat(bean.getProperty()).isEqualTo("test");
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -1007,6 +1016,20 @@ class JavaBeanBinderTests {
 
 		public void setNested(ExampleDefaultsBean nested) {
 			this.nested = nested;
+		}
+
+	}
+
+	public static class PackagePrivateSetterBean {
+
+		private String property;
+
+		public String getProperty() {
+			return this.property;
+		}
+
+		void setProperty(String property) {
+			this.property = property;
 		}
 
 	}

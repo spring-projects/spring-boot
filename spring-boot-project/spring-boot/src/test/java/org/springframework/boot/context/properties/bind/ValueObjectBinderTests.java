@@ -167,6 +167,16 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
+	void bindToClassWhenHasPackagePrivateConstructorShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.property", "test");
+		this.sources.add(source);
+		ExamplePackagePrivateConstructorBean bound = this.binder
+				.bind("foo", Bindable.of(ExamplePackagePrivateConstructorBean.class)).get();
+		assertThat(bound.getProperty()).isEqualTo("test");
+	}
+
+	@Test
 	void createShouldReturnCreatedValue() {
 		ExampleValueBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleValueBean.class));
 		assertThat(value.getIntValue()).isEqualTo(0);
@@ -366,6 +376,20 @@ class ValueObjectBinderTests {
 
 		public String getBar() {
 			return this.bar;
+		}
+
+	}
+
+	public static class ExamplePackagePrivateConstructorBean {
+
+		private final String property;
+
+		ExamplePackagePrivateConstructorBean(String property) {
+			this.property = property;
+		}
+
+		public String getProperty() {
+			return this.property;
 		}
 
 	}

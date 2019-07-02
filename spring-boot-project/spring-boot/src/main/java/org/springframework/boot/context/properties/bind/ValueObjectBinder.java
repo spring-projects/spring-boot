@@ -192,8 +192,17 @@ class ValueObjectBinder implements DataObjectBinder {
 
 		@SuppressWarnings("unchecked")
 		static <T> ValueObject<T> get(Class<T> type) {
-			Constructor<?>[] constructors = type.getDeclaredConstructors();
-			return (constructors.length != 1) ? null : get((Constructor<T>) constructors[0]);
+			Constructor<?> constructor = null;
+			for (Constructor<?> candidate : type.getDeclaredConstructors()) {
+				int modifiers = candidate.getModifiers();
+				if (!Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers)) {
+					if (constructor != null) {
+						return null;
+					}
+					constructor = candidate;
+				}
+			}
+			return get((Constructor<T>) constructor);
 		}
 
 		static <T> DefaultValueObject<T> get(Constructor<T> constructor) {
