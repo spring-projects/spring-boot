@@ -28,10 +28,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.Logger;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +61,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -495,17 +496,15 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	private void withDebugLogging(Runnable runnable) {
-		LoggerContext loggingContext = (LoggerContext) LogManager.getContext(false);
-		org.apache.logging.log4j.core.config.Configuration configuration = loggingContext.getConfiguration();
-		configuration.addLogger(ConfigFileApplicationListener.class.getName(),
-				new LoggerConfig(ConfigFileApplicationListener.class.getName(), Level.DEBUG, true));
-		loggingContext.updateLoggers();
+		Log log = LogFactory.getLog(ConfigFileApplicationListener.class);
+		Logger logger = (Logger) ReflectionTestUtils.getField(log, "logger");
+		Level previousLevel = logger.getLevel();
+		logger.setLevel(Level.DEBUG);
 		try {
 			runnable.run();
 		}
 		finally {
-			configuration.removeLogger(ConfigFileApplicationListener.class.getName());
-			loggingContext.updateLoggers();
+			logger.setLevel(previousLevel);
 		}
 	}
 

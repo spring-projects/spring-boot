@@ -70,6 +70,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@AfterEach
 	void resetLogger() {
 		this.logger.setLevel(Level.OFF);
+		this.loggingSystem.getShutdownHandler().run();
 	}
 
 	@AfterEach

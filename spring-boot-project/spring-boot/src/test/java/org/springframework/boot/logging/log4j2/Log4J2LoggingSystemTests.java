@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,8 +67,12 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private Logger logger;
 
+	private Configuration configuration;
+
 	@BeforeEach
 	void setup() {
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
 	}
@@ -75,6 +80,9 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@AfterEach
 	void cleanUp() {
 		this.loggingSystem.cleanUp();
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		loggerContext.stop();
+		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
 	}
 
 	@Test
