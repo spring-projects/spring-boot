@@ -172,18 +172,7 @@ produced at all (`off`).
 The printed banner is registered as a singleton bean under the following name:
 `springBootBanner`.
 
-[NOTE]
-====
-YAML maps `off` to `false`, so be sure to add quotes if you want to disable the banner in
-your application, as shown in the following example:
 
-[source,yaml,indent=0]
-----
-	spring:
-		main:
-			banner-mode: "off"
-----
-====
 
 [[boot-features-customizing-spring-application]]
 === Customizing SpringApplication
