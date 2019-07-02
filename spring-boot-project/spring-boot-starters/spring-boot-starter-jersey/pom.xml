@@ -93,7 +93,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-spring4</artifactId>
+			<artifactId>jersey-spring5</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jvnet</groupId>
