@@ -76,8 +76,8 @@ final class StringToEnumIgnoringCaseConverterFactory implements ConverterFactory
 
 		private String getLettersAndDigits(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
-			name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit).map(Character::toLowerCase)
-					.forEach(canonicalName::append);
+			name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+					.forEach((c) -> canonicalName.append((char) c));
 			return canonicalName.toString();
 		}
 
