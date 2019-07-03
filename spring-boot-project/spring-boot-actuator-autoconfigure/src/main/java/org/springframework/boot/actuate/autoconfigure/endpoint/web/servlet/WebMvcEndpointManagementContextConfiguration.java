@@ -43,6 +43,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -71,12 +72,13 @@ public class WebMvcEndpointManagementContextConfiguration {
 		allEndpoints.addAll(webEndpoints);
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		ManagementPortType type = ManagementPortType.get(environment);
-		Boolean samePort = type == ManagementPortType.SAME;
-		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath(), samePort);
+		String basePath = webEndpointProperties.getBasePath();
+		EndpointMapping endpointMapping = new EndpointMapping(basePath);
+		boolean shouldRegisterLinksMapping = StringUtils.hasText(basePath)
+				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
 		return new WebMvcEndpointHandlerMapping(endpointMapping, webEndpoints, endpointMediaTypes,
-				corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints, webEndpointProperties.getBasePath()));
+				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, basePath),
+				shouldRegisterLinksMapping);
 	}
 
 	@Bean

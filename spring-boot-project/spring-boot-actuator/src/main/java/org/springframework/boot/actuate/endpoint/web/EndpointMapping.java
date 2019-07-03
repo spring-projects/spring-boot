@@ -28,20 +28,12 @@ public class EndpointMapping {
 
 	private final String path;
 
-	private final Boolean samePort;
-
 	/**
 	 * Creates a new {@code EndpointMapping} using the given {@code path}.
 	 * @param path the path
-	 * @param samePort states true or false for same port as server
 	 */
-	public EndpointMapping(String path, Boolean samePort) {
-		this.path = normalizePath(path);
-		this.samePort = samePort;
-	}
-
 	public EndpointMapping(String path) {
-		this(path, true);
+		this.path = normalizePath(path);
 	}
 
 	/**
@@ -50,10 +42,6 @@ public class EndpointMapping {
 	 */
 	public String getPath() {
 		return this.path;
-	}
-
-	public boolean isSamePort() {
-		return this.samePort;
 	}
 
 	public String createSubPath(String path) {

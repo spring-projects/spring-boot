@@ -43,6 +43,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
 
 /**
@@ -66,16 +67,20 @@ public class WebFluxEndpointManagementContextConfiguration {
 			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
 			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties,
 			Environment environment) {
-		ManagementPortType type = ManagementPortType.get(environment);
-		Boolean samePort = type == ManagementPortType.SAME;
-		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath(), samePort);
+		String basePath = webEndpointProperties.getBasePath();
+		EndpointMapping endpointMapping = new EndpointMapping(basePath);
 		Collection<ExposableWebEndpoint> endpoints = webEndpointsSupplier.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(endpoints);
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
 		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints, endpointMediaTypes,
-				corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints, webEndpointProperties.getBasePath()));
+				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, basePath),
+				shouldRegisterLinksMapping(environment, basePath));
+	}
+
+	private boolean shouldRegisterLinksMapping(Environment environment, String basePath) {
+		return StringUtils.hasText(basePath)
+				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
 	}
 
 	@Bean

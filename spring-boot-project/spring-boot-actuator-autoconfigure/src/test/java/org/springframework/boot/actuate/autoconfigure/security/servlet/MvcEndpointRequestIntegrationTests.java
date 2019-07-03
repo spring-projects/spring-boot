@@ -119,7 +119,8 @@ class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrat
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes,
 					Arrays.asList(EndpointId::toString), Collections.emptyList(), Collections.emptyList());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
-					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()),
+					true);
 		}
 
 	}

@@ -77,9 +77,4 @@ class EndpointMappingTests {
 		assertThat(new EndpointMapping("/test").createSubPath("one/")).isEqualTo("/test/one");
 	}
 
-	@Test
-	void setDifferentPort() {
-		assertThat(new EndpointMapping("/test", false).isSamePort()).isFalse();
-	}
-
 }

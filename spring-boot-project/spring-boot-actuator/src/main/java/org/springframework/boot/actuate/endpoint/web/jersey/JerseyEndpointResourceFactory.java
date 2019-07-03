@@ -71,15 +71,16 @@ public class JerseyEndpointResourceFactory {
 	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param linksResolver resolver for determining links to available endpoints
+	 * @param shouldRegisterLinks should register links
 	 * @return the resources for the operations
 	 */
 	public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			EndpointLinksResolver linksResolver) {
+			EndpointLinksResolver linksResolver, boolean shouldRegisterLinks) {
 		List<Resource> resources = new ArrayList<>();
 		endpoints.stream().flatMap((endpoint) -> endpoint.getOperations().stream())
 				.map((operation) -> createResource(endpointMapping, operation)).forEach(resources::add);
-		if (StringUtils.hasText(endpointMapping.getPath()) || !endpointMapping.isSamePort()) {
+		if (shouldRegisterLinks) {
 			Resource resource = createEndpointLinksResource(endpointMapping.getPath(), endpointMediaTypes,
 					linksResolver);
 			resources.add(resource);

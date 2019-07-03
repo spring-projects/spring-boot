@@ -41,6 +41,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.WebFilter;
@@ -122,9 +123,10 @@ class WebFluxEndpointIntegrationTests
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
-			return new WebFluxEndpointHandlerMapping(new EndpointMapping(environment.getProperty("endpointPath")),
+			String endpointPath = environment.getProperty("endpointPath");
+			return new WebFluxEndpointHandlerMapping(new EndpointMapping(endpointPath),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes, corsConfiguration,
-					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
+					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()), StringUtils.hasText(endpointPath));
 		}
 
 		@Bean

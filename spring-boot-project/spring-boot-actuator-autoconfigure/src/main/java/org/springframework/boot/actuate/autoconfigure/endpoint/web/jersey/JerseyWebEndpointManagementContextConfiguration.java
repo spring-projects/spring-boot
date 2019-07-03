@@ -44,6 +44,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Jersey
@@ -71,14 +72,18 @@ class JerseyWebEndpointManagementContextConfiguration {
 		return (resourceConfig) -> {
 			JerseyEndpointResourceFactory resourceFactory = new JerseyEndpointResourceFactory();
 			String basePath = webEndpointProperties.getBasePath();
-			ManagementPortType type = ManagementPortType.get(environment);
-			Boolean samePort = type == ManagementPortType.SAME;
-			EndpointMapping endpointMapping = new EndpointMapping(basePath, samePort);
+			EndpointMapping endpointMapping = new EndpointMapping(basePath);
 			Collection<ExposableWebEndpoint> webEndpoints = Collections
 					.unmodifiableCollection(webEndpointsSupplier.getEndpoints());
 			resourceConfig.registerResources(new HashSet<>(resourceFactory.createEndpointResources(endpointMapping,
-					webEndpoints, endpointMediaTypes, new EndpointLinksResolver(allEndpoints, basePath))));
+					webEndpoints, endpointMediaTypes, new EndpointLinksResolver(allEndpoints, basePath),
+					shouldRegisterLinksMapping(environment, basePath))));
 		};
+	}
+
+	private boolean shouldRegisterLinksMapping(Environment environment, String basePath) {
+		return StringUtils.hasText(basePath)
+				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
 	}
 
 }
