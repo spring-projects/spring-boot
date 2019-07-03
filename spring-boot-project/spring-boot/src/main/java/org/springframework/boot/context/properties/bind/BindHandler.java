@@ -77,7 +77,9 @@ public interface BindHandler {
 	}
 
 	/**
-	 * Called when binding finishes, regardless of whether the property was bound or not.
+	 * Called when binding finishes with either bound or unbound result. This method will
+	 * not be called when binding failed, even if a handler rurns a result from
+	 * {@link #onFailure}.
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
