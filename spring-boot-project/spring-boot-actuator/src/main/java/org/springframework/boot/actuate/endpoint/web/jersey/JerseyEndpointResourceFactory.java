@@ -79,7 +79,7 @@ public class JerseyEndpointResourceFactory {
 		List<Resource> resources = new ArrayList<>();
 		endpoints.stream().flatMap((endpoint) -> endpoint.getOperations().stream())
 				.map((operation) -> createResource(endpointMapping, operation)).forEach(resources::add);
-		if (StringUtils.hasText(endpointMapping.getPath())) {
+		if (StringUtils.hasText(endpointMapping.getPath()) || !endpointMapping.isSamePort()) {
 			Resource resource = createEndpointLinksResource(endpointMapping.getPath(), endpointMediaTypes,
 					linksResolver);
 			resources.add(resource);
