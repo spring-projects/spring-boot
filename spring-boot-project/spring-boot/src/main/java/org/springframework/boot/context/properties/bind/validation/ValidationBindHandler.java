@@ -66,18 +66,21 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
+		Object result = super.onFailure(name, target, context, error);
+		if (result != null) {
+			this.exceptions.clear();
+		}
+		validate(name, target, context, result);
+		return result;
+	}
+
+	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
 			throws Exception {
 		validate(name, target, context, result);
 		super.onFinish(name, target, context, result);
-	}
-
-	@Override
-	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
-			throws Exception {
-		Object result = super.onFailure(name, target, context, error);
-		validate(name, target, context, null);
-		return result;
 	}
 
 	private void validate(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
