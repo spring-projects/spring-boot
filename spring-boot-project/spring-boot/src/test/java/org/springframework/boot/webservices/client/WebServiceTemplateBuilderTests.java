@@ -26,7 +26,6 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -199,8 +198,8 @@ class WebServiceTemplateBuilderTests {
 
 	@Test
 	void additionalInterceptorsShouldAddToExistingWebServiceTemplate() {
-		ClientInterceptor f1 = Mockito.mock(ClientInterceptor.class);
-		ClientInterceptor f2 = Mockito.mock(ClientInterceptor.class);
+		ClientInterceptor f1 = mock(ClientInterceptor.class);
+		ClientInterceptor f2 = mock(ClientInterceptor.class);
 		WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 		webServiceTemplate.setInterceptors(new ClientInterceptor[] { f1 });
 		this.builder.additionalInterceptors(f2).configure(webServiceTemplate);

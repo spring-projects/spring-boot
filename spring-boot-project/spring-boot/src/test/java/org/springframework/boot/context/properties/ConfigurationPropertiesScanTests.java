@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -29,6 +28,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willCallRealMethod;
+import static org.mockito.Mockito.mock;
 
 /**
  * Integration tests for {@link ConfigurationPropertiesScan @ConfigurationPropertiesScan}.
@@ -71,7 +71,7 @@ class ConfigurationPropertiesScanTests {
 
 	@Test
 	void scanImportBeanRegistrarShouldBeResourceLoaderAwareWithRequiredResource() {
-		DefaultResourceLoader resourceLoader = Mockito.mock(DefaultResourceLoader.class);
+		DefaultResourceLoader resourceLoader = mock(DefaultResourceLoader.class);
 		this.context.setResourceLoader(resourceLoader);
 		willCallRealMethod().given(resourceLoader).getClassLoader();
 		given(resourceLoader.getResource("test")).willReturn(new ByteArrayResource("test".getBytes()));
