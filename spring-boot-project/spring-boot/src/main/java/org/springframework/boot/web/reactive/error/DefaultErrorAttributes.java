@@ -46,7 +46,7 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
  * <li>trace - The exception stack trace</li>
  * <li>path - The URL path when the exception was raised</li>
- * <li>requestId - Unique Id associated with the current request</li>
+ * <li>requestId - Unique ID associated with the current request</li>
  * </ul>
  *
  * @author Brian Clozel

@@ -1982,7 +1982,7 @@ following information:
 
 |`status`
 |Response's HTTP status code if available (for example, `200` or `500`),
-or `IO_ERROR` in case or I/O issues, `CLIENT_ERROR` otherwise
+or `IO_ERROR` in case of I/O issues, `CLIENT_ERROR` otherwise
 
 |`uri`
 |Request's URI template prior to variable substitution, if possible (for example,
