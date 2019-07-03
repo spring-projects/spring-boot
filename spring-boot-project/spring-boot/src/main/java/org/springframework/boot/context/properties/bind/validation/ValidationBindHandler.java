@@ -76,7 +76,10 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
 			throws Exception {
 		Object result = super.onFailure(name, target, context, error);
-		validate(name, target, context, null);
+		if (result != null) {
+			this.exceptions.clear();
+		}
+		validate(name, target, context, result);
 		return result;
 	}
 

@@ -167,7 +167,7 @@ public class ValidationBindHandlerTests {
 
 	@Test
 	public void bindShouldValidateIfOtherHandlersInChainIgnoreError() {
-		TestHandler testHandler = new TestHandler();
+		TestHandler testHandler = new TestHandler(null);
 		this.handler = new ValidationBindHandler(testHandler, this.validator);
 		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));
 		ExampleValidatedBean bean = new ExampleValidatedBean();
@@ -175,6 +175,21 @@ public class ValidationBindHandlerTests {
 				.isThrownBy(() -> this.binder.bind("foo",
 						Bindable.of(ExampleValidatedBean.class).withExistingValue(bean), this.handler))
 				.withCauseInstanceOf(BindValidationException.class);
+	}
+
+	@Test
+	public void bindShouldValidateIfOtherHandlersInChainReplaceErrorWithResult() {
+		TestHandler testHandler = new TestHandler(new ExampleValidatedBeanSubclass());
+		this.handler = new ValidationBindHandler(testHandler, this.validator);
+		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));
+		this.sources.add(new MockConfigurationPropertySource("foo.age", "bad"));
+		this.sources.add(new MockConfigurationPropertySource("foo.years", "99"));
+		ExampleValidatedBean bean = new ExampleValidatedBean();
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo",
+						Bindable.of(ExampleValidatedBean.class).withExistingValue(bean), this.handler))
+				.withCauseInstanceOf(BindValidationException.class)
+				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageContaining("years"));
 	}
 
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
@@ -215,6 +230,25 @@ public class ValidationBindHandlerTests {
 
 		public void setAge(int age) {
 			this.age = age;
+		}
+
+	}
+
+	public static class ExampleValidatedBeanSubclass extends ExampleValidatedBean {
+
+		@Min(100)
+		private int years;
+
+		public ExampleValidatedBeanSubclass() {
+			setAge(20);
+		}
+
+		public int getYears() {
+			return this.years;
+		}
+
+		public void setYears(int years) {
+			this.years = years;
 		}
 
 	}
@@ -282,10 +316,16 @@ public class ValidationBindHandlerTests {
 
 	static class TestHandler extends AbstractBindHandler {
 
+		private Object result;
+
+		TestHandler(Object result) {
+			this.result = result;
+		}
+
 		@Override
 		public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
 				Exception error) throws Exception {
-			return null;
+			return this.result;
 		}
 
 	}
