@@ -242,7 +242,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 					Collections.emptyList());
 			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
 					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
-					new EndpointLinksResolver(discoverer.getEndpoints()));
+					new EndpointLinksResolver(discoverer.getEndpoints()), true);
 			config.registerResources(new HashSet<>(resources));
 		}
 
@@ -288,7 +288,8 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
 			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
-					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()),
+					true);
 		}
 
 	}
@@ -317,7 +318,8 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
-					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()),
+					true);
 		}
 
 	}

@@ -81,6 +81,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 	private final CorsConfiguration corsConfiguration;
 
+	private final boolean shouldRegisterLinksMapping;
+
 	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class, "handle",
 			HttpServletRequest.class, Map.class);
 
@@ -92,10 +94,12 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes) {
-		this(endpointMapping, endpoints, endpointMediaTypes, null);
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			boolean shouldRegisterLinksMapping) {
+		this(endpointMapping, endpoints, endpointMediaTypes, null, shouldRegisterLinksMapping);
 	}
 
 	/**
@@ -105,14 +109,16 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			CorsConfiguration corsConfiguration) {
+			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
 		this.corsConfiguration = corsConfiguration;
+		this.shouldRegisterLinksMapping = shouldRegisterLinksMapping;
 		setOrder(-100);
 	}
 
@@ -123,7 +129,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				registerMappingForOperation(endpoint, operation);
 			}
 		}
-		if (StringUtils.hasText(this.endpointMapping.getPath())) {
+		if (this.shouldRegisterLinksMapping) {
 			registerLinksMapping();
 		}
 	}

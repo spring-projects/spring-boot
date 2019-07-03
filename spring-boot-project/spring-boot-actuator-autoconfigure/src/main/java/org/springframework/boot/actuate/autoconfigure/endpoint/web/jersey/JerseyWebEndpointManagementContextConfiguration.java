@@ -26,6 +26,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -42,6 +43,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Jersey
@@ -62,7 +65,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 	@Bean
 	ResourceConfigCustomizer webEndpointRegistrar(WebEndpointsSupplier webEndpointsSupplier,
 			ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
-			WebEndpointProperties webEndpointProperties) {
+			WebEndpointProperties webEndpointProperties, Environment environment) {
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
@@ -73,8 +76,14 @@ class JerseyWebEndpointManagementContextConfiguration {
 			Collection<ExposableWebEndpoint> webEndpoints = Collections
 					.unmodifiableCollection(webEndpointsSupplier.getEndpoints());
 			resourceConfig.registerResources(new HashSet<>(resourceFactory.createEndpointResources(endpointMapping,
-					webEndpoints, endpointMediaTypes, new EndpointLinksResolver(allEndpoints, basePath))));
+					webEndpoints, endpointMediaTypes, new EndpointLinksResolver(allEndpoints, basePath),
+					shouldRegisterLinksMapping(environment, basePath))));
 		};
+	}
+
+	private boolean shouldRegisterLinksMapping(Environment environment, String basePath) {
+		return StringUtils.hasText(basePath)
+				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
 	}
 
 }

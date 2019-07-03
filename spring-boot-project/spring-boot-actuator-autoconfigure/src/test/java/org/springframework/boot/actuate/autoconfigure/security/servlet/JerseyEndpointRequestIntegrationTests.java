@@ -133,7 +133,7 @@ class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestInteg
 					Arrays.asList(EndpointId::toString), Collections.emptyList(), Collections.emptyList());
 			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
 					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
-					new EndpointLinksResolver(discoverer.getEndpoints()));
+					new EndpointLinksResolver(discoverer.getEndpoints()), true);
 			config.registerResources(new HashSet<>(resources));
 		}
 
