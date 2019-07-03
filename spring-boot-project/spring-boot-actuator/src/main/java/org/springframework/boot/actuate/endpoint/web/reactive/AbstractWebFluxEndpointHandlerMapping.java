@@ -120,7 +120,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 				registerMappingForOperation(endpoint, operation);
 			}
 		}
-		if (StringUtils.hasText(this.endpointMapping.getPath())) {
+		if (StringUtils.hasText(this.endpointMapping.getPath()) || !this.endpointMapping.isSamePort()) {
 			registerLinksMapping();
 		}
 	}
