@@ -98,7 +98,6 @@ class ThreadDumpEndpointTests {
 		synchronized (monitor) {
 			monitor.notifyAll();
 		}
-		System.out.println(threadDump);
 		assertThat(threadDump)
 				.containsPattern(String.format("\t- parking to wait for <[0-9a-z]+> \\(a %s\\$Sync\\)",
 						CountDownLatch.class.getName().replace(".", "\\.")))
