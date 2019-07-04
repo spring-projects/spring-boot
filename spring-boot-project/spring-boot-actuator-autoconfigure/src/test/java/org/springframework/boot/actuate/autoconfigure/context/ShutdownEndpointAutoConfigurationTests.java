@@ -39,6 +39,7 @@ class ShutdownEndpointAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(ShutdownEndpointAutoConfiguration.class));
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void runShouldHaveEndpointBeanThatIsNotDisposable() {
 		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
 				.withPropertyValues("management.endpoints.web.exposure.include=shutdown").run((context) -> {

@@ -36,7 +36,7 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
- * {@link ConfigurationProperties}.
+ * {@link ConfigurationProperties @ConfigurationProperties}.
  *
  * @author Dave Syer
  * @author Phillip Webb

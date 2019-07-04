@@ -66,7 +66,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 			}
 		}
 		finally {
-			RedisConnectionUtils.releaseConnection(connection, this.redisConnectionFactory);
+			RedisConnectionUtils.releaseConnection(connection, this.redisConnectionFactory, false);
 		}
 	}
 

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * Sample {@link JsonComponent} used for tests.
+ * Sample {@link JsonComponent @JsonComponent} used for tests.
  *
  * @author Paul Aly
  */

@@ -27,8 +27,9 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * {@link BeanDefinition} that is used for registering {@link ConfigurationProperties}
- * beans that are bound at creation time.
+ * {@link BeanDefinition} that is used for registering
+ * {@link ConfigurationProperties @ConfigurationProperties} beans that are bound at
+ * creation time.
  *
  * @author Stephane Nicoll
  * @author Madhura Bhave

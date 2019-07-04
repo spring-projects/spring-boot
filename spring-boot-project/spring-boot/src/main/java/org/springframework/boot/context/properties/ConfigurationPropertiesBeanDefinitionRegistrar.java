@@ -34,8 +34,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Registers a bean definition for a type annotated with {@link ConfigurationProperties}
- * using the prefix of the annotation in the bean name.
+ * Registers a bean definition for a type annotated with
+ * {@link ConfigurationProperties @ConfigurationProperties} using the prefix of the
+ * annotation in the bean name.
  *
  * @author Madhura Bhave
  */

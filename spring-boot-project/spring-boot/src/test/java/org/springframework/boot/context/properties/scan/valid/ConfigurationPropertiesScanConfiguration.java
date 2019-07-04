@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration;
 
 /**
- * Used for testing {@link ConfigurationProperties} scanning.
+ * Used for testing {@link ConfigurationProperties @ConfigurationProperties} scanning.
  *
  * @author Madhura Bhave
  */

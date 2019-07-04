@@ -46,7 +46,7 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * Internal class by the {@link ConfigurationPropertiesBindingPostProcessor} to handle the
- * actual {@link ConfigurationProperties} binding.
+ * actual {@link ConfigurationProperties @ConfigurationProperties} binding.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb

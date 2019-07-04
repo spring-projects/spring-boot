@@ -31,7 +31,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willCallRealMethod;
 
 /**
- * Integration tests for {@link ConfigurationPropertiesScan}.
+ * Integration tests for {@link ConfigurationPropertiesScan @ConfigurationPropertiesScan}.
  *
  * @author Madhura Bhave
  * @author Johnny Lim

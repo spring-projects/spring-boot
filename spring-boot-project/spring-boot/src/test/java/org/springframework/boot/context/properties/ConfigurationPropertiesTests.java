@@ -92,8 +92,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link ConfigurationProperties} annotated beans. Covers
- * {@link EnableConfigurationProperties},
+ * Tests for {@link ConfigurationProperties @ConfigurationProperties}-annotated beans.
+ * Covers {@link EnableConfigurationProperties @EnableConfigurationProperties},
  * {@link ConfigurationPropertiesBindingPostProcessorRegistrar},
  * {@link ConfigurationPropertiesBindingPostProcessor} and
  * {@link ConfigurationPropertiesBinder}.

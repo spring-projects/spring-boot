@@ -38,8 +38,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} for registering {@link ConfigurationProperties}
- * bean definitions via scanning.
+ * {@link ImportBeanDefinitionRegistrar} for registering
+ * {@link ConfigurationProperties @ConfigurationProperties} bean definitions via scanning.
  *
  * @author Madhura Bhave
  */

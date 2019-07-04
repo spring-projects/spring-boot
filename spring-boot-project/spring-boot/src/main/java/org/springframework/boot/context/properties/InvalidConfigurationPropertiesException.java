@@ -19,7 +19,8 @@ package org.springframework.boot.context.properties;
 import org.springframework.util.Assert;
 
 /**
- * Exception thrown when a {@link ConfigurationProperties} has been misconfigured.
+ * Exception thrown when a {@link ConfigurationProperties @ConfigurationProperties} has
+ * been misconfigured.
  *
  * @author Madhura Bhave
  * @since 2.2.0

@@ -28,6 +28,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -86,6 +87,7 @@ abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 		assertThat(this.value).isEqualTo(123);
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	static class AbstractConfig {
 
 		@Value("${server.port:8080}")

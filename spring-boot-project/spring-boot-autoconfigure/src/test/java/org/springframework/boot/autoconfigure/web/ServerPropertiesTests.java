@@ -217,15 +217,15 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeUndertowServerOption() {
 		bind("server.undertow.options.server.ALWAYS_SET_KEEP_ALIVE", "true");
-		assertThat(this.properties.getUndertow().getOptions().getServer().containsKey("ALWAYS_SET_KEEP_ALIVE"));
-		assertThat(this.properties.getUndertow().getOptions().getServer().get("ALWAYS_SET_KEEP_ALIVE").equals("true"));
+		assertThat(this.properties.getUndertow().getOptions().getServer()).containsEntry("ALWAYS_SET_KEEP_ALIVE",
+				"true");
 	}
 
 	@Test
 	void testCustomizeUndertowSocketOption() {
 		bind("server.undertow.options.socket.ALWAYS_SET_KEEP_ALIVE", "true");
-		assertThat(this.properties.getUndertow().getOptions().getSocket().containsKey("ALWAYS_SET_KEEP_ALIVE"));
-		assertThat(this.properties.getUndertow().getOptions().getSocket().get("ALWAYS_SET_KEEP_ALIVE").equals("true"));
+		assertThat(this.properties.getUndertow().getOptions().getSocket()).containsEntry("ALWAYS_SET_KEEP_ALIVE",
+				"true");
 	}
 
 	@Test

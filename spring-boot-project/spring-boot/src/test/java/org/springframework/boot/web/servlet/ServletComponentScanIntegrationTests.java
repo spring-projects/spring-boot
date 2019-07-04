@@ -34,7 +34,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ServletComponentScan}
+ * Integration tests for {@link ServletComponentScan @ServletComponentScan}
  *
  * @author Andy Wilkinson
  */

@@ -43,8 +43,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Spring Bean and Jackson {@link Module} to register {@link JsonComponent} annotated
- * beans.
+ * Spring Bean and Jackson {@link Module} to register {@link JsonComponent @JsonComponent}
+ * annotated beans.
  *
  * @author Phillip Webb
  * @author Paul Aly

@@ -30,10 +30,11 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link Component} that provides {@link JsonSerializer}, {@link JsonDeserializer} or
- * {@link KeyDeserializer} implementations to be registered with Jackson when
- * {@link JsonComponentModule} is in use. Can be used to annotate implementations directly
- * or a class that contains them as inner-classes. For example: <pre class="code">
+ * {@link Component @Component} that provides {@link JsonSerializer},
+ * {@link JsonDeserializer} or {@link KeyDeserializer} implementations to be registered
+ * with Jackson when {@link JsonComponentModule} is in use. Can be used to annotate
+ * implementations directly or a class that contains them as inner-classes. For example:
+ * <pre class="code">
  * &#064;JsonComponent
  * public class CustomerJsonComponent {
  *

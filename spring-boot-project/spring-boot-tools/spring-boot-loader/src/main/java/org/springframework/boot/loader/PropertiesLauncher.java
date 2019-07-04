@@ -418,12 +418,14 @@ public class PropertiesLauncher extends Launcher {
 		try {
 			if (this.home != null) {
 				// Prefer home dir for MANIFEST if there is one
-				Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
-				if (manifest != null) {
-					String value = manifest.getMainAttributes().getValue(manifestKey);
-					if (value != null) {
-						debug("Property '" + manifestKey + "' from home directory manifest: " + value);
-						return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
+				try (ExplodedArchive archive = new ExplodedArchive(this.home, false)) {
+					Manifest manifest = archive.getManifest();
+					if (manifest != null) {
+						String value = manifest.getMainAttributes().getValue(manifestKey);
+						if (value != null) {
+							debug("Property '" + manifestKey + "' from home directory manifest: " + value);
+							return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
+						}
 					}
 				}
 			}
