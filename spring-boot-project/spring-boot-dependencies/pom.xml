@@ -2254,7 +2254,6 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
-			<!-- Remove once https://github.com/eclipse-ee4j/jersey/issues/4184 is fixed -->
 			<dependency>
 				<groupId>org.glassfish.jersey.ext</groupId>
 				<artifactId>jersey-spring5</artifactId>
