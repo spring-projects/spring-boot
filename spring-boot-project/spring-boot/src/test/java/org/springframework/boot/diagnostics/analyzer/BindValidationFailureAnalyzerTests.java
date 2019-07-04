@@ -139,9 +139,7 @@ class BindValidationFailureAnalyzerTests {
 
 	@ConfigurationProperties("test.foo")
 	@Validated
-	public static class FieldValidationFailureProperties {
-
-		// Needs to be public due to validator (see gh-17394)
+	static class FieldValidationFailureProperties {
 
 		@NotNull
 		private String foo;
@@ -152,40 +150,40 @@ class BindValidationFailureAnalyzerTests {
 		@Valid
 		private FieldValidationFailureProperties.Nested nested = new FieldValidationFailureProperties.Nested();
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 
-		public void setValue(int value) {
+		void setValue(int value) {
 			this.value = value;
 		}
 
-		public FieldValidationFailureProperties.Nested getNested() {
+		FieldValidationFailureProperties.Nested getNested() {
 			return this.nested;
 		}
 
-		public void setNested(FieldValidationFailureProperties.Nested nested) {
+		void setNested(FieldValidationFailureProperties.Nested nested) {
 			this.nested = nested;
 		}
 
-		public static class Nested {
+		static class Nested {
 
 			@NotNull
 			private String bar;
 
-			public String getBar() {
+			String getBar() {
 				return this.bar;
 			}
 
-			public void setBar(String bar) {
+			void setBar(String bar) {
 				this.bar = bar;
 			}
 

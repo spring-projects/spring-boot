@@ -118,12 +118,13 @@ class ValidationBindHandlerTests {
 	}
 
 	@Test
-	void bindShouldFailWithAccessToName() {
+	void bindShouldFailWithAccessToNameAndValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
 		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo");
 		assertThat(cause.getMessage()).contains("nested.age");
+		assertThat(cause.getMessage()).contains("rejected value [4]");
 	}
 
 	@Test
@@ -254,26 +255,22 @@ class ValidationBindHandlerTests {
 	}
 
 	@Validated
-	public static class ExampleValidatedWithNestedBean {
-
-		// Needs to be public due to validator (see gh-17394)
+	static class ExampleValidatedWithNestedBean {
 
 		@Valid
 		private ExampleNested nested = new ExampleNested();
 
-		public ExampleNested getNested() {
+		ExampleNested getNested() {
 			return this.nested;
 		}
 
-		public void setNested(ExampleNested nested) {
+		void setNested(ExampleNested nested) {
 			this.nested = nested;
 		}
 
 	}
 
-	public static class ExampleNested {
-
-		// Needs to be public due to validator (see gh-17394)
+	static class ExampleNested {
 
 		private String name;
 
@@ -283,27 +280,27 @@ class ValidationBindHandlerTests {
 		@NotNull
 		private String address;
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 
-		public int getAge() {
+		int getAge() {
 			return this.age;
 		}
 
-		public void setAge(int age) {
+		void setAge(int age) {
 			this.age = age;
 		}
 
-		public String getAddress() {
+		String getAddress() {
 			return this.address;
 		}
 
-		public void setAddress(String address) {
+		void setAddress(String address) {
 			this.address = address;
 		}
 

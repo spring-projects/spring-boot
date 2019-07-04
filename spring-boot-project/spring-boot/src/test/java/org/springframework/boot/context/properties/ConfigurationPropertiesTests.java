@@ -1626,9 +1626,7 @@ class ConfigurationPropertiesTests {
 
 	@EnableConfigurationProperties
 	@ConfigurationProperties
-	public static class ValidatorProperties implements Validator {
-
-		// Needs to be public due to validator (see gh-17394)
+	static class ValidatorProperties implements Validator {
 
 		private String foo;
 
@@ -1642,11 +1640,11 @@ class ConfigurationPropertiesTests {
 			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
 		}
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
@@ -1672,17 +1670,15 @@ class ConfigurationPropertiesTests {
 	}
 
 	@ConfigurationProperties(prefix = "custom")
-	public static class WithCustomValidatorProperties {
-
-		// Needs to be public due to validator (see gh-17394)
+	static class WithCustomValidatorProperties {
 
 		private String foo;
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
