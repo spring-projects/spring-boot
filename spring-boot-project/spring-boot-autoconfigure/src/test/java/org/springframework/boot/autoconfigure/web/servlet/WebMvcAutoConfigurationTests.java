@@ -483,14 +483,14 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void hiddenHttpMethodFilterCanBeDisabled() {
-		this.contextRunner.withPropertyValues("spring.mvc.hiddenmethod.filter.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
+	void hiddenHttpMethodFilterCanBeEnabled() {
+		this.contextRunner.withPropertyValues("spring.mvc.hiddenmethod.filter.enabled=true")
+				.run((context) -> assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test
-	void hiddenHttpMethodFilterEnabledByDefault() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class));
+	void hiddenHttpMethodFilterDisabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test

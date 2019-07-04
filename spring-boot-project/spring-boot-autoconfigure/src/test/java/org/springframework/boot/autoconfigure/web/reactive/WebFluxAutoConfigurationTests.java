@@ -302,22 +302,23 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void hiddenHttpMethodFilterIsAutoConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
+	void hiddenHttpMethodFilterIsDisabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test
 	void hiddenHttpMethodFilterCanBeOverridden() {
-		this.contextRunner.withUserConfiguration(CustomHiddenHttpMethodFilter.class).run((context) -> {
-			assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
-			assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
-		});
+		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
+				.withUserConfiguration(CustomHiddenHttpMethodFilter.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
+					assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
+				});
 	}
 
 	@Test
-	void hiddenHttpMethodFilterCanBeDisabled() {
-		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
+	void hiddenHttpMethodFilterCanBeEnabled() {
+		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
+				.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
 	}
 
 	@Test

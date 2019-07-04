@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -89,6 +90,7 @@ class FilterOrderingIntegrationTests {
 				TestRedisConfiguration.class, WebMvcAutoConfiguration.class, SecurityAutoConfiguration.class,
 				SessionAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, HttpEncodingAutoConfiguration.class);
+		TestPropertyValues.of("spring.mvc.hiddenmethod.filter.enabled:true").applyTo(this.context);
 		this.context.refresh();
 	}
 
