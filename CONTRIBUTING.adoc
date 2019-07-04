@@ -18,10 +18,9 @@ please ask on https://stackoverflow.com[Stack Overflow]. The Spring Boot team an
 broader community monitor the https://stackoverflow.com/tags/spring-boot[`spring-boot`]
 tag.
 
-If you are reporting a bug, please help to speed up problem diagnosis by providing as much
-information as possible. Ideally, that would include a small
-https://github.com/spring-projects/spring-boot-issues[sample project] that reproduces the
-problem.
+If you are reporting a bug, please help to speed up problem diagnosis by providing as
+much information as possible. Ideally, that would include a small sample project that
+reproduces the problem.
 
 
 
