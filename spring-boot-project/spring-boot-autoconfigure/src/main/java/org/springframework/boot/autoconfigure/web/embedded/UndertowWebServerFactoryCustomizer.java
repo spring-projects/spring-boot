@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.lang.reflect.Field;
+
 import io.undertow.UndertowOptions;
 import org.xnio.Option;
 
@@ -61,6 +63,7 @@ public class UndertowWebServerFactoryCustomizer
 	public void customize(ConfigurableUndertowWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Undertow undertowProperties = properties.getUndertow();
+		ServerProperties.Undertow.Options undertowOptions = undertowProperties.getOptions();
 		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties.getAccesslog();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		propertyMapper.from(undertowProperties::getBufferSize).whenNonNull().asInt(DataSize::toBytes)
@@ -109,6 +112,12 @@ public class UndertowWebServerFactoryCustomizer
 				.to((alwaysSetKeepAlive) -> customizeServerOption(factory, UndertowOptions.ALWAYS_SET_KEEP_ALIVE,
 						alwaysSetKeepAlive));
 
+		propertyMapper.from(undertowOptions::getServer)
+				.to((server) -> server.forEach((key, value) -> setCustomOption(factory, key, value, "server")));
+
+		propertyMapper.from(undertowOptions::getSocket)
+				.to((socket) -> socket.forEach((key, value) -> setCustomOption(factory, key, value, "socket")));
+
 		factory.addDeploymentInfoCustomizers(
 				(deploymentInfo) -> deploymentInfo.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
 	}
@@ -121,12 +130,43 @@ public class UndertowWebServerFactoryCustomizer
 		factory.addBuilderCustomizers((builder) -> builder.setServerOption(option, value));
 	}
 
+	private <T> void customizeSocketOption(ConfigurableUndertowWebServerFactory factory, Option<T> option, T value) {
+		factory.addBuilderCustomizers((builder) -> builder.setSocketOption(option, value));
+	}
+
 	private boolean getOrDeduceUseForwardHeaders() {
 		if (this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NONE)) {
 			CloudPlatform platform = CloudPlatform.getActive(this.environment);
 			return platform != null && platform.isUsingForwardHeaders();
 		}
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> void setCustomOption(ConfigurableUndertowWebServerFactory factory, String key, String value,
+			String type) {
+		Field[] fields = UndertowOptions.class.getDeclaredFields();
+		for (Field field : fields) {
+			if (getCanonicalName(field.getName()).equals(getCanonicalName(key))) {
+				Option<T> option = (Option<T>) Option.fromString(
+						UndertowOptions.class.getName() + '.' + field.getName(), getClass().getClassLoader());
+				T parsed = option.parseValue(value, getClass().getClassLoader());
+				if (type.equals("server")) {
+					customizeServerOption(factory, option, parsed);
+				}
+				else if (type.equals("socket")) {
+					customizeSocketOption(factory, option, parsed);
+				}
+				return;
+			}
+		}
+	}
+
+	private String getCanonicalName(String key) {
+		StringBuilder canonicalName = new StringBuilder(key.length());
+		key.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+				.forEach((c) -> canonicalName.append((char) c));
+		return canonicalName.toString();
 	}
 
 }

@@ -156,6 +156,29 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customServerOption() {
+		bind("server.undertow.options.server.ALWAYS_SET_KEEP_ALIVE=false");
+		assertThat(boundServerOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+	}
+
+	@Test
+	void customServerOptionShouldBeRelaxed() {
+		bind("server.undertow.options.server.always-set-keep-alive=false");
+		assertThat(boundServerOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+	}
+
+	@Test
+	void customSocketOption() {
+		bind("server.undertow.options.socket.ALWAYS_SET_KEEP_ALIVE=false");
+		assertThat(boundSocketOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+	}
+
+	void customSocketOptionShouldBeRelaxed() {
+		bind("server.undertow.options.socket.always-set-keep-alive=false");
+		assertThat(boundSocketOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+	}
+
+	@Test
 	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
@@ -183,6 +206,14 @@ class UndertowWebServerFactoryCustomizerTests {
 		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
 		this.customizer.customize(factory);
 		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "serverOptions")).getMap();
+		return map.get(option);
+	}
+
+	private <T> T boundSocketOption(Option<T> option) {
+		Builder builder = Undertow.builder();
+		ConfigurableUndertowWebServerFactory factory = mockFactory(builder);
+		this.customizer.customize(factory);
+		OptionMap map = ((OptionMap.Builder) ReflectionTestUtils.getField(builder, "socketOptions")).getMap();
 		return map.get(option);
 	}
 
