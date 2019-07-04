@@ -162,8 +162,19 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customServerOptionShouldBeRelaxed() {
+		bind("server.undertow.options.server.always-set-keep-alive=false");
+		assertThat(boundServerOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+	}
+
+	@Test
 	void customSocketOption() {
 		bind("server.undertow.options.socket.ALWAYS_SET_KEEP_ALIVE=false");
+		assertThat(boundSocketOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+	}
+
+	void customSocketOptionShouldBeRelaxed() {
+		bind("server.undertow.options.socket.always-set-keep-alive=false");
 		assertThat(boundSocketOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
 	}
 

@@ -142,12 +142,12 @@ public class UndertowWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> void setCustomOption(ConfigurableUndertowWebServerFactory factory, String key, String value,
 			String type) {
 		Field[] fields = UndertowOptions.class.getDeclaredFields();
 		for (Field field : fields) {
-			String name = getLetterAndNumber(key);
-			if (getLetterAndNumber(field.getName()).equals(name)) {
+			if (getCanonicalName(field.getName()).equals(getCanonicalName(key))) {
 				Option<T> option = (Option<T>) Option.fromString(
 						UndertowOptions.class.getName() + '.' + field.getName(), getClass().getClassLoader());
 				T parsed = option.parseValue(value, getClass().getClassLoader());
@@ -162,9 +162,9 @@ public class UndertowWebServerFactoryCustomizer
 		}
 	}
 
-	private String getLetterAndNumber(String name) {
-		StringBuilder canonicalName = new StringBuilder(name.length());
-		name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+	private String getCanonicalName(String key) {
+		StringBuilder canonicalName = new StringBuilder(key.length());
+		key.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit).map(Character::toLowerCase)
 				.forEach((c) -> canonicalName.append((char) c));
 		return canonicalName.toString();
 	}
