@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class SampleApplication {
 		if (!argument.startsWith("--spring.profiles.active=")) {
 			throw new IllegalArgumentException("Invalid argument " + argument);
 		}
-		int index = args[0].indexOf("=");
+		int index = args[0].indexOf('=');
 		String profile = argument.substring(index + 1);
 		System.out.println("I haz been run with profile(s) '" + profile + "'");
 	}

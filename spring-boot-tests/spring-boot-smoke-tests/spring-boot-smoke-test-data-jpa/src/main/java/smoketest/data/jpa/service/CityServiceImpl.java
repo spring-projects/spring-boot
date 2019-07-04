@@ -50,7 +50,7 @@ class CityServiceImpl implements CityService {
 		}
 
 		String country = "";
-		int splitPos = name.lastIndexOf(",");
+		int splitPos = name.lastIndexOf(',');
 
 		if (splitPos >= 0) {
 			country = name.substring(splitPos + 1);

@@ -127,9 +127,9 @@ class StringSequenceTests {
 	@Test
 	void indexOfStringShouldReturnIndexOf() {
 		StringSequence sequence = new StringSequence("aabbaacc");
-		assertThat(sequence.indexOf("a")).isEqualTo(0);
-		assertThat(sequence.indexOf("b")).isEqualTo(2);
-		assertThat(sequence.subSequence(2).indexOf("a")).isEqualTo(2);
+		assertThat(sequence.indexOf('a')).isEqualTo(0);
+		assertThat(sequence.indexOf('b')).isEqualTo(2);
+		assertThat(sequence.subSequence(2).indexOf('a')).isEqualTo(2);
 	}
 
 	@Test
