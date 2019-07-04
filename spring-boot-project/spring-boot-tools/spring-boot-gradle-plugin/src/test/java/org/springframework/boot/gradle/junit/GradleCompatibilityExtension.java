@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -30,7 +31,7 @@ import org.springframework.boot.gradle.testkit.GradleBuildExtension;
 
 /**
  * {@link Extension} that runs {@link TestTemplate templated tests} against multiple
- * versions of Gradle. Test classes using the extension must have non-private and
+ * versions of Gradle. Test classes using the extension must have a non-private and
  * non-final {@link GradleBuild} field named {@code gradleBuild}.
  *
  * @author Andy Wilkinson
