@@ -31,7 +31,9 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -63,7 +65,8 @@ public class MongoDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-					MongoAutoConfiguration.class, MongoDataAutoConfiguration.class));
+					MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
+			.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO));
 
 	@Test
 	public void templateExists() {
@@ -157,7 +160,7 @@ public class MongoDataAutoConfigurationTests {
 	public void backsOffIfMongoClientBeanIsNotPresent() {
 		ApplicationContextRunner runner = new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(MongoDataAutoConfiguration.class));
-		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoDataAutoConfiguration.class));
+		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoTemplate.class));
 	}
 
 	@Test
@@ -174,6 +177,12 @@ public class MongoDataAutoConfigurationTests {
 			MongoDbFactory dbFactory = context.getBean(MongoDbFactory.class);
 			assertThat(dbFactory).isInstanceOf(SimpleMongoClientDbFactory.class);
 		});
+	}
+
+	@Test
+	public void autoConfiguresIfUserProvidesMongoDbFactoryButNoClient() {
+		this.contextRunner.withUserConfiguration(MongoDbFactoryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -204,6 +213,16 @@ public class MongoDataAutoConfigurationTests {
 		@Bean
 		com.mongodb.client.MongoClient fallbackMongoClient() {
 			return MongoClients.create();
+		}
+
+	}
+
+	@Configuration
+	static class MongoDbFactoryConfiguration {
+
+		@Bean
+		MongoDbFactory mongoDbFactory() {
+			return new SimpleMongoClientDbFactory(MongoClients.create(), "test");
 		}
 
 	}
