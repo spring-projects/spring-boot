@@ -114,7 +114,7 @@ public class RestTemplateBuilder {
 		this.errorHandler = null;
 		this.basicAuthentication = null;
 		this.defaultHeaders = Collections.emptyMap();
-		this.customizers = setOf(customizers);
+		this.customizers = copiedSetOf(customizers);
 		this.requestCustomizers = Collections.emptySet();
 	}
 
@@ -191,7 +191,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder messageConverters(Collection<? extends HttpMessageConverter<?>> messageConverters) {
 		Assert.notNull(messageConverters, "MessageConverters must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
-				setOf(messageConverters), this.interceptors, this.requestFactory, this.uriTemplateHandler,
+				copiedSetOf(messageConverters), this.interceptors, this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
 	}
@@ -235,7 +235,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder defaultMessageConverters() {
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
-				setOf(new RestTemplate().getMessageConverters()), this.interceptors, this.requestFactory,
+				copiedSetOf(new RestTemplate().getMessageConverters()), this.interceptors, this.requestFactory,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
 	}
@@ -266,7 +266,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder interceptors(Collection<ClientHttpRequestInterceptor> interceptors) {
 		Assert.notNull(interceptors, "interceptors must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
-				this.messageConverters, setOf(interceptors), this.requestFactory, this.uriTemplateHandler,
+				this.messageConverters, copiedSetOf(interceptors), this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
 	}
@@ -477,7 +477,7 @@ public class RestTemplateBuilder {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthentication, this.defaultHeaders, setOf(customizers),
+				this.errorHandler, this.basicAuthentication, this.defaultHeaders, copiedSetOf(customizers),
 				this.requestCustomizers);
 	}
 
@@ -541,7 +541,7 @@ public class RestTemplateBuilder {
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
-				setOf(requestCustomizers));
+				copiedSetOf(requestCustomizers));
 	}
 
 	/**
@@ -677,16 +677,16 @@ public class RestTemplateBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Set<T> setOf(T... items) {
-		return setOf(Arrays.asList(items));
+	private <T> Set<T> copiedSetOf(T... items) {
+		return copiedSetOf(Arrays.asList(items));
 	}
 
-	private <T> Set<T> setOf(Collection<? extends T> collection) {
+	private <T> Set<T> copiedSetOf(Collection<? extends T> collection) {
 		return Collections.unmodifiableSet(new LinkedHashSet<>(collection));
 	}
 
-	private static <T> List<T> listOf(T[] items) {
-		return Collections.unmodifiableList(new ArrayList<>(Arrays.asList(items)));
+	private static <T> List<T> copiedListOf(T[] items) {
+		return Collections.unmodifiableList(Arrays.asList(Arrays.copyOf(items, items.length)));
 	}
 
 	private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {
@@ -700,7 +700,7 @@ public class RestTemplateBuilder {
 	private static <K, V> Map<K, List<V>> append(Map<K, List<V>> map, K key, V[] values) {
 		Map<K, List<V>> result = new LinkedHashMap<>((map != null) ? map : Collections.emptyMap());
 		if (values != null) {
-			result.put(key, listOf(values));
+			result.put(key, copiedListOf(values));
 		}
 		return Collections.unmodifiableMap(result);
 	}
