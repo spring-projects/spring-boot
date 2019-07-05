@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.requests.IsolationLevel;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -267,6 +269,11 @@ public class KafkaProperties {
 		private Duration heartbeatInterval;
 
 		/**
+		 * Isolation level for reading messages that have been written transactionally.
+		 */
+		private IsolationLevel isolationLevel = IsolationLevel.READ_UNCOMMITTED;
+
+		/**
 		 * Deserializer class for keys.
 		 */
 		private Class<?> keyDeserializer = StringDeserializer.class;
@@ -362,6 +369,14 @@ public class KafkaProperties {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
+		public IsolationLevel getIsolationLevel() {
+			return this.isolationLevel;
+		}
+
+		public void setIsolationLevel(IsolationLevel isolationLevel) {
+			this.isolationLevel = isolationLevel;
+		}
+
 		public Class<?> getKeyDeserializer() {
 			return this.keyDeserializer;
 		}
@@ -406,6 +421,8 @@ public class KafkaProperties {
 			map.from(this::getGroupId).to(properties.in(ConsumerConfig.GROUP_ID_CONFIG));
 			map.from(this::getHeartbeatInterval).asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG));
+			map.from(() -> getIsolationLevel().name().toLowerCase(Locale.ROOT))
+					.to(properties.in(ConsumerConfig.ISOLATION_LEVEL_CONFIG));
 			map.from(this::getKeyDeserializer).to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
