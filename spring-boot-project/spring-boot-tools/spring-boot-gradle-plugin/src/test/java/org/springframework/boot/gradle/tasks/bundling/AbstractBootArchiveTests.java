@@ -50,6 +50,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Abstract base class for testing {@link BootArchive} implementations.
@@ -248,7 +249,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		properties.put("initInfoProvides", this.task.getBaseName());
 		properties.put("initInfoShortDescription", this.project.getDescription());
 		properties.put("initInfoDescription", this.project.getDescription());
-		assertThat(Files.readAllBytes(this.task.getArchivePath().toPath()))
+		assertThat(contentOf(this.task.getArchivePath()).getBytes())
 				.startsWith(new DefaultLaunchScript(null, properties).toByteArray());
 		try {
 			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(this.task.getArchivePath().toPath());
@@ -266,7 +267,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		Files.write(customScript.toPath(), Arrays.asList("custom script"), StandardOpenOption.CREATE);
 		this.task.launchScript((configuration) -> configuration.setScript(customScript));
 		executeTask();
-		assertThat(Files.readAllBytes(this.task.getArchivePath().toPath())).startsWith("custom script".getBytes());
+		assertThat(contentOf(this.task.getArchivePath())).startsWith("custom script");
 	}
 
 	@Test
@@ -278,10 +279,10 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			configuration.getProperties().put("initInfoDescription", "description");
 		});
 		executeTask();
-		byte[] bytes = Files.readAllBytes(this.task.getArchivePath().toPath());
-		assertThat(bytes).containsSequence("Provides:          provides".getBytes());
-		assertThat(bytes).containsSequence("Short-Description: short description".getBytes());
-		assertThat(bytes).containsSequence("Description:       description".getBytes());
+		String content = contentOf(this.task.getArchivePath());
+		assertThat(content).contains("Provides:          provides");
+		assertThat(content).contains("Short-Description: short description");
+		assertThat(content).contains("Description:       description");
 	}
 
 	@Test

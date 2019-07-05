@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -30,9 +28,9 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Tests for {@link LogFileWebEndpointAutoConfiguration}.
@@ -119,9 +117,7 @@ class LogFileWebEndpointAutoConfigurationTests {
 					LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
 					Resource resource = endpoint.logFile();
 					assertThat(resource).isNotNull();
-					try (InputStream input = resource.getInputStream()) {
-						assertThat(StreamUtils.copyToString(input, StandardCharsets.UTF_8)).isEqualTo("--TEST--");
-					}
+					assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 				});
 	}
 
