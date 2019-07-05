@@ -122,7 +122,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * A capture session that captures {@link System#out System.out} and {@link System#out
+	 * A capture session that captures {@link System#out System.out} and {@link System#err
 	 * System.err}.
 	 */
 	private static class SystemCapture {

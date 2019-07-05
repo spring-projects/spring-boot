@@ -37,7 +37,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * argument to your test class constructor or test method:
  *
  * <pre class="code">
- * &#064;ExtendWith(OutputExtension.class)
+ * &#064;ExtendWith(OutputCaptureExtension.class)
  * class MyTest {
  *
  *     &#064;Test
