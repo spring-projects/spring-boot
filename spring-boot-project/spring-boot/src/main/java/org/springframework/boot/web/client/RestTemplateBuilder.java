@@ -686,7 +686,7 @@ public class RestTemplateBuilder {
 	}
 
 	private static <T> List<T> listOf(T[] items) {
-		return Collections.unmodifiableList(new ArrayList<>(Arrays.asList(items)));
+		return Collections.unmodifiableList(Arrays.asList(items));
 	}
 
 	private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {
