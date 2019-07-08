@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,37 +60,20 @@ import org.springframework.util.StringUtils;
  * @since 1.0.0
  */
 @Configuration
-@ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
+@ConditionalOnClass({ JobLauncher.class, DataSource.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
 @EnableConfigurationProperties(BatchProperties.class)
 @Import(BatchConfigurerConfiguration.class)
 public class BatchAutoConfiguration {
 
-	private final BatchProperties properties;
-
-	private final JobParametersConverter jobParametersConverter;
-
-	public BatchAutoConfiguration(BatchProperties properties,
-			ObjectProvider<JobParametersConverter> jobParametersConverter) {
-		this.properties = properties;
-		this.jobParametersConverter = jobParametersConverter.getIfAvailable();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(DataSource.class)
-	public BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
-		return new BatchDataSourceInitializer(dataSource, resourceLoader, this.properties);
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
-			JobRepository jobRepository) {
+			JobRepository jobRepository, BatchProperties properties) {
 		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(jobLauncher, jobExplorer, jobRepository);
-		String jobNames = this.properties.getJob().getNames();
+		String jobNames = properties.getJob().getNames();
 		if (StringUtils.hasText(jobNames)) {
 			runner.setJobNames(jobNames);
 		}
@@ -106,16 +89,28 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
 	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
+			ListableJobLocator jobRegistry, JobRepository jobRepository,
+			ObjectProvider<JobParametersConverter> jobParametersConverter) {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);
 		factory.setJobRegistry(jobRegistry);
 		factory.setJobRepository(jobRepository);
-		if (this.jobParametersConverter != null) {
-			factory.setJobParametersConverter(this.jobParametersConverter);
-		}
+		jobParametersConverter.ifAvailable(factory::setJobParametersConverter);
 		return factory;
+	}
+
+	@ConditionalOnBean(DataSource.class)
+	@ConditionalOnClass(DatabasePopulator.class)
+	static class DataSourceInitializerConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
+				ResourceLoader resourceLoader, BatchProperties properties) {
+			return new BatchDataSourceInitializer(dataSource, resourceLoader, properties);
+		}
+
 	}
 
 }
