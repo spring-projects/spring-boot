@@ -121,6 +121,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public static final String LOGGING_SYSTEM_BEAN_NAME = "springBootLoggingSystem";
 
+	/**
+	 * The name of the {@link LogFile} bean.
+	 */
+	public static final String LOGFILE_BEAN_NAME = "springBootLogFile";
+
 	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
 	static {
 		MultiValueMap<String, String> loggers = new LinkedMultiValueMap<>();
@@ -159,6 +164,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private final Log logger = LogFactory.getLog(getClass());
 
 	private LoggingSystem loggingSystem;
+
+	private LogFile logFile;
 
 	private int order = DEFAULT_ORDER;
 
@@ -224,6 +231,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
+		if (this.logFile != null && !beanFactory.containsBean(LOGFILE_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOGFILE_BEAN_NAME, this.logFile);
+		}
 	}
 
 	private void onContextClosedEvent() {
@@ -246,12 +256,12 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		new LoggingSystemProperties(environment).apply();
-		LogFile logFile = LogFile.get(environment);
-		if (logFile != null) {
-			logFile.applyToSystemProperties();
+		this.logFile = LogFile.get(environment);
+		if (this.logFile != null) {
+			this.logFile.applyToSystemProperties();
 		}
 		initializeEarlyLoggingLevel(environment);
-		initializeSystem(environment, this.loggingSystem, logFile);
+		initializeSystem(environment, this.loggingSystem, this.logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
 	}

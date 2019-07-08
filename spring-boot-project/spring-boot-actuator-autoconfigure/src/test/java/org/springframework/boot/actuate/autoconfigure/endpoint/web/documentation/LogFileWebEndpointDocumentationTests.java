@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 import org.junit.Test;
 
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -56,7 +57,7 @@ public class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumen
 
 		@Bean
 		public LogFileWebEndpoint endpoint(Environment environment) {
-			return new LogFileWebEndpoint(environment);
+			return new LogFileWebEndpoint(LogFile.get(environment), null);
 		}
 
 	}
