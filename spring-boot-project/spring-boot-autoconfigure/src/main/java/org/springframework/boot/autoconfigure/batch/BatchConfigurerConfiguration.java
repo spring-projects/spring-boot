@@ -45,8 +45,10 @@ class BatchConfigurerConfiguration {
 
 		@Bean
 		BasicBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
+				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			return new BasicBatchConfigurer(properties, dataSource, transactionManagerCustomizers.getIfAvailable());
+			return new BasicBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
+					transactionManagerCustomizers.getIfAvailable());
 		}
 
 	}
@@ -58,10 +60,11 @@ class BatchConfigurerConfiguration {
 
 		@Bean
 		JpaBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
+				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 				EntityManagerFactory entityManagerFactory) {
-			return new JpaBatchConfigurer(properties, dataSource, transactionManagerCustomizers.getIfAvailable(),
-					entityManagerFactory);
+			return new JpaBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
+					transactionManagerCustomizers.getIfAvailable(), entityManagerFactory);
 		}
 
 	}
