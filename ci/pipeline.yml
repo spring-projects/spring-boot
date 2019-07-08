@@ -216,12 +216,6 @@ jobs:
           username: concourse-ci
   - put: repo-status-build
     params: { state: "success", commit: "git-repo" }
-  - put: slack-alert
-    params:
-      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
-      silent: true
-      icon_emoji: ":concourse:"
-      username: concourse-ci
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
@@ -237,6 +231,20 @@ jobs:
         properties:
           "zip.type": "docs"
           "zip.deployed": "false"
+    on_failure:
+      do:
+      - put: slack-alert
+        params:
+          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+          silent: true
+          icon_emoji: ":concourse:"
+          username: concourse-ci
+  - put: slack-alert
+    params:
+      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+      silent: true
+      icon_emoji: ":concourse:"
+      username: concourse-ci
 - name: build-pull-requests
   serial: true
   public: true
