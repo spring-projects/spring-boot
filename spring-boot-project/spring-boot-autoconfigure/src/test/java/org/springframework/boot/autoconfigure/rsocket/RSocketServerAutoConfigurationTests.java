@@ -79,7 +79,7 @@ class RSocketServerAutoConfigurationTests {
 	}
 
 	@Test
-	void shoudUseCustomServerBootstrap() {
+	void shouldUseCustomServerBootstrap() {
 		contextRunner().withUserConfiguration(CustomServerBootstrapConfig.class).run((context) -> assertThat(context)
 				.getBeanNames(RSocketServerBootstrap.class).containsExactly("customServerBootstrap"));
 	}
