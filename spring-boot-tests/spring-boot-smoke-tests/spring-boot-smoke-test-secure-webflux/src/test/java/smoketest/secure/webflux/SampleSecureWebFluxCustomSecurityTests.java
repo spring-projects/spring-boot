@@ -63,19 +63,19 @@ class SampleSecureWebFluxCustomSecurityTests {
 	@Test
 	void actuatorsSecuredByRole() {
 		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange().expectStatus().isForbidden();
+				.header("Authorization", getBasicAuth()).exchange().expectStatus().isForbidden();
 	}
 
 	@Test
 	void actuatorsAccessibleOnCorrectLogin() {
 		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuthForAdmin()).exchange().expectStatus().isOk();
+				.header("Authorization", getBasicAuthForAdmin()).exchange().expectStatus().isOk();
 	}
 
 	@Test
 	void actuatorExcludedFromEndpointRequestMatcher() {
 		this.webClient.get().uri("/actuator/mappings").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange().expectStatus().isOk();
+				.header("Authorization", getBasicAuth()).exchange().expectStatus().isOk();
 	}
 
 	@Test
@@ -89,15 +89,15 @@ class SampleSecureWebFluxCustomSecurityTests {
 		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 				.isUnauthorized();
 		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuthForAdmin()).exchange().expectStatus().isOk();
+				.header("Authorization", getBasicAuthForAdmin()).exchange().expectStatus().isOk();
 	}
 
 	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
+		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
 	private String getBasicAuthForAdmin() {
-		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
+		return "Basic " + Base64.getEncoder().encodeToString("admin:admin".getBytes());
 	}
 
 	@Configuration(proxyBeanMethods = false)
