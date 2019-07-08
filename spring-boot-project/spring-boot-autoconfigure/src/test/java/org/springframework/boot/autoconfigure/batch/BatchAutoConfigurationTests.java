@@ -89,7 +89,13 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoDatabase() {
+	public void whenThereIsNoDataSourceAutoConfigurationBacksOff() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
+	}
+
+	@Test
+	public void testCustomConfigurationWithNoDatabase() {
 		this.contextRunner.withUserConfiguration(TestCustomConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(JobLauncher.class);
 			JobExplorer explorer = context.getBean(JobExplorer.class);

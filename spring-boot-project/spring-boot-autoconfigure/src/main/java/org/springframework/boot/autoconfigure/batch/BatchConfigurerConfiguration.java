@@ -40,6 +40,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 class BatchConfigurerConfiguration {
 
 	@Configuration
+	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean(name = "entityManagerFactory")
 	static class JdbcBatchConfiguration {
 
