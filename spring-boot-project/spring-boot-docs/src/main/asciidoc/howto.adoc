@@ -2430,12 +2430,12 @@ other factory that your application defines, if any.
 This section answers questions that arise from using Spring Batch with Spring Boot.
 
 NOTE: By default, batch applications require a `DataSource` to store job details.
-Batch autowires a single `DataSource` in your context and
-uses that for processing. If you like to use a different `DataSource`, you can create
-one and mark it is `@Bean` as `@BatchDataSource`. If you do so and want two data sources,
-remember to create another one and mark it as `@Primary`. If you want to deviate from that,
- you need to implement `BatchConfigurer`. See
-{spring-batch-javadoc}/core/configuration/annotation/EnableBatchProcessing.html[The
+Batch autowires a single `DataSource` in your context and uses that for processing. To
+have Batch use a `DataSource` other than the application’s main `DataSource`, declare a
+`DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`. If you do so and
+want two data sources, remember to create another one and mark it as `@Primary`. To take
+greater control, implement `BatchConfigurer`. See
+{spring-batch-javadoc}/core/configuration/annotation/EnableBatchProcessing.html[the
 Javadoc of `@EnableBatchProcessing`] for more details.
 
 For more about Spring Batch, see the https://projects.spring.io/spring-batch/[Spring Batch

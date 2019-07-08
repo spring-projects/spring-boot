@@ -36,7 +36,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
 @ConditionalOnMissingBean(BatchConfigurer.class)
-@ConditionalOnBean(DataSource.class)
 @Configuration(proxyBeanMethods = false)
 class BatchConfigurerConfiguration {
 
@@ -45,10 +44,10 @@ class BatchConfigurerConfiguration {
 	static class JdbcBatchConfiguration {
 
 		@Bean
-		BasicBatchConfigurer batchConfigurer(BatchProperties properties, ObjectProvider<DataSource> dataSource,
+		BasicBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			return new BasicBatchConfigurer(properties, batchDataSource.getIfAvailable(dataSource::getIfAvailable),
+			return new BasicBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
 					transactionManagerCustomizers.getIfAvailable());
 		}
 
@@ -60,11 +59,11 @@ class BatchConfigurerConfiguration {
 	static class JpaBatchConfiguration {
 
 		@Bean
-		JpaBatchConfigurer batchConfigurer(BatchProperties properties, ObjectProvider<DataSource> dataSource,
+		JpaBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 				EntityManagerFactory entityManagerFactory) {
-			return new JpaBatchConfigurer(properties, batchDataSource.getIfAvailable(dataSource::getIfAvailable),
+			return new JpaBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
 					transactionManagerCustomizers.getIfAvailable(), entityManagerFactory);
 		}
 

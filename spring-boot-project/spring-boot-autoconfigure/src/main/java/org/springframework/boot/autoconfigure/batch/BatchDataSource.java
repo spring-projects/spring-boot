@@ -23,9 +23,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 
 /**
- * Qualifier annotation to allow a Batch-specific DataSource.
+ * Qualifier annotation for a DataSource to be injected into Batch auto-configuration. Can
+ * be used on a secondary data source, if there is another one marked as
+ * {@link Primary @Primary}.
  *
  * @author Dmytro Nosan
  * @since 2.2.0

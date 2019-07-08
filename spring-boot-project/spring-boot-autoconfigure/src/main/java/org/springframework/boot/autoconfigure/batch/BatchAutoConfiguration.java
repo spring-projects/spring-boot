@@ -76,10 +76,10 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(DataSource.class)
-	public BatchDataSourceInitializer batchDataSourceInitializer(ObjectProvider<DataSource> dataSource,
+	public BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
 			@BatchDataSource ObjectProvider<DataSource> batchDataSource, ResourceLoader resourceLoader) {
-		return new BatchDataSourceInitializer(batchDataSource.getIfAvailable(dataSource::getIfAvailable),
-				resourceLoader, this.properties);
+		return new BatchDataSourceInitializer(batchDataSource.getIfAvailable(() -> dataSource), resourceLoader,
+				this.properties);
 	}
 
 	@Bean
