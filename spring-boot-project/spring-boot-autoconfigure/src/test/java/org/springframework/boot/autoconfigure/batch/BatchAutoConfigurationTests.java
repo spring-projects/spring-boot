@@ -63,6 +63,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
@@ -93,6 +94,12 @@ class BatchAutoConfigurationTests {
 	@Test
 	void whenThereIsNoDataSourceAutoConfigurationBacksOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
+	}
+
+	@Test
+	void whenThereIsAnEntityManagerFactoryButNoDataSourceAutoConfigurationBacksOff() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EntityManagerFactoryConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
 	}
 
@@ -280,6 +287,16 @@ class BatchAutoConfigurationTests {
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
 	static class TestConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EntityManagerFactoryConfiguration {
+
+		@Bean
+		EntityManagerFactory entityManagerFactory() {
+			return mock(EntityManagerFactory.class);
+		}
 
 	}
 

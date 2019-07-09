@@ -35,12 +35,12 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
+@ConditionalOnBean(DataSource.class)
 @ConditionalOnMissingBean(BatchConfigurer.class)
 @Configuration(proxyBeanMethods = false)
 class BatchConfigurerConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean(name = "entityManagerFactory")
 	static class JdbcBatchConfiguration {
 
