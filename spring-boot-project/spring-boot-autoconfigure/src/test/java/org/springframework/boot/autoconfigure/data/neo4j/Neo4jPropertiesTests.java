@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import com.hazelcast.util.Base64;
+import java.util.Base64;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.config.AutoIndexMode;
@@ -164,10 +165,8 @@ class Neo4jPropertiesTests {
 			assertThat(credentials).isNotNull();
 			Object content = credentials.credentials();
 			assertThat(content).isInstanceOf(String.class);
-			String[] auth = new String(Base64.decode(((String) content).getBytes())).split(":");
-			assertThat(auth[0]).isEqualTo(username);
-			assertThat(auth[1]).isEqualTo(password);
-			assertThat(auth).hasSize(2);
+			String[] auth = new String(Base64.getDecoder().decode((String) content)).split(":");
+			assertThat(auth).containsExactly(username, password);
 		}
 	}
 
