@@ -80,6 +80,7 @@ class JacksonAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class));
 
 	@Test
+	@Deprecated
 	void registersJodaModuleAutomatically() {
 		this.contextRunner.run((context) -> {
 			ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
@@ -116,6 +117,7 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void customJodaDateTimeFormat() throws Exception {
 		this.contextRunner.withPropertyValues("spring.jackson.date-format:yyyyMMddHHmmss",
 				"spring.jackson.joda-date-time-format:yyyy-MM-dd HH:mm:ss").run((context) -> {
@@ -336,6 +338,7 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void customLocaleWithJodaTime() throws JsonProcessingException {
 		this.contextRunner.withPropertyValues("spring.jackson.locale:de_DE", "spring.jackson.date-format:zzzz",
 				"spring.jackson.serialization.write-dates-with-zone-id:true").run((context) -> {

@@ -108,6 +108,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
+	@Deprecated
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class, DateTimeSerializer.class,
 			JacksonJodaDateFormat.class })
@@ -117,6 +118,8 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		SimpleModule jodaDateTimeSerializationModule(JacksonProperties jacksonProperties) {
+			logger.warn("Auto-configuration of Jackson's Joda-Time integration is deprecated in favor of using "
+					+ "java.time (JSR-310).");
 			SimpleModule module = new SimpleModule();
 			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat(jacksonProperties);
 			if (jacksonJodaFormat != null) {

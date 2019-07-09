@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.gson;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,7 +28,6 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -198,9 +199,8 @@ class GsonAutoConfigurationTests {
 	void customDateFormat() {
 		this.contextRunner.withPropertyValues("spring.gson.date-format:H").run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			DateTime dateTime = new DateTime(1988, 6, 25, 20, 30);
-			Date date = dateTime.toDate();
-			assertThat(gson.toJson(date)).isEqualTo("\"20\"");
+			ZonedDateTime dateTime = ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault());
+			assertThat(gson.toJson(Date.from(dateTime.toInstant()))).isEqualTo("\"20\"");
 		});
 	}
 

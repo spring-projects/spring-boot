@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties to configure Jackson.
@@ -117,6 +118,10 @@ public class JacksonProperties {
 		this.dateFormat = dateFormat;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "dateFormat",
+			reason = "Auto-configuration for Jackson's Joda-Time integration is "
+					+ "deprecated in favor of its Java 8 Time integration")
 	public String getJodaDateTimeFormat() {
 		return this.jodaDateTimeFormat;
 	}
