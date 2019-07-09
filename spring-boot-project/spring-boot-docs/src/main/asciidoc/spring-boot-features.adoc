@@ -5415,7 +5415,7 @@ TIP: It is also possible to _force_ a particular cache provider by setting the
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching
 dependencies. The starter brings in `spring-context-support`. If you add dependencies
 manually, you must include `spring-context-support` in order to use the JCache,
-EhCache 2.x, or Guava support.
+EhCache 2.x, or Caffeine support.
 
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its
 configuration before it is fully initialized by exposing a bean that implements the
