@@ -3560,12 +3560,12 @@ The following code shows a typical example:
 
 		public MyService(RSocketRequester.Builder rsocketRequesterBuilder) {
 			this.rsocketRequester = rsocketRequesterBuilder
-				.connectTcp("example.org", 9090).block();
+					.connectTcp("example.org", 9090).block();
 		}
 
 		public Mono<User> someRSocketCall(String name) {
-			return this.requester.route("user").data(payload)
-                   				.retrieveMono(User.class);
+			return this.requester.route("user").data(name)
+					.retrieveMono(User.class);
 		}
 
 	}

@@ -46,7 +46,7 @@ public final class DevToolsEnablementDeducer {
 	 * Checks if a specific {@link StackTraceElement} in the current thread's stacktrace
 	 * should cause devtools to be disabled.
 	 * @param thread the current thread
-	 * @return {@code true} if devtools should be enabled skipped
+	 * @return {@code true} if devtools should be enabled
 	 */
 	public static boolean shouldEnable(Thread thread) {
 		for (StackTraceElement element : thread.getStackTrace()) {

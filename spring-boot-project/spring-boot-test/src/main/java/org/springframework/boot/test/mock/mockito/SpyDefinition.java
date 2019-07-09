@@ -28,6 +28,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * A complete definition that can be used to create a Mockito spy.
  *
@@ -98,7 +100,7 @@ class SpyDefinition extends Definition {
 		if (this.isProxyTargetAware()) {
 			settings.verificationStartedListeners(new SpringAopBypassingVerificationStartedListener());
 		}
-		return (T) Mockito.mock(instance.getClass(), settings);
+		return (T) mock(instance.getClass(), settings);
 	}
 
 	/**

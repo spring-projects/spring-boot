@@ -191,7 +191,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 * Determines the resource base path for web applications using the value of
 	 * {@link WebAppConfiguration @WebAppConfiguration}, if any, on the test class of the
 	 * given {@code configuration}. Defaults to {@code src/main/webapp} in its absence.
-	 * @param configuration the configure to examine
+	 * @param configuration the configuration to examine
 	 * @return the resource base path
 	 * @since 2.1.6
 	 */

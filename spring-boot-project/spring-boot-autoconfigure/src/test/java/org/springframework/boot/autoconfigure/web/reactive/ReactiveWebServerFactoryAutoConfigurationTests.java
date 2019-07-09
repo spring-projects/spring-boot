@@ -21,7 +21,6 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -275,7 +274,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		HttpHandler httpHandler() {
-			return Mockito.mock(HttpHandler.class);
+			return mock(HttpHandler.class);
 		}
 
 	}
@@ -285,7 +284,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 
 		@Bean
 		HttpHandler additionalHttpHandler() {
-			return Mockito.mock(HttpHandler.class);
+			return mock(HttpHandler.class);
 		}
 
 	}
