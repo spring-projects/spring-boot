@@ -31,7 +31,6 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,12 +60,12 @@ class SampleActuatorLog4J2ApplicationTests {
 	@Test
 	void validateLoggersEndpoint() throws Exception {
 		this.mvc.perform(get("/actuator/loggers/org.apache.coyote.http11.Http11NioProtocol").header("Authorization",
-				"Basic " + getBasicAuth())).andExpect(status().isOk()).andExpect(
-						content().string(equalTo("{\"configuredLevel\":\"WARN\"," + "\"effectiveLevel\":\"WARN\"}")));
+				getBasicAuth())).andExpect(status().isOk())
+				.andExpect(content().string("{\"configuredLevel\":\"WARN\"," + "\"effectiveLevel\":\"WARN\"}"));
 	}
 
 	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
+		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
 }
