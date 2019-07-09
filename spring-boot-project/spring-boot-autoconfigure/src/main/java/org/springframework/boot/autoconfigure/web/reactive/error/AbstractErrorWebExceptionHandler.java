@@ -222,7 +222,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 			builder.append("<div style='white-space:pre-wrap;'>").append(htmlEscape(trace)).append("</div>");
 		}
 		builder.append("</body></html>");
-		return responseBody.syncBody(builder.toString());
+		return responseBody.body(builder.toString());
 	}
 
 	private String htmlEscape(Object input) {

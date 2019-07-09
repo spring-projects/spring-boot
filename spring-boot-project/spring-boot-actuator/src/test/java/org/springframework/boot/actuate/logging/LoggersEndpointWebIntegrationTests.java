@@ -95,7 +95,7 @@ class LoggersEndpointWebIntegrationTests {
 	@WebEndpointTest
 	void setLoggerUsingApplicationJsonShouldSetLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
+				.body(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
@@ -103,15 +103,14 @@ class LoggersEndpointWebIntegrationTests {
 	void setLoggerUsingActuatorV2JsonShouldSetLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
+				.body(Collections.singletonMap("configuredLevel", "debug")).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
 	@WebEndpointTest
 	void setLoggerWithWrongLogLevelResultInBadRequestResponse() {
 		this.client.post().uri("/actuator/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.syncBody(Collections.singletonMap("configuredLevel", "other")).exchange().expectStatus()
-				.isBadRequest();
+				.body(Collections.singletonMap("configuredLevel", "other")).exchange().expectStatus().isBadRequest();
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
@@ -119,14 +118,14 @@ class LoggersEndpointWebIntegrationTests {
 	void setLoggerWithNullLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
-				.syncBody(Collections.singletonMap("configuredLevel", null)).exchange().expectStatus().isNoContent();
+				.body(Collections.singletonMap("configuredLevel", null)).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
 	@WebEndpointTest
 	void setLoggerWithNoLogLevel() {
 		this.client.post().uri("/actuator/loggers/ROOT")
-				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON)).syncBody(Collections.emptyMap())
+				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON)).body(Collections.emptyMap())
 				.exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
