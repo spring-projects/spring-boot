@@ -325,6 +325,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	/**
 	 * Add {@link Connector}s in addition to the default connector, e.g. for SSL or AJP
 	 * @param connectors the connectors to add
+	 * @since 2.2.0
 	 */
 	public void addAdditionalTomcatConnectors(Connector... connectors) {
 		Assert.notNull(connectors, "Connectors must not be null");
@@ -335,6 +336,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * Returns a mutable collection of the {@link Connector}s that will be added to the
 	 * Tomcat.
 	 * @return the additionalTomcatConnectors
+	 * @since 2.2.0
 	 */
 	public List<Connector> getAdditionalTomcatConnectors() {
 		return this.additionalTomcatConnectors;
