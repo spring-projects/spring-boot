@@ -250,14 +250,14 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	@Test
 	void forwardedHeaderTransformerShouldBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
-				.withPropertyValues("server.forward-headers-strategy=framework")
+				.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
 				.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
 	void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
-				.withPropertyValues("server.forward-headers-strategy=native")
+				.withPropertyValues("server.forward-headers-strategy=native", "server.port=0")
 				.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
 	}
 
@@ -265,7 +265,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
 		this.contextRunner
 				.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class, HttpHandlerConfiguration.class)
-				.withPropertyValues("server.forward-headers-strategy=framework")
+				.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
 				.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 

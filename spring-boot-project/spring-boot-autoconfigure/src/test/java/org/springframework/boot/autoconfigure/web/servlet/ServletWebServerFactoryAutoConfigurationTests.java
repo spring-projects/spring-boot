@@ -155,7 +155,8 @@ class ServletWebServerFactoryAutoConfigurationTests {
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(JettyServerCustomizerConfiguration.class);
+						.withUserConfiguration(JettyServerCustomizerConfiguration.class)
+						.withPropertyValues("server.port:0");
 		runner.run((context) -> {
 			JettyServletWebServerFactory factory = context.getBean(JettyServletWebServerFactory.class);
 			assertThat(factory.getServerCustomizers()).hasSize(1);
@@ -168,7 +169,8 @@ class ServletWebServerFactoryAutoConfigurationTests {
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(UndertowDeploymentInfoCustomizerConfiguration.class);
+						.withUserConfiguration(UndertowDeploymentInfoCustomizerConfiguration.class)
+						.withPropertyValues("server.port:0");
 		runner.run((context) -> {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
@@ -181,7 +183,8 @@ class ServletWebServerFactoryAutoConfigurationTests {
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class);
+						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
+						.withPropertyValues("server.port:0");
 		runner.run((context) -> {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getBuilderCustomizers()).hasSize(1);
