@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -36,27 +36,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dmytro Nosan
  */
-class AbstractDependsOnBeanFactoryPostProcessorTests {
+public class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(FooBarConfiguration.class);
 
 	@Test
-	void fooBeansShouldDependOnBarBeanNames() {
+	public void fooBeansShouldDependOnBarBeanNames() {
 		this.contextRunner
 				.withUserConfiguration(FooDependsOnBarNamePostProcessor.class, FooBarFactoryBeanConfiguration.class)
 				.run(this::assertThatFooDependsOnBar);
 	}
 
 	@Test
-	void fooBeansShouldDependOnBarBeanTypes() {
+	public void fooBeansShouldDependOnBarBeanTypes() {
 		this.contextRunner
 				.withUserConfiguration(FooDependsOnBarTypePostProcessor.class, FooBarFactoryBeanConfiguration.class)
 				.run(this::assertThatFooDependsOnBar);
 	}
 
 	@Test
-	void fooBeansShouldDependOnBarBeanNamesParentContext() {
+	public void fooBeansShouldDependOnBarBeanNamesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
 			this.contextRunner.withUserConfiguration(FooDependsOnBarNamePostProcessor.class).withParent(parentContext)
@@ -65,7 +65,7 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 	}
 
 	@Test
-	void fooBeansShouldDependOnBarBeanTypesParentContext() {
+	public void fooBeansShouldDependOnBarBeanTypesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
 			this.contextRunner.withUserConfiguration(FooDependsOnBarTypePostProcessor.class).withParent(parentContext)
@@ -101,7 +101,7 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@Configuration
 	static class FooBarFactoryBeanConfiguration {
 
 		@Bean
@@ -116,7 +116,7 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@Configuration
 	static class FooBarConfiguration {
 
 		@Bean
