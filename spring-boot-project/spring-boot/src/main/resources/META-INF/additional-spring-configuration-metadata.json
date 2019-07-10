@@ -720,6 +720,13 @@
       "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
     },
     {
+      "name": "spring.reactor.debug-agent.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
+      "description": "Whether the Reactor Debug Agent should be enabled when reactor-tools is present.",
+      "defaultValue": true
+    },
+    {
       "name": "trace",
       "type": "java.lang.Boolean",
       "description": "Enable trace logs.",
