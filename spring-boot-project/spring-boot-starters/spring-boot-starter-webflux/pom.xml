@@ -45,5 +45,9 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webflux</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.synchronoss.cloud</groupId>
+			<artifactId>nio-multipart-parser</artifactId>
+		</dependency>
 	</dependencies>
 </project>
