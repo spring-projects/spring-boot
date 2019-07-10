@@ -60,6 +60,15 @@ public class BuildInfoMojo extends AbstractMojo {
 	private File outputFile;
 
 	/**
+	 * Sets the value used for the {@code build.time} property. Defaults to
+	 * {@link Instant#now} when the {@code mojo} instance was created. To disable
+	 * {@code build.time} property, {@code 'off'} value should be used.
+	 * @since 2.2.0
+	 */
+	@Parameter
+	private String time = Instant.now().toString();
+
+	/**
 	 * Additional properties to store in the build-info.properties. Each entry is prefixed
 	 * by {@code build.} in the generated build-info.properties.
 	 */
@@ -71,7 +80,7 @@ public class BuildInfoMojo extends AbstractMojo {
 		try {
 			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(new ProjectDetails(
 					this.project.getGroupId(), this.project.getArtifactId(), this.project.getVersion(),
-					this.project.getName(), Instant.now(), this.additionalProperties));
+					this.project.getName(), getBuildTime(), this.additionalProperties));
 			this.buildContext.refresh(this.outputFile);
 		}
 		catch (NullAdditionalPropertyValueException ex) {
@@ -80,6 +89,10 @@ public class BuildInfoMojo extends AbstractMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
+	}
+
+	private Instant getBuildTime() {
+		return "off".equals(this.time) ? null : Instant.parse(this.time);
 	}
 
 }
