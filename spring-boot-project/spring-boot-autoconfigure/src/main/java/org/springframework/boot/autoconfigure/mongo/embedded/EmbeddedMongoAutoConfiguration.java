@@ -74,6 +74,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
  * @author Andy Wilkinson
  * @author Yogesh Lonkar
  * @author Mark Paluch
+ * @author Issam El-atif
  * @since 1.3.0
  */
 @Configuration
@@ -210,30 +211,31 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
-	 * {@code embeddedMongoServer} bean.
+	 * Additional configuration to ensure that {@link MongoClient} beans depend on any
+	 * {@link MongodExecutable} beans.
 	 */
 	@Configuration
 	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
 	protected static class EmbeddedMongoDependencyConfiguration extends MongoClientDependsOnBeanFactoryPostProcessor {
 
-		public EmbeddedMongoDependencyConfiguration() {
-			super("embeddedMongoServer");
+		EmbeddedMongoDependencyConfiguration() {
+			super(MongodExecutable.class);
 		}
 
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
-	 * {@code embeddedMongoServer} bean.
+	 * Additional configuration to ensure that
+	 * {@link com.mongodb.reactivestreams.client.MongoClient} beans depend on any
+	 * {@link MongodExecutable} beans.
 	 */
 	@Configuration
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class, ReactiveMongoClientFactoryBean.class })
 	protected static class EmbeddedReactiveMongoDependencyConfiguration
 			extends ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
 
-		public EmbeddedReactiveMongoDependencyConfiguration() {
-			super("embeddedMongoServer");
+		EmbeddedReactiveMongoDependencyConfiguration() {
+			super(MongodExecutable.class);
 		}
 
 	}
