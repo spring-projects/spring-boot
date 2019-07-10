@@ -26,7 +26,6 @@ import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
 import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
@@ -234,17 +233,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public Object invoke(InvocationContext context) {
-			return Mono.create((sink) -> Schedulers.elastic().schedule(() -> invoke(context, sink)));
-		}
-
-		private void invoke(InvocationContext context, MonoSink<Object> sink) {
-			try {
-				Object result = this.invoker.invoke(context);
-				sink.success(result);
-			}
-			catch (Exception ex) {
-				sink.error(ex);
-			}
+			return Mono.fromCallable(() -> this.invoker.invoke(context)).subscribeOn(Schedulers.elastic());
 		}
 
 	}
