@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,6 +53,12 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 
 	private final Function<ListableBeanFactory, Set<String>> dependsOn;
 
+	/**
+	 * Create an instance with target bean and factory bean classes and dependency names.
+	 * @param beanClass target bean class
+	 * @param factoryBeanClass target factory bean class
+	 * @param dependsOn dependency names
+	 */
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
 			Class<? extends FactoryBean<?>> factoryBeanClass, String... dependsOn) {
 		this.beanClass = beanClass;
@@ -78,9 +83,9 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	}
 
 	/**
-	 * Create an instance with target bean class and dependencies.
+	 * Create an instance with target bean class and dependency names.
 	 * @param beanClass target bean class
-	 * @param dependsOn dependencies
+	 * @param dependsOn dependency names
 	 * @since 2.0.4
 	 */
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass, String... dependsOn) {
@@ -119,8 +124,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 
 	private static Set<String> getBeanNames(ListableBeanFactory beanFactory, Class<?> beanClass) {
 		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
-		return Arrays.stream(names).map(BeanFactoryUtils::transformedBeanName)
-				.collect(Collectors.toCollection(LinkedHashSet::new));
+		return Arrays.stream(names).map(BeanFactoryUtils::transformedBeanName).collect(Collectors.toSet());
 	}
 
 	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
