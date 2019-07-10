@@ -63,6 +63,13 @@ class EndpointsPropertiesSampleActuatorApplicationTests {
 		assertThat(entity.getBody()).contains("\"hello\":\"world\"");
 	}
 
+	@Test
+	void logfileWithRandomName() {
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
+				.getForEntity("/admin/logfile", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
 	private String getPassword() {
 		return "password";
 	}

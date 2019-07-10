@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.logging.LogFile;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
@@ -43,8 +44,6 @@ class LogFileWebEndpointTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private final LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment);
-
 	private File logFile;
 
 	@BeforeEach
@@ -55,19 +54,22 @@ class LogFileWebEndpointTests {
 
 	@Test
 	void nullResponseWithoutLogFile() {
-		assertThat(this.endpoint.logFile()).isNull();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(null, null);
+		assertThat(endpoint.logFile()).isNull();
 	}
 
 	@Test
 	void nullResponseWithMissingLogFile() {
 		this.environment.setProperty("logging.file.name", "no_test.log");
-		assertThat(this.endpoint.logFile()).isNull();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
+		assertThat(endpoint.logFile()).isNull();
 	}
 
 	@Test
 	void resourceResponseWithLogFile() throws Exception {
 		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
-		Resource resource = this.endpoint.logFile();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
+		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
 		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 	}
@@ -76,14 +78,15 @@ class LogFileWebEndpointTests {
 	@Deprecated
 	void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
-		Resource resource = this.endpoint.logFile();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
+		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
 		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 	}
 
 	@Test
 	void resourceResponseWithExternalLogFile() throws Exception {
-		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment, this.logFile);
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(null, this.logFile);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
 		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
