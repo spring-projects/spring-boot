@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.mongodb.MongoClient;
@@ -33,6 +34,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -45,7 +47,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
  * Tests for {@link EmbeddedMongoAutoConfiguration}.
@@ -177,7 +178,12 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void customMongoServerConfiguration() {
-		assertThatCode(() -> load(CustomMongoConfiguration.class)).doesNotThrowAnyException();
+		load(CustomMongoConfiguration.class);
+		Map<String, MongoClient> mongoClients = this.context.getBeansOfType(MongoClient.class);
+		for (String mongoClientBeanName : mongoClients.keySet()) {
+			BeanDefinition beanDefinition = this.context.getBeanFactory().getBeanDefinition(mongoClientBeanName);
+			assertThat(beanDefinition.getDependsOn()).contains("customMongoServer");
+		}
 	}
 
 	private void assertVersionConfiguration(String configuredVersion, String expectedVersion) {

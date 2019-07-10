@@ -48,8 +48,6 @@ import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -218,32 +216,26 @@ public class EmbeddedMongoAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
-	protected static class EmbeddedMongoDependencyConfiguration {
+	protected static class EmbeddedMongoDependencyConfiguration extends MongoClientDependsOnBeanFactoryPostProcessor {
 
-		@Bean
-		public MongoClientDependsOnBeanFactoryPostProcessor mongoClientDependsOnBeanFactoryPostProcessor(
-				ListableBeanFactory listableBeanFactory) {
-			String[] mongoExecutableBeanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(listableBeanFactory,
-					MongodExecutable.class);
-			return new MongoClientDependsOnBeanFactoryPostProcessor(mongoExecutableBeanNames);
+		EmbeddedMongoDependencyConfiguration() {
+			super(MongodExecutable.class);
 		}
 
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link MongoClient} beans depend on any
+	 * Additional configuration to ensure that
+	 * {@link com.mongodb.reactivestreams.client.MongoClient} beans depend on any
 	 * {@link MongodExecutable} beans.
 	 */
 	@Configuration
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class, ReactiveMongoClientFactoryBean.class })
-	protected static class EmbeddedReactiveMongoDependencyConfiguration {
+	protected static class EmbeddedReactiveMongoDependencyConfiguration
+			extends ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
 
-		@Bean
-		public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor reactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(
-				ListableBeanFactory listableBeanFactory) {
-			String[] mongoExecutableBeanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(listableBeanFactory,
-					MongodExecutable.class);
-			return new ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(mongoExecutableBeanNames);
+		EmbeddedReactiveMongoDependencyConfiguration() {
+			super(MongodExecutable.class);
 		}
 
 	}

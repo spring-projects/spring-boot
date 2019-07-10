@@ -37,7 +37,24 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
 public class ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor
 		extends AbstractDependsOnBeanFactoryPostProcessor {
 
+	/**
+	 * Creates a new {@code ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor}
+	 * that will set up dependencies upon beans with the given names.
+	 * @param dependsOn names of the beans to depend upon
+	 * @deprecated since 2.1.7 in favor of
+	 * {@link #ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor}
+	 */
+	@Deprecated
 	public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(String... dependsOn) {
+		super(MongoClient.class, ReactiveMongoClientFactoryBean.class, dependsOn);
+	}
+
+	/**
+	 * Creates a new {@code ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor}
+	 * that will set up dependencies upon beans with the given types.
+	 * @param dependsOn types of the beans to depend upon
+	 */
+	public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(Class<?>... dependsOn) {
 		super(MongoClient.class, ReactiveMongoClientFactoryBean.class, dependsOn);
 	}
 
