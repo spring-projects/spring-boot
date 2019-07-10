@@ -30,6 +30,7 @@
 				</property>
 			</activation>
 			<modules>
+				<module>spring-boot-smoke-tests</module>
 				<module>spring-boot-smoke-tests-invoker</module>
 				<module>spring-boot-integration-tests</module>
 				<module>spring-boot-deployment-tests</module>

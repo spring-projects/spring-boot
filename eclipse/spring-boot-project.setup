@@ -139,8 +139,14 @@
     <workingSet
         name="spring-boot-tests">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-.*-test.*"/>
+          xsi:type="predicates:AndPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-(.*-test|tests).*"/>
+        <operand
+            xsi:type="workingsets:ExclusionPredicate"
+            excludedWorkingSet="//@setupTasks.7/@workingSets.3"/>
+      </predicate>
     </workingSet>
   </setupTask>
   <setupTask
