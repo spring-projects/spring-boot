@@ -78,7 +78,7 @@ public class RSocketStrategiesAutoConfiguration {
 		@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
 		public RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(Jackson2ObjectMapperBuilder builder) {
 			return (strategy) -> {
-				ObjectMapper objectMapper = builder.factory(new CBORFactory()).build();
+				ObjectMapper objectMapper = builder.createXmlMapper(false).factory(new CBORFactory()).build();
 				strategy.decoder(new Jackson2CborDecoder(objectMapper, SUPPORTED_TYPES));
 				strategy.encoder(new Jackson2CborEncoder(objectMapper, SUPPORTED_TYPES));
 			};
