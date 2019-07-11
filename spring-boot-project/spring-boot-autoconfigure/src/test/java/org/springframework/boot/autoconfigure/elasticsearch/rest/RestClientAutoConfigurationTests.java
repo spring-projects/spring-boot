@@ -56,14 +56,38 @@ class RestClientAutoConfigurationTests {
 
 	@Test
 	void configureShouldCreateBothRestClientVariants() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
-				.hasSingleBean(RestHighLevelClient.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class).hasSingleBean(RestHighLevelClient.class);
+			RestHighLevelClient restHighLevelClient = context.getBean(RestHighLevelClient.class);
+			assertThat(restHighLevelClient.getLowLevelClient()).isNotSameAs(context.getBean(RestClient.class));
+		});
 	}
 
 	@Test
 	void configureWhenCustomClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(RestClient.class).hasBean("customRestClient"));
+	}
+
+	@Test
+	void configureWhenCustomRestHighLevelClientShouldBackOff() {
+		this.contextRunner.withUserConfiguration(CustomRestHighLevelClientConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class).hasSingleBean(RestHighLevelClient.class);
+			RestHighLevelClient restHighLevelClient = context.getBean(RestHighLevelClient.class);
+			assertThat(restHighLevelClient.getLowLevelClient()).isSameAs(context.getBean(RestClient.class));
+		});
+	}
+
+	@Test
+	void configureWhenDefaultRestClientShouldCreateWhenNoUniqueRestHighLevelClient() {
+		this.contextRunner.withUserConfiguration(TwoCustomRestHighLevelClientConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			Map<String, RestHighLevelClient> restHighLevelClients = context.getBeansOfType(RestHighLevelClient.class);
+			assertThat(restHighLevelClients).isNotEmpty();
+			for (RestHighLevelClient restHighLevelClient : restHighLevelClients.values()) {
+				assertThat(restHighLevelClient.getLowLevelClient()).isNotSameAs(context.getBean(RestClient.class));
+			}
+		});
 	}
 
 	@Test
@@ -134,6 +158,31 @@ class RestClientAutoConfigurationTests {
 		@Bean
 		RestClientBuilderCustomizer myCustomizer() {
 			return (builder) -> builder.setPathPrefix("/test");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomRestHighLevelClientConfiguration {
+
+		@Bean
+		RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
+			return new RestHighLevelClient(builder);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TwoCustomRestHighLevelClientConfiguration {
+
+		@Bean
+		RestHighLevelClient customRestHighLevelClient(RestClientBuilder builder) {
+			return new RestHighLevelClient(builder);
+		}
+
+		@Bean
+		RestHighLevelClient customRestHighLevelClient1(RestClientBuilder builder) {
+			return new RestHighLevelClient(builder);
 		}
 
 	}
