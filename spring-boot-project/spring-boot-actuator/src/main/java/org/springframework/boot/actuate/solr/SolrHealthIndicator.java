@@ -91,8 +91,8 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 			}
 		}
 		Status status = (statusCode != 0) ? Status.DOWN : Status.UP;
-		builder.status(status).withDetail("status", statusCode)
-				.withDetail("detectedPathType", this.detectedPathType.toString());
+		builder.status(status).withDetail("status", statusCode).withDetail("detectedPathType",
+				this.detectedPathType.toString());
 	}
 
 	private int doCoreAdminCheck() throws IOException, SolrServerException {
@@ -106,7 +106,7 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 		return this.solrClient.ping().getStatus();
 	}
 
-	private enum PathType {
+	enum PathType {
 
 		ROOT, PARTICULAR_CORE, UNKNOWN
 

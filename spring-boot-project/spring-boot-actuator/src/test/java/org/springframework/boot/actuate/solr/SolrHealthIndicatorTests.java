@@ -34,7 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link SolrHealthIndicator}
@@ -60,8 +63,7 @@ class SolrHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("status")).isEqualTo(0);
-		assertThat(health.getDetails().get("detectedPathType"))
-				.isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
+		assertThat(health.getDetails().get("detectedPathType")).isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
 		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
 		verifyNoMoreInteractions(solrClient);
 	}
@@ -94,9 +96,8 @@ class SolrHealthIndicatorTests {
 		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
 		verify(solrClient, times(1)).ping();
 		verifyNoMoreInteractions(solrClient);
-		reset(solrClient);
 		healthIndicator.health();
-		verify(solrClient, times(1)).ping();
+		verify(solrClient, times(2)).ping();
 		verifyNoMoreInteractions(solrClient);
 	}
 
@@ -108,15 +109,13 @@ class SolrHealthIndicatorTests {
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("status")).isEqualTo(400);
-		assertThat(health.getDetails().get("detectedPathType"))
-				.isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
+		assertThat(health.getDetails().get("detectedPathType")).isEqualTo(SolrHealthIndicator.PathType.ROOT.toString());
 		verify(solrClient, times(1)).request(any(CoreAdminRequest.class), isNull());
 		verifyNoMoreInteractions(solrClient);
 	}
 
 	@Test
-	void solrIsUpAndRequestFailedWithBaseUrlPointsToParticularCore()
-			throws Exception {
+	void solrIsUpAndRequestFailedWithBaseUrlPointsToParticularCore() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 				.willThrow(new HttpSolrClient.RemoteSolrException("mock", 404, "", null));
