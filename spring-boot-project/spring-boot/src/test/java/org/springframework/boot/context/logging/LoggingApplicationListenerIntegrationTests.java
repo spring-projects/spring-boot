@@ -16,14 +16,19 @@
 
 package org.springframework.boot.context.logging;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -51,6 +56,17 @@ class LoggingApplicationListenerIntegrationTests {
 	}
 
 	@Test
+	void logFileRegisteredInTheContextWhenApplicable(@TempDir File tempDir) throws Exception {
+		String logFile = new File(tempDir, "test.log").getAbsolutePath();
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
+				.web(WebApplicationType.NONE).properties("logging.file=" + logFile).run()) {
+			SampleService service = context.getBean(SampleService.class);
+			assertThat(service.logFile).isNotNull();
+			assertThat(service.logFile.toString()).isEqualTo(logFile);
+		}
+	}
+
+	@Test
 	void loggingPerformedDuringChildApplicationStartIsNotLost(CapturedOutput capturedOutput) {
 		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE).child(Config.class)
 				.web(WebApplicationType.NONE).listeners(new ApplicationListener<ApplicationStartingEvent>() {
@@ -71,8 +87,11 @@ class LoggingApplicationListenerIntegrationTests {
 
 		private final LoggingSystem loggingSystem;
 
-		SampleService(LoggingSystem loggingSystem) {
+		private final LogFile logFile;
+
+		SampleService(LoggingSystem loggingSystem, ObjectProvider<LogFile> logFile) {
 			this.loggingSystem = loggingSystem;
+			this.logFile = logFile.getIfAvailable();
 		}
 
 	}
