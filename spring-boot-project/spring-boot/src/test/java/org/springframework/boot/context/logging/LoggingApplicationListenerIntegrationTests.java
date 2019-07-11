@@ -18,12 +18,15 @@ package org.springframework.boot.context.logging;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.ApplicationListener;
@@ -42,12 +45,26 @@ public class LoggingApplicationListenerIntegrationTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
 		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
 				.web(WebApplicationType.NONE).run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.loggingSystem).isNotNull();
+		}
+	}
+
+	@Test
+	public void logFileRegisteredInTheContextWhenApplicable() throws Exception {
+		String logFile = this.temp.newFile().getAbsolutePath();
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
+				.web(WebApplicationType.NONE).properties("logging.file=" + logFile).run()) {
+			SampleService service = context.getBean(SampleService.class);
+			assertThat(service.logFile).isNotNull();
+			assertThat(service.logFile.toString()).isEqualTo(logFile);
 		}
 	}
 
@@ -72,8 +89,11 @@ public class LoggingApplicationListenerIntegrationTests {
 
 		private final LoggingSystem loggingSystem;
 
-		SampleService(LoggingSystem loggingSystem) {
+		private final LogFile logFile;
+
+		SampleService(LoggingSystem loggingSystem, ObjectProvider<LogFile> logFile) {
 			this.loggingSystem = loggingSystem;
+			this.logFile = logFile.getIfAvailable();
 		}
 
 	}
