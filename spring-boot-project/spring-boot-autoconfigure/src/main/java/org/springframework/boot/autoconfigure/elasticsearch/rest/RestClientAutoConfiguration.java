@@ -28,6 +28,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -88,6 +89,30 @@ public class RestClientAutoConfiguration {
 		@ConditionalOnMissingBean
 		public RestHighLevelClient restHighLevelClient(RestClientBuilder restClientBuilder) {
 			return new RestHighLevelClient(restClientBuilder);
+		}
+
+	}
+
+	/**
+	 * Configuration to configure a {@link RestClient} bean from a
+	 * {@link RestHighLevelClient} if such a bean has been registered by the application.
+	 * If {@link RestHighLevelClient} is not unique or does not exist then
+	 * {@link RestClientBuilder#build()} will be used.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(RestHighLevelClient.class)
+	@ConditionalOnBean(RestHighLevelClient.class)
+	public static class RestClientConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public RestClient restClient(ObjectProvider<RestHighLevelClient> restHighLevelClient,
+				RestClientBuilder builder) {
+			RestHighLevelClient client = restHighLevelClient.getIfUnique();
+			if (client != null) {
+				return client.getLowLevelClient();
+			}
+			return builder.build();
 		}
 
 	}
