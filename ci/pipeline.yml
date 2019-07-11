@@ -43,6 +43,7 @@ resources:
     repository: spring-boot
     access_token: ((github-ci-release-token))
     pre_release: true
+    release: false
 - name: github-release
   type: github-release
   icon: briefcase-download
