@@ -16,8 +16,10 @@
 
 package org.springframework.boot.testsupport.runner.classpath;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -42,14 +44,34 @@ import org.springframework.util.ReflectionUtils;
  * class loader is created with the customized class path and is used both to load the
  * test class and as the thread context class loader while the test is being run.
  *
- * NOTE: As JUnit 5 doesn't support native class loader support yet, this extension
- * executes the tests with the modified class loader via the {@link Launcher} facilities.
- * While the original test results are swallowed, the test itself is still executed.
- *
  * @author Christoph Dreis
  * @since 2.2.0
  */
 public class ModifiedClassPathExtension implements InvocationInterceptor {
+
+	@Override
+	public void interceptBeforeAllMethod(Invocation<Void> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		interceptInvocation(invocation, extensionContext);
+	}
+
+	@Override
+	public void interceptBeforeEachMethod(Invocation<Void> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		interceptInvocation(invocation, extensionContext);
+	}
+
+	@Override
+	public void interceptAfterEachMethod(Invocation<Void> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		interceptInvocation(invocation, extensionContext);
+	}
+
+	@Override
+	public void interceptAfterAllMethod(Invocation<Void> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		interceptInvocation(invocation, extensionContext);
+	}
 
 	@Override
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
@@ -63,7 +85,7 @@ public class ModifiedClassPathExtension implements InvocationInterceptor {
 				.createTestClassLoader(extensionContext.getRequiredTestClass());
 		Thread.currentThread().setContextClassLoader(classLoader);
 		try {
-			swallowOriginalInvocation(invocation);
+			fakeInvocation(invocation);
 			TestExecutionSummary summary = launchTests(invocationContext, extensionContext, classLoader);
 			if (!CollectionUtils.isEmpty(summary.getFailures())) {
 				throw summary.getFailures().get(0).getException();
@@ -96,9 +118,20 @@ public class ModifiedClassPathExtension implements InvocationInterceptor {
 				.equals(ModifiedClassPathClassLoader.class.getName());
 	}
 
-	private void swallowOriginalInvocation(Invocation invocation) {
-		try {
+	private void interceptInvocation(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
+		if (isModifiedClassPathClassLoader(extensionContext)) {
 			invocation.proceed();
+		}
+		else {
+			fakeInvocation(invocation);
+		}
+	}
+
+	private void fakeInvocation(Invocation invocation) {
+		try {
+			Field field = ReflectionUtils.findField(invocation.getClass(), "invoked");
+			ReflectionUtils.makeAccessible(field);
+			ReflectionUtils.setField(field, invocation, new AtomicBoolean(true));
 		}
 		catch (Throwable ignore) {
 

@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link ModifiedClassPathExtension} overriding entries on the class path.
  *
- * @author Andy Wilkinson
+ * @author Christoph Dreis
  */
 @ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathOverrides("org.springframework:spring-context:4.1.0.RELEASE")
