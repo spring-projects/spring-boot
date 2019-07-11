@@ -16,12 +16,11 @@
 
 package org.springframework.boot;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
@@ -33,31 +32,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("spring-web*.jar")
-public class SpringApplicationNoWebTests {
-
-	private ConfigurableApplicationContext context;
-
-	@After
-	public void cleanUp() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+class SpringApplicationNoWebTests {
 
 	@Test
-	public void detectWebApplicationTypeToNone() {
+	void detectWebApplicationTypeToNone() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.NONE);
 	}
 
 	@Test
-	public void specificApplicationContextClass() {
+	void specificApplicationContextClass() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(StaticApplicationContext.class);
-		this.context = application.run();
-		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
+		ConfigurableApplicationContext context = application.run();
+		assertThat(context).isInstanceOf(StaticApplicationContext.class);
+		context.close();
 	}
 
 	@Configuration(proxyBeanMethods = false)

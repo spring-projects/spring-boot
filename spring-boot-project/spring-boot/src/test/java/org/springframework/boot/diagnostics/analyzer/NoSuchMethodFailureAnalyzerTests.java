@@ -19,12 +19,12 @@ package org.springframework.boot.diagnostics.analyzer;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -34,12 +34,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathOverrides("javax.servlet:servlet-api:2.5")
-public class NoSuchMethodFailureAnalyzerTests {
+class NoSuchMethodFailureAnalyzerTests {
 
 	@Test
-	public void noSuchMethodErrorIsAnalyzed() {
+	void noSuchMethodErrorIsAnalyzed() {
 		Throwable failure = createFailure();
 		assertThat(failure).isNotNull();
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
