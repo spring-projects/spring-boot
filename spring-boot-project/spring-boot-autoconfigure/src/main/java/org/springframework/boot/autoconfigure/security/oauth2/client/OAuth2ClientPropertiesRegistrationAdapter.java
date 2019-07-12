@@ -56,9 +56,10 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static ClientRegistration getClientRegistration(String registrationId,
 			OAuth2ClientProperties.Registration properties, Map<String, Provider> providers) {
-		Builder builder = getBuilderFromIssuerIfPossible(registrationId, properties.getProvider(), providers);
+		String provider = StringUtils.trimWhitespace(properties.getProvider());
+		Builder builder = getBuilderFromIssuerIfPossible(registrationId, provider, providers);
 		if (builder == null) {
-			builder = getBuilder(registrationId, properties.getProvider(), providers);
+			builder = getBuilder(registrationId, provider, providers);
 		}
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getClientId).to(builder::clientId);
