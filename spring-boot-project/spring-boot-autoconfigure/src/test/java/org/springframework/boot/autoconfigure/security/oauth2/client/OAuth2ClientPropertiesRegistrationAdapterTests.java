@@ -251,6 +251,31 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(userInfoEndpoint.getUserNameAttributeName()).isEqualTo("sub");
 	}
 
+	@Test
+	public void getClientRegistrationsWhenRegistrationProviderPropertyShouldBeTrimmed() {
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		OAuth2ClientProperties.Registration registration = createRegistration("  provider  ");
+		Provider provider = createProvider();
+		properties.getProvider().put("provider", provider);
+		properties.getRegistration().put("registration", registration);
+		assertThat(OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties)).isNotEmpty();
+	}
+
+	@Test
+	public void getClientRegistrationsWhenRegistrationProviderPropertyWithIssuerShouldBeTrimmed() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		setupMockResponse(issuer);
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		OAuth2ClientProperties.Registration registration = createRegistration("   provider  ");
+		Provider provider = createProvider();
+		provider.setIssuerUri(issuer);
+		properties.getProvider().put("provider", provider);
+		properties.getRegistration().put("registration", registration);
+		assertThat(OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties)).isNotEmpty();
+	}
+
 	private Provider createProvider() {
 		Provider provider = new Provider();
 		provider.setAuthorizationUri("https://example.com/auth");
