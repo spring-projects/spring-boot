@@ -27,6 +27,7 @@ import org.springframework.beans.DirectFieldAccessor;
  * {@link DataSourcePoolMetadata} for a Hikari {@link DataSource}.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<HikariDataSource> {
@@ -67,6 +68,11 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	@Override
 	public Boolean getDefaultAutoCommit() {
 		return getDataSource().isAutoCommit();
+	}
+
+	@Override
+	public Integer getIdle() {
+		return getHikariPool().getIdleConnections();
 	}
 
 }

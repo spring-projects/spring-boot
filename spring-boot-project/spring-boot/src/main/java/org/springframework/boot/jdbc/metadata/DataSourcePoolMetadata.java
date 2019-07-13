@@ -23,6 +23,7 @@ import javax.sql.DataSource;
  * {@link DataSource} implementations.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public interface DataSourcePoolMetadata {
@@ -78,5 +79,14 @@ public interface DataSourcePoolMetadata {
 	 * @return the default auto-commit state or {@code null}
 	 */
 	Boolean getDefaultAutoCommit();
+
+	/**
+	 * Return the number of established but idle connections. Can also return {@code null}
+	 * if that information is not available.
+	 * @return the number of established but idle connections or {@code null}
+	 */
+	default Integer getIdle() {
+		return null;
+	}
 
 }

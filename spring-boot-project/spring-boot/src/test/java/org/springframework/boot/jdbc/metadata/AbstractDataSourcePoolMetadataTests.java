@@ -49,6 +49,11 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 	}
 
 	@Test
+	void getIdle() {
+		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(Integer.valueOf(0));
+	}
+
+	@Test
 	void getPoolSizeNoConnection() {
 		// Make sure the pool is initialized
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
