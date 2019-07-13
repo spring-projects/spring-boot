@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @param <D> the data source pool metadata type
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 
@@ -65,6 +66,11 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0.5F));
 			return null;
 		});
+	}
+
+	@Test
+	void getIdle() {
+		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(Integer.valueOf(1));
 	}
 
 	@Test
