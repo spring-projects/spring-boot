@@ -8,9 +8,7 @@
 	</module>
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
-		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check">
-			<property name="unlessImports" value="org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner" />
-		</module>
+		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check" />
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
 			<property name="regexp" value="true" />

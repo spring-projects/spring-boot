@@ -18,13 +18,13 @@ package org.springframework.boot.autoconfigure.validation;
 
 import javax.validation.Validator;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,15 +35,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions({ "tomcat-embed-el-*.jar", "el-api-*.jar" })
-public class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests {
+class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
 
 	@Test
-	public void missingElDependencyIsTolerated() {
+	void missingElDependencyIsTolerated() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Validator.class);
 			assertThat(context).hasSingleBean(MethodValidationPostProcessor.class);

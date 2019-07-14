@@ -16,12 +16,12 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.ClassUtils;
@@ -35,10 +35,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("jackson-*.jar")
 @RestClientTest(ExampleRestClient.class)
-public class RestClientTestWithoutJacksonIntegrationTests {
+class RestClientTestWithoutJacksonIntegrationTests {
 
 	@Autowired
 	private MockRestServiceServer server;
@@ -47,7 +47,7 @@ public class RestClientTestWithoutJacksonIntegrationTests {
 	private ExampleRestClient client;
 
 	@Test
-	public void restClientTestCanBeUsedWhenJacksonIsNotOnTheClassPath() {
+	void restClientTestCanBeUsedWhenJacksonIsNotOnTheClassPath() {
 		ClassLoader classLoader = getClass().getClassLoader();
 		assertThat(ClassUtils.isPresent("com.fasterxml.jackson.databind.Module", classLoader)).isFalse();
 		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));

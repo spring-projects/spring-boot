@@ -16,13 +16,13 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.validation.annotation.Validated;
 
@@ -34,19 +34,19 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("hibernate-validator-*.jar")
-public class ValidationExceptionFailureAnalyzerTests {
+class ValidationExceptionFailureAnalyzerTests {
 
 	@Test
-	public void validatedPropertiesTest() {
+	void validatedPropertiesTest() {
 		assertThatExceptionOfType(Exception.class)
 				.isThrownBy(() -> new AnnotationConfigApplicationContext(TestConfiguration.class).close())
 				.satisfies((ex) -> assertThat(new ValidationExceptionFailureAnalyzer().analyze(ex)).isNotNull());
 	}
 
 	@Test
-	public void nonValidatedPropertiesTest() {
+	void nonValidatedPropertiesTest() {
 		new AnnotationConfigApplicationContext(NonValidatedTestConfiguration.class).close();
 	}
 
