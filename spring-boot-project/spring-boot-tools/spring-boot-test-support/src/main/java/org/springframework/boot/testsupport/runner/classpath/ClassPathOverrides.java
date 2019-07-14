@@ -23,8 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used in combination with {@link ModifiedClassPathRunner} to override entries
- * on the classpath.
+ * Annotation used in combination with {@link ModifiedClassPathRunner} or
+ * {@link ModifiedClassPathExtension} to override entries on the classpath.
  *
  * @author Andy Wilkinson
  * @since 1.5.0
