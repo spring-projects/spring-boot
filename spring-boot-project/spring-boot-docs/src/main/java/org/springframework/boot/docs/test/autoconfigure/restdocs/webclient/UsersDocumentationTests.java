@@ -28,10 +28,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
-@ExtendWith(SpringExtension.class)
 @WebFluxTest
 @AutoConfigureRestDocs
-public class UsersDocumentationTests {
+class UsersDocumentationTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
