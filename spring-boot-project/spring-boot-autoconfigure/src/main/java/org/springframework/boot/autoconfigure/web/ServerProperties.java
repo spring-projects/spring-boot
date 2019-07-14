@@ -61,6 +61,7 @@ import org.springframework.util.unit.DataSize;
  * @author Artsiom Yudovin
  * @author Andrew McGhie
  * @author Rafiullah Hamedy
+ * @author Dirk Deyne
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -404,6 +405,20 @@ public class ServerProperties {
 		 * Modeler MBean Registry configuration.
 		 */
 		private final Mbeanregistry mbeanregistry = new Mbeanregistry();
+
+ 		/**
+		 * Specify additional unencoded characters that Tomcat should allow in a
+		 * querystring. The value may be any combination of the following characters: " <
+		 * > [ \ ] ^ ` { | } . Any other characters present in the value will be ignored.
+		 */
+		private String relaxedQueryChars;
+
+		/**
+		 * Specify additional unencoded characters that Tomcat should allow in the path.
+		 * The value may be any combination of the following characters: " < > [ \ ] ^ ` {
+		 * | } . Any other characters present in the value will be ignored.
+		 */
+		private String relaxedPathChars;
 
 		public int getMaxThreads() {
 			return this.maxThreads;
