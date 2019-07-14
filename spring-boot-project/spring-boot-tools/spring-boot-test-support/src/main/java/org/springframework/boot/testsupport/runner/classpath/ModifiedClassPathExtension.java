@@ -52,25 +52,25 @@ public class ModifiedClassPathExtension implements InvocationInterceptor {
 	@Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		interceptInvocation(invocation, extensionContext);
+		intercept(invocation, extensionContext);
 	}
 
 	@Override
 	public void interceptBeforeEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		interceptInvocation(invocation, extensionContext);
+		intercept(invocation, extensionContext);
 	}
 
 	@Override
 	public void interceptAfterEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		interceptInvocation(invocation, extensionContext);
+		intercept(invocation, extensionContext);
 	}
 
 	@Override
 	public void interceptAfterAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		interceptInvocation(invocation, extensionContext);
+		intercept(invocation, extensionContext);
 	}
 
 	@Override
@@ -80,62 +80,64 @@ public class ModifiedClassPathExtension implements InvocationInterceptor {
 			invocation.proceed();
 			return;
 		}
+		fakeInvocation(invocation);
+		runTestWithModifiedClassPath(invocationContext, extensionContext);
+	}
+
+	private void runTestWithModifiedClassPath(ReflectiveInvocationContext<Method> invocationContext,
+			ExtensionContext extensionContext) throws ClassNotFoundException, Throwable {
+		Class<?> testClass = extensionContext.getRequiredTestClass();
+		Method testMethod = invocationContext.getExecutable();
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-		URLClassLoader classLoader = ModifiedClassPathClassLoaderFactory
-				.createTestClassLoader(extensionContext.getRequiredTestClass());
-		Thread.currentThread().setContextClassLoader(classLoader);
+		URLClassLoader modifiedClassLoader = ModifiedClassPathClassLoaderFactory.createTestClassLoader(testClass);
+		Thread.currentThread().setContextClassLoader(modifiedClassLoader);
 		try {
-			fakeInvocation(invocation);
-			TestExecutionSummary summary = launchTests(invocationContext, extensionContext, classLoader);
-			if (!CollectionUtils.isEmpty(summary.getFailures())) {
-				throw summary.getFailures().get(0).getException();
-			}
-		}
-		catch (Exception ex) {
-			throw ex;
+			runTest(modifiedClassLoader, testClass.getName(), testMethod.getName());
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(originalClassLoader);
 		}
 	}
 
-	private TestExecutionSummary launchTests(ReflectiveInvocationContext<Method> invocationContext,
-			ExtensionContext extensionContext, URLClassLoader classLoader) throws ClassNotFoundException {
-		Class<?> testClass = classLoader.loadClass(extensionContext.getRequiredTestClass().getName());
-		Method method = ReflectionUtils.findMethod(testClass, invocationContext.getExecutable().getName());
+	private void runTest(URLClassLoader classLoader, String testClassName, String testMethodName)
+			throws ClassNotFoundException, Throwable {
+		Class<?> testClass = classLoader.loadClass(testClassName);
+		Method testMethod = ReflectionUtils.findMethod(testClass, testMethodName);
 		LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-				.selectors(DiscoverySelectors.selectMethod(testClass, method)).build();
+				.selectors(DiscoverySelectors.selectMethod(testClass, testMethod)).build();
 		Launcher launcher = LauncherFactory.create();
 		TestPlan testPlan = launcher.discover(request);
 		SummaryGeneratingListener listener = new SummaryGeneratingListener();
 		launcher.registerTestExecutionListeners(listener);
 		launcher.execute(testPlan);
-		return listener.getSummary();
+		TestExecutionSummary summary = listener.getSummary();
+		if (!CollectionUtils.isEmpty(summary.getFailures())) {
+			throw summary.getFailures().get(0).getException();
+		}
 	}
 
-	private boolean isModifiedClassPathClassLoader(ExtensionContext extensionContext) {
-		return extensionContext.getRequiredTestClass().getClassLoader().getClass().getName()
-				.equals(ModifiedClassPathClassLoader.class.getName());
-	}
-
-	private void interceptInvocation(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
+	private void intercept(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
 		if (isModifiedClassPathClassLoader(extensionContext)) {
 			invocation.proceed();
+			return;
 		}
-		else {
-			fakeInvocation(invocation);
-		}
+		fakeInvocation(invocation);
 	}
 
-	private void fakeInvocation(Invocation invocation) {
+	private void fakeInvocation(Invocation<Void> invocation) {
 		try {
 			Field field = ReflectionUtils.findField(invocation.getClass(), "invoked");
 			ReflectionUtils.makeAccessible(field);
 			ReflectionUtils.setField(field, invocation, new AtomicBoolean(true));
 		}
-		catch (Throwable ignore) {
-
+		catch (Throwable ex) {
 		}
+	}
+
+	private boolean isModifiedClassPathClassLoader(ExtensionContext extensionContext) {
+		Class<?> testClass = extensionContext.getRequiredTestClass();
+		ClassLoader classLoader = testClass.getClassLoader();
+		return classLoader.getClass().getName().equals(ModifiedClassPathClassLoader.class.getName());
 	}
 
 }

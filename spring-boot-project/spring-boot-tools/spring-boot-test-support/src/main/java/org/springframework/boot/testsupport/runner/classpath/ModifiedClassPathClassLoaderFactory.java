@@ -225,19 +225,16 @@ final class ModifiedClassPathClassLoaderFactory {
 		}
 
 		private boolean isExcluded(URL url) {
-			if (!"file".equals(url.getProtocol())) {
-				return false;
-			}
-			String name;
-			try {
-				name = new File(url.toURI()).getName();
-			}
-			catch (URISyntaxException ex) {
-				return false;
-			}
-			for (String exclusion : this.exclusions) {
-				if (this.matcher.match(exclusion, name)) {
-					return true;
+			if ("file".equals(url.getProtocol())) {
+				try {
+					String name = new File(url.toURI()).getName();
+					for (String exclusion : this.exclusions) {
+						if (this.matcher.match(exclusion, name)) {
+							return true;
+						}
+					}
+				}
+				catch (URISyntaxException ex) {
 				}
 			}
 			return false;

@@ -18,7 +18,6 @@ package org.springframework.boot.context.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 
@@ -69,7 +69,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -102,7 +101,8 @@ class LoggingApplicationListenerTests {
 
 	private final GenericApplicationContext context = new GenericApplicationContext();
 
-	private Path tempDir;
+	@TempDir
+	public Path tempDir;
 
 	private File logFile;
 
@@ -111,7 +111,6 @@ class LoggingApplicationListenerTests {
 	@BeforeEach
 	void init(CapturedOutput output) throws SecurityException, IOException {
 		this.output = output;
-		this.tempDir = Files.createTempDirectory("logging-application-listener-tests");
 		this.logFile = new File(this.tempDir.toFile(), "foo.log");
 		LogManager.getLogManager().readConfiguration(JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
 		multicastEvent(new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
@@ -128,7 +127,6 @@ class LoggingApplicationListenerTests {
 		if (loggingSystem.getShutdownHandler() != null) {
 			loggingSystem.getShutdownHandler().run();
 		}
-		FileSystemUtils.deleteRecursively(this.tempDir);
 		System.clearProperty(LoggingSystem.class.getName());
 		System.clearProperty(LoggingSystemProperties.LOG_FILE);
 		System.clearProperty(LoggingSystemProperties.LOG_PATH);
