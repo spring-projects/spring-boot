@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.allOf;
  * @author Andy Wilkinson
  * @since 2.2.0
  */
-public class OutputCaptureRule implements TestRule {
+public class OutputCaptureRule implements TestRule, CapturedOutput {
 
 	private final OutputCapture delegate = new OutputCapture();
 
@@ -62,6 +62,21 @@ public class OutputCaptureRule implements TestRule {
 				}
 			}
 		};
+	}
+
+	@Override
+	public String getAll() {
+		return this.delegate.getAll();
+	}
+
+	@Override
+	public String getOut() {
+		return this.delegate.getOut();
+	}
+
+	@Override
+	public String getErr() {
+		return this.delegate.getErr();
 	}
 
 	@Override
