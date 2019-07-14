@@ -406,7 +406,7 @@ public class ServerProperties {
 		 */
 		private final Mbeanregistry mbeanregistry = new Mbeanregistry();
 
- 		/**
+		/**
 		 * Specify additional unencoded characters that Tomcat should allow in a
 		 * querystring. The value may be any combination of the following characters: " <
 		 * > [ \ ] ^ ` { | } . Any other characters present in the value will be ignored.
@@ -574,6 +574,22 @@ public class ServerProperties {
 
 		public Mbeanregistry getMbeanregistry() {
 			return this.mbeanregistry;
+		}
+
+		public String getRelaxedPathChars() {
+			return this.relaxedPathChars;
+		}
+
+		public void setRelaxedPathChars(String relaxedPathChars) {
+			this.relaxedPathChars = relaxedPathChars;
+		}
+
+		public String getRelaxedQueryChars() {
+			return this.relaxedQueryChars;
+		}
+
+		public void setRelaxedQueryChars(String relaxedQueryChars) {
+			this.relaxedQueryChars = relaxedQueryChars;
 		}
 
 		/**
