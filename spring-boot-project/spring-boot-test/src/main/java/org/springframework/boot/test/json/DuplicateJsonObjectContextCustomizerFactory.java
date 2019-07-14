@@ -17,7 +17,7 @@
 package org.springframework.boot.test.json;
 
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -57,17 +57,14 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		}
 
 		private List<URL> findJsonObjects() {
-			List<URL> jsonObjects = new ArrayList<>();
 			try {
 				Enumeration<URL> resources = getClass().getClassLoader().getResources("org/json/JSONObject.class");
-				while (resources.hasMoreElements()) {
-					jsonObjects.add(resources.nextElement());
-				}
+				return Collections.list(resources);
 			}
 			catch (Exception ex) {
 				// Continue
 			}
-			return jsonObjects;
+			return Collections.emptyList();
 		}
 
 		private void logDuplicateJsonObjectsWarning(List<URL> jsonObjects) {
