@@ -7023,9 +7023,8 @@ property:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@SpringBootTest(properties = "spring.main.web-application-type=reactive")
-	public class MyWebFluxTests { ... }
+	class MyWebFluxTests { ... }
 ----
 
 
@@ -7088,10 +7087,10 @@ that class explicitly where it is required, as shown in the following example:
 ----
 	@SpringBootTest
 	@Import(MyTestsConfiguration.class)
-	public class MyTests {
+	class MyTests {
 
 		@Test
-		public void exampleTest() {
+		void exampleTest() {
 			...
 		}
 
@@ -7345,7 +7344,7 @@ Strings respectively. Any helper fields on the test class can be `@Autowired` wh
 		}
 
 		@Test
-		public void testDeserialize() throws Exception {
+		void testDeserialize() throws Exception {
 			String content = "{\"make\":\"Ford\",\"model\":\"Focus\"}";
 			assertThat(this.json.parse(content))
 					.isEqualTo(new VehicleDetails("Ford", "Focus"));
@@ -7636,10 +7635,9 @@ following example:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@DataJpaTest
 	@AutoConfigureTestDatabase(replace=Replace.NONE)
-	public class ExampleRepositoryTests {
+	class ExampleRepositoryTests {
 
 		// ...
 
@@ -7765,7 +7763,7 @@ The following class shows the `@DataMongoTest` annotation in use:
 	import org.springframework.data.mongodb.core.MongoTemplate;
 
 	@DataMongoTest
-	public class ExampleDataMongoTests {
+	class ExampleDataMongoTests {
 
 		@Autowired
 		private MongoTemplate mongoTemplate;
@@ -7785,7 +7783,7 @@ the following example:
 	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
 	@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-	public class ExampleDataMongoNonEmbeddedTests {
+	class ExampleDataMongoNonEmbeddedTests {
 
 	}
 ----
@@ -7812,7 +7810,7 @@ The following example shows a typical setup for using Neo4J tests in Spring Boot
 	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 
 	@DataNeo4jTest
-	public class ExampleDataNeo4jTests {
+	class ExampleDataNeo4jTests {
 
 		@Autowired
 		private YourRepository repository;
@@ -7835,7 +7833,7 @@ as follows:
 
 	@DataNeo4jTest
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public class ExampleNonTransactionalTests {
+	class ExampleNonTransactionalTests {
 
 	}
 ----
@@ -7861,7 +7859,7 @@ The following example shows the `@DataRedisTest` annotation in use:
 	import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 
 	@DataRedisTest
-	public class ExampleDataRedisTests {
+	class ExampleDataRedisTests {
 
 		@Autowired
 		private YourRepository repository;
@@ -7892,7 +7890,7 @@ The following example shows the `@DataLdapTest` annotation in use:
 	import org.springframework.ldap.core.LdapTemplate;
 
 	@DataLdapTest
-	public class ExampleDataLdapTests {
+	class ExampleDataLdapTests {
 
 		@Autowired
 		private LdapTemplate ldapTemplate;
@@ -7912,7 +7910,7 @@ following example:
 	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 
 	@DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
-	public class ExampleDataLdapNonEmbeddedTests {
+	class ExampleDataLdapNonEmbeddedTests {
 
 	}
 ----
@@ -7935,7 +7933,7 @@ The specific beans that you want to test should be specified by using the `value
 [source,java,indent=0]
 ----
 	@RestClientTest(RemoteVehicleDetailsService.class)
-	public class ExampleRestClientTest {
+	class ExampleRestClientTest {
 
 		@Autowired
 		private RemoteVehicleDetailsService service;
@@ -7944,7 +7942,7 @@ The specific beans that you want to test should be specified by using the `value
 		private MockRestServiceServer server;
 
 		@Test
-		public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
+		void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
 				throws Exception {
 			this.server.expect(requestTo("/greet/details"))
 					.andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
@@ -8099,10 +8097,9 @@ simply by adding `@ImportAutoConfiguration` to the test as shown in the followin
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@JdbcTest
 	@ImportAutoConfiguration(IntegrationAutoConfiguration.class)
-	public class ExampleJdbcTests {
+	class ExampleJdbcTests {
 
 	}
 ----
