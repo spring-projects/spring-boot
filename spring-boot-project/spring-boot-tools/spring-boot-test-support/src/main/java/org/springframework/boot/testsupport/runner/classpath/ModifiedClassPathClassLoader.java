@@ -16,30 +16,31 @@
 
 package org.springframework.boot.testsupport.runner.classpath;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
- * Annotation used in combination with {@link ModifiedClassPathExtension} to override
- * entries on the classpath.
+ * Custom {@link URLClassLoader} that modifies the class path.
  *
  * @author Andy Wilkinson
- * @since 1.5.0
+ * @author Christoph Dreis
+ * @see ModifiedClassPathClassLoaderFactory
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Documented
-public @interface ClassPathOverrides {
+final class ModifiedClassPathClassLoader extends URLClassLoader {
 
-	/**
-	 * One or more sets of Maven coordinates ({@code groupId:artifactId:version}) to be
-	 * added to the classpath. The additions will take precedence over any existing
-	 * classes on the classpath.
-	 * @return the coordinates
-	 */
-	String[] value();
+	private final ClassLoader junitLoader;
+
+	ModifiedClassPathClassLoader(URL[] urls, ClassLoader parent, ClassLoader junitLoader) {
+		super(urls, parent);
+		this.junitLoader = junitLoader;
+	}
+
+	@Override
+	public Class<?> loadClass(String name) throws ClassNotFoundException {
+		if (name.startsWith("org.junit") || name.startsWith("org.hamcrest")) {
+			return this.junitLoader.loadClass(name);
+		}
+		return super.loadClass(name);
+	}
 
 }

@@ -18,13 +18,13 @@ package org.springframework.boot.autoconfigure.jsonb;
 
 import javax.json.bind.Jsonb;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,15 +33,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("johnzon-jsonb-*.jar")
-public class JsonbAutoConfigurationWithNoProviderTests {
+class JsonbAutoConfigurationWithNoProviderTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
 
 	@Test
-	public void jsonbBacksOffWhenThereIsNoProvider() {
+	void jsonbBacksOffWhenThereIsNoProvider() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(Jsonb.class));
 	}
 

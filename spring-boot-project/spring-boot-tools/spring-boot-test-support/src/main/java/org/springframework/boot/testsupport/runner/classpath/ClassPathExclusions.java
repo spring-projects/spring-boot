@@ -24,8 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used in combination with {@link ModifiedClassPathRunner} to exclude entries
- * from the classpath.
+ * Annotation used in combination with {@link ModifiedClassPathExtension} to exclude
+ * entries from the classpath.
  *
  * @author Andy Wilkinson
  * @since 1.5.0

@@ -17,35 +17,35 @@
 package org.springframework.boot.testsupport.runner.classpath;
 
 import org.hamcrest.Matcher;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.isA;
 
 /**
- * Tests for {@link ModifiedClassPathRunner} excluding entries from the class path.
+ * Tests for {@link ModifiedClassPathExtension} excluding entries from the class path.
  *
- * @author Andy Wilkinson
+ * @author Christoph Dreis
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("hibernate-validator-*.jar")
-public class ModifiedClassPathRunnerExclusionsTests {
+class ModifiedClassPathExtensionExclusionsTests {
 
-	private static final String EXCLUDED_RESOURCE = "META-INF/services/javax.validation.spi.ValidationProvider";
+	private static final String EXCLUDED_RESOURCE = "META-INF/services/" + "javax.validation.spi.ValidationProvider";
 
 	@Test
-	public void entriesAreFilteredFromTestClassClassLoader() {
+	void entriesAreFilteredFromTestClassClassLoader() {
 		assertThat(getClass().getClassLoader().getResource(EXCLUDED_RESOURCE)).isNull();
 	}
 
 	@Test
-	public void entriesAreFilteredFromThreadContextClassLoader() {
+	void entriesAreFilteredFromThreadContextClassLoader() {
 		assertThat(Thread.currentThread().getContextClassLoader().getResource(EXCLUDED_RESOURCE)).isNull();
 	}
 
 	@Test
-	public void testsThatUseHamcrestWorkCorrectly() {
+	void testsThatUseHamcrestWorkCorrectly() {
 		Matcher<IllegalStateException> matcher = isA(IllegalStateException.class);
 		assertThat(matcher.matches(new IllegalStateException())).isTrue();
 	}

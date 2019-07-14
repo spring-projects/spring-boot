@@ -17,12 +17,12 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import org.ehcache.jsr107.EhcacheCachingProvider;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.DefaultCacheConfiguration;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -35,12 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("ehcache-2*.jar")
-public class EhCache3CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
+class EhCache3CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Test
-	public void ehcache3AsJCacheWithCaches() {
+	void ehcache3AsJCacheWithCaches() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
@@ -52,7 +52,7 @@ public class EhCache3CacheAutoConfigurationTests extends AbstractCacheAutoConfig
 	}
 
 	@Test
-	public void ehcache3AsJCacheWithConfig() {
+	void ehcache3AsJCacheWithConfig() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)

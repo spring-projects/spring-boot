@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.DefaultCacheAndCustomizersConfiguration;
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.EhCacheCustomCacheManager;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,15 +36,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("ehcache-3*.jar")
-public class EhCache2CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
+class EhCache2CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
 
 	@Test
-	public void ehCacheWithCaches() {
+	void ehCacheWithCaches() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=ehcache").run((context) -> {
 					EhCacheCacheManager cacheManager = getCacheManager(context, EhCacheCacheManager.class);
@@ -55,14 +55,14 @@ public class EhCache2CacheAutoConfigurationTests extends AbstractCacheAutoConfig
 	}
 
 	@Test
-	public void ehCacheWithCustomizers() {
+	void ehCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
 				.withPropertyValues("spring.cache.type=ehcache")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "ehcacheCacheManagerCustomizer"));
 	}
 
 	@Test
-	public void ehCacheWithConfig() {
+	void ehCacheWithConfig() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 				.withPropertyValues("spring.cache.type=ehcache",
 						"spring.cache.ehcache.config=cache/ehcache-override.xml")
@@ -73,7 +73,7 @@ public class EhCache2CacheAutoConfigurationTests extends AbstractCacheAutoConfig
 	}
 
 	@Test
-	public void ehCacheWithExistingCacheManager() {
+	void ehCacheWithExistingCacheManager() {
 		this.contextRunner.withUserConfiguration(EhCacheCustomCacheManager.class)
 				.withPropertyValues("spring.cache.type=ehcache").run((context) -> {
 					EhCacheCacheManager cacheManager = getCacheManager(context, EhCacheCacheManager.class);

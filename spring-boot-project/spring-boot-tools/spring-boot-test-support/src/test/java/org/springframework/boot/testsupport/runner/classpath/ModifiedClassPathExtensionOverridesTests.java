@@ -16,8 +16,8 @@
 
 package org.springframework.boot.testsupport.runner.classpath;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
@@ -25,22 +25,22 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ModifiedClassPathRunner} overriding entries on the class path.
+ * Tests for {@link ModifiedClassPathExtension} overriding entries on the class path.
  *
- * @author Andy Wilkinson
+ * @author Christoph Dreis
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathOverrides("org.springframework:spring-context:4.1.0.RELEASE")
-public class ModifiedClassPathRunnerOverridesTests {
+class ModifiedClassPathExtensionOverridesTests {
 
 	@Test
-	public void classesAreLoadedFromOverride() {
+	void classesAreLoadedFromOverride() {
 		assertThat(ApplicationContext.class.getProtectionDomain().getCodeSource().getLocation().toString())
 				.endsWith("spring-context-4.1.0.RELEASE.jar");
 	}
 
 	@Test
-	public void classesAreLoadedFromTransitiveDependencyOfOverride() {
+	void classesAreLoadedFromTransitiveDependencyOfOverride() {
 		assertThat(StringUtils.class.getProtectionDomain().getCodeSource().getLocation().toString())
 				.endsWith("spring-core-4.1.0.RELEASE.jar");
 	}

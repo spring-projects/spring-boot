@@ -16,33 +16,42 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import org.junit.Test;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
  * Tests for {@link RestClientTest @RestClientTest} without Jackson.
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("jackson-*.jar")
-public class RestClientTestWithoutJacksonIntegrationTests {
+@RestClientTest(ExampleRestClient.class)
+class RestClientTestWithoutJacksonIntegrationTests {
+
+	@Autowired
+	private MockRestServiceServer server;
+
+	@Autowired
+	private ExampleRestClient client;
 
 	@Test
-	public void restClientTestCanBeUsedWhenJacksonIsNotOnTheClassPath() {
-		assertThat(ClassUtils.isPresent("com.fasterxml.jackson.databind.Module", getClass().getClassLoader()))
-				.isFalse();
-		Result result = JUnitCore.runClasses(RestClientTestWithComponentIntegrationTests.class);
-		assertThat(result.getFailureCount()).isEqualTo(0);
-		assertThat(result.getRunCount()).isGreaterThan(0);
+	void restClientTestCanBeUsedWhenJacksonIsNotOnTheClassPath() {
+		ClassLoader classLoader = getClass().getClassLoader();
+		assertThat(ClassUtils.isPresent("com.fasterxml.jackson.databind.Module", classLoader)).isFalse();
+		this.server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		assertThat(this.client.test()).isEqualTo("hello");
 	}
 
 }
