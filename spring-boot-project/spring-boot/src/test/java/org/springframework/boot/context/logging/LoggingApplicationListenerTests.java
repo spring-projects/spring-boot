@@ -72,8 +72,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link LoggingApplicationListener} with Logback.
@@ -150,10 +148,10 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void baseConfigLocation() {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		this.output.expect(containsString("Hello world"));
-		this.output.expect(not(containsString("???")));
-		this.output.expect(containsString("[junit-"));
 		this.logger.info("Hello world", new RuntimeException("Expected"));
+		assertThat(this.output).contains("Hello world");
+		assertThat(this.output).doesNotContain("???");
+		assertThat(this.output).contains("[junit-");
 		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
@@ -162,17 +160,16 @@ public class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml");
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertThat(output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
+		assertThat(this.output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
 	}
 
 	@Test
 	public void overrideConfigDoesNotExist() {
 		addPropertiesToEnvironment(this.context, "logging.config=doesnotexist.xml");
 		assertThatIllegalStateException().isThrownBy(() -> {
-			this.output.expect(
-					containsString("Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
 			this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+			assertThat(this.output)
+					.contains("Logging system failed to initialize using configuration from 'doesnotexist.xml'");
 		});
 	}
 
@@ -182,8 +179,7 @@ public class LoggingApplicationListenerTests {
 				"logging.config=-Djava.util.logging.config.file=\"d:\\home\\site\\wwwroot\\bin\\apache-tomcat-7.0.52\\conf\\logging.properties\"");
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertThat(output).contains("Hello world").doesNotContain("???");
+		assertThat(this.output).contains("Hello world").doesNotContain("???");
 		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
@@ -192,8 +188,7 @@ public class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "LOGGING_CONFIG=-Dnop");
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertThat(output).contains("Hello world").doesNotContain("???");
+		assertThat(this.output).contains("Hello world").doesNotContain("???");
 		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
@@ -201,10 +196,10 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigBroken() {
 		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-broken.xml");
 		assertThatIllegalStateException().isThrownBy(() -> {
-			this.output.expect(containsString(
-					"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
-			this.output.expect(containsString("ConsolAppender"));
 			this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+			assertThat(this.output).contains(
+					"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'");
+			assertThat(this.output).contains("ConsolAppender");
 		});
 	}
 
@@ -246,7 +241,6 @@ public class LoggingApplicationListenerTests {
 	@Test
 	@Deprecated
 	public void addLogFilePropertyWithDefaultAndDeprecatedProperty() {
-		assertThat(this.logFile).doesNotExist();
 		addPropertiesToEnvironment(this.context, "logging.file=" + this.logFile);
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -284,8 +278,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.output.toString()).contains("testatdebug");
-		assertThat(this.output.toString()).doesNotContain("testattrace");
+		assertThat(this.output).contains("testatdebug");
+		assertThat(this.output).doesNotContain("testattrace");
 	}
 
 	@Test
@@ -294,8 +288,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.loggerContext.getLogger("org.springframework.boot.actuate.endpoint.web").debug("testdebugwebgroup");
 		this.loggerContext.getLogger("org.hibernate.SQL").debug("testdebugsqlgroup");
-		assertThat(this.output.toString()).contains("testdebugwebgroup");
-		assertThat(this.output.toString()).contains("testdebugsqlgroup");
+		assertThat(this.output).contains("testdebugwebgroup");
+		assertThat(this.output).contains("testdebugsqlgroup");
 	}
 
 	@Test
@@ -304,8 +298,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.output.toString()).contains("testatdebug");
-		assertThat(this.output.toString()).contains("testattrace");
+		assertThat(this.output).contains("testatdebug");
+		assertThat(this.output).contains("testattrace");
 	}
 
 	@Test
@@ -323,8 +317,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.output.toString()).doesNotContain("testatdebug");
-		assertThat(this.output.toString()).doesNotContain("testattrace");
+		assertThat(this.output).doesNotContain("testatdebug");
+		assertThat(this.output).doesNotContain("testattrace");
 	}
 
 	@Test
@@ -333,8 +327,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.output.toString()).contains("testatdebug");
-		assertThat(this.output.toString()).contains("testattrace");
+		assertThat(this.output).contains("testatdebug");
+		assertThat(this.output).contains("testattrace");
 	}
 
 	@Test
@@ -343,8 +337,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.output.toString()).contains("testatdebug");
-		assertThat(this.output.toString()).contains("testattrace");
+		assertThat(this.output).contains("testatdebug");
+		assertThat(this.output).contains("testattrace");
 	}
 
 	@Test
@@ -353,8 +347,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.output.toString()).contains("testatdebug");
-		assertThat(this.output.toString()).contains("testattrace");
+		assertThat(this.output).contains("testatdebug");
+		assertThat(this.output).contains("testattrace");
 	}
 
 	@Test
@@ -363,8 +357,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.output.toString()).contains("testatdebug");
-		assertThat(this.output.toString()).contains("testattrace");
+		assertThat(this.output).contains("testatdebug");
+		assertThat(this.output).contains("testattrace");
 	}
 
 	@Test
@@ -381,7 +375,7 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.error("testaterror");
-		assertThat(this.output.toString()).doesNotContain("testatdebug").doesNotContain("testaterror");
+		assertThat(this.output).doesNotContain("testatdebug").doesNotContain("testaterror");
 	}
 
 	@Test
@@ -390,7 +384,7 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.error("testaterror");
-		assertThat(this.output.toString()).doesNotContain("testatdebug").doesNotContain("testaterror");
+		assertThat(this.output).doesNotContain("testatdebug").doesNotContain("testaterror");
 	}
 
 	@Test
@@ -399,7 +393,7 @@ public class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		assertThat(this.output.toString()).doesNotContain("testatdebug");
+		assertThat(this.output).doesNotContain("testatdebug");
 	}
 
 	@Test
@@ -409,7 +403,7 @@ public class LoggingApplicationListenerTests {
 		multicastEvent(new ApplicationStartingEvent(this.springApplication, new String[] { "--debug" }));
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		assertThat(this.output.toString()).doesNotContain("testatdebug");
+		assertThat(this.output).doesNotContain("testatdebug");
 	}
 
 	@Test
@@ -422,18 +416,18 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void defaultExceptionConversionWord() {
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		this.output.expect(containsString("Hello world"));
-		this.output.expect(not(containsString("Wrapped by: java.lang.RuntimeException: Wrapper")));
 		this.logger.info("Hello world", new RuntimeException("Wrapper", new RuntimeException("Expected")));
+		assertThat(this.output).contains("Hello world");
+		assertThat(this.output).doesNotContain("Wrapped by: java.lang.RuntimeException: Wrapper");
 	}
 
 	@Test
 	public void overrideExceptionConversionWord() {
 		addPropertiesToEnvironment(this.context, "logging.exceptionConversionWord=%rEx");
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		this.output.expect(containsString("Hello world"));
-		this.output.expect(containsString("Wrapped by: java.lang.RuntimeException: Wrapper"));
 		this.logger.info("Hello world", new RuntimeException("Wrapper", new RuntimeException("Expected")));
+		assertThat(this.output).contains("Hello world");
+		assertThat(this.output).contains("Wrapped by: java.lang.RuntimeException: Wrapper");
 	}
 
 	@Test
@@ -554,7 +548,7 @@ public class LoggingApplicationListenerTests {
 		propertySources.addLast(new MapPropertySource("test2", Collections.singletonMap("logging.level.root", "WARN")));
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		assertThat(this.output.toString()).contains("testatdebug");
+		assertThat(this.output).contains("testatdebug");
 	}
 
 	@Test
@@ -670,11 +664,11 @@ public class LoggingApplicationListenerTests {
 
 	}
 
-	public static final class TestCleanupLoggingSystem extends LoggingSystem {
+	static final class TestCleanupLoggingSystem extends LoggingSystem {
 
 		private boolean cleanedUp = false;
 
-		public TestCleanupLoggingSystem(ClassLoader classLoader) {
+		TestCleanupLoggingSystem(ClassLoader classLoader) {
 		}
 
 		@Override
