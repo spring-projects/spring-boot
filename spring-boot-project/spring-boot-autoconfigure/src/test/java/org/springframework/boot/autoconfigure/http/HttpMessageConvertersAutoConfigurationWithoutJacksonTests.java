@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,20 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions("jackson-*.jar")
 public class HttpMessageConvertersAutoConfigurationWithoutJacksonTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
 
 	@Test
 	public void autoConfigurationWorksWithSpringHateoasButWithoutJackson() {
-		this.context.register(HttpMessageConvertersAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeansOfType(HttpMessageConverters.class)).hasSize(1);
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HttpMessageConverters.class));
 	}
 
 }
