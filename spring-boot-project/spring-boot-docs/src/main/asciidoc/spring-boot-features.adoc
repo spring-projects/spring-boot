@@ -3106,6 +3106,21 @@ precedence):
 |`ErrorPageFilter`
 |`Ordered.HIGHEST_PRECEDENCE + 1`
 
+|`SessionRepositoryFilter`
+|`Integer.MIN_VALUE + 50`
+
+|`OrderedHiddenHttpMethodFilter`
+|`OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 10000`
+
+|`OrderedFormContentFilter`
+|`OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 9900`
+
+|`OrderedRequestContextFilter`
+|`OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 105`
+
+|`springSecurityFilterChain`
+|`OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100`
+
 |`HttpTraceFilter`
 |`Ordered.LOWEST_PRECEDENCE - 10`
 |===
