@@ -28,15 +28,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleLogbackApplicationTests {
 
 	@Test
-	void testLoadedCustomLogbackConfig(CapturedOutput capturedOutput) throws Exception {
+	void testLoadedCustomLogbackConfig(CapturedOutput output) throws Exception {
 		SampleLogbackApplication.main(new String[0]);
-		assertThat(capturedOutput).contains("Sample Debug Message").doesNotContain("Sample Trace Message");
+		assertThat(output).contains("Sample Debug Message").doesNotContain("Sample Trace Message");
 	}
 
 	@Test
-	void testProfile(CapturedOutput capturedOutput) throws Exception {
+	void testProfile(CapturedOutput output) throws Exception {
 		SampleLogbackApplication.main(new String[] { "--spring.profiles.active=staging" });
-		assertThat(capturedOutput).contains("Sample Debug Message").contains("Sample Trace Message");
+		assertThat(output).contains("Sample Debug Message").contains("Sample Trace Message");
 	}
 
 }

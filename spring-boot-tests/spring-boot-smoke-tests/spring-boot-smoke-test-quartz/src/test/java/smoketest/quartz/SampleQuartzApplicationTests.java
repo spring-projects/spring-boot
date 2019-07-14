@@ -35,13 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleQuartzApplicationTests {
 
 	@Test
-	void quartzJobIsTriggered(CapturedOutput capturedOutput) throws InterruptedException {
+	void quartzJobIsTriggered(CapturedOutput output) throws InterruptedException {
 		try (ConfigurableApplicationContext context = SpringApplication.run(SampleQuartzApplication.class)) {
 			long end = System.currentTimeMillis() + 5000;
-			while ((!capturedOutput.toString().contains("Hello World!")) && System.currentTimeMillis() < end) {
+			while ((!output.toString().contains("Hello World!")) && System.currentTimeMillis() < end) {
 				Thread.sleep(100);
 			}
-			assertThat(capturedOutput).contains("Hello World!");
+			assertThat(output).contains("Hello World!");
 		}
 	}
 

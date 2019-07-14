@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleRedisApplicationTests {
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) {
+	void testDefaultSettings(CapturedOutput output) {
 		try {
 			SampleRedisApplication.main(new String[0]);
 		}
@@ -43,7 +43,7 @@ class SampleRedisApplicationTests {
 				return;
 			}
 		}
-		assertThat(capturedOutput).contains("Found key spring.boot.redis.test");
+		assertThat(output).contains("Found key spring.boot.redis.test");
 	}
 
 	private boolean redisServerRunning(Throwable ex) {

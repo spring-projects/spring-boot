@@ -47,20 +47,20 @@ class SampleProfileApplicationTests {
 	}
 
 	@Test
-	void testDefaultProfile(CapturedOutput capturedOutput) {
+	void testDefaultProfile(CapturedOutput output) {
 		SampleProfileApplication.main(new String[0]);
-		assertThat(capturedOutput).contains("Hello Phil");
+		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
-	void testGoodbyeProfile(CapturedOutput capturedOutput) {
+	void testGoodbyeProfile(CapturedOutput output) {
 		System.setProperty("spring.profiles.active", "goodbye");
 		SampleProfileApplication.main(new String[0]);
-		assertThat(capturedOutput).contains("Goodbye Everyone");
+		assertThat(output).contains("Goodbye Everyone");
 	}
 
 	@Test
-	void testGenericProfile(CapturedOutput capturedOutput) {
+	void testGenericProfile(CapturedOutput output) {
 		/*
 		 * This is a profile that requires a new environment property, and one which is
 		 * only overridden in the current working directory. That file also only contains
@@ -69,13 +69,13 @@ class SampleProfileApplicationTests {
 		 */
 		System.setProperty("spring.profiles.active", "generic");
 		SampleProfileApplication.main(new String[0]);
-		assertThat(capturedOutput).contains("Bonjour Phil");
+		assertThat(output).contains("Bonjour Phil");
 	}
 
 	@Test
-	void testGoodbyeProfileFromCommandline(CapturedOutput capturedOutput) {
+	void testGoodbyeProfileFromCommandline(CapturedOutput output) {
 		SampleProfileApplication.main(new String[] { "--spring.profiles.active=goodbye" });
-		assertThat(capturedOutput).contains("Goodbye Everyone");
+		assertThat(output).contains("Goodbye Everyone");
 	}
 
 }

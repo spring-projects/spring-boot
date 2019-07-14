@@ -67,7 +67,7 @@ class LoggingApplicationListenerIntegrationTests {
 	}
 
 	@Test
-	void loggingPerformedDuringChildApplicationStartIsNotLost(CapturedOutput capturedOutput) {
+	void loggingPerformedDuringChildApplicationStartIsNotLost(CapturedOutput output) {
 		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE).child(Config.class)
 				.web(WebApplicationType.NONE).listeners(new ApplicationListener<ApplicationStartingEvent>() {
 
@@ -79,7 +79,7 @@ class LoggingApplicationListenerIntegrationTests {
 					}
 
 				}).run();
-		assertThat(capturedOutput).contains("Child application starting");
+		assertThat(output).contains("Child application starting");
 	}
 
 	@Component

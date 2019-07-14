@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleCouchbaseApplicationTests {
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) {
+	void testDefaultSettings(CapturedOutput output) {
 		try {
 			new SpringApplicationBuilder(SampleCouchbaseApplication.class).run("--server.port=0");
 		}
@@ -40,7 +40,7 @@ class SampleCouchbaseApplicationTests {
 				return;
 			}
 		}
-		assertThat(capturedOutput).contains("firstName='Alice', lastName='Smith'");
+		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean serverNotRunning(RuntimeException ex) {

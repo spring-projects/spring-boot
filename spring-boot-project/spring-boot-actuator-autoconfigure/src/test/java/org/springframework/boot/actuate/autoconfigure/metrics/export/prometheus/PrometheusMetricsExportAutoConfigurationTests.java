@@ -124,23 +124,23 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void withPushGatewayEnabled(CapturedOutput capturedOutput) {
+	void withPushGatewayEnabled(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues("management.metrics.export.prometheus.pushgateway.enabled=true")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					assertThat(capturedOutput).doesNotContain("Invalid PushGateway base url");
+					assertThat(output).doesNotContain("Invalid PushGateway base url");
 					hasGatewayURL(context, "http://localhost:9091/metrics/job/");
 				});
 	}
 
 	@Test
 	@Deprecated
-	void withCustomLegacyPushGatewayURL(CapturedOutput capturedOutput) {
+	void withCustomLegacyPushGatewayURL(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues("management.metrics.export.prometheus.pushgateway.enabled=true",
 						"management.metrics.export.prometheus.pushgateway.base-url=localhost:9090")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					assertThat(capturedOutput).contains("Invalid PushGateway base url").contains("localhost:9090");
+					assertThat(output).contains("Invalid PushGateway base url").contains("localhost:9090");
 					hasGatewayURL(context, "http://localhost:9090/metrics/job/");
 				});
 	}

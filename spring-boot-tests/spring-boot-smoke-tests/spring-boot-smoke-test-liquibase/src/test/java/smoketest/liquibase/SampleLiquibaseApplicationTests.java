@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleLiquibaseApplicationTests {
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) throws Exception {
+	void testDefaultSettings(CapturedOutput output) throws Exception {
 		try {
 			SampleLiquibaseApplication.main(new String[] { "--server.port=0" });
 		}
@@ -40,7 +40,7 @@ class SampleLiquibaseApplicationTests {
 				return;
 			}
 		}
-		assertThat(capturedOutput).contains("Successfully acquired change log lock")
+		assertThat(output).contains("Successfully acquired change log lock")
 				.contains("Creating database history " + "table with name: PUBLIC.DATABASECHANGELOG")
 				.contains("Table person created")
 				.contains("ChangeSet classpath:/db/" + "changelog/db.changelog-master.yaml::1::"

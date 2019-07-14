@@ -44,8 +44,8 @@ class GrabCommandIntegrationTests {
 	@RegisterExtension
 	CliTester cli;
 
-	GrabCommandIntegrationTests(CapturedOutput capturedOutput) {
-		this.cli = new CliTester("src/test/resources/grab-samples/", capturedOutput);
+	GrabCommandIntegrationTests(CapturedOutput output) {
+		this.cli = new CliTester("src/test/resources/grab-samples/", output);
 	}
 
 	@BeforeEach

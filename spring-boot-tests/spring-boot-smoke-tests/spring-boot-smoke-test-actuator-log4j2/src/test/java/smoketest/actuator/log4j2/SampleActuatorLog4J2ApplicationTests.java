@@ -52,9 +52,9 @@ class SampleActuatorLog4J2ApplicationTests {
 	private MockMvc mvc;
 
 	@Test
-	void testLogger(CapturedOutput capturedOutput) {
+	void testLogger(CapturedOutput output) {
 		logger.info("Hello World");
-		assertThat(capturedOutput).contains("Hello World");
+		assertThat(output).contains("Hello World");
 	}
 
 	@Test

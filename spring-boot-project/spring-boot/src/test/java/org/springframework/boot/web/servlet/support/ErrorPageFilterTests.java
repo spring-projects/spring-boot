@@ -125,7 +125,7 @@ class ErrorPageFilterTests {
 	}
 
 	@Test
-	void responseCommittedWhenFromClientAbortException(CapturedOutput capturedOutput) throws Exception {
+	void responseCommittedWhenFromClientAbortException(CapturedOutput output) throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.response.setCommitted(true);
 		this.chain = new TestFilterChain((request, response, chain) -> {
@@ -134,7 +134,7 @@ class ErrorPageFilterTests {
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.response.isCommitted()).isTrue();
-		assertThat(capturedOutput).doesNotContain("Cannot forward");
+		assertThat(output).doesNotContain("Cannot forward");
 	}
 
 	@Test
@@ -342,7 +342,7 @@ class ErrorPageFilterTests {
 	}
 
 	@Test
-	void errorMessageForRequestWithoutPathInfo(CapturedOutput capturedOutput) throws IOException, ServletException {
+	void errorMessageForRequestWithoutPathInfo(CapturedOutput output) throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.chain = new TestFilterChain((request, response, chain) -> {
@@ -350,11 +350,11 @@ class ErrorPageFilterTests {
 			throw new RuntimeException();
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(capturedOutput).contains("request [/test]");
+		assertThat(output).contains("request [/test]");
 	}
 
 	@Test
-	void errorMessageForRequestWithPathInfo(CapturedOutput capturedOutput) throws IOException, ServletException {
+	void errorMessageForRequestWithPathInfo(CapturedOutput output) throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.request.setPathInfo("/alpha");
 		this.filter.addErrorPages(new ErrorPage("/error"));
@@ -363,7 +363,7 @@ class ErrorPageFilterTests {
 			throw new RuntimeException();
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(capturedOutput).contains("request [/test/alpha]");
+		assertThat(output).contains("request [/test/alpha]");
 	}
 
 	@Test

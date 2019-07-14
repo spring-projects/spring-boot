@@ -59,13 +59,13 @@ class PropertiesLauncherTests {
 
 	private ClassLoader contextClassLoader;
 
-	private CapturedOutput capturedOutput;
+	private CapturedOutput output;
 
 	@BeforeEach
 	void setup(CapturedOutput capturedOutput) {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		System.setProperty("loader.home", new File("src/test/resources").getAbsolutePath());
-		this.capturedOutput = capturedOutput;
+		this.output = capturedOutput;
 	}
 
 	@AfterEach
@@ -312,8 +312,8 @@ class PropertiesLauncherTests {
 		manifest.getMainAttributes().putValue("Loader-Path", "/foo.jar, /bar");
 		File manifestFile = new File(this.tempDir, "META-INF/MANIFEST.MF");
 		manifestFile.getParentFile().mkdirs();
-		try (FileOutputStream output = new FileOutputStream(manifestFile)) {
-			manifest.write(output);
+		try (FileOutputStream manifestStream = new FileOutputStream(manifestFile)) {
+			manifest.write(manifestStream);
 		}
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat((List<String>) ReflectionTestUtils.getField(launcher, "paths")).containsExactly("/foo.jar", "/bar/");
@@ -344,7 +344,7 @@ class PropertiesLauncherTests {
 		while (!timeout && count < 100) {
 			count++;
 			Thread.sleep(50L);
-			timeout = this.capturedOutput.toString().contains(value);
+			timeout = this.output.toString().contains(value);
 		}
 		assertThat(timeout).as("Timed out waiting for (" + value + ")").isTrue();
 	}

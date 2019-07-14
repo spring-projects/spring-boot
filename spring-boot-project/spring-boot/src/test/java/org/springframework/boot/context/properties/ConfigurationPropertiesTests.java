@@ -504,9 +504,9 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenHasMultiplePropertySourcesPlaceholderConfigurerShouldLogWarning(CapturedOutput capturedOutput) {
+	void loadWhenHasMultiplePropertySourcesPlaceholderConfigurerShouldLogWarning(CapturedOutput output) {
 		load(MultiplePropertySourcesPlaceholderConfigurerConfiguration.class);
-		assertThat(capturedOutput).contains("Multiple PropertySourcesPlaceholderConfigurer beans registered");
+		assertThat(output).contains("Multiple PropertySourcesPlaceholderConfigurer beans registered");
 	}
 
 	@Test

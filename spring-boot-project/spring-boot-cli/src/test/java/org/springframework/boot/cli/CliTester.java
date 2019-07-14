@@ -63,7 +63,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
-	private final CapturedOutput capturedOutput;
+	private final CapturedOutput output;
 
 	private String previousOutput = "";
 
@@ -75,7 +75,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 
 	private File serverPortFile;
 
-	public CliTester(String prefix, CapturedOutput capturedOutput) {
+	public CliTester(String prefix, CapturedOutput output) {
 		this.prefix = prefix;
 		try {
 			this.temp = Files.createTempDirectory("cli-tester").toFile();
@@ -83,7 +83,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to create temp directory");
 		}
-		this.capturedOutput = capturedOutput;
+		this.output = output;
 	}
 
 	public void setTimeout(long timeout) {
@@ -182,7 +182,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 	}
 
 	private String getOutput() {
-		String output = this.capturedOutput.toString().substring(this.previousOutput.length());
+		String output = this.output.toString().substring(this.previousOutput.length());
 		this.previousOutput = output;
 		return output;
 	}

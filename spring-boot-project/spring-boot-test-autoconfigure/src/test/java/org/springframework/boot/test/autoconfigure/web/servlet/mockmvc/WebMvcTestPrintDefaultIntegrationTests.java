@@ -47,15 +47,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebMvcTestPrintDefaultIntegrationTests {
 
 	@Test
-	void shouldNotPrint(CapturedOutput capturedOutput) {
+	void shouldNotPrint(CapturedOutput output) {
 		executeTests(ShouldNotPrint.class);
-		assertThat(capturedOutput).doesNotContain("HTTP Method");
+		assertThat(output).doesNotContain("HTTP Method");
 	}
 
 	@Test
-	void shouldPrint(CapturedOutput capturedOutput) {
+	void shouldPrint(CapturedOutput output) {
 		executeTests(ShouldPrint.class);
-		assertThat(capturedOutput).contains("HTTP Method");
+		assertThat(output).contains("HTTP Method");
 	}
 
 	private void executeTests(Class<?> testClass) {

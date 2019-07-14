@@ -33,11 +33,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpringApplicationBuilderExampleTests {
 
 	@Test
-	void contextHierarchyWithDisabledBanner(CapturedOutput capturedOutput) {
+	void contextHierarchyWithDisabledBanner(CapturedOutput output) {
 		System.setProperty("spring.main.web-application-type", "none");
 		try {
 			new SpringApplicationBuilderExample().hierarchyWithDisabledBanner(new String[0]);
-			assertThat(capturedOutput).doesNotContain(":: Spring Boot ::");
+			assertThat(output).doesNotContain(":: Spring Boot ::");
 		}
 		finally {
 			System.clearProperty("spring.main.web-application-type");

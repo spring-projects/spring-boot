@@ -160,8 +160,7 @@ class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl(CapturedOutput capturedOutput)
-			throws Exception {
+	void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl(CapturedOutput output) throws Exception {
 		System.setProperty("javax.net.ssl.trustStorePassword", "trustStoreSecret");
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
@@ -174,7 +173,7 @@ class SslConnectorCustomizerTests {
 		customizer.customize(connector);
 		this.tomcat.start();
 		assertThat(connector.getState()).isEqualTo(LifecycleState.STARTED);
-		assertThat(capturedOutput).doesNotContain("Password verification failed");
+		assertThat(output).doesNotContain("Password verification failed");
 	}
 
 	@Test

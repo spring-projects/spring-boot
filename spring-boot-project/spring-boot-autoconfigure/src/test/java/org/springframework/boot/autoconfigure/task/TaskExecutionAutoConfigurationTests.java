@@ -98,13 +98,13 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	void taskExecutorAutoConfigured(CapturedOutput capturedOutput) {
+	void taskExecutorAutoConfigured(CapturedOutput output) {
 		this.contextRunner.run((context) -> {
-			assertThat(capturedOutput).doesNotContain("Initializing ExecutorService");
+			assertThat(output).doesNotContain("Initializing ExecutorService");
 			assertThat(context).hasSingleBean(Executor.class);
 			assertThat(context).hasBean("applicationTaskExecutor");
 			assertThat(context).getBean("applicationTaskExecutor").isInstanceOf(ThreadPoolTaskExecutor.class);
-			assertThat(capturedOutput).contains("Initializing ExecutorService");
+			assertThat(output).contains("Initializing ExecutorService");
 		});
 	}
 

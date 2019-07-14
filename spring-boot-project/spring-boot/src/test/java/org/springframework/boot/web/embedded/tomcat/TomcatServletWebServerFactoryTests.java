@@ -328,9 +328,9 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
-	void startupFailureDoesNotResultInUnstoppedThreadsBeingReported(CapturedOutput capturedOutput) throws IOException {
+	void startupFailureDoesNotResultInUnstoppedThreadsBeingReported(CapturedOutput output) throws IOException {
 		super.portClashOfPrimaryConnectorResultsInPortInUseException();
-		assertThat(capturedOutput).doesNotContain("appears to have started a thread named [main]");
+		assertThat(output).doesNotContain("appears to have started a thread named [main]");
 	}
 
 	@Test

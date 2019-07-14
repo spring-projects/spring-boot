@@ -37,9 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleBitronixApplicationTests {
 
 	@Test
-	void testTransactionRollback(CapturedOutput capturedOutput) throws Exception {
+	void testTransactionRollback(CapturedOutput output) throws Exception {
 		SampleBitronixApplication.main(new String[] {});
-		assertThat(capturedOutput.toString()).has(substring(1, "---->")).has(substring(1, "----> josh"))
+		assertThat(output.toString()).has(substring(1, "---->")).has(substring(1, "----> josh"))
 				.has(substring(2, "Count is 1")).has(substring(1, "Simulated error"));
 	}
 

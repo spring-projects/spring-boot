@@ -60,40 +60,40 @@ class UserDetailsServiceAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
 	@Test
-	void testDefaultUsernamePassword(CapturedOutput capturedOutput) {
+	void testDefaultUsernamePassword(CapturedOutput output) {
 		this.contextRunner.run((context) -> {
 			UserDetailsService manager = context.getBean(UserDetailsService.class);
-			assertThat(capturedOutput.toString()).contains("Using generated security password:");
+			assertThat(output).contains("Using generated security password:");
 			assertThat(manager.loadUserByUsername("user")).isNotNull();
 		});
 	}
 
 	@Test
-	void defaultUserNotCreatedIfAuthenticationManagerBeanPresent(CapturedOutput capturedOutput) {
+	void defaultUserNotCreatedIfAuthenticationManagerBeanPresent(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestAuthenticationManagerConfiguration.class).run((context) -> {
 			AuthenticationManager manager = context.getBean(AuthenticationManager.class);
 			assertThat(manager)
 					.isEqualTo(context.getBean(TestAuthenticationManagerConfiguration.class).authenticationManager);
-			assertThat(capturedOutput.toString()).doesNotContain("Using generated security password: ");
+			assertThat(output).doesNotContain("Using generated security password: ");
 			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 			assertThat(manager.authenticate(token)).isNotNull();
 		});
 	}
 
 	@Test
-	void defaultUserNotCreatedIfUserDetailsServiceBeanPresent(CapturedOutput capturedOutput) {
+	void defaultUserNotCreatedIfUserDetailsServiceBeanPresent(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestUserDetailsServiceConfiguration.class).run((context) -> {
 			UserDetailsService userDetailsService = context.getBean(UserDetailsService.class);
-			assertThat(capturedOutput.toString()).doesNotContain("Using generated security password: ");
+			assertThat(output).doesNotContain("Using generated security password: ");
 			assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
 		});
 	}
 
 	@Test
-	void defaultUserNotCreatedIfAuthenticationProviderBeanPresent(CapturedOutput capturedOutput) {
+	void defaultUserNotCreatedIfAuthenticationProviderBeanPresent(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestAuthenticationProviderConfiguration.class).run((context) -> {
 			AuthenticationProvider provider = context.getBean(AuthenticationProvider.class);
-			assertThat(capturedOutput.toString()).doesNotContain("Using generated security password: ");
+			assertThat(output).doesNotContain("Using generated security password: ");
 			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 			assertThat(provider.authenticate(token)).isNotNull();
 		});
@@ -131,10 +131,9 @@ class UserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Test
-	void generatedPasswordShouldNotBePrintedIfAuthenticationManagerBuilderIsUsed(CapturedOutput capturedOutput) {
+	void generatedPasswordShouldNotBePrintedIfAuthenticationManagerBuilderIsUsed(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestConfigWithAuthenticationManagerBuilder.class)
-				.run(((context) -> assertThat(capturedOutput.toString())
-						.doesNotContain("Using generated security password: ")));
+				.run(((context) -> assertThat(output).doesNotContain("Using generated security password: ")));
 	}
 
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {

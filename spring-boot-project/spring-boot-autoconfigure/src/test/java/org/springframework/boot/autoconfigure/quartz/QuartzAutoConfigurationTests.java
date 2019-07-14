@@ -154,7 +154,7 @@ class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	void withConfiguredJobAndTrigger(CapturedOutput capturedOutput) {
+	void withConfiguredJobAndTrigger(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(QuartzFullConfiguration.class)
 				.withPropertyValues("test-name=withConfiguredJobAndTrigger").run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
@@ -162,7 +162,7 @@ class QuartzAutoConfigurationTests {
 					assertThat(scheduler.getJobDetail(JobKey.jobKey("fooJob"))).isNotNull();
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger"))).isNotNull();
 					Thread.sleep(1000L);
-					assertThat(capturedOutput).contains("withConfiguredJobAndTrigger").contains("jobDataValue");
+					assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue");
 				});
 	}
 

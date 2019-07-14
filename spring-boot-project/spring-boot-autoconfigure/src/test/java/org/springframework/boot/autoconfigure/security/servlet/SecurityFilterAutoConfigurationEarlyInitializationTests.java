@@ -55,17 +55,15 @@ import org.springframework.web.bind.annotation.RestController;
 class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	@Test
-	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput capturedOutput) {
+	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput output) {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
-			String password = capturedOutput.toString().split("Using generated security password: ")[1].split("\n")[0]
-					.trim();
+			String password = output.toString().split("Using generated security password: ")[1].split("\n")[0].trim();
 			new TestRestTemplate("user", password).getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
-
 		}
 	}
 

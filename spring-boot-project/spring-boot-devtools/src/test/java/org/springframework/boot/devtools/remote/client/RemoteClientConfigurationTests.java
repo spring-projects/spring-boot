@@ -78,21 +78,21 @@ class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	void warnIfRestartDisabled(CapturedOutput capturedOutput) {
+	void warnIfRestartDisabled(CapturedOutput output) {
 		configure("spring.devtools.remote.restart.enabled:false");
-		assertThat(capturedOutput).contains("Remote restart is disabled");
+		assertThat(output).contains("Remote restart is disabled");
 	}
 
 	@Test
-	void warnIfNotHttps(CapturedOutput capturedOutput) {
+	void warnIfNotHttps(CapturedOutput output) {
 		configure("http://localhost", true);
-		assertThat(capturedOutput).contains("is insecure");
+		assertThat(output).contains("is insecure");
 	}
 
 	@Test
-	void doesntWarnIfUsingHttps(CapturedOutput capturedOutput) {
+	void doesntWarnIfUsingHttps(CapturedOutput output) {
 		configure("https://localhost", true);
-		assertThat(capturedOutput).doesNotContain("is insecure");
+		assertThat(output).doesNotContain("is insecure");
 	}
 
 	@Test

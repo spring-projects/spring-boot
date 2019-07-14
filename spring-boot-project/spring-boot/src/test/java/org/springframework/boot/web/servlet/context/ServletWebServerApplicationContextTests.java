@@ -419,9 +419,9 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	void servletRequestCanBeInjectedEarly(CapturedOutput capturedOutput) throws Exception {
+	void servletRequestCanBeInjectedEarly(CapturedOutput output) throws Exception {
 		// gh-14990
-		int initialOutputLength = capturedOutput.length();
+		int initialOutputLength = output.length();
 		addWebServerFactoryBean();
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(WithAutowiredServletRequest.class);
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
@@ -431,8 +431,7 @@ class ServletWebServerApplicationContextTests {
 			assertThat(bean.getRequest()).isNotNull();
 		});
 		this.context.refresh();
-		String output = capturedOutput.toString().substring(initialOutputLength);
-		assertThat(output).doesNotContain("Replacing scope");
+		assertThat(output.toString().substring(initialOutputLength)).doesNotContain("Replacing scope");
 	}
 
 	@Test

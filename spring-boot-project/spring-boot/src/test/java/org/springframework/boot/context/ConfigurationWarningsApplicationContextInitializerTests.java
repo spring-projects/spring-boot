@@ -54,57 +54,57 @@ class ConfigurationWarningsApplicationContextInitializerTests {
 			+ "start due to a @ComponentScan of 'org.springframework'.";
 
 	@Test
-	void logWarningInDefaultPackage(CapturedOutput capturedOutput) {
+	void logWarningInDefaultPackage(CapturedOutput output) {
 		load(InDefaultPackageConfiguration.class);
-		assertThat(capturedOutput).contains(DEFAULT_SCAN_WARNING);
+		assertThat(output).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	void logWarningInDefaultPackageAndMetaAnnotation(CapturedOutput capturedOutput) {
+	void logWarningInDefaultPackageAndMetaAnnotation(CapturedOutput output) {
 		load(InDefaultPackageWithMetaAnnotationConfiguration.class);
-		assertThat(capturedOutput).contains(DEFAULT_SCAN_WARNING);
+		assertThat(output).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	void noLogIfInRealPackage(CapturedOutput capturedOutput) {
+	void noLogIfInRealPackage(CapturedOutput output) {
 		load(InRealPackageConfiguration.class);
-		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(output).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	void noLogWithoutComponentScanAnnotation(CapturedOutput capturedOutput) {
+	void noLogWithoutComponentScanAnnotation(CapturedOutput output) {
 		load(InDefaultPackageWithoutScanConfiguration.class);
-		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(output).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	void noLogIfHasValue(CapturedOutput capturedOutput) {
+	void noLogIfHasValue(CapturedOutput output) {
 		load(InDefaultPackageWithValueConfiguration.class);
-		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(output).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	void noLogIfHasBasePackages(CapturedOutput capturedOutput) {
+	void noLogIfHasBasePackages(CapturedOutput output) {
 		load(InDefaultPackageWithBasePackagesConfiguration.class);
-		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(output).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	void noLogIfHasBasePackageClasses(CapturedOutput capturedOutput) {
+	void noLogIfHasBasePackageClasses(CapturedOutput output) {
 		load(InDefaultPackageWithBasePackageClassesConfiguration.class);
-		assertThat(capturedOutput).doesNotContain(DEFAULT_SCAN_WARNING);
+		assertThat(output).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	void logWarningInOrgSpringPackage(CapturedOutput capturedOutput) {
+	void logWarningInOrgSpringPackage(CapturedOutput output) {
 		load(InOrgSpringPackageConfiguration.class);
-		assertThat(capturedOutput).contains(ORGSPRING_SCAN_WARNING);
+		assertThat(output).contains(ORGSPRING_SCAN_WARNING);
 	}
 
 	@Test
-	void logWarningIfScanningProblemPackages(CapturedOutput capturedOutput) {
+	void logWarningIfScanningProblemPackages(CapturedOutput output) {
 		load(InRealButScanningProblemPackages.class);
-		assertThat(capturedOutput).contains("Your ApplicationContext is unlikely to start due to a "
+		assertThat(output).contains("Your ApplicationContext is unlikely to start due to a "
 				+ "@ComponentScan of the default package, 'org.springframework'.");
 
 	}

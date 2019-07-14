@@ -76,14 +76,13 @@ class RestarterTests {
 	}
 
 	@Test
-	void testRestart(CapturedOutput capturedOutput) throws Exception {
+	void testRestart(CapturedOutput output) throws Exception {
 		Restarter.clearInstance();
 		Thread thread = new Thread(SampleApplication::main);
 		thread.start();
 		Thread.sleep(2600);
-		String output = capturedOutput.toString();
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0")).isGreaterThan(1);
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1")).isGreaterThan(1);
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Tick 0")).isGreaterThan(1);
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Tick 1")).isGreaterThan(1);
 		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(0);
 	}
 

@@ -63,7 +63,7 @@ class ErrorMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void renderWhenAlreadyCommittedLogsMessage(CapturedOutput capturedOutput) {
+	void renderWhenAlreadyCommittedLogsMessage(CapturedOutput output) {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
@@ -71,7 +71,7 @@ class ErrorMvcAutoConfigurationTests {
 					true);
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true), webRequest.getRequest(),
 					webRequest.getResponse());
-			assertThat(capturedOutput).contains("Cannot render error page for request [/path] "
+			assertThat(output).contains("Cannot render error page for request [/path] "
 					+ "and exception [Exception message] as the response has "
 					+ "already been committed. As a result, the response may " + "have the wrong status code.");
 		});

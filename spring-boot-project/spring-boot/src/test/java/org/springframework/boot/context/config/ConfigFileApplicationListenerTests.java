@@ -418,54 +418,54 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	void profilesAddedToEnvironmentAndViaProperty(CapturedOutput capturedOutput) {
+	void profilesAddedToEnvironmentAndViaProperty(CapturedOutput output) {
 		// External profile takes precedence over profile added via the environment
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.profiles.active=other");
 		this.environment.addActiveProfile("dev");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
 		assertThat(this.environment.getProperty("my.property")).isEqualTo("fromotherpropertiesfile");
-		validateProfilePreference(capturedOutput, null, "dev", "other");
+		validateProfilePreference(output, null, "dev", "other");
 	}
 
 	@Test
-	void profilesAddedToEnvironmentViaActiveAndIncludeProperty(CapturedOutput capturedOutput) {
+	void profilesAddedToEnvironmentViaActiveAndIncludeProperty(CapturedOutput output) {
 		// Active profile property takes precedence
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.profiles.active=dev",
 				"spring.profiles.include=other");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("other", "dev");
 		assertThat(this.environment.getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
-		validateProfilePreference(capturedOutput, null, "other", "dev");
+		validateProfilePreference(output, null, "other", "dev");
 	}
 
 	@Test
-	void profilesAddedViaIncludePropertyAndActivatedViaAnotherPropertySource(CapturedOutput capturedOutput) {
+	void profilesAddedViaIncludePropertyAndActivatedViaAnotherPropertySource(CapturedOutput output) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.include=dev,simple");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "simple", "other");
-		validateProfilePreference(capturedOutput, "dev", "simple", "other");
+		validateProfilePreference(output, "dev", "simple", "other");
 	}
 
 	@Test
-	void profilesAddedToEnvironmentAndViaPropertyDuplicate(CapturedOutput capturedOutput) {
+	void profilesAddedToEnvironmentAndViaPropertyDuplicate(CapturedOutput output) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.profiles.active=dev,other");
 		this.environment.addActiveProfile("dev");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
 		assertThat(this.environment.getProperty("my.property")).isEqualTo("fromotherpropertiesfile");
-		validateProfilePreference(capturedOutput, null, "dev", "other");
+		validateProfilePreference(output, null, "dev", "other");
 	}
 
 	@Test
-	void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins(CapturedOutput capturedOutput) {
+	void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins(CapturedOutput output) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.profiles.active=other,dev");
 		this.environment.addActiveProfile("other");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
 		assertThat(this.environment.getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
-		validateProfilePreference(capturedOutput, null, "other", "dev");
+		validateProfilePreference(output, null, "other", "dev");
 	}
 
 	@Test
@@ -475,12 +475,11 @@ class ConfigFileApplicationListenerTests {
 				new ApplicationEnvironmentPreparedEvent(this.application, new String[0], this.environment));
 	}
 
-	private void validateProfilePreference(CapturedOutput capturedOutput, String... profiles) {
+	private void validateProfilePreference(CapturedOutput output, String... profiles) {
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(new SpringApplication(), new String[0],
 				new AnnotationConfigApplicationContext());
 		withDebugLogging(() -> this.initializer.onApplicationEvent(event));
-		String log = capturedOutput.toString();
-
+		String log = output.toString();
 		// First make sure that each profile got processed only once
 		for (String profile : profiles) {
 			String reason = "Wrong number of occurrences for profile '" + profile + "' --> " + log;
@@ -787,7 +786,7 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	void activateProfileFromProfileSpecificProperties(CapturedOutput capturedOutput) {
+	void activateProfileFromProfileSpecificProperties(CapturedOutput output) {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=includeprofile");
@@ -797,7 +796,7 @@ class ConfigFileApplicationListenerTests {
 		assertThat(environment).has(matchingProfile("morespecific"));
 		assertThat(environment).has(matchingProfile("yetmorespecific"));
 		assertThat(environment).doesNotHave(matchingProfile("missing"));
-		assertThat(capturedOutput)
+		assertThat(output)
 				.contains("The following profiles are active: includeprofile,specific,morespecific,yetmorespecific");
 	}
 

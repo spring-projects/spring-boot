@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ManagementContextAutoConfigurationTests {
 
 	@Test
-	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput capturedOutput) {
+	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput output) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
@@ -51,7 +51,7 @@ class ManagementContextAutoConfigurationTests {
 								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 								EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0")
-				.run((context) -> assertThat(tomcatStartedOccurencesIn(capturedOutput)).isEqualTo(2));
+				.run((context) -> assertThat(tomcatStartedOccurencesIn(output)).isEqualTo(2));
 	}
 
 	private int tomcatStartedOccurencesIn(CharSequence output) {

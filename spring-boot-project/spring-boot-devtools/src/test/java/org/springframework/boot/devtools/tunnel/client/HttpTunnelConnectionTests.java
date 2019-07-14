@@ -139,11 +139,11 @@ class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	void connectFailureLogsWarning(CapturedOutput capturedOutput) throws Exception {
+	void connectFailureLogsWarning(CapturedOutput output) throws Exception {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
-		assertThat(capturedOutput).contains("Failed to connect to remote application at http://localhost:12345");
+		assertThat(output).contains("Failed to connect to remote application at http://localhost:12345");
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {

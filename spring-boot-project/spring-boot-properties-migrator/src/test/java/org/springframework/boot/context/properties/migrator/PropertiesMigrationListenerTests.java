@@ -46,9 +46,9 @@ class PropertiesMigrationListenerTests {
 	}
 
 	@Test
-	void sampleReport(CapturedOutput capturedOutput) {
+	void sampleReport(CapturedOutput output) {
 		this.context = createSampleApplication().run("--banner.charset=UTF8");
-		assertThat(capturedOutput).contains("commandLineArgs").contains("spring.banner.charset")
+		assertThat(output).contains("commandLineArgs").contains("spring.banner.charset")
 				.contains("Each configuration key has been temporarily mapped")
 				.doesNotContain("Please refer to the migration guide");
 	}
