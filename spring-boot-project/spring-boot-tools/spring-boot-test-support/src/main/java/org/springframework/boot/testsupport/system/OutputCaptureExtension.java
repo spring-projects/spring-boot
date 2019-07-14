@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -28,31 +27,12 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 /**
  * Internal JUnit 5 {@code @Extension} to capture {@link System#out System.out} and
- * {@link System#err System.err}. Can be used on a test class via
- * {@link ExtendWith @ExtendWith}. This extension provides {@link ParameterResolver
- * parameter resolution} for a {@link CapturedOutput} instance which can be used to assert
- * that the correct output was written.
- * <p>
- * To use with {@link ExtendWith @ExtendWith}, inject the {@link CapturedOutput} as an
- * argument to your test class constructor or test method:
- *
- * <pre class="code">
- * &#064;ExtendWith(OutputCaptureExtension.class)
- * class MyTest {
- *
- *     &#064;Test
- *     void test(CapturedOutput output) {
- *         assertThat(output).contains("ok");
- *     }
- *
- * }
- * </pre>
+ * {@link System#err System.err}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 2.2.0
- * @see CapturedOutput
  */
 public class OutputCaptureExtension
 		implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {

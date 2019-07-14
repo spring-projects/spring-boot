@@ -35,8 +35,6 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see OutputCaptureExtension
- * @see OutputCaptureRule
  */
 class OutputCapture implements CapturedOutput {
 

@@ -83,7 +83,7 @@ public class OutputCaptureRule implements TestRule, CapturedOutput {
 
 	/**
 	 * Resets the current capture session, clearing its captured output.
-	 * @deprecated since 2.2 with no replacement
+	 * @deprecated since 2.2.0 with no replacement
 	 */
 	@Deprecated
 	public void reset() {

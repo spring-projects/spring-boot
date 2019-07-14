@@ -17,20 +17,13 @@
 package org.springframework.boot.testsupport.system;
 
 /**
- * Provides access to {@link System#out System.out} and {@link System#err System.err}
- * output that has been capture by the {@link OutputCaptureExtension}. Can be used to
- * apply assertions either using AssertJ or standard JUnit assertions. For example:
- * <pre class="code">
- * assertThat(output).contains("started"); // Checks all output
- * assertThat(output.getErr()).contains("failed"); // Only checks System.err
- * assertThat(output.getOut()).contains("ok"); // Only checks System.put
- * </pre>
+ * Internal test class providing access to {@link System#out System.out} and
+ * {@link System#err System.err} output that has been captured.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 2.2.0
- * @see OutputCaptureExtension
  */
 public interface CapturedOutput extends CharSequence {
 

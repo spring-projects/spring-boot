@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * parameter resolution} for a {@link CapturedOutput} instance which can be used to assert
  * that the correct output was written.
  * <p>
- * To use with {@link ExtendWith @ExtendWith}, inject the {@link CapturedOutput} as an
+ * To use, add {@link ExtendWith @ExtendWith} and inject the {@link CapturedOutput} as an
  * argument to your test class constructor or test method:
  *
  * <pre class="code">
