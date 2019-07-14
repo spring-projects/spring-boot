@@ -104,7 +104,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		String secretHeaderName = remoteProperties.getSecretHeaderName();
 		String secret = remoteProperties.getSecret();
 		Assert.state(secret != null,
-				"The environment value 'spring.devtools.remote.secret' " + "is required to secure your connection.");
+				"The environment value 'spring.devtools.remote.secret' is required to secure your connection.");
 		return new HttpHeaderInterceptor(secretHeaderName, secret);
 	}
 

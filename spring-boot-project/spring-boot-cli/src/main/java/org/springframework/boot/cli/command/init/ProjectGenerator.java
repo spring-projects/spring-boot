@@ -58,7 +58,7 @@ class ProjectGenerator {
 		}
 		if (fileName == null) {
 			throw new ReportableException("Could not save the project, the server did not set a preferred "
-					+ "file name and no location was set. Specify the output location " + "for the project.");
+					+ "file name and no location was set. Specify the output location for the project.");
 		}
 		writeProject(response, fileName, force);
 	}

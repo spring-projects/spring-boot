@@ -52,27 +52,27 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 
 	@Test
 	void scheduledTasks() throws Exception {
-		this.mockMvc.perform(get("/actuator/scheduledtasks")).andExpect(status().isOk()).andDo(document(
-				"scheduled-tasks",
-				preprocessResponse(replacePattern(
-						Pattern.compile("org.*\\.ScheduledTasksEndpointDocumentationTests\\$" + "TestConfiguration"),
-						"com.example.Processor")),
-				responseFields(fieldWithPath("cron").description("Cron tasks, if any."),
-						targetFieldWithPrefix("cron.[]."),
-						fieldWithPath("cron.[].expression").description("Cron expression."),
-						fieldWithPath("fixedDelay").description("Fixed delay tasks, if any."),
-						targetFieldWithPrefix("fixedDelay.[]."), initialDelayWithPrefix("fixedDelay.[]."),
-						fieldWithPath("fixedDelay.[].interval")
-								.description("Interval, in milliseconds, between the end of the last"
-										+ " execution and the start of the next."),
-						fieldWithPath("fixedRate").description("Fixed rate tasks, if any."),
-						targetFieldWithPrefix("fixedRate.[]."),
-						fieldWithPath("fixedRate.[].interval")
-								.description("Interval, in milliseconds, between the start of each execution."),
-						initialDelayWithPrefix("fixedRate.[]."),
-						fieldWithPath("custom").description("Tasks with custom triggers, if any."),
-						targetFieldWithPrefix("custom.[]."),
-						fieldWithPath("custom.[].trigger").description("Trigger for the task."))))
+		this.mockMvc.perform(get("/actuator/scheduledtasks")).andExpect(status().isOk())
+				.andDo(document("scheduled-tasks",
+						preprocessResponse(replacePattern(
+								Pattern.compile("org.*\\.ScheduledTasksEndpointDocumentationTests\\$TestConfiguration"),
+								"com.example.Processor")),
+						responseFields(fieldWithPath("cron").description("Cron tasks, if any."),
+								targetFieldWithPrefix("cron.[]."),
+								fieldWithPath("cron.[].expression").description("Cron expression."),
+								fieldWithPath("fixedDelay").description("Fixed delay tasks, if any."),
+								targetFieldWithPrefix("fixedDelay.[]."), initialDelayWithPrefix("fixedDelay.[]."),
+								fieldWithPath("fixedDelay.[].interval")
+										.description("Interval, in milliseconds, between the end of the last"
+												+ " execution and the start of the next."),
+								fieldWithPath("fixedRate").description("Fixed rate tasks, if any."),
+								targetFieldWithPrefix("fixedRate.[]."),
+								fieldWithPath("fixedRate.[].interval")
+										.description("Interval, in milliseconds, between the start of each execution."),
+								initialDelayWithPrefix("fixedRate.[]."),
+								fieldWithPath("custom").description("Tasks with custom triggers, if any."),
+								targetFieldWithPrefix("custom.[]."),
+								fieldWithPath("custom.[].trigger").description("Trigger for the task."))))
 				.andDo(MockMvcResultHandlers.print());
 	}
 

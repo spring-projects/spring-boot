@@ -86,7 +86,7 @@ public class Repackager {
 		}
 		if (!source.exists() || !source.isFile()) {
 			throw new IllegalArgumentException(
-					"Source must refer to an existing file, " + "got " + source.getAbsolutePath());
+					"Source must refer to an existing file, got " + source.getAbsolutePath());
 		}
 		this.source = source.getAbsoluteFile();
 		this.layoutFactory = layoutFactory;

@@ -170,7 +170,7 @@ class AutoConfigurationImportSelectorTests {
 	@Test
 	void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
-				"org.springframework.boot.autoconfigure." + "AutoConfigurationImportSelectorTests.TestConfiguration");
+				"org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration");
 		assertThatIllegalStateException().isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
 	}
 

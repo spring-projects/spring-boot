@@ -196,8 +196,8 @@ public abstract class AutoConfigurationPackages {
 				else {
 					if (logger.isDebugEnabled()) {
 						String packageNames = StringUtils.collectionToCommaDelimitedString(this.packages);
-						logger.debug("@EnableAutoConfiguration was declared on a class " + "in the package '"
-								+ packageNames + "'. Automatic @Repository and @Entity scanning is " + "enabled.");
+						logger.debug("@EnableAutoConfiguration was declared on a class in the package '" + packageNames
+								+ "'. Automatic @Repository and @Entity scanning is enabled.");
 					}
 				}
 				this.loggedBasePackageInfo = true;

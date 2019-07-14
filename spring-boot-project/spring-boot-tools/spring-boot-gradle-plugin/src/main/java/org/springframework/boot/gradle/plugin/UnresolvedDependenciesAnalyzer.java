@@ -54,7 +54,7 @@ class UnresolvedDependenciesAnalyzer {
 					+ "declared without a version failed to resolve:\n");
 			this.dependenciesWithNoVersion
 					.forEach((dependency) -> message.append("    ").append(dependency).append("\n"));
-			message.append("\nDid you forget to apply the " + "io.spring.dependency-management plugin to the ");
+			message.append("\nDid you forget to apply the io.spring.dependency-management plugin to the ");
 			message.append(project.getName()).append(" project?\n");
 			logger.warn(message.toString());
 		}

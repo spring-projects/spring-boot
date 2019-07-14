@@ -66,15 +66,17 @@ class HazelcastAutoConfigurationClientTests {
 
 	@Test
 	void systemPropertyWithXml() {
-		this.contextRunner.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/" + "hazelcast-client-specific.xml")
+		this.contextRunner
+				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.xml")
 				.run(assertSpecificHazelcastClient("explicit-xml"));
 	}
 
 	@Test
 	void systemPropertyWithYaml() {
-		this.contextRunner.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
-				+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/" + "hazelcast-client-specific.yaml")
+		this.contextRunner
+				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
+						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml")
 				.run(assertSpecificHazelcastClient("explicit-yaml"));
 	}
 

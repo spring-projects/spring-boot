@@ -100,9 +100,9 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 		long end = System.currentTimeMillis() + 30000;
 		while (serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException(String.format(
-						"server.port file was not written within 30 seconds. " + "Application output:%n%s",
-						FileCopyUtils.copyToString(new FileReader(standardOut))));
+				throw new IllegalStateException(
+						String.format("server.port file was not written within 30 seconds. Application output:%n%s",
+								FileCopyUtils.copyToString(new FileReader(standardOut))));
 			}
 			Thread.sleep(100);
 		}
@@ -115,7 +115,7 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 		long end = System.currentTimeMillis() + 30000;
 		while (!standardOut.exists()) {
 			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException("Standard out file was not written " + "within 30 seconds");
+				throw new IllegalStateException("Standard out file was not written within 30 seconds");
 			}
 			Thread.sleep(100);
 		}

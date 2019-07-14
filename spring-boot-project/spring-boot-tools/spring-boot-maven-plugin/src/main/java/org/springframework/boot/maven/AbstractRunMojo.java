@@ -424,8 +424,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 		}
 		if (mainClass == null) {
-			throw new MojoExecutionException(
-					"Unable to find a suitable main class, " + "please add a 'mainClass' property");
+			throw new MojoExecutionException("Unable to find a suitable main class, please add a 'mainClass' property");
 		}
 		return mainClass;
 	}
@@ -557,7 +556,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 			catch (NoSuchMethodException ex) {
 				Exception wrappedEx = new Exception(
-						"The specified mainClass doesn't contain a " + "main method with appropriate signature.", ex);
+						"The specified mainClass doesn't contain a main method with appropriate signature.", ex);
 				thread.getThreadGroup().uncaughtException(thread, wrappedEx);
 			}
 			catch (Exception ex) {

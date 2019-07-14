@@ -199,7 +199,7 @@ public class DevToolsIntegrationTests {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(
 						"server.port file '" + this.serverPortFile + "' was not written within " + timeToWait.toMillis()
-								+ "ms. " + "Application output:%n%s%s",
+								+ "ms. Application output:%n%s%s",
 						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardOut())),
 						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardError()))));
 			}

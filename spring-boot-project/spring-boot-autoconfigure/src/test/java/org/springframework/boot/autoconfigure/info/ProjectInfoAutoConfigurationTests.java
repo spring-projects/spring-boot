@@ -59,7 +59,7 @@ class ProjectInfoAutoConfigurationTests {
 	@Test
 	void gitPropertiesFallbackWithGitPropertiesBean() {
 		this.contextRunner.withUserConfiguration(CustomInfoPropertiesConfiguration.class).withPropertyValues(
-				"spring.info.git.location=" + "classpath:/org/springframework/boot/autoconfigure/info/git.properties")
+				"spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties")
 				.run((context) -> {
 					GitProperties gitProperties = context.getBean(GitProperties.class);
 					assertThat(gitProperties).isSameAs(context.getBean("customGitProperties"));
@@ -115,8 +115,7 @@ class ProjectInfoAutoConfigurationTests {
 
 	@Test
 	void buildPropertiesCustomInvalidLocation() {
-		this.contextRunner
-				.withPropertyValues("spring.info.build.location=" + "classpath:/org/acme/no-build-info.properties")
+		this.contextRunner.withPropertyValues("spring.info.build.location=classpath:/org/acme/no-build-info.properties")
 				.run((context) -> assertThat(context.getBeansOfType(BuildProperties.class)).hasSize(0));
 	}
 

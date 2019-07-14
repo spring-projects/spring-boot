@@ -99,7 +99,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			});
 		}
 		else {
-			this.logger.debug("No ContextLoaderListener registered, as " + "createRootApplicationContext() did not "
+			this.logger.debug("No ContextLoaderListener registered, as createRootApplicationContext() did not "
 					+ "return an application context");
 		}
 	}

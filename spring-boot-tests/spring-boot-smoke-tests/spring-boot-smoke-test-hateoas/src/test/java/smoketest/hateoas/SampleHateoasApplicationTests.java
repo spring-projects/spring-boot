@@ -41,7 +41,7 @@ class SampleHateoasApplicationTests {
 	void hasHalLinks() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/customers/1", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\"" + ",\"lastName\":\"Gierke\"");
+		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"");
 		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
 	}
 

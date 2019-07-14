@@ -177,7 +177,7 @@ class WebMvcEndpointExposureIntegrationTests {
 			return false;
 		}
 		throw new IllegalStateException(
-				String.format("Unexpected %s HTTP status for " + "endpoint %s", result.getStatus(), path));
+				String.format("Unexpected %s HTTP status for endpoint %s", result.getStatus(), path));
 	}
 
 	@RestControllerEndpoint(id = "custommvc")

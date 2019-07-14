@@ -405,7 +405,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 				if (ex == null) {
 					throw new IllegalStateException(message);
 				}
-				throw new IllegalStateException(message + " and the attempt to deduce" + " the bean's type failed", ex);
+				throw new IllegalStateException(message + " and the attempt to deduce the bean's type failed", ex);
 			}
 		}
 

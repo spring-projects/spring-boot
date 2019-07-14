@@ -46,7 +46,7 @@ class SslBuilderCustomizerTests {
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
 		Class<?> name = Class.forName(
-				"org.springframework.boot.web.embedded.undertow" + ".SslBuilderCustomizer$ConfigurableAliasKeyManager");
+				"org.springframework.boot.web.embedded.undertow.SslBuilderCustomizer$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(name);
 	}
 

@@ -60,8 +60,9 @@ class HikariDataSourceConfigurationTests {
 
 	@Test
 	void testDataSourceGenericPropertiesOverridden() {
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.hikari.data-source-properties" + ".dataSourceClassName=org.h2.JDBCDataSource")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.datasource.hikari.data-source-properties.dataSourceClassName=org.h2.JDBCDataSource")
 				.run((context) -> {
 					HikariDataSource ds = context.getBean(HikariDataSource.class);
 					assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))

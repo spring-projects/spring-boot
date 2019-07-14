@@ -254,7 +254,7 @@ public class StartMojo extends AbstractRunMojo {
 			}
 		}
 		throw new MojoExecutionException(
-				"Spring application did not start before the configured " + "timeout (" + (wait * maxAttempts) + "ms");
+				"Spring application did not start before the configured timeout (" + (wait * maxAttempts) + "ms");
 	}
 
 	private class CreateJmxConnector implements Callable<JMXConnector> {

@@ -67,8 +67,7 @@ public class FreeMarkerAutoConfigurationTests {
 		File emptyDirectory = new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory");
 		emptyDirectory.mkdirs();
 		this.contextRunner
-				.withPropertyValues(
-						"spring.freemarker.templateLoaderPath:" + "classpath:/empty-templates/empty-directory/")
+				.withPropertyValues("spring.freemarker.templateLoaderPath:classpath:/empty-templates/empty-directory/")
 				.run((context) -> assertThat(output).doesNotContain("Cannot find template location"));
 	}
 

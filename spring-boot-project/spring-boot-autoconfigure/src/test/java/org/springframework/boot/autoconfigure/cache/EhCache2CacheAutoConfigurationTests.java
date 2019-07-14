@@ -57,7 +57,7 @@ public class EhCache2CacheAutoConfigurationTests extends AbstractCacheAutoConfig
 	@Test
 	public void ehCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "ehcache")
+				.withPropertyValues("spring.cache.type=ehcache")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "ehcacheCacheManagerCustomizer"));
 	}
 

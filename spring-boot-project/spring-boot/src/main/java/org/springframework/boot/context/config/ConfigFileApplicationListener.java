@@ -539,8 +539,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				}
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Failed to load property " + "source from location '" + location + "'",
-						ex);
+				throw new IllegalStateException("Failed to load property source from location '" + location + "'", ex);
 			}
 		}
 

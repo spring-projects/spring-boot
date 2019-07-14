@@ -88,8 +88,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		Class<?>[] configClasses = config.getClasses();
 		String[] configLocations = config.getLocations();
 		Assert.state(!ObjectUtils.isEmpty(configClasses) || !ObjectUtils.isEmpty(configLocations),
-				() -> "No configuration classes " + "or locations found in @SpringApplicationConfiguration. "
-						+ "For default configuration detection to work you need " + "Spring 4.0.3 or better (found "
+				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
+						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
 						+ SpringVersion.getVersion() + ").");
 		SpringApplication application = getSpringApplication();
 		application.setMainApplicationClass(config.getTestClass());
@@ -244,7 +244,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	@Override
 	public ApplicationContext loadContext(String... locations) throws Exception {
 		throw new UnsupportedOperationException(
-				"SpringApplicationContextLoader " + "does not support the loadContext(String...) method");
+				"SpringApplicationContextLoader does not support the loadContext(String...) method");
 	}
 
 	@Override

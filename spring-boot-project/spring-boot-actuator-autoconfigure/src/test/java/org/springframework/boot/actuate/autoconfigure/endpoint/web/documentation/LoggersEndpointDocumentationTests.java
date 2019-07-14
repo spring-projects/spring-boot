@@ -85,7 +85,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("loggers/set", requestFields(fieldWithPath("configuredLevel")
-						.description("Level for the logger. May be" + " omitted to clear the level.").optional())));
+						.description("Level for the logger. May be omitted to clear the level.").optional())));
 		verify(this.loggingSystem).setLogLevel("com.example", LogLevel.DEBUG);
 	}
 

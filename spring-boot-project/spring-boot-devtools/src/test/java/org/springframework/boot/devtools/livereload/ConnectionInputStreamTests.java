@@ -42,7 +42,7 @@ class ConnectionInputStreamTests {
 		for (int i = 0; i < 100; i++) {
 			header += "x-something-" + i + ": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 		}
-		String data = header + "\r\n\r\n" + "content\r\n";
+		String data = header + "\r\n\r\ncontent\r\n";
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(data.getBytes()));
 		assertThat(inputStream.readHeader()).isEqualTo(header);
 	}

@@ -88,8 +88,7 @@ class WebClientMetricsConfigurationTests {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-			assertThat(output)
-					.doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
+			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
 					.doesNotContain("Are you using 'uriVariables'?");
 		});
 	}

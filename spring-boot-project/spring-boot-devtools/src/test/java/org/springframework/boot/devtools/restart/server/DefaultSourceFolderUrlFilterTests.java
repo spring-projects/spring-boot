@@ -71,13 +71,13 @@ class DefaultSourceFolderUrlFilterTests {
 
 	@Test
 	void skippedProjects() throws Exception {
-		String sourceFolder = "/Users/me/code/spring-boot-samples/" + "spring-boot-sample-devtools";
-		URL jarUrl = new URL("jar:file:/Users/me/tmp/" + "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
+		String sourceFolder = "/Users/me/code/spring-boot-samples/spring-boot-sample-devtools";
+		URL jarUrl = new URL("jar:file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
 		assertThat(this.filter.isMatch(sourceFolder, jarUrl)).isTrue();
-		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/" + "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
+		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
 				+ "lib/spring-boot-1.3.0.BUILD-SNAPSHOT.jar!/");
 		assertThat(this.filter.isMatch(sourceFolder, nestedJarUrl)).isFalse();
-		URL fileUrl = new URL("file:/Users/me/tmp/" + "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
+		URL fileUrl = new URL("file:/Users/me/tmp/spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
 		assertThat(this.filter.isMatch(sourceFolder, fileUrl)).isTrue();
 	}
 

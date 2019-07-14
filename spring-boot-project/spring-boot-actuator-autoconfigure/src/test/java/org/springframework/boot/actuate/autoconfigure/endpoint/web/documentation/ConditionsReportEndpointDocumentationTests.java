@@ -66,15 +66,14 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 	@Test
 	void conditions() throws Exception {
 		List<FieldDescriptor> positiveMatchFields = Arrays.asList(
-				fieldWithPath("").description("Classes and methods with conditions that were " + "matched."),
+				fieldWithPath("").description("Classes and methods with conditions that were matched."),
 				fieldWithPath(".*.[].condition").description("Name of the condition."),
 				fieldWithPath(".*.[].message").description("Details of why the condition was matched."));
 		List<FieldDescriptor> negativeMatchFields = Arrays.asList(
-				fieldWithPath("").description("Classes and methods with conditions that " + "were not matched."),
+				fieldWithPath("").description("Classes and methods with conditions that were not matched."),
 				fieldWithPath(".*.notMatched").description("Conditions that were matched."),
 				fieldWithPath(".*.notMatched.[].condition").description("Name of the condition."),
-				fieldWithPath(".*.notMatched.[].message")
-						.description("Details of why the condition was" + " not matched."),
+				fieldWithPath(".*.notMatched.[].message").description("Details of why the condition was not matched."),
 				fieldWithPath(".*.matched").description("Conditions that were matched."),
 				fieldWithPath(".*.matched.[].condition").description("Name of the condition.")
 						.type(JsonFieldType.STRING).optional(),

@@ -78,7 +78,7 @@ class WebEndpointDiscovererTests {
 		load(TestWebEndpointExtensionConfiguration.class,
 				(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining(
-								"Invalid extension 'endpointExtension': no endpoint found with id '" + "test'"));
+								"Invalid extension 'endpointExtension': no endpoint found with id 'test'"));
 	}
 
 	@Test

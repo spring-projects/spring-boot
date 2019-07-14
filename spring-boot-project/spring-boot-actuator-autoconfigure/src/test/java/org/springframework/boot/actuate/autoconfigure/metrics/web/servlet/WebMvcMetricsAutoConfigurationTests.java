@@ -122,7 +122,7 @@ class WebMvcMetricsAutoConfigurationTests {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
 					assertThat(output)
-							.doesNotContain("Reached the maximum number of URI tags " + "for 'http.server.requests'");
+							.doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
 				});
 	}
 

@@ -113,7 +113,7 @@ class TokenTests {
 	@Test
 	void getExpiryWhenExpIsNullShouldThrowException() {
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
-		String claims = "{\"iss\": \"http://localhost:8080/uaa/oauth/token\"" + "}";
+		String claims = "{\"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		Token token = createToken(header, claims);
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class).isThrownBy(token::getExpiry)
 				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));

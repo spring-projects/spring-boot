@@ -95,7 +95,7 @@ public class ReactiveMongoClientFactory {
 
 	private MongoClient createCredentialNetworkMongoClient(MongoClientSettings settings) {
 		Assert.state(this.properties.getUri() == null,
-				"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
+				"Invalid mongo configuration, either uri or host/port/credentials must be specified");
 		Builder builder = builder(settings);
 		if (hasCustomCredentials()) {
 			applyCredentials(builder);

@@ -63,7 +63,7 @@ class CentralDirectoryEndRecord {
 			if (this.size > this.block.length) {
 				if (this.size >= MAXIMUM_SIZE || this.size > data.getSize()) {
 					throw new IOException(
-							"Unable to find ZIP central directory " + "records after reading " + this.size + " bytes");
+							"Unable to find ZIP central directory records after reading " + this.size + " bytes");
 				}
 				this.block = createBlockFromEndOfData(data, this.size + READ_BLOCK_SIZE);
 			}

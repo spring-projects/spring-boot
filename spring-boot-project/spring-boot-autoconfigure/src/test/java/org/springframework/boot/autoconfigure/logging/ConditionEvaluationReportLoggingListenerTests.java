@@ -86,9 +86,8 @@ class ConditionEvaluationReportLoggingListenerTests {
 		context.register(ErrorConfig.class);
 		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh).satisfies((ex) -> this.initializer
 				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex)));
-		assertThat(output)
-				.contains("Error starting" + " ApplicationContext. To display the conditions report re-run"
-						+ " your application with 'debug' enabled.");
+		assertThat(output).contains("Error starting ApplicationContext. To display the conditions report re-run"
+				+ " your application with 'debug' enabled.");
 	}
 
 	@Test

@@ -88,7 +88,7 @@ class Connection {
 		String accept = getWebsocketAcceptResponse();
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols", "Upgrade: websocket", "Connection: Upgrade",
 				"Sec-WebSocket-Accept: " + accept);
-		new Frame("{\"command\":\"hello\",\"protocols\":" + "[\"http://livereload.com/protocols/official-7\"],"
+		new Frame("{\"command\":\"hello\",\"protocols\":[\"http://livereload.com/protocols/official-7\"],"
 				+ "\"serverName\":\"spring-boot\"}").write(this.outputStream);
 		Thread.sleep(100);
 		this.webSocket = true;

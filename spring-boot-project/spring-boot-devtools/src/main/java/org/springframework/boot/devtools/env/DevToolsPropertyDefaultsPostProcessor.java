@@ -84,7 +84,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 				environment.getPropertySources().addLast(new MapPropertySource("devtools", PROPERTIES));
 			}
 			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING)) {
-				logger.info("For additional web related logging consider " + "setting the '" + WEB_LOGGING
+				logger.info("For additional web related logging consider setting the '" + WEB_LOGGING
 						+ "' property to 'DEBUG'");
 			}
 		}

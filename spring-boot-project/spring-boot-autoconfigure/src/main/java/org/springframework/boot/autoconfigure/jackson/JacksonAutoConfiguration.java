@@ -142,7 +142,7 @@ public class JacksonAutoConfiguration {
 					if (logger.isWarnEnabled()) {
 						logger.warn("spring.jackson.date-format could not be used to "
 								+ "configure formatting of Joda's DateTime. You may want "
-								+ "to configure spring.jackson.joda-date-time-format as " + "well.");
+								+ "to configure spring.jackson.joda-date-time-format as well.");
 					}
 				}
 			}

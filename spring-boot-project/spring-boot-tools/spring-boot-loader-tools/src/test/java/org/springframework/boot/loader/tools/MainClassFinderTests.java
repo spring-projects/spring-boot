@@ -87,7 +87,7 @@ class MainClassFinderTests {
 		try (JarFile jarFile = this.testJarFile.getJarFile()) {
 			assertThatIllegalStateException().isThrownBy(() -> MainClassFinder.findSingleMainClass(jarFile, ""))
 					.withMessageContaining(
-							"Unable to find a single main class " + "from the following candidates [a.B, a.b.c.E]");
+							"Unable to find a single main class from the following candidates [a.B, a.b.c.E]");
 		}
 	}
 
@@ -145,7 +145,7 @@ class MainClassFinderTests {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> MainClassFinder.findSingleMainClass(this.testJarFile.getJarSource()))
 				.withMessageContaining(
-						"Unable to find a single main class " + "from the following candidates [a.B, a.b.c.E]");
+						"Unable to find a single main class from the following candidates [a.B, a.b.c.E]");
 	}
 
 	@Test

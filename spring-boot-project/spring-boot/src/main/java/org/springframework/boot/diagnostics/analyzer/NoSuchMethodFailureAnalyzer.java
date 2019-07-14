@@ -50,7 +50,7 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 		String description = getDescription(cause, className, candidates, actual);
 		return new FailureAnalysis(description,
-				"Correct the classpath of your application so that it contains a single," + " compatible version of "
+				"Correct the classpath of your application so that it contains a single, compatible version of "
 						+ className,
 				cause);
 	}

@@ -59,8 +59,7 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	private static final List<FieldDescriptor> componentFields = Arrays.asList(
 			fieldWithPath("status").description("Status of a specific part of the application"),
-			subsectionWithPath("details")
-					.description("Details of the health of a specific part of the" + " application."));
+			subsectionWithPath("details").description("Details of the health of a specific part of the application."));
 
 	@Test
 	void health() throws Exception {
@@ -71,7 +70,7 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 										+ "`management.endpoint.health.show-details`)."),
 						fieldWithPath("details.*.status").description("Status of a specific part of the application."),
 						subsectionWithPath("details.*.details")
-								.description("Details of the health of a specific part of the" + " application."))));
+								.description("Details of the health of a specific part of the application."))));
 	}
 
 	@Test

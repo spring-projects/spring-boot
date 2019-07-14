@@ -80,7 +80,7 @@ class RunArgumentsTests {
 
 	@Test
 	void parseWithNewLinesAndTabs() {
-		String[] args = parseArgs("     -Dfoo=bar \n" + "\t\t -Dfoo2=bar2  ");
+		String[] args = parseArgs("     -Dfoo=bar \n\t\t -Dfoo2=bar2  ");
 		assertThat(args.length).isEqualTo(2);
 		assertThat(args[0]).isEqualTo("-Dfoo=bar");
 		assertThat(args[1]).isEqualTo("-Dfoo2=bar2");

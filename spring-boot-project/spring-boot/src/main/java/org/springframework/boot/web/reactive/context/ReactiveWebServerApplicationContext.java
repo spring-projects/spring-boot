@@ -98,7 +98,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		String[] beanNames = getBeanFactory().getBeanNamesForType(ReactiveWebServerFactory.class);
 		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
-					"Unable to start ReactiveWebApplicationContext due to missing " + "ReactiveWebServerFactory bean.");
+					"Unable to start ReactiveWebApplicationContext due to missing ReactiveWebServerFactory bean.");
 		}
 		if (beanNames.length > 1) {
 			throw new ApplicationContextException("Unable to start ReactiveWebApplicationContext due to multiple "

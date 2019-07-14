@@ -123,7 +123,7 @@ abstract class RedisConnectionConfiguration {
 				nodes.add(new RedisNode(parts[0], Integer.valueOf(parts[1])));
 			}
 			catch (RuntimeException ex) {
-				throw new IllegalStateException("Invalid redis sentinel " + "property '" + node + "'", ex);
+				throw new IllegalStateException("Invalid redis sentinel property '" + node + "'", ex);
 			}
 		}
 		return nodes;

@@ -46,7 +46,7 @@ public class NoSuchMethodFailureAnalyzerTests {
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 				.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailure(")
-				.contains("javax.servlet.ServletContext.addServlet" + "(Ljava/lang/String;Ljavax/servlet/Servlet;)"
+				.contains("javax.servlet.ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
 						+ "Ljavax/servlet/ServletRegistration$Dynamic;")
 				.contains("class, javax.servlet.ServletContext,");
 	}

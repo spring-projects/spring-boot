@@ -106,8 +106,8 @@ public class CacheAutoConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			Assert.notNull(this.cacheManager.getIfAvailable(),
-					() -> "No cache manager could " + "be auto-configured, check your configuration (caching "
-							+ "type is '" + this.cacheProperties.getType() + "')");
+					() -> "No cache manager could be auto-configured, check your configuration (caching " + "type is '"
+							+ this.cacheProperties.getType() + "')");
 		}
 
 	}

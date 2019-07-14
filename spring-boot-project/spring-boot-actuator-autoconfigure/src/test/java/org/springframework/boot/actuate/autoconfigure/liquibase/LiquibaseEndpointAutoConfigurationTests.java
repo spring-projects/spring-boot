@@ -91,7 +91,7 @@ class LiquibaseEndpointAutoConfigurationTests {
 				public void setCloseDataSourceOnceMigrated(boolean closeDataSourceOnceMigrated) {
 					if (this.propertiesSet) {
 						throw new IllegalStateException(
-								"setCloseDataSourceOnceMigrated " + "invoked after afterPropertiesSet");
+								"setCloseDataSourceOnceMigrated invoked after afterPropertiesSet");
 					}
 					super.setCloseDataSourceOnceMigrated(closeDataSourceOnceMigrated);
 				}

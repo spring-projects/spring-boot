@@ -85,7 +85,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.reactive.DispatcherHandler";
 
-	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework." + "web.servlet.DispatcherServlet";
+	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework.web.servlet.DispatcherServlet";
 
 	private static final String JERSEY_WEB_ENVIRONMENT_CLASS = "org.glassfish.jersey.server.ResourceConfig";
 
@@ -232,7 +232,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class)
 				.findFromClass(mergedConfig.getTestClass());
 		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
-				+ "@ContextConfiguration or @SpringBootTest(classes=...) " + "with your test");
+				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
 		logger.info("Found @SpringBootConfiguration " + found.getName() + " for test " + mergedConfig.getTestClass());
 		return merge(found, classes);
 	}
@@ -327,7 +327,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).isPresent(WebAppConfiguration.class)) {
 			throw new IllegalStateException("@WebAppConfiguration should only be used "
 					+ "with @SpringBootTest when @SpringBootTest is configured with a "
-					+ "mock web environment. Please remove @WebAppConfiguration or " + "reconfigure @SpringBootTest.");
+					+ "mock web environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");
 		}
 	}
 

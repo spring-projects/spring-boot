@@ -90,7 +90,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 						TooManyHttpHandlers.class)
 				.run((context) -> assertThat(context.getStartupFailure())
 						.isInstanceOf(ApplicationContextException.class)
-						.hasMessageContaining("multiple HttpHandler beans : " + "httpHandler,additionalHttpHandler"));
+						.hasMessageContaining("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
 	}
 
 	@Test

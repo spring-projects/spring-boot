@@ -94,7 +94,7 @@ class MongoClientFactoryTests {
 	@Test
 	void uriCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://user:secret@mongo1.example.com:12345," + "mongo2.example.com:23456/test");
+		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test");
 		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = getAllAddresses(client);
 		assertThat(allAddresses).hasSize(2);

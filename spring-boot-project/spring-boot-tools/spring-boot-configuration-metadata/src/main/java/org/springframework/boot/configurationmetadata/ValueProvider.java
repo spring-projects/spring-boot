@@ -59,7 +59,7 @@ public class ValueProvider implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ValueProvider{" + "name='" + this.name + ", parameters=" + this.parameters + '}';
+		return "ValueProvider{name='" + this.name + ", parameters=" + this.parameters + '}';
 	}
 
 }

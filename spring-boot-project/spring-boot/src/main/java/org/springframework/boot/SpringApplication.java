@@ -581,8 +581,7 @@ public class SpringApplication {
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
-						"Unable create a default ApplicationContext, " + "please specify an ApplicationContextClass",
-						ex);
+						"Unable create a default ApplicationContext, please specify an ApplicationContextClass", ex);
 			}
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);

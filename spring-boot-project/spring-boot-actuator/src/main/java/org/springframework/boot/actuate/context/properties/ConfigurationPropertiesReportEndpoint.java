@@ -326,7 +326,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				catch (Exception ex) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Skipping '" + writer.getFullName() + "' on '" + pojo.getClass().getName()
-								+ "' as an exception " + "was thrown when retrieving its value", ex);
+								+ "' as an exception was thrown when retrieving its value", ex);
 					}
 					return;
 				}

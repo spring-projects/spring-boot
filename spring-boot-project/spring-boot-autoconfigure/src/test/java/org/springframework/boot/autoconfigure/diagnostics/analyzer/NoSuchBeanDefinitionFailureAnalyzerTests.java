@@ -158,21 +158,20 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis, Class<?> component, int index,
 			Class<?> type) {
 		String expected = String.format(
-				"Parameter %s of constructor in %s required a bean of " + "type '%s' that could not be found.", index,
+				"Parameter %s of constructor in %s required a bean of type '%s' that could not be found.", index,
 				component.getName(), type.getName());
 		assertThat(analysis.getDescription()).startsWith(expected);
 	}
 
 	private void assertActionMissingType(FailureAnalysis analysis, Class<?> type) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the entries above or defining a bean of type '%s' " + "in your configuration.",
+				"Consider revisiting the entries above or defining a bean of type '%s' in your configuration.",
 				type.getName()));
 	}
 
 	private void assertActionMissingName(FailureAnalysis analysis, String name) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the entries above or defining a bean named '%s' " + "in your configuration.",
-				name));
+				"Consider revisiting the entries above or defining a bean named '%s' in your configuration.", name));
 	}
 
 	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description, Class<?> target,

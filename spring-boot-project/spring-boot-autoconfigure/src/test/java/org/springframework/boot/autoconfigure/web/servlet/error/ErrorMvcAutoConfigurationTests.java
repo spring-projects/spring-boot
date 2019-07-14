@@ -73,7 +73,7 @@ class ErrorMvcAutoConfigurationTests {
 					webRequest.getResponse());
 			assertThat(output).contains("Cannot render error page for request [/path] "
 					+ "and exception [Exception message] as the response has "
-					+ "already been committed. As a result, the response may " + "have the wrong status code.");
+					+ "already been committed. As a result, the response may have the wrong status code.");
 		});
 	}
 

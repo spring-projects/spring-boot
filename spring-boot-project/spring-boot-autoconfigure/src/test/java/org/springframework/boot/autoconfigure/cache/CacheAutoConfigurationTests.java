@@ -145,7 +145,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@Test
 	public void simpleCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "simple")
+				.withPropertyValues("spring.cache.type=simple")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "simpleCacheManagerCustomizer"));
 	}
 
@@ -182,7 +182,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@Test
 	public void genericCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(GenericCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "generic")
+				.withPropertyValues("spring.cache.type=generic")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "genericCacheManagerCustomizer"));
 	}
 
@@ -209,7 +209,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@Test
 	public void couchbaseCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(CouchbaseCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "couchbase")
+				.withPropertyValues("spring.cache.type=couchbase")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer"));
 	}
 
@@ -288,7 +288,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@Test
 	public void redisCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(RedisWithCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "redis")
+				.withPropertyValues("spring.cache.type=redis")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "redisCacheManagerCustomizer"));
 	}
 
@@ -437,7 +437,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@Test
 	public void hazelcastCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(HazelcastCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "hazelcast")
+				.withPropertyValues("spring.cache.type=hazelcast")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "hazelcastCacheManagerCustomizer"));
 	}
 
@@ -541,7 +541,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@Test
 	public void infinispanCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "infinispan")
+				.withPropertyValues("spring.cache.type=infinispan")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "infinispanCacheManagerCustomizer"));
 	}
 
@@ -626,7 +626,7 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	@Test
 	public void caffeineCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
-				.withPropertyValues("spring.cache.type=" + "caffeine")
+				.withPropertyValues("spring.cache.type=caffeine")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "caffeineCacheManagerCustomizer"));
 	}
 

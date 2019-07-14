@@ -86,7 +86,7 @@ public class GroovyTemplateAutoConfiguration {
 				if (!location.exists(this.applicationContext)) {
 					logger.warn("Cannot find template location: " + location
 							+ " (please add some templates, check your Groovy "
-							+ "configuration, or set spring.groovy.template." + "check-template-location=false)");
+							+ "configuration, or set spring.groovy.template.check-template-location=false)");
 				}
 			}
 		}

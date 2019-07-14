@@ -70,8 +70,8 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 			fieldWithPath("attributeNames").description("Names of the attributes stored in the session."),
 			fieldWithPath("creationTime").description("Timestamp of when the session was created."),
 			fieldWithPath("lastAccessedTime").description("Timestamp of when the session was last accessed."),
-			fieldWithPath("maxInactiveInterval").description(
-					"Maximum permitted period of inactivity, in seconds, " + "before the session will expire."),
+			fieldWithPath("maxInactiveInterval")
+					.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
 			fieldWithPath("expired").description("Whether the session has expired."));
 
 	@MockBean

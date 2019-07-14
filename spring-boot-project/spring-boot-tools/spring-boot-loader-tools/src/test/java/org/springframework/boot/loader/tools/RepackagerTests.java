@@ -168,7 +168,7 @@ class RepackagerTests {
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		assertThatIllegalStateException().isThrownBy(() -> repackager.repackage(NO_LIBRARIES)).withMessageContaining(
-				"Unable to find a single main class " + "from the following candidates [a.b.C, a.b.D]");
+				"Unable to find a single main class from the following candidates [a.b.C, a.b.D]");
 	}
 
 	@Test

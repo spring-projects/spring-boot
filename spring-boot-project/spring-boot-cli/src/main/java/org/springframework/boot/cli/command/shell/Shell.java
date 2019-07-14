@@ -142,7 +142,7 @@ public class Shell {
 		String version = getClass().getPackage().getImplementationVersion();
 		version = (version != null) ? " (v" + version + ")" : "";
 		System.out.println(ansi("Spring Boot", Code.BOLD).append(version, Code.FAINT));
-		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit " + "RETURN for help, and 'exit' to quit."));
+		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit RETURN for help, and 'exit' to quit."));
 	}
 
 	private void runInputLoop() throws Exception {

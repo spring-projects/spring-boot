@@ -48,7 +48,7 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	@Test
 	void liquibase() throws Exception {
 		FieldDescriptor changeSetsField = fieldWithPath("contexts.*.liquibaseBeans.*.changeSets")
-				.description("Change sets made by the Liquibase beans, keyed by " + "bean name.");
+				.description("Change sets made by the Liquibase beans, keyed by bean name.");
 		this.mockMvc.perform(get("/actuator/liquibase")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("liquibase",
 						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),

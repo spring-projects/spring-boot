@@ -201,7 +201,7 @@ class ConditionEvaluationReportTests {
 		}
 		assertThat(messages).areAtLeastOne(Matched.by(containsString("@ConditionalOnClass found required classes "
 				+ "'javax.servlet.Servlet', 'org.springframework.web.multipart."
-				+ "support.StandardServletMultipartResolver', " + "'javax.servlet.MultipartConfigElement'")));
+				+ "support.StandardServletMultipartResolver', 'javax.servlet.MultipartConfigElement'")));
 		context.close();
 	}
 

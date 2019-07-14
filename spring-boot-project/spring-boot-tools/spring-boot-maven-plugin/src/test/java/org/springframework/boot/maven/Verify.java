@@ -249,9 +249,9 @@ public final class Verify {
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-core");
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-4");
-			assertThat(verifier.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
+			assertThat(verifier.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
 					.as("Unpacked launcher classes").isTrue();
-			assertThat(verifier.hasEntry("WEB-INF/classes/org/" + "test/SampleApplication.class")).as("Own classes")
+			assertThat(verifier.hasEntry("WEB-INF/classes/org/test/SampleApplication.class")).as("Own classes")
 					.isTrue();
 			assertThat(verifier.hasEntry("index.html")).as("Web content").isTrue();
 		}
@@ -294,9 +294,9 @@ public final class Verify {
 			verifier.assertHasEntryNameStartingWith("lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("lib/spring-core");
 			verifier.assertHasNoEntryNameStartingWith("lib/jakarta.servlet-api");
-			assertThat(verifier.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
+			assertThat(verifier.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
 					.as("Unpacked launcher classes").isFalse();
-			assertThat(verifier.hasEntry("org/" + "test/SampleModule.class")).as("Own classes").isTrue();
+			assertThat(verifier.hasEntry("org/test/SampleModule.class")).as("Own classes").isTrue();
 		}
 
 		@Override
