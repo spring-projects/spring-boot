@@ -67,6 +67,7 @@ class JdbcSessionConfiguration {
 			}
 			setTableName(jdbcSessionProperties.getTableName());
 			setCleanupCron(jdbcSessionProperties.getCleanupCron());
+			setSaveMode(jdbcSessionProperties.getSaveMode());
 		}
 
 	}
