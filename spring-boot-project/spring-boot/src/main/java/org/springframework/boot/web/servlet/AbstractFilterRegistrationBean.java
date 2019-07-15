@@ -260,6 +260,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 				builder.append(" urls=").append(this.urlPatterns);
 			}
 		}
+		builder.append(" order=").append(getOrder());
 		return builder.toString();
 	}
 
