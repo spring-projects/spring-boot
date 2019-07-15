@@ -38,6 +38,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  *
  * @author Jon Schneider
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class DataSourcePoolMetrics implements MeterBinder {
@@ -68,6 +69,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 			bindPoolMetadata(registry, "active", DataSourcePoolMetadata::getActive);
 			bindPoolMetadata(registry, "max", DataSourcePoolMetadata::getMax);
 			bindPoolMetadata(registry, "min", DataSourcePoolMetadata::getMin);
+			bindPoolMetadata(registry, "idle", DataSourcePoolMetadata::getIdle);
 		}
 	}
 

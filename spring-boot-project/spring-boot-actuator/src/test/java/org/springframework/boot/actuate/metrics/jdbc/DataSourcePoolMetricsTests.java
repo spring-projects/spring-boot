@@ -18,37 +18,64 @@ package org.springframework.boot.actuate.metrics.jdbc;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Tests for {@link DataSourcePoolMetrics}.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  */
 class DataSourcePoolMetricsTests {
 
 	@Test
 	void dataSourceIsInstrumented() {
-		new ApplicationContextRunner().withUserConfiguration(DataSourceConfig.class, MetricsApp.class)
+		new ApplicationContextRunner().withUserConfiguration(HikariPool.class, DataSourceConfig.class, MetricsApp.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true", "metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					context.getBean(MeterRegistry.class).get("jdbc.connections.max").meter();
 				});
+	}
+
+	@Configuration
+	static class HikariPool {
+
+		private final List<DataSource> dataSources;
+
+		@Autowired
+		HikariPool(List<DataSource> dataSources) {
+			this.dataSources = dataSources;
+		}
+
+		@PostConstruct
+		void initPool() {
+			this.dataSources.forEach((dataSource) -> {
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+				jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
+			});
+
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
