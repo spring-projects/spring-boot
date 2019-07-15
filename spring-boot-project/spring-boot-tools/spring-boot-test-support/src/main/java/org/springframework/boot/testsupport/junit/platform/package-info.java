@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /**
- * Reflective mirror of JUnit 5 classes required to workaround shurefire bug
+ * Reflective mirror of JUnit 5 classes required to workaround surefire bug
  * {@code SUREFIRE-1679}.
  */
 package org.springframework.boot.testsupport.junit.platform;
