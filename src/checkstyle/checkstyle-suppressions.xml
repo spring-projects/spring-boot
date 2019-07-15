@@ -37,8 +37,6 @@
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
 	<suppress files="FlywayAutoConfigurationTests\.java" checks="IllegalImport" />
-	<suppress files="ModifiedClassPathRunnerOverridesTests" checks="SpringJUnit5" />
-	<suppress files="ModifiedClassPathRunnerExclusionsTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
