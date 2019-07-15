@@ -33,6 +33,7 @@ import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
@@ -64,8 +65,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 				.withPropertyValues("spring.session.store-type=redis",
 						"spring.redis.port=" + redis.getFirstMappedPort())
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,
-						"0 * * * * *"));
+				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE, "0 * * * * *",
+						SaveMode.ON_SET_ATTRIBUTE));
 	}
 
 	@Test
@@ -75,8 +76,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 						JdbcOperationsSessionRepository.class, MongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.redis.port=" + redis.getFirstMappedPort())
-				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,
-						"0 * * * * *"));
+				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE, "0 * * * * *",
+						SaveMode.ON_SET_ATTRIBUTE));
 	}
 
 	@Test
@@ -84,8 +85,10 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
 						"spring.session.redis.flush-mode=immediate", "spring.session.redis.cleanup-cron=0 0 12 * * *",
+						"spring.session.redis.save-mode=on-get-attribute",
 						"spring.redis.port=" + redis.getFirstMappedPort())
-				.run(validateSpringSessionUsesRedis("foo:event:0:created:", FlushMode.IMMEDIATE, "0 0 12 * * *"));
+				.run(validateSpringSessionUsesRedis("foo:event:0:created:", FlushMode.IMMEDIATE, "0 0 12 * * *",
+						SaveMode.ON_GET_ATTRIBUTE));
 	}
 
 	@Test
@@ -116,7 +119,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
-			String sessionCreatedChannelPrefix, FlushMode flushMode, String cleanupCron) {
+			String sessionCreatedChannelPrefix, FlushMode flushMode, String cleanupCron, SaveMode saveMode) {
 		return (context) -> {
 			RedisOperationsSessionRepository repository = validateSessionRepository(context,
 					RedisOperationsSessionRepository.class);
@@ -125,6 +128,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 			SpringBootRedisHttpSessionConfiguration configuration = context
 					.getBean(SpringBootRedisHttpSessionConfiguration.class);
 			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", cleanupCron);
+			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
 		};
 	}
 

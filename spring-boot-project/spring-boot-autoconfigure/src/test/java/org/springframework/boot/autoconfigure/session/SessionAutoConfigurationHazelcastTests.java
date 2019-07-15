@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.hazelcast.HazelcastSessionRepository;
@@ -85,6 +86,16 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 					HazelcastSessionRepository repository = validateSessionRepository(context,
 							HazelcastSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("flushMode", FlushMode.IMMEDIATE);
+				});
+	}
+
+	@Test
+	void customSaveMode() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
+				"spring.session.hazelcast.save-mode=on-get-attribute").run((context) -> {
+					HazelcastSessionRepository repository = validateSessionRepository(context,
+							HazelcastSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
 				});
 	}
 
