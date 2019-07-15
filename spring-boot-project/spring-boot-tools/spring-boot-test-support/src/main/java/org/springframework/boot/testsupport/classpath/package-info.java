@@ -15,6 +15,6 @@
  */
 
 /**
- * Custom JUnit runners used in Spring Boot's own tests.
+ * Custom JUnit runner to change the classpath.
  */
-package org.springframework.boot.testsupport.runner;
+package org.springframework.boot.testsupport.classpath;

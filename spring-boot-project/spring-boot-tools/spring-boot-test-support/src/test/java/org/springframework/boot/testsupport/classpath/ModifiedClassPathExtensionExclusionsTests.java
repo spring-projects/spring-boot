@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testsupport.runner.classpath;
+package org.springframework.boot.testsupport.classpath;
 
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;

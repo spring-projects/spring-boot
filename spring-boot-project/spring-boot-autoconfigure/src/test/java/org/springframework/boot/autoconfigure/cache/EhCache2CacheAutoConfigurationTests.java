@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.DefaultCacheConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.EhCacheCustomCacheManager;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -18,7 +18,7 @@ package org.springframework.boot.env;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.core.io.ByteArrayResource;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
