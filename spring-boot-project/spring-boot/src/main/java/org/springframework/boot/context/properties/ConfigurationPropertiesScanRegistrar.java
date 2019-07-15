@@ -22,6 +22,7 @@ import java.util.Set;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -82,6 +83,9 @@ class ConfigurationPropertiesScanRegistrar
 		scanner.setEnvironment(this.environment);
 		scanner.setResourceLoader(this.resourceLoader);
 		scanner.addIncludeFilter(new AnnotationTypeFilter(ConfigurationProperties.class));
+		TypeExcludeFilter typeExcludeFilter = new TypeExcludeFilter();
+		typeExcludeFilter.setBeanFactory(beanFactory);
+		scanner.addExcludeFilter(typeExcludeFilter);
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
 				scan(beanFactory, registry, scanner, basePackage);

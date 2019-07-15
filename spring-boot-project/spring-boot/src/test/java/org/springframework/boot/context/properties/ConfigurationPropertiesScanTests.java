@@ -16,14 +16,23 @@
 
 package org.springframework.boot.context.properties;
 
+import java.io.IOException;
+import java.util.Objects;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration;
+import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration.BFirstProperties;
+import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration.BProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -89,6 +98,23 @@ class ConfigurationPropertiesScanTests {
 						.isFalse();
 	}
 
+	@Test
+	void scanImportBeanRegistrarShouldUsePackageName() {
+		load(TestAnotherPackageConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(BProperties.class)).containsOnly(
+				"b.first-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BFirstProperties",
+				"b.second-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BSecondProperties");
+	}
+
+	@Test
+	void scanImportBeanRegistrarShouldApplyTypeExcludeFilter() {
+		this.context.getBeanFactory().registerSingleton("filter", new ConfigurationPropertiesTestTypeExcludeFilter());
+		this.context.register(TestAnotherPackageConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(BProperties.class)).containsOnly(
+				"b.first-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BFirstProperties");
+	}
+
 	private void load(Class<?>... classes) {
 		this.context.register(classes);
 		this.context.refresh();
@@ -96,6 +122,32 @@ class ConfigurationPropertiesScanTests {
 
 	@ConfigurationPropertiesScan(basePackageClasses = AScanConfiguration.class)
 	static class TestConfiguration {
+
+	}
+
+	@ConfigurationPropertiesScan(basePackages = "org.springframework.boot.context.properties.scan.valid.b")
+	static class TestAnotherPackageConfiguration {
+
+	}
+
+	static class ConfigurationPropertiesTestTypeExcludeFilter extends TypeExcludeFilter {
+
+		@Override
+		public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+				throws IOException {
+			AssignableTypeFilter typeFilter = new AssignableTypeFilter(BFirstProperties.class);
+			return !typeFilter.match(metadataReader, metadataReaderFactory);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return (this == o);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(42);
+		}
 
 	}
 

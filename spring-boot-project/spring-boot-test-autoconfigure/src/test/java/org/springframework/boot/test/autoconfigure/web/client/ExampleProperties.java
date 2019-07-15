@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context.properties.scan.valid.b;
+
+package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 /**
- * @author Madhura Bhave
+ * Example {@link ConfigurationProperties} used to test the use of configuration
+ * properties scan with sliced test.
+ *
  * @author Stephane Nicoll
  */
-public class BScanConfiguration {
+@ConfigurationProperties("example")
+public class ExampleProperties {
 
-	public interface BProperties {
+	private final String name;
 
+	public ExampleProperties(@DefaultValue("test") String name) {
+		this.name = name;
 	}
 
-	@ConfigurationProperties(prefix = "b.first")
-	public static class BFirstProperties implements BProperties {
-
-	}
-
-	@ConfigurationProperties(prefix = "b.second")
-	public static class BSecondProperties implements BProperties {
-
+	public String getName() {
+		return this.name;
 	}
 
 }
