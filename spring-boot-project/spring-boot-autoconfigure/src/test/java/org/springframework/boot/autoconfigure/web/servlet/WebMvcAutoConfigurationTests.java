@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -147,7 +148,7 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void handlerMappingsCreated() {
-		this.contextRunner.run((context) -> assertThat(context).getBeans(HandlerMapping.class).hasSize(6));
+		this.contextRunner.run((context) -> assertThat(context).getBeans(HandlerMapping.class).hasSize(5));
 	}
 
 	@Test
@@ -195,7 +196,7 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void resourceHandlerMappingDisabled() {
 		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
-				.run((context) -> assertThat(context.getBean("resourceHandlerMapping")).isEqualTo(null));
+				.run((context) -> assertThat(getResourceMappingLocations(context)).hasSize(1));
 	}
 
 	@Test
@@ -379,25 +380,14 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void faviconMapping() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).getBeanNames(ResourceHttpRequestHandler.class).contains("faviconRequestHandler");
-			assertThat(context).getBeans(SimpleUrlHandlerMapping.class).containsKey("faviconHandlerMapping");
-			assertThat(getFaviconMappingLocations(context).get("/**/favicon.ico")).hasSize(6);
-		});
-	}
-
-	@Test
-	void faviconMappingUsesStaticLocations() {
-		this.contextRunner.withPropertyValues("spring.resources.static-locations=classpath:/static")
-				.run((context) -> assertThat(getFaviconMappingLocations(context).get("/**/favicon.ico")).hasSize(3));
+		this.contextRunner
+				.run((context) -> assertThat(getResourceMappingLocations(context).get("/favicon.ico")).hasSize(1));
 	}
 
 	@Test
 	void faviconMappingDisabled() {
-		this.contextRunner.withPropertyValues("spring.mvc.favicon.enabled:false").run((context) -> {
-			assertThat(context).getBeans(ResourceHttpRequestHandler.class).doesNotContainKey("faviconRequestHandler");
-			assertThat(context).getBeans(SimpleUrlHandlerMapping.class).doesNotContainKey("faviconHandlerMapping");
-		});
+		this.contextRunner.withPropertyValues("spring.mvc.favicon.enabled:false")
+				.run((context) -> assertThat(getResourceMappingLocations(context).get("/favicon.ico")).isNull());
 	}
 
 	@Test
@@ -667,11 +657,14 @@ class WebMvcAutoConfigurationTests {
 
 	private void assertCachePeriod(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
-		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.values()) {
-			if (handler instanceof ResourceHttpRequestHandler) {
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(5);
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl()).isNull();
+		assertThat(handlerMap).hasSize(3);
+		for (Entry<String, Object> entry : handlerMap.entrySet()) {
+			if (!entry.getKey().equals("/favicon.ico")) {
+				Object handler = entry.getValue();
+				if (handler instanceof ResourceHttpRequestHandler) {
+					assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(5);
+					assertThat(((ResourceHttpRequestHandler) handler).getCacheControl()).isNull();
+				}
 			}
 		}
 	}
@@ -788,7 +781,7 @@ class WebMvcAutoConfigurationTests {
 
 	private void assertCacheControl(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
-		assertThat(handlerMap).hasSize(2);
+		assertThat(handlerMap).hasSize(3);
 		for (Object handler : handlerMap.keySet()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
 				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(-1);
@@ -796,10 +789,6 @@ class WebMvcAutoConfigurationTests {
 						.isEqualToComparingFieldByField(CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
 			}
 		}
-	}
-
-	protected Map<String, List<Resource>> getFaviconMappingLocations(ApplicationContext context) {
-		return getMappingLocations(context.getBean("faviconHandlerMapping", HandlerMapping.class));
 	}
 
 	protected Map<String, List<Resource>> getResourceMappingLocations(ApplicationContext context) {
