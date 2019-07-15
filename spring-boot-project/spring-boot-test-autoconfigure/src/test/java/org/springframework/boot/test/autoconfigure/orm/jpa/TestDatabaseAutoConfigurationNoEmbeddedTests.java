@@ -19,14 +19,12 @@ package org.springframework.boot.test.autoconfigure.orm.jpa;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +38,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar", "derby-*.jar" })
 class TestDatabaseAutoConfigurationNoEmbeddedTests {
 

@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.web.jersey;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
@@ -28,7 +27,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +40,6 @@ import static org.mockito.Mockito.verify;
  *
  * @author Madhura Bhave
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("spring-webmvc-*")
 class JerseySameManagementContextConfigurationTests {
 

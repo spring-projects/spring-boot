@@ -19,10 +19,8 @@ package org.springframework.boot.webservices.client;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.ws.transport.WebServiceMessageSender;
@@ -36,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions({ "httpclient-*.jar", "okhttp*.jar" })
 class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 

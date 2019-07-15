@@ -41,9 +41,8 @@ import org.springframework.util.ReflectionUtils;
  * test class and as the thread context class loader while the test is being run.
  *
  * @author Christoph Dreis
- * @since 2.2.0
  */
-public class ModifiedClassPathExtension implements InvocationInterceptor {
+class ModifiedClassPathExtension implements InvocationInterceptor {
 
 	@Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,

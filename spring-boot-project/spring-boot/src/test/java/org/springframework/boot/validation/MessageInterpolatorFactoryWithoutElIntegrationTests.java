@@ -22,10 +22,8 @@ import javax.validation.ValidationException;
 
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -35,7 +33,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("tomcat-embed-el-*.jar")
 class MessageInterpolatorFactoryWithoutElIntegrationTests {
 

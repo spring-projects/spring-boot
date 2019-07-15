@@ -17,13 +17,11 @@
 package org.springframework.boot.autoconfigure.hateoas;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 
@@ -32,7 +30,6 @@ import org.springframework.mock.web.MockServletContext;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("jackson-*.jar")
 class HypermediaAutoConfigurationWithoutJacksonTests {
 

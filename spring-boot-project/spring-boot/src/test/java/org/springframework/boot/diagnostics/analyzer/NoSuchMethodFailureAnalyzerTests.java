@@ -20,11 +20,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -34,7 +32,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathOverrides("javax.servlet:servlet-api:2.5")
 class NoSuchMethodFailureAnalyzerTests {
 

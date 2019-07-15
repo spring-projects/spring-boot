@@ -19,12 +19,10 @@ package org.springframework.boot.autoconfigure.jsonb;
 import javax.json.bind.Jsonb;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("johnzon-jsonb-*.jar")
 class JsonbAutoConfigurationWithNoProviderTests {
 

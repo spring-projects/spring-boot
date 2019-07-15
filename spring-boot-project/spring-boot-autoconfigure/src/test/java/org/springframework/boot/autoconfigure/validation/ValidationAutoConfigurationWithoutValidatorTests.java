@@ -19,12 +19,10 @@ package org.springframework.boot.autoconfigure.validation;
 import javax.validation.Validator;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("hibernate-validator-*.jar")
 class ValidationAutoConfigurationWithoutValidatorTests {
 

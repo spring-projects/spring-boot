@@ -18,7 +18,6 @@ package org.springframework.boot.testsupport.runner.classpath;
 
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -28,7 +27,6 @@ import static org.hamcrest.Matchers.isA;
  *
  * @author Christoph Dreis
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("hibernate-validator-*.jar")
 class ModifiedClassPathExtensionExclusionsTests {
 

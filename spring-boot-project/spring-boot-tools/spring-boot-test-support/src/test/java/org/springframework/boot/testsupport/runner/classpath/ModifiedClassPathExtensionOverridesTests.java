@@ -17,7 +17,6 @@
 package org.springframework.boot.testsupport.runner.classpath;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
@@ -29,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Christoph Dreis
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathOverrides("org.springframework:spring-context:4.1.0.RELEASE")
 class ModifiedClassPathExtensionOverridesTests {
 

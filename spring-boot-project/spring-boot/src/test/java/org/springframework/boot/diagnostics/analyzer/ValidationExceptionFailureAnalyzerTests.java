@@ -17,12 +17,10 @@
 package org.springframework.boot.diagnostics.analyzer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.validation.annotation.Validated;
 
@@ -34,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("hibernate-validator-*.jar")
 class ValidationExceptionFailureAnalyzerTests {
 

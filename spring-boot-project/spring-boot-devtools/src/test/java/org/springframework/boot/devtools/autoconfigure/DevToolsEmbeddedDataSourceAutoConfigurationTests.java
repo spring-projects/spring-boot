@@ -22,11 +22,9 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.Mockito.never;
@@ -37,7 +35,6 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("HikariCP-*.jar")
 class DevToolsEmbeddedDataSourceAutoConfigurationTests extends AbstractDevToolsDataSourceAutoConfigurationTests {
 

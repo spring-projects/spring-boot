@@ -21,11 +21,9 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("spring-jdbc-*.jar")
 class DataSourceUnwrapperNoSpringJdbcTests {
 

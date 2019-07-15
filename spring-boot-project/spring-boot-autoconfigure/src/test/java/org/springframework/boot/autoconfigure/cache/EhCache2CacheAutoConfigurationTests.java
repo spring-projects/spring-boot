@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.DefaultCacheAndCustomizersConfiguration;
@@ -25,7 +24,6 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.EhCacheCustomCacheManager;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("ehcache-3*.jar")
 class EhCache2CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 

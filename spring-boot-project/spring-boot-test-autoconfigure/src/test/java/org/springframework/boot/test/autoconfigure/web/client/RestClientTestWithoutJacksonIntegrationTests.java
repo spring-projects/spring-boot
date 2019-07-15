@@ -17,11 +17,9 @@
 package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.ClassUtils;
@@ -35,7 +33,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(ModifiedClassPathExtension.class)
 @ClassPathExclusions("jackson-*.jar")
 @RestClientTest(ExampleRestClient.class)
 class RestClientTestWithoutJacksonIntegrationTests {
