@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -39,9 +43,11 @@ import org.quartz.simpl.RAMJobStore;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -51,6 +57,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.scheduling.quartz.QuartzJobBean;
@@ -72,6 +79,9 @@ public class QuartzAutoConfigurationTests {
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
+
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
@@ -241,6 +251,32 @@ public class QuartzAutoConfigurationTests {
 					assertThat(schedulerFactory).hasFieldOrPropertyWithValue("waitForJobsToCompleteOnShutdown", true);
 					assertThat(schedulerFactory).hasFieldOrPropertyWithValue("overwriteExistingJobs", true);
 				});
+	}
+
+	@Test
+	public void withLiquibase() {
+		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class, LiquibaseAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc", "spring.quartz.jdbc.initialize-schema=never",
+						"spring.liquibase.change-log=classpath:org/quartz/impl/jdbcjobstore/liquibase.quartz.init.xml")
+				.run(assertDataSourceJobStore("dataSource"));
+	}
+
+	@Test
+	public void withFlyway() throws Exception {
+		Path flywayLocation = this.temp.newFolder().toPath();
+		ClassPathResource tablesResource = new ClassPathResource("org/quartz/impl/jdbcjobstore/tables_h2.sql");
+		try (InputStream stream = tablesResource.getInputStream()) {
+			Files.copy(stream, flywayLocation.resolve("V2__quartz.sql"));
+		}
+		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class, FlywayAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc", "spring.quartz.jdbc.initialize-schema=never",
+						"spring.flyway.locations=filesystem:" + flywayLocation,
+						"spring.flyway.baseline-on-migrate=true")
+				.run(assertDataSourceJobStore("dataSource"));
 	}
 
 	@Test
