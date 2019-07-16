@@ -27,6 +27,8 @@ import javax.validation.ValidationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -37,7 +39,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.5.0
  */
-public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpolator> {
+public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpolator>, MessageSourceAware {
 
 	private static final Set<String> FALLBACKS;
 
@@ -47,8 +49,30 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
 	}
 
+	private MessageSource messageSource;
+
+	/**
+	 * Sets the {@link MessageSource} used to create
+	 * {@link MessageSourceInterpolatorDelegate}.
+	 * @param messageSource the message source that resolves any message parameters before
+	 * final interpolation
+	 */
+	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 	@Override
 	public MessageInterpolator getObject() throws BeansException {
+		MessageInterpolator messageInterpolator = getMessageInterpolator();
+		MessageSource messageSource = this.messageSource;
+		if (messageSource != null) {
+			return new MessageSourceInterpolatorDelegate(messageSource, messageInterpolator);
+		}
+		return messageInterpolator;
+	}
+
+	private MessageInterpolator getMessageInterpolator() {
 		try {
 			return Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();
 		}

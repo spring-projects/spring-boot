@@ -114,7 +114,7 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		if (existing != null) {
 			return wrap(existing, true);
 		}
-		return create();
+		return create(applicationContext);
 	}
 
 	private static Validator getExisting(ApplicationContext applicationContext) {
@@ -130,10 +130,11 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 		}
 	}
 
-	private static Validator create() {
+	private static Validator create(ApplicationContext applicationContext) {
 		OptionalValidatorFactoryBean validator = new OptionalValidatorFactoryBean();
 		try {
 			MessageInterpolatorFactory factory = new MessageInterpolatorFactory();
+			factory.setMessageSource(applicationContext);
 			validator.setMessageInterpolator(factory.getObject());
 		}
 		catch (ValidationException ex) {
