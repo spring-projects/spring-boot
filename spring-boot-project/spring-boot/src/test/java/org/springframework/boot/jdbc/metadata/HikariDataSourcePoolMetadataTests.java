@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HikariDataSourcePoolMetadata}.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 public class HikariDataSourcePoolMetadataTests
 		extends AbstractDataSourcePoolMetadataTests<HikariDataSourcePoolMetadata> {

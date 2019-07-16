@@ -48,6 +48,16 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 		}
 	}
 
+	@Override
+	public Integer getIdle() {
+		HikariPool pool = getHikariPool();
+		if (Objects.nonNull(pool)) {
+			return pool.getIdleConnections();
+		}
+
+		return null;
+	}
+
 	private HikariPool getHikariPool() {
 		return (HikariPool) new DirectFieldAccessor(getDataSource()).getPropertyValue("pool");
 	}
@@ -70,16 +80,6 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	@Override
 	public Boolean getDefaultAutoCommit() {
 		return getDataSource().isAutoCommit();
-	}
-
-	@Override
-	public Integer getIdle() {
-		HikariPool pool = getHikariPool();
-		if (Objects.nonNull(pool)) {
-			return pool.getIdleConnections();
-		}
-
-		return super.getIdle();
 	}
 
 }
