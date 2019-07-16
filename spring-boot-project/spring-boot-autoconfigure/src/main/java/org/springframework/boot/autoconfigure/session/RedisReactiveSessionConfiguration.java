@@ -53,6 +53,7 @@ class RedisReactiveSessionConfiguration {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setRedisNamespace(redisSessionProperties.getNamespace());
+			setSaveMode(redisSessionProperties.getSaveMode());
 		}
 
 	}

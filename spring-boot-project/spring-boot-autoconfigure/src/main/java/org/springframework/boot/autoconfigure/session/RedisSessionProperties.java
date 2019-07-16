@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
 
 /**
  * Configuration properties for Redis backed Spring Session.
@@ -39,6 +40,12 @@ public class RedisSessionProperties {
 	 * Sessions flush mode.
 	 */
 	private FlushMode flushMode = FlushMode.ON_SAVE;
+
+	/**
+	 * Sessions save mode. Determines how session changes are tracked and saved to the
+	 * session store.
+	 */
+	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
 
 	/**
 	 * The configure action to apply when no user defined ConfigureRedisAction bean is
@@ -65,6 +72,14 @@ public class RedisSessionProperties {
 
 	public void setFlushMode(FlushMode flushMode) {
 		this.flushMode = flushMode;
+	}
+
+	public SaveMode getSaveMode() {
+		return this.saveMode;
+	}
+
+	public void setSaveMode(SaveMode saveMode) {
+		this.saveMode = saveMode;
 	}
 
 	public String getCleanupCron() {

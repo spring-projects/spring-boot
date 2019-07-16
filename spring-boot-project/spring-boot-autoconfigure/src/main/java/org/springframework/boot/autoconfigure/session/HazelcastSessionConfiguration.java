@@ -59,6 +59,7 @@ class HazelcastSessionConfiguration {
 			}
 			setSessionMapName(hazelcastSessionProperties.getMapName());
 			setFlushMode(hazelcastSessionProperties.getFlushMode());
+			setSaveMode(hazelcastSessionProperties.getSaveMode());
 		}
 
 	}
