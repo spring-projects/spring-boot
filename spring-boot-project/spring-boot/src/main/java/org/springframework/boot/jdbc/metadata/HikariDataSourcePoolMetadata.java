@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jdbc.metadata;
 
+import java.util.Objects;
+
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -72,7 +74,12 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 
 	@Override
 	public Integer getIdle() {
-		return getHikariPool().getIdleConnections();
+		HikariPool pool = getHikariPool();
+		if (Objects.nonNull(pool)) {
+			return pool.getIdleConnections();
+		}
+
+		return super.getIdle();
 	}
 
 }
