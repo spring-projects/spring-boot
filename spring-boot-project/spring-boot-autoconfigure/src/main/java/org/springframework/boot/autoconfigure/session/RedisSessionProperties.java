@@ -42,6 +42,12 @@ public class RedisSessionProperties {
 	private FlushMode flushMode = FlushMode.ON_SAVE;
 
 	/**
+	 * Sessions save mode. Determines how session changes are tracked and saved to the
+	 * session store.
+	 */
+	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
+
+	/**
 	 * The configure action to apply when no user defined ConfigureRedisAction bean is
 	 * present.
 	 */
@@ -51,12 +57,6 @@ public class RedisSessionProperties {
 	 * Cron expression for expired session cleanup job.
 	 */
 	private String cleanupCron = DEFAULT_CLEANUP_CRON;
-
-	/**
-	 * Sessions save mode. Determines how session changes are tracked and saved to the
-	 * session store.
-	 */
-	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
 
 	public String getNamespace() {
 		return this.namespace;
@@ -74,6 +74,14 @@ public class RedisSessionProperties {
 		this.flushMode = flushMode;
 	}
 
+	public SaveMode getSaveMode() {
+		return this.saveMode;
+	}
+
+	public void setSaveMode(SaveMode saveMode) {
+		this.saveMode = saveMode;
+	}
+
 	public String getCleanupCron() {
 		return this.cleanupCron;
 	}
@@ -88,14 +96,6 @@ public class RedisSessionProperties {
 
 	public void setConfigureAction(ConfigureAction configureAction) {
 		this.configureAction = configureAction;
-	}
-
-	public SaveMode getSaveMode() {
-		return this.saveMode;
-	}
-
-	public void setSaveMode(SaveMode saveMode) {
-		this.saveMode = saveMode;
 	}
 
 	/**
