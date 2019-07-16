@@ -20,6 +20,7 @@ import java.io.File;
 import java.time.Instant;
 import java.util.Map;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -48,6 +49,12 @@ public class BuildInfoMojo extends AbstractMojo {
 	private BuildContext buildContext;
 
 	/**
+	 * The Maven session.
+	 */
+	@Parameter(defaultValue = "${session}", readonly = true, required = true)
+	private MavenSession session;
+
+	/**
 	 * The Maven project.
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
@@ -60,13 +67,13 @@ public class BuildInfoMojo extends AbstractMojo {
 	private File outputFile;
 
 	/**
-	 * Sets the value used for the {@code build.time} property. Defaults to
-	 * {@link Instant#now} when the {@code mojo} instance was created. To disable
-	 * {@code build.time} property, {@code 'off'} value should be used.
+	 * The value used for the {@code build.time} property in a form suitable for
+	 * {@link Instant#parse(CharSequence)}. Defaults to {@code session.request.startTime}.
+	 * To disable the {@code build.time} property entirely, use {@code 'off'}.
 	 * @since 2.2.0
 	 */
 	@Parameter
-	private String time = Instant.now().toString();
+	private String time;
 
 	/**
 	 * Additional properties to store in the build-info.properties. Each entry is prefixed
@@ -78,9 +85,9 @@ public class BuildInfoMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(new ProjectDetails(
-					this.project.getGroupId(), this.project.getArtifactId(), this.project.getVersion(),
-					this.project.getName(), getBuildTime(), this.additionalProperties));
+			ProjectDetails details = new ProjectDetails(this.project.getGroupId(), this.project.getArtifactId(),
+					this.project.getVersion(), this.project.getName(), getBuildTime(), this.additionalProperties);
+			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(details);
 			this.buildContext.refresh(this.outputFile);
 		}
 		catch (NullAdditionalPropertyValueException ex) {
@@ -92,7 +99,13 @@ public class BuildInfoMojo extends AbstractMojo {
 	}
 
 	private Instant getBuildTime() {
-		return "off".equals(this.time) ? null : Instant.parse(this.time);
+		if (this.time == null || this.time.isEmpty()) {
+			return this.session.getRequest().getStartTime().toInstant();
+		}
+		if ("off".equalsIgnoreCase(this.time)) {
+			return null;
+		}
+		return Instant.parse(this.time);
 	}
 
 }
