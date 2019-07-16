@@ -17,7 +17,6 @@
 package org.springframework.boot.jdbc.metadata;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.jupiter.api.Test;
 
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -59,15 +58,15 @@ public class HikariDataSourcePoolMetadataTests
 		HikariDataSource dataSource = initializeBuilder().type(HikariDataSource.class).build();
 		dataSource.setMinimumIdle(minSize);
 		dataSource.setMaximumPoolSize(maxSize);
+
+		this.initPool(dataSource);
+
 		return dataSource;
 	}
 
-	@Test
-	void getIdle() {
-		// Make sure the pool is initialized
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
+	private void initPool(HikariDataSource dataSource) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
-		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(Integer.valueOf(1));
 	}
 
 }

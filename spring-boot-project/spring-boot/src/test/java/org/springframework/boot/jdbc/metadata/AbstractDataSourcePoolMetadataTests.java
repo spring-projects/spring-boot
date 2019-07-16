@@ -70,7 +70,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 
 	@Test
 	void getIdle() {
-		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(Integer.valueOf(0));
+		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(Integer.valueOf(1));
 	}
 
 	@Test

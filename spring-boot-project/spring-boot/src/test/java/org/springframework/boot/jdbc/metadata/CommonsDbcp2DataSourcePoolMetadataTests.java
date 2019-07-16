@@ -19,6 +19,9 @@ package org.springframework.boot.jdbc.metadata;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -83,11 +86,19 @@ class CommonsDbcp2DataSourcePoolMetadataTests
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxTotal(maxSize);
+
+		this.initPool(dataSource);
+
 		return new CommonsDbcp2DataSourcePoolMetadata(dataSource);
 	}
 
 	private BasicDataSource createDataSource() {
 		return initializeBuilder().type(BasicDataSource.class).build();
+	}
+
+	private void initPool(BasicDataSource dataSource) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
 	}
 
 }

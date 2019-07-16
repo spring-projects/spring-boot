@@ -18,6 +18,9 @@ package org.springframework.boot.jdbc.metadata;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -58,7 +61,15 @@ public class TomcatDataSourcePoolMetadataTests
 		// Avoid warnings
 		dataSource.setInitialSize(minSize);
 		dataSource.setMaxIdle(maxSize);
+
+		this.initPool(dataSource);
+
 		return dataSource;
+	}
+
+	private void initPool(DataSource dataSource) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
 	}
 
 }
