@@ -21,7 +21,11 @@ import javax.validation.MessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.context.MessageSource;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MessageInterpolatorFactory}.
@@ -34,6 +38,18 @@ class MessageInterpolatorFactoryTests {
 	void getObjectShouldReturnResourceBundleMessageInterpolator() {
 		MessageInterpolator interpolator = new MessageInterpolatorFactory().getObject();
 		assertThat(interpolator).isInstanceOf(ResourceBundleMessageInterpolator.class);
+	}
+
+	@Test
+	void getObjectShouldReturnMessageSourceMessageInterpolatorDelegateWithResourceBundleMessageInterpolator() {
+		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
+		MessageSource messageSource = mock(MessageSource.class);
+		interpolatorFactory.setMessageSource(messageSource);
+		MessageInterpolator interpolator = interpolatorFactory.getObject();
+		assertThat(interpolator).isInstanceOf(MessageSourceInterpolatorDelegate.class);
+		assertThat(interpolator).hasFieldOrPropertyWithValue("messageSource", messageSource);
+		assertThat(ReflectionTestUtils.getField(interpolator, "messageInterpolator"))
+				.isInstanceOf(ResourceBundleMessageInterpolator.class);
 	}
 
 }

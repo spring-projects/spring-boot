@@ -24,9 +24,12 @@ import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.context.MessageSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 /**
  * Integration tests for {@link MessageInterpolatorFactory} without EL.
@@ -48,6 +51,18 @@ class MessageInterpolatorFactoryWithoutElIntegrationTests {
 	void getObjectShouldUseFallback() {
 		MessageInterpolator interpolator = new MessageInterpolatorFactory().getObject();
 		assertThat(interpolator).isInstanceOf(ParameterMessageInterpolator.class);
+	}
+
+	@Test
+	void getObjectShouldUseMessageSourceMessageInterpolatorDelegateWithFallback() {
+		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
+		MessageSource messageSource = mock(MessageSource.class);
+		interpolatorFactory.setMessageSource(messageSource);
+		MessageInterpolator interpolator = interpolatorFactory.getObject();
+		assertThat(interpolator).isInstanceOf(MessageSourceInterpolatorDelegate.class);
+		assertThat(interpolator).hasFieldOrPropertyWithValue("messageSource", messageSource);
+		assertThat(ReflectionTestUtils.getField(interpolator, "messageInterpolator"))
+				.isInstanceOf(ParameterMessageInterpolator.class);
 	}
 
 }

@@ -65,7 +65,9 @@ final class ConfigurationPropertiesJsr303Validator implements Validator {
 
 		Delegate(ApplicationContext applicationContext) {
 			setApplicationContext(applicationContext);
-			setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+			MessageInterpolatorFactory factory = new MessageInterpolatorFactory();
+			factory.setMessageSource(applicationContext);
+			setMessageInterpolator(factory.getObject());
 			afterPropertiesSet();
 		}
 
