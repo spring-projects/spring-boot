@@ -1250,6 +1250,7 @@
 										<spring-boot-docs-version>${revision}</spring-boot-docs-version>
 										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
 										<spring-docs-version>${spring-framework.version}</spring-docs-version>
+										<spring-integration-docs-version>${spring-integration.version}</spring-integration-docs-version>
 										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
 										<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
 										<github-tag>${github-tag}</github-tag>

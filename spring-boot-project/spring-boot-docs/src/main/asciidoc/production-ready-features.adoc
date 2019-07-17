@@ -1792,7 +1792,7 @@ Spring Boot registers the following core metrics when applicable:
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the
 application's absolute start time
 * Tomcat metrics
-* https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#micrometer-integration[Spring Integration] metrics
+* {spring-integration-reference}#micrometer-integration[Spring Integration] metrics
 
 
 
