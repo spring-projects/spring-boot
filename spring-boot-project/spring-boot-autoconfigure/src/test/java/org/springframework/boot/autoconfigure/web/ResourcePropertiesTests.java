@@ -21,11 +21,9 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Cache;
-import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.http.CacheControl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.endsWith;
 
 /**
  * Tests for {@link ResourceProperties}.
@@ -62,7 +60,7 @@ class ResourcePropertiesTests {
 
 	@Test
 	void defaultStaticLocationsAllEndWithTrailingSlash() {
-		assertThat(this.properties.getStaticLocations()).are(Matched.by(endsWith("/")));
+		assertThat(this.properties.getStaticLocations()).allMatch((location) -> location.endsWith("/"));
 	}
 
 	@Test
