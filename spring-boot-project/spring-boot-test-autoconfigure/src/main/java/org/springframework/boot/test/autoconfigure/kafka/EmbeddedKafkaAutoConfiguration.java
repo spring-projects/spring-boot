@@ -55,7 +55,7 @@ public class EmbeddedKafkaAutoConfiguration {
 		if (currentContext instanceof ConfigurableApplicationContext) {
 			MutablePropertySources sources = ((ConfigurableApplicationContext) currentContext)
 					.getEnvironment().getPropertySources();
-			getKafkaBrokers(sources).put("spring.kafka.embedded.brokers", brokers);
+			getKafkaBrokers(sources).put("spring.kafka.bootstrap-servers", brokers);
 		}
 		if (currentContext.getParent() != null) {
 			setBrokersProperty(currentContext.getParent(), brokers);

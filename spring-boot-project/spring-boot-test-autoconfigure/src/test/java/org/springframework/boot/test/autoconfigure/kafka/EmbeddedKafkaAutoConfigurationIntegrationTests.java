@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.kafka;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +27,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -46,13 +49,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
 		properties = {
 				"spring.kafka.consumer.group-id=testGroup",
-				"spring.kafka.consumer.auto-offset-reset=earliest"
+				"spring.kafka.consumer.auto-offset-reset=earliest",
+				"spring.kafka.bootstrap-servers=localhost:9093" // For the sake of working override
 		})
-@EmbeddedKafka(controlledShutdown = true)
+@EmbeddedKafka(topics = EmbeddedKafkaAutoConfigurationIntegrationTests.TEST_TOPIC)
 @DirtiesContext
 public class EmbeddedKafkaAutoConfigurationIntegrationTests {
 
-	private static final String TEST_TOPIC = "testTopic";
+	static final String TEST_TOPIC = "testTopic";
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
@@ -60,9 +64,17 @@ public class EmbeddedKafkaAutoConfigurationIntegrationTests {
 	@Autowired
 	private Listener listener;
 
+	@Autowired
+	EmbeddedKafkaBroker embeddedKafkaBroker;
+
+	@Autowired
+	private KafkaProperties kafkaProperties;
+
 	@Test
 	public void testEndToEnd() throws Exception {
-		this.kafkaTemplate.send(TEST_TOPIC, "foo", "bar");
+		assertThat(String.join(",", this.kafkaProperties.getBootstrapServers()))
+				.isEqualTo(this.embeddedKafkaBroker.getBrokersAsString());
+		this.kafkaTemplate.send(TEST_TOPIC, "bar");
 		assertThat(this.listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
 		assertThat(this.listener.received).isEqualTo("bar");
 	}

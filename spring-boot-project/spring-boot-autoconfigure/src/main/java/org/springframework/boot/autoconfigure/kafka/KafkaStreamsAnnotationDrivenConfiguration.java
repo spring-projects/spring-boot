@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.util.Map;
 
-import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 
@@ -40,7 +39,6 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
  *
  * @author Gary Russell
  * @author Stephane Nicoll
- * @author Artem Bilan
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamsBuilder.class)
@@ -49,19 +47,14 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 	private final KafkaProperties properties;
 
-	private final Environment environment;
-
-	KafkaStreamsAnnotationDrivenConfiguration(KafkaProperties properties,
-			Environment environment) {
+	KafkaStreamsAnnotationDrivenConfiguration(KafkaProperties properties) {
 		this.properties = properties;
-		this.environment = environment;
 	}
 
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
-		Map<String, Object> streamsProperties =
-				applyEmbeddedBrokersIfAny(this.properties.buildStreamsProperties());
+		Map<String, Object> streamsProperties = this.properties.buildStreamsProperties();
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
 			if (applicationName == null) {
@@ -77,14 +70,6 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
 			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean) {
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
-	}
-
-	private Map<String, Object> applyEmbeddedBrokersIfAny(Map<String, Object> properties) {
-		String embeddedBrokerAddresses = this.environment.getProperty("spring.kafka.embedded.brokers");
-		if (embeddedBrokerAddresses != null) {
-			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, embeddedBrokerAddresses);
-		}
-		return properties;
 	}
 
 	// Separate class required to avoid BeanCurrentlyInCreationException
