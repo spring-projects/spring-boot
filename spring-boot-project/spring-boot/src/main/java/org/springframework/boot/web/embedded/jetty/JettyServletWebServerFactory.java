@@ -27,7 +27,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -101,7 +103,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	private int selectors = -1;
 
-	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
+	private Set<JettyServerCustomizer> jettyServerCustomizers = new LinkedHashSet<>();
 
 	private ResourceLoader resourceLoader;
 
@@ -425,7 +427,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	public void setServerCustomizers(Collection<? extends JettyServerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers = new ArrayList<>(customizers);
+		this.jettyServerCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**

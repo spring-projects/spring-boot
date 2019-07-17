@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import io.undertow.Handlers;
@@ -52,7 +54,7 @@ import org.springframework.util.Assert;
 public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerFactory
 		implements ConfigurableUndertowWebServerFactory {
 
-	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<>();
+	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
 
 	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
 
@@ -295,7 +297,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 */
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new ArrayList<>(customizers);
+		this.builderCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
