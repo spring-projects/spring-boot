@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Michael Simons
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
 @ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)

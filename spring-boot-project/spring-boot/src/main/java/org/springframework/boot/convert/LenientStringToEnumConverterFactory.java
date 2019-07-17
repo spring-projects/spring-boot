@@ -87,9 +87,9 @@ final class LenientStringToEnumConverterFactory implements ConverterFactory<Stri
 		private T findEnum(String source) {
 			Map<String, T> candidates = new LinkedHashMap<String, T>();
 			for (T candidate : (Set<T>) EnumSet.allOf(this.enumType)) {
-				candidates.put(getLettersAndDigits(candidate.name()), candidate);
+				candidates.put(getCanonicalName(candidate.name()), candidate);
 			}
-			String name = getLettersAndDigits(source);
+			String name = getCanonicalName(source);
 			T result = candidates.get(name);
 			if (result != null) {
 				return result;
@@ -103,7 +103,7 @@ final class LenientStringToEnumConverterFactory implements ConverterFactory<Stri
 			throw new IllegalArgumentException("No enum constant " + this.enumType.getCanonicalName() + "." + source);
 		}
 
-		private String getLettersAndDigits(String name) {
+		private String getCanonicalName(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
 			name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
 					.forEach((c) -> canonicalName.append((char) c));
