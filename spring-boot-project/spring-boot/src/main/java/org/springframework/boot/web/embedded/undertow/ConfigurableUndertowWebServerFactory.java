@@ -44,7 +44,12 @@ public interface ConfigurableUndertowWebServerFactory extends ConfigurableWebSer
 	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
 	 * Undertow {@link DeploymentInfo}.
 	 * @param customizers the customizers to add
+	 * @deprecated since 2.1.7 in favor of
+	 * {@link UndertowServletWebServerFactory#addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer...)}
+	 * as {@link UndertowReactiveWebServerFactory} does not create a
+	 * {@link DeploymentInfo}
 	 */
+	@Deprecated
 	void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers);
 
 	/**

@@ -54,6 +54,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<>();
 
+	@Deprecated
 	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
 
 	private Integer bufferSize;
@@ -203,7 +204,10 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * Undertow {@link DeploymentInfo}. Calling this method will replace any existing
 	 * customizers.
 	 * @param customizers the customizers to set
+	 * @deprecated since 2.1.7 as the factory does not create a {@link DeploymentInfo}
+	 * making customization redundant
 	 */
+	@Deprecated
 	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
@@ -213,7 +217,10 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
 	 * will be applied to the Undertow {@link DeploymentInfo}.
 	 * @return the customizers that will be applied
+	 * @deprecated since 2.1.7 as the factory does not create a {@link DeploymentInfo}
+	 * making customization redundant
 	 */
+	@Deprecated
 	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
 		return this.deploymentInfoCustomizers;
 	}

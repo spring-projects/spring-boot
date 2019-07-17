@@ -82,8 +82,6 @@ public class UndertowWebServerFactoryCustomizer
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
 		propertyMapper.from(properties::getConnectionTimeout)
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
-		factory.addDeploymentInfoCustomizers(
-				(deploymentInfo) -> deploymentInfo.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
 	}
 
 	private boolean isPositive(Number value) {
