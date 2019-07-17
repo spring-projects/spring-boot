@@ -80,14 +80,14 @@ class ConditionalOnJavaTests {
 	void equalOrNewerMessage() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER, JavaVersion.NINE,
 				JavaVersion.EIGHT);
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (1.8 or newer) found 1.9");
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (1.8 or newer) found 9");
 	}
 
 	@Test
 	void olderThanMessage() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN, JavaVersion.NINE,
 				JavaVersion.EIGHT);
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 1.8) found 1.9");
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 1.8) found 9");
 	}
 
 	@Test

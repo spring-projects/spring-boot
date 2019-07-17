@@ -17,8 +17,11 @@
 package org.springframework.boot.system;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JavaVersion}.
@@ -75,6 +78,48 @@ class JavaVersionTests {
 	@Test
 	void isOlderThanWhenGreaterToSmallerShouldBeFalse() {
 		assertThat(JavaVersion.NINE.isOlderThan(JavaVersion.EIGHT)).isFalse();
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_8)
+	void currentJavaVersionEight() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.EIGHT);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_9)
+	void currentJavaVersionNine() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.NINE);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_10)
+	void currentJavaVersionTen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_11)
+	void currentJavaVersionEleven() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.ELEVEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_12)
+	void currentJavaVersionTwelve() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TWELVE);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_13)
+	void currentJavaVersionThirteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.THIRTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_14)
+	void currentJavaVersionUnknown() {
+		assertThatIllegalStateException().isThrownBy(JavaVersion::getJavaVersion);
 	}
 
 }
