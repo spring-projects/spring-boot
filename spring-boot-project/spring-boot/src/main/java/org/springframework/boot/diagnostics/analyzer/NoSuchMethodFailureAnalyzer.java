@@ -31,12 +31,14 @@ import org.springframework.util.ClassUtils;
  * NoSuchMethodErrors}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodError> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchMethodError cause) {
-		String className = extractClassName(cause);
+		String message = cleanMessage(cause);
+		String className = extractClassName(message);
 		if (className == null) {
 			return null;
 		}
@@ -48,24 +50,33 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		if (actual == null) {
 			return null;
 		}
-		String description = getDescription(cause, className, candidates, actual);
+		String description = getDescription(cause, message, className, candidates, actual);
 		return new FailureAnalysis(description,
 				"Correct the classpath of your application so that it contains a single, compatible version of "
 						+ className,
 				cause);
 	}
 
-	private String extractClassName(NoSuchMethodError cause) {
-		int descriptorIndex = cause.getMessage().indexOf('(');
+	private String cleanMessage(NoSuchMethodError error) {
+		int loadedFromIndex = error.getMessage().indexOf(" (loaded from");
+		if (loadedFromIndex == -1) {
+			return error.getMessage();
+		}
+		return error.getMessage().substring(0, loadedFromIndex);
+	}
+
+	private String extractClassName(String message) {
+		int descriptorIndex = message.indexOf('(');
 		if (descriptorIndex == -1) {
 			return null;
 		}
-		String classAndMethodName = cause.getMessage().substring(0, descriptorIndex);
+		String classAndMethodName = message.substring(0, descriptorIndex);
 		int methodNameIndex = classAndMethodName.lastIndexOf('.');
 		if (methodNameIndex == -1) {
 			return null;
 		}
-		return classAndMethodName.substring(0, methodNameIndex);
+		String className = classAndMethodName.substring(0, methodNameIndex);
+		return className.replace('/', '.');
 	}
 
 	private List<URL> findCandidates(String className) {
@@ -87,7 +98,8 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 	}
 
-	private String getDescription(NoSuchMethodError cause, String className, List<URL> candidates, URL actual) {
+	private String getDescription(NoSuchMethodError cause, String message, String className, List<URL> candidates,
+			URL actual) {
 		StringWriter description = new StringWriter();
 		PrintWriter writer = new PrintWriter(description);
 		writer.println("An attempt was made to call a method that does not"
@@ -99,7 +111,7 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		writer.println("The following method did not exist:");
 		writer.println();
 		writer.print("    ");
-		writer.println(cause.getMessage());
+		writer.println(message);
 		writer.println();
 		writer.println("The method's class, " + className + ", is available from the following locations:");
 		writer.println();
