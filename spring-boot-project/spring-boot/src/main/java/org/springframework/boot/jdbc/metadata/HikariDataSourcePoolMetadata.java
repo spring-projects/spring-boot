@@ -45,6 +45,16 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 		}
 	}
 
+	@Override
+	public Integer getIdle() {
+		try {
+			return getHikariPool().getIdleConnections();
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
 	private HikariPool getHikariPool() {
 		return (HikariPool) new DirectFieldAccessor(getDataSource()).getPropertyValue("pool");
 	}
