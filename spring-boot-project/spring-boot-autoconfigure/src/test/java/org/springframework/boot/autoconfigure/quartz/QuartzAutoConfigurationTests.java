@@ -103,6 +103,19 @@ class QuartzAutoConfigurationTests {
 	}
 
 	@Test
+	void withDataSourceAndInMemoryStoreDoesNotInitializeDataSource() {
+		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=memory").run((context) -> {
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean("dataSource", DataSource.class));
+					assertThat(jdbcTemplate.queryForList("SHOW TABLES").stream()
+							.map((table) -> (String) table.get("TABLE_NAME")))
+									.noneMatch((name) -> name.startsWith("QRTZ"));
+				});
+	}
+
+	@Test
 	void withDataSourceNoTransactionManager() {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
