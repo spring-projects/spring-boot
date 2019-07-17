@@ -1466,6 +1466,7 @@
 								<spring-boot-version>${revision}</spring-boot-version>
 								<spring-docs-version>${spring-framework.version}</spring-docs-version>
 								<spring-framework-version>${spring-framework.version}</spring-framework-version>
+								<spring-integration-docs-version>${spring-integration.version}</spring-integration-docs-version>
 								<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
 								<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
 							</attributes>

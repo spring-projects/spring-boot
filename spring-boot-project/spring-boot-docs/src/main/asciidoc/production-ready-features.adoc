@@ -1792,7 +1792,7 @@ Spring Boot registers the following core metrics when applicable:
 application's absolute start time
 * Tomcat metrics (`server.tomcat.mbeanregistry.enabled` must be set to `true` for all
 Tomcat metrics to be registered)
-* https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#micrometer-integration[Spring Integration] metrics
+* {spring-integration-reference}#micrometer-integration[Spring Integration] metrics
 
 
 
