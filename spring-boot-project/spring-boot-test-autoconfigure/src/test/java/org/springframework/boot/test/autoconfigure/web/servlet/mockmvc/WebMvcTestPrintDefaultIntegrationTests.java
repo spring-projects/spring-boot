@@ -16,7 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 
@@ -43,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @ExtendWith(OutputCaptureExtension.class)
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
 class WebMvcTestPrintDefaultIntegrationTests {
 
 	@Test
@@ -54,7 +57,7 @@ class WebMvcTestPrintDefaultIntegrationTests {
 	@Test
 	void shouldPrint(CapturedOutput output) throws Throwable {
 		executeTests(ShouldPrint.class);
-		assertThat(output).contains("HTTP Method");
+		assertThat(output).containsOnlyOnce("HTTP Method");
 	}
 
 	private void executeTests(Class<?> testClass) throws Throwable {
