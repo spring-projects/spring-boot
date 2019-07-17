@@ -24,7 +24,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
  * {@link DataSourcePoolMetadata} for an Apache Commons DBCP2 {@link DataSource}.
  *
  * @author Stephane Nicoll
- * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class CommonsDbcp2DataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<BasicDataSource> {
@@ -36,6 +35,11 @@ public class CommonsDbcp2DataSourcePoolMetadata extends AbstractDataSourcePoolMe
 	@Override
 	public Integer getActive() {
 		return getDataSource().getNumActive();
+	}
+
+	@Override
+	public Integer getIdle() {
+		return getDataSource().getNumIdle();
 	}
 
 	@Override
@@ -56,11 +60,6 @@ public class CommonsDbcp2DataSourcePoolMetadata extends AbstractDataSourcePoolMe
 	@Override
 	public Boolean getDefaultAutoCommit() {
 		return getDataSource().getDefaultAutoCommit();
-	}
-
-	@Override
-	public Integer getIdle() {
-		return getDataSource().getNumIdle();
 	}
 
 }

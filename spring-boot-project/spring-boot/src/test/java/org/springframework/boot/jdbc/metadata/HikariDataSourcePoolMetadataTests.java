@@ -18,16 +18,12 @@ package org.springframework.boot.jdbc.metadata;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import org.springframework.jdbc.core.ConnectionCallback;
-import org.springframework.jdbc.core.JdbcTemplate;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HikariDataSourcePoolMetadata}.
  *
  * @author Stephane Nicoll
- * @author Artsiom Yudovin
  */
 public class HikariDataSourcePoolMetadataTests
 		extends AbstractDataSourcePoolMetadataTests<HikariDataSourcePoolMetadata> {
@@ -58,15 +54,8 @@ public class HikariDataSourcePoolMetadataTests
 		HikariDataSource dataSource = initializeBuilder().type(HikariDataSource.class).build();
 		dataSource.setMinimumIdle(minSize);
 		dataSource.setMaximumPoolSize(maxSize);
-
-		this.initPool(dataSource);
-
+		dataSource.setIdleTimeout(5000);
 		return dataSource;
-	}
-
-	private void initPool(HikariDataSource dataSource) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
 	}
 
 }

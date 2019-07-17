@@ -23,7 +23,6 @@ import org.apache.tomcat.jdbc.pool.DataSource;
  * {@link DataSourcePoolMetadata} for a Tomcat DataSource.
  *
  * @author Stephane Nicoll
- * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DataSource> {
@@ -36,6 +35,11 @@ public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	public Integer getActive() {
 		ConnectionPool pool = getDataSource().getPool();
 		return (pool != null) ? pool.getActive() : 0;
+	}
+
+	@Override
+	public Integer getIdle() {
+		return getDataSource().getNumIdle();
 	}
 
 	@Override
@@ -56,11 +60,6 @@ public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	@Override
 	public Boolean getDefaultAutoCommit() {
 		return getDataSource().isDefaultAutoCommit();
-	}
-
-	@Override
-	public Integer getIdle() {
-		return getDataSource().getNumIdle();
 	}
 
 }
