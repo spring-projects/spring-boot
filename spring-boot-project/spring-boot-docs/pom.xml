@@ -204,11 +204,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.timgroup</groupId>
-			<artifactId>java-statsd-client</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.unboundid</groupId>
 			<artifactId>unboundid-ldapsdk</artifactId>
 			<optional>true</optional>
