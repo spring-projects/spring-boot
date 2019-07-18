@@ -65,6 +65,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ConfigFileApplicationListener}.
@@ -979,6 +980,16 @@ class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getProperty("mapkey")).isEqualTo("mapvalue");
 		assertThat(this.environment.getProperty("gh17001loaded")).isEqualTo("true");
+	}
+
+	@Test
+	void whenConfigLocationSpecifiesUnknownFileExtensionConfigFileProcessingFailsFast() {
+		String location = "classpath:application.unknown";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
+				.withMessageContaining(location);
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
