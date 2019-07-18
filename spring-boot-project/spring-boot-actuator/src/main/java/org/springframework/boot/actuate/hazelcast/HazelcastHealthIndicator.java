@@ -16,12 +16,7 @@
 
 package org.springframework.boot.actuate.hazelcast;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.hazelcast.core.Endpoint;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.transaction.TransactionalTask;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -29,14 +24,13 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.util.Assert;
 
 /**
- * {@link HealthIndicator} for a Hazelcast.
+ * {@link HealthIndicator} for Hazelcast.
  *
  * @author Dmytro Nosan
+ * @author Stephane Nicoll
  * @since 2.2.0
  */
 public class HazelcastHealthIndicator extends AbstractHealthIndicator {
-
-	private static final TransactionalTask<?> TASK = (context) -> null;
 
 	private final HazelcastInstance hazelcast;
 
@@ -48,16 +42,11 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) {
-		this.hazelcast.executeTransaction(TASK);
-		builder.up().withDetails(getDetails());
-	}
-
-	private Map<String, Object> getDetails() {
-		Map<String, Object> details = new LinkedHashMap<>();
-		Endpoint endpoint = this.hazelcast.getLocalEndpoint();
-		details.put("name", this.hazelcast.getName());
-		details.put("uuid", endpoint.getUuid());
-		return details;
+		this.hazelcast.executeTransaction((context) -> {
+			builder.up().withDetail("name", this.hazelcast.getName()).withDetail("uuid",
+					this.hazelcast.getLocalEndpoint().getUuid());
+			return null;
+		});
 	}
 
 }

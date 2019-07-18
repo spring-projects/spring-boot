@@ -16,11 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.hazelcast;
 
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.config.Config;
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -40,16 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class HazelcastHealthIndicatorAutoConfigurationIntegrationTests {
 
-	private final HazelcastInstance hazelcastServer = Hazelcast.newHazelcastInstance(new Config());
-
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withBean(ClientConfig.class)
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HazelcastHealthIndicatorAutoConfiguration.class,
 					HazelcastAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
-
-	@AfterEach
-	void shutdown() {
-		this.hazelcastServer.shutdown();
-	}
 
 	@Test
 	void hazelcastUp() {
@@ -66,7 +55,7 @@ class HazelcastHealthIndicatorAutoConfigurationIntegrationTests {
 	@Test
 	void hazelcastDown() {
 		this.contextRunner.run((context) -> {
-			shutdown();
+			context.getBean(HazelcastInstance.class).shutdown();
 			assertThat(context).hasSingleBean(HazelcastHealthIndicator.class);
 			Health health = context.getBean(HazelcastHealthIndicator.class).health();
 			assertThat(health.getStatus()).isEqualTo(Status.DOWN);

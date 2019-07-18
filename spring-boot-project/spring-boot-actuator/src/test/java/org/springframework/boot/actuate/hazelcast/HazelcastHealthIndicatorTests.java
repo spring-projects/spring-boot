@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.hazelcast;
 import com.hazelcast.core.Endpoint;
 import com.hazelcast.core.HazelcastException;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.transaction.TransactionalTask;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
@@ -33,12 +34,11 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link HazelcastHealthIndicator}.
  *
  * @author Dmytro Nosan
+ * @author Stephane Nicoll
  */
 class HazelcastHealthIndicatorTests {
 
 	private final HazelcastInstance hazelcast = mock(HazelcastInstance.class);
-
-	private final HazelcastHealthIndicator healthIndicator = new HazelcastHealthIndicator(this.hazelcast);
 
 	@Test
 	void hazelcastUp() {
@@ -46,9 +46,11 @@ class HazelcastHealthIndicatorTests {
 		when(this.hazelcast.getName()).thenReturn("hz0-instance");
 		when(this.hazelcast.getLocalEndpoint()).thenReturn(endpoint);
 		when(endpoint.getUuid()).thenReturn("7581bb2f-879f-413f-b574-0071d7519eb0");
-
-		Health health = this.healthIndicator.health();
-
+		when(this.hazelcast.executeTransaction(any())).thenAnswer((invocation) -> {
+			TransactionalTask<?> task = invocation.getArgument(0);
+			return task.execute(null);
+		});
+		Health health = new HazelcastHealthIndicator(this.hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name", "hz0-instance")
 				.containsEntry("uuid", "7581bb2f-879f-413f-b574-0071d7519eb0");
@@ -57,9 +59,7 @@ class HazelcastHealthIndicatorTests {
 	@Test
 	void hazelcastDown() {
 		when(this.hazelcast.executeTransaction(any())).thenThrow(new HazelcastException());
-
-		Health health = this.healthIndicator.health();
-
+		Health health = new HazelcastHealthIndicator(this.hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 

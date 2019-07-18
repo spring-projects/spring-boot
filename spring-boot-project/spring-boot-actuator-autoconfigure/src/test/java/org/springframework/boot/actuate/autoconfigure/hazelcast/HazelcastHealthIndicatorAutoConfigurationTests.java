@@ -48,7 +48,6 @@ class HazelcastHealthIndicatorAutoConfigurationTests {
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.hazelcast.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(HazelcastHealthIndicator.class)
-						.doesNotHaveBean(HazelcastHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
 
