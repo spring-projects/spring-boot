@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContainerInitializer;
 
@@ -91,6 +92,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Christoffer Sawicki
+ * @author Dawid Antecki
  * @since 2.0.0
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
@@ -813,7 +815,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		@Override
 		public Set<String> listWebAppPaths(String path) {
-			return this.delegate.listWebAppPaths(path);
+			return this.delegate.listWebAppPaths(path).stream()
+					.filter((webAppPath) -> !webAppPath.startsWith("/org/springframework/boot"))
+					.collect(Collectors.toSet());
 		}
 
 		@Override
