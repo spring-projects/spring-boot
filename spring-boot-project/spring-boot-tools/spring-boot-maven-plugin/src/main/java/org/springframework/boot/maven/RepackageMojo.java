@@ -139,7 +139,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * archive type.
 	 * @since 1.0.0
 	 */
-	@Parameter
+	@Parameter(property = "spring-boot.repackage.layout")
 	private LayoutType layout;
 
 	/**
