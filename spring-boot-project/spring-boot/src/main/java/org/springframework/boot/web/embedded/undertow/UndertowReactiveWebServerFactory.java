@@ -33,7 +33,6 @@ import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.servlet.api.DeploymentInfo;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
@@ -56,6 +55,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
 
+	@Deprecated
 	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
 
 	private Integer bufferSize;
@@ -198,32 +198,6 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			return "0.0.0.0";
 		}
 		return getAddress().getHostAddress();
-	}
-
-	/**
-	 * Set {@link UndertowDeploymentInfoCustomizer}s that should be applied to the
-	 * Undertow {@link DeploymentInfo}. Calling this method will replace any existing
-	 * customizers.
-	 * @param customizers the customizers to set
-	 */
-	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
-	}
-
-	/**
-	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo}.
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
-		return this.deploymentInfoCustomizers;
-	}
-
-	@Override
-	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
-		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
-		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	@Override

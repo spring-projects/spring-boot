@@ -245,19 +245,6 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
-		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-				.withUserConfiguration(UndertowDeploymentInfoCustomizerConfiguration.class,
-						HttpHandlerConfiguration.class)
-				.run((context) -> {
-					UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
-					assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
-				});
-	}
-
-	@Test
 	void undertowBuilderCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))

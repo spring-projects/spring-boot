@@ -92,7 +92,6 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(properties::getIoThreads).to(factory::setIoThreads);
 		map.from(properties::getWorkerThreads).to(factory::setWorkerThreads);
 		map.from(properties::getDirectBuffers).to(factory::setUseDirectBuffers);
-		map.from(properties::isEagerFilterInit).to((x) -> setEagerFilterInit(factory, x));
 		map.from(properties::getMaxHttpPostSize).as(DataSize::toBytes).when(this::isPositive)
 				.to(options.server(UndertowOptions.MAX_ENTITY_SIZE));
 		map.from(properties::getMaxParameters).to(options.server(UndertowOptions.MAX_PARAMETERS));
@@ -104,10 +103,6 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(properties::isAlwaysSetKeepAlive).to(options.server(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
 		map.from(properties.getOptions()::getServer).to(options.forEach(options::server));
 		map.from(properties.getOptions()::getSocket).to(options.forEach(options::socket));
-	}
-
-	private void setEagerFilterInit(ConfigurableUndertowWebServerFactory factory, Boolean eagerFilterInit) {
-		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo.setEagerFilterInit(eagerFilterInit));
 	}
 
 	private boolean isPositive(Number value) {

@@ -19,7 +19,6 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 
 import io.undertow.Undertow.Builder;
-import io.undertow.servlet.api.DeploymentInfo;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 
@@ -39,13 +38,6 @@ public interface ConfigurableUndertowWebServerFactory extends ConfigurableWebSer
 	 * @param customizers the customizers to add
 	 */
 	void addBuilderCustomizers(UndertowBuilderCustomizer... customizers);
-
-	/**
-	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
-	 * Undertow {@link DeploymentInfo}.
-	 * @param customizers the customizers to add
-	 */
-	void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers);
 
 	/**
 	 * Set the buffer size.

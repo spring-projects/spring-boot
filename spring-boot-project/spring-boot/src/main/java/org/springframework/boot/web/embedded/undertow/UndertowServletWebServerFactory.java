@@ -196,7 +196,11 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return this.deploymentInfoCustomizers;
 	}
 
-	@Override
+	/**
+	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
+	 * Undertow {@link DeploymentInfo}.
+	 * @param customizers the customizers to add
+	 */
 	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
 		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));

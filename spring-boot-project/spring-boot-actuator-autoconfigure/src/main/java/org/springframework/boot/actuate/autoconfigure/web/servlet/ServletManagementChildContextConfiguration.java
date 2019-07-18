@@ -45,6 +45,7 @@ import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactor
 import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.TomcatServletWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.servlet.UndertowServletWebServerFactoryCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -115,7 +116,7 @@ class ServletManagementChildContextConfiguration {
 		ServletManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
 			super(beanFactory, ServletWebServerFactoryCustomizer.class, TomcatServletWebServerFactoryCustomizer.class,
 					TomcatWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
-					UndertowWebServerFactoryCustomizer.class);
+					UndertowServletWebServerFactoryCustomizer.class, UndertowWebServerFactoryCustomizer.class);
 		}
 
 		@Override
