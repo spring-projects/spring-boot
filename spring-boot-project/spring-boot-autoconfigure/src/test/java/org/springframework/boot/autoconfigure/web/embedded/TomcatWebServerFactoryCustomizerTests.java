@@ -199,6 +199,22 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customRelaxedPathChars() {
+		bind("server.tomcat.relaxed-path-chars=|,^");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getRelaxedPathChars()).isEqualTo("|^"));
+	}
+
+	@Test
+	void customRelaxedQueryChars() {
+		bind("server.tomcat.relaxed-query-chars=^  ,  | ");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getRelaxedQueryChars()).isEqualTo("^|"));
+	}
+
+	@Test
 	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		testRemoteIpValveConfigured();

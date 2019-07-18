@@ -397,6 +397,18 @@ public class ServerProperties {
 		private List<String> additionalTldSkipPatterns = new ArrayList<>();
 
 		/**
+		 * Comma-separated list of additional unencoded characters that should be allowed
+		 * in URI paths. Only "< > [ \ ] ^ ` { | }" are allowed.
+		 */
+		private List<Character> relaxedPathChars = new ArrayList<>();
+
+		/**
+		 * Comma-separated list of additional unencoded characters that should be allowed
+		 * in URI query strings. Only "< > [ \ ] ^ ` { | }" are allowed.
+		 */
+		private List<Character> relaxedQueryChars = new ArrayList<>();
+
+		/**
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
@@ -405,20 +417,6 @@ public class ServerProperties {
 		 * Modeler MBean Registry configuration.
 		 */
 		private final Mbeanregistry mbeanregistry = new Mbeanregistry();
-
-		/**
-		 * Specify additional unencoded characters that Tomcat should allow in a
-		 * querystring. The value may be any combination of the following characters: " <
-		 * > [ \ ] ^ ` { | } . Any other characters present in the value will be ignored.
-		 */
-		private String relaxedQueryChars;
-
-		/**
-		 * Specify additional unencoded characters that Tomcat should allow in the path.
-		 * The value may be any combination of the following characters: " < > [ \ ] ^ ` {
-		 * | } . Any other characters present in the value will be ignored.
-		 */
-		private String relaxedPathChars;
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -568,28 +566,28 @@ public class ServerProperties {
 			this.additionalTldSkipPatterns = additionalTldSkipPatterns;
 		}
 
+		public List<Character> getRelaxedPathChars() {
+			return this.relaxedPathChars;
+		}
+
+		public void setRelaxedPathChars(List<Character> relaxedPathChars) {
+			this.relaxedPathChars = relaxedPathChars;
+		}
+
+		public List<Character> getRelaxedQueryChars() {
+			return this.relaxedQueryChars;
+		}
+
+		public void setRelaxedQueryChars(List<Character> relaxedQueryChars) {
+			this.relaxedQueryChars = relaxedQueryChars;
+		}
+
 		public Resource getResource() {
 			return this.resource;
 		}
 
 		public Mbeanregistry getMbeanregistry() {
 			return this.mbeanregistry;
-		}
-
-		public String getRelaxedPathChars() {
-			return this.relaxedPathChars;
-		}
-
-		public void setRelaxedPathChars(String relaxedPathChars) {
-			this.relaxedPathChars = relaxedPathChars;
-		}
-
-		public String getRelaxedQueryChars() {
-			return this.relaxedQueryChars;
-		}
-
-		public void setRelaxedQueryChars(String relaxedQueryChars) {
-			this.relaxedQueryChars = relaxedQueryChars;
 		}
 
 		/**
