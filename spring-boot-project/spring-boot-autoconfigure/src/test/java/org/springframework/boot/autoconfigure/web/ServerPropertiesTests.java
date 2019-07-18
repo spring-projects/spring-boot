@@ -127,6 +127,8 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.remote-ip-header", "Remote-Ip");
 		map.put("server.tomcat.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		map.put("server.tomcat.background-processor-delay", "10");
+		map.put("server.tomcat.relaxed-path-chars", "|,<");
+		map.put("server.tomcat.relaxed-query-chars", "^  ,  | ");
 		bind(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		Accesslog accesslog = tomcat.getAccesslog();
@@ -146,6 +148,8 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
+		assertThat(tomcat.getRelaxedQueryChars()).containsExactly('^', '|');
 	}
 
 	@Test
