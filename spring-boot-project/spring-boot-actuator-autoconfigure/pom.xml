@@ -69,11 +69,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.timgroup</groupId>
-			<artifactId>java-statsd-client</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<optional>true</optional>
