@@ -22,7 +22,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.type.classreading.MetadataReader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -53,7 +52,7 @@ class ConcurrentReferenceCachingMetadataReaderFactoryTests {
 		MetadataReader metadataReader1 = factory.getMetadataReader(getClass().getName());
 		factory.clearCache();
 		MetadataReader metadataReader2 = factory.getMetadataReader(getClass().getName());
-		assertThat(metadataReader1).isNotEqualTo(sameInstance(metadataReader2));
+		assertThat(metadataReader1).isNotSameAs(metadataReader2);
 		verify(factory, times(2)).createMetadataReader(any(Resource.class));
 	}
 
