@@ -403,6 +403,7 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void testRabbitListenerContainerFactoryWithDeprecatedTransactionSizeStillWorks() {
 		this.contextRunner
 				.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)

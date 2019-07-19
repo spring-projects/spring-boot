@@ -663,8 +663,8 @@ public class RabbitProperties {
 		private Integer maxConcurrency;
 
 		/**
-		 * Number of messages to be processed between acks when the acknowledge mode is
-		 * AUTO. If larger than prefetch, prefetch will be increased to this value.
+		 * Batch size, expressed as the number of physical messages, to be used by the
+		 * container.
 		 */
 		private Integer batchSize;
 
@@ -692,11 +692,11 @@ public class RabbitProperties {
 		}
 
 		/**
-		 * Get the number of messages processed in one transaction.
-		 * @return number of messages
+		 * Return the number of messages processed in one transaction.
+		 * @return the number of messages
 		 * @deprecated since 2.2.0 in favor of {@link SimpleContainer#getBatchSize()}
 		 */
-		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.batchSize")
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.batch-size")
 		@Deprecated
 		public Integer getTransactionSize() {
 			return getBatchSize();
@@ -704,7 +704,7 @@ public class RabbitProperties {
 
 		/**
 		 * Set the number of messages processed in one transaction.
-		 * @param transactionSize number of messages
+		 * @param transactionSize the number of messages
 		 * @deprecated since 2.2.0 in favor of
 		 * {@link SimpleContainer#setBatchSize(Integer)}
 		 */
