@@ -37,6 +37,7 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
@@ -46,8 +47,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to Data JDBC tests.
  * <p>
- * By default, tests annotated with {@code @DataJdbcTest} will use an embedded in-memory
- * database (replacing any explicit or usually auto-configured DataSource). The
+ * By default, tests annotated with {@code @DataJdbcTest} are transactional and roll back
+ * at the end of each test. They also use an embedded in-memory database (replacing any
+ * explicit or usually auto-configured DataSource). The
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
  * override these settings.
  * <p>
@@ -67,6 +69,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(DataJdbcTypeExcludeFilter.class)
+@Transactional
 @AutoConfigureCache
 @AutoConfigureDataJdbc
 @AutoConfigureTestDatabase
