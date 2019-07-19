@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
@@ -44,6 +45,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to Data JDBC tests.
+ * <p>
+ * By default, tests annotated with {@code @DataJdbcTest} will use an embedded in-memory
+ * database (replacing any explicit or usually auto-configured DataSource). The
+ * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
+ * override these settings.
+ * <p>
+ * If you are looking to load your full application configuration, but use an embedded
+ * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
+ * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
+ * annotation.
  *
  * @author Andy Wilkinson
  * @since 2.1.0
