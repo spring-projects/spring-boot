@@ -54,6 +54,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.Assert;
@@ -168,6 +169,7 @@ public class JacksonAutoConfiguration {
 	static class JacksonObjectMapperBuilderConfiguration {
 
 		@Bean
+		@Scope("prototype")
 		@ConditionalOnMissingBean
 		Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(ApplicationContext applicationContext,
 				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {

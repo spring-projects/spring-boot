@@ -391,6 +391,16 @@ class JacksonAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void builderIsNotSharedAcrossMultipleInjectionPoints() {
+		this.contextRunner.withUserConfiguration(ObjectMapperBuilderConsumerConfig.class).run((context) -> {
+			ObjectMapperBuilderConsumerConfig consumer = context.getBean(ObjectMapperBuilderConsumerConfig.class);
+			assertThat(consumer.builderOne).isNotNull();
+			assertThat(consumer.builderTwo).isNotNull();
+			assertThat(consumer.builderOne).isNotSameAs(consumer.builderTwo);
+		});
+	}
+
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode, Class<?>... configClasses) {
 		this.contextRunner.withUserConfiguration(configClasses).run((context) -> {
 			DeserializationConfig deserializationConfig = context.getBean(ObjectMapper.class)
@@ -475,6 +485,27 @@ class JacksonAutoConfigurationTests {
 		@Bean
 		Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
 			return (builder) -> builder.dateFormat(new MyDateFormat());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ObjectMapperBuilderConsumerConfig {
+
+		Jackson2ObjectMapperBuilder builderOne;
+
+		Jackson2ObjectMapperBuilder builderTwo;
+
+		@Bean
+		String consumerOne(Jackson2ObjectMapperBuilder builder) {
+			this.builderOne = builder;
+			return "one";
+		}
+
+		@Bean
+		String consumerTwo(Jackson2ObjectMapperBuilder builder) {
+			this.builderTwo = builder;
+			return "two";
 		}
 
 	}
