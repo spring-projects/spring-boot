@@ -149,6 +149,7 @@ class DispatcherServletAutoConfigurationTests {
 			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").containsExactly(true);
 			assertThat(dispatcherServlet).extracting("dispatchTraceRequest").containsExactly(false);
 			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails").containsExactly(false);
+			assertThat(dispatcherServlet).extracting("publishEvents").containsExactly(true);
 			assertThat(context.getBean("dispatcherServletRegistration")).hasFieldOrPropertyWithValue("loadOnStartup",
 					-1);
 		});
@@ -156,9 +157,11 @@ class DispatcherServletAutoConfigurationTests {
 
 	@Test
 	void dispatcherServletCustomConfig() {
-		this.contextRunner.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:true",
-				"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
-				"spring.mvc.servlet.load-on-startup=5").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:true",
+						"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
+						"spring.mvc.publish-request-handled-events:false", "spring.mvc.servlet.load-on-startup=5")
+				.run((context) -> {
 					DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
 					assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").containsExactly(true);
 					assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").containsExactly(false);
