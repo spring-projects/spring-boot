@@ -24,6 +24,7 @@ import java.util.List;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -665,7 +666,7 @@ public class RabbitProperties {
 		 * Number of messages to be processed between acks when the acknowledge mode is
 		 * AUTO. If larger than prefetch, prefetch will be increased to this value.
 		 */
-		private Integer transactionSize;
+		private Integer batchSize;
 
 		/**
 		 * Whether to fail if the queues declared by the container are not available on
@@ -690,12 +691,34 @@ public class RabbitProperties {
 			this.maxConcurrency = maxConcurrency;
 		}
 
+		/**
+		 * Get the number of messages processed in one transaction.
+		 * @return number of messages
+		 * @deprecated since 2.2.0 in favor of {@link SimpleContainer#getBatchSize()}
+		 */
+		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.batchSize")
+		@Deprecated
 		public Integer getTransactionSize() {
-			return this.transactionSize;
+			return getBatchSize();
 		}
 
+		/**
+		 * Set the number of messages processed in one transaction.
+		 * @param transactionSize number of messages
+		 * @deprecated since 2.2.0 in favor of
+		 * {@link SimpleContainer#setBatchSize(Integer)}
+		 */
+		@Deprecated
 		public void setTransactionSize(Integer transactionSize) {
-			this.transactionSize = transactionSize;
+			setBatchSize(transactionSize);
+		}
+
+		public Integer getBatchSize() {
+			return this.batchSize;
+		}
+
+		public void setBatchSize(Integer batchSize) {
+			this.batchSize = batchSize;
 		}
 
 		@Override
