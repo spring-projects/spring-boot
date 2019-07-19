@@ -48,8 +48,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to JPA tests.
  * <p>
- * By default, tests annotated with {@code @DataJpaTest} will use an embedded in-memory
- * database (replacing any explicit or usually auto-configured DataSource). The
+ * By default, tests annotated with {@code @DataJpaTest} are transactional and roll back
+ * at the end of each test. They also use an embedded in-memory database (replacing any
+ * explicit or usually auto-configured DataSource). The
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
  * override these settings.
  * <p>
