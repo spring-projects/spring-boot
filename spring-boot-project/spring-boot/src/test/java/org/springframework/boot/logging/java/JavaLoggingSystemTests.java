@@ -18,6 +18,7 @@ package org.springframework.boot.logging.java;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
@@ -161,6 +162,31 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", null);
+		this.logger.fine("Hello");
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
+	}
+
+	@Test
+	void setLevelForLoggerGroup(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		List<String> members = Arrays.asList("org.springframework.boot");
+		this.logger.fine("Hello");
+		this.loggingSystem.setLoggerGroup("test", members);
+		this.loggingSystem.setLoggerGroupLevel("test", LogLevel.DEBUG);
+		this.logger.fine("Hello");
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
+	}
+
+	@Test
+	void setLevelForLoggerGroupToNull(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		List<String> members = Arrays.asList("org.springframework.boot");
+		this.loggingSystem.setLoggerGroup("test", members);
+		this.loggingSystem.setLoggerGroupLevel("test", LogLevel.DEBUG);
+		this.logger.fine("Hello");
+		this.loggingSystem.setLoggerGroupLevel("test", null);
 		this.logger.fine("Hello");
 		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
 	}

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.logging;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
@@ -58,25 +59,39 @@ public class LoggersEndpoint {
 	@ReadOperation
 	public Map<String, Object> loggers() {
 		Collection<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
+		Set<String> groups = this.loggingSystem.getLoggerGroupNames();
 		if (configurations == null) {
 			return Collections.emptyMap();
 		}
 		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("levels", getLevels());
 		result.put("loggers", getLoggers(configurations));
+		if (groups != null) {
+			result.put("groups", getLoggerGroups(groups));
+		}
 		return result;
 	}
 
 	@ReadOperation
 	public LoggerLevels loggerLevels(@Selector String name) {
 		Assert.notNull(name, "Name must not be null");
+		LogLevel groupConfiguredLevel = this.loggingSystem.getLoggerGroupConfiguredLevel(name);
+		if (groupConfiguredLevel != null) {
+			List<String> members = this.loggingSystem.getLoggerGroup(name);
+			return (groupConfiguredLevel != null) ? new GroupLoggerLevels(groupConfiguredLevel, members) : null;
+		}
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(name);
-		return (configuration != null) ? new LoggerLevels(configuration) : null;
+		return (configuration != null) ? new SingleLoggerLevels(configuration) : null;
 	}
 
 	@WriteOperation
 	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "Name must not be empty");
+		Set<String> loggerGroups = this.loggingSystem.getLoggerGroupNames();
+		if (loggerGroups.contains(name)) {
+			this.loggingSystem.setLoggerGroupLevel(name, configuredLevel);
+			return;
+		}
 		this.loggingSystem.setLogLevel(name, configuredLevel);
 	}
 
@@ -88,9 +103,19 @@ public class LoggersEndpoint {
 	private Map<String, LoggerLevels> getLoggers(Collection<LoggerConfiguration> configurations) {
 		Map<String, LoggerLevels> loggers = new LinkedHashMap<>(configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
-			loggers.put(configuration.getName(), new LoggerLevels(configuration));
+			loggers.put(configuration.getName(), new SingleLoggerLevels(configuration));
 		}
 		return loggers;
+	}
+
+	private Map<String, LoggerLevels> getLoggerGroups(Set<String> groups) {
+		Map<String, LoggerLevels> loggerGroups = new LinkedHashMap<>(groups.size());
+		for (String name : groups) {
+			List<String> members = this.loggingSystem.getLoggerGroup(name);
+			LogLevel groupConfiguredLevel = this.loggingSystem.getLoggerGroupConfiguredLevel(name);
+			loggerGroups.put(name, new GroupLoggerLevels(groupConfiguredLevel, members));
+		}
+		return loggerGroups;
 	}
 
 	/**
@@ -100,11 +125,8 @@ public class LoggersEndpoint {
 
 		private String configuredLevel;
 
-		private String effectiveLevel;
-
-		public LoggerLevels(LoggerConfiguration configuration) {
-			this.configuredLevel = getName(configuration.getConfiguredLevel());
-			this.effectiveLevel = getName(configuration.getEffectiveLevel());
+		public LoggerLevels(LogLevel configuredLevel) {
+			this.configuredLevel = getName(configuredLevel);
 		}
 
 		private String getName(LogLevel level) {
@@ -113,6 +135,33 @@ public class LoggersEndpoint {
 
 		public String getConfiguredLevel() {
 			return this.configuredLevel;
+
+		}
+
+	}
+
+	public static class GroupLoggerLevels extends LoggerLevels {
+
+		private List<String> members;
+
+		public GroupLoggerLevels(LogLevel configuredLevel, List<String> members) {
+			super(configuredLevel);
+			this.members = members;
+		}
+
+		public List<String> getMembers() {
+			return this.members;
+		}
+
+	}
+
+	public static class SingleLoggerLevels extends LoggerLevels {
+
+		private String effectiveLevel;
+
+		public SingleLoggerLevels(LoggerConfiguration configuration) {
+			super(configuration.getConfiguredLevel());
+			this.effectiveLevel = super.getName(configuration.getEffectiveLevel());
 		}
 
 		public String getEffectiveLevel() {

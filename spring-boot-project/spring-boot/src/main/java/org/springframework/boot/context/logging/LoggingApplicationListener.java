@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.logging;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -325,7 +326,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			system.setLogLevel(logger, level);
 			return;
 		}
-		groupLoggers.forEach((groupLogger) -> system.setLogLevel(groupLogger, level));
+		system.setLoggerGroup(logger, groupLoggers);
+		system.setLoggerGroupLevel(logger, level);
 	}
 
 	protected void setLogLevels(LoggingSystem system, Environment environment) {
@@ -342,7 +344,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				setLogLevel(system, name, level);
 			}
 			else {
-				setLogLevel(system, groupedNames, level);
+				setLogLevel(system, groupedNames, level, name);
 			}
 		});
 	}
@@ -353,15 +355,18 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		return groups;
 	}
 
-	private void setLogLevel(LoggingSystem system, String[] names, LogLevel level) {
-		for (String name : names) {
-			setLogLevel(system, name, level);
+	private void setLogLevel(LoggingSystem system, String[] names, LogLevel level, String groupName) {
+		try {
+			system.setLoggerGroup(groupName, Arrays.asList(names));
+			system.setLoggerGroupLevel(groupName, level);
+		}
+		catch (RuntimeException ex) {
+			this.logger.error("Cannot set level '" + level + "' for '" + groupName + "'");
 		}
 	}
 
 	private void setLogLevel(LoggingSystem system, String name, LogLevel level) {
 		try {
-			name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
 			system.setLogLevel(name, level);
 		}
 		catch (RuntimeException ex) {
