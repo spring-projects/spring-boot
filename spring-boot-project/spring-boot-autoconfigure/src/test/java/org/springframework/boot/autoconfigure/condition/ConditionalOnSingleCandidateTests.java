@@ -171,7 +171,7 @@ class ConditionalOnSingleCandidateTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnSingleCandidate(value = String.class, type = "java.lang.String")
+	@ConditionalOnSingleCandidate(value = String.class, type = "java.lang.Integer")
 	static class OnBeanSingleCandidateTwoTypesConfiguration {
 
 	}

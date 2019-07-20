@@ -438,7 +438,7 @@ public class ConditionalOnMissingBeanTests {
 		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE, ExampleBean.class);
+			builder.getBeanDefinition().setAttribute(BeanTypeRegistry.FACTORY_BEAN_OBJECT_TYPE, ExampleBean.class);
 			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
@@ -456,7 +456,7 @@ public class ConditionalOnMissingBeanTests {
 		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE,
+			builder.getBeanDefinition().setAttribute(BeanTypeRegistry.FACTORY_BEAN_OBJECT_TYPE,
 					ExampleBean.class.getName());
 			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
@@ -513,7 +513,7 @@ public class ConditionalOnMissingBeanTests {
 
 		@Bean
 		@ConditionalOnMissingBean(value = ExampleBean.class,
-				ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests.CustomExampleBean")
+				ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests$CustomExampleBean")
 		ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
