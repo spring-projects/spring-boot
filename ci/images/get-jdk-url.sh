@@ -11,7 +11,10 @@ case "$1" in
 	java12)
 		 echo "https://github.com/AdoptOpenJDK/openjdk12-binaries/releases/download/jdk-12.0.1%2B12/OpenJDK12U-jdk_x64_linux_hotspot_12.0.1_12.tar.gz"
 	;;
-	*)
+	java13)
+		 echo "https://github.com/AdoptOpenJDK/openjdk13-binaries/releases/download/jdk13u-2019-07-17-05-32/OpenJDK13U-jdk_x64_linux_hotspot_2019-07-17-05-32.tar.gz"
+	;;
+  *)
 		echo $"Unknown java version"
 		exit 1
 esac
