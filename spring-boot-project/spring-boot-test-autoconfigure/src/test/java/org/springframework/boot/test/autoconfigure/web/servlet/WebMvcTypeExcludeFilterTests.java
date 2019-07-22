@@ -31,6 +31,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +56,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
+		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
 	}
 
 	@Test
@@ -68,6 +70,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
+		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
 	}
 
 	@Test
@@ -81,6 +84,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isTrue();
+		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isTrue();
 	}
 
 	@Test
@@ -93,6 +97,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
+		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
 	}
 
 	@Test
@@ -106,6 +111,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
+		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
 	}
 
 	private boolean excludes(WebMvcTypeExcludeFilter filter, Class<?> type) throws IOException {
@@ -172,6 +178,10 @@ class WebMvcTypeExcludeFilterTests {
 	}
 
 	static class ExampleWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+	}
+
+	static class ExampleHandlerInterceptor implements HandlerInterceptor {
 
 	}
 

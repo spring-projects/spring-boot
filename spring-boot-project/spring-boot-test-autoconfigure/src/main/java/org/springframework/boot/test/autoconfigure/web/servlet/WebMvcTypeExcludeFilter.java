@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -65,6 +66,7 @@ class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeF
 		includes.add(ErrorAttributes.class);
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
+		includes.add(HandlerInterceptor.class);
 		for (String optionalInclude : OPTIONAL_INCLUDES) {
 			try {
 				includes.add(ClassUtils.forName(optionalInclude, null));
