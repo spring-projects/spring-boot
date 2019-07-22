@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.web.reactive;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
@@ -30,6 +31,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,6 +56,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 	}
 
 	@Test
@@ -63,6 +68,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 	}
 
 	@Test
@@ -74,6 +80,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isTrue();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebFilter.class)).isTrue();
 	}
 
 	@Test
@@ -85,6 +92,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
+		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 	}
 
 	@Test
@@ -96,6 +104,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 	}
 
 	private boolean excludes(WebFluxTypeExcludeFilter filter, Class<?> type) throws IOException {
@@ -154,6 +163,15 @@ class WebFluxTypeExcludeFilterTests {
 
 	@Repository
 	static class ExampleRepository {
+
+	}
+
+	static class ExampleWebFilter implements WebFilter {
+
+		@Override
+		public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
+			return null;
+		}
 
 	}
 
