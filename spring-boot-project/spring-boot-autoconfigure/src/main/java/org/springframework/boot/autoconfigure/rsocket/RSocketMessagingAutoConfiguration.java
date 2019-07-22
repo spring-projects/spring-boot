@@ -29,7 +29,6 @@ import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.util.pattern.PathPatternParser;
 import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 
 /**
@@ -52,9 +51,7 @@ public class RSocketMessagingAutoConfiguration {
 		RSocketMessageHandler messageHandler = new RSocketMessageHandler();
 		messageHandler.setRSocketStrategies(rSocketStrategies);
 		if (ClassUtils.isPresent(PATHPATTERN_ROUTEMATCHER_CLASS, null)) {
-			PathPatternParser parser = new PathPatternParser();
-			parser.setSeparator('.');
-			messageHandler.setRouteMatcher(new PathPatternRouteMatcher(parser));
+			messageHandler.setRouteMatcher(new PathPatternRouteMatcher());
 		}
 		return messageHandler;
 	}
