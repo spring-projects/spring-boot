@@ -61,6 +61,7 @@ class ActiveMQConnectionFactoryConfiguration {
 							.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
+		@Configuration
 		@ConditionalOnClass(CachingConnectionFactory.class)
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
 				matchIfMissing = true)
