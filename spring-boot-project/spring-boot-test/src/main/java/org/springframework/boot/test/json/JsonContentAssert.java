@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractCharSequenceAssert;
@@ -749,6 +750,21 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	}
 
 	/**
+	 * Verify that the JSON path is present without checking if it has a value.
+	 * @param expression the {@link JsonPath} expression
+	 * @param args arguments to parameterize the {@code JsonPath} expression with, using
+	 * formatting specifiers defined in {@link String#format(String, Object...)}
+	 * @return {@code this} assertion object
+	 * @throws AssertionError if the value at the given path is missing
+	 * @since 2.2.0
+	 * @see #hasJsonPathValue(CharSequence, Object...)
+	 */
+	public JsonContentAssert hasJsonPath(CharSequence expression, Object... args) {
+		new JsonPathValue(expression, args).assertHasPath();
+		return this;
+	}
+
+	/**
 	 * Verify that the actual value at the given JSON path produces a non-null result. If
 	 * the JSON path expression is not {@linkplain JsonPath#isDefinite() definite}, this
 	 * method verifies that the value at the given path is not <em>empty</em>.
@@ -843,6 +859,21 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 */
 	public JsonContentAssert hasEmptyJsonPathValue(CharSequence expression, Object... args) {
 		new JsonPathValue(expression, args).assertHasEmptyValue();
+		return this;
+	}
+
+	/**
+	 * Verify that the JSON path is not present, even if it has a {@code null} value.
+	 * @param expression the {@link JsonPath} expression
+	 * @param args arguments to parameterize the {@code JsonPath} expression with, using
+	 * formatting specifiers defined in {@link String#format(String, Object...)}
+	 * @return {@code this} assertion object
+	 * @throws AssertionError if the value at the given path is not missing
+	 * @since 2.2.0
+	 * @see #doesNotHaveJsonPathValue(CharSequence, Object...)
+	 */
+	public JsonContentAssert doesNotHaveJsonPath(CharSequence expression, Object... args) {
+		new JsonPathValue(expression, args).assertDoesNotHavePath();
 		return this;
 	}
 
@@ -1049,6 +1080,24 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 		}
 
+		void assertHasPath() {
+			try {
+				read();
+			}
+			catch (PathNotFoundException ex) {
+				failWithMessage("No JSON path \"%s\" found", this.expression);
+			}
+		}
+
+		void assertDoesNotHavePath() {
+			try {
+				read();
+				failWithMessage("Expecting no JSON path \"%s\"", this.expression);
+			}
+			catch (PathNotFoundException ex) {
+			}
+		}
+
 		void assertHasValue(Class<?> type, String expectedDescription) {
 			Object value = getValue(true);
 			if (value == null || isIndefiniteAndEmpty()) {
@@ -1080,9 +1129,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 		Object getValue(boolean required) {
 			try {
-				CharSequence json = JsonContentAssert.this.actual;
-				return this.jsonPath.read((json != null) ? json.toString() : null,
-						JsonContentAssert.this.configuration);
+				return read();
 			}
 			catch (Exception ex) {
 				if (required) {
@@ -1090,6 +1137,11 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 				}
 				return null;
 			}
+		}
+
+		private Object read() {
+			CharSequence json = JsonContentAssert.this.actual;
+			return this.jsonPath.read((json != null) ? json.toString() : null, JsonContentAssert.this.configuration);
 		}
 
 		private String getNoValueMessage() {
