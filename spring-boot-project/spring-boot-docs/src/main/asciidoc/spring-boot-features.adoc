@@ -7495,9 +7495,9 @@ full end-to-end tests with an actual server>>.
 To test that {spring-reference}/web-reactive.html[Spring WebFlux] controllers are
 working as expected, you can use the `@WebFluxTest` annotation. `@WebFluxTest`
 auto-configures the Spring WebFlux infrastructure and limits scanned beans to
-`@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, and
-`WebFluxConfigurer`. Regular `@Component` beans are not scanned when the `@WebFluxTest`
-annotation is used.
+`@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`,
+`WebFilter`, and `WebFluxConfigurer`. Regular `@Component` beans are not scanned when the
+`@WebFluxTest` annotation is used.
 
 TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be
 <<appendix.adoc#test-auto-configuration,found in the appendix>>.
