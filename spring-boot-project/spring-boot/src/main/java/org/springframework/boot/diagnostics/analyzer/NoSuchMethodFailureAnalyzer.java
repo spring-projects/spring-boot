@@ -37,6 +37,18 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchMethodError cause) {
+		NoSuchMethodDescriptor descriptor = getNoSuchMethodDescriptor(cause.getMessage());
+		if (descriptor == null) {
+			return null;
+		}
+		String description = getDescription(cause, descriptor);
+		return new FailureAnalysis(description,
+				"Correct the classpath of your application so that it contains a single, compatible version of "
+						+ descriptor.getClassName(),
+				cause);
+	}
+
+	protected NoSuchMethodDescriptor getNoSuchMethodDescriptor(String cause) {
 		String message = cleanMessage(cause);
 		String className = extractClassName(message);
 		if (className == null) {
@@ -50,22 +62,25 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		if (actual == null) {
 			return null;
 		}
-		String description = getDescription(cause, message, className, candidates, actual);
-		return new FailureAnalysis(description,
-				"Correct the classpath of your application so that it contains a single, compatible version of "
-						+ className,
-				cause);
+		return new NoSuchMethodDescriptor(message, className, candidates, actual);
 	}
 
-	private String cleanMessage(NoSuchMethodError error) {
-		int loadedFromIndex = error.getMessage().indexOf(" (loaded from");
+	private String cleanMessage(String message) {
+		int loadedFromIndex = message.indexOf(" (loaded from");
 		if (loadedFromIndex == -1) {
-			return error.getMessage();
+			return message;
 		}
-		return error.getMessage().substring(0, loadedFromIndex);
+		return message.substring(0, loadedFromIndex);
 	}
 
 	private String extractClassName(String message) {
+		if (message.startsWith("'") && message.endsWith("'")) {
+			int splitIndex = message.indexOf(' ');
+			if (splitIndex == -1) {
+				return null;
+			}
+			message = message.substring(splitIndex + 1);
+		}
 		int descriptorIndex = message.indexOf('(');
 		if (descriptorIndex == -1) {
 			return null;
@@ -98,8 +113,7 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 	}
 
-	private String getDescription(NoSuchMethodError cause, String message, String className, List<URL> candidates,
-			URL actual) {
+	private String getDescription(NoSuchMethodError cause, NoSuchMethodDescriptor descriptor) {
 		StringWriter description = new StringWriter();
 		PrintWriter writer = new PrintWriter(description);
 		writer.println("An attempt was made to call a method that does not"
@@ -111,11 +125,12 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		writer.println("The following method did not exist:");
 		writer.println();
 		writer.print("    ");
-		writer.println(message);
+		writer.println(descriptor.getErrorMessage());
 		writer.println();
-		writer.println("The method's class, " + className + ", is available from the following locations:");
+		writer.println(
+				"The method's class, " + descriptor.getClassName() + ", is available from the following locations:");
 		writer.println();
-		for (URL candidate : candidates) {
+		for (URL candidate : descriptor.getCandidateLocations()) {
 			writer.print("    ");
 			writer.println(candidate);
 		}
@@ -123,8 +138,44 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		writer.println("It was loaded from the following location:");
 		writer.println();
 		writer.print("    ");
-		writer.println(actual);
+		writer.println(descriptor.getActualLocation());
 		return description.toString();
+	}
+
+	protected static class NoSuchMethodDescriptor {
+
+		private final String errorMessage;
+
+		private final String className;
+
+		private final List<URL> candidateLocations;
+
+		private final URL actualLocation;
+
+		public NoSuchMethodDescriptor(String errorMessage, String className, List<URL> candidateLocations,
+				URL actualLocation) {
+			this.errorMessage = errorMessage;
+			this.className = className;
+			this.candidateLocations = candidateLocations;
+			this.actualLocation = actualLocation;
+		}
+
+		public String getErrorMessage() {
+			return this.errorMessage;
+		}
+
+		public String getClassName() {
+			return this.className;
+		}
+
+		public List<URL> getCandidateLocations() {
+			return this.candidateLocations;
+		}
+
+		public URL getActualLocation() {
+			return this.actualLocation;
+		}
+
 	}
 
 }

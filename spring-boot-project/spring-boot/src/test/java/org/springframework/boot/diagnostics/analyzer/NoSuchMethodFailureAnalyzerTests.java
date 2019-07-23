@@ -25,6 +25,7 @@ import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer.NoSuchMethodDescriptor;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,9 +35,52 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link NoSuchMethodFailureAnalyzer}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ClassPathOverrides("javax.servlet:servlet-api:2.5")
 class NoSuchMethodFailureAnalyzerTests {
+
+	@Test
+	void parseJava8ErrorMessage() {
+		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
+				"javax.servlet.ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
+						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
+		assertThat(descriptor).isNotNull();
+		assertThat(descriptor.getErrorMessage())
+				.isEqualTo("javax.servlet.ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
+						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
+		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
+		assertThat(descriptor.getCandidateLocations()).isNotEmpty();
+		assertThat(descriptor.getActualLocation()).asString().contains("servlet-api-2.5.jar");
+	}
+
+	@Test
+	void parseJava13OpenJ9ErrorMessage() {
+		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
+				"javax/servlet/ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
+						+ "Ljavax/servlet/ServletRegistration$Dynamic; (loaded from file...");
+		assertThat(descriptor).isNotNull();
+		assertThat(descriptor.getErrorMessage())
+				.isEqualTo("javax/servlet/ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
+						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
+		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
+		assertThat(descriptor.getCandidateLocations()).isNotEmpty();
+		assertThat(descriptor.getActualLocation()).asString().contains("servlet-api-2.5.jar");
+	}
+
+	@Test
+	void parseJava13HotspotErrorMessage() {
+		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
+				"'javax.servlet.ServletRegistration$Dynamic javax.servlet.ServletContext.addServlet("
+						+ "java.lang.String, javax.servlet.Servlet)'");
+		assertThat(descriptor).isNotNull();
+		assertThat(descriptor.getErrorMessage())
+				.isEqualTo("'javax.servlet.ServletRegistration$Dynamic javax.servlet.ServletContext.addServlet("
+						+ "java.lang.String, javax.servlet.Servlet)'");
+		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
+		assertThat(descriptor.getCandidateLocations()).isNotEmpty();
+		assertThat(descriptor.getActualLocation()).asString().contains("servlet-api-2.5.jar");
+	}
 
 	@Test
 	@EnabledOnJre({ JRE.JAVA_8, JRE.JAVA_11, JRE.JAVA_12 })
@@ -50,8 +94,8 @@ class NoSuchMethodFailureAnalyzerTests {
 	@DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11, JRE.JAVA_12 })
 	void noSuchMethodErrorIsAnalyzedJava13AndLater() {
 		testNoSuchMethodErrorFailureAnalysis(
-				"javax/servlet/ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
+				"'javax.servlet.ServletRegistration$Dynamic javax.servlet.ServletContext.addServlet("
+						+ "java.lang.String, javax.servlet.Servlet)'");
 	}
 
 	private void testNoSuchMethodErrorFailureAnalysis(String expectedMethodRepresentation) {
