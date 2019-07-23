@@ -25,7 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * Qualifier for beans that are needed to convert {@link Endpoint} input parameters.
+ * Qualifier for beans that are needed to convert {@link Endpoint @Endpoint} input
+ * parameters.
  *
  * @author Chao Chang
  * @since 2.2.0

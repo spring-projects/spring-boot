@@ -1101,7 +1101,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		void assertHasValue(Class<?> type, String expectedDescription) {
 			Object value = getValue(true);
 			if (value == null || isIndefiniteAndEmpty()) {
-				failWithMessage(getNoValueMessage());
+				failWithNoValueMessage();
 			}
 			if (type != null && !type.isInstance(value)) {
 				failWithMessage(getExpectedValueMessage(expectedDescription));
@@ -1133,19 +1133,19 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			}
 			catch (Exception ex) {
 				if (required) {
-					failWithMessage("%s. %s", getNoValueMessage(), ex.getMessage());
+					failWithNoValueMessage();
 				}
 				return null;
 			}
 		}
 
+		private void failWithNoValueMessage() {
+			failWithMessage("No value at JSON path \"%s\"", this.expression);
+		}
+
 		private Object read() {
 			CharSequence json = JsonContentAssert.this.actual;
 			return this.jsonPath.read((json != null) ? json.toString() : null, JsonContentAssert.this.configuration);
-		}
-
-		private String getNoValueMessage() {
-			return "No value at JSON path \"" + this.expression + "\"";
 		}
 
 		private String getExpectedValueMessage(String expectedDescription) {
