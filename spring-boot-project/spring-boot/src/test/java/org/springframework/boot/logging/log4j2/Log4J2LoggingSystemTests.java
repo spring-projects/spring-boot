@@ -20,7 +20,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -185,31 +184,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel("foo.bar.baz", LogLevel.DEBUG);
 		LogManager.getRootLogger().debug("Hello");
 		assertThat(output.toString()).doesNotContain("Hello");
-	}
-
-	@Test
-	void setLevelForLoggerGroup(CapturedOutput output) {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
-		List<String> members = Arrays.asList("org.springframework.boot");
-		this.logger.debug("Hello");
-		this.loggingSystem.setLoggerGroup("test", members);
-		this.loggingSystem.setLoggerGroupLevel("test", LogLevel.DEBUG);
-		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
-	}
-
-	@Test
-	void setLevelForLoggerGroupToNull(CapturedOutput output) {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
-		List<String> members = Arrays.asList("org.springframework.boot");
-		this.loggingSystem.setLoggerGroup("test", members);
-		this.loggingSystem.setLoggerGroupLevel("test", LogLevel.DEBUG);
-		this.logger.debug("Hello");
-		this.loggingSystem.setLoggerGroupLevel("test", null);
-		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
 	}
 
 	@Test

@@ -52,7 +52,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.contentOf;
 import static org.mockito.Mockito.mock;
@@ -215,40 +214,6 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
 				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.TRACE, LogLevel.TRACE));
-	}
-
-	@Test
-	void setLevelForLoggerGroup(CapturedOutput output) {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, null, null);
-		List<String> members = Arrays.asList("org.springframework.boot");
-		this.logger.debug("Hello");
-		this.loggingSystem.setLoggerGroup("test", members);
-		this.loggingSystem.setLoggerGroupLevel("test", LogLevel.DEBUG);
-		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
-	}
-
-	@Test
-	void setLevelForLoggerGroupToNull(CapturedOutput output) {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, null, null);
-		List<String> members = Arrays.asList("org.springframework.boot");
-		this.loggingSystem.setLoggerGroup("test", members);
-		this.loggingSystem.setLoggerGroupLevel("test", LogLevel.DEBUG);
-		this.logger.debug("Hello");
-		this.loggingSystem.setLoggerGroupLevel("test", null);
-		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
-	}
-
-	@Test
-	void setLogLevelForInvalidLoggerGroup() {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, null, null);
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.loggingSystem.setLoggerGroupLevel("test", LogLevel.DEBUG))
-				.withMessageContaining("Group does not exist");
 	}
 
 	@Test

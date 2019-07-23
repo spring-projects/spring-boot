@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -67,10 +66,6 @@ public abstract class LoggingSystem {
 		systems.put("java.util.logging.LogManager", "org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
 	}
-
-	private Map<String, List<String>> loggerGroups = new ConcurrentHashMap<>();
-
-	private Map<String, LogLevel> loggerGroupConfigurations = new ConcurrentHashMap<>();
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
@@ -128,18 +123,6 @@ public abstract class LoggingSystem {
 	}
 
 	/**
-	 * Set the logging level for a given logger group.
-	 * @param groupName the name of the group to set
-	 * @param level the log level ({@code null}) can be used to remove any custom level
-	 * for the logger group and use the default configuration instead.
-	 */
-	public void setLoggerGroupLevel(String groupName, LogLevel level) {
-		this.loggerGroupConfigurations.put(groupName, level);
-		List<String> members = this.loggerGroups.get(groupName);
-		members.forEach((member) -> setLogLevel(member, level));
-	}
-
-	/**
 	 * Returns a collection of the current configuration for all a {@link LoggingSystem}'s
 	 * loggers.
 	 * @return the current configurations
@@ -157,41 +140,6 @@ public abstract class LoggingSystem {
 	 */
 	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		throw new UnsupportedOperationException("Unable to get logger configuration");
-	}
-
-	/**
-	 * Get the all registered logger groups.
-	 * @return a Set of the names of the logger groups
-	 */
-	public Set<String> getLoggerGroupNames() {
-		return this.loggerGroupConfigurations.isEmpty() ? null : this.loggerGroupConfigurations.keySet();
-	}
-
-	/**
-	 * Get a logger group's configured level.
-	 * @param groupName name of the logger group
-	 * @return the logger groups configured level
-	 */
-	public LogLevel getLoggerGroupConfiguredLevel(String groupName) {
-		return this.loggerGroupConfigurations.get(groupName);
-	}
-
-	/**
-	 * Associate a name to a list of logger's name to create a logger group.
-	 * @param groupName name of the logger group
-	 * @param members list of the members names
-	 */
-	public void setLoggerGroup(String groupName, List<String> members) {
-		this.loggerGroups.put(groupName, members);
-	}
-
-	/**
-	 * Get a logger group's members.
-	 * @param groupName name of the logger group
-	 * @return list of the members names associated with this group
-	 */
-	public List<String> getLoggerGroup(String groupName) {
-		return this.loggerGroups.get(groupName);
 	}
 
 	/**
