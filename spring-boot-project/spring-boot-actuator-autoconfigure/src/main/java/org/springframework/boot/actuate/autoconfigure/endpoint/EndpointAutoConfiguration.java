@@ -16,21 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.convert.ApplicationConversionService;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -53,59 +50,29 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ParameterValueMapper endpointOperationParameterMapper(
-			ApplicationContext applicationContext) {
-		return new ConversionServiceParameterValueMapper(
-				new Factory(applicationContext.getAutowireCapableBeanFactory()).create());
+			@EndpointConverter ObjectProvider<Converter<?, ?>> converters,
+			@EndpointConverter ObjectProvider<GenericConverter> genericConverters) {
+		ConversionService conversionService = createConversionService(
+				converters.orderedStream().collect(Collectors.toList()),
+				genericConverters.orderedStream().collect(Collectors.toList()));
+		return new ConversionServiceParameterValueMapper(conversionService);
+	}
+
+	private ConversionService createConversionService(List<Converter<?, ?>> converters,
+			List<GenericConverter> genericConverters) {
+		if (genericConverters.isEmpty() && converters.isEmpty()) {
+			return ApplicationConversionService.getSharedInstance();
+		}
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		converters.forEach(conversionService::addConverter);
+		genericConverters.forEach(conversionService::addConverter);
+		return conversionService;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public CachingOperationInvokerAdvisor endpointCachingOperationInvokerAdvisor(Environment environment) {
 		return new CachingOperationInvokerAdvisor(new EndpointIdTimeToLivePropertyFunction(environment));
-	}
-
-	private static class Factory {
-
-		@SuppressWarnings("rawtypes")
-		private final List<Converter> converters;
-
-		private final List<GenericConverter> genericConverters;
-
-		Factory(BeanFactory beanFactory) {
-			this.converters = beans(beanFactory, Converter.class,
-					EndpointConverter.VALUE);
-			this.genericConverters = beans(beanFactory, GenericConverter.class,
-					EndpointConverter.VALUE);
-		}
-
-		private <T> List<T> beans(BeanFactory beanFactory, Class<T> type,
-				String qualifier) {
-			if (beanFactory instanceof ListableBeanFactory) {
-				return beans(type, qualifier, (ListableBeanFactory) beanFactory);
-			}
-			return Collections.emptyList();
-		}
-
-		private <T> List<T> beans(Class<T> type, String qualifier,
-				ListableBeanFactory beanFactory) {
-			return new ArrayList<>(BeanFactoryAnnotationUtils
-					.qualifiedBeansOfType(beanFactory, type, qualifier).values());
-		}
-
-		public ConversionService create() {
-			if (this.converters.isEmpty() && this.genericConverters.isEmpty()) {
-				return ApplicationConversionService.getSharedInstance();
-			}
-			ApplicationConversionService conversionService = new ApplicationConversionService();
-			for (Converter<?, ?> converter : this.converters) {
-				conversionService.addConverter(converter);
-			}
-			for (GenericConverter genericConverter : this.genericConverters) {
-				conversionService.addConverter(genericConverter);
-			}
-			return conversionService;
-		}
-
 	}
 
 }

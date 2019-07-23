@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConverterNotFoundException;
@@ -42,72 +43,55 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Chao Chang
  */
-public class EndpointAutoConfigurationTests {
+class EndpointAutoConfigurationTests {
 
-	private static final AutoConfigurations CONFIGURATIONS = AutoConfigurations
-			.of(EndpointAutoConfiguration.class);
-
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(CONFIGURATIONS);
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class));
 
 	@Test
-	public void mapShouldUseConfigurationConverter() {
-		this.contextRunner.withUserConfiguration(ConverterConfiguration.class)
-				.run((context) -> {
-					ParameterValueMapper parameterValueMapper = context
-							.getBean(ParameterValueMapper.class);
-					Object paramValue = parameterValueMapper.mapParameterValue(
-							new TestOperationParameter(Person.class), "John Smith");
-					assertThat(paramValue).isInstanceOf(Person.class);
-					Person person = (Person) paramValue;
-					assertThat(person.firstName).isEqualTo("John");
-					assertThat(person.lastName).isEqualTo("Smith");
-				});
+	void mapShouldUseConfigurationConverter() {
+		this.contextRunner.withUserConfiguration(ConverterConfiguration.class).run((context) -> {
+			ParameterValueMapper parameterValueMapper = context.getBean(ParameterValueMapper.class);
+			Object paramValue = parameterValueMapper.mapParameterValue(new TestOperationParameter(Person.class),
+					"John Smith");
+			assertThat(paramValue).isInstanceOf(Person.class);
+			Person person = (Person) paramValue;
+			assertThat(person.firstName).isEqualTo("John");
+			assertThat(person.lastName).isEqualTo("Smith");
+		});
 	}
 
 	@Test
-	public void mapWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
+	void mapWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
 		assertThatExceptionOfType(ParameterMappingException.class).isThrownBy(() -> {
-			this.contextRunner
-					.withUserConfiguration(NonQualifiedConverterConfiguration.class)
-					.run((context) -> {
-						ParameterValueMapper parameterValueMapper = context
-								.getBean(ParameterValueMapper.class);
-						parameterValueMapper.mapParameterValue(
-								new TestOperationParameter(Person.class), "John Smith");
-					});
+			this.contextRunner.withUserConfiguration(NonQualifiedConverterConfiguration.class).run((context) -> {
+				ParameterValueMapper parameterValueMapper = context.getBean(ParameterValueMapper.class);
+				parameterValueMapper.mapParameterValue(new TestOperationParameter(Person.class), "John Smith");
+			});
 
 		}).withCauseInstanceOf(ConverterNotFoundException.class);
-
 	}
 
 	@Test
-	public void mapShouldUseGenericConfigurationConverter() {
-		this.contextRunner.withUserConfiguration(GenericConverterConfiguration.class)
-				.run((context) -> {
-					ParameterValueMapper parameterValueMapper = context
-							.getBean(ParameterValueMapper.class);
-					Object paramValue = parameterValueMapper.mapParameterValue(
-							new TestOperationParameter(Person.class), "John Smith");
-					assertThat(paramValue).isInstanceOf(Person.class);
-					Person person = (Person) paramValue;
-					assertThat(person.firstName).isEqualTo("John");
-					assertThat(person.lastName).isEqualTo("Smith");
-				});
+	void mapShouldUseGenericConfigurationConverter() {
+		this.contextRunner.withUserConfiguration(GenericConverterConfiguration.class).run((context) -> {
+			ParameterValueMapper parameterValueMapper = context.getBean(ParameterValueMapper.class);
+			Object paramValue = parameterValueMapper.mapParameterValue(new TestOperationParameter(Person.class),
+					"John Smith");
+			assertThat(paramValue).isInstanceOf(Person.class);
+			Person person = (Person) paramValue;
+			assertThat(person.firstName).isEqualTo("John");
+			assertThat(person.lastName).isEqualTo("Smith");
+		});
 	}
 
 	@Test
-	public void mapWhenGenericConfigurationConverterIsNotQualifiedShouldNotConvert() {
+	void mapWhenGenericConfigurationConverterIsNotQualifiedShouldNotConvert() {
 		assertThatExceptionOfType(ParameterMappingException.class).isThrownBy(() -> {
-			this.contextRunner
-					.withUserConfiguration(
-							NonQualifiedGenericConverterConfiguration.class)
-					.run((context) -> {
-						ParameterValueMapper parameterValueMapper = context
-								.getBean(ParameterValueMapper.class);
-						parameterValueMapper.mapParameterValue(
-								new TestOperationParameter(Person.class), "John Smith");
-					});
+			this.contextRunner.withUserConfiguration(NonQualifiedGenericConverterConfiguration.class).run((context) -> {
+				ParameterValueMapper parameterValueMapper = context.getBean(ParameterValueMapper.class);
+				parameterValueMapper.mapParameterValue(new TestOperationParameter(Person.class), "John Smith");
+			});
 
 		}).withCauseInstanceOf(ConverterNotFoundException.class);
 
@@ -131,8 +115,7 @@ public class EndpointAutoConfigurationTests {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType,
-				TypeDescriptor targetType) {
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			String[] content = StringUtils.split((String) source, " ");
 			return new Person(content[0], content[1]);
 		}
@@ -144,7 +127,7 @@ public class EndpointAutoConfigurationTests {
 
 		@Bean
 		@EndpointConverter
-		public Converter<String, Person> personConverter() {
+		Converter<String, Person> personConverter() {
 			return new PersonConverter();
 		}
 
@@ -154,7 +137,7 @@ public class EndpointAutoConfigurationTests {
 	static class NonQualifiedConverterConfiguration {
 
 		@Bean
-		public Converter<String, Person> personConverter() {
+		Converter<String, Person> personConverter() {
 			return new PersonConverter();
 		}
 
@@ -165,7 +148,7 @@ public class EndpointAutoConfigurationTests {
 
 		@Bean
 		@EndpointConverter
-		public GenericConverter genericPersonConverter() {
+		GenericConverter genericPersonConverter() {
 			return new GenericPersonConverter();
 		}
 
@@ -175,7 +158,7 @@ public class EndpointAutoConfigurationTests {
 	static class NonQualifiedGenericConverterConfiguration {
 
 		@Bean
-		public GenericConverter genericPersonConverter() {
+		GenericConverter genericPersonConverter() {
 			return new GenericPersonConverter();
 		}
 
@@ -190,14 +173,6 @@ public class EndpointAutoConfigurationTests {
 		Person(String firstName, String lastName) {
 			this.firstName = firstName;
 			this.lastName = lastName;
-		}
-
-		public String getFirstName() {
-			return this.firstName;
-		}
-
-		public String getLastName() {
-			return this.lastName;
 		}
 
 	}
