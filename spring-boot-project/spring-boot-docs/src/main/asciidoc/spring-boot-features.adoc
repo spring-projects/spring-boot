@@ -6283,6 +6283,43 @@ spring.kafka.producer.properties.spring.json.add.type.headers=false
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot
 explicitly supports.
 
+[[boot-features-embedded-kafka]]
+==== Testing with Embedded Kafka
+Spring for Apache Kafka provides a convenient way to test projects with an embedded Apache Kafka
+broker. To use this feature, annotate a test class with `@EmbeddedKafka` from the `spring-kafka-test`
+module. For more information, please see the Spring for Apache Kafka
+https://docs.spring.io/spring-kafka/docs/current/reference/html/#embedded-kafka-annotation[reference manual].
+
+To make Spring Boot auto-configuration work with the aforementioned embedded Apache Kafka broker, you need
+to remap a system property for embedded broker addresses (populated by the `EmbeddedKafkaBroker`)
+into the Spring Boot configuration property for Apache Kafka. There are several ways to do that:
+
+* Provide a system property to map embedded broker addresses into `spring.kafka.bootstrap-servers` in the test class:
+
+[source,java,indent=0]
+----
+static {
+    System.setProperty(EmbeddedKafkaBroker.BROKER_LIST_PROPERTY, "spring.kafka.bootstrap-servers");
+}
+----
+
+* Configure a property name on the `@EmbeddedKafka` annotation:
+
+[source,java,indent=0]
+----
+@EmbeddedKafka(topics = "someTopic",
+        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+----
+
+* Use a placeholder in configuration properties:
+
+[source,properties,indent=0]
+----
+spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}
+----
+
+
+
 [[boot-features-resttemplate]]
 == Calling REST Services with `RestTemplate`
 If you need to call remote REST services from your application, you can use the Spring
