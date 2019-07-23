@@ -25,6 +25,8 @@ import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -73,6 +75,7 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
+	@DisabledOnJre(JRE.JAVA_13)
 	void systemPropertyWithYaml() {
 		this.contextRunner
 				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
@@ -87,6 +90,7 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
+	@DisabledOnJre(JRE.JAVA_13)
 	void explicitConfigFileWithYaml() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
@@ -103,6 +107,7 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
+	@DisabledOnJre(JRE.JAVA_13)
 	void explicitConfigUrlWithYaml() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
