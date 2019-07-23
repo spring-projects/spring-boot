@@ -113,7 +113,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected instanceof Resource) {
 			return isEqualToJson((Resource) expected);
 		}
-		failWithMessage("Unsupported type for JSON assert {}", expected.getClass());
+		failWithMessage("Unsupported type for JSON assert %s", expected.getClass());
 		return null;
 	}
 
@@ -441,7 +441,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected instanceof Resource) {
 			return isNotEqualToJson((Resource) expected);
 		}
-		failWithMessage("Unsupported type for JSON assert {}", expected.getClass());
+		failWithMessage("Unsupported type for JSON assert %s", expected.getClass());
 		return null;
 	}
 
@@ -1006,14 +1006,14 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 	private JsonContentAssert assertNotFailed(JSONCompareResult result) {
 		if (result.failed()) {
-			failWithMessage("JSON Comparison failure: {}", result.getMessage());
+			failWithMessage("JSON Comparison failure: %s", result.getMessage());
 		}
 		return this;
 	}
 
 	private JsonContentAssert assertNotPassed(JSONCompareResult result) {
 		if (result.passed()) {
-			failWithMessage("JSON Comparison failure: {}", result.getMessage());
+			failWithMessage("JSON Comparison failure: %s", result.getMessage());
 		}
 		return this;
 	}
@@ -1086,7 +1086,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			}
 			catch (Exception ex) {
 				if (required) {
-					failWithMessage("{}. {}", getNoValueMessage(), ex.getMessage());
+					failWithMessage("%s. %s", getNoValueMessage(), ex.getMessage());
 				}
 				return null;
 			}
