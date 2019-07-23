@@ -7379,8 +7379,9 @@ assertThat(json.write(message))
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest`
 annotation. `@WebMvcTest` auto-configures the Spring MVC infrastructure and limits
 scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`,
-`GenericConverter`, `Filter`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`.
-Regular `@Component` beans are not scanned when using this annotation.
+`GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, and
+`HandlerMethodArgumentResolver`. Regular `@Component` beans are not scanned when using
+this annotation.
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be
 <<appendix.adoc#test-auto-configuration,found in the appendix>>.
