@@ -388,5 +388,14 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>java13</id>
+			<activation>
+				<jdk>13</jdk>
+			</activation>
+			<properties>
+				<gradle.task>assemble</gradle.task>
+			</properties>
+		</profile>
 	</profiles>
 </project>
