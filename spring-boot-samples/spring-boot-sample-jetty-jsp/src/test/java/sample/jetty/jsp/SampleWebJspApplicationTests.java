@@ -24,7 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -59,10 +60,12 @@ public class SampleWebJspApplicationTests {
 		// To allow aliased resources on Concourse Windows CI (See gh-15553) to be served
 		// as static resources.
 		@Bean
-		public JettyServerCustomizer jettyServerCustomizer() {
-			return (server) -> {
-				ContextHandler handler = (ContextHandler) server.getHandler();
-				handler.addAliasCheck(new ContextHandler.ApproveAliases());
+		public WebServerFactoryCustomizer<JettyServletWebServerFactory> jettyServerCustomizer() {
+			return (factory) -> {
+				factory.addServerCustomizers((server) -> {
+					ContextHandler handler = (ContextHandler) server.getHandler();
+					handler.addAliasCheck(new ContextHandler.ApproveAliases());
+				});
 			};
 		}
 
