@@ -31,11 +31,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.ReactiveAdapterRegistry;
-import org.springframework.core.annotation.Order;
-import org.springframework.core.codec.CharSequenceEncoder;
-import org.springframework.core.codec.StringDecoder;
-import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.cbor.Jackson2CborDecoder;
 import org.springframework.http.codec.cbor.Jackson2CborEncoder;
@@ -59,11 +54,7 @@ public class RSocketStrategiesAutoConfiguration {
 	@ConditionalOnMissingBean
 	public RSocketStrategies rSocketStrategies(ObjectProvider<RSocketStrategiesCustomizer> customizers) {
 		RSocketStrategies.Builder builder = RSocketStrategies.builder();
-		builder.reactiveAdapterStrategy(ReactiveAdapterRegistry.getSharedInstance());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-		builder.decoder(StringDecoder.allMimeTypes());
-		builder.encoder(CharSequenceEncoder.allMimeTypes());
-		builder.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT));
 		return builder.build();
 	}
 
@@ -74,7 +65,6 @@ public class RSocketStrategiesAutoConfiguration {
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_CBOR };
 
 		@Bean
-		@Order(0)
 		@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
 		public RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(Jackson2ObjectMapperBuilder builder) {
 			return (strategy) -> {
@@ -94,7 +84,6 @@ public class RSocketStrategiesAutoConfiguration {
 				new MediaType("application", "*+json") };
 
 		@Bean
-		@Order(1)
 		@ConditionalOnBean(ObjectMapper.class)
 		public RSocketStrategiesCustomizer jacksonJsonRSocketStrategyCustomizer(ObjectMapper objectMapper) {
 			return (strategy) -> {

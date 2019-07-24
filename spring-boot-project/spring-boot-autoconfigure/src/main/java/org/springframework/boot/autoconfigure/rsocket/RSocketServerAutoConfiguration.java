@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.rsocket;
 import java.util.stream.Collectors;
 
 import io.rsocket.RSocketFactory;
+import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
 
@@ -40,6 +41,7 @@ import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
@@ -102,6 +104,18 @@ public class RSocketServerAutoConfiguration {
 		RSocketServerBootstrap rSocketServerBootstrap(RSocketServerFactory rSocketServerFactory,
 				RSocketMessageHandler rSocketMessageHandler) {
 			return new RSocketServerBootstrap(rSocketServerFactory, rSocketMessageHandler.serverResponder());
+		}
+
+		@Bean
+		ServerRSocketFactoryCustomizer frameDecoderServerFactoryCustomizer(
+				RSocketMessageHandler rSocketMessageHandler) {
+			return (serverRSocketFactory) -> {
+				if (rSocketMessageHandler.getRSocketStrategies()
+						.dataBufferFactory() instanceof NettyDataBufferFactory) {
+					return serverRSocketFactory.frameDecoder(PayloadDecoder.ZERO_COPY);
+				}
+				return serverRSocketFactory;
+			};
 		}
 
 	}
