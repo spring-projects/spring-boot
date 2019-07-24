@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Madhura Bhave
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class JettyServerCustomizerConfig {
 
 	@Bean
