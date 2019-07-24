@@ -194,6 +194,7 @@ class EmbeddedMongoAutoConfigurationTests {
 	void customMongoServerConfiguration() {
 		load(CustomMongoConfiguration.class);
 		Map<String, MongoClient> mongoClients = this.context.getBeansOfType(MongoClient.class);
+		assertThat(mongoClients).isNotEmpty();
 		for (String mongoClientBeanName : mongoClients.keySet()) {
 			BeanDefinition beanDefinition = this.context.getBeanFactory().getBeanDefinition(mongoClientBeanName);
 			assertThat(beanDefinition.getDependsOn()).contains("customMongoServer");
