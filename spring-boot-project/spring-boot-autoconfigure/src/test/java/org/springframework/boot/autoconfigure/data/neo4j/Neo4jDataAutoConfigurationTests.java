@@ -16,16 +16,21 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import java.time.LocalDate;
+
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.junit.jupiter.api.Test;
+import org.neo4j.ogm.driver.Driver;
 import org.neo4j.ogm.driver.NativeTypesNotAvailableException;
 import org.neo4j.ogm.driver.NativeTypesNotSupportedException;
+import org.neo4j.ogm.drivers.bolt.driver.BoltDriver;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.Event;
 import org.neo4j.ogm.session.event.EventListener;
 import org.neo4j.ogm.session.event.PersistenceEvent;
+import org.testcontainers.containers.Neo4jContainer;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
@@ -33,6 +38,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jDriverAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -67,8 +73,9 @@ class Neo4jDataAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withClassLoader(new FilteredClassLoader(EmbeddedDriver.class))
-			.withUserConfiguration(TestConfiguration.class).withConfiguration(
-					AutoConfigurations.of(Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class));
+			.withUserConfiguration(TestConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(Neo4jDriverAutoConfiguration.class,
+					Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class));
 
 	@Test
 	void defaultConfiguration() {
@@ -78,7 +85,35 @@ class Neo4jDataAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
 			assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
 			assertThat(context).doesNotHaveBean(BookmarkManager.class);
+			assertThat(context).doesNotHaveBean(BoltDriver.class);
 		});
+	}
+
+	@Test
+	void shouldUseExistingNativeDriverToProvideBoltDriver() {
+
+		try (Neo4jContainer neo4jServer = new Neo4jContainer<>()) {
+			neo4jServer.start();
+			this.contextRunner.withPropertyValues("spring.neo4j.uri=" + neo4jServer.getBoltUrl(),
+					"spring.neo4j.authentication.username=neo4j",
+					"spring.neo4j.authentication.password=" + neo4jServer.getAdminPassword(),
+					"spring.data.neo4j.use-native-types=true").run((context) -> {
+						assertThat(context).hasSingleBean(org.neo4j.ogm.config.Configuration.class);
+						assertThat(context).hasSingleBean(SessionFactory.class);
+						assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
+						assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
+						assertThat(context).doesNotHaveBean(BookmarkManager.class);
+
+						assertThat(context).hasSingleBean(Driver.class);
+						assertThat(context).hasSingleBean(BoltDriver.class);
+
+						// Make sure we configured both session and driver correctly
+						BoltDriver ogmDriver = context.getBean(BoltDriver.class);
+						SessionFactory sessionFactory = context.getBean(SessionFactory.class);
+						assertThat(sessionFactory.unwrap(org.neo4j.ogm.driver.Driver.class)).isSameAs(ogmDriver);
+						assertThat(ogmDriver.getTypeSystem().supportsAsNativeType(LocalDate.class)).isTrue();
+					});
+		}
 	}
 
 	@Test
@@ -96,6 +131,7 @@ class Neo4jDataAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomSessionFactory.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(org.neo4j.ogm.config.Configuration.class);
 			assertThat(context).hasSingleBean(SessionFactory.class);
+			assertThat(context).doesNotHaveBean(BoltDriver.class);
 		});
 	}
 
@@ -106,6 +142,7 @@ class Neo4jDataAutoConfigurationTests {
 					.isSameAs(context.getBean("myConfiguration"));
 			assertThat(context).hasSingleBean(SessionFactory.class);
 			assertThat(context).hasSingleBean(org.neo4j.ogm.config.Configuration.class);
+			assertThat(context).doesNotHaveBean(BoltDriver.class);
 		});
 	}
 

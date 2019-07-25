@@ -44,7 +44,10 @@ class MongoAutoConfigurationTests {
 
 	@Test
 	void clientExists() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(MongoClient.class);
+			context.getBean(MongoClient.class).getDatabase("asd");
+		});
 	}
 
 	@Test

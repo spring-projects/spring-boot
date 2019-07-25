@@ -20,18 +20,24 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.ogm.config.AutoIndexMode;
+import org.neo4j.ogm.drivers.bolt.driver.BoltDriver;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.EventListener;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jDriverAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -53,9 +59,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Vince Bickers
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Michael J. Simons
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
+@AutoConfigureAfter(Neo4jDriverAutoConfiguration.class)
 @ConditionalOnClass({ SessionFactory.class, Neo4jTransactionManager.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
@@ -69,10 +77,37 @@ public class Neo4jDataAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(Driver.class)
+	@ConditionalOnClass(BoltDriver.class)
+	public org.neo4j.ogm.driver.Driver ogmDriver(org.neo4j.ogm.config.Configuration ogmConfiguration,
+			Driver nativeDriver) {
+		BoltDriver boltDriver = new BoltDriver(nativeDriver);
+		// That makes sure the type system get's initialized.
+		boltDriver.configure(ogmConfiguration);
+		return boltDriver;
+	}
+
+	@Bean
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
-			ApplicationContext applicationContext, ObjectProvider<EventListener> eventListeners) {
-		SessionFactory sessionFactory = new SessionFactory(configuration, getPackagesToScan(applicationContext));
-		eventListeners.stream().forEach(sessionFactory::register);
+			ApplicationContext applicationContext, ObjectProvider<EventListener> eventListenerProvider,
+			ObjectProvider<org.neo4j.ogm.driver.Driver> ogmDriverProvider) {
+
+		SessionFactory sessionFactory;
+
+		org.neo4j.ogm.driver.Driver ogmDriver = ogmDriverProvider.getIfUnique();
+		String[] packagesToScan = getPackagesToScan(applicationContext);
+		if (ogmDriver == null) {
+			sessionFactory = new SessionFactory(configuration, packagesToScan);
+		}
+		else {
+			sessionFactory = new SessionFactory(ogmDriver, configuration.mergeBasePackagesWith(packagesToScan));
+			if (configuration.getAutoIndex() != AutoIndexMode.NONE) {
+				sessionFactory.runAutoIndexManager(configuration);
+			}
+		}
+
+		eventListenerProvider.stream().forEach(sessionFactory::register);
 		return sessionFactory;
 	}
 
