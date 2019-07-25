@@ -39,6 +39,7 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 	 * @param cluster the Couchbase cluster
 	 */
 	public CouchbaseReactiveHealthIndicator(Cluster cluster) {
+		super("Couchbase health check failed");
 		this.cluster = cluster;
 	}
 
