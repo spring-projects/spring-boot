@@ -16,15 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
+import org.springframework.boot.actuate.health.DefaultHealthIndicatorStrategy;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorStrategy;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -82,6 +85,18 @@ class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldCreateDefaultHealthIndicatorStrategy() {
+		this.contextRunner.run((context) -> assertThat(context).getBean(HealthIndicatorStrategy.class)
+				.isInstanceOf(DefaultHealthIndicatorStrategy.class));
+	}
+
+	@Test
+	void shouldNotCreateDefaultHealthIndicatorCustomStrategyPresent() {
+		this.contextRunner.withBean(CustomHealthIndicatorStrategy.class).run((context) -> assertThat(context)
+				.getBean(HealthIndicatorStrategy.class).isInstanceOf(CustomHealthIndicatorStrategy.class));
+	}
+
+	@Test
 	void runWhenHasCustomOrderPropertyShouldCreateOrderedHealthAggregator() {
 		this.contextRunner.withPropertyValues("management.health.status.order:UP,DOWN").run((context) -> {
 			OrderedHealthAggregator aggregator = context.getBean(OrderedHealthAggregator.class);
@@ -107,6 +122,15 @@ class HealthIndicatorAutoConfigurationTests {
 		@ConditionalOnEnabledHealthIndicator("custom")
 		HealthIndicator customHealthIndicator() {
 			return new CustomHealthIndicator();
+		}
+
+	}
+
+	static class CustomHealthIndicatorStrategy implements HealthIndicatorStrategy {
+
+		@Override
+		public Map<String, Health> doHealth(Map<String, HealthIndicator> healthIndicators) {
+			return Collections.emptyMap();
 		}
 
 	}

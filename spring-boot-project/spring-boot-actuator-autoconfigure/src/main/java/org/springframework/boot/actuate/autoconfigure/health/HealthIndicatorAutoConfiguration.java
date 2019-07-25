@@ -21,9 +21,11 @@ import java.util.Map;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
+import org.springframework.boot.actuate.health.DefaultHealthIndicatorStrategy;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
+import org.springframework.boot.actuate.health.HealthIndicatorStrategy;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
@@ -69,6 +71,12 @@ public class HealthIndicatorAutoConfiguration {
 	@ConditionalOnMissingBean(HealthIndicatorRegistry.class)
 	public HealthIndicatorRegistry healthIndicatorRegistry(ApplicationContext applicationContext) {
 		return HealthIndicatorRegistryBeans.get(applicationContext);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public HealthIndicatorStrategy healthIndicatorStrategy() {
+		return new DefaultHealthIndicatorStrategy();
 	}
 
 	@Configuration(proxyBeanMethods = false)

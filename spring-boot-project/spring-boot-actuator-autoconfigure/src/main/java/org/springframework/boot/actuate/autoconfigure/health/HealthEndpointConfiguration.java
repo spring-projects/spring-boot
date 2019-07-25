@@ -21,6 +21,7 @@ import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
+import org.springframework.boot.actuate.health.HealthIndicatorStrategy;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
@@ -38,8 +39,9 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthEndpoint healthEndpoint(HealthAggregator healthAggregator, HealthIndicatorRegistry registry) {
-		return new HealthEndpoint(new CompositeHealthIndicator(healthAggregator, registry));
+	HealthEndpoint healthEndpoint(HealthAggregator healthAggregator, HealthIndicatorRegistry registry,
+			HealthIndicatorStrategy healthIndicatorStrategy) {
+		return new HealthEndpoint(new CompositeHealthIndicator(healthAggregator, registry, healthIndicatorStrategy));
 	}
 
 }
