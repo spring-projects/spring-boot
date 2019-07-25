@@ -48,7 +48,9 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
-@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class })
+@ConditionalOnMissingBean(value = { ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class }, type = {
+		"org.springframework.security.oauth2.jwt.ReactiveJwtDecoder",
+		"org.springframework.security.oauth2.server.resource.introspection.ReactiveOAuth2TokenIntrospectionClient" })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveUserDetailsServiceAutoConfiguration {
 

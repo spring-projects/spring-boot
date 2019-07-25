@@ -23,8 +23,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +44,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2TokenIntrospectionClient;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,6 +101,36 @@ class UserDetailsServiceAutoConfigurationTests {
 			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 			assertThat(provider.authenticate(token)).isNotNull();
 		});
+	}
+
+	@Test
+	void defaultUserNotCreatedIfResourceServerWithOpaqueIsUsed() {
+		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
+		webApplicationContextRunner
+				.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
+				.withUserConfiguration(TestSecurityConfiguration.class)
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(OAuth2TokenIntrospectionClient.class);
+					assertThat(context).doesNotHaveBean(UserDetailsService.class);
+				});
+	}
+
+	@Test
+	void defaultUserNotCreatedIfResourceServerWithJWTIsUsed() {
+		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
+		webApplicationContextRunner
+				.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
+				.withUserConfiguration(TestSecurityConfiguration.class)
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JwtDecoder.class);
+					assertThat(context).doesNotHaveBean(UserDetailsService.class);
+				});
 	}
 
 	@Test
