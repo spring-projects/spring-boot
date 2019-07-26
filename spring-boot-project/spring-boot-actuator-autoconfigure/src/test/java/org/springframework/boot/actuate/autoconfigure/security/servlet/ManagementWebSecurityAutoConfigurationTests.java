@@ -37,6 +37,7 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.FilterChainProxy;
@@ -126,8 +127,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/foo").permitAll().anyRequest().authenticated().and().formLogin()
-					.and().httpBasic();
+			http.authorizeRequests((requests) -> requests.antMatchers("/foo").permitAll().anyRequest().authenticated())
+					.formLogin(Customizer.withDefaults()).httpBasic();
 		}
 
 	}

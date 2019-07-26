@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -114,11 +115,18 @@ class SampleSecureWebFluxCustomSecurityTests {
 		}
 
 		@Bean
-		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info")).permitAll()
-					.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
-					.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().pathMatchers("/login")
-					.permitAll().anyExchange().authenticated().and().httpBasic().and().build();
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+			// @formatter:off
+			http.authorizeExchange((exchanges) ->
+					exchanges
+						.matchers(EndpointRequest.to("health", "info")).permitAll()
+						.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
+						.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+						.pathMatchers("/login").permitAll()
+						.anyExchange().authenticated())
+				.httpBasic(Customizer.withDefaults());
+			// @formatter:off
+			return http.build();
 		}
 
 	}
