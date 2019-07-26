@@ -17,13 +17,16 @@
 package org.springframework.boot.actuate.autoconfigure.neo4j;
 
 import org.junit.jupiter.api.Test;
-import org.neo4j.ogm.session.Session;
+import org.neo4j.driver.v1.Driver;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator;
+import org.springframework.boot.actuate.neo4j.Neo4jNativeHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -38,38 +41,61 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Michael J. Simons
  */
 class Neo4jHealthIndicatorAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(Neo4jConfiguration.class).withConfiguration(AutoConfigurations
-					.of(Neo4jHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(Neo4jHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class)
-				.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.withUserConfiguration(SessionFactoryBasedNeo4jConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class)
+						.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.neo4j.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
-						.hasSingleBean(ApplicationHealthIndicator.class));
+		this.contextRunner.withUserConfiguration(SessionFactoryBasedNeo4jConfiguration.class)
+				.withPropertyValues("management.health.neo4j.enabled:false").run((context) -> assertThat(context)
+						.doesNotHaveBean(Neo4jHealthIndicator.class).hasSingleBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	void defaultIndicatorCanBeReplaced() {
-		this.contextRunner.withUserConfiguration(CustomIndicatorConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(Neo4jHealthIndicator.class);
-			assertThat(context).doesNotHaveBean(ApplicationHealthIndicator.class);
-			Health health = context.getBean(Neo4jHealthIndicator.class).health();
-			assertThat(health.getDetails()).containsOnly(entry("test", true));
-		});
+		this.contextRunner
+				.withUserConfiguration(SessionFactoryBasedNeo4jConfiguration.class, CustomIndicatorConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("neo4jHealthIndicator");
+					assertThat(context).doesNotHaveBean(ApplicationHealthIndicator.class);
+					Health health = context.getBean("neo4jHealthIndicator", HealthIndicator.class).health();
+					assertThat(health.getDetails()).containsOnly(entry("test", true));
+				});
+	}
+
+	@Test
+	void defaultNativeIndicatorCanBeReplaced() {
+		this.contextRunner
+				.withUserConfiguration(DriverBasedNeo4jConfiguration.class, CustomIndicatorConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("neo4jHealthIndicator");
+					assertThat(context).doesNotHaveBean(ApplicationHealthIndicator.class);
+					Health health = context.getBean("neo4jHealthIndicator", HealthIndicator.class).health();
+					assertThat(health.getDetails()).containsOnly(entry("test", true));
+				});
+	}
+
+	@Test
+	void shouldPreferDriver() {
+		this.contextRunner
+				.withUserConfiguration(SessionFactoryBasedNeo4jConfiguration.class, DriverBasedNeo4jConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Neo4jNativeHealthIndicator.class)
+						.doesNotHaveBean(Neo4jHealthIndicator.class).doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class Neo4jConfiguration {
+	static class SessionFactoryBasedNeo4jConfiguration {
 
 		@Bean
 		SessionFactory sessionFactory() {
@@ -79,17 +105,25 @@ class Neo4jHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class DriverBasedNeo4jConfiguration {
+
+		@Bean
+		Driver driver() {
+			return mock(Driver.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomIndicatorConfiguration {
 
 		@Bean
-		Neo4jHealthIndicator neo4jHealthIndicator(SessionFactory sessionFactory) {
-			return new Neo4jHealthIndicator(sessionFactory) {
+		HealthIndicator neo4jHealthIndicator() {
+			return new AbstractHealthIndicator() {
 
-				@Override
-				protected void extractResult(Session session, Health.Builder builder) {
+				protected void doHealthCheck(Health.Builder builder) throws Exception {
 					builder.up().withDetail("test", true);
 				}
-
 			};
 		}
 
