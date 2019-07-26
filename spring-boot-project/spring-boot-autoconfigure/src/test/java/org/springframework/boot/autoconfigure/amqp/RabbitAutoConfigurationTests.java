@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLContext;
@@ -137,7 +138,7 @@ public class RabbitAutoConfigurationTests {
 					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
 					com.rabbitmq.client.ConnectionFactory rcf = connectionFactory.getRabbitConnectionFactory();
 					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
-					assertThat((Address[]) ReflectionTestUtils.getField(connectionFactory, "addresses")).hasSize(1);
+					assertThat((List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses")).hasSize(1);
 				});
 	}
 
@@ -145,7 +146,7 @@ public class RabbitAutoConfigurationTests {
 	public void testConnectionFactoryWithCustomConnectionNameStrategy() {
 		this.contextRunner.withUserConfiguration(ConnectionNameStrategyConfiguration.class).run((context) -> {
 			CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
-			Address[] addresses = (Address[]) ReflectionTestUtils.getField(connectionFactory, "addresses");
+			List<Address> addresses = (List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses");
 			assertThat(addresses).hasSize(1);
 			com.rabbitmq.client.ConnectionFactory rcf = mock(com.rabbitmq.client.ConnectionFactory.class);
 			given(rcf.newConnection(isNull(), eq(addresses), anyString())).willReturn(mock(Connection.class));
