@@ -2,7 +2,7 @@ source ./test-functions.sh
 install_service
 
 useradd wagner
-echo 'RUN_AS=wagner' > /test-service/spring-boot-app.conf
+echo 'RUN_AS_USER=wagner' > /test-service/spring-boot-app.conf
 
 useradd phil
 chown phil /test-service/spring-boot-app.jar
