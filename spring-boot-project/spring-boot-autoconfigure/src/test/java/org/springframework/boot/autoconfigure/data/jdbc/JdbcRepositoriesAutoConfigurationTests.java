@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.jdbc.city.City;
 import org.springframework.boot.autoconfigure.data.jdbc.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -65,8 +66,8 @@ class JdbcRepositoriesAutoConfigurationTests {
 	@Test
 	void basicAutoConfiguration() {
 		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class, DataSourceAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
+						DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class))
 				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.schema=classpath:data-jdbc-schema.sql",
 						"spring.datasource.data=classpath:city.sql", "spring.datasource.generate-unique-name:true")
@@ -90,8 +91,8 @@ class JdbcRepositoriesAutoConfigurationTests {
 	@Test
 	void honoursUsersEnableJdbcRepositoriesConfiguration() {
 		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(JdbcTemplateAutoConfiguration.class, DataSourceAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
+						DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class))
 				.withUserConfiguration(EnableRepositoriesConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.schema=classpath:data-jdbc-schema.sql",
 						"spring.datasource.data=classpath:city.sql", "spring.datasource.generate-unique-name:true")
