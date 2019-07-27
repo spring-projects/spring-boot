@@ -166,6 +166,7 @@ class DispatcherServletAutoConfigurationTests {
 					assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").containsExactly(true);
 					assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").containsExactly(false);
 					assertThat(dispatcherServlet).extracting("dispatchTraceRequest").containsExactly(true);
+					assertThat(dispatcherServlet).extracting("publishEvents").containsExactly(false);
 					assertThat(context.getBean("dispatcherServletRegistration"))
 							.hasFieldOrPropertyWithValue("loadOnStartup", 5);
 				});
