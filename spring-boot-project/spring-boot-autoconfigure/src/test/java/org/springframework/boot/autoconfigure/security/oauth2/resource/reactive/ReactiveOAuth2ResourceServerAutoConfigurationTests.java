@@ -375,8 +375,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	static class SecurityWebFilterChainConfig {
 
 		@Bean
-		SecurityWebFilterChain testSpringSecurityFilterChain(ServerHttpSecurity http) {
-			http.authorizeExchange().pathMatchers("/message/**").hasRole("ADMIN").anyExchange().authenticated().and()
+		SecurityWebFilterChain testSpringSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+			http.authorizeExchange(
+					(exchanges) -> exchanges.pathMatchers("/message/**").hasRole("ADMIN").anyExchange().authenticated())
 					.httpBasic();
 			return http.build();
 		}

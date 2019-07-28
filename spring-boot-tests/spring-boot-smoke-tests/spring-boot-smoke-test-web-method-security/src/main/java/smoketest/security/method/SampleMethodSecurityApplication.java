@@ -73,15 +73,13 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-			http.authorizeRequests()
-					.antMatchers("/login").permitAll()
-					.anyRequest().fullyAuthenticated()
-					.and()
-				.formLogin().loginPage("/login").failureUrl("/login?error")
-					.and()
-				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-					.and()
-				.exceptionHandling().accessDeniedPage("/access?error");
+			http.authorizeRequests((requests) ->
+					requests
+						.antMatchers("/login").permitAll()
+						.anyRequest().fullyAuthenticated())
+				.formLogin((form) -> form.loginPage("/login").failureUrl("/login?error"))
+				.logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout")))
+				.exceptionHandling((exceptions) -> exceptions.accessDeniedPage("/access?error"));
 			// @formatter:on
 		}
 
@@ -93,12 +91,8 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			// @formatter:off
-			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
-					.anyRequest().authenticated()
-					.and()
-				.httpBasic();
-			// @formatter:on
+			http.requestMatcher(EndpointRequest.toAnyEndpoint())
+					.authorizeRequests((requests) -> requests.anyRequest().authenticated()).httpBasic();
 		}
 
 	}

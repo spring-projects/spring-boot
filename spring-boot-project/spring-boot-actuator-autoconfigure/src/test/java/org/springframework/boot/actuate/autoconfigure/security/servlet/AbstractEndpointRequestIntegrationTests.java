@@ -167,10 +167,14 @@ abstract class AbstractEndpointRequestIntegrationTests {
 			return new WebSecurityConfigurerAdapter() {
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests().requestMatchers(EndpointRequest.toLinks()).permitAll()
+					// @formatter:off
+					http.authorizeRequests((requests) -> requests
+							.requestMatchers(EndpointRequest.toLinks()).permitAll()
 							.requestMatchers(EndpointRequest.to(TestEndpoint1.class)).permitAll()
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated().anyRequest()
-							.hasRole("ADMIN").and().httpBasic();
+							.hasRole("ADMIN"))
+						.httpBasic();
+					// @formatter:on
 				}
 			};
 		}

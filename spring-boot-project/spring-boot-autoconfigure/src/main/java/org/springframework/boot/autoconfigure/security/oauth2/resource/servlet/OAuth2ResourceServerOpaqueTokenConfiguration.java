@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOAuth2TokenIntrospectionClient;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2TokenIntrospectionClient;
 
@@ -60,7 +61,8 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 			return new WebSecurityConfigurerAdapter() {
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests().anyRequest().authenticated().and().oauth2ResourceServer().opaqueToken();
+					http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
+							.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 				}
 			};
 		}

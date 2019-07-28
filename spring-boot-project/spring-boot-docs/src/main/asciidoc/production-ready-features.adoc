@@ -396,9 +396,9 @@ A typical Spring Security configuration might look something like the following 
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
-					.anyRequest().hasRole("ENDPOINT_ADMIN")
-					.and()
+			http.requestMatcher(EndpointRequest.toAnyEndpoint())
+				.authorizeRequests((requests) ->
+					requests.anyRequest().hasRole("ENDPOINT_ADMIN"))
 				.httpBasic();
 		}
 
@@ -432,8 +432,8 @@ following example:
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
-				.anyRequest().permitAll();
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+				.anyRequest().permitAll());
 		}
 
 	}

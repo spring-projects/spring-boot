@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,8 +66,12 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest().fullyAuthenticated().and()
-					.formLogin().loginPage("/login").failureUrl("/login?error").permitAll().and().logout().permitAll();
+			// @formatter:off
+			http.authorizeRequests(
+					(requests) -> requests.antMatchers("/css/**").permitAll().anyRequest().fullyAuthenticated())
+					.formLogin((form) -> form.loginPage("/login").failureUrl("/login?error").permitAll())
+					.logout(LogoutConfigurer::permitAll);
+			// @formatter:on
 		}
 
 		@Bean
