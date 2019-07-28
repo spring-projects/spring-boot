@@ -34,8 +34,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
 import org.springframework.data.repository.Repository;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,15 +53,26 @@ class JdbcRepositoriesAutoConfigurationTests {
 	@Test
 	void backsOffWithNoDataSource() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(JdbcRepositoryConfigExtension.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(AbstractJdbcConfiguration.class));
 	}
 
 	@Test
 	void backsOffWithNoJdbcOperations() {
 		this.contextRunner.with(database()).withUserConfiguration(TestConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(DataSource.class);
-			assertThat(context).doesNotHaveBean(JdbcRepositoryConfigExtension.class);
+			assertThat(context).doesNotHaveBean(AbstractJdbcConfiguration.class);
 		});
+	}
+
+	@Test
+	void backsOffWithNoTransactionManager() {
+		this.contextRunner.with(database())
+				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
+				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+					assertThat(context).hasSingleBean(DataSource.class);
+					assertThat(context).hasSingleBean(NamedParameterJdbcOperations.class);
+					assertThat(context).doesNotHaveBean(AbstractJdbcConfiguration.class);
+				});
 	}
 
 	@Test
