@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.jdbc;
 
+import java.util.function.Function;
+
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,6 @@ import org.springframework.boot.autoconfigure.data.jdbc.city.City;
 import org.springframework.boot.autoconfigure.data.jdbc.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JdbcRepositoriesAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 class JdbcRepositoriesAutoConfigurationTests {
 
@@ -56,22 +58,18 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 	@Test
 	void backsOffWithNoJdbcOperations() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, TestConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(DataSource.class);
-					assertThat(context).doesNotHaveBean(JdbcRepositoryConfigExtension.class);
-				});
+		this.contextRunner.with(database()).withUserConfiguration(TestConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(DataSource.class);
+			assertThat(context).doesNotHaveBean(JdbcRepositoryConfigExtension.class);
+		});
 	}
 
 	@Test
 	void basicAutoConfiguration() {
-		this.contextRunner
+		this.contextRunner.with(database())
 				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
-						DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class))
-				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.schema=classpath:data-jdbc-schema.sql",
-						"spring.datasource.data=classpath:city.sql", "spring.datasource.generate-unique-name:true")
-				.run((context) -> {
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withUserConfiguration(TestConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(AbstractJdbcConfiguration.class);
 					assertThat(context).hasSingleBean(CityRepository.class);
 					assertThat(context.getBean(CityRepository.class).findById(2000L)).isPresent();
@@ -80,9 +78,10 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationWithNoRepositories() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
-				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, EmptyConfiguration.class)
-				.run((context) -> {
+		this.contextRunner.with(database())
+				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withUserConfiguration(EmptyConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(AbstractJdbcConfiguration.class);
 					assertThat(context).doesNotHaveBean(Repository.class);
 				});
@@ -90,17 +89,20 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 	@Test
 	void honoursUsersEnableJdbcRepositoriesConfiguration() {
-		this.contextRunner
+		this.contextRunner.with(database())
 				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
-						DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class))
-				.withUserConfiguration(EnableRepositoriesConfiguration.class, EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.schema=classpath:data-jdbc-schema.sql",
-						"spring.datasource.data=classpath:city.sql", "spring.datasource.generate-unique-name:true")
-				.run((context) -> {
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withUserConfiguration(EnableRepositoriesConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(AbstractJdbcConfiguration.class);
 					assertThat(context).hasSingleBean(CityRepository.class);
 					assertThat(context.getBean(CityRepository.class).findById(2000L)).isPresent();
 				});
+	}
+
+	private Function<ApplicationContextRunner, ApplicationContextRunner> database() {
+		return (runner) -> runner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.datasource.schema=classpath:data-jdbc-schema.sql",
+						"spring.datasource.data=classpath:city.sql", "spring.datasource.generate-unique-name:true");
 	}
 
 	@TestAutoConfigurationPackage(City.class)
