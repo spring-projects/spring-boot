@@ -28,6 +28,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.core.ElasticsearchEntityMapper;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.EntityMapper;
@@ -91,6 +92,11 @@ class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultEntityMapperRegistered() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(EntityMapper.class));
+	}
+
+	@Test
 	void customTransportTemplateShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class).run((context) -> assertThat(context)
 				.getBeanNames(ElasticsearchTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
@@ -107,6 +113,12 @@ class ElasticsearchDataAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomReactiveRestTemplate.class)
 				.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
 						.contains("reactiveElasticsearchTemplate"));
+	}
+
+	@Test
+	void customEntityMapperShouldeBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomEntityMapper.class).run((context) -> assertThat(context)
+				.getBeanNames(EntityMapper.class).containsExactly("elasticsearchEntityMapper"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -135,6 +147,16 @@ class ElasticsearchDataAutoConfigurationTests {
 		@Bean
 		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
 			return mock(ReactiveElasticsearchTemplate.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomEntityMapper {
+
+		@Bean
+		EntityMapper elasticsearchEntityMapper() {
+			return mock(ElasticsearchEntityMapper.class);
 		}
 
 	}
