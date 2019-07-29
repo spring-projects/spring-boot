@@ -19,10 +19,10 @@ package org.springframework.boot.context.embedded;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,13 +85,8 @@ public class EmbeddedServletContainerWarDevelopmentIntegrationTests
 		if (input == null) {
 			return Collections.emptyList();
 		}
-		List<String> lines = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new StringReader(input))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
-			}
-			return lines;
+			return reader.lines().collect(Collectors.toList());
 		}
 		catch (IOException ex) {
 			throw new RuntimeException("Failed to read lines from input '" + input + "'");
