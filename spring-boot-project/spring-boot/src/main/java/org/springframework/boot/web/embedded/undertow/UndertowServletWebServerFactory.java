@@ -26,7 +26,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +59,7 @@ import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.api.ServletStackTraces;
+import io.undertow.servlet.core.DeploymentImpl;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.xnio.OptionMap;
@@ -277,6 +281,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		addLocaleMappings(deployment);
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
+		if (manager.getDeployment() instanceof DeploymentImpl) {
+			removeSuperfluousMimeMappings((DeploymentImpl) manager.getDeployment(), deployment);
+		}
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		Duration timeoutDuration = getSession().getTimeout();
 		int sessionTimeout = (isZeroOrLess(timeoutDuration) ? -1 : (int) timeoutDuration.getSeconds());
@@ -409,6 +416,16 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		for (Mapping mimeMapping : getMimeMappings()) {
 			servletBuilder.addMimeMapping(new MimeMapping(mimeMapping.getExtension(), mimeMapping.getMimeType()));
 		}
+	}
+
+	private void removeSuperfluousMimeMappings(DeploymentImpl deployment, DeploymentInfo deploymentInfo) {
+		// DeploymentManagerImpl will always add MimeMappings.DEFAULT_MIME_MAPPINGS
+		// but we only want ours
+		Map<String, String> mappings = new HashMap<>();
+		for (MimeMapping mapping : deploymentInfo.getMimeMappings()) {
+			mappings.put(mapping.getExtension().toLowerCase(Locale.ENGLISH), mapping.getMimeType());
+		}
+		deployment.setMimeExtensionMappings(mappings);
 	}
 
 	/**
