@@ -132,7 +132,7 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					DataSource dataSource = context.getBean(Flyway.class).getDataSource();
 					assertThat(dataSource).isNotNull();
-					assertThat(dataSource).extracting("url").hasSize(1).first().asString().startsWith("jdbc:h2:mem:");
+					assertThat(dataSource).extracting("url").asString().startsWith("jdbc:h2:mem:");
 				});
 	}
 

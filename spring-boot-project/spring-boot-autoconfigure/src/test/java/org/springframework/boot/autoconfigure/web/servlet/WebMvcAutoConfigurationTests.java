@@ -355,14 +355,14 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void ignoreDefaultModelOnRedirectIsTrue() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-				.extracting("ignoreDefaultModelOnRedirect").containsExactly(true));
+				.extracting("ignoreDefaultModelOnRedirect").isEqualTo(true));
 	}
 
 	@Test
 	void overrideIgnoreDefaultModelOnRedirect() {
 		this.contextRunner.withPropertyValues("spring.mvc.ignore-default-model-on-redirect:false")
 				.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-						.extracting("ignoreDefaultModelOnRedirect").containsExactly(false));
+						.extracting("ignoreDefaultModelOnRedirect").isEqualTo(false));
 	}
 
 	@Test
