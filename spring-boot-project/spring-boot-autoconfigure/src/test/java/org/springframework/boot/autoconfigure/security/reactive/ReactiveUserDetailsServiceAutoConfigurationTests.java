@@ -78,11 +78,10 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void doesNotConfigureDefaultUserIfResourceServerWithJWTIsUsed() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class, JwtDecoderConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
-					assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
-				});
+		this.contextRunner.withUserConfiguration(JwtDecoderConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
+			assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
+		});
 	}
 
 	@Test
