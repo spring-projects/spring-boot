@@ -149,7 +149,7 @@ class WebMvcMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.run((context) -> assertThat(context.getBean(RequestMappingHandlerMapping.class))
-						.extracting("interceptors").element(0).asList().extracting((item) -> (Class) item.getClass())
+						.extracting("interceptors").asList().extracting((item) -> (Class) item.getClass())
 						.contains(LongTaskTimingHandlerInterceptor.class));
 	}
 
