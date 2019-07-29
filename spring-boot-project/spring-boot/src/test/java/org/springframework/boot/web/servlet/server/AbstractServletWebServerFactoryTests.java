@@ -779,7 +779,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		AbstractServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
 		Map<String, String> configuredMimeMappings = getActualMimeMappings();
-		Collection<MimeMappings.Mapping> expectedMimeMappings = getExpectedMimeMappings();
+		Collection<MimeMappings.Mapping> expectedMimeMappings = MimeMappings.DEFAULT.getAll();
 		configuredMimeMappings.forEach(
 				(key, value) -> assertThat(expectedMimeMappings).contains(new MimeMappings.Mapping(key, value)));
 		for (MimeMappings.Mapping mapping : expectedMimeMappings) {
@@ -1015,10 +1015,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	protected abstract Map<String, String> getActualMimeMappings();
-
-	protected Collection<MimeMappings.Mapping> getExpectedMimeMappings() {
-		return MimeMappings.DEFAULT.getAll();
-	}
 
 	protected abstract Charset getCharset(Locale locale);
 
