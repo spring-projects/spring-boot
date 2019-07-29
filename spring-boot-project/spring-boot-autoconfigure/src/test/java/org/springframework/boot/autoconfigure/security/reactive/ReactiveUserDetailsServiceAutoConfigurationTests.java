@@ -34,6 +34,8 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.oauth2.server.resource.introspection.ReactiveOAuth2TokenIntrospectionClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -42,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ReactiveUserDetailsServiceAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
 class ReactiveUserDetailsServiceAutoConfigurationTests {
 
@@ -71,6 +74,24 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(AuthenticationManagerConfig.class, TestSecurityConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
 				.run((context) -> assertThat(context).getBean(ReactiveUserDetailsService.class).isNull());
+	}
+
+	@Test
+	void doesNotConfigureDefaultUserIfResourceServerWithJWTIsUsed() {
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class, JwtDecoderConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
+					assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
+				});
+	}
+
+	@Test
+	void doesNotConfigureDefaultUserIfResourceServerWithOpaqueIsUsed() {
+		this.contextRunner.withUserConfiguration(ReactiveOAuth2TokenIntrospectionClientConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ReactiveOAuth2TokenIntrospectionClient.class);
+					assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
+				});
 	}
 
 	@Test
@@ -145,6 +166,26 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 		@Bean
 		PasswordEncoder passwordEncoder() {
 			return mock(PasswordEncoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JwtDecoderConfiguration {
+
+		@Bean
+		ReactiveJwtDecoder jwtDecoder() {
+			return mock(ReactiveJwtDecoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ReactiveOAuth2TokenIntrospectionClientConfiguration {
+
+		@Bean
+		ReactiveOAuth2TokenIntrospectionClient introspectionClient() {
+			return mock(ReactiveOAuth2TokenIntrospectionClient.class);
 		}
 
 	}
