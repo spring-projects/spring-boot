@@ -23,10 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link UserDetailsServiceAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
 @ExtendWith(OutputCaptureExtension.class)
 class UserDetailsServiceAutoConfigurationTests {
@@ -105,32 +104,18 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void defaultUserNotCreatedIfResourceServerWithOpaqueIsUsed() {
-		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
-		webApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
-				.withUserConfiguration(TestSecurityConfiguration.class)
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
-						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
-						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(OAuth2TokenIntrospectionClient.class);
-					assertThat(context).doesNotHaveBean(UserDetailsService.class);
-				});
+		this.contextRunner.withUserConfiguration(TestConfigWithIntrospectionClient.class).run((context) -> {
+			assertThat(context).hasSingleBean(OAuth2TokenIntrospectionClient.class);
+			assertThat(context).doesNotHaveBean(UserDetailsService.class);
+		});
 	}
 
 	@Test
 	void defaultUserNotCreatedIfResourceServerWithJWTIsUsed() {
-		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
-		webApplicationContextRunner
-				.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
-				.withUserConfiguration(TestSecurityConfiguration.class)
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JwtDecoder.class);
-					assertThat(context).doesNotHaveBean(UserDetailsService.class);
-				});
+		this.contextRunner.withUserConfiguration(TestConfigWithJwtDecoder.class).run((context) -> {
+			assertThat(context).hasSingleBean(JwtDecoder.class);
+			assertThat(context).doesNotHaveBean(UserDetailsService.class);
+		});
 	}
 
 	@Test
@@ -238,6 +223,28 @@ class UserDetailsServiceAutoConfigurationTests {
 		@Bean
 		ClientRegistrationRepository clientRegistrationRepository() {
 			return mock(ClientRegistrationRepository.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestSecurityConfiguration.class)
+	static class TestConfigWithJwtDecoder {
+
+		@Bean
+		JwtDecoder jwtDecoder() {
+			return mock(JwtDecoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestSecurityConfiguration.class)
+	static class TestConfigWithIntrospectionClient {
+
+		@Bean
+		OAuth2TokenIntrospectionClient introspectionClient() {
+			return mock(OAuth2TokenIntrospectionClient.class);
 		}
 
 	}

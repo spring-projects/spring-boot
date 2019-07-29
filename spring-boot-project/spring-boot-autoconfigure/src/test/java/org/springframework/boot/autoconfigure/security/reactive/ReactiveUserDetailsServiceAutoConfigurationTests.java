@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ReactiveUserDetailsServiceAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
 class ReactiveUserDetailsServiceAutoConfigurationTests {
 
@@ -78,10 +78,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void doesNotConfigureDefaultUserIfResourceServerWithJWTIsUsed() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys")
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class, JwtDecoderConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
 					assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
@@ -90,12 +87,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void doesNotConfigureDefaultUserIfResourceServerWithOpaqueIsUsed() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
-				.withUserConfiguration(TestSecurityConfiguration.class)
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
-						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
-						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
+		this.contextRunner.withUserConfiguration(ReactiveOAuth2TokenIntrospectionClientConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ReactiveOAuth2TokenIntrospectionClient.class);
 					assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
@@ -174,6 +166,26 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 		@Bean
 		PasswordEncoder passwordEncoder() {
 			return mock(PasswordEncoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JwtDecoderConfiguration {
+
+		@Bean
+		ReactiveJwtDecoder jwtDecoder() {
+			return mock(ReactiveJwtDecoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ReactiveOAuth2TokenIntrospectionClientConfiguration {
+
+		@Bean
+		ReactiveOAuth2TokenIntrospectionClient introspectionClient() {
+			return mock(ReactiveOAuth2TokenIntrospectionClient.class);
 		}
 
 	}
