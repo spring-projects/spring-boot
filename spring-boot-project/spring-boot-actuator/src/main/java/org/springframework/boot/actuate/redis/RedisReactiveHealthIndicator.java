@@ -40,6 +40,7 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	private final ReactiveRedisConnectionFactory connectionFactory;
 
 	public RedisReactiveHealthIndicator(ReactiveRedisConnectionFactory connectionFactory) {
+		super("Redis health check failed");
 		this.connectionFactory = connectionFactory;
 	}
 
