@@ -48,6 +48,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * their order of execution.
  *
  * @author Brian Clozel
+ * @author Peter-Josef Meisch
  */
 abstract class ElasticsearchDataConfiguration {
 
@@ -67,6 +68,7 @@ abstract class ElasticsearchDataConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean
 		EntityMapper entityMapper(SimpleElasticsearchMappingContext mappingContext) {
 			return new DefaultEntityMapper(mappingContext);
 		}
