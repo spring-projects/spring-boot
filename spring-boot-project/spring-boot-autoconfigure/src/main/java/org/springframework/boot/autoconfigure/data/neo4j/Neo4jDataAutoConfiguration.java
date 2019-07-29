@@ -53,28 +53,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Vince Bickers
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Michael Simons
  * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass({ SessionFactory.class, Neo4jTransactionManager.class, PlatformTransactionManager.class })
-@ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
 @Import(Neo4jBookmarkManagementConfiguration.class)
 public class Neo4jDataAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-		return properties.createConfiguration();
-	}
-
-	@Bean
-	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
-			ApplicationContext applicationContext, ObjectProvider<EventListener> eventListeners) {
-		SessionFactory sessionFactory = new SessionFactory(configuration, getPackagesToScan(applicationContext));
-		eventListeners.stream().forEach(sessionFactory::register);
-		return sessionFactory;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
@@ -91,12 +77,32 @@ public class Neo4jDataAutoConfiguration {
 		return transactionManager;
 	}
 
-	private String[] getPackagesToScan(ApplicationContext applicationContext) {
-		List<String> packages = EntityScanPackages.get(applicationContext).getPackageNames();
-		if (packages.isEmpty() && AutoConfigurationPackages.has(applicationContext)) {
-			packages = AutoConfigurationPackages.get(applicationContext);
+	@Configuration
+	@ConditionalOnMissingBean(SessionFactory.class)
+	protected static class Neo4jOgmSessionFactoryConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
+			return properties.createConfiguration();
 		}
-		return StringUtils.toStringArray(packages);
+
+		@Bean
+		public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
+				ApplicationContext applicationContext, ObjectProvider<EventListener> eventListeners) {
+			SessionFactory sessionFactory = new SessionFactory(configuration, getPackagesToScan(applicationContext));
+			eventListeners.stream().forEach(sessionFactory::register);
+			return sessionFactory;
+		}
+
+		private String[] getPackagesToScan(ApplicationContext applicationContext) {
+			List<String> packages = EntityScanPackages.get(applicationContext).getPackageNames();
+			if (packages.isEmpty() && AutoConfigurationPackages.has(applicationContext)) {
+				packages = AutoConfigurationPackages.get(applicationContext);
+			}
+			return StringUtils.toStringArray(packages);
+		}
+
 	}
 
 	@Configuration
