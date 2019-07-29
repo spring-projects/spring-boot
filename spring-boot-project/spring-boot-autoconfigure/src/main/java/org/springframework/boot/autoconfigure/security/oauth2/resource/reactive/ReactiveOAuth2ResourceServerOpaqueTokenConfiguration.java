@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusReactiveOAuth2TokenIntrospectionClient;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOAuth2TokenIntrospectionClient;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -58,8 +59,8 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 		@Bean
 		@ConditionalOnBean(ReactiveOAuth2TokenIntrospectionClient.class)
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated())
-					.oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::opaqueToken);
+			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
+			http.oauth2ResourceServer(OAuth2ResourceServerSpec::opaqueToken);
 			return http.build();
 		}
 

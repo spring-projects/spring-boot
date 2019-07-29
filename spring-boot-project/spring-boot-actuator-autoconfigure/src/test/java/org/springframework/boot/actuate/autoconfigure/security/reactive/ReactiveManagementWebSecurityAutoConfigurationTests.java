@@ -165,10 +165,12 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 		@Bean
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-			return http
-					.authorizeExchange(
-							(exchanges) -> exchanges.pathMatchers("/foo").permitAll().anyExchange().authenticated())
-					.formLogin(Customizer.withDefaults()).build();
+			http.authorizeExchange((exchanges) -> {
+				exchanges.pathMatchers("/foo").permitAll();
+				exchanges.anyExchange().authenticated();
+			});
+			http.formLogin(Customizer.withDefaults());
+			return http.build();
 		}
 
 	}
@@ -194,9 +196,9 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 		}
 
 		private List<SecurityWebFilterChain> getFilterChains(ServerHttpSecurity http) throws Exception {
-			return Collections
-					.singletonList(http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated())
-							.formLogin(Customizer.withDefaults()).build());
+			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
+			http.formLogin(Customizer.withDefaults());
+			return Collections.singletonList(http.build());
 		}
 
 		static class TestServerHttpSecurity extends ServerHttpSecurity implements ApplicationContextAware {

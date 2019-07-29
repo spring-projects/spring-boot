@@ -127,8 +127,12 @@ class ManagementWebSecurityAutoConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> requests.antMatchers("/foo").permitAll().anyRequest().authenticated())
-					.formLogin(Customizer.withDefaults()).httpBasic();
+			http.authorizeRequests((requests) -> {
+				requests.antMatchers("/foo").permitAll();
+				requests.anyRequest().authenticated();
+			});
+			http.formLogin(Customizer.withDefaults());
+			http.httpBasic();
 		}
 
 	}

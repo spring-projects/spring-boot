@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.security.reactive;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest.EndpointServerWebExchangeMatcher;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -56,16 +57,17 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 		ReactiveOAuth2ResourceServerAutoConfiguration.class })
 public class ReactiveManagementWebSecurityAutoConfiguration {
 
+	private static final EndpointServerWebExchangeMatcher HEALTH_OR_INFO_ENDPOINT = EndpointRequest
+			.to(HealthEndpoint.class, InfoEndpoint.class);
+
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-		// @formatter:off
-		http.authorizeExchange((exchanges) ->
-				exchanges
-					.matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll()
-					.anyExchange().authenticated())
-			.httpBasic(Customizer.withDefaults())
-			.formLogin(Customizer.withDefaults());
-		// @formatter:on
+		http.authorizeExchange((exchanges) -> {
+			exchanges.matchers(HEALTH_OR_INFO_ENDPOINT).permitAll();
+			exchanges.anyExchange().authenticated();
+		});
+		http.httpBasic(Customizer.withDefaults());
+		http.formLogin(Customizer.withDefaults());
 		return http.build();
 	}
 

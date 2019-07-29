@@ -116,16 +116,15 @@ class SampleSecureWebFluxCustomSecurityTests {
 
 		@Bean
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-			// @formatter:off
-			http.authorizeExchange((exchanges) ->
-					exchanges
-						.matchers(EndpointRequest.to("health", "info")).permitAll()
-						.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
-						.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-						.pathMatchers("/login").permitAll()
-						.anyExchange().authenticated())
-				.httpBasic(Customizer.withDefaults());
-			// @formatter:off
+			http.authorizeExchange((exchanges) -> {
+				exchanges.matchers(EndpointRequest.to("health", "info")).permitAll();
+				exchanges.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
+						.hasRole("ACTUATOR");
+				exchanges.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
+				exchanges.pathMatchers("/login").permitAll();
+				exchanges.anyExchange().authenticated();
+			});
+			http.httpBasic(Customizer.withDefaults());
 			return http.build();
 		}
 

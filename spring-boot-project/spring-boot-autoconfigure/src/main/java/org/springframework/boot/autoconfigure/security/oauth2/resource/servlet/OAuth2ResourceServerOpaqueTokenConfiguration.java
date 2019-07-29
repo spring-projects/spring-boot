@@ -59,11 +59,13 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 		@ConditionalOnBean(OAuth2TokenIntrospectionClient.class)
 		WebSecurityConfigurerAdapter opaqueTokenWebSecurityConfigurerAdapter() {
 			return new WebSecurityConfigurerAdapter() {
+
 				@Override
 				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
-							.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+					http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
+					http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 				}
+
 			};
 		}
 

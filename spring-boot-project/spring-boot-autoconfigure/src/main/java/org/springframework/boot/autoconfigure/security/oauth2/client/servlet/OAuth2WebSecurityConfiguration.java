@@ -57,8 +57,9 @@ class OAuth2WebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> requests.anyRequest().authenticated())
-					.oauth2Login(Customizer.withDefaults()).oauth2Client();
+			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
+			http.oauth2Login(Customizer.withDefaults());
+			http.oauth2Client();
 		}
 
 	}
