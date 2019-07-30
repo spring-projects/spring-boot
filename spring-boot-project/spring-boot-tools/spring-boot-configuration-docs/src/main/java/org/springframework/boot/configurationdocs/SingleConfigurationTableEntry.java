@@ -76,7 +76,7 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 			builder.append("|");
 		}
 		else {
-			builder.append("|+++", this.description, "+++");
+			builder.append("|+++", this.description.replace("|", "\\|"), "+++");
 		}
 	}
 
