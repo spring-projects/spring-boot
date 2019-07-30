@@ -96,7 +96,7 @@ include::{snippets}loggers/set/request-fields.adoc[]
 
 
 
-[[loggers-setting-level]]
+[[loggers-group-setting-level]]
 == Setting a Log Level for a Group
 
 To set the level of a logger, make a `POST` request to
@@ -109,7 +109,7 @@ The preceding example sets the `configuredLevel` of the `test` logger group to `
 
 
 
-[[loggers-setting-level-request-structure]]
+[[loggers-group-setting-level-request-structure]]
 === Request Structure
 
 The request specifies the desired level of the logger group. The following table describes the
