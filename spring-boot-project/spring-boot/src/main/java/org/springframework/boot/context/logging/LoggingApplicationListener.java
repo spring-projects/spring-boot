@@ -125,14 +125,22 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
 	 * The name of the {@link LogFile} bean.
+	 * @since 2.2.0
 	 */
-	public static final String LOGFILE_BEAN_NAME = "springBootLogFile";
+	public static final String LOG_FILE_BEAN_NAME = "springBootLogFile";
 
 	/**
 	 * The name of the{@link LoggerGroups} bean.
 	 * @since 2.2.0
 	 */
 	public static final String LOGGER_GROUPS_BEAN_NAME = "springBootLoggerGroups";
+
+	/**
+	 * The name of the {@link LogFile} bean.
+	 * @deprecated since 2.2.0 in favor of {@link #LOG_FILE_BEAN_NAME}
+	 */
+	@Deprecated
+	public static final String LOGFILE_BEAN_NAME = LOG_FILE_BEAN_NAME;
 
 	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
 	static {
@@ -242,8 +250,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
-		if (this.logFile != null && !beanFactory.containsBean(LOGFILE_BEAN_NAME)) {
-			beanFactory.registerSingleton(LOGFILE_BEAN_NAME, this.logFile);
+		if (this.logFile != null && !beanFactory.containsBean(LOG_FILE_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOG_FILE_BEAN_NAME, this.logFile);
 		}
 		if (this.loggerGroups != null && !beanFactory.containsBean(LOGGER_GROUPS_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGER_GROUPS_BEAN_NAME, this.loggerGroups);
