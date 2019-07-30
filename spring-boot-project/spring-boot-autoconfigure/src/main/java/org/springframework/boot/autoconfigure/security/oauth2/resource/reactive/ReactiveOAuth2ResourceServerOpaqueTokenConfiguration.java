@@ -58,7 +58,7 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ReactiveOAuth2TokenIntrospectionClient.class)
-		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
 			http.oauth2ResourceServer(OAuth2ResourceServerSpec::opaqueToken);
 			return http.build();
