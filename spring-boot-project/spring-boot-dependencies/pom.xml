@@ -159,7 +159,7 @@
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<okhttp3.version>3.14.2</okhttp3.version>
 		<pooled-jms.version>1.0.6</pooled-jms.version>
-		<postgresql.version>42.2.5</postgresql.version>
+		<postgresql.version>42.2.6</postgresql.version>
 		<prometheus-pushgateway.version>0.6.0</prometheus-pushgateway.version>
 		<quartz.version>2.3.1</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
