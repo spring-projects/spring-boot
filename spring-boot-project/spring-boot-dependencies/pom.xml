@@ -123,7 +123,7 @@
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.40</jetty-el.version>
 		<jetty-reactive-httpclient.version>1.0.3</jetty-reactive-httpclient.version>
-		<jmustache.version>1.14</jmustache.version>
+		<jmustache.version>1.15</jmustache.version>
 		<jna.version>4.5.2</jna.version>
 		<joda-time.version>2.10.2</joda-time.version>
 		<jolokia.version>1.6.1</jolokia.version>
