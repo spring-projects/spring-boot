@@ -98,6 +98,7 @@
 		<module>spring-boot-smoke-test-web-static</module>
 		<module>spring-boot-smoke-test-web-ui</module>
 		<module>spring-boot-smoke-test-webflux</module>
+		<module>spring-boot-smoke-test-webflux-coroutines</module>
 		<module>spring-boot-smoke-test-websocket-jetty</module>
 		<module>spring-boot-smoke-test-websocket-tomcat</module>
 		<module>spring-boot-smoke-test-websocket-undertow</module>
