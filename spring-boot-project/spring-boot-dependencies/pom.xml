@@ -177,7 +177,7 @@
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.26</slf4j.version>
 		<snakeyaml.version>1.24</snakeyaml.version>
-		<solr.version>8.0.0</solr.version>
+		<solr.version>8.2.0</solr.version>
 		<spring-amqp.version>2.2.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-batch.version>4.2.0.BUILD-SNAPSHOT</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.5.RELEASE</spring-cloud-connectors.version>
