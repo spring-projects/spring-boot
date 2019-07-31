@@ -45,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Artur Konczak
  * @author Brian Clozel
+ * @author Peter-Josef Meisch
  */
 @DisabledWithoutDockerTestcontainers
 class ElasticsearchDataAutoConfigurationTests {

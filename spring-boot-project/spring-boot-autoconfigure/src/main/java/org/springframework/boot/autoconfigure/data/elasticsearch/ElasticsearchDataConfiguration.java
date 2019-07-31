@@ -48,7 +48,6 @@ import org.springframework.web.reactive.function.client.WebClient;
  * their order of execution.
  *
  * @author Brian Clozel
- * @author Peter-Josef Meisch
  */
 abstract class ElasticsearchDataConfiguration {
 
