@@ -67,6 +67,7 @@ abstract class ElasticsearchDataConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean
 		EntityMapper entityMapper(SimpleElasticsearchMappingContext mappingContext) {
 			return new DefaultEntityMapper(mappingContext);
 		}
