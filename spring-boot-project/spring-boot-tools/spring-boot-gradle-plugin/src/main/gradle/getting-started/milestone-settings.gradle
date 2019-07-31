@@ -1,8 +1,7 @@
 pluginManagement {
 	repositories {
-		maven {
-			url 'https://repo.spring.io/libs-milestone'
-		}
+		maven { url 'https://repo.spring.io/milestone' }
+		gradlePluginPortal()
 	}
 	resolutionStrategy {
 		eachPlugin {
