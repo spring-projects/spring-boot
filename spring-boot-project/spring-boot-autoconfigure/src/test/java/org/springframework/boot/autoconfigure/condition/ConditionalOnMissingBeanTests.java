@@ -438,7 +438,7 @@ public class ConditionalOnMissingBeanTests {
 		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(BeanTypeRegistry.FACTORY_BEAN_OBJECT_TYPE, ExampleBean.class);
+			builder.getBeanDefinition().setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, ExampleBean.class);
 			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 
@@ -456,8 +456,7 @@ public class ConditionalOnMissingBeanTests {
 		public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(NonspecificFactoryBean.class);
 			builder.addConstructorArgValue("foo");
-			builder.getBeanDefinition().setAttribute(BeanTypeRegistry.FACTORY_BEAN_OBJECT_TYPE,
-					ExampleBean.class.getName());
+			builder.getBeanDefinition().setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, ExampleBean.class.getName());
 			registry.registerBeanDefinition("exampleBeanFactoryBean", builder.getBeanDefinition());
 		}
 

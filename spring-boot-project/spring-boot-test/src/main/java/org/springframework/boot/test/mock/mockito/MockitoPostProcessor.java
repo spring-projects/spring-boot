@@ -78,8 +78,6 @@ import org.springframework.util.StringUtils;
 public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
 		implements BeanClassLoaderAware, BeanFactoryAware, BeanFactoryPostProcessor, Ordered {
 
-	private static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
-
 	private static final String BEAN_NAME = MockitoPostProcessor.class.getName();
 
 	private static final String CONFIGURATION_CLASS_ATTRIBUTE = Conventions
@@ -254,7 +252,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class)) {
 			beanName = BeanFactoryUtils.transformedBeanName(beanName);
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			if (typeName.equals(beanDefinition.getAttribute(FACTORY_BEAN_OBJECT_TYPE))) {
+			if (typeName.equals(beanDefinition.getAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE))) {
 				beans.add(beanName);
 			}
 		}

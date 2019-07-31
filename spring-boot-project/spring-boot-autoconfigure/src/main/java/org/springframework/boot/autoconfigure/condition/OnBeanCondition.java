@@ -36,7 +36,6 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
-import org.springframework.boot.autoconfigure.condition.BeanTypeRegistry.TypeExtractor;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -56,6 +55,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -73,8 +73,6 @@ import org.springframework.util.StringUtils;
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class OnBeanCondition extends FilteringSpringBootCondition implements ConfigurationCondition {
-
-	private static final TypeExtractor RESOLVING_EXTRACTOR = ResolvableType::resolve;
 
 	@Override
 	public ConfigurationPhase getConfigurationPhase() {
@@ -228,8 +226,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
 			Class<?> type, Set<Class<?>> parameterizedContainers, Set<String> result) {
-		BeanTypeRegistry registry = BeanTypeRegistry.get(beanFactory);
-		result = addAll(result, registry.getNamesForType(type, getTypeExtractor(parameterizedContainers)));
+		result = addAll(result, beanFactory.getBeanNamesForType(type, true, false));
+		for (Class<?> container : parameterizedContainers) {
+			ResolvableType generic = ResolvableType.forClassWithGenerics(container, type);
+			result = addAll(result, beanFactory.getBeanNamesForType(generic, true, false));
+		}
 		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
 			if (parent instanceof ListableBeanFactory) {
@@ -261,8 +262,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private Set<String> collectBeanNamesForAnnotation(ListableBeanFactory beanFactory,
 			Class<? extends Annotation> annotationType, boolean considerHierarchy, Set<String> result) {
-		BeanTypeRegistry registry = BeanTypeRegistry.get(beanFactory);
-		result = addAll(result, registry.getNamesForAnnotation(annotationType));
+		result = addAll(result, beanFactory.getBeanNamesForAnnotation(annotationType));
 		if (considerHierarchy) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
 			if (parent instanceof ListableBeanFactory) {
@@ -279,15 +279,6 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return beanFactory.containsBean(beanName);
 		}
 		return beanFactory.containsLocalBean(beanName);
-	}
-
-	private Set<String> addAll(Set<String> result, Collection<String> additional) {
-		if (CollectionUtils.isEmpty(additional)) {
-			return result;
-		}
-		result = (result != null) ? result : new LinkedHashSet<>();
-		result.addAll(additional);
-		return result;
 	}
 
 	private String createOnBeanNoMatchReason(MatchResult matchResult) {
@@ -370,26 +361,24 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return null;
 	}
 
-	private TypeExtractor getTypeExtractor(Set<Class<?>> parameterizedContainers) {
-		if (parameterizedContainers.isEmpty()) {
-			return RESOLVING_EXTRACTOR;
+	private static Set<String> addAll(Set<String> result, Collection<String> additional) {
+		if (CollectionUtils.isEmpty(additional)) {
+			return result;
 		}
-		return (type) -> {
-			Class<?> resolved = RESOLVING_EXTRACTOR.getBeanType(type);
-			if (isParameterizedContainer(resolved, parameterizedContainers)) {
-				resolved = type.getGeneric().resolve();
-			}
-			return resolved;
-		};
+		result = (result != null) ? result : new LinkedHashSet<>();
+		result.addAll(additional);
+		return result;
 	}
 
-	private boolean isParameterizedContainer(Class<?> type, Set<Class<?>> parameterizedContainers) {
-		for (Class<?> parameterizedContainer : parameterizedContainers) {
-			if (parameterizedContainer.isAssignableFrom(type)) {
-				return true;
-			}
+	private static Set<String> addAll(Set<String> result, String[] additional) {
+		if (ObjectUtils.isEmpty(additional)) {
+			return result;
 		}
-		return false;
+		result = (result != null) ? result : new LinkedHashSet<>();
+		for (String addition : additional) {
+			result.add(addition);
+		}
+		return result;
 	}
 
 	/**
