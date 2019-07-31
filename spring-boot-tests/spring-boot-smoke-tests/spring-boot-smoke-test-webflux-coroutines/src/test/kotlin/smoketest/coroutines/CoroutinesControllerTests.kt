@@ -9,7 +9,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class CoroutinesApplicationTests(@Autowired private val webClient: WebTestClient) {
+class CoroutinesControllerTests(@Autowired private val webClient: WebTestClient) {
 
 	@Test
 	fun testSuspendingFunction() {
@@ -22,4 +22,5 @@ class CoroutinesApplicationTests(@Autowired private val webClient: WebTestClient
 		webClient.get().uri("/flow").accept(MediaType.TEXT_PLAIN).exchange()
 				.expectBody<String>().isEqualTo("Hello World")
 	}
+
 }

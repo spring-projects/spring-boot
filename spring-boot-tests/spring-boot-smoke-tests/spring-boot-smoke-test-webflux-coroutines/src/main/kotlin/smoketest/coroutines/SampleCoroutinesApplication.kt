@@ -4,7 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class CoroutinesApplication
+class SampleCoroutinesApplication
 fun main(args: Array<String>) {
-	runApplication<CoroutinesApplication>(*args)
+	runApplication<SampleCoroutinesApplication>(*args)
+
 }

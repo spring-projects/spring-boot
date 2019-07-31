@@ -21,4 +21,5 @@ class CoroutinesController {
 		delay(10)
 		emit("World")
 	}
+
 }
