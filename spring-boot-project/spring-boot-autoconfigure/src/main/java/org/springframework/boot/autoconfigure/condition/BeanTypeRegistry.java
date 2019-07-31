@@ -117,7 +117,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 		updateTypesIfNecessary();
 		return this.beanTypes.entrySet().stream()
 				.filter((entry) -> entry.getValue() != null && MergedAnnotations
-						.from(entry.getValue().resolve(), MergedAnnotations.SearchStrategy.EXHAUSTIVE)
+						.from(entry.getValue().resolve(), MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 						.isPresent(annotation))
 				.map(Map.Entry::getKey).collect(Collectors.toCollection(LinkedHashSet::new));
 	}

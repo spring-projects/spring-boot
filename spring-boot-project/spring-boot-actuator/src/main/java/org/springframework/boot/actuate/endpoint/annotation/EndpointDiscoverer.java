@@ -403,8 +403,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		private Set<ExtensionBean> extensions = new LinkedHashSet<>();
 
 		EndpointBean(String beanName, Object bean) {
-			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(bean.getClass(), SearchStrategy.EXHAUSTIVE)
-					.get(Endpoint.class);
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations
+					.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
 			String id = annotation.getString("id");
 			Assert.state(StringUtils.hasText(id),
 					() -> "No @Endpoint id attribute specified for " + bean.getClass().getName());
@@ -470,7 +470,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 					.get(EndpointExtension.class);
 			Class<?> endpointType = extensionAnnotation.getClass("endpoint");
 			MergedAnnotation<Endpoint> endpointAnnotation = MergedAnnotations
-					.from(endpointType, SearchStrategy.EXHAUSTIVE).get(Endpoint.class);
+					.from(endpointType, SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
 			Assert.state(endpointAnnotation.isPresent(),
 					() -> "Extension " + endpointType.getName() + " does not specify an endpoint");
 			this.endpointId = EndpointId.of(endpointAnnotation.getString("id"));

@@ -151,7 +151,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * @see SpringApplication#run(String...)
 	 */
 	protected String[] getArgs(MergedContextConfiguration config) {
-		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.EXHAUSTIVE).get(SpringBootTest.class)
+		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
 				.getValue("args", String[].class).orElse(NO_ARGS);
 	}
 
@@ -215,7 +215,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration config) {
-		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.EXHAUSTIVE).get(SpringBootTest.class)
+		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
 				.getValue("webEnvironment", WebEnvironment.class).orElse(WebEnvironment.NONE).isEmbedded();
 	}
 

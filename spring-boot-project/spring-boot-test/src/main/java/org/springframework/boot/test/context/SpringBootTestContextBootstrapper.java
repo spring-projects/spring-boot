@@ -196,7 +196,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 * @since 2.1.6
 	 */
 	protected String determineResourceBasePath(MergedContextConfiguration configuration) {
-		return MergedAnnotations.from(configuration.getTestClass(), SearchStrategy.EXHAUSTIVE)
+		return MergedAnnotations.from(configuration.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
 				.get(WebAppConfiguration.class).getValue(MergedAnnotation.VALUE, String.class)
 				.orElse("src/main/webapp");
 	}

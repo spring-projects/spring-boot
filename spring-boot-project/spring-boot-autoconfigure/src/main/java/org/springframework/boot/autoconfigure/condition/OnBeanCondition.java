@@ -566,7 +566,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		private boolean isBeanMethod(Method method) {
-			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.EXHAUSTIVE)
+			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 					.isPresent(Bean.class);
 		}
 

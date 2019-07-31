@@ -110,7 +110,7 @@ class ConfigurationPropertiesScanRegistrar
 
 	private void validateScanConfiguration(Class<?> type) {
 		MergedAnnotation<Component> component = MergedAnnotations
-				.from(type, MergedAnnotations.SearchStrategy.EXHAUSTIVE).get(Component.class);
+				.from(type, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY).get(Component.class);
 		if (component.isPresent()) {
 			throw new InvalidConfigurationPropertiesException(type, component.getRoot().getType());
 		}
