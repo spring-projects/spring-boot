@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,8 @@ import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicat
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -162,9 +165,15 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
+		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
+		String path = predicate.getPath();
+		String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
+		if (matchAllRemainingPathSegmentsVariable != null) {
+			path = path.replace("{*" + matchAllRemainingPathSegmentsVariable + "}", "**");
+		}
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
 				new ServletWebOperationAdapter(operation));
-		registerMapping(createRequestMappingInfo(operation), new OperationHandler(servletWebOperation),
+		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
 				this.handleMethod);
 	}
 
@@ -181,9 +190,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		return servletWebOperation;
 	}
 
-	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
-		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
-		PatternsRequestCondition patterns = patternsRequestConditionForPattern(predicate.getPath());
+	private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
+		PatternsRequestCondition patterns = patternsRequestConditionForPattern(path);
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.valueOf(predicate.getHttpMethod().name()));
 		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
@@ -275,6 +283,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	 */
 	private class ServletWebOperationAdapter implements ServletWebOperation {
 
+		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
+
 		private final WebOperation operation;
 
 		ServletWebOperationAdapter(WebOperation operation) {
@@ -302,12 +312,41 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		private Map<String, Object> getArguments(HttpServletRequest request, Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>();
 			arguments.putAll(getTemplateVariables(request));
+			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
+					.getMatchAllRemainingPathSegmentsVariable();
+			if (matchAllRemainingPathSegmentsVariable != null) {
+				arguments.put(matchAllRemainingPathSegmentsVariable, getRemainingPathSegments(request));
+			}
 			if (body != null && HttpMethod.POST.name().equals(request.getMethod())) {
 				arguments.putAll(body);
 			}
 			request.getParameterMap().forEach(
 					(name, values) -> arguments.put(name, (values.length != 1) ? Arrays.asList(values) : values[0]));
 			return arguments;
+		}
+
+		private Object getRemainingPathSegments(HttpServletRequest request) {
+			String[] pathTokens = tokenize(request, HandlerMapping.LOOKUP_PATH, true);
+			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
+			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
+			Assert.state(numberOfRemainingPathSegments >= 0, "Unable to extract remaining path segments");
+			String[] remainingPathSegments = new String[numberOfRemainingPathSegments];
+			System.arraycopy(pathTokens, patternTokens.length - 1, remainingPathSegments, 0,
+					numberOfRemainingPathSegments);
+			return remainingPathSegments;
+		}
+
+		private String[] tokenize(HttpServletRequest request, String attributeName, boolean decode) {
+			String value = (String) request.getAttribute(attributeName);
+			String[] segments = StringUtils.tokenizeToStringArray(value, PATH_SEPARATOR, false, true);
+			if (decode) {
+				for (int i = 0; i < segments.length; i++) {
+					if (segments[i].contains("%")) {
+						segments[i] = StringUtils.uriDecode(segments[i], StandardCharsets.UTF_8);
+					}
+				}
+			}
+			return segments;
 		}
 
 		@SuppressWarnings("unchecked")

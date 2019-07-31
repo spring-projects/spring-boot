@@ -577,7 +577,6 @@ endpoint.
 
 [[production-ready-endpoints-custom-web-predicate-path]]
 ===== Path
-
 The path of the predicate is determined by the ID of the endpoint and the base path of
 web-exposed endpoints. The default base path is `/actuator`. For example, an endpoint with
 the ID `sessions` will use `/actuator/sessions` as its path in the predicate.
@@ -585,13 +584,14 @@ the ID `sessions` will use `/actuator/sessions` as its path in the predicate.
 The path can be further customized by annotating one or more parameters of the operation
 method with `@Selector`. Such a parameter is added to the path predicate as a path
 variable. The variable's value is passed into the operation method when the endpoint
-operation is invoked.
+operation is invoked. If you want to capture all remaining path elements, you can add
+`@Selector(Match=ALL_REMAINING)` to the last parameter and make it a type that is
+conversion compatible with a `String[]`.
 
 
 
 [[production-ready-endpoints-custom-web-predicate-http-method]]
 ===== HTTP method
-
 The HTTP method of the predicate is determined by the operation type, as shown in
 the following table:
 

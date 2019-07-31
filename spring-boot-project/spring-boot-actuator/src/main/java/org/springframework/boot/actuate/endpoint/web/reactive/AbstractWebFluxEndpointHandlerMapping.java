@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +48,7 @@ import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -264,15 +266,17 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	 */
 	private static final class ReactiveWebOperationAdapter implements ReactiveWebOperation {
 
-		private final OperationInvoker invoker;
+		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
-		private final String operationId;
+		private final WebOperation operation;
+
+		private final OperationInvoker invoker;
 
 		private final Supplier<Mono<? extends SecurityContext>> securityContextSupplier;
 
 		private ReactiveWebOperationAdapter(WebOperation operation) {
+			this.operation = operation;
 			this.invoker = getInvoker(operation);
-			this.operationId = operation.getId();
 			this.securityContextSupplier = getSecurityContextSupplier();
 		}
 
@@ -305,10 +309,26 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		@Override
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange, Map<String, String> body) {
 			Map<String, Object> arguments = getArguments(exchange, body);
+			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
+					.getMatchAllRemainingPathSegmentsVariable();
+			if (matchAllRemainingPathSegmentsVariable != null) {
+				arguments.put(matchAllRemainingPathSegmentsVariable,
+						tokenizePathSegments((String) arguments.get(matchAllRemainingPathSegmentsVariable)));
+			}
 			return this.securityContextSupplier.get()
 					.map((securityContext) -> new InvocationContext(securityContext, arguments))
 					.flatMap((invocationContext) -> handleResult((Publisher<?>) this.invoker.invoke(invocationContext),
 							exchange.getRequest().getMethod()));
+		}
+
+		private String[] tokenizePathSegments(String path) {
+			String[] segments = StringUtils.tokenizeToStringArray(path, PATH_SEPARATOR, false, true);
+			for (int i = 0; i < segments.length; i++) {
+				if (segments[i].contains("%")) {
+					segments[i] = StringUtils.uriDecode(segments[i], StandardCharsets.UTF_8);
+				}
+			}
+			return segments;
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange, Map<String, String> body) {
@@ -345,7 +365,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public String toString() {
-			return "Actuator web endpoint '" + this.operationId + "'";
+			return "Actuator web endpoint '" + this.operation.getId() + "'";
 		}
 
 	}

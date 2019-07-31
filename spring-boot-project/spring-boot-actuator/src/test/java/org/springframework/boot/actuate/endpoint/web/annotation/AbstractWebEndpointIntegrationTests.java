@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +51,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -122,6 +124,20 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	void operationWithTrailingSlashShouldMatch() {
 		load(TestEndpointConfiguration.class, (client) -> client.get().uri("/test/").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("All").isEqualTo(true));
+	}
+
+	@Test
+	void matchAllRemainingPathsSelectorShouldMatchFullPath() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get().uri("/matchallremaining/one/two/three").exchange().expectStatus().isOk()
+						.expectBody().jsonPath("selection").isEqualTo("one|two|three"));
+	}
+
+	@Test
+	void matchAllRemainingPathsSelectorShouldDecodePath() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get().uri("/matchallremaining/one/two%20three/").exchange().expectStatus().isOk()
+						.expectBody().jsonPath("selection").isEqualTo("one|two three"));
 	}
 
 	@Test
@@ -420,6 +436,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
+	static class MatchAllRemainingEndpointConfiguration {
+
+		@Bean
+		MatchAllRemainingEndpoint matchAllRemainingEndpoint() {
+			return new MatchAllRemainingEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
 	static class QueryEndpointConfiguration {
 
 		@Bean
@@ -621,6 +648,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@DeleteOperation
 		Map<String, Object> deletePart(@Selector String part) {
 			return Collections.singletonMap("part", part);
+		}
+
+	}
+
+	@Endpoint(id = "matchallremaining")
+	static class MatchAllRemainingEndpoint {
+
+		@ReadOperation
+		Map<String, String> select(@Selector(match = Match.ALL_REMAINING) String... selection) {
+			return Collections.singletonMap("selection", StringUtils.arrayToDelimitedString(selection, "|"));
 		}
 
 	}

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.web.jersey;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +51,7 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -90,7 +92,13 @@ public class JerseyEndpointResourceFactory {
 
 	private Resource createResource(EndpointMapping endpointMapping, WebOperation operation) {
 		WebOperationRequestPredicate requestPredicate = operation.getRequestPredicate();
-		Builder resourceBuilder = Resource.builder().path(endpointMapping.createSubPath(requestPredicate.getPath()));
+		String path = requestPredicate.getPath();
+		String matchAllRemainingPathSegmentsVariable = requestPredicate.getMatchAllRemainingPathSegmentsVariable();
+		if (matchAllRemainingPathSegmentsVariable != null) {
+			path = path.replace("{*" + matchAllRemainingPathSegmentsVariable + "}",
+					"{" + matchAllRemainingPathSegmentsVariable + ": .*}");
+		}
+		Builder resourceBuilder = Resource.builder().path(endpointMapping.createSubPath(path));
 		resourceBuilder.addMethod(requestPredicate.getHttpMethod().name())
 				.consumes(StringUtils.toStringArray(requestPredicate.getConsumes()))
 				.produces(StringUtils.toStringArray(requestPredicate.getProduces()))
@@ -110,6 +118,8 @@ public class JerseyEndpointResourceFactory {
 	 * {@link Inflector} to invoke the {@link WebOperation}.
 	 */
 	private static final class OperationInflector implements Inflector<ContainerRequestContext, Object> {
+
+		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
 		private static final List<Function<Object, Object>> BODY_CONVERTERS;
 
@@ -159,7 +169,24 @@ public class JerseyEndpointResourceFactory {
 		}
 
 		private Map<String, Object> extractPathParameters(ContainerRequestContext requestContext) {
-			return extract(requestContext.getUriInfo().getPathParameters());
+			Map<String, Object> pathParameters = extract(requestContext.getUriInfo().getPathParameters());
+			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
+					.getMatchAllRemainingPathSegmentsVariable();
+			if (matchAllRemainingPathSegmentsVariable != null) {
+				String remainingPathSegments = (String) pathParameters.get(matchAllRemainingPathSegmentsVariable);
+				pathParameters.put(matchAllRemainingPathSegmentsVariable, tokenizePathSegments(remainingPathSegments));
+			}
+			return pathParameters;
+		}
+
+		private String[] tokenizePathSegments(String path) {
+			String[] segments = StringUtils.tokenizeToStringArray(path, PATH_SEPARATOR, false, true);
+			for (int i = 0; i < segments.length; i++) {
+				if (segments[i].contains("%")) {
+					segments[i] = StringUtils.uriDecode(segments[i], StandardCharsets.UTF_8);
+				}
+			}
+			return segments;
 		}
 
 		private Map<String, Object> extractQueryParameters(ContainerRequestContext requestContext) {
