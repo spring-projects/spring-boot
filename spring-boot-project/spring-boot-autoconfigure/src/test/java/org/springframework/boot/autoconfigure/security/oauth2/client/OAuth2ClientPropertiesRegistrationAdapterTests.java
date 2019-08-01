@@ -213,12 +213,46 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
+	void oidcRfc8414ProviderConfigurationWhenProviderNotSpecifiedOnRegistration() throws Exception {
+		OAuth2ClientProperties.Registration login = new Registration();
+		login.setClientId("clientId");
+		login.setClientSecret("clientSecret");
+		testOidcRfc8414Configuration(login, "okta");
+	}
+
+	@Test
+	void oAuthProviderConfigurationWhenProviderNotSpecifiedOnRegistration() throws Exception {
+		OAuth2ClientProperties.Registration login = new Registration();
+		login.setClientId("clientId");
+		login.setClientSecret("clientSecret");
+		testOAuthConfiguration(login, "okta");
+	}
+
+	@Test
 	void oidcProviderConfigurationWhenProviderSpecifiedOnRegistration() throws Exception {
 		OAuth2ClientProperties.Registration login = new Registration();
 		login.setProvider("okta-oidc");
 		login.setClientId("clientId");
 		login.setClientSecret("clientSecret");
 		testOidcConfiguration(login, "okta-oidc");
+	}
+
+	@Test
+	void oidcRfc8414ProviderConfigurationWhenProviderSpecifiedOnRegistration() throws Exception {
+		OAuth2ClientProperties.Registration login = new Registration();
+		login.setProvider("okta-oidcRfc8414");
+		login.setClientId("clientId");
+		login.setClientSecret("clientSecret");
+		testOidcRfc8414Configuration(login, "okta-oidcRfc8414");
+	}
+
+	@Test
+	void oAuthProviderConfigurationWhenProviderSpecifiedOnRegistration() throws Exception {
+		OAuth2ClientProperties.Registration login = new Registration();
+		login.setProvider("okta-oauth");
+		login.setClientId("clientId");
+		login.setClientSecret("clientSecret");
+		testOAuthConfiguration(login, "okta-oauth");
 	}
 
 	@Test
@@ -300,6 +334,70 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/oauth2/v3/userinfo");
 		assertThat(userInfoEndpoint.getAuthenticationMethod())
 				.isEqualTo(org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
+		assertThat(this.server.getRequestCount()).isEqualTo(1);
+	}
+
+	private void testOidcRfc8414Configuration(OAuth2ClientProperties.Registration registration, String providerId)
+			throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		setupMockResponseWithEmptyResponses(issuer, 1);
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		Provider provider = new Provider();
+		provider.setIssuerUri(issuer);
+		properties.getProvider().put(providerId, provider);
+		properties.getRegistration().put("okta", registration);
+		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
+				.getClientRegistrations(properties);
+		ClientRegistration adapted = registrations.get("okta");
+		ProviderDetails providerDetails = adapted.getProviderDetails();
+		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(ClientAuthenticationMethod.BASIC);
+		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
+		assertThat(adapted.getRegistrationId()).isEqualTo("okta");
+		assertThat(adapted.getClientName()).isEqualTo(issuer);
+		assertThat(adapted.getScopes()).containsOnly("openid");
+		assertThat(providerDetails.getAuthorizationUri()).isEqualTo("https://example.com/o/oauth2/v2/auth");
+		assertThat(providerDetails.getTokenUri()).isEqualTo("https://example.com/oauth2/v4/token");
+		assertThat(providerDetails.getJwkSetUri()).isEqualTo("https://example.com/oauth2/v3/certs");
+		UserInfoEndpoint userInfoEndpoint = providerDetails.getUserInfoEndpoint();
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/oauth2/v3/userinfo");
+		assertThat(userInfoEndpoint.getAuthenticationMethod())
+				.isEqualTo(org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
+		assertThat(this.server.getRequestCount()).isEqualTo(2);
+
+	}
+
+	private void testOAuthConfiguration(OAuth2ClientProperties.Registration registration, String providerId)
+			throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		setupMockResponseWithEmptyResponses(issuer, 2);
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		Provider provider = new Provider();
+		provider.setIssuerUri(issuer);
+		properties.getProvider().put(providerId, provider);
+		properties.getRegistration().put("okta", registration);
+		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
+				.getClientRegistrations(properties);
+		ClientRegistration adapted = registrations.get("okta");
+		ProviderDetails providerDetails = adapted.getProviderDetails();
+		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(ClientAuthenticationMethod.BASIC);
+		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
+		assertThat(adapted.getRegistrationId()).isEqualTo("okta");
+		assertThat(adapted.getClientName()).isEqualTo(issuer);
+		assertThat(adapted.getScopes()).containsOnly("openid");
+		assertThat(providerDetails.getAuthorizationUri()).isEqualTo("https://example.com/o/oauth2/v2/auth");
+		assertThat(providerDetails.getTokenUri()).isEqualTo("https://example.com/oauth2/v4/token");
+		assertThat(providerDetails.getJwkSetUri()).isEqualTo("https://example.com/oauth2/v3/certs");
+		UserInfoEndpoint userInfoEndpoint = providerDetails.getUserInfoEndpoint();
+		assertThat(userInfoEndpoint.getUri()).isEqualTo("https://example.com/oauth2/v3/userinfo");
+		assertThat(userInfoEndpoint.getAuthenticationMethod())
+				.isEqualTo(org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
+		assertThat(this.server.getRequestCount()).isEqualTo(3);
 	}
 
 	private void setupMockResponse(String issuer) throws JsonProcessingException {
@@ -307,6 +405,15 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.server.enqueue(mockResponse);
+	}
+
+	private void setupMockResponseWithEmptyResponses(String issuer, int amountOfEmptyResponse)
+			throws JsonProcessingException {
+		for (int i = 0; i < amountOfEmptyResponse; i++) {
+			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
+			this.server.enqueue(emptyResponse);
+		}
+		setupMockResponse(issuer);
 	}
 
 	private Map<String, Object> getResponse(String issuer) {
