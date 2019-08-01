@@ -200,7 +200,7 @@ need to import the root `spring-boot` pom and the `spring-boot-smoke-tests` pom 
 
 
 === Importing into IntelliJ IDEA
-**Please, do this first!!!**
+**Please, do this first!**
 Go to `Preferences | Build, Execution, Deployment | Build Tools | Maven | Importing`
 and set `VM options for importer` to `-Xmx2g` to allocate sufficient memory for IDEA's
 Maven import process to parse the Spring Boot project structure. _Not doing so could
