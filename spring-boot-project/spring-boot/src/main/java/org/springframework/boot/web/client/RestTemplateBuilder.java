@@ -154,7 +154,10 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Set a root URL that should be applied to each request that starts with {@code '/'}.
-	 * See {@link RootUriTemplateHandler} for details.
+	 * Since this works by adding a {@link UriTemplateHandler} to the
+	 * {@link RestTemplate}, the root URL will only apply when {@code String} variants of
+	 * the {@link RestTemplate} methods are used for specifying the request URL. See
+	 * {@link RootUriTemplateHandler} for details.
 	 * @param rootUri the root URI or {@code null}
 	 * @return a new builder instance
 	 */
