@@ -11,3 +11,4 @@ pipeline-name: "spring-boot-2.1.x"
 concourse-url: "https://ci.spring.io"
 bintray-subject: "spring"
 bintray-repo: "jars"
+task-timeout: 2h00m
