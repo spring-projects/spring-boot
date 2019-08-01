@@ -121,8 +121,7 @@ class HypermediaAutoConfigurationTests {
 		RequestMappingHandlerAdapter handlerAdapter = this.context.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes()).containsExactly(MediaTypes.HAL_JSON,
-						MediaTypes.HAL_JSON_UTF8);
+				assertThat(converter.getSupportedMediaTypes()).containsExactly(MediaTypes.HAL_JSON);
 			}
 		}
 	}
