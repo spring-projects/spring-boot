@@ -149,20 +149,20 @@ jobs:
   - do:
     - task: build-project
       privileged: true
-      timeout: 1h30m
+      timeout: ((task-timeout))
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
     - aggregate:
       - task: build-samples
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-samples.yml
       - task: build-integration-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
       - task: build-deployment-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
     on_failure:
@@ -213,20 +213,20 @@ jobs:
         path: git-repo
         status: pending
     - task: build-project
-      timeout: 1h30m
+      timeout: ((task-timeout))
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-pr-project.yml
     - aggregate:
       - task: build-samples
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-samples.yml
       - task: build-integration-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
       - task: build-deployment-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
     on_success:
@@ -251,20 +251,20 @@ jobs:
   - do:
     - task: build-project
       privileged: true
-      timeout: 1h30m
+      timeout: ((task-timeout))
       image: spring-boot-jdk9-ci-image
       file: git-repo/ci/tasks/build-project.yml
     - aggregate:
       - task: build-samples
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk9-ci-image
         file: git-repo/ci/tasks/build-samples.yml
       - task: build-integration-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk9-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
       - task: build-deployment-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk9-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
     on_failure:
@@ -297,20 +297,20 @@ jobs:
   - do:
     - task: build-project
       privileged: true
-      timeout: 1h30m
+      timeout: ((task-timeout))
       image: spring-boot-jdk10-ci-image
       file: git-repo/ci/tasks/build-project.yml
     - aggregate:
       - task: build-samples
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk10-ci-image
         file: git-repo/ci/tasks/build-samples.yml
       - task: build-integration-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk10-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
       - task: build-deployment-tests
-        timeout: 1h30m
+        timeout: ((task-timeout))
         image: spring-boot-jdk10-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
     on_failure:
