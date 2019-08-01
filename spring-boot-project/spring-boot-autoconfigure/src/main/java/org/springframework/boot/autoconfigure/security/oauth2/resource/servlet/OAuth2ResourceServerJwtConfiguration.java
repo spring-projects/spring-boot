@@ -81,7 +81,7 @@ class OAuth2ResourceServerJwtConfiguration {
 		@Bean
 		@Conditional(IssuerUriCondition.class)
 		JwtDecoder jwtDecoderByIssuerUri() {
-			return JwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
+			return JwtDecoders.fromIssuerLocation(this.properties.getIssuerUri());
 		}
 
 	}

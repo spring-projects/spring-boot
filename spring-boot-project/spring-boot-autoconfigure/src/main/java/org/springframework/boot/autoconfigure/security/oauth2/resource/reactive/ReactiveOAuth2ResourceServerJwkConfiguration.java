@@ -79,7 +79,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		@Bean
 		@Conditional(IssuerUriCondition.class)
 		ReactiveJwtDecoder jwtDecoderByIssuerUri() {
-			return ReactiveJwtDecoders.fromOidcIssuerLocation(this.properties.getIssuerUri());
+			return ReactiveJwtDecoders.fromIssuerLocation(this.properties.getIssuerUri());
 		}
 
 	}
