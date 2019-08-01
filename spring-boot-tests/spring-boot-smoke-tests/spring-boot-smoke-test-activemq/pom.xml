@@ -3,9 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<!-- Your own application should inherit from spring-boot-starter-parent -->
-		<artifactId>spring-boot-smoke-tests</artifactId>
 		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-smoke-tests</artifactId>
 		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-boot-smoke-test-activemq</artifactId>
