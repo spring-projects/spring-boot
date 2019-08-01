@@ -592,7 +592,6 @@ content into your application. Rather, pick only the properties that you need.
 
 	# LIQUIBASE ({sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[LiquibaseProperties])
 	spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml # Change log configuration path.
-	spring.liquibase.check-change-log-location=true # Whether to check that the change log location exists.
 	spring.liquibase.contexts= # Comma-separated list of runtime contexts to use.
 	spring.liquibase.database-change-log-lock-table=DATABASECHANGELOGLOCK # Name of table to use for tracking concurrent Liquibase usage.
 	spring.liquibase.database-change-log-table=DATABASECHANGELOG # Name of table to use for tracking change history.

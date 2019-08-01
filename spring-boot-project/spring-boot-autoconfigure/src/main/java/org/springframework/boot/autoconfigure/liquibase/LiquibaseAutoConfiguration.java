@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.liquibase;
 
 import java.util.function.Supplier;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -43,13 +42,11 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -101,15 +98,6 @@ public class LiquibaseAutoConfiguration {
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.liquibaseDataSource = liquibaseDataSource.getIfAvailable();
-		}
-
-		@PostConstruct
-		public void checkChangelogExists() {
-			if (this.properties.isCheckChangeLogLocation()) {
-				Resource resource = this.resourceLoader.getResource(this.properties.getChangeLog());
-				Assert.state(resource.exists(), () -> "Cannot find changelog location: " + resource
-						+ " (please add changelog or check your Liquibase " + "configuration)");
-			}
 		}
 
 		@Bean
