@@ -46,7 +46,7 @@ class RestClientConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RestClientBuilder restClientBuilder(RestClientProperties properties,
+		public RestClientBuilder elasticsearchRestClientBuilder(RestClientProperties properties,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
 			HttpHost[] hosts = properties.getUris().stream().map(HttpHost::create).toArray(HttpHost[]::new);
 			RestClientBuilder builder = RestClient.builder(hosts);
@@ -71,13 +71,14 @@ class RestClientConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RestHighLevelClient restHighLevelClient(RestClientBuilder restClientBuilder) {
+		public RestHighLevelClient elasticsearchRestHighLevelClient(RestClientBuilder restClientBuilder) {
 			return new RestHighLevelClient(restClientBuilder);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RestClient restClient(RestClientBuilder builder, ObjectProvider<RestHighLevelClient> restHighLevelClient) {
+		public RestClient elasticsearchRestClient(RestClientBuilder builder,
+				ObjectProvider<RestHighLevelClient> restHighLevelClient) {
 			RestHighLevelClient client = restHighLevelClient.getIfUnique();
 			if (client != null) {
 				return client.getLowLevelClient();
@@ -92,7 +93,7 @@ class RestClientConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RestClient restClient(RestClientBuilder builder) {
+		public RestClient elasticsearchRestClient(RestClientBuilder builder) {
 			return builder.build();
 		}
 
