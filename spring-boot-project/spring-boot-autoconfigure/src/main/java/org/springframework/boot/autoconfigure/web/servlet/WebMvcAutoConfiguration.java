@@ -167,13 +167,20 @@ public class WebMvcAutoConfiguration {
 		return new OrderedFormContentFilter();
 	}
 
+	static String[] getResourceLocations(String[] staticLocations) {
+		String[] locations = new String[staticLocations.length + SERVLET_LOCATIONS.length];
+		System.arraycopy(staticLocations, 0, locations, 0, staticLocations.length);
+		System.arraycopy(SERVLET_LOCATIONS, 0, locations, staticLocations.length, SERVLET_LOCATIONS.length);
+		return locations;
+	}
+
 	// Defined as a nested config to ensure WebMvcConfigurer is not read when not
 	// on the classpath
 	@Configuration
 	@Import(EnableWebMvcConfiguration.class)
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	@Order(0)
-	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ResourceLoaderAware {
+	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
 
@@ -187,8 +194,6 @@ public class WebMvcAutoConfiguration {
 
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		private ResourceLoader resourceLoader;
-
 		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
@@ -197,11 +202,6 @@ public class WebMvcAutoConfiguration {
 			this.beanFactory = beanFactory;
 			this.messageConvertersProvider = messageConvertersProvider;
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
-		}
-
-		@Override
-		public void setResourceLoader(ResourceLoader resourceLoader) {
-			this.resourceLoader = resourceLoader;
 		}
 
 		@Override
@@ -338,37 +338,6 @@ public class WebMvcAutoConfiguration {
 			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
 		}
 
-		@Bean
-		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext) {
-			return new WelcomePageHandlerMapping(new TemplateAvailabilityProviders(applicationContext),
-					applicationContext, getWelcomePage(), this.mvcProperties.getStaticPathPattern());
-		}
-
-		static String[] getResourceLocations(String[] staticLocations) {
-			String[] locations = new String[staticLocations.length + SERVLET_LOCATIONS.length];
-			System.arraycopy(staticLocations, 0, locations, 0, staticLocations.length);
-			System.arraycopy(SERVLET_LOCATIONS, 0, locations, staticLocations.length, SERVLET_LOCATIONS.length);
-			return locations;
-		}
-
-		private Optional<Resource> getWelcomePage() {
-			String[] locations = getResourceLocations(this.resourceProperties.getStaticLocations());
-			return Arrays.stream(locations).map(this::getIndexHtml).filter(this::isReadable).findFirst();
-		}
-
-		private Resource getIndexHtml(String location) {
-			return this.resourceLoader.getResource(location + "index.html");
-		}
-
-		private boolean isReadable(Resource resource) {
-			try {
-				return resource.exists() && (resource.getURL() != null);
-			}
-			catch (Exception ex) {
-				return false;
-			}
-		}
-
 		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
@@ -430,7 +399,9 @@ public class WebMvcAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebMvc}.
 	 */
 	@Configuration
-	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
+	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
+
+		private final ResourceProperties resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
 
@@ -438,8 +409,12 @@ public class WebMvcAutoConfiguration {
 
 		private final WebMvcRegistrations mvcRegistrations;
 
-		public EnableWebMvcConfiguration(ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
+		private ResourceLoader resourceLoader;
+
+		public EnableWebMvcConfiguration(ResourceProperties resourceProperties,
+				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
 				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider, ListableBeanFactory beanFactory) {
+			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
 			this.beanFactory = beanFactory;
@@ -468,6 +443,33 @@ public class WebMvcAutoConfiguration {
 		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 			// Must be @Primary for MvcUriComponentsBuilder to work
 			return super.requestMappingHandlerMapping();
+		}
+
+		@Bean
+		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext) {
+			WelcomePageHandlerMapping welcomePageHandlerMapping = new WelcomePageHandlerMapping(
+					new TemplateAvailabilityProviders(applicationContext), applicationContext, getWelcomePage(),
+					this.mvcProperties.getStaticPathPattern());
+			welcomePageHandlerMapping.setInterceptors(getInterceptors());
+			return welcomePageHandlerMapping;
+		}
+
+		private Optional<Resource> getWelcomePage() {
+			String[] locations = getResourceLocations(this.resourceProperties.getStaticLocations());
+			return Arrays.stream(locations).map(this::getIndexHtml).filter(this::isReadable).findFirst();
+		}
+
+		private Resource getIndexHtml(String location) {
+			return this.resourceLoader.getResource(location + "index.html");
+		}
+
+		private boolean isReadable(Resource resource) {
+			try {
+				return resource.exists() && (resource.getURL() != null);
+			}
+			catch (Exception ex) {
+				return false;
+			}
 		}
 
 		@Bean
@@ -541,6 +543,11 @@ public class WebMvcAutoConfiguration {
 				}
 			}
 			return manager;
+		}
+
+		@Override
+		public void setResourceLoader(ResourceLoader resourceLoader) {
+			this.resourceLoader = resourceLoader;
 		}
 
 	}
