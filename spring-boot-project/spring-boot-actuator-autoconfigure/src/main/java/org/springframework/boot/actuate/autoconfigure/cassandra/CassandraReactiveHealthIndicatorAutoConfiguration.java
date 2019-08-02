@@ -54,7 +54,7 @@ public class CassandraReactiveHealthIndicatorAutoConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {
 
 	@Bean
-	@ConditionalOnMissingBean(name = "cassandraReactiveHealthIndicator")
+	@ConditionalOnMissingBean(name = "cassandraHealthIndicator")
 	public ReactiveHealthIndicator cassandraHealthIndicator(
 			Map<String, ReactiveCassandraOperations> reactiveCassandraOperations) {
 		return createHealthIndicator(reactiveCassandraOperations);
