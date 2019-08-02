@@ -39,11 +39,6 @@ public class LiquibaseProperties {
 	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
 	/**
-	 * Whether to check that the change log location exists.
-	 */
-	private boolean checkChangeLogLocation = true;
-
-	/**
 	 * Comma-separated list of runtime contexts to use.
 	 */
 	private String contexts;
@@ -126,14 +121,6 @@ public class LiquibaseProperties {
 	public void setChangeLog(String changeLog) {
 		Assert.notNull(changeLog, "ChangeLog must not be null");
 		this.changeLog = changeLog;
-	}
-
-	public boolean isCheckChangeLogLocation() {
-		return this.checkChangeLogLocation;
-	}
-
-	public void setCheckChangeLogLocation(boolean checkChangeLogLocation) {
-		this.checkChangeLogLocation = checkChangeLogLocation;
 	}
 
 	public String getContexts() {
