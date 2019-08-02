@@ -27,12 +27,14 @@ import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration;
 import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration.BFirstProperties;
 import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration.BProperties;
+import org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration.BSecondProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -44,6 +46,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Johnny Lim
+ * @author Stephane Nicoll
  */
 class ConfigurationPropertiesScanTests {
 
@@ -115,8 +118,16 @@ class ConfigurationPropertiesScanTests {
 				"b.first-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BFirstProperties");
 	}
 
-	private void load(Class<?>... classes) {
-		this.context.register(classes);
+	@Test
+	void scanShouldBindConfigurationProperties() {
+		load(TestAnotherPackageConfiguration.class, "b.first.name=constructor", "b.second.number=42");
+		assertThat(this.context.getBean(BFirstProperties.class).getName()).isEqualTo("constructor");
+		assertThat(this.context.getBean(BSecondProperties.class).getNumber()).isEqualTo(42);
+	}
+
+	private void load(Class<?> configuration, String... inlinedProperties) {
+		this.context.register(configuration);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, inlinedProperties);
 		this.context.refresh();
 	}
 
