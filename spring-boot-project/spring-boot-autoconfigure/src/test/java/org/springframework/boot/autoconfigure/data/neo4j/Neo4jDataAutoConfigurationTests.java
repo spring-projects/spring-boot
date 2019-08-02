@@ -100,6 +100,16 @@ class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
+	void customSessionFactoryShouldNotDisableOtherDefaults() {
+		this.contextRunner.withUserConfiguration(CustomSessionFactory.class).run((context) -> {
+			assertThat(context).hasSingleBean(SessionFactory.class);
+			assertThat(context.getBean(SessionFactory.class)).isSameAs(context.getBean("customSessionFactory"));
+			assertThat(context).hasSingleBean(Neo4jTransactionManager.class);
+			assertThat(context).hasSingleBean(OpenSessionInViewInterceptor.class);
+		});
+	}
+
+	@Test
 	void customConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			assertThat(context.getBean(org.neo4j.ogm.config.Configuration.class))

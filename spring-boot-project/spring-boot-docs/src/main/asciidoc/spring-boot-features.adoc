@@ -4667,9 +4667,9 @@ properties, as shown in the following example:
 	spring.data.neo4j.password=secret
 ----
 
-You can take full control over the session creation by adding a
-`org.neo4j.ogm.config.Configuration` `@Bean`. Also, adding a `@Bean` of type
-`SessionFactory` disables the auto-configuration and gives you full control.
+You can take full control over the session creation by either adding a
+`org.neo4j.ogm.config.Configuration` bean or a `org.neo4j.ogm.session.SessionFactory`
+bean.
 
 
 
