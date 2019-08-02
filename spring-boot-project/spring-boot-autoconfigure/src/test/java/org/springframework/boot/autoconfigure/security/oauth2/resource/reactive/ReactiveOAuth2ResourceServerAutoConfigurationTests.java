@@ -64,6 +64,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author HaiTao Zhang
  */
 class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
@@ -111,12 +112,11 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	void autoConfigurationShouldConfigureResourceServerUsingOidcRfc8414IssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
-		String path = "test";
-		String issuer = this.server.url(path).toString();
+		String issuer = this.server.url("").toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
-		setupMockResponseWithEmptyResponses(cleanIssuerPath, 1);
+		setupMockResponsesWithErrors(cleanIssuerPath, 1);
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
-				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
+				+ this.server.getHostName() + ":" + this.server.getPort()).run((context) -> {
 					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
@@ -128,12 +128,11 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	void autoConfigurationShouldConfigureResourceServerUsingOAuthIssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
-		String path = "test";
-		String issuer = this.server.url(path).toString();
+		String issuer = this.server.url("").toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
-		setupMockResponseWithEmptyResponses(cleanIssuerPath, 2);
+		setupMockResponsesWithErrors(cleanIssuerPath, 2);
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
-				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
+				+ this.server.getHostName() + ":" + this.server.getPort()).run((context) -> {
 					assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 					assertFilterConfiguredWithJwtAuthenticationManager(context);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
@@ -359,9 +358,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		this.server.enqueue(mockResponse);
 	}
 
-	private void setupMockResponseWithEmptyResponses(String issuer, int amountOfEmptyResponse)
-			throws JsonProcessingException {
-		for (int i = 0; i < amountOfEmptyResponse; i++) {
+	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) throws JsonProcessingException {
+		for (int i = 0; i < errorResponseCount; i++) {
 			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
 			this.server.enqueue(emptyResponse);
 		}
