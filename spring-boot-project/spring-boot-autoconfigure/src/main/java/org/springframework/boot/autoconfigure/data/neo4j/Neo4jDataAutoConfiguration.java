@@ -64,7 +64,7 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
-	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory, Neo4jProperties properties,
+	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		return customize(new Neo4jTransactionManager(sessionFactory), transactionManagerCustomizers.getIfAvailable());
 	}
