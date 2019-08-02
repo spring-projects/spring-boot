@@ -58,6 +58,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author HaiTao Zhang
  */
 class OAuth2ResourceServerAutoConfigurationTests {
 
@@ -114,14 +115,48 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
-		String issuer = this.server.url("").toString();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
 		setupMockResponse(cleanIssuerPath);
 		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
-				+ this.server.getHostName() + ":" + this.server.getPort()).run((context) -> {
+				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
-					assertThat(getBearerTokenFilter(context)).isNotNull();
+					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
+		assertThat(this.server.getRequestCount()).isEqualTo(1);
+	}
+
+	@Test
+	void autoConfigurationShouldConfigureResourceServerUsingOidcRfc8414IssuerUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponsesWithErrors(cleanIssuerPath, 1);
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
+				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
+					assertThat(context).hasSingleBean(JwtDecoder.class);
+					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
+				});
+		assertThat(this.server.getRequestCount()).isEqualTo(2);
+	}
+
+	@Test
+	void autoConfigurationShouldConfigureResourceServerUsingOAuthIssuerUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponsesWithErrors(cleanIssuerPath, 2);
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
+				+ this.server.getHostName() + ":" + this.server.getPort() + "/" + path).run((context) -> {
+					assertThat(context).hasSingleBean(JwtDecoder.class);
+					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
+				});
+		assertThat(this.server.getRequestCount()).isEqualTo(3);
 	}
 
 	@Test
@@ -304,6 +339,14 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.server.enqueue(mockResponse);
+	}
+
+	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) throws JsonProcessingException {
+		for (int i = 0; i < errorResponseCount; i++) {
+			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
+			this.server.enqueue(emptyResponse);
+		}
+		setupMockResponse(issuer);
 	}
 
 	private Map<String, Object> getResponse(String issuer) {
