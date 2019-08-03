@@ -65,6 +65,8 @@ public class Binder {
 
 	private final Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
+	private final BindHandler defaultBindHandler;
+
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
 	 * {@link DefaultFormattingConversionService} will be used for all conversion.
@@ -116,12 +118,32 @@ public class Binder {
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
 			ConversionService conversionService, Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+		this(sources, placeholdersResolver, conversionService, propertyEditorInitializer, null);
+	}
+
+	/**
+	 * Create a new {@link Binder} instance for the specified sources.
+	 * @param sources the sources used for binding
+	 * @param placeholdersResolver strategy to resolve any property placeholders
+	 * @param conversionService the conversion service to convert values (or {@code null}
+	 * to use {@link ApplicationConversionService})
+	 * @param propertyEditorInitializer initializer used to configure the property editors
+	 * that can convert values (or {@code null} if no initialization is required). Often
+	 * used to call {@link ConfigurableListableBeanFactory#copyRegisteredEditorsTo}.
+	 * @param defaultBindHandler the default bind handler to use if non is specified when
+	 * binding
+	 * @since 2.2.0
+	 */
+	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
+			ConversionService conversionService, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
+			BindHandler defaultBindHandler) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
 		this.conversionService = (conversionService != null) ? conversionService
 				: ApplicationConversionService.getSharedInstance();
 		this.propertyEditorInitializer = propertyEditorInitializer;
+		this.defaultBindHandler = (defaultBindHandler != null) ? defaultBindHandler : BindHandler.DEFAULT;
 	}
 
 	/**
@@ -254,7 +276,7 @@ public class Binder {
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, boolean create) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
-		handler = (handler != null) ? handler : BindHandler.DEFAULT;
+		handler = (handler != null) ? handler : this.defaultBindHandler;
 		Context context = new Context();
 		return bind(name, target, handler, context, false, create);
 	}
@@ -439,8 +461,22 @@ public class Binder {
 	 * @return a {@link Binder} instance
 	 */
 	public static Binder get(Environment environment) {
-		return new Binder(ConfigurationPropertySources.get(environment),
-				new PropertySourcesPlaceholdersResolver(environment));
+		return get(environment, null);
+	}
+
+	/**
+	 * Create a new {@link Binder} instance from the specified environment.
+	 * @param environment the environment source (must have attached
+	 * {@link ConfigurationPropertySources})
+	 * @param defaultBindHandler the default bind handler to use if non is specified when
+	 * binding
+	 * @return a {@link Binder} instance
+	 * @since 2.2.0
+	 */
+	public static Binder get(Environment environment, BindHandler defaultBindHandler) {
+		Iterable<ConfigurationPropertySource> sources = ConfigurationPropertySources.get(environment);
+		PropertySourcesPlaceholdersResolver placeholdersResolver = new PropertySourcesPlaceholdersResolver(environment);
+		return new Binder(sources, placeholdersResolver, null, null, defaultBindHandler);
 	}
 
 	/**

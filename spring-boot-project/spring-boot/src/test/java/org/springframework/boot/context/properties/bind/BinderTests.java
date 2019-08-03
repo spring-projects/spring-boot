@@ -211,6 +211,20 @@ class BinderTests {
 	}
 
 	@Test
+	void bindWhenHasCustomDefultHandlerShouldTriggerOnSuccess() {
+		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
+		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
+		Binder binder = new Binder(this.sources, null, null, null, handler);
+		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
+		binder.bind("foo", target);
+		InOrder inOrder = inOrder(handler);
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)),
+				any(), eq("bar"));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
+				isA(JavaBean.class));
+	}
+
+	@Test
 	void bindWhenHasMalformedDateShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "2014-04-01T01:30:00.000-05:00"));
 		assertThatExceptionOfType(BindException.class)
