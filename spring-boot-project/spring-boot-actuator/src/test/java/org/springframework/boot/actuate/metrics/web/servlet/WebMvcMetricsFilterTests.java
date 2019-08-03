@@ -83,6 +83,7 @@ import org.springframework.web.util.NestedServletException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -186,7 +187,7 @@ class WebMvcMetricsFilterTests {
 	void streamingError() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/streamingError")).andExpect(request().asyncStarted())
 				.andReturn();
-		this.mvc.perform(asyncDispatch(result)).andExpect(status().isOk());
+		assertThatIOException().isThrownBy(() -> this.mvc.perform(asyncDispatch(result)).andReturn());
 		assertThat(this.registry.get("http.server.requests").tags("exception", "IOException").timer().count())
 				.isEqualTo(1L);
 	}
