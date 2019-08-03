@@ -158,7 +158,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beans.getStrategy() == SearchStrategy.ANCESTORS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
-			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent, "Unable to use SearchStrategy.PARENTS");
+			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent,
+					"Unable to use SearchStrategy.ANCESTORS");
 			beanFactory = (ConfigurableListableBeanFactory) parent;
 		}
 		MatchResult matchResult = new MatchResult();
