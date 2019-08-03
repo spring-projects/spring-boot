@@ -31,7 +31,7 @@ public class TestJsonConverter extends JsonConverter {
 
 	@Override
 	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
-		return toJsonArray(metadata, itemType);
+		return super.toJsonArray(metadata, itemType);
 	}
 
 	@Override

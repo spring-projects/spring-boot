@@ -106,7 +106,9 @@ public class NettyWebServer implements WebServer {
 	}
 
 	private void applyRouteProviders(HttpServerRoutes routes) {
-		this.routeProviders.forEach((provider) -> provider.apply(routes));
+		for (NettyRouteProvider provider : this.routeProviders) {
+			routes = provider.apply(routes);
+		}
 		routes.route(ALWAYS, this.handlerAdapter);
 	}
 

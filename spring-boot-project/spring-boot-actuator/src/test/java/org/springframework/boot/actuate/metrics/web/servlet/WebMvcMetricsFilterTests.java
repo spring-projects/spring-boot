@@ -186,7 +186,7 @@ class WebMvcMetricsFilterTests {
 	void streamingError() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/streamingError")).andExpect(request().asyncStarted())
 				.andReturn();
-		assertThatCode(() -> this.mvc.perform(asyncDispatch(result)).andExpect(status().isOk()));
+		this.mvc.perform(asyncDispatch(result)).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests").tags("exception", "IOException").timer().count())
 				.isEqualTo(1L);
 	}
