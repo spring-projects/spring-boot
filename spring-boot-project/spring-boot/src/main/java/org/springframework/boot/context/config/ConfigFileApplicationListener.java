@@ -454,7 +454,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					}
 				}
 				throw new IllegalStateException("File extension of config file location '" + location
-						+ "' is not known to any PropertySourceLoader");
+						+ "' is not known to any PropertySourceLoader. If the location is meant to reference "
+						+ "a directory, it must end in '/'");
 			}
 			Set<String> processed = new HashSet<>();
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {

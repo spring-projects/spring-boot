@@ -989,7 +989,16 @@ class ConfigFileApplicationListenerTests {
 				"spring.config.location=" + location);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
-				.withMessageContaining(location);
+				.withMessageContaining(location)
+				.withMessageContaining("If the location is meant to reference a directory, it must end in '/'");
+	}
+
+	@Test
+	void whenConfigLocationSpecifiesFolderConfigFileProcessingContinues() {
+		String location = "classpath:application.unknown/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.postProcessEnvironment(this.environment, this.application);
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
