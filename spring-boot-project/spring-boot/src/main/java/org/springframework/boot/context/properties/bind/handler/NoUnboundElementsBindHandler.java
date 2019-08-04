@@ -99,9 +99,7 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	private boolean isUnbound(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
 		if (name.isAncestorOf(candidate)) {
-			if (!this.boundNames.contains(candidate) && !isOverriddenCollectionElement(candidate)) {
-				return true;
-			}
+			return !this.boundNames.contains(candidate) && !isOverriddenCollectionElement(candidate);
 		}
 		return false;
 	}
