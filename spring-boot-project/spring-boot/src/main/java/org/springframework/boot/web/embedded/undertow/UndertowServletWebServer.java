@@ -344,10 +344,7 @@ public class UndertowServletWebServer implements WebServer {
 				return false;
 			}
 			Port other = (Port) obj;
-			if (this.number != other.number) {
-				return false;
-			}
-			return true;
+			return this.number == other.number;
 		}
 
 		@Override
