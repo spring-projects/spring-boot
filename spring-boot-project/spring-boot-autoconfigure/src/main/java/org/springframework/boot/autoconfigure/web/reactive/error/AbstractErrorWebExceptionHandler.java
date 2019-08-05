@@ -62,6 +62,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * Currently duplicated from Spring WebFlux HttpWebHandlerAdapter.
 	 */
 	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS;
+
 	static {
 		Set<String> exceptions = new HashSet<>();
 		exceptions.add("AbortedException");
@@ -276,7 +277,8 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		if (logger.isDebugEnabled()) {
 			logger.debug(request.exchange().getLogPrefix() + formatError(throwable, request));
 		}
-		if (response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+		if (HttpStatus.resolve(response.rawStatusCode()) != null
+				&& response.statusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
 			logger.error(request.exchange().getLogPrefix() + "500 Server Error for " + formatRequest(request),
 					throwable);
 		}
