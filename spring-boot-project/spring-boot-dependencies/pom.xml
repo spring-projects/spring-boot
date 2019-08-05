@@ -179,7 +179,7 @@
 		<slf4j.version>1.7.26</slf4j.version>
 		<snakeyaml.version>1.24</snakeyaml.version>
 		<solr.version>8.2.0</solr.version>
-		<spring-amqp.version>2.2.0.BUILD-SNAPSHOT</spring-amqp.version>
+		<spring-amqp.version>2.2.0.M4</spring-amqp.version>
 		<spring-batch.version>4.2.0.M3</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.6.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Moore-RC2</spring-data-releasetrain.version>
