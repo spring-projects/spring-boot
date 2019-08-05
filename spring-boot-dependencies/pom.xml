@@ -158,7 +158,7 @@
 		<spring-batch.version>3.0.10.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Ingalls-SR23</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.23.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.3.21.BUILD-SNAPSHOT</spring-integration.version>
+		<spring-integration.version>4.3.21.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.3.RELEASE</spring-integration-java-dsl.version>
 		<spring-kafka.version>1.1.8.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
