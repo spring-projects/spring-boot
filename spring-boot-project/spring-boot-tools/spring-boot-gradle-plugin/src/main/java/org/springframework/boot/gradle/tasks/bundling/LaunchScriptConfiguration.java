@@ -106,17 +106,12 @@ public class LaunchScriptConfiguration implements Serializable {
 			return false;
 		}
 		if (this.script == null) {
-			if (other.script != null) {
-				return false;
-			}
+			return other.script == null;
 		}
 		else if (!this.script.equals(other.script)) {
 			return false;
 		}
-		else if (!equalContents(this.script, other.script)) {
-			return false;
-		}
-		return true;
+		else return equalContents(this.script, other.script);
 	}
 
 	private boolean equalContents(File one, File two) {
@@ -132,7 +127,7 @@ public class LaunchScriptConfiguration implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.properties == null) ? 0 : this.properties.hashCode());
+		result = prime * result + this.properties.hashCode();
 		result = prime * result + ((this.script == null) ? 0 : this.script.hashCode());
 		return result;
 	}
