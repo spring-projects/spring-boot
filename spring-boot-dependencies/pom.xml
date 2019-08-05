@@ -156,7 +156,7 @@
 		<spring-amqp.version>1.7.14.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.9.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.10.RELEASE</spring-batch.version>
-		<spring-data-releasetrain.version>Ingalls-BUILD-SNAPSHOT</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Ingalls-SR23</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.23.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.21.BUILD-SNAPSHOT</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.3.RELEASE</spring-integration-java-dsl.version>
