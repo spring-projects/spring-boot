@@ -38,42 +38,42 @@ public class DeferredLog implements Log {
 	@Override
 	public boolean isTraceEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isTraceEnabled() : true;
+			return (this.destination == null) || this.destination.isTraceEnabled();
 		}
 	}
 
 	@Override
 	public boolean isDebugEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isDebugEnabled() : true;
+			return (this.destination == null) || this.destination.isDebugEnabled();
 		}
 	}
 
 	@Override
 	public boolean isInfoEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isInfoEnabled() : true;
+			return (this.destination == null) || this.destination.isInfoEnabled();
 		}
 	}
 
 	@Override
 	public boolean isWarnEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isWarnEnabled() : true;
+			return (this.destination == null) || this.destination.isWarnEnabled();
 		}
 	}
 
 	@Override
 	public boolean isErrorEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isErrorEnabled() : true;
+			return (this.destination == null) || this.destination.isErrorEnabled();
 		}
 	}
 
 	@Override
 	public boolean isFatalEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isFatalEnabled() : true;
+			return (this.destination == null) || this.destination.isFatalEnabled();
 		}
 	}
 

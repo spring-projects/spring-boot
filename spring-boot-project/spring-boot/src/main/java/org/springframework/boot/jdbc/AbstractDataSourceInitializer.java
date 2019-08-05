@@ -69,11 +69,8 @@ public abstract class AbstractDataSourceInitializer {
 		if (getMode() == DataSourceInitializationMode.NEVER) {
 			return false;
 		}
-		if (getMode() == DataSourceInitializationMode.EMBEDDED
-				&& !EmbeddedDatabaseConnection.isEmbedded(this.dataSource)) {
-			return false;
-		}
-		return true;
+		return getMode() != DataSourceInitializationMode.EMBEDDED
+				|| EmbeddedDatabaseConnection.isEmbedded(this.dataSource);
 	}
 
 	/**
