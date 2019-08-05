@@ -53,6 +53,7 @@
 		<commons-pool2.version>2.7.0</commons-pool2.version>
 		<couchbase-client.version>2.7.7</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
+		<db2-jdbc.version>11.5.0.0</db2-jdbc.version>
 		<derby.version>10.14.2.0</derby.version>
 		<dropwizard-metrics.version>4.1.0</dropwizard-metrics.version>
 		<ehcache.version>2.10.6</ehcache.version>
@@ -712,6 +713,11 @@
 				<groupId>com.hazelcast</groupId>
 				<artifactId>hazelcast-spring</artifactId>
 				<version>${hazelcast.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.ibm.db2</groupId>
+				<artifactId>jcc</artifactId>
+				<version>${db2-jdbc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
