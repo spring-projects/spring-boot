@@ -134,7 +134,7 @@
 		<mssql-jdbc.version>6.1.0.jre7</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>3.4.3</mongodb.version>
-		<mysql.version>5.1.47</mysql.version>
+		<mysql.version>5.1.48</mysql.version>
 		<narayana.version>5.5.34.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>2.1.6</neo4j-ogm.version>
