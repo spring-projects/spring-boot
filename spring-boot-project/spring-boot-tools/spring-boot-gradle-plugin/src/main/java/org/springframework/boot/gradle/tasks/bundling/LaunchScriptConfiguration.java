@@ -111,7 +111,9 @@ public class LaunchScriptConfiguration implements Serializable {
 		else if (!this.script.equals(other.script)) {
 			return false;
 		}
-		else return equalContents(this.script, other.script);
+		else {
+			return equalContents(this.script, other.script);
+		}
 	}
 
 	private boolean equalContents(File one, File two) {
