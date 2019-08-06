@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>spring-boot-samples</artifactId>
 		<groupId>org.springframework.boot</groupId>
-		<version>1.5.22.BUILD-SNAPSHOT</version>
+		<version>1.5.23.BUILD-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spring-boot-sample-hypermedia-ui-secure</artifactId>

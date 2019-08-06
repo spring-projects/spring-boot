@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-dependencies</artifactId>
-	<version>1.5.22.BUILD-SNAPSHOT</version>
+	<version>1.5.23.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Dependencies</name>
 	<description>Spring Boot Dependencies</description>
@@ -224,79 +225,79 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot</artifactId>
 				<type>test-jar</type>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test</artifactId>
 				<type>test-jar</type>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test-autoconfigure</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-actuator</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-actuator-docs</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-autoconfigure</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-autoconfigure-processor</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-configuration-metadata</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-configuration-processor</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-devtools</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-loader</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-loader-tools</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -307,212 +308,212 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-activemq</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-actuator</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-amqp</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-aop</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-artemis</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-batch</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-cache</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-cloud-connectors</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-cassandra</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-couchbase</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-gemfire</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-jpa</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-ldap</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-mongodb</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-redis</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-neo4j</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-rest</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-solr</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-freemarker</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-groovy-templates</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-hateoas</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-integration</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jdbc</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jersey</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jetty</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jooq</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-atomikos</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-bitronix</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-undertow</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-log4j2</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-logging</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-mail</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-mobile</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-mustache</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-narayana</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-remote-shell</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-security</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-social-facebook</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-social-linkedin</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-social-twitter</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-test</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -523,32 +524,32 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-thymeleaf</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-tomcat</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-validation</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-websocket</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web-services</artifactId>
-				<version>1.5.22.BUILD-SNAPSHOT</version>
+				<version>1.5.23.BUILD-SNAPSHOT</version>
 			</dependency>
 
 			<!-- Third Party -->
