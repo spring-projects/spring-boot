@@ -37,7 +37,8 @@ public class RedisSessionProperties {
 	private String namespace = "spring:session";
 
 	/**
-	 * Sessions flush mode.
+	 * Sessions flush mode. Determines when session changes are written to the session
+	 * store.
 	 */
 	private FlushMode flushMode = FlushMode.ON_SAVE;
 
