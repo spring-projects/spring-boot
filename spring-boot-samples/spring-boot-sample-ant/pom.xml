@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<!-- This POM is just to trigger the Ant/Ivy sample from Maven and to test -->
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -62,8 +61,8 @@
 						<phase>package</phase>
 						<configuration>
 							<target>
-								<property name="build.compiler" value="extJavac" />
-								<ant dir="${basedir}" />
+								<property name="build.compiler" value="extJavac"/>
+								<ant dir="${basedir}"/>
 							</target>
 						</configuration>
 						<goals>
@@ -85,7 +84,7 @@
 					<dependency>
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-antlib</artifactId>
-						<version>1.5.22.BUILD-SNAPSHOT</version>
+						<version>1.5.23.BUILD-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 			</plugin>
