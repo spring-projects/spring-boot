@@ -469,8 +469,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		ExtensionBean(String beanName, Object bean) {
 			this.bean = bean;
 			this.beanName = beanName;
-			AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(bean.getClass(),
-					EndpointExtension.class);
+			AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(bean.getClass(),
+					EndpointExtension.class, false, true);
 			Class<?> endpointType = attributes.getClass("endpoint");
 			AnnotationAttributes endpointAttributes = AnnotatedElementUtils.findMergedAnnotationAttributes(endpointType,
 					Endpoint.class, true, true);
