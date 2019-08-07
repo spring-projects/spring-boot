@@ -36,7 +36,21 @@ import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
  */
 public class EntityManagerFactoryDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
+	/**
+	 * Creates a new {@code EntityManagerFactoryDependsOnPostProcessor} that will set up
+	 * dependencies upon beans with the given names.
+	 * @param dependsOn names of the beans to depend upon
+	 */
 	public EntityManagerFactoryDependsOnPostProcessor(String... dependsOn) {
+		super(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class, dependsOn);
+	}
+
+	/**
+	 * Creates a new {@code EntityManagerFactoryDependsOnPostProcessor} that will set up
+	 * dependencies upon beans with the given types.
+	 * @param dependsOn types of the beans to depend upon
+	 */
+	public EntityManagerFactoryDependsOnPostProcessor(Class<?>... dependsOn) {
 		super(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class, dependsOn);
 	}
 

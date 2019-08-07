@@ -34,7 +34,21 @@ import org.springframework.jdbc.core.JdbcOperations;
  */
 public class JdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
+	/**
+	 * Creates a new {@code JdbcOperationsDependsOnPostProcessor} that will set up
+	 * dependencies upon beans with the given names.
+	 * @param dependsOn names of the beans to depend upon
+	 */
 	public JdbcOperationsDependsOnPostProcessor(String... dependsOn) {
+		super(JdbcOperations.class, dependsOn);
+	}
+
+	/**
+	 * Creates a new {@code JdbcOperationsDependsOnPostProcessor} that will set up
+	 * dependencies upon beans with the given types.
+	 * @param dependsOn types of the beans to depend upon
+	 */
+	public JdbcOperationsDependsOnPostProcessor(Class<?>... dependsOn) {
 		super(JdbcOperations.class, dependsOn);
 	}
 
