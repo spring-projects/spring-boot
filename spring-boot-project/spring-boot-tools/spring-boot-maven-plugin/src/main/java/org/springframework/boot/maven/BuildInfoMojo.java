@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
@@ -100,7 +101,8 @@ public class BuildInfoMojo extends AbstractMojo {
 
 	private Instant getBuildTime() {
 		if (this.time == null || this.time.isEmpty()) {
-			return this.session.getRequest().getStartTime().toInstant();
+			Date startTime = this.session.getRequest().getStartTime();
+			return (startTime != null) ? startTime.toInstant() : Instant.now();
 		}
 		if ("off".equalsIgnoreCase(this.time)) {
 			return null;
