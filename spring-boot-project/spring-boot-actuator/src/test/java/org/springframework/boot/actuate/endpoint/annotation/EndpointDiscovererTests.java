@@ -44,6 +44,8 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.FixedValue;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -237,6 +239,15 @@ public class EndpointDiscovererTests {
 	}
 
 	@Test
+	public void getEndpointsWhenHasProxiedEndpointShouldReturnEndpoint() {
+		load(ProxiedSpecializedEndpointsConfiguration.class, (context) -> {
+			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"));
+		});
+	}
+
+	@Test
 	public void getEndpointsShouldApplyFilters() {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			EndpointFilter<SpecializedExposableEndpoint> filter = (endpoint) -> {
@@ -328,6 +339,19 @@ public class EndpointDiscovererTests {
 	}
 
 	@Configuration
+	static class ProxiedSpecializedTestEndpointConfiguration {
+
+		@Bean
+		public SpecializedExtension specializedExtension() {
+			Enhancer enhancer = new Enhancer();
+			enhancer.setSuperclass(SpecializedExtension.class);
+			enhancer.setCallback((FixedValue) () -> null);
+			return (SpecializedExtension) enhancer.create();
+		}
+
+	}
+
+	@Configuration
 	static class TestEndpointConfiguration {
 
 		@Bean
@@ -384,6 +408,11 @@ public class EndpointDiscovererTests {
 
 	@Import({ TestEndpoint.class, SubSpecializedTestEndpoint.class, SpecializedExtension.class })
 	static class SubSpecializedEndpointsConfiguration {
+
+	}
+
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, ProxiedSpecializedTestEndpointConfiguration.class })
+	static class ProxiedSpecializedEndpointsConfiguration {
 
 	}
 
