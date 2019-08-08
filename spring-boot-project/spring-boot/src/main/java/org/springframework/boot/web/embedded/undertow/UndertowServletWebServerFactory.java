@@ -259,7 +259,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		deployment.setClassLoader(getServletClassLoader());
 		deployment.setContextPath(getContextPath());
 		deployment.setDisplayName(getDisplayName());
-		deployment.setTempDir(new File(System.getProperty("java.io.tmpdir")));
 		deployment.setDeploymentName("spring-boot");
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
@@ -267,6 +266,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		configureErrorPages(deployment);
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
+		deployment.setTempDir(createTempDir("undertow"));
 		deployment.setEagerFilterInit(this.eagerInitFilters);
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
