@@ -381,7 +381,10 @@ public abstract class MainClassFinder {
 				return false;
 			}
 			MainClass other = (MainClass) obj;
-			return this.name.equals(other.name);
+			if (!this.name.equals(other.name)) {
+				return false;
+			}
+			return true;
 		}
 
 		@Override

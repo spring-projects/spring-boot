@@ -157,7 +157,10 @@ public final class Metadata {
 			if (this.deprecation == null && itemMetadata.getDeprecation() != null) {
 				return false;
 			}
-			return this.deprecation == null || this.deprecation.equals(itemMetadata.getDeprecation());
+			if (this.deprecation != null && !this.deprecation.equals(itemMetadata.getDeprecation())) {
+				return false;
+			}
+			return true;
 		}
 
 		public MetadataItemCondition ofType(Class<?> dataType) {
@@ -339,7 +342,10 @@ public final class Metadata {
 			if (this.value != null && !this.value.equals(valueHint.getValue())) {
 				return false;
 			}
-			return this.description == null || this.description.equals(valueHint.getDescription());
+			if (this.description != null && !this.description.equals(valueHint.getDescription())) {
+				return false;
+			}
+			return true;
 		}
 
 	}
