@@ -24,8 +24,8 @@ import org.springframework.boot.loader.archive.Archive;
  * included inside a {@code /BOOT-INF/classes} directory.
  *
  * @author Phillip Webb
- * @author Andy Wilkinso
- * @since 1.0.0n
+ * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
