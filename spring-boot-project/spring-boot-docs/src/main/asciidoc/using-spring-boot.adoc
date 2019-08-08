@@ -482,6 +482,11 @@ the list of auto-configuration classes to exclude by using the
 
 TIP: You can define exclusions both at the annotation level and by using the property.
 
+NOTE: Even though auto-configuration classes are `public`, the only aspect of the class
+that is considered public API is the name of the class which can be used for disabling the
+auto-configuration. The actual contents of those classes, such as nested configuration classes
+or bean methods are for internal use only and we do not recommend using those directly.
+
 [[using-boot-spring-beans-and-dependency-injection]]
 == Spring Beans and Dependency Injection
 You are free to use any of the standard Spring Framework techniques to define your beans
