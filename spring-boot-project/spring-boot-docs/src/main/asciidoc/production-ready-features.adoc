@@ -1683,6 +1683,24 @@ Here is an example `scrape_config` to add to `prometheus.yml`:
 		  - targets: ['HOST:PORT']
 ----
 
+For ephemeral or batch jobs which may not exist long enough to be scraped,
+https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support can be used to
+expose their metrics to Prometheus. To enable Prometheus Pushgateway support, add the following
+dependency to your project:
+
+[source,xml,indent=0]
+----
+<dependency>
+	<groupId>io.prometheus</groupId>
+	<artifactId>simpleclient_pushgateway</artifactId>
+</dependency>
+----
+
+When the Prometheus Pushgateway dependency is present on the classpath, Spring Boot auto-configures
+a `PrometheusPushGatewayManager` bean. This manages the pushing of metrics to a Prometheus Pushgateway.
+The `PrometheusPushGatewayManager` can be tuned using properties under `management.metrics.export.prometheus.pushgateway`.
+For advanced configuration, you can also provide your own `PrometheusPushGatewayManager` bean.
+
 
 
 [[production-ready-metrics-export-signalfx]]
