@@ -323,8 +323,7 @@ class LiquibaseAutoConfigurationTests {
 
 	@Test
 	void userConfigurationJdbcTemplateDependency() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
 				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("jdbcTemplate");

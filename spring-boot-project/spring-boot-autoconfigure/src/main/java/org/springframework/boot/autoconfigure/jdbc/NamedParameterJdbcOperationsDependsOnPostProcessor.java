@@ -33,8 +33,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 public class NamedParameterJdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	/**
-	 * Creates a new {@code NamedParameterJdbcOperationsDependsOnPostProcessor} that will set up
-	 * dependencies upon beans with the given names.
+	 * Creates a new {@code NamedParameterJdbcOperationsDependsOnPostProcessor} that will
+	 * set up dependencies upon beans with the given names.
 	 * @param dependsOn names of the beans to depend upon
 	 */
 	public NamedParameterJdbcOperationsDependsOnPostProcessor(String... dependsOn) {
@@ -42,8 +42,8 @@ public class NamedParameterJdbcOperationsDependsOnPostProcessor extends Abstract
 	}
 
 	/**
-	 * Creates a new {@code NamedParameterJdbcOperationsDependsOnPostProcessor} that will set up
-	 * dependencies upon beans with the given types.
+	 * Creates a new {@code NamedParameterJdbcOperationsDependsOnPostProcessor} that will
+	 * set up dependencies upon beans with the given types.
 	 * @param dependsOn types of the beans to depend upon
 	 */
 	public NamedParameterJdbcOperationsDependsOnPostProcessor(Class<?>... dependsOn) {
