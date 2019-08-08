@@ -115,15 +115,6 @@ public class EndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsWhenHasProxiedEndpointShouldReturnEndpoint() {
-		load(ProxiedSpecializedEndpointsConfiguration.class, (context) -> {
-			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
-			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"));
-		});
-	}
-
-	@Test
 	public void getEndpointsWhenHasEndpointInParentContextShouldReturnEndpoint() {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext(
 				TestEndpointConfiguration.class);
@@ -244,6 +235,15 @@ public class EndpointDiscovererTests {
 					ReflectionUtils.findMethod(SubSpecializedTestEndpoint.class, "getSpecialOne", String.class));
 			assertThat(operations).containsKeys(ReflectionUtils.findMethod(SpecializedExtension.class, "getSpecial"));
 			assertThat(operations).hasSize(3);
+		});
+	}
+
+	@Test
+	public void getEndpointsWhenHasProxiedEndpointShouldReturnEndpoint() {
+		load(ProxiedSpecializedEndpointsConfiguration.class, (context) -> {
+			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"));
 		});
 	}
 
@@ -401,11 +401,6 @@ public class EndpointDiscovererTests {
 
 	}
 
-	@Import({ TestEndpoint.class, ProxiedSpecializedTestEndpointConfiguration.class, SpecializedTestEndpoint.class })
-	static class ProxiedSpecializedEndpointsConfiguration {
-
-	}
-
 	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, SpecializedExtension.class })
 	static class SpecializedEndpointsConfiguration {
 
@@ -413,6 +408,11 @@ public class EndpointDiscovererTests {
 
 	@Import({ TestEndpoint.class, SubSpecializedTestEndpoint.class, SpecializedExtension.class })
 	static class SubSpecializedEndpointsConfiguration {
+
+	}
+
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, ProxiedSpecializedTestEndpointConfiguration.class })
+	static class ProxiedSpecializedEndpointsConfiguration {
 
 	}
 
