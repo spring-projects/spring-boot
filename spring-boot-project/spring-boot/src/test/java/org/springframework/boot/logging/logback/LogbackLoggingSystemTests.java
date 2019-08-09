@@ -160,7 +160,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void getSupportedLevels() {
 		assertThat(this.loggingSystem.getSupportedLogLevels()).isEqualTo(
-				EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF));
+				EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF, LogLevel.ON));
 	}
 
 	@Test
