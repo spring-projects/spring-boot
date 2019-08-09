@@ -17,10 +17,7 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -53,6 +50,16 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 		}
 		List<PropertySource<?>> propertySources = new ArrayList<>(loaded.size());
 		for (int i = 0; i < loaded.size(); i++) {
+			Map<String, Object> curr = loaded.get(i);
+			Iterator<String> iter = curr.keySet().iterator();
+			while(iter.hasNext()){
+				String key = iter.next();
+				String value = curr.get(key).toString();
+				if(key != null && key.startsWith("logging.level")
+						&& ("true".equals(value) || "false".equals(value))){
+					curr.put(key, value);
+				}
+			}
 			String documentNumber = (loaded.size() != 1) ? " (document #" + i + ")" : "";
 			propertySources.add(new OriginTrackedMapPropertySource(name + documentNumber,
 					Collections.unmodifiableMap(loaded.get(i)), true));
