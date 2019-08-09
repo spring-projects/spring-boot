@@ -17,8 +17,11 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Iterator;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
@@ -52,11 +55,11 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 		for (int i = 0; i < loaded.size(); i++) {
 			Map<String, Object> curr = loaded.get(i);
 			Iterator<String> iter = curr.keySet().iterator();
-			while(iter.hasNext()){
+			while (iter.hasNext()) {
 				String key = iter.next();
 				String value = curr.get(key).toString();
-				if(key != null && key.startsWith("logging.level")
-						&& ("true".equals(value) || "false".equals(value))){
+				if (key != null && key.startsWith("logging.level")
+						&& ("true".equals(value) || "false".equals(value))) {
 					curr.put(key, value);
 				}
 			}
