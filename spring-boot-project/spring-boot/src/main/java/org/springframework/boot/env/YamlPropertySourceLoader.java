@@ -59,8 +59,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 			while (iter.hasNext()) {
 				String key = iter.next();
 				String value = curr.get(key).toString();
-				if (key != null && key.startsWith("logging.level")
-						&& ("true".equals(value) || "false".equals(value))) {
+				if (key != null && key.startsWith("logging.level") && ("true".equals(value) || "false".equals(value))) {
 					curr.put(key, value);
 				}
 			}
