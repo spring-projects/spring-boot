@@ -148,6 +148,9 @@ do as they were designed before this was clarified.
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
+| https://pebbletemplates.io/[Pebbles Templates]
+| https://github.com/PebbleTemplates/pebble
+
 | https://picocli.info/[picocli]
 | https://github.com/remkop/picocli/tree/master/picocli-spring-boot-starter
 
