@@ -310,8 +310,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Map<String, Object> getArguments(HttpServletRequest request, Map<String, String> body) {
-			Map<String, Object> arguments = new LinkedHashMap<>();
-			arguments.putAll(getTemplateVariables(request));
+			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(request));
 			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
 					.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
