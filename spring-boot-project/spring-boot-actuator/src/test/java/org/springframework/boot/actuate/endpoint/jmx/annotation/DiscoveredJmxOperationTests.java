@@ -124,9 +124,7 @@ class DiscoveredJmxOperationTests {
 		annotationAttributes.put("produces", "application/xml");
 		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method, OperationType.READ,
 				annotationAttributes);
-		DiscoveredJmxOperation operation = new DiscoveredJmxOperation(EndpointId.of("test"), operationMethod,
-				mock(OperationInvoker.class));
-		return operation;
+		return new DiscoveredJmxOperation(EndpointId.of("test"), operationMethod, mock(OperationInvoker.class));
 	}
 
 	private Method findMethod(String methodName) {
