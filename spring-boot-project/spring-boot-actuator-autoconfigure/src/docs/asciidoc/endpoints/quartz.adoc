@@ -1,0 +1,92 @@
+[[quartz]]
+= Quartz (`quartz`)
+
+The `quartz` endpoint allows you to monitor the Quartz's Scheduler.
+
+NOTE: All the following quartz's endpoint are also available for triggers by simply replace `/actuator/quartz/jobs/` by `/actuator/quartz/triggers/`.
+
+
+[[jobs-all]]
+== Retrieving all jobs
+To retrieve jobs registered in the scheduler of your application, make a `GET` request to `/actuator/quartz/jobs`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/jobs-all/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/jobs-all/http-response.adoc[]
+
+
+[[jobs-all-response-structure]]
+=== Response Structure
+The response contains minimal informations of the application’s scheduled jobs (only the identifier).
+The following table describes the structure of the response:
+
+include::{snippets}/quartz/jobs-all/response-fields.adoc[]
+
+
+
+[[jobs-group]]
+== Retrieving jobs for group
+To retrieve jobs by group, make a `GET` request to `/actuator/quartz/jobs/{group}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/jobs-group/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/jobs-group/http-response.adoc[]
+
+[[jobs-group-response-structure]]
+=== Response Structure
+The response contains minimal informations of the application’s scheduled jobs (only the identifier).
+The following table describes the structure of the response:
+
+include::{snippets}/quartz/jobs-group/response-fields.adoc[]
+
+
+
+[[jobs-group-name]]
+== Retrieving job by identifier
+To retrieve a job by group and name, make a `GET` request to `/actuator/quartz/jobs/{group}/{name}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/jobs-group-name/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/jobs-group-name/http-response.adoc[]
+
+[[jobs-group-name-structure]]
+=== Response Structure
+The response details of the application’s scheduled job.
+The following table describes the structure of the response:
+
+include::{snippets}/quartz/jobs-group-name/response-fields.adoc[]
+
+
+
+[[jobs-pause-resume]]
+== Change state of job
+To resume or pause a given job depending on its current state, make a `POST` request to `/actuator/quartz/jobs/{group}/{name}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/jobs-pause-resume/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/quartz/jobs-pause-resume/http-response.adoc[]
+
+NOTE: A paused job will be resume and an active job will be paused.
+
+[[jobs-pause-resume-structure]]
+=== Response Structure
+The response details of the application’s scheduled job.
+The following table describes the structure of the response:
+
+include::{snippets}/quartz/jobs-pause-resume/response-fields.adoc[]
+
+
+
+[[jobs-delete]]
+== Delete a job
+To delete a job, make a `DELETE` request to `/actuator/quartz/jobs/{group}/{name}`, as shown in the following curl-based example:
+
+include::{snippets}/quartz/jobs-delete/curl-request.adoc[]

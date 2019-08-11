@@ -83,6 +83,7 @@ org.springframework.boot.actuate.autoconfigure.r2dbc.ConnectionFactoryHealthCont
 org.springframework.boot.actuate.autoconfigure.redis.RedisHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisReactiveHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.scheduling.QuartzEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.session.SessionsEndpointAutoConfiguration,\
