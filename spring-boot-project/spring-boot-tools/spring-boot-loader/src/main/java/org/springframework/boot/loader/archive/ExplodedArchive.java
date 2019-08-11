@@ -173,7 +173,7 @@ public class ExplodedArchive implements Archive {
 		private Iterator<File> listFiles(File file) {
 			File[] files = file.listFiles();
 			if (files == null) {
-				return Collections.<File>emptyList().iterator();
+				return Collections.emptyIterator();
 			}
 			Arrays.sort(files, this.entryComparator);
 			return Arrays.asList(files).iterator();
