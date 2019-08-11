@@ -7948,7 +7948,7 @@ for assertions, as follows:
 		@Test
 		public void testName() throws Exception {
 			System.out.println("Hello World!");
-			assertThat(capture.toString(), containsString("World"));
+			assertThat(capture.toString(), containsString("World");
 		}
 
 	}
