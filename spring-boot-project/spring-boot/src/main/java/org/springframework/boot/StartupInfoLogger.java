@@ -126,7 +126,7 @@ class StartupInfoLogger {
 	}
 
 	private void appendPid(StringBuilder message) {
-		append(message, "with PID ", () -> new ApplicationPid());
+		append(message, "with PID ", ApplicationPid::new);
 	}
 
 	private void appendContext(StringBuilder message) {

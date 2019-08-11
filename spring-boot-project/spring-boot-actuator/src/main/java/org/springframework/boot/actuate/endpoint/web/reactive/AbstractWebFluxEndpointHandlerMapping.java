@@ -332,8 +332,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange, Map<String, String> body) {
-			Map<String, Object> arguments = new LinkedHashMap<>();
-			arguments.putAll(getTemplateVariables(exchange));
+			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(exchange));
 			if (body != null) {
 				arguments.putAll(body);
 			}
