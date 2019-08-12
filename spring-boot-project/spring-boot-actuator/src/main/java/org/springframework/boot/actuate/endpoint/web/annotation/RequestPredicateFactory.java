@@ -65,8 +65,7 @@ class RequestPredicateFactory {
 
 	private Parameter getAllRemainingPathSegmentsParameter(Parameter[] selectorParameters) {
 		Parameter trailingPathsParameter = null;
-		for (int i = 0; i < selectorParameters.length; i++) {
-			Parameter selectorParameter = selectorParameters[i];
+		for (Parameter selectorParameter : selectorParameters) {
 			Selector selector = selectorParameter.getAnnotation(Selector.class);
 			if (selector.match() == Match.ALL_REMAINING) {
 				Assert.state(trailingPathsParameter == null,
