@@ -42,11 +42,11 @@ public class ConnectionInputStreamTests {
 
 	@Test
 	public void readHeader() throws Exception {
-		String header = "";
+		StringBuilder headerBuilder = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
-			header += "x-something-" + i
-					+ ": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+			headerBuilder.append("x-something-").append(i).append(": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 		}
+		String header = headerBuilder.toString();
 		String data = header + "\r\n\r\n" + "content\r\n";
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(data.getBytes()));
