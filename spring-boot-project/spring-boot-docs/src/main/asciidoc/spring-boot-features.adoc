@@ -8297,30 +8297,15 @@ which auto-configures one for you.
 [[boot-features-output-capture-test-utility]]
 ==== OutputCapture
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and
-`System.err` output. To use with {@link ExtendWith @ExtendWith}, you can inject
-`CapturedOutput` as an argument to your test class constructor or test method as follows:
+`System.err` output. To use with `@ExtendWith`, you can inject `CapturedOutput` as an
+argument to your test class constructor or test method as follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-    import org.junit.jupiter.api.extension.ExtendWith;
-
-    import org.springframework.boot.test.system.CapturedOutput;
-    import org.springframework.boot.test.system.OutputCaptureExtension;
-
-	import static org.assertj.core.api.Assertions.assertThat;
-
-	@ExtendWith(OutputCaptureExtension.class)
-	class MyTest {
-
-		@Test
-		void testName(CapturedOutput output) {
-			System.out.println("Hello World!");
-			assertThat(output).contains("World");
-		}
-
-	}
+include::{test-examples}/test/system/OutputCaptureTests.java[tag=test]
 ----
+
+
 
 [[boot-features-rest-templates-test-utility]]
 ==== TestRestTemplate
