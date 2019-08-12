@@ -908,7 +908,7 @@ interface. The following code shows a sample `ReactiveHealthIndicator` implement
 		@Override
 		public Mono<Health> health() {
 			return doHealthCheck() //perform some specific health check that returns a Mono<Health>
-				.onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build())));
+				.onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()));
 		}
 
 	}

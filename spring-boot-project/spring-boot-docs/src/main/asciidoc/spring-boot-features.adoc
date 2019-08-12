@@ -8316,7 +8316,7 @@ which auto-configures one for you.
 		@Test
 		void testName(CapturedOutput output) {
 			System.out.println("Hello World!");
-			assertThat(output).contains("World"));
+			assertThat(output).contains("World");
 		}
 
 	}
