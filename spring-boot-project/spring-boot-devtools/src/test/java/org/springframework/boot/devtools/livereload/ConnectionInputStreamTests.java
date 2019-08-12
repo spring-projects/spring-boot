@@ -37,7 +37,7 @@ class ConnectionInputStreamTests {
 	private static final byte[] NO_BYTES = {};
 
 	@Test
-	public void readHeader() throws Exception {
+    void readHeader() throws Exception {
 		StringBuilder headerBuilder = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			headerBuilder.append("x-something-").append(i).append(": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
