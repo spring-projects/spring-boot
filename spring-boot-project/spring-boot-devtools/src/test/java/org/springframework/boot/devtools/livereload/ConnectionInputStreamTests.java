@@ -37,15 +37,13 @@ class ConnectionInputStreamTests {
 	private static final byte[] NO_BYTES = {};
 
 	@Test
-    void readHeader() throws Exception {
-		StringBuilder headerBuilder = new StringBuilder();
+	void readHeader() throws Exception {
+		String header = "";
 		for (int i = 0; i < 100; i++) {
-			headerBuilder.append("x-something-").append(i).append(": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+			header += "x-something-" + i + ": xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 		}
-		String header = headerBuilder.toString();
-		String data = header + "\r\n\r\n" + "content\r\n";
-		ConnectionInputStream inputStream = new ConnectionInputStream(
-				new ByteArrayInputStream(data.getBytes()));
+		String data = header + "\r\n\r\ncontent\r\n";
+		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(data.getBytes()));
 		assertThat(inputStream.readHeader()).isEqualTo(header);
 	}
 
