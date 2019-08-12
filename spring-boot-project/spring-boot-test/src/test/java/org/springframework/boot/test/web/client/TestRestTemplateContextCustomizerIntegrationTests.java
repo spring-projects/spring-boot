@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +34,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,25 +42,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class TestRestTemplateContextCustomizerIntegrationTests {
+class TestRestTemplateContextCustomizerIntegrationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void test() {
+	void test() {
 		assertThat(this.restTemplate.getForObject("/", String.class)).contains("hello");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ TestServlet.class, NoTestRestTemplateBeanChecker.class })
 	static class TestConfig {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
@@ -71,8 +68,7 @@ public class TestRestTemplateContextCustomizerIntegrationTests {
 	static class TestServlet extends GenericServlet {
 
 		@Override
-		public void service(ServletRequest request, ServletResponse response)
-				throws ServletException, IOException {
+		public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 			try (PrintWriter writer = response.getWriter()) {
 				writer.println("hello");
 			}

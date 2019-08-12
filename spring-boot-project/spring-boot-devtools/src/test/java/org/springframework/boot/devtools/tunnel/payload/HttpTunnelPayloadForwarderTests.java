@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,31 +21,27 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link HttpTunnelPayloadForwarder}.
  *
  * @author Phillip Webb
  */
-public class HttpTunnelPayloadForwarderTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class HttpTunnelPayloadForwarderTests {
 
 	@Test
-	public void targetChannelMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TargetChannel must not be null");
-		new HttpTunnelPayloadForwarder(null);
+	void targetChannelMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayloadForwarder(null))
+				.withMessageContaining("TargetChannel must not be null");
 	}
 
 	@Test
-	public void forwardInSequence() throws Exception {
+	void forwardInSequence() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		WritableByteChannel channel = Channels.newChannel(out);
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
@@ -56,7 +52,7 @@ public class HttpTunnelPayloadForwarderTests {
 	}
 
 	@Test
-	public void forwardOutOfSequence() throws Exception {
+	void forwardOutOfSequence() throws Exception {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		WritableByteChannel channel = Channels.newChannel(out);
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
@@ -67,14 +63,14 @@ public class HttpTunnelPayloadForwarderTests {
 	}
 
 	@Test
-	public void overflow() throws Exception {
+	void overflow() throws Exception {
 		WritableByteChannel channel = Channels.newChannel(new ByteArrayOutputStream());
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Too many messages queued");
-		for (int i = 2; i < 130; i++) {
-			forwarder.forward(payload(i, "data" + i));
-		}
+		assertThatIllegalStateException().isThrownBy(() -> {
+			for (int i = 2; i < 130; i++) {
+				forwarder.forward(payload(i, "data" + i));
+			}
+		}).withMessageContaining("Too many messages queued");
 	}
 
 	private HttpTunnelPayload payload(long sequence, String data) {

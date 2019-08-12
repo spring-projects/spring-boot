@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,19 +16,23 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory;
+import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.connection.CachingConnectionFactory;
 
 /**
  * Configuration for ActiveMQ {@link ConnectionFactory}.
@@ -38,62 +42,66 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Aurélien Leboulanger
- * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQConnectionFactoryConfiguration {
 
-	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
-	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
-		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.getIfAvailable())
-						.createConnectionFactory(ActiveMQConnectionFactory.class);
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
+			matchIfMissing = true)
+	static class SimpleConnectionFactoryConfiguration {
+
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
+		ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
+				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
+			return createJmsConnectionFactory(properties, factoryCustomizers);
+		}
+
+		private static ActiveMQConnectionFactory createJmsConnectionFactory(ActiveMQProperties properties,
+				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
+			return new ActiveMQConnectionFactoryFactory(properties,
+					factoryCustomizers.orderedStream().collect(Collectors.toList()))
+							.createConnectionFactory(ActiveMQConnectionFactory.class);
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(CachingConnectionFactory.class)
+		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
+				matchIfMissing = true)
+		static class CachingConnectionFactoryConfiguration {
+
+			@Bean
+			CachingConnectionFactory cachingJmsConnectionFactory(JmsProperties jmsProperties,
+					ActiveMQProperties properties,
+					ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
+				JmsProperties.Cache cacheProperties = jmsProperties.getCache();
+				CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
+						createJmsConnectionFactory(properties, factoryCustomizers));
+				connectionFactory.setCacheConsumers(cacheProperties.isConsumers());
+				connectionFactory.setCacheProducers(cacheProperties.isProducers());
+				connectionFactory.setSessionCacheSize(cacheProperties.getSessionCacheSize());
+				return connectionFactory;
+			}
+
+		}
+
 	}
 
-	@Configuration
-	@ConditionalOnClass(PooledConnectionFactory.class)
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ JmsPoolConnectionFactory.class, PooledObject.class })
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true", matchIfMissing = false)
-		public PooledConnectionFactory pooledJmsConnectionFactory(
-				ActiveMQProperties properties,
-				ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
-			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(
-					new ActiveMQConnectionFactoryFactory(properties,
-							factoryCustomizers.getIfAvailable()).createConnectionFactory(
-									ActiveMQConnectionFactory.class));
-			ActiveMQProperties.Pool pool = properties.getPool();
-			pooledConnectionFactory.setBlockIfSessionPoolIsFull(pool.isBlockIfFull());
-			if (pool.getBlockIfFullTimeout() != null) {
-				pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
-						pool.getBlockIfFullTimeout().toMillis());
-			}
-			pooledConnectionFactory
-					.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
-			if (pool.getExpiryTimeout() != null) {
-				pooledConnectionFactory
-						.setExpiryTimeout(pool.getExpiryTimeout().toMillis());
-			}
-			if (pool.getIdleTimeout() != null) {
-				pooledConnectionFactory
-						.setIdleTimeout((int) pool.getIdleTimeout().toMillis());
-			}
-			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
-			pooledConnectionFactory.setMaximumActiveSessionPerConnection(
-					pool.getMaximumActiveSessionPerConnection());
-			pooledConnectionFactory
-					.setReconnectOnException(pool.isReconnectOnException());
-			if (pool.getTimeBetweenExpirationCheck() != null) {
-				pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
-						pool.getTimeBetweenExpirationCheck().toMillis());
-			}
-			pooledConnectionFactory
-					.setUseAnonymousProducers(pool.isUseAnonymousProducers());
-			return pooledConnectionFactory;
+		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true")
+		JmsPoolConnectionFactory pooledJmsConnectionFactory(ActiveMQProperties properties,
+				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
+					factoryCustomizers.orderedStream().collect(Collectors.toList()))
+							.createConnectionFactory(ActiveMQConnectionFactory.class);
+			return new JmsPoolConnectionFactoryFactory(properties.getPool())
+					.createPooledConnectionFactory(connectionFactory);
 		}
 
 	}

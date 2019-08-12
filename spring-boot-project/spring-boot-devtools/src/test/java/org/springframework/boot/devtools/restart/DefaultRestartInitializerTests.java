@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,90 +16,88 @@
 
 package org.springframework.boot.devtools.restart;
 
-import java.net.URL;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DefaultRestartInitializer}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
-public class DefaultRestartInitializerTests {
+class DefaultRestartInitializerTests {
 
 	@Test
-	public void nullForTests() {
-		MockRestartInitializer initializer = new MockRestartInitializer(true);
-		assertThat(initializer.getInitialUrls(Thread.currentThread())).isNull();
+	void jUnitStackShouldReturnNull() {
+		testSkippedStacks("org.junit.runners.Something");
 	}
 
 	@Test
-	public void validMainThread() {
-		MockRestartInitializer initializer = new MockRestartInitializer(false);
+	void jUnit5StackShouldReturnNull() {
+		testSkippedStacks("org.junit.platform.Something");
+	}
+
+	@Test
+	void springTestStackShouldReturnNull() {
+		testSkippedStacks("org.springframework.boot.test.Something");
+	}
+
+	@Test
+	void cucumberStackShouldReturnNull() {
+		testSkippedStacks("cucumber.runtime.Runtime.run");
+	}
+
+	@Test
+	void validMainThreadShouldReturnUrls() {
+		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread)).isTrue();
-		assertThat(initializer.getInitialUrls(thread)).isNotEqualTo(nullValue());
+		assertThat(initializer.getInitialUrls(thread)).isNotNull();
 	}
 
 	@Test
-	public void threadNotNamedMain() {
-		MockRestartInitializer initializer = new MockRestartInitializer(false);
+	void threadNotNamedMainShouldReturnNull() {
+		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
 		thread.setName("buscuit");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread)).isFalse();
 		assertThat(initializer.getInitialUrls(thread)).isNull();
 	}
 
 	@Test
-	public void threadNotUsingAppClassLoader() {
-		MockRestartInitializer initializer = new MockRestartInitializer(false);
-		ClassLoader classLoader = new MockLauncherClassLoader(
-				getClass().getClassLoader());
+	void threadNotUsingAppClassLoader() {
+		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
+		ClassLoader classLoader = new MockLauncherClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread)).isFalse();
 		assertThat(initializer.getInitialUrls(thread)).isNull();
 	}
 
 	@Test
-	public void skipsDueToJUnitStacks() {
-		testSkipStack("org.junit.runners.Something", true);
+	void urlsCanBeRetrieved() {
+		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread())).isNotEmpty();
 	}
 
-	@Test
-	public void skipsDueToSpringTest() {
-		testSkipStack("org.springframework.boot.test.Something", true);
+	protected void testSkippedStacks(String s) {
+		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
+		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
+		Thread thread = mock(Thread.class);
+		thread.setName("main");
+		StackTraceElement element = new StackTraceElement(s, "someMethod", "someFile", 123);
+		given(thread.getStackTrace()).willReturn(new StackTraceElement[] { element });
+		given(thread.getContextClassLoader()).willReturn(classLoader);
+		assertThat(initializer.getInitialUrls(thread)).isEqualTo(null);
 	}
 
-	@Test
-	public void skipsDueToCucumber() {
-		testSkipStack("cucumber.runtime.Runtime.run", true);
-	}
-
-	@Test
-	public void urlsCanBeRetrieved() {
-		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread()))
-				.isNotEmpty();
-	}
-
-	private void testSkipStack(String className, boolean expected) {
-		MockRestartInitializer initializer = new MockRestartInitializer(true);
-		StackTraceElement element = new StackTraceElement(className, "someMethod",
-				"someFile", 123);
-		assertThat(initializer.isSkippedStackElement(element)).isEqualTo(expected);
-	}
-
-	private static class MockAppClassLoader extends ClassLoader {
+	static class MockAppClassLoader extends ClassLoader {
 
 		MockAppClassLoader(ClassLoader parent) {
 			super(parent);
@@ -107,33 +105,10 @@ public class DefaultRestartInitializerTests {
 
 	}
 
-	private static class MockLauncherClassLoader extends ClassLoader {
+	static class MockLauncherClassLoader extends ClassLoader {
 
 		MockLauncherClassLoader(ClassLoader parent) {
 			super(parent);
-		}
-
-	}
-
-	private static class MockRestartInitializer extends DefaultRestartInitializer {
-
-		private final boolean considerStackElements;
-
-		MockRestartInitializer(boolean considerStackElements) {
-			this.considerStackElements = considerStackElements;
-		}
-
-		@Override
-		protected boolean isSkippedStackElement(StackTraceElement element) {
-			if (!this.considerStackElements) {
-				return false;
-			}
-			return true;
-		}
-
-		@Override
-		protected URL[] getUrls(Thread thread) {
-			return new URL[0];
 		}
 
 	}

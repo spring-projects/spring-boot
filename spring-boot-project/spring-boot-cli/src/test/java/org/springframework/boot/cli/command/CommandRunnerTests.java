@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,9 @@ package org.springframework.boot.cli.command;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -31,6 +29,7 @@ import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
@@ -41,18 +40,12 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class CommandRunnerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class CommandRunnerTests {
 
 	private CommandRunner commandRunner;
 
 	@Mock
 	private Command regularCommand;
-
-	@Mock
-	private Command shellCommand;
 
 	@Mock
 	private Command anotherCommand;
@@ -61,14 +54,14 @@ public class CommandRunnerTests {
 
 	private ClassLoader loader;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		Thread.currentThread().setContextClassLoader(this.loader);
 		System.clearProperty("debug");
 	}
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.loader = Thread.currentThread().getContextClassLoader();
 		MockitoAnnotations.initMocks(this);
 		this.commandRunner = new CommandRunner("spring") {
@@ -100,25 +93,23 @@ public class CommandRunnerTests {
 	}
 
 	@Test
-	public void runWithoutArguments() throws Exception {
-		this.thrown.expect(NoArgumentsException.class);
-		this.commandRunner.run();
+	void runWithoutArguments() throws Exception {
+		assertThatExceptionOfType(NoArgumentsException.class).isThrownBy(this.commandRunner::run);
 	}
 
 	@Test
-	public void runCommand() throws Exception {
+	void runCommand() throws Exception {
 		this.commandRunner.run("command", "--arg1", "arg2");
 		verify(this.regularCommand).run("--arg1", "arg2");
 	}
 
 	@Test
-	public void missingCommand() throws Exception {
-		this.thrown.expect(NoSuchCommandException.class);
-		this.commandRunner.run("missing");
+	void missingCommand() throws Exception {
+		assertThatExceptionOfType(NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("missing"));
 	}
 
 	@Test
-	public void appArguments() throws Exception {
+	void appArguments() throws Exception {
 		this.commandRunner.runAndHandleErrors("command", "--", "--debug", "bar");
 		verify(this.regularCommand).run("--", "--debug", "bar");
 		// When handled by the command itself it shouldn't cause the system property to be
@@ -127,21 +118,21 @@ public class CommandRunnerTests {
 	}
 
 	@Test
-	public void handlesSuccess() {
+	void handlesSuccess() {
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(0);
 		assertThat(this.calls).isEmpty();
 	}
 
 	@Test
-	public void handlesNoSuchCommand() {
+	void handlesNoSuchCommand() {
 		int status = this.commandRunner.runAndHandleErrors("missing");
 		assertThat(status).isEqualTo(1);
 		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE);
 	}
 
 	@Test
-	public void handlesRegularExceptionWithMessage() throws Exception {
+	void handlesRegularExceptionWithMessage() throws Exception {
 		willThrow(new RuntimeException("With Message")).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(1);
@@ -149,7 +140,7 @@ public class CommandRunnerTests {
 	}
 
 	@Test
-	public void handlesRegularExceptionWithoutMessage() throws Exception {
+	void handlesRegularExceptionWithoutMessage() throws Exception {
 		willThrow(new NullPointerException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(1);
@@ -157,16 +148,7 @@ public class CommandRunnerTests {
 	}
 
 	@Test
-	public void handlesExceptionWithDashD() throws Exception {
-		willThrow(new RuntimeException()).given(this.regularCommand).run();
-		int status = this.commandRunner.runAndHandleErrors("command", "-d");
-		assertThat(System.getProperty("debug")).isEqualTo("true");
-		assertThat(status).isEqualTo(1);
-		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
-	}
-
-	@Test
-	public void handlesExceptionWithDashDashDebug() throws Exception {
+	void handlesExceptionWithDashDashDebug() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
 		assertThat(System.getProperty("debug")).isEqualTo("true");
@@ -175,27 +157,27 @@ public class CommandRunnerTests {
 	}
 
 	@Test
-	public void exceptionMessages() {
+	void exceptionMessages() {
 		assertThat(new NoSuchCommandException("name").getMessage())
 				.isEqualTo("'name' is not a valid command. See 'help'.");
 	}
 
 	@Test
-	public void help() throws Exception {
+	void help() throws Exception {
 		this.commandRunner.run("help", "command");
 		verify(this.regularCommand).getHelp();
 	}
 
 	@Test
-	public void helpNoCommand() throws Exception {
-		this.thrown.expect(NoHelpCommandArgumentsException.class);
-		this.commandRunner.run("help");
+	void helpNoCommand() throws Exception {
+		assertThatExceptionOfType(NoHelpCommandArgumentsException.class)
+				.isThrownBy(() -> this.commandRunner.run("help"));
 	}
 
 	@Test
-	public void helpUnknownCommand() throws Exception {
-		this.thrown.expect(NoSuchCommandException.class);
-		this.commandRunner.run("help", "missing");
+	void helpUnknownCommand() throws Exception {
+		assertThatExceptionOfType(NoSuchCommandException.class)
+				.isThrownBy(() -> this.commandRunner.run("help", "missing"));
 	}
 
 	private enum Call {

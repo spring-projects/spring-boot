@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -31,9 +30,7 @@ import org.springframework.boot.web.reactive.function.client.WebClientCustomizer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -47,23 +44,16 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebClient.class)
-@AutoConfigureAfter(CodecsAutoConfiguration.class)
+@AutoConfigureAfter({ CodecsAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class })
 public class WebClientAutoConfiguration {
 
 	private final WebClient.Builder webClientBuilder;
 
-	public WebClientAutoConfiguration(
-			ObjectProvider<List<WebClientCustomizer>> customizerProvider) {
+	public WebClientAutoConfiguration(ObjectProvider<WebClientCustomizer> customizerProvider) {
 		this.webClientBuilder = WebClient.builder();
-		List<WebClientCustomizer> customizers = customizerProvider.getIfAvailable();
-		if (!CollectionUtils.isEmpty(customizers)) {
-			customizers = new ArrayList<>(customizers);
-			AnnotationAwareOrderComparator.sort(customizers);
-			customizers
-					.forEach((customizer) -> customizer.customize(this.webClientBuilder));
-		}
+		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(this.webClientBuilder));
 	}
 
 	@Bean
@@ -73,15 +63,14 @@ public class WebClientAutoConfiguration {
 		return this.webClientBuilder.clone();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CodecCustomizer.class)
 	protected static class WebClientCodecsConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
 		@Order(0)
-		public WebClientCodecCustomizer exchangeStrategiesCustomizer(
-				List<CodecCustomizer> codecCustomizers) {
+		public WebClientCodecCustomizer exchangeStrategiesCustomizer(List<CodecCustomizer> codecCustomizers) {
 			return new WebClientCodecCustomizer(codecCustomizers);
 		}
 

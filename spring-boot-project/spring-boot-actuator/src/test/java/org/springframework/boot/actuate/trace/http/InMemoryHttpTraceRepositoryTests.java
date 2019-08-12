@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.trace.http;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -30,12 +30,12 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class InMemoryHttpTraceRepositoryTests {
+class InMemoryHttpTraceRepositoryTests {
 
 	private final InMemoryHttpTraceRepository repository = new InMemoryHttpTraceRepository();
 
 	@Test
-	public void capacityLimited() {
+	void capacityLimited() {
 		this.repository.setCapacity(2);
 		this.repository.add(new HttpTrace(createRequest("GET")));
 		this.repository.add(new HttpTrace(createRequest("POST")));
@@ -47,7 +47,7 @@ public class InMemoryHttpTraceRepositoryTests {
 	}
 
 	@Test
-	public void reverseFalse() {
+	void reverseFalse() {
 		this.repository.setReverse(false);
 		this.repository.setCapacity(2);
 		this.repository.add(new HttpTrace(createRequest("GET")));

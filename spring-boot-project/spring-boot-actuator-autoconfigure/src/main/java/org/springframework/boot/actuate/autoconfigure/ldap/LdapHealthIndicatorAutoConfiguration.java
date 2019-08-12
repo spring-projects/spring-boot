@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapOperations;
@@ -41,26 +41,19 @@ import org.springframework.ldap.core.LdapOperations;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(LdapOperations.class)
 @ConditionalOnBean(LdapOperations.class)
 @ConditionalOnEnabledHealthIndicator("ldap")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter(LdapDataAutoConfiguration.class)
-public class LdapHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<LdapHealthIndicator, LdapOperations> {
-
-	private final Map<String, LdapOperations> ldapOperations;
-
-	public LdapHealthIndicatorAutoConfiguration(
-			Map<String, LdapOperations> ldapOperations) {
-		this.ldapOperations = ldapOperations;
-	}
+@AutoConfigureAfter(LdapAutoConfiguration.class)
+public class LdapHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<LdapHealthIndicator, LdapOperations> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "ldapHealthIndicator")
-	public HealthIndicator ldapHealthIndicator() {
-		return createHealthIndicator(this.ldapOperations);
+	public HealthIndicator ldapHealthIndicator(Map<String, LdapOperations> ldapOperations) {
+		return createHealthIndicator(ldapOperations);
 	}
 
 }

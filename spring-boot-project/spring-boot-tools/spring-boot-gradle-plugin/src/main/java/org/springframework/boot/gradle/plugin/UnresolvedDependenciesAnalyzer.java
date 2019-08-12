@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,10 +21,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.artifacts.UnresolvedDependency;
-import org.slf4j.LoggerFactory;
 
 /**
  * An analyzer for {@link UnresolvedDependency unresolvable dependencies} that logs a
@@ -35,15 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 class UnresolvedDependenciesAnalyzer {
 
-	private static final org.slf4j.Logger logger = LoggerFactory
-			.getLogger(SpringBootPlugin.class);
+	private static final Log logger = LogFactory.getLog(SpringBootPlugin.class);
 
 	private Set<ModuleVersionSelector> dependenciesWithNoVersion = new HashSet<>();
 
 	void analyze(Set<UnresolvedDependency> unresolvedDependencies) {
 		this.dependenciesWithNoVersion = unresolvedDependencies.stream()
-				.map((unresolvedDependency) -> unresolvedDependency.getSelector())
-				.filter(this::hasNoVersion).collect(Collectors.toSet());
+				.map((unresolvedDependency) -> unresolvedDependency.getSelector()).filter(this::hasNoVersion)
+				.collect(Collectors.toSet());
 	}
 
 	void buildFinished(Project project) {
@@ -53,10 +53,9 @@ class UnresolvedDependenciesAnalyzer {
 			message.append("\nDuring the build, one or more dependencies that were "
 					+ "declared without a version failed to resolve:\n");
 			this.dependenciesWithNoVersion
-					.forEach((dependency) -> message.append("    " + dependency + "\n"));
-			message.append("\nDid you forget to apply the "
-					+ "io.spring.dependency-management plugin to the " + project.getName()
-					+ " project?\n");
+					.forEach((dependency) -> message.append("    ").append(dependency).append("\n"));
+			message.append("\nDid you forget to apply the io.spring.dependency-management plugin to the ");
+			message.append(project.getName()).append(" project?\n");
 			logger.warn(message.toString());
 		}
 	}

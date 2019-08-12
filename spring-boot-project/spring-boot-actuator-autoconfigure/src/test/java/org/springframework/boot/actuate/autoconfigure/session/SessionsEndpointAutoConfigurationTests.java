@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.session.SessionsEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,32 +33,34 @@ import static org.mockito.Mockito.mock;
  *
  * @author Vedran Pavic
  */
-public class SessionsEndpointAutoConfigurationTests {
+class SessionsEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
 			.withUserConfiguration(SessionConfiguration.class);
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(SessionsEndpoint.class));
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=sessions")
+				.run((context) -> assertThat(context).hasSingleBean(SessionsEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("management.endpoint.sessions.enabled:false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(SessionsEndpoint.class));
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
 	}
 
-	@Configuration
+	@Test
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoint.sessions.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class SessionConfiguration {
 
 		@Bean
-		public FindByIndexNameSessionRepository<?> sessionRepository() {
+		FindByIndexNameSessionRepository<?> sessionRepository() {
 			return mock(FindByIndexNameSessionRepository.class);
 		}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
- * {@link ConfigurationProperties} for configuring Micrometer-based metrics.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring
+ * Micrometer-based metrics.
  *
  * @author Jon Schneider
+ * @author Alexander Abramov
+ * @author Tadaya Tsuyukubo
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -42,7 +46,12 @@ public class MetricsProperties {
 	 * Whether meter IDs starting-with the specified name should be enabled. The longest
 	 * match wins, the key `all` can also be used to configure all meters.
 	 */
-	private Map<String, Boolean> enable = new LinkedHashMap<>();
+	private final Map<String, Boolean> enable = new LinkedHashMap<>();
+
+	/**
+	 * Common tags that are applied to every meter.
+	 */
+	private final Map<String, String> tags = new LinkedHashMap<>();
 
 	private final Web web = new Web();
 
@@ -60,9 +69,8 @@ public class MetricsProperties {
 		return this.enable;
 	}
 
-	public void setEnable(Map<String, Boolean> enable) {
-		Assert.notNull(enable, "enable must not be null");
-		this.enable = enable;
+	public Map<String, String> getTags() {
+		return this.tags;
 	}
 
 	public Web getWeb() {
@@ -89,10 +97,7 @@ public class MetricsProperties {
 
 		public static class Client {
 
-			/**
-			 * Name of the metric for sent requests.
-			 */
-			private String requestsMetricName = "http.client.requests";
+			private final ClientRequest request = new ClientRequest();
 
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
@@ -101,12 +106,30 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public String getRequestsMetricName() {
-				return this.requestsMetricName;
+			public ClientRequest getRequest() {
+				return this.request;
 			}
 
+			/**
+			 * Return the name of the metric for client requests.
+			 * @return request metric name
+			 * @deprecated since 2.2.0 in favor of {@link ClientRequest#getMetricName()}
+			 */
+			@Deprecated
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.client.request.metric-name")
+			public String getRequestsMetricName() {
+				return this.request.getMetricName();
+			}
+
+			/**
+			 * Set the name of the metric for client requests.
+			 * @param requestsMetricName request metric name
+			 * @deprecated since 2.2.0 in favor of
+			 * {@link ClientRequest#setMetricName(String)}
+			 */
+			@Deprecated
 			public void setRequestsMetricName(String requestsMetricName) {
-				this.requestsMetricName = requestsMetricName;
+				this.request.setMetricName(requestsMetricName);
 			}
 
 			public int getMaxUriTags() {
@@ -117,37 +140,127 @@ public class MetricsProperties {
 				this.maxUriTags = maxUriTags;
 			}
 
+			public static class ClientRequest {
+
+				/**
+				 * Name of the metric for sent requests.
+				 */
+				private String metricName = "http.client.requests";
+
+				/**
+				 * Auto-timed request settings.
+				 */
+				@NestedConfigurationProperty
+				private final AutoTimeProperties autotime = new AutoTimeProperties();
+
+				public AutoTimeProperties getAutotime() {
+					return this.autotime;
+				}
+
+				public String getMetricName() {
+					return this.metricName;
+				}
+
+				public void setMetricName(String metricName) {
+					this.metricName = metricName;
+				}
+
+			}
+
 		}
 
 		public static class Server {
 
-			/**
-			 * Whether requests handled by Spring MVC or WebFlux should be automatically
-			 * timed. If the number of time series emitted grows too large on account of
-			 * request mapping timings, disable this and use 'Timed' on a per request
-			 * mapping basis as needed.
-			 */
-			private boolean autoTimeRequests = true;
+			private final ServerRequest request = new ServerRequest();
 
 			/**
-			 * Name of the metric for received requests.
+			 * Maximum number of unique URI tag values allowed. After the max number of
+			 * tag values is reached, metrics with additional tag values are denied by
+			 * filter.
 			 */
-			private String requestsMetricName = "http.server.requests";
+			private int maxUriTags = 100;
 
+			public ServerRequest getRequest() {
+				return this.request;
+			}
+
+			/**
+			 * Return whether server requests should be automatically timed.
+			 * @return {@code true} if server request should be automatically timed
+			 * @deprecated since 2.2.0 in favor of {@link AutoTimeProperties#isEnabled()}
+			 */
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.autotime.enabled")
+			@Deprecated
 			public boolean isAutoTimeRequests() {
-				return this.autoTimeRequests;
+				return this.request.getAutotime().isEnabled();
 			}
 
+			/**
+			 * Set whether server requests should be automatically timed.
+			 * @param autoTimeRequests whether server requests should be automatically
+			 * timed
+			 * @deprecated since 2.2.0 in favor of {@link AutoTimeProperties#isEnabled()}
+			 */
+			@Deprecated
 			public void setAutoTimeRequests(boolean autoTimeRequests) {
-				this.autoTimeRequests = autoTimeRequests;
+				this.request.getAutotime().setEnabled(autoTimeRequests);
 			}
 
+			/**
+			 * Return name of the metric for server requests.
+			 * @return request metric name
+			 * @deprecated since 2.2.0 in favor of {@link ServerRequest#getMetricName()}
+			 */
+			@DeprecatedConfigurationProperty(replacement = "management.metrics.web.server.request.metric-name")
+			@Deprecated
 			public String getRequestsMetricName() {
-				return this.requestsMetricName;
+				return this.request.getMetricName();
 			}
 
+			/**
+			 * Set the name of the metric for server requests.
+			 * @param requestsMetricName request metric name
+			 * @deprecated since 2.2.0 in favor of
+			 * {@link ServerRequest#setMetricName(String)}
+			 */
+			@Deprecated
 			public void setRequestsMetricName(String requestsMetricName) {
-				this.requestsMetricName = requestsMetricName;
+				this.request.setMetricName(requestsMetricName);
+			}
+
+			public int getMaxUriTags() {
+				return this.maxUriTags;
+			}
+
+			public void setMaxUriTags(int maxUriTags) {
+				this.maxUriTags = maxUriTags;
+			}
+
+			public static class ServerRequest {
+
+				/**
+				 * Name of the metric for received requests.
+				 */
+				private String metricName = "http.server.requests";
+
+				/**
+				 * Auto-timed request settings.
+				 */
+				@NestedConfigurationProperty
+				private final AutoTimeProperties autotime = new AutoTimeProperties();
+
+				public AutoTimeProperties getAutotime() {
+					return this.autotime;
+				}
+
+				public String getMetricName() {
+					return this.metricName;
+				}
+
+				public void setMetricName(String metricName) {
+					this.metricName = metricName;
+				}
+
 			}
 
 		}
@@ -157,54 +270,61 @@ public class MetricsProperties {
 	public static class Distribution {
 
 		/**
-		 * Whether meter IDs starting-with the specified name should be publish percentile
-		 * histograms. Monitoring systems that support aggregable percentile calculation
-		 * based on a histogram be set to true. For other systems, this has no effect. The
-		 * longest match wins, the key `all` can also be used to configure all meters.
+		 * Whether meter IDs starting with the specified name should publish percentile
+		 * histograms. For monitoring systems that support aggregable percentile
+		 * calculation based on a histogram, this can be set to true. For other systems,
+		 * this has no effect. The longest match wins, the key `all` can also be used to
+		 * configure all meters.
 		 */
-		private Map<String, Boolean> percentilesHistogram = new LinkedHashMap<>();
+		private final Map<String, Boolean> percentilesHistogram = new LinkedHashMap<>();
 
 		/**
 		 * Specific computed non-aggregable percentiles to ship to the backend for meter
 		 * IDs starting-with the specified name. The longest match wins, the key `all` can
 		 * also be used to configure all meters.
 		 */
-		private Map<String, double[]> percentiles = new LinkedHashMap<>();
+		private final Map<String, double[]> percentiles = new LinkedHashMap<>();
 
 		/**
 		 * Specific SLA boundaries for meter IDs starting-with the specified name. The
-		 * longest match wins, the key `all` can also be used to configure all meters.
-		 * Counters will be published for each specified boundary. Values can be specified
-		 * as a long or as a Duration value (for timer meters, defaulting to ms if no unit
-		 * specified).
+		 * longest match wins. Counters will be published for each specified boundary.
+		 * Values can be specified as a long or as a Duration value (for timer meters,
+		 * defaulting to ms if no unit specified).
 		 */
-		private Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
+		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
+
+		/**
+		 * Minimum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> minimumExpectedValue = new LinkedHashMap<>();
+
+		/**
+		 * Maximum value that meter IDs starting-with the specified name are expected to
+		 * observe. The longest match wins. Values can be specified as a long or as a
+		 * Duration value (for timer meters, defaulting to ms if no unit specified).
+		 */
+		private final Map<String, String> maximumExpectedValue = new LinkedHashMap<>();
 
 		public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
-		}
-
-		public void setPercentilesHistogram(Map<String, Boolean> percentilesHistogram) {
-			Assert.notNull(percentilesHistogram, "PercentilesHistogram must not be null");
-			this.percentilesHistogram = percentilesHistogram;
 		}
 
 		public Map<String, double[]> getPercentiles() {
 			return this.percentiles;
 		}
 
-		public void setPercentiles(Map<String, double[]> percentiles) {
-			Assert.notNull(percentiles, "Percentiles must not be null");
-			this.percentiles = percentiles;
-		}
-
 		public Map<String, ServiceLevelAgreementBoundary[]> getSla() {
 			return this.sla;
 		}
 
-		public void setSla(Map<String, ServiceLevelAgreementBoundary[]> sla) {
-			Assert.notNull(sla, "SLA must not be null");
-			this.sla = sla;
+		public Map<String, String> getMinimumExpectedValue() {
+			return this.minimumExpectedValue;
+		}
+
+		public Map<String, String> getMaximumExpectedValue() {
+			return this.maximumExpectedValue;
 		}
 
 	}

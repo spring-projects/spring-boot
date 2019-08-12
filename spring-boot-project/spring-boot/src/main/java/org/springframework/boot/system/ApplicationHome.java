@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ public class ApplicationHome {
 	 * @param sourceClass the source class or {@code null}
 	 */
 	public ApplicationHome(Class<?> sourceClass) {
-		this.source = findSource(sourceClass != null ? sourceClass : getStartClass());
+		this.source = findSource((sourceClass != null) ? sourceClass : getStartClass());
 		this.dir = findHomeDir(this.source);
 	}
 
@@ -88,11 +88,10 @@ public class ApplicationHome {
 
 	private File findSource(Class<?> sourceClass) {
 		try {
-			ProtectionDomain domain = (sourceClass != null
-					? sourceClass.getProtectionDomain() : null);
-			CodeSource codeSource = (domain != null ? domain.getCodeSource() : null);
-			URL location = (codeSource != null ? codeSource.getLocation() : null);
-			File source = (location != null ? findSource(location) : null);
+			ProtectionDomain domain = (sourceClass != null) ? sourceClass.getProtectionDomain() : null;
+			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
+			URL location = (codeSource != null) ? codeSource.getLocation() : null;
+			File source = (location != null) ? findSource(location) : null;
 			if (source != null && source.exists() && !isUnitTest()) {
 				return source.getAbsoluteFile();
 			}
@@ -136,11 +135,11 @@ public class ApplicationHome {
 
 	private File findHomeDir(File source) {
 		File homeDir = source;
-		homeDir = (homeDir != null ? homeDir : findDefaultHomeDir());
+		homeDir = (homeDir != null) ? homeDir : findDefaultHomeDir();
 		if (homeDir.isFile()) {
 			homeDir = homeDir.getParentFile();
 		}
-		homeDir = (homeDir.exists() ? homeDir : new File("."));
+		homeDir = homeDir.exists() ? homeDir : new File(".");
 		return homeDir.getAbsoluteFile();
 	}
 

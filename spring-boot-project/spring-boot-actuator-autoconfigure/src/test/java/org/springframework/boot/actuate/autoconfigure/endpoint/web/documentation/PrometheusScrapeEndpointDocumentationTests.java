@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,10 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
@@ -37,31 +36,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class PrometheusScrapeEndpointDocumentationTests
-		extends MockMvcEndpointDocumentationTests {
+class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void prometheus() throws Exception {
-		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk())
-				.andDo(document("prometheus"));
+	void prometheus() throws Exception {
+		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public PrometheusScrapeEndpoint endpoint() {
+		PrometheusScrapeEndpoint endpoint() {
 			CollectorRegistry collectorRegistry = new CollectorRegistry(true);
-			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry(
-					new PrometheusConfig() {
-
-						@Override
-						public String get(String key) {
-							return null;
-						}
-
-					}, collectorRegistry, Clock.SYSTEM);
+			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((key) -> null, collectorRegistry,
+					Clock.SYSTEM);
 			new JvmMemoryMetrics().bindTo(meterRegistry);
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}

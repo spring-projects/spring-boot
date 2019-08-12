@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
@@ -37,9 +38,8 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
@@ -51,10 +51,9 @@ class JmsAnnotationDrivenConfiguration {
 
 	private final JmsProperties properties;
 
-	JmsAnnotationDrivenConfiguration(
-			ObjectProvider<DestinationResolver> destinationResolver,
-			ObjectProvider<JtaTransactionManager> transactionManager,
-			ObjectProvider<MessageConverter> messageConverter, JmsProperties properties) {
+	JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
+			ObjectProvider<JtaTransactionManager> transactionManager, ObjectProvider<MessageConverter> messageConverter,
+			JmsProperties properties) {
 		this.destinationResolver = destinationResolver;
 		this.transactionManager = transactionManager;
 		this.messageConverter = messageConverter;
@@ -63,7 +62,7 @@ class JmsAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
+	DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
 		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
 		configurer.setTransactionManager(this.transactionManager.getIfUnique());
@@ -73,29 +72,29 @@ class JmsAnnotationDrivenConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnSingleCandidate(ConnectionFactory.class)
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
-	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
-			DefaultJmsListenerContainerFactoryConfigurer configurer,
-			ConnectionFactory connectionFactory) {
+	DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+			DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
 		return factory;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJms
 	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
-	protected static class EnableJmsConfiguration {
+	static class EnableJmsConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJndi
-	protected static class JndiConfiguration {
+	static class JndiConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(DestinationResolver.class)
-		public JndiDestinationResolver destinationResolver() {
+		JndiDestinationResolver destinationResolver() {
 			JndiDestinationResolver resolver = new JndiDestinationResolver();
 			resolver.setFallbackToDynamicDestination(true);
 			return resolver;

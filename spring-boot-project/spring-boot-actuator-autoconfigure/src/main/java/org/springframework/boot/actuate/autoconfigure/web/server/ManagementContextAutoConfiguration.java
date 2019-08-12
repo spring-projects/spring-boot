@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import java.util.List;
+
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -26,12 +30,14 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -49,16 +55,14 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@EnableConfigurationProperties({ WebEndpointProperties.class,
-		ManagementServerProperties.class })
+@EnableConfigurationProperties({ WebEndpointProperties.class, ManagementServerProperties.class })
 public class ManagementContextAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
-	static class SameManagementContextConfiguration
-			implements SmartInitializingSingleton {
+	static class SameManagementContextConfiguration implements SmartInitializingSingleton {
 
 		private final Environment environment;
 
@@ -70,17 +74,14 @@ public class ManagementContextAutoConfiguration {
 		public void afterSingletonsInstantiated() {
 			verifySslConfiguration();
 			if (this.environment instanceof ConfigurableEnvironment) {
-				addLocalManagementPortPropertyAlias(
-						(ConfigurableEnvironment) this.environment);
+				addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.environment);
 			}
 		}
 
 		private void verifySslConfiguration() {
-			Boolean enabled = this.environment
-					.getProperty("management.server.ssl.enabled", Boolean.class, false);
-			Assert.state(!enabled,
-					"Management-specific SSL cannot be configured as the management "
-							+ "server is not listening on a separate port");
+			Boolean enabled = this.environment.getProperty("management.server.ssl.enabled", Boolean.class, false);
+			Assert.state(!enabled, "Management-specific SSL cannot be configured as the management "
+					+ "server is not listening on a separate port");
 		}
 
 		/**
@@ -88,23 +89,21 @@ public class ManagementContextAutoConfiguration {
 		 * 'local.server.port'.
 		 * @param environment the environment
 		 */
-		private void addLocalManagementPortPropertyAlias(
-				ConfigurableEnvironment environment) {
-			environment.getPropertySources()
-					.addLast(new PropertySource<Object>("Management Server") {
+		private void addLocalManagementPortPropertyAlias(ConfigurableEnvironment environment) {
+			environment.getPropertySources().addLast(new PropertySource<Object>("Management Server") {
 
-						@Override
-						public Object getProperty(String name) {
-							if ("local.management.port".equals(name)) {
-								return environment.getProperty("local.server.port");
-							}
-							return null;
-						}
+				@Override
+				public Object getProperty(String name) {
+					if ("local.management.port".equals(name)) {
+						return environment.getProperty("local.server.port");
+					}
+					return null;
+				}
 
-					});
+			});
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@EnableManagementContext(ManagementContextType.SAME)
 		static class EnableSameManagementContextConfiguration {
 
@@ -112,10 +111,9 @@ public class ManagementContextAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-	static class DifferentManagementContextConfiguration
-			implements SmartInitializingSingleton {
+	static class DifferentManagementContextConfiguration implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
 
@@ -128,23 +126,32 @@ public class ManagementContextAutoConfiguration {
 		}
 
 		@Override
-		public void afterSingletonsInstantiated() {
-			ConfigurableWebServerApplicationContext managementContext = this.managementContextFactory
-					.createManagementContext(this.applicationContext,
-							EnableChildManagementContextConfiguration.class,
-							PropertyPlaceholderAutoConfiguration.class);
-			managementContext.setServerNamespace("management");
-			managementContext.setId(this.applicationContext.getId() + ":management");
-			setClassLoaderIfPossible(managementContext);
-			CloseManagementContextListener.addIfPossible(this.applicationContext,
-					managementContext);
-			managementContext.refresh();
+		public void onApplicationEvent(WebServerInitializedEvent event) {
+			if (event.getApplicationContext().equals(this.applicationContext)) {
+				ConfigurableWebServerApplicationContext managementContext = this.managementContextFactory
+						.createManagementContext(this.applicationContext,
+								EnableChildManagementContextConfiguration.class,
+								PropertyPlaceholderAutoConfiguration.class);
+				if (isLazyInitialization()) {
+					managementContext.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
+				}
+				managementContext.setServerNamespace("management");
+				managementContext.setId(this.applicationContext.getId() + ":management");
+				setClassLoaderIfPossible(managementContext);
+				CloseManagementContextListener.addIfPossible(this.applicationContext, managementContext);
+				managementContext.refresh();
+			}
+		}
+
+		protected boolean isLazyInitialization() {
+			AbstractApplicationContext context = (AbstractApplicationContext) this.applicationContext;
+			List<BeanFactoryPostProcessor> postProcessors = context.getBeanFactoryPostProcessors();
+			return postProcessors.stream().anyMatch(LazyInitializationBeanFactoryPostProcessor.class::isInstance);
 		}
 
 		private void setClassLoaderIfPossible(ConfigurableApplicationContext child) {
 			if (child instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) child)
-						.setClassLoader(this.applicationContext.getClassLoader());
+				((DefaultResourceLoader) child).setClassLoader(this.applicationContext.getClassLoader());
 			}
 		}
 
@@ -154,15 +161,13 @@ public class ManagementContextAutoConfiguration {
 	 * {@link ApplicationListener} to propagate the {@link ContextClosedEvent} and
 	 * {@link ApplicationFailedEvent} from a parent to a child.
 	 */
-	private static class CloseManagementContextListener
-			implements ApplicationListener<ApplicationEvent> {
+	private static class CloseManagementContextListener implements ApplicationListener<ApplicationEvent> {
 
 		private final ApplicationContext parentContext;
 
 		private final ConfigurableApplicationContext childContext;
 
-		CloseManagementContextListener(ApplicationContext parentContext,
-				ConfigurableApplicationContext childContext) {
+		CloseManagementContextListener(ApplicationContext parentContext, ConfigurableApplicationContext childContext) {
 			this.parentContext = parentContext;
 			this.childContext = childContext;
 		}
@@ -191,8 +196,7 @@ public class ManagementContextAutoConfiguration {
 			}
 		}
 
-		public static void addIfPossible(ApplicationContext parentContext,
-				ConfigurableApplicationContext childContext) {
+		static void addIfPossible(ApplicationContext parentContext, ConfigurableApplicationContext childContext) {
 			if (parentContext instanceof ConfigurableApplicationContext) {
 				add((ConfigurableApplicationContext) parentContext, childContext);
 			}
@@ -200,8 +204,7 @@ public class ManagementContextAutoConfiguration {
 
 		private static void add(ConfigurableApplicationContext parentContext,
 				ConfigurableApplicationContext childContext) {
-			parentContext.addApplicationListener(
-					new CloseManagementContextListener(parentContext, childContext));
+			parentContext.addApplicationListener(new CloseManagementContextListener(parentContext, childContext));
 		}
 
 	}

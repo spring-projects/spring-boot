@@ -12,7 +12,7 @@
   port to the integration test itself.
 
   The example below showcases how you could achieve the same feature using the
-  {{{http://mojo.codehaus.org/build-helper-maven-plugin/}build-helper-plugin}}:
+  {{{https://www.mojohaus.org/build-helper-maven-plugin/}build-helper-plugin}}:
 
 ---
 <project>

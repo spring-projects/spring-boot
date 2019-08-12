@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -32,24 +30,21 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.convert.ConverterNotFoundException;
 
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link IgnoreTopLevelConverterNotFoundBindHandler}.
  *
  * @author Madhura Bhave
  */
-public class IgnoreTopLevelConverterNotFoundBindHandlerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example", "bar");
 		this.sources.add(source);
@@ -57,57 +52,58 @@ public class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenHandlerNotPresentShouldFail() {
-		this.thrown.expectCause(instanceOf(ConverterNotFoundException.class));
-		this.binder.bind("example", Bindable.of(Example.class));
+	void bindWhenHandlerNotPresentShouldFail() {
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)))
+				.withCauseInstanceOf(ConverterNotFoundException.class);
 	}
 
 	@Test
-	public void bindWhenTopLevelContextAndExceptionIgnorableShouldNotFail() {
-		this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreTopLevelConverterNotFoundBindHandler());
+	void bindWhenTopLevelContextAndExceptionIgnorableShouldNotFail() {
+		this.binder.bind("example", Bindable.of(Example.class), new IgnoreTopLevelConverterNotFoundBindHandler());
 	}
 
 	@Test
-	public void bindWhenExceptionNotIgnorableShouldFail() {
+	void bindWhenExceptionNotIgnorableShouldFail() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "1");
 		this.sources.add(source);
-		this.thrown.expectCause(instanceOf(IllegalStateException.class));
-		this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreTopLevelConverterNotFoundBindHandler());
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
+						new IgnoreTopLevelConverterNotFoundBindHandler()))
+				.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test
-	public void bindWhenExceptionInNestedContextShouldFail() {
+	void bindWhenExceptionInNestedContextShouldFail() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.map", "hello");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(instanceOf(ConverterNotFoundException.class));
-		this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreTopLevelConverterNotFoundBindHandler());
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
+						new IgnoreTopLevelConverterNotFoundBindHandler()))
+				.withCauseInstanceOf(ConverterNotFoundException.class);
 	}
 
-	public static class Example {
+	static class Example {
 
 		private int foo;
 
 		private Map<String, String> map;
 
-		public int getFoo() {
+		int getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(int foo) {
+		void setFoo(int foo) {
 			throw new IllegalStateException();
 		}
 
-		public Map<String, String> getMap() {
+		Map<String, String> getMap() {
 			return this.map;
 		}
 
-		public void setMap(Map<String, String> map) {
+		void setMap(Map<String, String> map) {
 			this.map = map;
 		}
 

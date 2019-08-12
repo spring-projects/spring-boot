@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,10 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -32,10 +35,13 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  */
 class JsonConverter {
 
-	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType)
-			throws Exception {
+	private static final ItemMetadataComparator ITEM_COMPARATOR = new ItemMetadataComparator();
+
+	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		for (ItemMetadata item : metadata.getItems()) {
+		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.isOfItemType(itemType))
+				.sorted(ITEM_COMPARATOR).collect(Collectors.toList());
+		for (ItemMetadata item : items) {
 			if (item.isOfItemType(itemType)) {
 				jsonArray.put(toJsonObject(item));
 			}
@@ -43,7 +49,7 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	public JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
+	JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemHint hint : hints) {
 			jsonArray.put(toJsonObject(hint));
@@ -51,13 +57,13 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	public JSONObject toJsonObject(ItemMetadata item) throws Exception {
-		JSONObject jsonObject = new JSONOrderedObject();
+	JSONObject toJsonObject(ItemMetadata item) throws Exception {
+		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", item.getName());
-		putIfPresent(jsonObject, "type", item.getType());
-		putIfPresent(jsonObject, "description", item.getDescription());
-		putIfPresent(jsonObject, "sourceType", item.getSourceType());
-		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
+		jsonObject.putOpt("type", item.getType());
+		jsonObject.putOpt("description", item.getDescription());
+		jsonObject.putOpt("sourceType", item.getSourceType());
+		jsonObject.putOpt("sourceMethod", item.getSourceMethod());
 		Object defaultValue = item.getDefaultValue();
 		if (defaultValue != null) {
 			putDefaultValue(jsonObject, defaultValue);
@@ -81,7 +87,7 @@ class JsonConverter {
 	}
 
 	private JSONObject toJsonObject(ItemHint hint) throws Exception {
-		JSONObject jsonObject = new JSONOrderedObject();
+		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", hint.getName());
 		if (!hint.getValues().isEmpty()) {
 			jsonObject.put("values", getItemHintValues(hint));
@@ -101,9 +107,9 @@ class JsonConverter {
 	}
 
 	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws Exception {
-		JSONObject result = new JSONOrderedObject();
+		JSONObject result = new JSONObject();
 		putHintValue(result, value.getValue());
-		putIfPresent(result, "description", value.getDescription());
+		result.putOpt("description", value.getDescription());
 		return result;
 	}
 
@@ -115,25 +121,17 @@ class JsonConverter {
 		return providers;
 	}
 
-	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider)
-			throws Exception {
-		JSONObject result = new JSONOrderedObject();
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws Exception {
+		JSONObject result = new JSONObject();
 		result.put("name", provider.getName());
 		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
-			JSONObject parameters = new JSONOrderedObject();
+			JSONObject parameters = new JSONObject();
 			for (Map.Entry<String, Object> entry : provider.getParameters().entrySet()) {
 				parameters.put(entry.getKey(), extractItemValue(entry.getValue()));
 			}
 			result.put("parameters", parameters);
 		}
 		return result;
-	}
-
-	private void putIfPresent(JSONObject jsonObject, String name, Object value)
-			throws Exception {
-		if (value != null) {
-			jsonObject.put(name, value);
-		}
 	}
 
 	private void putHintValue(JSONObject jsonObject, Object value) throws Exception {
@@ -158,6 +156,36 @@ class JsonConverter {
 
 		}
 		return defaultValue;
+	}
+
+	private static class ItemMetadataComparator implements Comparator<ItemMetadata> {
+
+		@Override
+		public int compare(ItemMetadata o1, ItemMetadata o2) {
+			if (o1.isOfItemType(ItemType.GROUP)) {
+				return compareGroup(o1, o2);
+			}
+			return compareProperty(o1, o2);
+		}
+
+		private int compareGroup(ItemMetadata o1, ItemMetadata o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+
+		private int compareProperty(ItemMetadata o1, ItemMetadata o2) {
+			if (isDeprecated(o1) && !isDeprecated(o2)) {
+				return 1;
+			}
+			if (isDeprecated(o2) && !isDeprecated(o1)) {
+				return -1;
+			}
+			return o1.getName().compareTo(o2.getName());
+		}
+
+		private boolean isDeprecated(ItemMetadata item) {
+			return item.getDeprecation() != null;
+		}
+
 	}
 
 }

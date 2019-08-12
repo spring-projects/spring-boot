@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.web.servlet;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -27,148 +25,131 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ServletComponentScanRegistrar}
  *
  * @author Andy Wilkinson
  */
-public class ServletComponentScanRegistrarTests {
+class ServletComponentScanRegistrarTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@After
-	public void after() {
+	@AfterEach
+	void after() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void packagesConfiguredWithValue() {
+	void packagesConfiguredWithValue() {
 		this.context = new AnnotationConfigApplicationContext(ValuePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
-				"com.example.bar");
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo", "com.example.bar");
 	}
 
 	@Test
-	public void packagesConfiguredWithValueAsm() {
+	void packagesConfiguredWithValueAsm() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.registerBeanDefinition("valuePackages",
-				new RootBeanDefinition(ValuePackages.class.getName()));
+		this.context.registerBeanDefinition("valuePackages", new RootBeanDefinition(ValuePackages.class.getName()));
 		this.context.refresh();
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
-				"com.example.bar");
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo", "com.example.bar");
 	}
 
 	@Test
-	public void packagesConfiguredWithBackPackages() {
+	void packagesConfiguredWithBackPackages() {
 		this.context = new AnnotationConfigApplicationContext(BasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
-				"com.example.bar");
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo", "com.example.bar");
 	}
 
 	@Test
-	public void packagesConfiguredWithBasePackageClasses() {
+	void packagesConfiguredWithBasePackageClasses() {
 		this.context = new AnnotationConfigApplicationContext(BasePackageClasses.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan())
-				.contains(getClass().getPackage().getName());
+		assertThat(postProcessor.getPackagesToScan()).contains(getClass().getPackage().getName());
 	}
 
 	@Test
-	public void packagesConfiguredWithBothValueAndBasePackages() {
-		this.thrown.expect(AnnotationConfigurationException.class);
-		this.thrown.expectMessage(allOf(containsString("'value'"),
-				containsString("'basePackages'"), containsString("com.example.foo"),
-				containsString("com.example.bar")));
-		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
+	void packagesConfiguredWithBothValueAndBasePackages() {
+		assertThatExceptionOfType(AnnotationConfigurationException.class)
+				.isThrownBy(() -> this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class))
+				.withMessageContaining("'value'").withMessageContaining("'basePackages'")
+				.withMessageContaining("com.example.foo").withMessageContaining("com.example.bar");
 	}
 
 	@Test
-	public void packagesFromMultipleAnnotationsAreMerged() {
-		this.context = new AnnotationConfigApplicationContext(BasePackages.class,
-				AdditionalPackages.class);
+	void packagesFromMultipleAnnotationsAreMerged() {
+		this.context = new AnnotationConfigApplicationContext(BasePackages.class, AdditionalPackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
-				"com.example.bar", "com.example.baz");
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo", "com.example.bar", "com.example.baz");
 	}
 
 	@Test
-	public void withNoBasePackagesScanningUsesBasePackageOfAnnotatedClass() {
+	void withNoBasePackagesScanningUsesBasePackageOfAnnotatedClass() {
 		this.context = new AnnotationConfigApplicationContext(NoBasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan())
-				.containsExactly("org.springframework.boot.web.servlet");
+		assertThat(postProcessor.getPackagesToScan()).containsExactly("org.springframework.boot.web.servlet");
 	}
 
 	@Test
-	public void noBasePackageAndBasePackageAreCombinedCorrectly() {
-		this.context = new AnnotationConfigApplicationContext(NoBasePackages.class,
-				BasePackages.class);
+	void noBasePackageAndBasePackageAreCombinedCorrectly() {
+		this.context = new AnnotationConfigApplicationContext(NoBasePackages.class, BasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan()).containsExactlyInAnyOrder(
-				"org.springframework.boot.web.servlet", "com.example.foo",
-				"com.example.bar");
+		assertThat(postProcessor.getPackagesToScan()).containsExactlyInAnyOrder("org.springframework.boot.web.servlet",
+				"com.example.foo", "com.example.bar");
 	}
 
 	@Test
-	public void basePackageAndNoBasePackageAreCombinedCorrectly() {
-		this.context = new AnnotationConfigApplicationContext(BasePackages.class,
-				NoBasePackages.class);
+	void basePackageAndNoBasePackageAreCombinedCorrectly() {
+		this.context = new AnnotationConfigApplicationContext(BasePackages.class, NoBasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan()).containsExactlyInAnyOrder(
-				"org.springframework.boot.web.servlet", "com.example.foo",
-				"com.example.bar");
+		assertThat(postProcessor.getPackagesToScan()).containsExactlyInAnyOrder("org.springframework.boot.web.servlet",
+				"com.example.foo", "com.example.bar");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan({ "com.example.foo", "com.example.bar" })
 	static class ValuePackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackages = { "com.example.foo", "com.example.bar" })
 	static class BasePackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackages = "com.example.baz")
 	static class AdditionalPackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(basePackageClasses = ServletComponentScanRegistrarTests.class)
 	static class BasePackageClasses {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan(value = "com.example.foo", basePackages = "com.example.bar")
 	static class ValueAndBasePackages {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ServletComponentScan
 	static class NoBasePackages {
 

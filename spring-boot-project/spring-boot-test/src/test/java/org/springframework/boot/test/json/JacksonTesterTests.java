@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,35 +19,35 @@ package org.springframework.boot.test.json;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link JacksonTester}.
  *
  * @author Phillip Webb
  */
-public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
+class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
-	public void initFieldsWhenTestIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TestInstance must not be null");
-		JacksonTester.initFields(null, new ObjectMapper());
+	void initFieldsWhenTestIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> JacksonTester.initFields(null, new ObjectMapper()))
+				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
-	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Marshaller must not be null");
-		JacksonTester.initFields(new InitFieldsTestClass(), (ObjectMapper) null);
+	void initFieldsWhenMarshallerIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> JacksonTester.initFields(new InitFieldsTestClass(), (ObjectMapper) null))
+				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test
-	public void initFieldsShouldSetNullFields() {
+	void initFieldsShouldSetNullFields() {
 		InitFieldsTestClass test = new InitFieldsTestClass();
 		assertThat(test.test).isNull();
 		assertThat(test.base).isNull();
@@ -59,8 +59,7 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 	}
 
 	@Override
-	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
-			ResolvableType type) {
+	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type) {
 		return new JacksonTester<>(resourceLoadClass, type, new ObjectMapper());
 	}
 
@@ -68,9 +67,8 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public JacksonTester<ExampleObject> base;
 
-		public JacksonTester<ExampleObject> baseSet = new JacksonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new ObjectMapper());
+		public JacksonTester<ExampleObject> baseSet = new JacksonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new ObjectMapper());
 
 	}
 
@@ -78,9 +76,8 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public JacksonTester<List<ExampleObject>> test;
 
-		public JacksonTester<ExampleObject> testSet = new JacksonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new ObjectMapper());
+		public JacksonTester<ExampleObject> testSet = new JacksonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new ObjectMapper());
 
 	}
 

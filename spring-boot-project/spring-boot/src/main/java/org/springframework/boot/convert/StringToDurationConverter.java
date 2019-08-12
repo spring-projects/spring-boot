@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,19 +42,25 @@ final class StringToDurationConverter implements GenericConverter {
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
 		}
-		DurationFormat format = targetType.getAnnotation(DurationFormat.class);
-		DurationUnit unit = targetType.getAnnotation(DurationUnit.class);
-		return convert(source.toString(), (format != null ? format.value() : null),
-				(unit != null ? unit.value() : null));
+		return convert(source.toString(), getStyle(targetType), getDurationUnit(targetType));
+	}
+
+	private DurationStyle getStyle(TypeDescriptor targetType) {
+		DurationFormat annotation = targetType.getAnnotation(DurationFormat.class);
+		return (annotation != null) ? annotation.value() : null;
+	}
+
+	private ChronoUnit getDurationUnit(TypeDescriptor targetType) {
+		DurationUnit annotation = targetType.getAnnotation(DurationUnit.class);
+		return (annotation != null) ? annotation.value() : null;
 	}
 
 	private Duration convert(String source, DurationStyle style, ChronoUnit unit) {
-		style = (style != null ? style : DurationStyle.detect(source));
+		style = (style != null) ? style : DurationStyle.detect(source);
 		return style.parse(source, unit);
 	}
 

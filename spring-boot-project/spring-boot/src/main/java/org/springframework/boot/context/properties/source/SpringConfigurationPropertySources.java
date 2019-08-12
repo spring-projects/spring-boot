@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,13 +37,12 @@ import org.springframework.util.ConcurrentReferenceHashMap.ReferenceType;
  *
  * @author Phillip Webb
  */
-class SpringConfigurationPropertySources
-		implements Iterable<ConfigurationPropertySource> {
+class SpringConfigurationPropertySources implements Iterable<ConfigurationPropertySource> {
 
 	private final Iterable<PropertySource<?>> sources;
 
-	private final Map<PropertySource<?>, ConfigurationPropertySource> cache = new ConcurrentReferenceHashMap<>(
-			16, ReferenceType.SOFT);
+	private final Map<PropertySource<?>, ConfigurationPropertySource> cache = new ConcurrentReferenceHashMap<>(16,
+			ReferenceType.SOFT);
 
 	SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
 		Assert.notNull(sources, "Sources must not be null");
@@ -57,7 +56,7 @@ class SpringConfigurationPropertySources
 
 	private ConfigurationPropertySource adapt(PropertySource<?> source) {
 		ConfigurationPropertySource result = this.cache.get(source);
-		// Most PropertySource test quality only using the source name, we need to
+		// Most PropertySources test equality only using the source name, so we need to
 		// check the actual source hasn't also changed.
 		if (result != null && result.getUnderlyingSource() == source) {
 			return result;
@@ -67,10 +66,9 @@ class SpringConfigurationPropertySources
 		return result;
 	}
 
-	private static class SourcesIterator
-			implements Iterator<ConfigurationPropertySource> {
+	private static class SourcesIterator implements Iterator<ConfigurationPropertySource> {
 
-		private Deque<Iterator<PropertySource<?>>> iterators;
+		private final Deque<Iterator<PropertySource<?>>> iterators;
 
 		private ConfigurationPropertySource next;
 
@@ -91,10 +89,10 @@ class SpringConfigurationPropertySources
 		@Override
 		public ConfigurationPropertySource next() {
 			ConfigurationPropertySource next = fetchNext();
-			this.next = null;
 			if (next == null) {
 				throw new NoSuchElementException();
 			}
+			this.next = null;
 			return next;
 		}
 

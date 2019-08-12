@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,10 +36,9 @@ abstract class Definition {
 
 	private final QualifierDefinition qualifier;
 
-	Definition(String name, MockReset reset, boolean proxyTargetAware,
-			QualifierDefinition qualifier) {
+	Definition(String name, MockReset reset, boolean proxyTargetAware, QualifierDefinition qualifier) {
 		this.name = name;
-		this.reset = (reset != null ? reset : MockReset.AFTER);
+		this.reset = (reset != null) ? reset : MockReset.AFTER;
 		this.proxyTargetAware = proxyTargetAware;
 		this.qualifier = qualifier;
 	}
@@ -48,7 +47,7 @@ abstract class Definition {
 	 * Return the name for bean.
 	 * @return the name or {@code null}
 	 */
-	public String getName() {
+	String getName() {
 		return this.name;
 	}
 
@@ -56,7 +55,7 @@ abstract class Definition {
 	 * Return the mock reset mode.
 	 * @return the reset mode
 	 */
-	public MockReset getReset() {
+	MockReset getReset() {
 		return this.reset;
 	}
 
@@ -64,7 +63,7 @@ abstract class Definition {
 	 * Return if AOP advised beans should be proxy target aware.
 	 * @return if proxy target aware
 	 */
-	public boolean isProxyTargetAware() {
+	boolean isProxyTargetAware() {
 		return this.proxyTargetAware;
 	}
 
@@ -72,19 +71,8 @@ abstract class Definition {
 	 * Return the qualifier or {@code null}.
 	 * @return the qualifier
 	 */
-	public QualifierDefinition getQualifier() {
+	QualifierDefinition getQualifier() {
 		return this.qualifier;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = 1;
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
-		result = MULTIPLIER * result
-				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
-		return result;
 	}
 
 	@Override
@@ -99,9 +87,18 @@ abstract class Definition {
 		boolean result = true;
 		result = result && ObjectUtils.nullSafeEquals(this.name, other.name);
 		result = result && ObjectUtils.nullSafeEquals(this.reset, other.reset);
-		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware,
-				other.proxyTargetAware);
+		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware, other.proxyTargetAware);
 		result = result && ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
 		return result;
 	}
 

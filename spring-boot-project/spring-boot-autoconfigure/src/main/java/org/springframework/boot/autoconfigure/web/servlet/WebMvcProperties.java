@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
 
 /**
@@ -33,7 +34,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Brian Clozel
- * @since 1.1
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.mvc")
 public class WebMvcProperties {
@@ -76,6 +77,11 @@ public class WebMvcProperties {
 	private boolean ignoreDefaultModelOnRedirect = true;
 
 	/**
+	 * Whether to publish a ServletRequestHandledEvent at the end of each request.
+	 */
+	private boolean publishRequestHandledEvents = true;
+
+	/**
 	 * Whether a "NoHandlerFoundException" should be thrown if no Handler was found to
 	 * process a request.
 	 */
@@ -83,7 +89,7 @@ public class WebMvcProperties {
 
 	/**
 	 * Whether to enable warn logging of exceptions resolved by a
-	 * "HandlerExceptionResolver".
+	 * "HandlerExceptionResolver", except for "DefaultHandlerExceptionResolver".
 	 */
 	private boolean logResolvedException = false;
 
@@ -106,8 +112,7 @@ public class WebMvcProperties {
 		return this.messageCodesResolverFormat;
 	}
 
-	public void setMessageCodesResolverFormat(
-			DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
+	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
@@ -143,12 +148,19 @@ public class WebMvcProperties {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
 	}
 
+	public boolean isPublishRequestHandledEvents() {
+		return this.publishRequestHandledEvents;
+	}
+
+	public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
+		this.publishRequestHandledEvents = publishRequestHandledEvents;
+	}
+
 	public boolean isThrowExceptionIfNoHandlerFound() {
 		return this.throwExceptionIfNoHandlerFound;
 	}
 
-	public void setThrowExceptionIfNoHandlerFound(
-			boolean throwExceptionIfNoHandlerFound) {
+	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
@@ -226,9 +238,24 @@ public class WebMvcProperties {
 	public static class Servlet {
 
 		/**
+		 * Path of the dispatcher servlet.
+		 */
+		private String path = "/";
+
+		/**
 		 * Load on startup priority of the dispatcher servlet.
 		 */
 		private int loadOnStartup = -1;
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			Assert.notNull(path, "Path must not be null");
+			Assert.isTrue(!path.contains("*"), "Path must not contain wildcards");
+			this.path = path;
+		}
 
 		public int getLoadOnStartup() {
 			return this.loadOnStartup;
@@ -236,6 +263,36 @@ public class WebMvcProperties {
 
 		public void setLoadOnStartup(int loadOnStartup) {
 			this.loadOnStartup = loadOnStartup;
+		}
+
+		public String getServletMapping() {
+			if (this.path.equals("") || this.path.equals("/")) {
+				return "/";
+			}
+			if (this.path.endsWith("/")) {
+				return this.path + "*";
+			}
+			return this.path + "/*";
+		}
+
+		public String getPath(String path) {
+			String prefix = getServletPrefix();
+			if (!path.startsWith("/")) {
+				path = "/" + path;
+			}
+			return prefix + path;
+		}
+
+		public String getServletPrefix() {
+			String result = this.path;
+			int index = result.indexOf('*');
+			if (index != -1) {
+				result = result.substring(0, index);
+			}
+			if (result.endsWith("/")) {
+				result = result.substring(0, result.length() - 1);
+			}
+			return result;
 		}
 
 	}

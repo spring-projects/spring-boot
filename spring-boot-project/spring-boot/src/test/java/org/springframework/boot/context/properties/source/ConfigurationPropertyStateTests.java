@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,49 +20,42 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ConfigurationPropertyState}.
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertyStateTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class ConfigurationPropertyStateTests {
 
 	@Test
-	public void searchWhenIterableIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
-		ConfigurationPropertyState.search(null, (e) -> true);
+	void searchWhenIterableIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
-	public void searchWhenPredicateIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Predicate must not be null");
-		ConfigurationPropertyState.search(Collections.emptyList(), null);
+	void searchWhenPredicateIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
+				.withMessageContaining("Predicate must not be null");
 	}
 
 	@Test
-	public void searchWhenContainsItemShouldReturnPresent() {
+	void searchWhenContainsItemShouldReturnPresent() {
 		List<String> source = Arrays.asList("a", "b", "c");
-		ConfigurationPropertyState result = ConfigurationPropertyState.search(source,
-				"b"::equals);
+		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
 	@Test
-	public void searchWhenContainsNoItemShouldReturnAbsent() {
+	void searchWhenContainsNoItemShouldReturnAbsent() {
 		List<String> source = Arrays.asList("a", "x", "c");
-		ConfigurationPropertyState result = ConfigurationPropertyState.search(source,
-				"b"::equals);
+		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 

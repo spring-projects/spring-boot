@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,18 +18,18 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.assertj.core.api.Condition;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 /**
@@ -37,34 +37,31 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  *
  * @author Roman Zaynetdinov
  */
-@RunWith(SpringRunner.class)
 @WebFluxTest
+@WithMockUser
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
-public class WebTestClientRestDocsAutoConfigurationIntegrationTests {
-
-	@Before
-	public void deleteSnippets() {
-		FileSystemUtils.deleteRecursively(new File("target/generated-snippets"));
-	}
+class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
 
-	@Test
-	public void defaultSnippetsAreWritten() throws Exception {
-		this.webTestClient.get().uri("/").exchange().expectBody()
-				.consumeWith(document("default-snippets"));
-		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
-		assertThat(defaultSnippetsDir).exists();
-		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
-				.has(contentContaining("'https://api.example.com/'"));
-		assertThat(new File(defaultSnippetsDir, "http-request.adoc"))
-				.has(contentContaining("api.example.com"));
-		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
+	private File generatedSnippets;
+
+	@BeforeEach
+	void deleteSnippets() {
+		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(), "generated-snippets");
+		FileSystemUtils.deleteRecursively(this.generatedSnippets);
 	}
 
-	private Condition<File> contentContaining(String toContain) {
-		return new ContentContainingCondition(toContain);
+	@Test
+	void defaultSnippetsAreWritten() throws Exception {
+		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful().expectBody()
+				.consumeWith(document("default-snippets"));
+		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
+		assertThat(defaultSnippetsDir).exists();
+		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc"))).contains("'https://api.example.com/'");
+		assertThat(contentOf(new File(defaultSnippetsDir, "http-request.adoc"))).contains("api.example.com");
+		assertThat(new File(defaultSnippetsDir, "http-response.adoc")).isFile();
 	}
 
 }

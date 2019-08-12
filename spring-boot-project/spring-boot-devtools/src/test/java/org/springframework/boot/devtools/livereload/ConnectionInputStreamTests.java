@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,11 +21,10 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 
 /**
  * Tests for {@link ConnectionInputStream}.
@@ -33,12 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class ConnectionInputStreamTests {
+class ConnectionInputStreamTests {
 
 	private static final byte[] NO_BYTES = {};
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void readHeader() throws Exception {
@@ -54,10 +50,9 @@ public class ConnectionInputStreamTests {
 	}
 
 	@Test
-	public void readFully() throws Exception {
+	void readFully() throws Exception {
 		byte[] bytes = "the data that we want to read fully".getBytes();
-		LimitedInputStream source = new LimitedInputStream(
-				new ByteArrayInputStream(bytes), 2);
+		LimitedInputStream source = new LimitedInputStream(new ByteArrayInputStream(bytes), 2);
 		ConnectionInputStream inputStream = new ConnectionInputStream(source);
 		byte[] buffer = new byte[bytes.length];
 		inputStream.readFully(buffer, 0, buffer.length);
@@ -65,25 +60,20 @@ public class ConnectionInputStreamTests {
 	}
 
 	@Test
-	public void checkedRead() throws Exception {
-		ConnectionInputStream inputStream = new ConnectionInputStream(
-				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class);
-		this.thrown.expectMessage("End of stream");
-		inputStream.checkedRead();
+	void checkedRead() throws Exception {
+		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
+		assertThatIOException().isThrownBy(inputStream::checkedRead).withMessageContaining("End of stream");
 	}
 
 	@Test
-	public void checkedReadArray() throws Exception {
-		ConnectionInputStream inputStream = new ConnectionInputStream(
-				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class);
-		this.thrown.expectMessage("End of stream");
+	void checkedReadArray() throws Exception {
 		byte[] buffer = new byte[100];
-		inputStream.checkedRead(buffer, 0, buffer.length);
+		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
+		assertThatIOException().isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
+				.withMessageContaining("End of stream");
 	}
 
-	private static class LimitedInputStream extends FilterInputStream {
+	static class LimitedInputStream extends FilterInputStream {
 
 		private final int max;
 

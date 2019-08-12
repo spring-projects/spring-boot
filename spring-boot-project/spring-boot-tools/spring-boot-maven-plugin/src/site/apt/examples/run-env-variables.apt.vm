@@ -40,7 +40,7 @@ Dmytro Nosan
 
   If the value is empty or not defined (i.e. <<<<MY_ENV/>>>>), the env variable is set
   with an empty String as the value. Maven trims values specified in the pom so it is
-  not possible to specify a env variable who needs to start or end with a space.
+  not possible to specify an env variable which needs to start or end with a space.
 
   Any String typed Maven variable can be passed as system properties. Any attempt to pass
   any other Maven variable type (e.g. a <<<List>>> or a <<<URL>>> variable) will cause the

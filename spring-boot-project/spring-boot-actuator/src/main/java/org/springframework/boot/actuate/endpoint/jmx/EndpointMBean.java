@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,10 +48,12 @@ import org.springframework.util.ClassUtils;
  */
 public class EndpointMBean implements DynamicMBean {
 
-	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent(
-			"reactor.core.publisher.Mono", EndpointMBean.class.getClassLoader());
+	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent("reactor.core.publisher.Mono",
+			EndpointMBean.class.getClassLoader());
 
 	private final JmxOperationResponseMapper responseMapper;
+
+	private final ClassLoader classLoader;
 
 	private final ExposableJmxEndpoint endpoint;
 
@@ -59,11 +61,11 @@ public class EndpointMBean implements DynamicMBean {
 
 	private final Map<String, JmxOperation> operations;
 
-	EndpointMBean(JmxOperationResponseMapper responseMapper,
-			ExposableJmxEndpoint endpoint) {
+	EndpointMBean(JmxOperationResponseMapper responseMapper, ClassLoader classLoader, ExposableJmxEndpoint endpoint) {
 		Assert.notNull(responseMapper, "ResponseMapper must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		this.responseMapper = responseMapper;
+		this.classLoader = classLoader;
 		this.endpoint = endpoint;
 		this.info = new MBeanInfoFactory(responseMapper).getMBeanInfo(endpoint);
 		this.operations = getOperations(endpoint);
@@ -71,8 +73,7 @@ public class EndpointMBean implements DynamicMBean {
 
 	private Map<String, JmxOperation> getOperations(ExposableJmxEndpoint endpoint) {
 		Map<String, JmxOperation> operations = new HashMap<>();
-		endpoint.getOperations()
-				.forEach((operation) -> operations.put(operation.getName(), operation));
+		endpoint.getOperations().forEach((operation) -> operations.put(operation.getName(), operation));
 		return Collections.unmodifiableMap(operations);
 	}
 
@@ -86,21 +87,37 @@ public class EndpointMBean implements DynamicMBean {
 			throws MBeanException, ReflectionException {
 		JmxOperation operation = this.operations.get(actionName);
 		if (operation == null) {
-			String message = "Endpoint with id '" + this.endpoint.getId()
-					+ "' has no operation named " + actionName;
+			String message = "Endpoint with id '" + this.endpoint.getEndpointId() + "' has no operation named "
+					+ actionName;
 			throw new ReflectionException(new IllegalArgumentException(message), message);
 		}
-		return invoke(operation, params);
+		ClassLoader previousClassLoader = overrideThreadContextClassLoader(this.classLoader);
+		try {
+			return invoke(operation, params);
+		}
+		finally {
+			overrideThreadContextClassLoader(previousClassLoader);
+		}
 	}
 
-	private Object invoke(JmxOperation operation, Object[] params)
-			throws MBeanException, ReflectionException {
+	private ClassLoader overrideThreadContextClassLoader(ClassLoader classLoader) {
+		if (classLoader != null) {
+			try {
+				return ClassUtils.overrideThreadContextClassLoader(classLoader);
+			}
+			catch (SecurityException ex) {
+				// can't set class loader, ignore it and proceed
+			}
+		}
+		return null;
+	}
+
+	private Object invoke(JmxOperation operation, Object[] params) throws MBeanException, ReflectionException {
 		try {
-			String[] parameterNames = operation.getParameters().stream()
-					.map(JmxOperationParameter::getName).toArray(String[]::new);
+			String[] parameterNames = operation.getParameters().stream().map(JmxOperationParameter::getName)
+					.toArray(String[]::new);
 			Map<String, Object> arguments = getArguments(parameterNames, params);
-			InvocationContext context = new InvocationContext(SecurityContext.NONE,
-					arguments);
+			InvocationContext context = new InvocationContext(SecurityContext.NONE, arguments);
 			Object result = operation.invoke(context);
 			if (REACTOR_PRESENT) {
 				result = ReactiveHandler.handle(result);
@@ -108,8 +125,7 @@ public class EndpointMBean implements DynamicMBean {
 			return this.responseMapper.mapResponse(result);
 		}
 		catch (InvalidEndpointRequestException ex) {
-			throw new ReflectionException(new IllegalArgumentException(ex.getMessage()),
-					ex.getMessage());
+			throw new ReflectionException(new IllegalArgumentException(ex.getMessage()), ex.getMessage());
 		}
 		catch (Exception ex) {
 			throw new MBeanException(translateIfNecessary(ex), ex.getMessage());
@@ -138,8 +154,8 @@ public class EndpointMBean implements DynamicMBean {
 	}
 
 	@Override
-	public void setAttribute(Attribute attribute) throws AttributeNotFoundException,
-			InvalidAttributeValueException, MBeanException, ReflectionException {
+	public void setAttribute(Attribute attribute)
+			throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
 		throw new AttributeNotFoundException("EndpointMBeans do not support attributes");
 	}
 
@@ -155,7 +171,7 @@ public class EndpointMBean implements DynamicMBean {
 
 	private static class ReactiveHandler {
 
-		public static Object handle(Object result) {
+		static Object handle(Object result) {
 			if (result instanceof Mono) {
 				return ((Mono<?>) result).block();
 			}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package org.springframework.boot.web.embedded.jetty;
 
 import javax.servlet.ServletException;
 
-import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -42,62 +41,42 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 	 * @param initializers the initializers that should be invoked
 	 * @since 1.2.1
 	 */
-	public ServletContextInitializerConfiguration(
-			ServletContextInitializer... initializers) {
+	public ServletContextInitializerConfiguration(ServletContextInitializer... initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = initializers;
 	}
 
 	@Override
 	public void configure(WebAppContext context) throws Exception {
-		context.addBean(new Initializer(context), true);
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(context.getClassLoader());
+		try {
+			callInitializers(context);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(classLoader);
+		}
 	}
 
-	/**
-	 * Jetty {@link AbstractLifeCycle} to call the {@link ServletContextInitializer
-	 * ServletContextInitializers}.
-	 */
-	private class Initializer extends AbstractLifeCycle {
-
-		private final WebAppContext context;
-
-		Initializer(WebAppContext context) {
-			this.context = context;
-		}
-
-		@Override
-		protected void doStart() throws Exception {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			Thread.currentThread().setContextClassLoader(this.context.getClassLoader());
-			try {
-				callInitializers();
-			}
-			finally {
-				Thread.currentThread().setContextClassLoader(classLoader);
+	private void callInitializers(WebAppContext context) throws ServletException {
+		try {
+			setExtendedListenerTypes(context, true);
+			for (ServletContextInitializer initializer : this.initializers) {
+				initializer.onStartup(context.getServletContext());
 			}
 		}
-
-		private void callInitializers() throws ServletException {
-			try {
-				setExtendedListenerTypes(true);
-				for (ServletContextInitializer initializer : ServletContextInitializerConfiguration.this.initializers) {
-					initializer.onStartup(this.context.getServletContext());
-				}
-			}
-			finally {
-				setExtendedListenerTypes(false);
-			}
+		finally {
+			setExtendedListenerTypes(context, false);
 		}
+	}
 
-		private void setExtendedListenerTypes(boolean extended) {
-			try {
-				this.context.getServletContext().setExtendedListenerTypes(extended);
-			}
-			catch (NoSuchMethodError ex) {
-				// Not available on Jetty 8
-			}
+	private void setExtendedListenerTypes(WebAppContext context, boolean extended) {
+		try {
+			context.getServletContext().setExtendedListenerTypes(extended);
 		}
-
+		catch (NoSuchMethodError ex) {
+			// Not available on Jetty 8
+		}
 	}
 
 }

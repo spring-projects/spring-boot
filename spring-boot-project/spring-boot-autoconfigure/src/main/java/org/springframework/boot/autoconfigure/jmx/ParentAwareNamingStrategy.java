@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,8 +36,7 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @since 1.1.1
  */
-public class ParentAwareNamingStrategy extends MetadataNamingStrategy
-		implements ApplicationContextAware {
+public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
@@ -51,14 +50,12 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy
 	 * Set if unique runtime object names should be ensured.
 	 * @param ensureUniqueRuntimeObjectNames {@code true} if unique names should ensured.
 	 */
-	public void setEnsureUniqueRuntimeObjectNames(
-			boolean ensureUniqueRuntimeObjectNames) {
+	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
 
 	@Override
-	public ObjectName getObjectName(Object managedBean, String beanKey)
-			throws MalformedObjectNameException {
+	public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
 		ObjectName name = super.getObjectName(managedBean, beanKey);
 		Hashtable<String, String> properties = new Hashtable<>();
 		properties.putAll(name.getKeyPropertyList());
@@ -66,20 +63,17 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy
 			properties.put("identity", ObjectUtils.getIdentityHexString(managedBean));
 		}
 		else if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
-			properties.put("context",
-					ObjectUtils.getIdentityHexString(this.applicationContext));
+			properties.put("context", ObjectUtils.getIdentityHexString(this.applicationContext));
 		}
 		return ObjectNameManager.getInstance(name.getDomain(), properties);
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
-	private boolean parentContextContainsSameBean(ApplicationContext context,
-			String beanKey) {
+	private boolean parentContextContainsSameBean(ApplicationContext context, String beanKey) {
 		if (context.getParent() == null) {
 			return false;
 		}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.solr.repository.SolrRepository;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 import org.springframework.data.solr.repository.config.SolrRepositoryConfigExtension;
 import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBean;
 
@@ -35,18 +36,17 @@ import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBea
  * classpath.
  * </p>
  * If active auto configuration does the same as
- * {@link org.springframework.data.solr.repository.config.EnableSolrRepositories} would
- * do.
+ * {@link EnableSolrRepositories @EnableSolrRepositories} would do.
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
  * @since 1.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SolrClient.class, SolrRepository.class })
-@ConditionalOnMissingBean({ SolrRepositoryFactoryBean.class,
-		SolrRepositoryConfigExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.solr.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnMissingBean({ SolrRepositoryFactoryBean.class, SolrRepositoryConfigExtension.class })
+@ConditionalOnProperty(prefix = "spring.data.solr.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @Import(SolrRepositoriesRegistrar.class)
 public class SolrRepositoriesAutoConfiguration {
 

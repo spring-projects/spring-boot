@@ -1,14 +1,8 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
-}
-
 plugins {
-	id 'org.jetbrains.kotlin.jvm' version '1.2.10'
+	id 'org.springframework.boot' version '{version}'
 }
 
-apply plugin: 'org.springframework.boot'
+apply plugin: 'org.jetbrains.kotlin.jvm'
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 

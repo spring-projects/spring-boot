@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,17 +38,18 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  * @author Dave Syer
+ * @since 1.0.0
  */
 public final class RepositoryConfigurationFactory {
 
-	private static final RepositoryConfiguration MAVEN_CENTRAL = new RepositoryConfiguration(
-			"central", URI.create("https://repo.maven.apache.org/maven2/"), false);
+	private static final RepositoryConfiguration MAVEN_CENTRAL = new RepositoryConfiguration("central",
+			URI.create("https://repo.maven.apache.org/maven2/"), false);
 
-	private static final RepositoryConfiguration SPRING_MILESTONE = new RepositoryConfiguration(
-			"spring-milestone", URI.create("https://repo.spring.io/milestone"), false);
+	private static final RepositoryConfiguration SPRING_MILESTONE = new RepositoryConfiguration("spring-milestone",
+			URI.create("https://repo.spring.io/milestone"), false);
 
-	private static final RepositoryConfiguration SPRING_SNAPSHOT = new RepositoryConfiguration(
-			"spring-snapshot", URI.create("https://repo.spring.io/snapshot"), true);
+	private static final RepositoryConfiguration SPRING_SNAPSHOT = new RepositoryConfiguration("spring-snapshot",
+			URI.create("https://repo.spring.io/snapshot"), true);
 
 	private RepositoryConfigurationFactory() {
 	}
@@ -65,10 +66,8 @@ public final class RepositoryConfigurationFactory {
 			repositoryConfiguration.add(SPRING_MILESTONE);
 			repositoryConfiguration.add(SPRING_SNAPSHOT);
 		}
-		addDefaultCacheAsRepository(mavenSettings.getLocalRepository(),
-				repositoryConfiguration);
-		addActiveProfileRepositories(mavenSettings.getActiveProfiles(),
-				repositoryConfiguration);
+		addDefaultCacheAsRepository(mavenSettings.getLocalRepository(), repositoryConfiguration);
+		addActiveProfileRepositories(mavenSettings.getActiveProfiles(), repositoryConfiguration);
 		return repositoryConfiguration;
 	}
 
@@ -85,16 +84,15 @@ public final class RepositoryConfigurationFactory {
 			List<RepositoryConfiguration> configurations) {
 		for (Profile activeProfile : activeProfiles) {
 			Interpolator interpolator = new RegexBasedInterpolator();
-			interpolator.addValueSource(
-					new PropertiesBasedValueSource(activeProfile.getProperties()));
+			interpolator.addValueSource(new PropertiesBasedValueSource(activeProfile.getProperties()));
 			for (Repository repository : activeProfile.getRepositories()) {
 				configurations.add(getRepositoryConfiguration(interpolator, repository));
 			}
 		}
 	}
 
-	private static RepositoryConfiguration getRepositoryConfiguration(
-			Interpolator interpolator, Repository repository) {
+	private static RepositoryConfiguration getRepositoryConfiguration(Interpolator interpolator,
+			Repository repository) {
 		String name = interpolate(interpolator, repository.getId());
 		String url = interpolate(interpolator, repository.getUrl());
 		boolean snapshotsEnabled = false;

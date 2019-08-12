@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,18 +19,18 @@ package org.springframework.boot.autoconfigure.webservices;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
@@ -41,6 +41,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -57,7 +58,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
@@ -65,34 +66,28 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
 public class WebServicesAutoConfiguration {
 
-	private final WebServicesProperties properties;
-
-	public WebServicesAutoConfiguration(WebServicesProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-			ApplicationContext applicationContext) {
+			ApplicationContext applicationContext, WebServicesProperties properties) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
 		servlet.setApplicationContext(applicationContext);
-		String path = this.properties.getPath();
-		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(
-				servlet, urlMapping);
-		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
+		String path = properties.getPath();
+		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
+		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(servlet,
+				urlMapping);
+		WebServicesProperties.Servlet servletProperties = properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
 		servletProperties.getInit().forEach(registration::addInitParameter);
 		return registration;
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.webservices", name = "wsdl-locations")
+	@Conditional(OnWsdlLocationsCondition.class)
 	public static WsdlDefinitionBeanFactoryPostProcessor wsdlDefinitionBeanFactoryPostProcessor() {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWs
 	protected static class WsConfiguration {
 
@@ -109,42 +104,34 @@ public class WebServicesAutoConfiguration {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			Binder binder = Binder.get(this.applicationContext.getEnvironment());
-			List<String> wsdlLocations = binder
-					.bind("spring.webservices.wsdl-locations",
-							Bindable.listOf(String.class))
+			List<String> wsdlLocations = binder.bind("spring.webservices.wsdl-locations", Bindable.listOf(String.class))
 					.orElse(Collections.emptyList());
 			for (String wsdlLocation : wsdlLocations) {
-				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class,
+				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class, SimpleWsdl11Definition::new,
 						registry);
-				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class, registry);
+				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class, SimpleXsdSchema::new, registry);
 			}
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
-		private void registerBeans(String location, String pattern, Class<?> type,
-				BeanDefinitionRegistry registry) {
+		private <T> void registerBeans(String location, String pattern, Class<T> type,
+				Function<Resource, T> beanSupplier, BeanDefinitionRegistry registry) {
 			for (Resource resource : getResources(location, pattern)) {
-				RootBeanDefinition beanDefinition = new RootBeanDefinition(type);
-				ConstructorArgumentValues constructorArguments = new ConstructorArgumentValues();
-				constructorArguments.addIndexedArgumentValue(0, resource);
-				beanDefinition.setConstructorArgumentValues(constructorArguments);
-				registry.registerBeanDefinition(
-						StringUtils.stripFilenameExtension(resource.getFilename()),
+				BeanDefinition beanDefinition = BeanDefinitionBuilder
+						.genericBeanDefinition(type, () -> beanSupplier.apply(resource)).getBeanDefinition();
+				registry.registerBeanDefinition(StringUtils.stripFilenameExtension(resource.getFilename()),
 						beanDefinition);
 			}
 		}
 
 		private Resource[] getResources(String location, String pattern) {
 			try {
-				return this.applicationContext
-						.getResources(ensureTrailingSlash(location) + pattern);
+				return this.applicationContext.getResources(ensureTrailingSlash(location) + pattern);
 			}
 			catch (IOException ex) {
 				return new Resource[0];
@@ -152,7 +139,7 @@ public class WebServicesAutoConfiguration {
 		}
 
 		private String ensureTrailingSlash(String path) {
-			return (path.endsWith("/") ? path : path + "/");
+			return path.endsWith("/") ? path : path + "/";
 		}
 
 	}

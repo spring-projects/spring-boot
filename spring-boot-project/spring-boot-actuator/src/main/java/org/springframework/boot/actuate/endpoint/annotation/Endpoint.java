@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.springframework.boot.actuate.endpoint.EndpointId;
 
 /**
  * Identifies a type as being an actuator endpoint that provides information about the
@@ -52,8 +54,9 @@ import java.lang.annotation.Target;
 public @interface Endpoint {
 
 	/**
-	 * The id of the endpoint.
+	 * The id of the endpoint (must follow {@link EndpointId} rules).
 	 * @return the id
+	 * @see EndpointId
 	 */
 	String id() default "";
 

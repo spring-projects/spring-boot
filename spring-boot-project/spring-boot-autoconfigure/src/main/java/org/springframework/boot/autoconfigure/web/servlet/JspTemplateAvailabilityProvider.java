@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,9 @@
  */
 
 package org.springframework.boot.autoconfigure.web.servlet;
+
+import java.io.File;
+import java.security.AccessControlException;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.env.Environment;
@@ -28,25 +31,30 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 1.1.0
+ * @since 2.0.0
  */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
+	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
+			ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
 			String resourceName = getResourceName(view, environment);
-			return resourceLoader.getResource(resourceName).exists();
+			if (resourceLoader.getResource(resourceName).exists()) {
+				return true;
+			}
+			try {
+				return new File("src/main/webapp", resourceName).exists();
+			}
+			catch (AccessControlException ex) {
+			}
 		}
 		return false;
 	}
 
 	private String getResourceName(String view, Environment environment) {
-		String prefix = environment.getProperty("spring.mvc.view.prefix",
-				WebMvcAutoConfiguration.DEFAULT_PREFIX);
-		String suffix = environment.getProperty("spring.mvc.view.suffix",
-				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
+		String prefix = environment.getProperty("spring.mvc.view.prefix", WebMvcAutoConfiguration.DEFAULT_PREFIX);
+		String suffix = environment.getProperty("spring.mvc.view.suffix", WebMvcAutoConfiguration.DEFAULT_SUFFIX);
 		return prefix + view + suffix;
 	}
 

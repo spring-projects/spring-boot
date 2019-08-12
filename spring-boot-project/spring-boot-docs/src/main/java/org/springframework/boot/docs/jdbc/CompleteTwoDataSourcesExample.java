@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.docs.jdbc;
 
-import javax.sql.DataSource;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -36,7 +37,7 @@ public class CompleteTwoDataSourcesExample {
 	 * A complete configuration that exposes two data sources.
 	 */
 	@Configuration
-	static class CompleteDataSourcesConfiguration {
+	public static class CompleteDataSourcesConfiguration {
 
 		// tag::configuration[]
 		@Bean
@@ -48,9 +49,9 @@ public class CompleteTwoDataSourcesExample {
 
 		@Bean
 		@Primary
-		@ConfigurationProperties("app.datasource.first")
-		public DataSource firstDataSource() {
-			return firstDataSourceProperties().initializeDataSourceBuilder().build();
+		@ConfigurationProperties("app.datasource.first.configuration")
+		public HikariDataSource firstDataSource() {
+			return firstDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
 		}
 
 		@Bean
@@ -60,9 +61,9 @@ public class CompleteTwoDataSourcesExample {
 		}
 
 		@Bean
-		@ConfigurationProperties("app.datasource.second")
-		public DataSource secondDataSource() {
-			return secondDataSourceProperties().initializeDataSourceBuilder().build();
+		@ConfigurationProperties("app.datasource.second.configuration")
+		public BasicDataSource secondDataSource() {
+			return secondDataSourceProperties().initializeDataSourceBuilder().type(BasicDataSource.class).build();
 		}
 		// end::configuration[]
 

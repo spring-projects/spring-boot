@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -49,9 +49,9 @@ import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -67,7 +67,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  * @see org.springframework.boot.devtools.RemoteSpringApplication
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(DevToolsProperties.class)
 public class RemoteClientConfiguration implements InitializingBean {
 
@@ -89,13 +89,12 @@ public class RemoteClientConfiguration implements InitializingBean {
 
 	@Bean
 	public ClientHttpRequestFactory clientHttpRequestFactory() {
-		List<ClientHttpRequestInterceptor> interceptors = Arrays
-				.asList(getSecurityInterceptor());
+		List<ClientHttpRequestInterceptor> interceptors = Arrays.asList(getSecurityInterceptor());
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		Proxy proxy = this.properties.getRemote().getProxy();
 		if (proxy.getHost() != null && proxy.getPort() != null) {
-			requestFactory.setProxy(new java.net.Proxy(Type.HTTP,
-					new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+			requestFactory
+					.setProxy(new java.net.Proxy(Type.HTTP, new InetSocketAddress(proxy.getHost(), proxy.getPort())));
 		}
 		return new InterceptingClientHttpRequestFactory(requestFactory, interceptors);
 	}
@@ -105,8 +104,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		String secretHeaderName = remoteProperties.getSecretHeaderName();
 		String secret = remoteProperties.getSecret();
 		Assert.state(secret != null,
-				"The environment value 'spring.devtools.remote.secret' "
-						+ "is required to secure your connection.");
+				"The environment value 'spring.devtools.remote.secret' is required to secure your connection.");
 		return new HttpHeaderInterceptor(secretHeaderName, secret);
 	}
 
@@ -129,41 +127,46 @@ public class RemoteClientConfiguration implements InitializingBean {
 	/**
 	 * LiveReload configuration.
 	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
-		@Autowired
-		private DevToolsProperties properties;
+		private final DevToolsProperties properties;
 
-		@Autowired(required = false)
-		private LiveReloadServer liveReloadServer;
+		private final ClientHttpRequestFactory clientHttpRequestFactory;
 
-		@Autowired
-		private ClientHttpRequestFactory clientHttpRequestFactory;
-
-		@Value("${remoteUrl}")
-		private String remoteUrl;
+		private final String remoteUrl;
 
 		private ExecutorService executor = Executors.newSingleThreadExecutor();
+
+		LiveReloadConfiguration(DevToolsProperties properties, ClientHttpRequestFactory clientHttpRequestFactory,
+				@Value("${remoteUrl}") String remoteUrl) {
+			this.properties = properties;
+			this.clientHttpRequestFactory = clientHttpRequestFactory;
+			this.remoteUrl = remoteUrl;
+		}
 
 		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
-		public LiveReloadServer liveReloadServer() {
+		LiveReloadServer liveReloadServer() {
 			return new LiveReloadServer(this.properties.getLivereload().getPort(),
 					Restarter.getInstance().getThreadFactory());
 		}
 
-		@EventListener
-		public void onClassPathChanged(ClassPathChangedEvent event) {
-			String url = this.remoteUrl + this.properties.getRemote().getContextPath();
-			this.executor.execute(new DelayedLiveReloadTrigger(optionalLiveReloadServer(),
-					this.clientHttpRequestFactory, url));
+		@Bean
+		ApplicationListener<ClassPathChangedEvent> liveReloadTriggeringClassPathChangedEventListener(
+				OptionalLiveReloadServer optionalLiveReloadServer) {
+			return (event) -> {
+				String url = this.remoteUrl + this.properties.getRemote().getContextPath();
+				this.executor.execute(
+						new DelayedLiveReloadTrigger(optionalLiveReloadServer, this.clientHttpRequestFactory, url));
+			};
 		}
 
 		@Bean
-		public OptionalLiveReloadServer optionalLiveReloadServer() {
-			return new OptionalLiveReloadServer(this.liveReloadServer);
+		OptionalLiveReloadServer optionalLiveReloadServer(ObjectProvider<LiveReloadServer> liveReloadServer) {
+			return new OptionalLiveReloadServer(liveReloadServer.getIfAvailable());
 		}
 
 		final ExecutorService getExecutor() {
@@ -175,35 +178,35 @@ public class RemoteClientConfiguration implements InitializingBean {
 	/**
 	 * Client configuration for remote update and restarts.
 	 */
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 
-		@Autowired
-		private DevToolsProperties properties;
+		private final DevToolsProperties properties;
 
-		@Value("${remoteUrl}")
-		private String remoteUrl;
+		RemoteRestartClientConfiguration(DevToolsProperties properties) {
+			this.properties = properties;
+		}
 
 		@Bean
-		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
+		ClassPathFileSystemWatcher classPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
+				ClassPathRestartStrategy classPathRestartStrategy) {
 			DefaultRestartInitializer restartInitializer = new DefaultRestartInitializer();
 			URL[] urls = restartInitializer.getInitialUrls(Thread.currentThread());
 			if (urls == null) {
 				urls = new URL[0];
 			}
-			return new ClassPathFileSystemWatcher(getFileSystemWatcherFactory(),
-					classPathRestartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(fileSystemWatcherFactory, classPathRestartStrategy, urls);
 		}
 
 		@Bean
-		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+		FileSystemWatcherFactory getFileSystemWatcherFactory() {
 			return this::newFileSystemWatcher;
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
-			FileSystemWatcher watcher = new FileSystemWatcher(true,
-					restartProperties.getPollInterval(),
+			FileSystemWatcher watcher = new FileSystemWatcher(true, restartProperties.getPollInterval(),
 					restartProperties.getQuietPeriod());
 			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {
@@ -213,16 +216,14 @@ public class RemoteClientConfiguration implements InitializingBean {
 		}
 
 		@Bean
-		public ClassPathRestartStrategy classPathRestartStrategy() {
-			return new PatternClassPathRestartStrategy(
-					this.properties.getRestart().getAllExclude());
+		ClassPathRestartStrategy classPathRestartStrategy() {
+			return new PatternClassPathRestartStrategy(this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean
-		public ClassPathChangeUploader classPathChangeUploader(
-				ClientHttpRequestFactory requestFactory) {
-			String url = this.remoteUrl + this.properties.getRemote().getContextPath()
-					+ "/restart";
+		ClassPathChangeUploader classPathChangeUploader(ClientHttpRequestFactory requestFactory,
+				@Value("${remoteUrl}") String remoteUrl) {
+			String url = remoteUrl + this.properties.getRemote().getContextPath() + "/restart";
 			return new ClassPathChangeUploader(url, requestFactory);
 		}
 

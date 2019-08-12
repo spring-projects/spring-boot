@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,13 +69,6 @@ public class ItemDeprecation {
 	}
 
 	@Override
-	public String toString() {
-		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
-				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
-				+ this.level + '\'' + '}';
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -84,8 +77,7 @@ public class ItemDeprecation {
 			return false;
 		}
 		ItemDeprecation other = (ItemDeprecation) o;
-		return nullSafeEquals(this.reason, other.reason)
-				&& nullSafeEquals(this.replacement, other.replacement)
+		return nullSafeEquals(this.reason, other.reason) && nullSafeEquals(this.replacement, other.replacement)
 				&& nullSafeEquals(this.level, other.level);
 	}
 
@@ -95,6 +87,12 @@ public class ItemDeprecation {
 		result = 31 * result + nullSafeHashCode(this.replacement);
 		result = 31 * result + nullSafeHashCode(this.level);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "ItemDeprecation{reason='" + this.reason + '\'' + ", replacement='" + this.replacement + '\''
+				+ ", level='" + this.level + '\'' + '}';
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {
@@ -108,7 +106,7 @@ public class ItemDeprecation {
 	}
 
 	private int nullSafeHashCode(Object o) {
-		return (o != null ? o.hashCode() : 0);
+		return (o != null) ? o.hashCode() : 0;
 	}
 
 }

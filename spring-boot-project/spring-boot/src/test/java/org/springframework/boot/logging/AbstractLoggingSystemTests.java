@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,18 +16,18 @@
 
 package org.springframework.boot.logging;
 
-import java.io.IOException;
+import java.nio.file.Path;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.StringUtils;
 
 /**
  * Base for {@link LoggingSystem} tests.
  *
+ * @author Ilya Lukyanovich
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -35,24 +35,21 @@ public abstract class AbstractLoggingSystemTests {
 
 	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private String originalTempFolder;
 
-	@Before
-	public void configureTempDir() throws IOException {
+	@BeforeEach
+	void configureTempDir(@TempDir Path temp) {
 		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
-		System.setProperty(JAVA_IO_TMPDIR, this.temp.newFolder().getAbsolutePath());
+		System.setProperty(JAVA_IO_TMPDIR, temp.toAbsolutePath().toString());
 	}
 
-	@After
-	public void reinstateTempDir() {
+	@AfterEach
+	void reinstateTempDir() {
 		System.setProperty(JAVA_IO_TMPDIR, this.originalTempFolder);
 	}
 
-	@After
-	public void clear() {
+	@AfterEach
+	void clear() {
 		System.clearProperty(LoggingSystemProperties.LOG_FILE);
 		System.clearProperty(LoggingSystemProperties.PID_KEY);
 	}
@@ -65,8 +62,7 @@ public abstract class AbstractLoggingSystemTests {
 		return getLogFile(file, path, true);
 	}
 
-	protected final LogFile getLogFile(String file, String path,
-			boolean applyToSystemProperties) {
+	protected final LogFile getLogFile(String file, String path, boolean applyToSystemProperties) {
 		LogFile logFile = new LogFile(file, path);
 		if (applyToSystemProperties) {
 			logFile.applyToSystemProperties();

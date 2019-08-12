@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,6 +39,7 @@ import org.springframework.boot.loader.jar.JarFile;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class JarFileArchive implements Archive {
 
@@ -53,7 +54,7 @@ public class JarFileArchive implements Archive {
 	private File tempUnpackFolder;
 
 	public JarFileArchive(File file) throws IOException {
-		this(file, null);
+		this(file, file.toURI().toURL());
 	}
 
 	public JarFileArchive(File file, URL url) throws IOException {
@@ -94,6 +95,11 @@ public class JarFileArchive implements Archive {
 		return new EntryIterator(this.jarFile.entries());
 	}
 
+	@Override
+	public void close() throws IOException {
+		this.jarFile.close();
+	}
+
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
 		if (jarEntry.getComment().startsWith(UNPACK_MARKER)) {
@@ -104,8 +110,7 @@ public class JarFileArchive implements Archive {
 			return new JarFileArchive(jarFile);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Failed to get nested archive for entry " + entry.getName(), ex);
+			throw new IllegalStateException("Failed to get nested archive for entry " + entry.getName(), ex);
 		}
 	}
 
@@ -133,14 +138,12 @@ public class JarFileArchive implements Archive {
 		int attempts = 0;
 		while (attempts++ < 1000) {
 			String fileName = new File(this.jarFile.getName()).getName();
-			File unpackFolder = new File(parent,
-					fileName + "-spring-boot-libs-" + UUID.randomUUID());
+			File unpackFolder = new File(parent, fileName + "-spring-boot-libs-" + UUID.randomUUID());
 			if (unpackFolder.mkdirs()) {
 				return unpackFolder;
 			}
 		}
-		throw new IllegalStateException(
-				"Failed to create unpack folder in directory '" + parent + "'");
+		throw new IllegalStateException("Failed to create unpack folder in directory '" + parent + "'");
 	}
 
 	private void unpack(JarEntry entry, File file) throws IOException {
@@ -204,7 +207,7 @@ public class JarFileArchive implements Archive {
 			this.jarEntry = jarEntry;
 		}
 
-		public JarEntry getJarEntry() {
+		JarEntry getJarEntry() {
 			return this.jarEntry;
 		}
 

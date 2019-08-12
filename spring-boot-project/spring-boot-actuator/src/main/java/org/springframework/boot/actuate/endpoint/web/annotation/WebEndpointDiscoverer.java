@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,10 @@
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -31,7 +33,6 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.Assert;
 
 /**
  * {@link EndpointDiscoverer} for {@link ExposableWebEndpoint web endpoints}.
@@ -39,11 +40,10 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class WebEndpointDiscoverer
-		extends EndpointDiscoverer<ExposableWebEndpoint, WebOperation>
+public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoint, WebOperation>
 		implements WebEndpointsSupplier {
 
-	private final PathMapper endpointPathMapper;
+	private final List<PathMapper> endpointPathMappers;
 
 	private final RequestPredicateFactory requestPredicateFactory;
 
@@ -52,37 +52,33 @@ public class WebEndpointDiscoverer
 	 * @param applicationContext the source application context
 	 * @param parameterValueMapper the parameter value mapper
 	 * @param endpointMediaTypes the endpoint media types
-	 * @param endpointPathMapper the endpoint path mapper
+	 * @param endpointPathMappers the endpoint path mappers
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param filters filters to apply
 	 */
-	public WebEndpointDiscoverer(ApplicationContext applicationContext,
-			ParameterValueMapper parameterValueMapper,
-			EndpointMediaTypes endpointMediaTypes, PathMapper endpointPathMapper,
+	public WebEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
+			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
 			Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
 		super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
-		Assert.notNull(endpointPathMapper, "EndpointPathMapper must not be null");
-		this.endpointPathMapper = endpointPathMapper;
+		this.endpointPathMappers = endpointPathMappers;
 		this.requestPredicateFactory = new RequestPredicateFactory(endpointMediaTypes);
 	}
 
 	@Override
-	protected ExposableWebEndpoint createEndpoint(Object endpointBean, String id,
-			boolean enabledByDefault, Collection<WebOperation> operations) {
-		String rootPath = this.endpointPathMapper.getRootPath(id);
-		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath,
-				enabledByDefault, operations);
+	protected ExposableWebEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+			Collection<WebOperation> operations) {
+		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
+		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath, enabledByDefault, operations);
 	}
 
 	@Override
-	protected WebOperation createOperation(String endpointId,
-			DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
-		String rootPath = this.endpointPathMapper.getRootPath(endpointId);
-		WebOperationRequestPredicate requestPredicate = this.requestPredicateFactory
-				.getRequestPredicate(endpointId, rootPath, operationMethod);
-		return new DiscoveredWebOperation(endpointId, operationMethod, invoker,
-				requestPredicate);
+	protected WebOperation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
+			OperationInvoker invoker) {
+		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, endpointId);
+		WebOperationRequestPredicate requestPredicate = this.requestPredicateFactory.getRequestPredicate(rootPath,
+				operationMethod);
+		return new DiscoveredWebOperation(endpointId, operationMethod, invoker, requestPredicate);
 	}
 
 	@Override

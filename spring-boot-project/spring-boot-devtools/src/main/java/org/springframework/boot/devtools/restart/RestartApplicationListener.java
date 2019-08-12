@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,9 @@
  */
 
 package org.springframework.boot.devtools.restart;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -32,12 +35,13 @@ import org.springframework.core.Ordered;
  * @since 1.3.0
  * @see Restarter
  */
-public class RestartApplicationListener
-		implements ApplicationListener<ApplicationEvent>, Ordered {
-
-	private int order = HIGHEST_PRECEDENCE;
+public class RestartApplicationListener implements ApplicationListener<ApplicationEvent>, Ordered {
 
 	private static final String ENABLED_PROPERTY = "spring.devtools.restart.enabled";
+
+	private static final Log logger = LogFactory.getLog(RestartApplicationListener.class);
+
+	private int order = HIGHEST_PRECEDENCE;
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -47,8 +51,7 @@ public class RestartApplicationListener
 		if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
-		if (event instanceof ApplicationReadyEvent
-				|| event instanceof ApplicationFailedEvent) {
+		if (event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
 		}
 		if (event instanceof ApplicationFailedEvent) {
@@ -64,9 +67,13 @@ public class RestartApplicationListener
 			String[] args = event.getArgs();
 			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 			boolean restartOnInitialize = !AgentReloader.isActive();
+			if (!restartOnInitialize) {
+				logger.info("Restart disabled due to an agent-based reloader being active");
+			}
 			Restarter.initialize(args, false, initializer, restartOnInitialize);
 		}
 		else {
+			logger.info("Restart disabled due to System property '" + ENABLED_PROPERTY + "' being set to false");
 			Restarter.disable();
 		}
 	}

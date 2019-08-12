@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * Event published by a {@link SpringApplication} when it fails to start.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see ApplicationReadyEvent
  */
 @SuppressWarnings("serial")
@@ -39,8 +40,8 @@ public class ApplicationFailedEvent extends SpringApplicationEvent {
 	 * @param context the context that was being created (maybe null)
 	 * @param exception the exception that caused the error
 	 */
-	public ApplicationFailedEvent(SpringApplication application, String[] args,
-			ConfigurableApplicationContext context, Throwable exception) {
+	public ApplicationFailedEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context,
+			Throwable exception) {
 		super(application, args);
 		this.context = context;
 		this.exception = exception;

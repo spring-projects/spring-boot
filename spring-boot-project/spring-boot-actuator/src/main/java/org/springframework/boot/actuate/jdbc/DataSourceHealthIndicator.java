@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,8 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Arthur Kalimullin
  * @since 2.0.0
  */
-public class DataSourceHealthIndicator extends AbstractHealthIndicator
-		implements InitializingBean {
+public class DataSourceHealthIndicator extends AbstractHealthIndicator implements InitializingBean {
 
 	private static final String DEFAULT_QUERY = "SELECT 1";
 
@@ -86,13 +85,12 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		super("DataSource health check failed");
 		this.dataSource = dataSource;
 		this.query = query;
-		this.jdbcTemplate = (dataSource != null ? new JdbcTemplate(dataSource) : null);
+		this.jdbcTemplate = (dataSource != null) ? new JdbcTemplate(dataSource) : null;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.state(this.dataSource != null,
-				"DataSource for DataSourceHealthIndicator must be specified");
+		Assert.state(this.dataSource != null, "DataSource for DataSourceHealthIndicator must be specified");
 	}
 
 	@Override
@@ -110,11 +108,15 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		builder.up().withDetail("database", product);
 		String validationQuery = getValidationQuery(product);
 		if (StringUtils.hasText(validationQuery)) {
-			// Avoid calling getObject as it breaks MySQL on Java 7
-			List<Object> results = this.jdbcTemplate.query(validationQuery,
-					new SingleColumnRowMapper());
-			Object result = DataAccessUtils.requiredSingleResult(results);
-			builder.withDetail("hello", result);
+			try {
+				// Avoid calling getObject as it breaks MySQL on Java 7
+				List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
+				Object result = DataAccessUtils.requiredSingleResult(results);
+				builder.withDetail("result", result);
+			}
+			finally {
+				builder.withDetail("validationQuery", validationQuery);
+			}
 		}
 	}
 

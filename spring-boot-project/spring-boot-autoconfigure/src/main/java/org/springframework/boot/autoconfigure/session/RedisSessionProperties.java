@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,8 @@
 package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.session.data.redis.RedisFlushMode;
+import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
 
 /**
  * Configuration properties for Redis backed Spring Session.
@@ -36,9 +37,22 @@ public class RedisSessionProperties {
 	private String namespace = "spring:session";
 
 	/**
-	 * Sessions flush mode.
+	 * Sessions flush mode. Determines when session changes are written to the session
+	 * store.
 	 */
-	private RedisFlushMode flushMode = RedisFlushMode.ON_SAVE;
+	private FlushMode flushMode = FlushMode.ON_SAVE;
+
+	/**
+	 * Sessions save mode. Determines how session changes are tracked and saved to the
+	 * session store.
+	 */
+	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
+
+	/**
+	 * The configure action to apply when no user defined ConfigureRedisAction bean is
+	 * present.
+	 */
+	private ConfigureAction configureAction = ConfigureAction.NOTIFY_KEYSPACE_EVENTS;
 
 	/**
 	 * Cron expression for expired session cleanup job.
@@ -53,12 +67,20 @@ public class RedisSessionProperties {
 		this.namespace = namespace;
 	}
 
-	public RedisFlushMode getFlushMode() {
+	public FlushMode getFlushMode() {
 		return this.flushMode;
 	}
 
-	public void setFlushMode(RedisFlushMode flushMode) {
+	public void setFlushMode(FlushMode flushMode) {
 		this.flushMode = flushMode;
+	}
+
+	public SaveMode getSaveMode() {
+		return this.saveMode;
+	}
+
+	public void setSaveMode(SaveMode saveMode) {
+		this.saveMode = saveMode;
 	}
 
 	public String getCleanupCron() {
@@ -67,6 +89,32 @@ public class RedisSessionProperties {
 
 	public void setCleanupCron(String cleanupCron) {
 		this.cleanupCron = cleanupCron;
+	}
+
+	public ConfigureAction getConfigureAction() {
+		return this.configureAction;
+	}
+
+	public void setConfigureAction(ConfigureAction configureAction) {
+		this.configureAction = configureAction;
+	}
+
+	/**
+	 * Strategies for configuring and validating Redis.
+	 */
+	public enum ConfigureAction {
+
+		/**
+		 * Ensure that Redis Keyspace events for Generic commands and Expired events are
+		 * enabled.
+		 */
+		NOTIFY_KEYSPACE_EVENTS,
+
+		/**
+		 * No not attempt to apply any custom Redis configuration.
+		 */
+		NONE
+
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import org.reactivestreams.Publisher;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -41,8 +42,7 @@ import org.springframework.util.ClassUtils;
  */
 class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebOperation {
 
-	private static final boolean REACTIVE_STREAMS_PRESENT = ClassUtils.isPresent(
-			"org.reactivestreams.Publisher",
+	private static final boolean REACTIVE_STREAMS_PRESENT = ClassUtils.isPresent("org.reactivestreams.Publisher",
 			DiscoveredWebOperation.class.getClassLoader());
 
 	private final String id;
@@ -51,8 +51,8 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 
 	private final WebOperationRequestPredicate requestPredicate;
 
-	DiscoveredWebOperation(String endpointId, DiscoveredOperationMethod operationMethod,
-			OperationInvoker invoker, WebOperationRequestPredicate requestPredicate) {
+	DiscoveredWebOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod, OperationInvoker invoker,
+			WebOperationRequestPredicate requestPredicate) {
 		super(operationMethod, invoker);
 		Method method = operationMethod.getMethod();
 		this.id = getId(endpointId, method);
@@ -60,9 +60,9 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 		this.requestPredicate = requestPredicate;
 	}
 
-	private String getId(String endpointId, Method method) {
-		return endpointId + Stream.of(method.getParameters()).filter(this::hasSelector)
-				.map(this::dashName).collect(Collectors.joining());
+	private String getId(EndpointId endpointId, Method method) {
+		return endpointId + Stream.of(method.getParameters()).filter(this::hasSelector).map(this::dashName)
+				.collect(Collectors.joining());
 	}
 
 	private boolean hasSelector(Parameter parameter) {
@@ -74,8 +74,7 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 	}
 
 	private boolean getBlocking(Method method) {
-		return !REACTIVE_STREAMS_PRESENT
-				|| !Publisher.class.isAssignableFrom(method.getReturnType());
+		return !REACTIVE_STREAMS_PRESENT || !Publisher.class.isAssignableFrom(method.getReturnType());
 	}
 
 	@Override
@@ -95,8 +94,8 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 
 	@Override
 	protected void appendFields(ToStringCreator creator) {
-		creator.append("id", this.id).append("blocking", this.blocking)
-				.append("requestPredicate", this.requestPredicate);
+		creator.append("id", this.id).append("blocking", this.blocking).append("requestPredicate",
+				this.requestPredicate);
 	}
 
 }

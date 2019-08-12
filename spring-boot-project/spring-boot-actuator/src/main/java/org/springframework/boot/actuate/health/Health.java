@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,6 +47,7 @@ import org.springframework.util.Assert;
  *
  * @author Christian Dupuis
  * @author Phillip Webb
+ * @author Michael Pratt
  * @since 1.1.0
  */
 @JsonInclude(Include.NON_EMPTY)
@@ -226,6 +227,19 @@ public final class Health {
 			Assert.notNull(key, "Key must not be null");
 			Assert.notNull(value, "Value must not be null");
 			this.details.put(key, value);
+			return this;
+		}
+
+		/**
+		 * Record details from the given {@code details} map. Keys from the given map
+		 * replace any existing keys if there are duplicates.
+		 * @param details map of details
+		 * @return this {@link Builder} instance
+		 * @since 2.1.0
+		 */
+		public Builder withDetails(Map<String, ?> details) {
+			Assert.notNull(details, "Details must not be null");
+			this.details.putAll(details);
 			return this;
 		}
 

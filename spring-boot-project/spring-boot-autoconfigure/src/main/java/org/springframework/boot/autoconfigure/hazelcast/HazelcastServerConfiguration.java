@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,19 +35,19 @@ import org.springframework.core.io.Resource;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  */
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(HazelcastInstance.class)
 class HazelcastServerConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Config.class)
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastServerConfigFileConfiguration {
 
 		@Bean
-		public HazelcastInstance hazelcastInstance(HazelcastProperties properties)
-				throws IOException {
+		HazelcastInstance hazelcastInstance(HazelcastProperties properties) throws IOException {
 			Resource config = properties.resolveConfigLocation();
 			if (config != null) {
 				return new HazelcastInstanceFactory(config).getHazelcastInstance();
@@ -57,12 +57,12 @@ class HazelcastServerConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(Config.class)
 	static class HazelcastServerConfigConfiguration {
 
 		@Bean
-		public HazelcastInstance hazelcastInstance(Config config) {
+		HazelcastInstance hazelcastInstance(Config config) {
 			return new HazelcastInstanceFactory(config).getHazelcastInstance();
 		}
 
@@ -75,8 +75,8 @@ class HazelcastServerConfiguration {
 	static class ConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
 		ConfigAvailableCondition() {
-			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml",
-					"classpath:/hazelcast.xml");
+			super(CONFIG_SYSTEM_PROPERTY, "file:./hazelcast.xml", "classpath:/hazelcast.xml", "file:./hazelcast.yaml",
+					"classpath:/hazelcast.yaml");
 		}
 
 	}

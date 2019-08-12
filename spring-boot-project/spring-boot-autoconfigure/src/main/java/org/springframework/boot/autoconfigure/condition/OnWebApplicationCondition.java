@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
@@ -36,20 +37,56 @@ import org.springframework.web.context.WebApplicationContext;
  * {@link WebApplicationContext}.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  * @see ConditionalOnWebApplication
  * @see ConditionalOnNotWebApplication
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnWebApplicationCondition extends SpringBootCondition {
+class OnWebApplicationCondition extends FilteringSpringBootCondition {
 
-	private static final String WEB_CONTEXT_CLASS = "org.springframework.web.context."
-			+ "support.GenericWebApplicationContext";
+	private static final String SERVLET_WEB_APPLICATION_CLASS = "org.springframework.web.context.support.GenericWebApplicationContext";
+
+	private static final String REACTIVE_WEB_APPLICATION_CLASS = "org.springframework.web.reactive.HandlerResult";
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		boolean required = metadata
-				.isAnnotated(ConditionalOnWebApplication.class.getName());
+	protected ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
+			AutoConfigurationMetadata autoConfigurationMetadata) {
+		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
+		for (int i = 0; i < outcomes.length; i++) {
+			String autoConfigurationClass = autoConfigurationClasses[i];
+			if (autoConfigurationClass != null) {
+				outcomes[i] = getOutcome(
+						autoConfigurationMetadata.get(autoConfigurationClass, "ConditionalOnWebApplication"));
+			}
+		}
+		return outcomes;
+	}
+
+	private ConditionOutcome getOutcome(String type) {
+		if (type == null) {
+			return null;
+		}
+		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnWebApplication.class);
+		if (ConditionalOnWebApplication.Type.SERVLET.name().equals(type)) {
+			if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
+				return ConditionOutcome.noMatch(message.didNotFind("servlet web application classes").atAll());
+			}
+		}
+		if (ConditionalOnWebApplication.Type.REACTIVE.name().equals(type)) {
+			if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
+				return ConditionOutcome.noMatch(message.didNotFind("reactive web application classes").atAll());
+			}
+		}
+		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS, getBeanClassLoader())
+				&& !ClassUtils.isPresent(REACTIVE_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
+			return ConditionOutcome.noMatch(message.didNotFind("reactive or servlet web application classes").atAll());
+		}
+		return null;
+	}
+
+	@Override
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		boolean required = metadata.isAnnotated(ConditionalOnWebApplication.class.getName());
 		ConditionOutcome outcome = isWebApplication(context, metadata, required);
 		if (required && !outcome.isMatch()) {
 			return ConditionOutcome.noMatch(outcome.getConditionMessage());
@@ -60,42 +97,37 @@ class OnWebApplicationCondition extends SpringBootCondition {
 		return ConditionOutcome.match(outcome.getConditionMessage());
 	}
 
-	private ConditionOutcome isWebApplication(ConditionContext context,
-			AnnotatedTypeMetadata metadata, boolean required) {
-		ConditionMessage.Builder message = ConditionMessage.forCondition(
-				ConditionalOnWebApplication.class, required ? "(required)" : "");
-		Type type = deduceType(metadata);
-		if (Type.SERVLET == type) {
+	private ConditionOutcome isWebApplication(ConditionContext context, AnnotatedTypeMetadata metadata,
+			boolean required) {
+		switch (deduceType(metadata)) {
+		case SERVLET:
 			return isServletWebApplication(context);
-		}
-		else if (Type.REACTIVE == type) {
+		case REACTIVE:
 			return isReactiveWebApplication(context);
+		default:
+			return isAnyWebApplication(context, required);
 		}
-		else {
-			ConditionOutcome servletOutcome = isServletWebApplication(context);
-			if (servletOutcome.isMatch() && required) {
-				return new ConditionOutcome(servletOutcome.isMatch(),
-						message.because(servletOutcome.getMessage()));
-			}
-			ConditionOutcome reactiveOutcome = isReactiveWebApplication(context);
-			if (reactiveOutcome.isMatch() && required) {
-				return new ConditionOutcome(reactiveOutcome.isMatch(),
-						message.because(reactiveOutcome.getMessage()));
-			}
-			boolean finalOutcome = (required
-					? servletOutcome.isMatch() && reactiveOutcome.isMatch()
-					: servletOutcome.isMatch() || reactiveOutcome.isMatch());
-			return new ConditionOutcome(finalOutcome,
-					message.because(servletOutcome.getMessage()).append("and")
-							.append(reactiveOutcome.getMessage()));
+	}
+
+	private ConditionOutcome isAnyWebApplication(ConditionContext context, boolean required) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnWebApplication.class,
+				required ? "(required)" : "");
+		ConditionOutcome servletOutcome = isServletWebApplication(context);
+		if (servletOutcome.isMatch() && required) {
+			return new ConditionOutcome(servletOutcome.isMatch(), message.because(servletOutcome.getMessage()));
 		}
+		ConditionOutcome reactiveOutcome = isReactiveWebApplication(context);
+		if (reactiveOutcome.isMatch() && required) {
+			return new ConditionOutcome(reactiveOutcome.isMatch(), message.because(reactiveOutcome.getMessage()));
+		}
+		return new ConditionOutcome(servletOutcome.isMatch() || reactiveOutcome.isMatch(),
+				message.because(servletOutcome.getMessage()).append("and").append(reactiveOutcome.getMessage()));
 	}
 
 	private ConditionOutcome isServletWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
-		if (!ClassUtils.isPresent(WEB_CONTEXT_CLASS, context.getClassLoader())) {
-			return ConditionOutcome
-					.noMatch(message.didNotFind("web application classes").atAll());
+		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS, context.getClassLoader())) {
+			return ConditionOutcome.noMatch(message.didNotFind("servlet web application classes").atAll());
 		}
 		if (context.getBeanFactory() != null) {
 			String[] scopes = context.getBeanFactory().getRegisteredScopeNames();
@@ -104,8 +136,7 @@ class OnWebApplicationCondition extends SpringBootCondition {
 			}
 		}
 		if (context.getEnvironment() instanceof ConfigurableWebEnvironment) {
-			return ConditionOutcome
-					.match(message.foundExactly("ConfigurableWebEnvironment"));
+			return ConditionOutcome.match(message.foundExactly("ConfigurableWebEnvironment"));
 		}
 		if (context.getResourceLoader() instanceof WebApplicationContext) {
 			return ConditionOutcome.match(message.foundExactly("WebApplicationContext"));
@@ -115,21 +146,20 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
+		if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS, context.getClassLoader())) {
+			return ConditionOutcome.noMatch(message.didNotFind("reactive web application classes").atAll());
+		}
 		if (context.getEnvironment() instanceof ConfigurableReactiveWebEnvironment) {
-			return ConditionOutcome
-					.match(message.foundExactly("ConfigurableReactiveWebEnvironment"));
+			return ConditionOutcome.match(message.foundExactly("ConfigurableReactiveWebEnvironment"));
 		}
 		if (context.getResourceLoader() instanceof ReactiveWebApplicationContext) {
-			return ConditionOutcome
-					.match(message.foundExactly("ReactiveWebApplicationContext"));
+			return ConditionOutcome.match(message.foundExactly("ReactiveWebApplicationContext"));
 		}
-		return ConditionOutcome
-				.noMatch(message.because("not a reactive web application"));
+		return ConditionOutcome.noMatch(message.because("not a reactive web application"));
 	}
 
 	private Type deduceType(AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata
-				.getAnnotationAttributes(ConditionalOnWebApplication.class.getName());
+		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnWebApplication.class.getName());
 		if (attributes != null) {
 			return (Type) attributes.get("type");
 		}

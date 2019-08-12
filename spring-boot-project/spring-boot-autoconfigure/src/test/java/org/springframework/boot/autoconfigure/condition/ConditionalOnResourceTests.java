@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -26,16 +26,16 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnResource}.
+ * Tests for {@link ConditionalOnResource @ConditionalOnResource}.
  *
  * @author Dave Syer
  */
-public class ConditionalOnResourceTests {
+class ConditionalOnResourceTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testResourceExists() {
+	void testResourceExists() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("foo")).isTrue();
@@ -43,7 +43,7 @@ public class ConditionalOnResourceTests {
 	}
 
 	@Test
-	public void testResourceExistsWithPlaceholder() {
+	void testResourceExistsWithPlaceholder() {
 		TestPropertyValues.of("schema=schema.sql").applyTo(this.context);
 		this.context.register(PlaceholderConfiguration.class);
 		this.context.refresh();
@@ -52,40 +52,40 @@ public class ConditionalOnResourceTests {
 	}
 
 	@Test
-	public void testResourceNotExists() {
+	void testResourceNotExists() {
 		this.context.register(MissingConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnResource(resources = "foo")
-	protected static class MissingConfiguration {
+	static class MissingConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnResource(resources = "schema.sql")
-	protected static class BasicConfiguration {
+	static class BasicConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnResource(resources = "${schema}")
-	protected static class PlaceholderConfiguration {
+	static class PlaceholderConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

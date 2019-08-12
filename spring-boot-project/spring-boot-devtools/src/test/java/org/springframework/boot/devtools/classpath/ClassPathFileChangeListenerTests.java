@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,10 +21,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -37,6 +35,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -46,10 +45,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class ClassPathFileChangeListenerTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class ClassPathFileChangeListenerTests {
 
 	@Mock
 	private ApplicationEventPublisher eventPublisher;
@@ -63,42 +59,40 @@ public class ClassPathFileChangeListenerTests {
 	@Captor
 	private ArgumentCaptor<ApplicationEvent> eventCaptor;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void eventPublisherMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("EventPublisher must not be null");
-		new ClassPathFileChangeListener(null, this.restartStrategy,
-				this.fileSystemWatcher);
+	void eventPublisherMustNotBeNull() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher))
+				.withMessageContaining("EventPublisher must not be null");
 	}
 
 	@Test
-	public void restartStrategyMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("RestartStrategy must not be null");
-		new ClassPathFileChangeListener(this.eventPublisher, null,
-				this.fileSystemWatcher);
+	void restartStrategyMustNotBeNull() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher))
+				.withMessageContaining("RestartStrategy must not be null");
 	}
 
 	@Test
-	public void sendsEventWithoutRestart() {
+	void sendsEventWithoutRestart() {
 		testSendsEvent(false);
 		verify(this.fileSystemWatcher, never()).stop();
 	}
 
 	@Test
-	public void sendsEventWithRestart() {
+	void sendsEventWithRestart() {
 		testSendsEvent(true);
 		verify(this.fileSystemWatcher).stop();
 	}
 
 	private void testSendsEvent(boolean restart) {
-		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(
-				this.eventPublisher, this.restartStrategy, this.fileSystemWatcher);
+		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(this.eventPublisher,
+				this.restartStrategy, this.fileSystemWatcher);
 		File folder = new File("s1");
 		File file = new File("f1");
 		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
@@ -113,8 +107,7 @@ public class ClassPathFileChangeListenerTests {
 		}
 		listener.onChange(changeSet);
 		verify(this.eventPublisher).publishEvent(this.eventCaptor.capture());
-		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor
-				.getValue();
+		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor.getValue();
 		assertThat(actualEvent.getChangeSet()).isEqualTo(changeSet);
 		assertThat(actualEvent.isRestartRequired()).isEqualTo(restart);
 	}

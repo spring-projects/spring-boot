@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,7 @@ public class MockCachingProvider implements CachingProvider {
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public CacheManager getCacheManager(URI uri, ClassLoader classLoader,
-			Properties properties) {
+	public CacheManager getCacheManager(URI uri, ClassLoader classLoader, Properties properties) {
 		CacheManager cacheManager = mock(CacheManager.class);
 		given(cacheManager.getURI()).willReturn(uri);
 		given(cacheManager.getClassLoader()).willReturn(classLoader);
@@ -53,14 +52,13 @@ public class MockCachingProvider implements CachingProvider {
 			String cacheName = invocation.getArgument(0);
 			return caches.get(cacheName);
 		});
-		given(cacheManager.createCache(anyString(), any(Configuration.class)))
-				.will((invocation) -> {
-					String cacheName = invocation.getArgument(0);
-					Cache cache = mock(Cache.class);
-					given(cache.getName()).willReturn(cacheName);
-					caches.put(cacheName, cache);
-					return cache;
-				});
+		given(cacheManager.createCache(anyString(), any(Configuration.class))).will((invocation) -> {
+			String cacheName = invocation.getArgument(0);
+			Cache cache = mock(Cache.class);
+			given(cache.getName()).willReturn(cacheName);
+			caches.put(cacheName, cache);
+			return cache;
+		});
 		return cacheManager;
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -129,12 +129,13 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @see #initialize(String[])
 	 */
-	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup, RestartInitializer initializer) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
-		this.logger.debug("Creating new Restarter for thread " + thread);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Creating new Restarter for thread " + thread);
+		}
 		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
 		this.initialUrls = initializer.getInitialUrls(thread);
@@ -275,11 +276,9 @@ public class Restarter {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
-		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader,
-				urls, updatedFiles, this.logger);
+		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader, urls, updatedFiles, this.logger);
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Starting application " + this.mainClassName + " with URLs "
-					+ Arrays.asList(urls));
+			this.logger.debug("Starting application " + this.mainClassName + " with URLs " + Arrays.asList(urls));
 		}
 		return relaunch(classLoader);
 	}
@@ -291,8 +290,8 @@ public class Restarter {
 	 * @throws Exception in case of errors
 	 */
 	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
-		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
-				this.args, this.exceptionHandler);
+		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName, this.args,
+				this.exceptionHandler);
 		launcher.start();
 		launcher.join();
 		return launcher.getError();
@@ -360,7 +359,9 @@ public class Restarter {
 			clear(Class.forName(className), fieldName);
 		}
 		catch (Exception ex) {
-			this.logger.debug("Unable to clear field " + className + " " + fieldName, ex);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Unable to clear field " + className + " " + fieldName, ex);
+			}
 		}
 	}
 
@@ -377,15 +378,14 @@ public class Restarter {
 			}
 		}
 		catch (Exception ex) {
-			this.logger.debug("Unable to clear field " + type + " " + fieldName, ex);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Unable to clear field " + type + " " + fieldName, ex);
+			}
 		}
 	}
 
 	private boolean isFromRestartClassLoader(Object object) {
-		if (object instanceof Class) {
-			return ((Class<?>) object).getClassLoader() instanceof RestartClassLoader;
-		}
-		return false;
+		return (object instanceof Class && ((Class<?>) object).getClassLoader() instanceof RestartClassLoader);
 	}
 
 	/**
@@ -410,8 +410,7 @@ public class Restarter {
 	void finish() {
 		synchronized (this.monitor) {
 			if (!isFinished()) {
-				this.logger = DeferredLog.replay(this.logger,
-						LogFactory.getLog(getClass()));
+				this.logger = DeferredLog.replay(this.logger, LogFactory.getLog(getClass()));
 				this.finished = true;
 			}
 		}
@@ -440,8 +439,8 @@ public class Restarter {
 	}
 
 	private void prepare(GenericApplicationContext applicationContext) {
-		ResourceLoader resourceLoader = new ClassLoaderFilesResourcePatternResolver(
-				applicationContext, this.classLoaderFiles);
+		ResourceLoader resourceLoader = new ClassLoaderFilesResourcePatternResolver(applicationContext,
+				this.classLoaderFiles);
 		applicationContext.setResourceLoader(resourceLoader);
 	}
 
@@ -526,8 +525,7 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @see #initialize(String[], boolean, RestartInitializer)
 	 */
-	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+	public static void initialize(String[] args, boolean forceReferenceCleanup, RestartInitializer initializer) {
 		initialize(args, forceReferenceCleanup, initializer, true);
 	}
 
@@ -543,13 +541,12 @@ public class Restarter {
 	 * @param restartOnInitialize if the restarter should be restarted immediately when
 	 * the {@link RestartInitializer} returns non {@code null} results
 	 */
-	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer, boolean restartOnInitialize) {
+	public static void initialize(String[] args, boolean forceReferenceCleanup, RestartInitializer initializer,
+			boolean restartOnInitialize) {
 		Restarter localInstance = null;
 		synchronized (INSTANCE_MONITOR) {
 			if (instance == null) {
-				localInstance = new Restarter(Thread.currentThread(), args,
-						forceReferenceCleanup, initializer);
+				localInstance = new Restarter(Thread.currentThread(), args, forceReferenceCleanup, initializer);
 				instance = localInstance;
 			}
 		}
@@ -603,13 +600,13 @@ public class Restarter {
 			setDaemon(false);
 		}
 
-		public void call(Callable<?> callable) {
+		void call(Callable<?> callable) {
 			this.callable = callable;
 			start();
 		}
 
 		@SuppressWarnings("unchecked")
-		public <V> V callAndWait(Callable<V> callable) {
+		<V> V callAndWait(Callable<V> callable) {
 			this.callable = callable;
 			start();
 			try {

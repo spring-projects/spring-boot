@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,8 +35,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * @author Phillip Webb
  * @since 1.4.1
  */
-public class SpringBootDependencyInjectionTestExecutionListener
-		extends DependencyInjectionTestExecutionListener {
+public class SpringBootDependencyInjectionTestExecutionListener extends DependencyInjectionTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
@@ -68,13 +67,10 @@ public class SpringBootDependencyInjectionTestExecutionListener
 		@Override
 		public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
 				Set<Class<? extends TestExecutionListener>> listeners) {
-			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<>(
-					listeners.size());
+			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<>(listeners.size());
 			for (Class<? extends TestExecutionListener> listener : listeners) {
-				updated.add(
-						listener.equals(DependencyInjectionTestExecutionListener.class)
-								? SpringBootDependencyInjectionTestExecutionListener.class
-								: listener);
+				updated.add(listener.equals(DependencyInjectionTestExecutionListener.class)
+						? SpringBootDependencyInjectionTestExecutionListener.class : listener);
 			}
 			return updated;
 		}

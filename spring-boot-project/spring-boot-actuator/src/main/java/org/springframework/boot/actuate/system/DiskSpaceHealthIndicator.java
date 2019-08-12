@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.util.unit.DataSize;
 
 /**
  * A {@link HealthIndicator} that checks available disk space and reports a status of
@@ -32,6 +33,7 @@ import org.springframework.boot.actuate.health.Status;
  *
  * @author Mattias Severson
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
@@ -40,14 +42,14 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
 	private final File path;
 
-	private final long threshold;
+	private final DataSize threshold;
 
 	/**
 	 * Create a new {@code DiskSpaceHealthIndicator} instance.
 	 * @param path the Path used to compute the available disk space
-	 * @param threshold the minimum disk space that should be available (in bytes)
+	 * @param threshold the minimum disk space that should be available
 	 */
-	public DiskSpaceHealthIndicator(File path, long threshold) {
+	public DiskSpaceHealthIndicator(File path, DataSize threshold) {
 		super("DiskSpace health check failed");
 		this.path = path;
 		this.threshold = threshold;
@@ -56,19 +58,16 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		long diskFreeInBytes = this.path.getUsableSpace();
-		if (diskFreeInBytes >= this.threshold) {
+		if (diskFreeInBytes >= this.threshold.toBytes()) {
 			builder.up();
 		}
 		else {
-			logger.warn(String.format(
-					"Free disk space below threshold. "
-							+ "Available: %d bytes (threshold: %d bytes)",
+			logger.warn(String.format("Free disk space below threshold. Available: %d bytes (threshold: %s)",
 					diskFreeInBytes, this.threshold));
 			builder.down();
 		}
-		builder.withDetail("total", this.path.getTotalSpace())
-				.withDetail("free", diskFreeInBytes)
-				.withDetail("threshold", this.threshold);
+		builder.withDetail("total", this.path.getTotalSpace()).withDetail("free", diskFreeInBytes)
+				.withDetail("threshold", this.threshold.toBytes());
 	}
 
 }

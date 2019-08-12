@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -34,6 +32,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ValidationErrors}.
@@ -41,72 +40,62 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ValidationErrorsTests {
+class ValidationErrorsTests {
 
-	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
-			.of("foo");
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
 	@Test
-	public void createWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be null");
-		new ValidationErrors(null, Collections.emptySet(), Collections.emptyList());
+	void createWhenNameIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(), Collections.emptyList()))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
-	public void createWhenBoundPropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("BoundProperties must not be null");
-		new ValidationErrors(NAME, null, Collections.emptyList());
+	void createWhenBoundPropertiesIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, null, Collections.emptyList()))
+				.withMessageContaining("BoundProperties must not be null");
 	}
 
 	@Test
-	public void createWhenErrorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Errors must not be null");
-		new ValidationErrors(NAME, Collections.emptySet(), null);
+	void createWhenErrorsIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
+				.withMessageContaining("Errors must not be null");
 	}
 
 	@Test
-	public void getNameShouldReturnName() {
+	void getNameShouldReturnName() {
 		ConfigurationPropertyName name = NAME;
-		ValidationErrors errors = new ValidationErrors(name, Collections.emptySet(),
-				Collections.emptyList());
+		ValidationErrors errors = new ValidationErrors(name, Collections.emptySet(), Collections.emptyList());
 		assertThat((Object) errors.getName()).isEqualTo(name);
 	}
 
 	@Test
-	public void getBoundPropertiesShouldReturnBoundProperties() {
+	void getBoundPropertiesShouldReturnBoundProperties() {
 		Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 		boundProperties.add(new ConfigurationProperty(NAME, "foo", null));
-		ValidationErrors errors = new ValidationErrors(NAME, boundProperties,
-				Collections.emptyList());
+		ValidationErrors errors = new ValidationErrors(NAME, boundProperties, Collections.emptyList());
 		assertThat(errors.getBoundProperties()).isEqualTo(boundProperties);
 	}
 
 	@Test
-	public void getErrorsShouldReturnErrors() {
+	void getErrorsShouldReturnErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
-		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(),
-				allErrors);
+		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(), allErrors);
 		assertThat(errors.getAllErrors()).isEqualTo(allErrors);
 	}
 
 	@Test
-	public void iteratorShouldIterateErrors() {
+	void iteratorShouldIterateErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
-		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(),
-				allErrors);
-		assertThat(errors.iterator()).containsExactlyElementsOf(allErrors);
+		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(), allErrors);
+		assertThat(errors.iterator()).toIterable().containsExactlyElementsOf(allErrors);
 	}
 
 	@Test
-	public void getErrorsShouldAdaptFieldErrorsToBeOriginProviders() {
+	void getErrorsShouldAdaptFieldErrorsToBeOriginProviders() {
 		Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 		ConfigurationPropertyName name1 = ConfigurationPropertyName.of("foo.bar");
 		Origin origin1 = MockOrigin.of("line1");
@@ -116,8 +105,8 @@ public class ValidationErrorsTests {
 		boundProperties.add(new ConfigurationProperty(name2, "boot", origin2));
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new FieldError("objectname", "bar", "message"));
-		ValidationErrors errors = new ValidationErrors(
-				ConfigurationPropertyName.of("foo.baz"), boundProperties, allErrors);
+		ValidationErrors errors = new ValidationErrors(ConfigurationPropertyName.of("foo.baz"), boundProperties,
+				allErrors);
 		assertThat(Origin.from(errors.getAllErrors().get(0))).isEqualTo(origin2);
 	}
 

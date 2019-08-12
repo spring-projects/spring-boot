@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -33,21 +33,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class HikariDriverConfigurationFailureAnalyzerTests {
+class HikariDriverConfigurationFailureAnalyzerTests {
 
 	@Test
-	public void failureAnalysisIsPerformed() {
+	void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis).isNotNull();
-		assertThat(failureAnalysis.getDescription())
-				.isEqualTo("Configuration of the Hikari connection pool failed: "
-						+ "'dataSourceClassName' is not supported.");
-		assertThat(failureAnalysis.getAction())
-				.contains("Spring Boot auto-configures only a driver");
+		assertThat(failureAnalysis.getDescription()).isEqualTo(
+				"Configuration of the Hikari connection pool failed: 'dataSourceClassName' is not supported.");
+		assertThat(failureAnalysis.getAction()).contains("Spring Boot auto-configures only a driver");
 	}
 
 	@Test
-	public void unrelatedIllegalStateExceptionIsSkipped() {
+	void unrelatedIllegalStateExceptionIsSkipped() {
 		FailureAnalysis failureAnalysis = new HikariDriverConfigurationFailureAnalyzer()
 				.analyze(new RuntimeException("foo", new IllegalStateException("bar")));
 		assertThat(failureAnalysis).isNull();
@@ -61,11 +59,9 @@ public class HikariDriverConfigurationFailureAnalyzerTests {
 
 	private BeanCreationException createFailure(Class<?> configuration) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.datasource.type=" + HikariDataSource.class.getName(),
-						"spring.datasource.hikari.data-source-class-name=com.example.Foo",
-						"spring.datasource.initialization-mode=always")
-				.applyTo(context);
+		TestPropertyValues.of("spring.datasource.type=" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.data-source-class-name=com.example.Foo",
+				"spring.datasource.initialization-mode=always").applyTo(context);
 		context.register(configuration);
 		try {
 			context.refresh();
@@ -77,7 +73,7 @@ public class HikariDriverConfigurationFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(DataSourceAutoConfiguration.class)
 	static class TestConfiguration {
 

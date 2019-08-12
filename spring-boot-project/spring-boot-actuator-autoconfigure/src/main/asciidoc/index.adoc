@@ -7,6 +7,7 @@ Andy Wilkinson
 :numbered:
 :icons: font
 :hide-uri-scheme:
+:docinfo: shared,private
 
 This API documentation describes Spring Boot Actuators web endpoints.
 
@@ -26,7 +27,7 @@ Before you proceed, you should read the following topics:
 === URLs
 
 By default, all web endpoints are available beneath the path `/actuator` with URLs of
-the form `/actuator/{id}`. The `/actuator` base path can be configured by using the
+the form `/actuator/\{id}`. The `/actuator` base path can be configured by using the
 `management.endpoints.web.base-path` property, as shown in the following example:
 
 [source,properties,indent=0]
@@ -35,7 +36,7 @@ the form `/actuator/{id}`. The `/actuator` base path can be configured by using 
 ----
 
 The preceding `application.properties` example changes the form of the endpoint URLs from
-`/actuator/{id}` to `/manage/{id}`. For example, the URL `info` endpoint would become
+`/actuator/\{id}` to `/manage/\{id}`. For example, the URL `info` endpoint would become
 `/manage/info`.
 
 

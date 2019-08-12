@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,10 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
@@ -37,25 +36,25 @@ import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServic
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
-import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.reactive.config.EnableWebFlux;
-import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -67,124 +66,93 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CloudFoundryWebFluxEndpointHandlerMapping}.
  *
  * @author Madhura Bhave
+ * @author Stephane Nicoll
  */
-public class CloudFoundryWebFluxEndpointIntegrationTests {
+class CloudFoundryWebFluxEndpointIntegrationTests {
 
-	private static ReactiveTokenValidator tokenValidator = mock(
-			ReactiveTokenValidator.class);
+	private static ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
 
 	private static ReactiveCloudFoundrySecurityService securityService = mock(
 			ReactiveCloudFoundrySecurityService.class);
 
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
+			AnnotationConfigReactiveWebServerApplicationContext::new)
+					.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class,
+							HttpHandlerAutoConfiguration.class, ReactiveWebServerFactoryAutoConfiguration.class))
+					.withUserConfiguration(TestEndpointConfiguration.class).withPropertyValues("server.port=0");
+
 	@Test
-	public void operationWithSecurityInterceptorForbidden() {
+	void operationWithSecurityInterceptorForbidden() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id")))
-				.willReturn(Mono.just(AccessLevel.RESTRICTED));
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication/test")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange()
-						.expectStatus().isEqualTo(HttpStatus.FORBIDDEN));
+		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
+		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication/test")
+				.accept(MediaType.APPLICATION_JSON).header("Authorization", "bearer " + mockAccessToken()).exchange()
+				.expectStatus().isEqualTo(HttpStatus.FORBIDDEN)));
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() {
+	void operationWithSecurityInterceptorSuccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id")))
-				.willReturn(Mono.just(AccessLevel.FULL));
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication/test")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange()
-						.expectStatus().isEqualTo(HttpStatus.OK));
+		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
+		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication/test")
+				.accept(MediaType.APPLICATION_JSON).header("Authorization", "bearer " + mockAccessToken()).exchange()
+				.expectStatus().isEqualTo(HttpStatus.OK)));
 	}
 
 	@Test
-	public void responseToOptionsRequestIncludesCorsHeaders() {
-		load(TestEndpointConfiguration.class, (client) -> client.options()
-				.uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
-				.header("Access-Control-Request-Method", "POST")
-				.header("Origin", "http://example.com").exchange().expectStatus().isOk()
-				.expectHeader()
-				.valueEquals("Access-Control-Allow-Origin", "http://example.com")
-				.expectHeader().valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+	void responseToOptionsRequestIncludesCorsHeaders() {
+		this.contextRunner.run(withWebTestClient((client) -> client.options().uri("/cfApplication/test")
+				.accept(MediaType.APPLICATION_JSON).header("Access-Control-Request-Method", "POST")
+				.header("Origin", "https://example.com").exchange().expectStatus().isOk().expectHeader()
+				.valueEquals("Access-Control-Allow-Origin", "https://example.com").expectHeader()
+				.valueEquals("Access-Control-Allow-Methods", "GET,POST")));
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithFullAccess() {
+	void linksToOtherEndpointsWithFullAccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id")))
-				.willReturn(Mono.just(AccessLevel.FULL));
-		load(TestEndpointConfiguration.class, (client) -> client.get()
-				.uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "bearer " + mockAccessToken()).exchange()
-				.expectStatus().isOk().expectBody().jsonPath("_links.length()")
-				.isEqualTo(5).jsonPath("_links.self.href").isNotEmpty()
-				.jsonPath("_links.self.templated").isEqualTo(false)
-				.jsonPath("_links.info.href").isNotEmpty()
-				.jsonPath("_links.info.templated").isEqualTo(false)
-				.jsonPath("_links.env.href").isNotEmpty().jsonPath("_links.env.templated")
-				.isEqualTo(false).jsonPath("_links.test.href").isNotEmpty()
-				.jsonPath("_links.test.templated").isEqualTo(false)
-				.jsonPath("_links.test-part.href").isNotEmpty()
-				.jsonPath("_links.test-part.templated").isEqualTo(true));
+		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
+		this.contextRunner
+				.run(withWebTestClient((client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
+						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus().isOk()
+						.expectBody().jsonPath("_links.length()").isEqualTo(5).jsonPath("_links.self.href").isNotEmpty()
+						.jsonPath("_links.self.templated").isEqualTo(false).jsonPath("_links.info.href").isNotEmpty()
+						.jsonPath("_links.info.templated").isEqualTo(false).jsonPath("_links.env.href").isNotEmpty()
+						.jsonPath("_links.env.templated").isEqualTo(false).jsonPath("_links.test.href").isNotEmpty()
+						.jsonPath("_links.test.templated").isEqualTo(false).jsonPath("_links.test-part.href")
+						.isNotEmpty().jsonPath("_links.test-part.templated").isEqualTo(true)));
 	}
 
 	@Test
-	public void linksToOtherEndpointsForbidden() {
-		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(
-				Reason.INVALID_TOKEN, "invalid-token");
+	void linksToOtherEndpointsForbidden() {
+		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
+				"invalid-token");
 		willThrow(exception).given(tokenValidator).validate(any());
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange()
-						.expectStatus().isUnauthorized());
+		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication")
+				.accept(MediaType.APPLICATION_JSON).header("Authorization", "bearer " + mockAccessToken()).exchange()
+				.expectStatus().isUnauthorized()));
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithRestrictedAccess() {
+	void linksToOtherEndpointsWithRestrictedAccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
-		given(securityService.getAccessLevel(any(), eq("app-id")))
-				.willReturn(Mono.just(AccessLevel.RESTRICTED));
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange()
-						.expectStatus().isOk().expectBody().jsonPath("_links.length()")
-						.isEqualTo(2).jsonPath("_links.self.href").isNotEmpty()
-						.jsonPath("_links.self.templated").isEqualTo(false)
-						.jsonPath("_links.info.href").isNotEmpty()
-						.jsonPath("_links.info.templated").isEqualTo(false)
-						.jsonPath("_links.env").doesNotExist().jsonPath("_links.test")
-						.doesNotExist().jsonPath("_links.test-part").doesNotExist());
+		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
+		this.contextRunner
+				.run(withWebTestClient((client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
+						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus().isOk()
+						.expectBody().jsonPath("_links.length()").isEqualTo(2).jsonPath("_links.self.href").isNotEmpty()
+						.jsonPath("_links.self.templated").isEqualTo(false).jsonPath("_links.info.href").isNotEmpty()
+						.jsonPath("_links.info.templated").isEqualTo(false).jsonPath("_links.env").doesNotExist()
+						.jsonPath("_links.test").doesNotExist().jsonPath("_links.test-part").doesNotExist()));
 	}
 
-	private AnnotationConfigReactiveWebServerApplicationContext createApplicationContext(
-			Class<?>... config) {
-		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
-		context.register(config);
-		return context;
-	}
-
-	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
-		BiConsumer<ApplicationContext, WebTestClient> consumer = (context,
-				client) -> clientConsumer.accept(client);
-		AnnotationConfigReactiveWebServerApplicationContext context = createApplicationContext(
-				configuration, CloudFoundryReactiveConfiguration.class);
-		context.refresh();
-		try {
-			consumer.accept(context, WebTestClient.bindToServer()
-					.baseUrl("http://localhost:" + getPort(context)).build());
-		}
-		finally {
-			context.close();
-		}
-	}
-
-	protected int getPort(AnnotationConfigReactiveWebServerApplicationContext context) {
-		return context.getBean(CloudFoundryReactiveConfiguration.class).port;
+	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
+			Consumer<WebTestClient> clientConsumer) {
+		return (context) -> {
+			int port = ((AnnotationConfigReactiveWebServerApplicationContext) context.getSourceApplicationContext())
+					.getWebServer().getPort();
+			clientConsumer.accept(WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build());
+		};
 	}
 
 	private String mockAccessToken() {
@@ -193,68 +161,44 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 				+ Base64Utils.encodeToString("signature".getBytes());
 	}
 
-	@Configuration
-	@EnableWebFlux
+	@Configuration(proxyBeanMethods = false)
 	static class CloudFoundryReactiveConfiguration {
 
-		private int port;
-
 		@Bean
-		public CloudFoundrySecurityInterceptor interceptor() {
-			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService,
-					"app-id");
+		CloudFoundrySecurityInterceptor interceptor() {
+			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
 		@Bean
-		public EndpointMediaTypes EndpointMediaTypes() {
+		EndpointMediaTypes EndpointMediaTypes() {
 			return new EndpointMediaTypes(Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 		}
 
 		@Bean
-		public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				WebEndpointDiscoverer webEndpointDiscoverer,
-				EndpointMediaTypes endpointMediaTypes,
+		CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
+				WebEndpointDiscoverer webEndpointDiscoverer, EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
-			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));
+			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
-			return new CloudFoundryWebFluxEndpointHandlerMapping(
-					new EndpointMapping("/cfApplication"),
-					webEndpointDiscoverer.getEndpoints(), endpointMediaTypes,
-					corsConfiguration, interceptor,
+			return new CloudFoundryWebFluxEndpointHandlerMapping(new EndpointMapping("/cfApplication"),
+					webEndpointDiscoverer.getEndpoints(), endpointMediaTypes, corsConfiguration, interceptor,
 					new EndpointLinksResolver(webEndpointDiscoverer.getEndpoints()));
 		}
 
 		@Bean
-		public WebEndpointDiscoverer webEndpointDiscoverer(
-				ApplicationContext applicationContext,
+		WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext,
 				EndpointMediaTypes endpointMediaTypes) {
 			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
-			return new WebEndpointDiscoverer(applicationContext, parameterMapper,
-					endpointMediaTypes, PathMapper.useEndpointId(),
+			return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes, null,
 					Collections.emptyList(), Collections.emptyList());
 		}
 
 		@Bean
-		public EndpointDelegate endpointDelegate() {
+		EndpointDelegate endpointDelegate() {
 			return mock(EndpointDelegate.class);
-		}
-
-		@Bean
-		public NettyReactiveWebServerFactory netty() {
-			return new NettyReactiveWebServerFactory(0);
-		}
-
-		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
-			return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
-		}
-
-		@Bean
-		public ApplicationListener<ReactiveWebServerInitializedEvent> serverInitializedListener() {
-			return (event) -> this.port = event.getWebServer().getPort();
 		}
 
 	}
@@ -269,17 +213,17 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 		}
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 		@ReadOperation
-		public Map<String, Object> readPart(@Selector String part) {
+		Map<String, Object> readPart(@Selector String part) {
 			return Collections.singletonMap("part", part);
 		}
 
 		@WriteOperation
-		public void write(String foo, String bar) {
+		void write(String foo, String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
 
@@ -289,7 +233,7 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	static class TestEnvEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
@@ -299,34 +243,34 @@ public class CloudFoundryWebFluxEndpointIntegrationTests {
 	static class TestInfoEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(CloudFoundryReactiveConfiguration.class)
-	protected static class TestEndpointConfiguration {
+	static class TestEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
+		TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
 			return new TestEndpoint(endpointDelegate);
 		}
 
 		@Bean
-		public TestInfoEndpoint testInfoEnvEndpoint() {
+		TestInfoEndpoint testInfoEnvEndpoint() {
 			return new TestInfoEndpoint();
 		}
 
 		@Bean
-		public TestEnvEndpoint testEnvEndpoint() {
+		TestEnvEndpoint testEnvEndpoint() {
 			return new TestEnvEndpoint();
 		}
 
 	}
 
-	public interface EndpointDelegate {
+	interface EndpointDelegate {
 
 		void write();
 

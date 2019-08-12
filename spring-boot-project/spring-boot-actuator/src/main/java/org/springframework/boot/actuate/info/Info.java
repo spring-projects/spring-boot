@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,8 +40,7 @@ public final class Info {
 	private final Map<String, Object> details;
 
 	private Info(Builder builder) {
-		Map<String, Object> content = new LinkedHashMap<>();
-		content.putAll(builder.content);
+		Map<String, Object> content = new LinkedHashMap<>(builder.content);
 		this.details = Collections.unmodifiableMap(content);
 	}
 
@@ -62,8 +61,7 @@ public final class Info {
 	public <T> T get(String id, Class<T> type) {
 		Object value = get(id);
 		if (value != null && type != null && !type.isInstance(value)) {
-			throw new IllegalStateException("Info entry is not of required type ["
-					+ type.getName() + "]: " + value);
+			throw new IllegalStateException("Info entry is not of required type [" + type.getName() + "]: " + value);
 		}
 		return (T) value;
 	}

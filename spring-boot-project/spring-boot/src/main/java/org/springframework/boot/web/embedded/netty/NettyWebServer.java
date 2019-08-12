@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,16 +16,18 @@
 
 package org.springframework.boot.web.embedded.netty;
 
-import java.net.BindException;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.ipc.netty.http.HttpResources;
-import reactor.ipc.netty.http.server.HttpServer;
-import reactor.ipc.netty.tcp.BlockingNettyContext;
+import reactor.netty.ChannelBindException;
+import reactor.netty.DisposableServer;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerRoutes;
 
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
@@ -45,6 +47,8 @@ import org.springframework.util.Assert;
  */
 public class NettyWebServer implements WebServer {
 
+	private static final Predicate<HttpServerRequest> ALWAYS = (r) -> true;
+
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
 	private final HttpServer httpServer;
@@ -53,10 +57,11 @@ public class NettyWebServer implements WebServer {
 
 	private final Duration lifecycleTimeout;
 
-	private BlockingNettyContext nettyContext;
+	private List<NettyRouteProvider> routeProviders = Collections.emptyList();
 
-	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
-			Duration lifecycleTimeout) {
+	private DisposableServer disposableServer;
+
+	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout) {
 		Assert.notNull(httpServer, "HttpServer must not be null");
 		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
 		this.httpServer = httpServer;
@@ -64,51 +69,66 @@ public class NettyWebServer implements WebServer {
 		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
+	public void setRouteProviders(List<NettyRouteProvider> routeProviders) {
+		this.routeProviders = routeProviders;
+	}
+
 	@Override
 	public void start() throws WebServerException {
-		if (this.nettyContext == null) {
+		if (this.disposableServer == null) {
 			try {
-				this.nettyContext = startHttpServer();
+				this.disposableServer = startHttpServer();
 			}
 			catch (Exception ex) {
-				if (findBindException(ex) != null) {
-					SocketAddress address = this.httpServer.options().getAddress();
-					if (address instanceof InetSocketAddress) {
-						throw new PortInUseException(
-								((InetSocketAddress) address).getPort());
-					}
+				ChannelBindException bindException = findBindException(ex);
+				if (bindException != null) {
+					throw new PortInUseException(bindException.localPort());
 				}
 				throw new WebServerException("Unable to start Netty", ex);
 			}
-			NettyWebServer.logger.info("Netty started on port(s): " + getPort());
-			startDaemonAwaitThread(this.nettyContext);
+			logger.info("Netty started on port(s): " + getPort());
+			startDaemonAwaitThread(this.disposableServer);
 		}
 	}
 
-	private BlockingNettyContext startHttpServer() {
+	private DisposableServer startHttpServer() {
+		HttpServer server = this.httpServer;
+		if (this.routeProviders.isEmpty()) {
+			server = server.handle(this.handlerAdapter);
+		}
+		else {
+			server = server.route(this::applyRouteProviders);
+		}
 		if (this.lifecycleTimeout != null) {
-			return this.httpServer.start(this.handlerAdapter, this.lifecycleTimeout);
+			return server.bindNow(this.lifecycleTimeout);
 		}
-		return this.httpServer.start(this.handlerAdapter);
+		return server.bindNow();
 	}
 
-	private BindException findBindException(Exception ex) {
+	private void applyRouteProviders(HttpServerRoutes routes) {
+		for (NettyRouteProvider provider : this.routeProviders) {
+			routes = provider.apply(routes);
+		}
+		routes.route(ALWAYS, this.handlerAdapter);
+	}
+
+	private ChannelBindException findBindException(Exception ex) {
 		Throwable candidate = ex;
 		while (candidate != null) {
-			if (candidate instanceof BindException) {
-				return (BindException) candidate;
+			if (candidate instanceof ChannelBindException) {
+				return (ChannelBindException) candidate;
 			}
 			candidate = candidate.getCause();
 		}
 		return null;
 	}
 
-	private void startDaemonAwaitThread(BlockingNettyContext nettyContext) {
+	private void startDaemonAwaitThread(DisposableServer disposableServer) {
 		Thread awaitThread = new Thread("server") {
 
 			@Override
 			public void run() {
-				nettyContext.getContext().onClose().block();
+				disposableServer.onDispose().block();
 			}
 
 		};
@@ -119,19 +139,21 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public void stop() throws WebServerException {
-		if (this.nettyContext != null) {
-			this.nettyContext.shutdown();
-			// temporary fix for gh-9146
-			this.nettyContext.getContext().onClose()
-					.doOnSuccess((o) -> HttpResources.reset()).block();
-			this.nettyContext = null;
+		if (this.disposableServer != null) {
+			if (this.lifecycleTimeout != null) {
+				this.disposableServer.disposeNow(this.lifecycleTimeout);
+			}
+			else {
+				this.disposableServer.disposeNow();
+			}
+			this.disposableServer = null;
 		}
 	}
 
 	@Override
 	public int getPort() {
-		if (this.nettyContext != null) {
-			return this.nettyContext.getPort();
+		if (this.disposableServer != null) {
+			return this.disposableServer.port();
 		}
 		return 0;
 	}

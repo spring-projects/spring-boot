@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Collection;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 
@@ -36,37 +36,45 @@ import org.springframework.context.ApplicationContext;
  */
 class MeterRegistryPostProcessor implements BeanPostProcessor {
 
-	private final ApplicationContext context;
+	private final ObjectProvider<MeterBinder> meterBinders;
+
+	private final ObjectProvider<MeterFilter> meterFilters;
+
+	private final ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers;
+
+	private final ObjectProvider<MetricsProperties> metricsProperties;
 
 	private volatile MeterRegistryConfigurer configurer;
 
-	MeterRegistryPostProcessor(ApplicationContext context) {
-		this.context = context;
+	private final ApplicationContext applicationContext;
+
+	MeterRegistryPostProcessor(ObjectProvider<MeterBinder> meterBinders, ObjectProvider<MeterFilter> meterFilters,
+			ObjectProvider<MeterRegistryCustomizer<?>> meterRegistryCustomizers,
+			ObjectProvider<MetricsProperties> metricsProperties, ApplicationContext applicationContext) {
+		this.meterBinders = meterBinders;
+		this.meterFilters = meterFilters;
+		this.meterRegistryCustomizers = meterRegistryCustomizers;
+		this.metricsProperties = metricsProperties;
+		this.applicationContext = applicationContext;
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof MeterRegistry) {
 			getConfigurer().configure((MeterRegistry) bean);
 		}
 		return bean;
 	}
 
-	@SuppressWarnings("unchecked")
 	private MeterRegistryConfigurer getConfigurer() {
 		if (this.configurer == null) {
-			this.configurer = new MeterRegistryConfigurer(beansOfType(MeterBinder.class),
-					beansOfType(MeterFilter.class),
-					(Collection<MeterRegistryCustomizer<?>>) (Object) beansOfType(
-							MeterRegistryCustomizer.class),
-					this.context.getBean(MetricsProperties.class).isUseGlobalRegistry());
+			boolean hasCompositeMeterRegistry = this.applicationContext
+					.getBeanNamesForType(CompositeMeterRegistry.class, false, false).length != 0;
+			this.configurer = new MeterRegistryConfigurer(this.meterRegistryCustomizers, this.meterFilters,
+					this.meterBinders, this.metricsProperties.getObject().isUseGlobalRegistry(),
+					hasCompositeMeterRegistry);
 		}
 		return this.configurer;
-	}
-
-	private <T> Collection<T> beansOfType(Class<T> type) {
-		return this.context.getBeansOfType(type).values();
 	}
 
 }

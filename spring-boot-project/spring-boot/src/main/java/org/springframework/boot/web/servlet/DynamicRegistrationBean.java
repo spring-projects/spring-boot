@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,12 +33,11 @@ import org.springframework.util.StringUtils;
  * Base class for Servlet 3.0+ {@link javax.servlet.Registration.Dynamic dynamic} based
  * registration beans.
  *
- * @param <D> The dynamic registration result
+ * @param <D> the dynamic registration result
  * @author Phillip Webb
  * @since 2.0.0
  */
-public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>
-		extends RegistrationBean {
+public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> extends RegistrationBean {
 
 	private static final Log logger = LogFactory.getLog(RegistrationBean.class);
 
@@ -108,15 +107,13 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>
 	protected final void register(String description, ServletContext servletContext) {
 		D registration = addRegistration(description, servletContext);
 		if (registration == null) {
-			logger.info(StringUtils.capitalize(description) + " was not registered "
-					+ "(possibly already registered?)");
+			logger.info(StringUtils.capitalize(description) + " was not registered (possibly already registered?)");
 			return;
 		}
 		configure(registration);
 	}
 
-	protected abstract D addRegistration(String description,
-			ServletContext servletContext);
+	protected abstract D addRegistration(String description, ServletContext servletContext);
 
 	protected void configure(D registration) {
 		registration.setAsyncSupported(this.asyncSupported);
@@ -132,7 +129,7 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>
 	 * @return the deduced name
 	 */
 	protected final String getOrDeduceName(Object value) {
-		return (this.name != null ? this.name : Conventions.getVariableName(value));
+		return (this.name != null) ? this.name : Conventions.getVariableName(value);
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,9 @@
 package org.springframework.boot.configurationmetadata;
 
 import java.text.BreakIterator;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Utility to extract the first sentence of a text.
@@ -26,7 +28,7 @@ import java.util.Locale;
  */
 class SentenceExtractor {
 
-	public String getFirstSentence(String text) {
+	String getFirstSentence(String text) {
 		if (text == null) {
 			return null;
 		}
@@ -45,11 +47,7 @@ class SentenceExtractor {
 
 	private String removeSpaceBetweenLine(String text) {
 		String[] lines = text.split(System.lineSeparator());
-		StringBuilder sb = new StringBuilder();
-		for (String line : lines) {
-			sb.append(line.trim()).append(" ");
-		}
-		return sb.toString().trim();
+		return Arrays.stream(lines).map(String::trim).collect(Collectors.joining(" "));
 	}
 
 }

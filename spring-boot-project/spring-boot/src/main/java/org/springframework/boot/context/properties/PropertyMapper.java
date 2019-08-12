@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  * {@link Source#toInstance(Function) new instance}.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public final class PropertyMapper {
@@ -97,6 +98,7 @@ public final class PropertyMapper {
 	 * @param <T> the source type
 	 * @param supplier the value supplier
 	 * @return a {@link Source} that can be used to complete the mapping
+	 * @see #from(Object)
 	 */
 	public <T> Source<T> from(Supplier<T> supplier) {
 		Assert.notNull(supplier, "Supplier must not be null");
@@ -105,6 +107,17 @@ public final class PropertyMapper {
 			source = this.sourceOperator.apply(source);
 		}
 		return source;
+	}
+
+	/**
+	 * Return a new {@link Source} from the specified value that can be used to perform
+	 * the mapping.
+	 * @param <T> the source type
+	 * @param value the value
+	 * @return a {@link Source} that can be used to complete the mapping
+	 */
+	public <T> Source<T> from(T value) {
+		return from(() -> value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -217,8 +230,7 @@ public final class PropertyMapper {
 		 * @return a new filtered source instance
 		 */
 		public Source<T> whenNonNull() {
-			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier),
-					Objects::nonNull);
+			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier), Objects::nonNull);
 		}
 
 		/**
@@ -277,7 +289,7 @@ public final class PropertyMapper {
 		 */
 		public Source<T> whenNot(Predicate<T> predicate) {
 			Assert.notNull(predicate, "Predicate must not be null");
-			return new Source<>(this.supplier, predicate.negate());
+			return when(predicate.negate());
 		}
 
 		/**
@@ -288,7 +300,7 @@ public final class PropertyMapper {
 		 */
 		public Source<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "Predicate must not be null");
-			return new Source<>(this.supplier, predicate);
+			return new Source<>(this.supplier, (this.predicate != null) ? this.predicate.and(predicate) : predicate);
 		}
 
 		/**

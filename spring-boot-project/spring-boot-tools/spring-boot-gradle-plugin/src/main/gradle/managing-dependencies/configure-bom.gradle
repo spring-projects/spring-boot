@@ -1,27 +1,6 @@
-buildscript {
-	dependencies {
-		classpath files(pluginClasspath.split(','))
-	}
-}
-
 plugins {
 	id 'java'
-}
-
-apply plugin: 'io.spring.dependency-management'
-
-dependencyManagement {
-	resolutionStrategy {
-		eachDependency {
-			if (it.requested.group == 'org.springframework.boot') {
-				it.useVersion project.bootVersion
-			}
-		}
-	}
-}
-
-repositories {
-	mavenLocal()
+	id 'org.springframework.boot' version '{version}'
 }
 
 // tag::configure-bom[]
@@ -33,3 +12,17 @@ dependencyManagement {
 	}
 }
 // end::configure-bom[]
+
+dependencyManagement {
+	resolutionStrategy {
+		eachDependency {
+			if (it.requested.group == 'org.springframework.boot') {
+				it.useVersion 'TEST-SNAPSHOT'
+			}
+		}
+	}
+}
+
+repositories {
+	maven { url 'file:repository' }
+}

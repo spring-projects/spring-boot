@@ -7,10 +7,11 @@ outputs:
 caches:
 - path: maven
 - path: gradle
+- path: embedmongo
 run:
   path: bash
   args:
-    - -exc
+    - -ec
     - |
       source /docker-lib.sh
       start_docker

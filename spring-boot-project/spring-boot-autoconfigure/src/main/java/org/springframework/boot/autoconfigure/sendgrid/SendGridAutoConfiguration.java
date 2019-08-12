@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,28 +37,20 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SendGrid.class)
 @ConditionalOnProperty(prefix = "spring.sendgrid", value = "api-key")
 @EnableConfigurationProperties(SendGridProperties.class)
 public class SendGridAutoConfiguration {
 
-	private final SendGridProperties properties;
-
-	public SendGridAutoConfiguration(SendGridProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public SendGrid sendGrid() {
-		if (this.properties.isProxyConfigured()) {
-			HttpHost proxy = new HttpHost(this.properties.getProxy().getHost(),
-					this.properties.getProxy().getPort());
-			return new SendGrid(this.properties.getApiKey(),
-					new Client(HttpClientBuilder.create().setProxy(proxy).build()));
+	public SendGrid sendGrid(SendGridProperties properties) {
+		if (properties.isProxyConfigured()) {
+			HttpHost proxy = new HttpHost(properties.getProxy().getHost(), properties.getProxy().getPort());
+			return new SendGrid(properties.getApiKey(), new Client(HttpClientBuilder.create().setProxy(proxy).build()));
 		}
-		return new SendGrid(this.properties.getApiKey());
+		return new SendGrid(properties.getApiKey());
 	}
 
 }

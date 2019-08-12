@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+	"-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+	"https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<suppressions>
+	<suppress files="[\\/]transaction-logs[\\/]" checks="NoHttp" />
+	<suppress files="[\\/]target[\\/]" checks="NoHttp" />
+	<suppress files="[\\/]build.log" checks="NoHttp" />
+	<suppress files=".+\.(jar|git|ico|p12|gif|jks|jpg|svg)" checks="NoHttp" />
+	<suppress files="dependency-reduced-pom.xml" checks="NoHttp" />
+	<suppress files="jquery.validate.js" checks="NoHttp" />
+	<suppress files="jquery-[0-9]\.[0-9]\.[0-9].js" checks="NoHttp" />
+	<suppress files="[\\/]spring-boot-project.setup" checks="NoHttp" />
+</suppressions>

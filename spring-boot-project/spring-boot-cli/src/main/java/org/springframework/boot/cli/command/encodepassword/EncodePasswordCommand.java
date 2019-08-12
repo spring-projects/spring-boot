@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,16 +52,14 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 
 	static {
 		Map<String, Supplier<PasswordEncoder>> encoders = new LinkedHashMap<>();
-		encoders.put("default",
-				PasswordEncoderFactories::createDelegatingPasswordEncoder);
+		encoders.put("default", PasswordEncoderFactories::createDelegatingPasswordEncoder);
 		encoders.put("bcrypt", BCryptPasswordEncoder::new);
 		encoders.put("pbkdf2", Pbkdf2PasswordEncoder::new);
 		ENCODERS = Collections.unmodifiableMap(encoders);
 	}
 
 	public EncodePasswordCommand() {
-		super("encodepassword", "Encode a password for use with Spring Security",
-				new EncodePasswordOptionHandler());
+		super("encodepassword", "Encode a password for use with Spring Security", new EncodePasswordOptionHandler());
 	}
 
 	@Override
@@ -72,10 +70,9 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 	@Override
 	public Collection<HelpExample> getExamples() {
 		List<HelpExample> examples = new ArrayList<>();
-		examples.add(new HelpExample("To encode a password with the default encoder",
-				"spring encodepassword mypassword"));
-		examples.add(new HelpExample("To encode a password with pbkdf2",
-				"spring encodepassword -a pbkdf2 mypassword"));
+		examples.add(
+				new HelpExample("To encode a password with the default encoder", "spring encodepassword mypassword"));
+		examples.add(new HelpExample("To encode a password with pbkdf2", "spring encodepassword -a pbkdf2 mypassword"));
 		return examples;
 	}
 
@@ -85,8 +82,8 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 
 		@Override
 		protected void options() {
-			this.algorithm = option(Arrays.asList("algorithm", "a"),
-					"The algorithm to use").withRequiredArg().defaultsTo("default");
+			this.algorithm = option(Arrays.asList("algorithm", "a"), "The algorithm to use").withRequiredArg()
+					.defaultsTo("default");
 		}
 
 		@Override
@@ -99,8 +96,8 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 			String password = (String) options.nonOptionArguments().get(0);
 			Supplier<PasswordEncoder> encoder = ENCODERS.get(algorithm);
 			if (encoder == null) {
-				Log.error("Unknown algorithm, valid options are: " + StringUtils
-						.collectionToCommaDelimitedString(ENCODERS.keySet()));
+				Log.error("Unknown algorithm, valid options are: "
+						+ StringUtils.collectionToCommaDelimitedString(ENCODERS.keySet()));
 				return ExitStatus.ERROR;
 			}
 			Log.info(encoder.get().encode(password));

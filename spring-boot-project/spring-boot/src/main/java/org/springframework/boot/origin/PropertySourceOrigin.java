@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,13 +62,12 @@ public class PropertySourceOrigin implements Origin {
 
 	@Override
 	public String toString() {
-		return "\"" + this.propertyName + "\" from property source \""
-				+ this.propertySource.getName() + "\"";
+		return "\"" + this.propertyName + "\" from property source \"" + this.propertySource.getName() + "\"";
 	}
 
 	/**
-	 * Get a {@link Origin} for the given {@link PropertySource} and {@code propertyName}.
-	 * Will either return an {@link OriginLookup} result or a
+	 * Get an {@link Origin} for the given {@link PropertySource} and
+	 * {@code propertyName}. Will either return an {@link OriginLookup} result or a
 	 * {@link PropertySourceOrigin}.
 	 * @param propertySource the origin property source
 	 * @param name the property name
@@ -76,7 +75,7 @@ public class PropertySourceOrigin implements Origin {
 	 */
 	public static Origin get(PropertySource<?> propertySource, String name) {
 		Origin origin = OriginLookup.getOrigin(propertySource, name);
-		return (origin != null ? origin : new PropertySourceOrigin(propertySource, name));
+		return (origin != null) ? origin : new PropertySourceOrigin(propertySource, name);
 	}
 
 }

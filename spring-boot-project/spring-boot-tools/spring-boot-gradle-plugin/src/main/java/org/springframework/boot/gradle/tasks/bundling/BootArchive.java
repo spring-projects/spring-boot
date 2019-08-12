@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,6 @@ public interface BootArchive extends Task {
 	 * @return the main class name
 	 */
 	@Input
-	@Optional
 	String getMainClassName();
 
 	/**
@@ -94,10 +93,25 @@ public interface BootArchive extends Task {
 
 	/**
 	 * Adds files to the classpath to include in the archive. The given {@code classpath}
-	 * are evaluated as per {@link Project#files(Object...)}.
+	 * is evaluated as per {@link Project#files(Object...)}.
 	 * @param classpath the additions to the classpath
 	 */
 	void classpath(Object... classpath);
+
+	/**
+	 * Sets the classpath to include in the archive. The given {@code classpath} is
+	 * evaluated as per {@link Project#files(Object...)}.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	void setClasspath(Object classpath);
+
+	/**
+	 * Sets the classpath to include in the archive.
+	 * @param classpath the classpath
+	 * @since 2.0.7
+	 */
+	void setClasspath(FileCollection classpath);
 
 	/**
 	 * Returns {@code true} if the Devtools jar should be excluded, otherwise

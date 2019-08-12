@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -27,55 +25,49 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 /**
  * Tests for {@link SpringBootCondition}.
  *
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class SpringBootConditionTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+class SpringBootConditionTests {
 
 	@Test
-	public void sensibleClassException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
-				"Error processing condition on " + ErrorOnClass.class.getName());
-		new AnnotationConfigApplicationContext(ErrorOnClass.class);
+	void sensibleClassException() {
+		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
+				.withMessageContaining("Error processing condition on " + ErrorOnClass.class.getName());
 	}
 
 	@Test
-	public void sensibleMethodException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Error processing condition on "
-				+ ErrorOnMethod.class.getName() + ".myBean");
-		new AnnotationConfigApplicationContext(ErrorOnMethod.class);
+	void sensibleMethodException() {
+		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
+				.withMessageContaining("Error processing condition on " + ErrorOnMethod.class.getName() + ".myBean");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(AlwaysThrowsCondition.class)
-	public static class ErrorOnClass {
+	static class ErrorOnClass {
 
 	}
 
-	@Configuration
-	public static class ErrorOnMethod {
+	@Configuration(proxyBeanMethods = false)
+	static class ErrorOnMethod {
 
 		@Bean
 		@Conditional(AlwaysThrowsCondition.class)
-		public String myBean() {
+		String myBean() {
 			return "bean";
 		}
 
 	}
 
-	public static class AlwaysThrowsCondition extends SpringBootCondition {
+	static class AlwaysThrowsCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			throw new RuntimeException("Oh no!");
 		}
 

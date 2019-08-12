@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ import org.springframework.boot.logging.LoggingSystemProperties;
  * Simple 'Java Logging' {@link Formatter}.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class SimpleFormatter extends Formatter {
 
@@ -47,8 +48,7 @@ public class SimpleFormatter extends Formatter {
 		String throwable = getThrowable(record);
 		String thread = getThreadName();
 		return String.format(this.format, this.date, source, record.getLoggerName(),
-				record.getLevel().getLocalizedName(), message, throwable, thread,
-				this.pid);
+				record.getLevel().getLocalizedName(), message, throwable, thread, this.pid);
 	}
 
 	private String getThrowable(LogRecord record) {
@@ -65,7 +65,7 @@ public class SimpleFormatter extends Formatter {
 
 	private String getThreadName() {
 		String name = Thread.currentThread().getName();
-		return (name != null ? name : "");
+		return (name != null) ? name : "";
 	}
 
 	private static String getOrUseDefault(String key, String defaultValue) {
