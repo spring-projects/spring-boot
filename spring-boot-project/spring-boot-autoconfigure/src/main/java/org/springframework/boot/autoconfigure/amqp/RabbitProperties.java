@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
@@ -95,6 +96,11 @@ public class RabbitProperties {
 	 * Whether to enable publisher returns.
 	 */
 	private boolean publisherReturns;
+
+	/**
+	 * The type of publisher confirms to use.
+	 */
+	private ConfirmType publisherConfirmType;
 
 	/**
 	 * Connection timeout. Set it to zero to wait forever.
@@ -275,11 +281,16 @@ public class RabbitProperties {
 	}
 
 	public boolean isPublisherConfirms() {
-		return this.publisherConfirms;
+		return this.publisherConfirmType.equals(ConfirmType.CORRELATED);
 	}
 
+	@Deprecated
 	public void setPublisherConfirms(boolean publisherConfirms) {
-		this.publisherConfirms = publisherConfirms;
+		if (publisherConfirms) {
+			this.publisherConfirmType = ConfirmType.CORRELATED;
+			return;
+		}
+		this.publisherConfirmType = ConfirmType.NONE;
 	}
 
 	public boolean isPublisherReturns() {
@@ -292,6 +303,14 @@ public class RabbitProperties {
 
 	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
+	}
+
+	public void setPublisherConfirmType(ConfirmType publisherConfirmType) {
+		this.publisherConfirmType = publisherConfirmType;
+	}
+
+	public ConfirmType getPublisherConfirmType() {
+		return this.publisherConfirmType;
 	}
 
 	public void setConnectionTimeout(Duration connectionTimeout) {
