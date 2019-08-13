@@ -27,7 +27,6 @@
 		<maven-resolver.version>1.1.1</maven-resolver.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<testcontainers.version>1.10.6</testcontainers.version>
-		<dependency-management-plugin.version>1.0.8.RELEASE</dependency-management-plugin.version>
 	</properties>
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
@@ -101,11 +100,6 @@
 				<groupId>com.vaadin.external.google</groupId>
 				<artifactId>android-json</artifactId>
 				<version>0.0.20131108.vaadin1</version>
-			</dependency>
-			<dependency>
-				<groupId>io.spring.gradle</groupId>
-				<artifactId>dependency-management-plugin</artifactId>
-				<version>${dependency-management-plugin.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
