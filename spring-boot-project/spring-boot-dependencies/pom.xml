@@ -53,6 +53,7 @@
 		<commons-pool2.version>2.7.0</commons-pool2.version>
 		<couchbase-client.version>2.7.9</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
+		<dependency-management-plugin.version>1.0.8.RELEASE</dependency-management-plugin.version>
 		<derby.version>10.14.2.0</derby.version>
 		<dropwizard-metrics.version>4.1.0</dropwizard-metrics.version>
 		<ehcache.version>2.10.6</ehcache.version>
@@ -1157,6 +1158,11 @@
 				<groupId>io.searchbox</groupId>
 				<artifactId>jest</artifactId>
 				<version>${jest.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.spring.gradle</groupId>
+				<artifactId>dependency-management-plugin</artifactId>
+				<version>${dependency-management-plugin.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.undertow</groupId>
