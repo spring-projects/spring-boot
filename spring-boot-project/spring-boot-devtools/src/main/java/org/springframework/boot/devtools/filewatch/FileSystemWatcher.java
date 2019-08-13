@@ -155,9 +155,8 @@ public class FileSystemWatcher {
 			saveInitialSnapshots();
 			if (this.watchThread == null) {
 				Map<File, FolderSnapshot> localFolders = new HashMap<>(this.folders);
-				this.watchThread = new Thread(new Watcher(this.remainingScans,
-						new ArrayList<>(this.listeners), this.triggerFilter,
-						this.pollInterval, this.quietPeriod, localFolders));
+				this.watchThread = new Thread(new Watcher(this.remainingScans, new ArrayList<>(this.listeners),
+						this.triggerFilter, this.pollInterval, this.quietPeriod, localFolders));
 				this.watchThread.setName("File Watcher");
 				this.watchThread.setDaemon(this.daemon);
 				this.watchThread.start();
