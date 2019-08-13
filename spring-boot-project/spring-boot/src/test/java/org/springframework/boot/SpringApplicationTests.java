@@ -1072,6 +1072,14 @@ public class SpringApplicationTests {
 				.getBean("someBean")).isEqualTo("override");
 	}
 
+	@Test
+	public void relaxedBindingShouldWorkBeforeEnvironmentIsPrepared() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run("--spring.config.additionalLocation=classpath:custom-config/");
+		assertThat(this.context.getEnvironment().getProperty("hello")).isEqualTo("world");
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final Class<?> propertySourceClass,
 			final String name) {
 		return new Condition<ConfigurableEnvironment>("has property source") {
