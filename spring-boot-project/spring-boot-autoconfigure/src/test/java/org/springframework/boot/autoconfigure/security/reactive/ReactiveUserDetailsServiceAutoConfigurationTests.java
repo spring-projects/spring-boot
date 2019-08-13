@@ -35,7 +35,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
-import org.springframework.security.oauth2.server.resource.introspection.ReactiveOAuth2TokenIntrospectionClient;
+import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -86,11 +86,10 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void doesNotConfigureDefaultUserIfResourceServerWithOpaqueIsUsed() {
-		this.contextRunner.withUserConfiguration(ReactiveOAuth2TokenIntrospectionClientConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveOAuth2TokenIntrospectionClient.class);
-					assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
-				});
+		this.contextRunner.withUserConfiguration(ReactiveOpaqueTokenIntrospectorConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveOpaqueTokenIntrospector.class);
+			assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
+		});
 	}
 
 	@Test
@@ -180,11 +179,11 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ReactiveOAuth2TokenIntrospectionClientConfiguration {
+	static class ReactiveOpaqueTokenIntrospectorConfiguration {
 
 		@Bean
-		ReactiveOAuth2TokenIntrospectionClient introspectionClient() {
-			return mock(ReactiveOAuth2TokenIntrospectionClient.class);
+		ReactiveOpaqueTokenIntrospector introspectionClient() {
+			return mock(ReactiveOpaqueTokenIntrospector.class);
 		}
 
 	}

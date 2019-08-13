@@ -48,8 +48,7 @@ import org.springframework.security.oauth2.server.resource.BearerTokenAuthentica
 import org.springframework.security.oauth2.server.resource.authentication.JwtReactiveAuthenticationManager;
 import org.springframework.security.oauth2.server.resource.authentication.OAuth2IntrospectionAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.OAuth2IntrospectionReactiveAuthenticationManager;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2TokenIntrospectionClient;
-import org.springframework.security.oauth2.server.resource.introspection.ReactiveOAuth2TokenIntrospectionClient;
+import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.web.server.MatcherSecurityWebFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
@@ -252,17 +251,17 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveOAuth2TokenIntrospectionClient.class);
+					assertThat(context).hasSingleBean(ReactiveOpaqueTokenIntrospector.class);
 					assertFilterConfiguredWithOpaqueTokenAuthenticationManager(context);
 				});
 	}
 
 	@Test
-	void oAuth2TokenIntrospectionClientIsConditionalOnMissingBean() {
+	void opaqueTokenIntrospectorIsConditionalOnMissingBean() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com")
-				.withUserConfiguration(OAuth2TokenIntrospectionClientConfig.class)
+				.withUserConfiguration(OpaqueTokenIntrospectorConfig.class)
 				.run((this::assertFilterConfiguredWithOpaqueTokenAuthenticationManager));
 	}
 
@@ -286,7 +285,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
-				.run((context) -> assertThat(context).doesNotHaveBean(OAuth2TokenIntrospectionClient.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOpaqueTokenIntrospector.class));
 	}
 
 	@Test
@@ -406,11 +405,11 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class OAuth2TokenIntrospectionClientConfig {
+	static class OpaqueTokenIntrospectorConfig {
 
 		@Bean
-		ReactiveOAuth2TokenIntrospectionClient decoder() {
-			return mock(ReactiveOAuth2TokenIntrospectionClient.class);
+		ReactiveOpaqueTokenIntrospector decoder() {
+			return mock(ReactiveOpaqueTokenIntrospector.class);
 		}
 
 	}

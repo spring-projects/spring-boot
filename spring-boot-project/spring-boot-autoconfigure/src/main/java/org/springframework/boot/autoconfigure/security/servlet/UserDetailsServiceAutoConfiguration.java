@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(
 		value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class },
 		type = { "org.springframework.security.oauth2.jwt.JwtDecoder",
-				"org.springframework.security.oauth2.server.resource.introspection.OAuth2TokenIntrospectionClient" })
+				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector" })
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";

@@ -3805,8 +3805,8 @@ to validate tokens via introspection:
 
 Again, the same properties are applicable for both servlet and reactive applications.
 
-Alternatively, you can define your own `OAuth2TokenIntrospectionClient` bean for servlet applications
-or a `ReactiveOAuth2TokenIntrospectionClient` for reactive applications.
+Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servlet applications
+or a `ReactiveOpaqueTokenIntrospector` for reactive applications.
 
 ==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0

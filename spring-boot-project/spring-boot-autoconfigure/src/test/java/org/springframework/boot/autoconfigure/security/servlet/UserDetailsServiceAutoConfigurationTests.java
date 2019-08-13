@@ -43,7 +43,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2TokenIntrospectionClient;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,7 +105,7 @@ class UserDetailsServiceAutoConfigurationTests {
 	@Test
 	void defaultUserNotCreatedIfResourceServerWithOpaqueIsUsed() {
 		this.contextRunner.withUserConfiguration(TestConfigWithIntrospectionClient.class).run((context) -> {
-			assertThat(context).hasSingleBean(OAuth2TokenIntrospectionClient.class);
+			assertThat(context).hasSingleBean(OpaqueTokenIntrospector.class);
 			assertThat(context).doesNotHaveBean(UserDetailsService.class);
 		});
 	}
@@ -243,8 +243,8 @@ class UserDetailsServiceAutoConfigurationTests {
 	static class TestConfigWithIntrospectionClient {
 
 		@Bean
-		OAuth2TokenIntrospectionClient introspectionClient() {
-			return mock(OAuth2TokenIntrospectionClient.class);
+		OpaqueTokenIntrospector introspectionClient() {
+			return mock(OpaqueTokenIntrospector.class);
 		}
 
 	}
