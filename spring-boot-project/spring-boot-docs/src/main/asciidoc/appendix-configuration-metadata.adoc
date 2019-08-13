@@ -815,20 +815,21 @@ The annotation processor also supports the use of the `@Data`, `@Getter`, and `@
 lombok annotations.
 
 
-The annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
-In the cases where a `Collection` or `Enum` property has a non-empty default value,
-<<configuration-metadata-additional-metadata,manual metadata>> should be provided.
+The annotation processor cannot auto-detect default values for ``Enum``s and
+``Collections``s. In the cases where a `Collection` or `Enum` property has a non-empty
+default value, <<configuration-metadata-additional-metadata,manual metadata>> should be
+provided.
 
 Consider the following class:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@ConfigurationProperties(prefix="rabbit")
-	public class RabbitProperties {
+	@ConfigurationProperties(prefix="acme.messaging")
+	public class MessagingProperties {
 
 		private List<String> addresses = new ArrayList<>(Arrays.asList("a", "b")) ;
 
-		private ContainerType  = ContainerType.SIMPLE;
+		private ContainerType = ContainerType.SIMPLE;
 
 		// ... getter and setters
 
@@ -843,20 +844,26 @@ Consider the following class:
 	}
 ----
 
-In order to document default values for properties in the class above, you could add the following
-JSON to <<configuration-metadata-additional-metadata,the manual metadata of the module>>:
+In order to document default values for properties in the class above, you could add the
+following content to <<configuration-metadata-additional-metadata,the manual metadata of
+the module>>:
 
 [source,json,indent=0]
 ----
-	{
-		"name": "rabbit.addresses",
-		"defaultValue": "a, b"
-	},
-	{
-		"name": "rabbit.container-type",
-		"defaultValue": "simple"
-	}
+	{"properties": [
+		{
+			"name": "acme.messaging.addresses",
+			"defaultValue": ["a, b"]
+		},
+		{
+			"name": "acme.messaging.container-type",
+			"defaultValue": "simple"
+		}
+	]}
 ----
+
+Only the `name` of the property is required to document additional fields with manual
+metadata.
 
 
 [NOTE]
