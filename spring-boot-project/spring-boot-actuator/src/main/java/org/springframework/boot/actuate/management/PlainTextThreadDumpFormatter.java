@@ -83,9 +83,7 @@ class PlainTextThreadDumpFormatter {
 		LockInfo lockInfo = info.getLockInfo();
 		if (firstElement && lockInfo != null) {
 			if (element.getClassName().equals(Object.class.getName()) && element.getMethodName().equals("wait")) {
-				if (lockInfo != null) {
-					writer.printf("\t- waiting on %s%n", format(lockInfo));
-				}
+				writer.printf("\t- waiting on %s%n", format(lockInfo));
 			}
 			else {
 				String lockOwner = info.getLockOwnerName();

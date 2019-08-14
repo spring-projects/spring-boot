@@ -123,9 +123,7 @@ class RequestPredicateFactory {
 		}
 		if (WebEndpointResponse.class.isAssignableFrom(method.getReturnType())) {
 			ResolvableType returnType = ResolvableType.forMethodReturnType(method);
-			if (ResolvableType.forClass(Resource.class).isAssignableFrom(returnType.getGeneric(0))) {
-				return true;
-			}
+			return ResolvableType.forClass(Resource.class).isAssignableFrom(returnType.getGeneric(0));
 		}
 		return false;
 	}
