@@ -263,17 +263,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 				.flatMap((response) -> write(exchange, response));
 	}
 
-	private boolean isDisconnectedClientError(Throwable ex) {
-		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
-				|| isDisconnectedClientErrorMessage(NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
-	}
-
-	private boolean isDisconnectedClientErrorMessage(String message) {
-		message = (message != null) ? message.toLowerCase() : "";
-		return (message.contains("broken pipe") || message.contains("connection reset by peer"));
-	}
-
-	private void logError(ServerRequest request, ServerResponse response, Throwable throwable) {
+	protected void logError(ServerRequest request, ServerResponse response, Throwable throwable) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(request.exchange().getLogPrefix() + formatError(throwable, request));
 		}
@@ -282,6 +272,16 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 			logger.error(request.exchange().getLogPrefix() + "500 Server Error for " + formatRequest(request),
 					throwable);
 		}
+	}
+
+	private boolean isDisconnectedClientError(Throwable ex) {
+		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
+				|| isDisconnectedClientErrorMessage(NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
+	}
+
+	private boolean isDisconnectedClientErrorMessage(String message) {
+		message = (message != null) ? message.toLowerCase() : "";
+		return (message.contains("broken pipe") || message.contains("connection reset by peer"));
 	}
 
 	private String formatError(Throwable ex, ServerRequest request) {
