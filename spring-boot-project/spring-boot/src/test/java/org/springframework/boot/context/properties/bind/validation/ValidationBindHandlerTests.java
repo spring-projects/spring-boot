@@ -198,8 +198,7 @@ class ValidationBindHandlerTests {
 			action.run();
 		}
 		catch (BindException ex) {
-			BindValidationException cause = (BindValidationException) ex.getCause();
-			return cause;
+			return (BindValidationException) ex.getCause();
 		}
 		throw new IllegalStateException("Did not throw");
 	}
