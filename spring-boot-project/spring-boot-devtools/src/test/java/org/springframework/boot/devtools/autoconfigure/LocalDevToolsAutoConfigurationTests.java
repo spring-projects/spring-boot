@@ -252,8 +252,7 @@ class LocalDevToolsAutoConfigurationTests {
 		Restarter.initialize(new String[0], false, new MockRestartInitializer(), false);
 		SpringApplication application = new SpringApplication(config);
 		application.setDefaultProperties(getDefaultProperties(properties));
-		ConfigurableApplicationContext context = application.run(args);
-		return context;
+		return application.run(args);
 	}
 
 	private Map<String, Object> getDefaultProperties(Map<String, Object> specifiedProperties) {
