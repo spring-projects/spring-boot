@@ -19,11 +19,9 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -54,9 +52,6 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		implements ConfigurableUndertowWebServerFactory {
 
 	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
-
-	@Deprecated
-	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
 
 	private Integer bufferSize;
 
