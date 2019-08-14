@@ -89,7 +89,7 @@ public final class Health {
 		if (obj == this) {
 			return true;
 		}
-		if (obj != null && obj instanceof Health) {
+		if (obj instanceof Health) {
 			Health other = (Health) obj;
 			return this.status.equals(other.status) && this.details.equals(other.details);
 		}
