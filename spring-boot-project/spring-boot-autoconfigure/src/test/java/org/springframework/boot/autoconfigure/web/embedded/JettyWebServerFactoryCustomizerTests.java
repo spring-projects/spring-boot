@@ -27,6 +27,8 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConfiguration.ConnectionFactory;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.RequestLogWriter;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,6 +51,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author HaiTao Zhang
  */
 class JettyWebServerFactoryCustomizerTests {
 
@@ -110,6 +113,36 @@ class JettyWebServerFactoryCustomizerTests {
 		RequestLogWriter logWriter = getLogWriter(requestLog);
 		assertThat(logWriter.getFileName()).isNull();
 		assertThat(logWriter.isAppend()).isFalse();
+	}
+
+	@Test
+	void maxThreadsCanBeCustomized() throws IOException {
+		bind("server.jetty.max-threads=100");
+		JettyWebServer server = customizeAndGetServer();
+		ThreadPool threadPool = server.getServer().getThreadPool();
+		if (threadPool instanceof QueuedThreadPool) {
+			assertThat(((QueuedThreadPool) threadPool).getMaxThreads()).isEqualTo(100);
+		}
+	}
+
+	@Test
+	void minThreadsCanBeCustomized() throws IOException {
+		bind("server.jetty.min-threads=100");
+		JettyWebServer server = customizeAndGetServer();
+		ThreadPool threadPool = server.getServer().getThreadPool();
+		if (threadPool instanceof QueuedThreadPool) {
+			assertThat(((QueuedThreadPool) threadPool).getMinThreads()).isEqualTo(100);
+		}
+	}
+
+	@Test
+	void idleTimeoutCanBeCustomized() throws IOException {
+		bind("server.jetty.idle-timeout=100");
+		JettyWebServer server = customizeAndGetServer();
+		ThreadPool threadPool = server.getServer().getThreadPool();
+		if (threadPool instanceof QueuedThreadPool) {
+			assertThat(((QueuedThreadPool) threadPool).getIdleTimeout()).isEqualTo(100);
+		}
 	}
 
 	private CustomRequestLog getRequestLog(JettyWebServer server) {

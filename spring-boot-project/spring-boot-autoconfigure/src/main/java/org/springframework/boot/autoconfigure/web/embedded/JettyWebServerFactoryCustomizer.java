@@ -29,6 +29,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -46,6 +48,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author HaiTao Zhang
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer
@@ -78,6 +81,12 @@ public class JettyWebServerFactoryCustomizer
 						.addServerCustomizers(new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
 		propertyMapper.from(jettyProperties::getMaxHttpPostSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+		propertyMapper.from(jettyProperties::getMaxThreads).when(this::isPositive)
+				.to((maxThreads) -> customizeMaxThreads(factory, maxThreads));
+		propertyMapper.from(jettyProperties::getMinThreads).when(this::isPositive)
+				.to((minThreads) -> customizeMinThreads(factory, minThreads));
+		propertyMapper.from(jettyProperties::getIdleTimeout).when(this::isPositive)
+				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
@@ -128,6 +137,33 @@ public class JettyWebServerFactoryCustomizer
 				}
 			}
 
+		});
+	}
+
+	private void customizeMaxThreads(ConfigurableJettyWebServerFactory factory, int maxThreads) {
+		factory.addServerCustomizers((connector) -> {
+			ThreadPool threadPool = connector.getThreadPool();
+			if (threadPool instanceof QueuedThreadPool) {
+				((QueuedThreadPool) threadPool).setMaxThreads(maxThreads);
+			}
+		});
+	}
+
+	private void customizeMinThreads(ConfigurableJettyWebServerFactory factory, int minThreads) {
+		factory.addServerCustomizers((connector) -> {
+			ThreadPool threadPool = connector.getThreadPool();
+			if (threadPool instanceof QueuedThreadPool) {
+				((QueuedThreadPool) threadPool).setMinThreads(minThreads);
+			}
+		});
+	}
+
+	private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, int idleTimeout) {
+		factory.addServerCustomizers((connector) -> {
+			ThreadPool threadPool = connector.getThreadPool();
+			if (threadPool instanceof QueuedThreadPool) {
+				((QueuedThreadPool) threadPool).setIdleTimeout(idleTimeout);
+			}
 		});
 	}
 
