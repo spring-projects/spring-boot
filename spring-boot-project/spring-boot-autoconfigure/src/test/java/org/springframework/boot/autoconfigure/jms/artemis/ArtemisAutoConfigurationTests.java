@@ -376,7 +376,7 @@ class ArtemisAutoConfigurationTests {
 	private TransportConfiguration getSingleTransportConfiguration(ActiveMQConnectionFactory connectionFactory) {
 		TransportConfiguration[] transportConfigurations = connectionFactory.getServerLocator()
 				.getStaticTransportConfigurations();
-		assertThat(transportConfigurations.length).isEqualTo(1);
+		assertThat(transportConfigurations).hasSize(1);
 		return transportConfigurations[0];
 	}
 

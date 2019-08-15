@@ -31,14 +31,14 @@ class RunArgumentsTests {
 	void parseNull() {
 		String[] args = parseArgs(null);
 		assertThat(args).isNotNull();
-		assertThat(args.length).isEqualTo(0);
+		assertThat(args).isEmpty();
 	}
 
 	@Test
 	void parseNullArray() {
 		String[] args = new RunArguments((String[]) null).asArray();
 		assertThat(args).isNotNull();
-		assertThat(args.length).isEqualTo(0);
+		assertThat(args).isEmpty();
 	}
 
 	@Test
@@ -59,13 +59,13 @@ class RunArgumentsTests {
 	void parseEmpty() {
 		String[] args = parseArgs("   ");
 		assertThat(args).isNotNull();
-		assertThat(args.length).isEqualTo(0);
+		assertThat(args).isEmpty();
 	}
 
 	@Test
 	void parseDebugFlags() {
 		String[] args = parseArgs("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
-		assertThat(args.length).isEqualTo(2);
+		assertThat(args).hasSize(2);
 		assertThat(args[0]).isEqualTo("-Xdebug");
 		assertThat(args[1]).isEqualTo("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 	}
@@ -73,7 +73,7 @@ class RunArgumentsTests {
 	@Test
 	void parseWithExtraSpaces() {
 		String[] args = parseArgs("     -Dfoo=bar        -Dfoo2=bar2  ");
-		assertThat(args.length).isEqualTo(2);
+		assertThat(args).hasSize(2);
 		assertThat(args[0]).isEqualTo("-Dfoo=bar");
 		assertThat(args[1]).isEqualTo("-Dfoo2=bar2");
 	}
@@ -81,7 +81,7 @@ class RunArgumentsTests {
 	@Test
 	void parseWithNewLinesAndTabs() {
 		String[] args = parseArgs("     -Dfoo=bar \n\t\t -Dfoo2=bar2  ");
-		assertThat(args.length).isEqualTo(2);
+		assertThat(args).hasSize(2);
 		assertThat(args[0]).isEqualTo("-Dfoo=bar");
 		assertThat(args[1]).isEqualTo("-Dfoo2=bar2");
 	}
@@ -89,7 +89,7 @@ class RunArgumentsTests {
 	@Test
 	void quoteHandledProperly() {
 		String[] args = parseArgs("-Dvalue=\"My Value\"    ");
-		assertThat(args.length).isEqualTo(1);
+		assertThat(args).hasSize(1);
 		assertThat(args[0]).isEqualTo("-Dvalue=My Value");
 	}
 

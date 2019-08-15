@@ -75,7 +75,7 @@ class FrameTests {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		frame.write(bos);
 		byte[] bytes = bos.toByteArray();
-		assertThat(bytes.length).isEqualTo(130);
+		assertThat(bytes).hasSize(130);
 		assertThat(bytes[0]).isEqualTo((byte) 0x81);
 		assertThat(bytes[1]).isEqualTo((byte) 0x7E);
 		assertThat(bytes[2]).isEqualTo((byte) 0x00);

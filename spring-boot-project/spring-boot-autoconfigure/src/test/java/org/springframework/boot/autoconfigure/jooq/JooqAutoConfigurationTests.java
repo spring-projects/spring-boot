@@ -122,13 +122,13 @@ class JooqAutoConfigurationTests {
 					assertThat(dsl.configuration().recordUnmapperProvider().getClass())
 							.isEqualTo(TestRecordUnmapperProvider.class);
 					assertThat(dsl.configuration().executorProvider().getClass()).isEqualTo(TestExecutorProvider.class);
-					assertThat(dsl.configuration().recordListenerProviders().length).isEqualTo(1);
+					assertThat(dsl.configuration().recordListenerProviders()).hasSize(1);
 					ExecuteListenerProvider[] executeListenerProviders = dsl.configuration().executeListenerProviders();
-					assertThat(executeListenerProviders.length).isEqualTo(2);
+					assertThat(executeListenerProviders).hasSize(2);
 					assertThat(executeListenerProviders[0]).isInstanceOf(DefaultExecuteListenerProvider.class);
 					assertThat(executeListenerProviders[1]).isInstanceOf(TestExecuteListenerProvider.class);
-					assertThat(dsl.configuration().visitListenerProviders().length).isEqualTo(1);
-					assertThat(dsl.configuration().transactionListenerProviders().length).isEqualTo(1);
+					assertThat(dsl.configuration().visitListenerProviders()).hasSize(1);
+					assertThat(dsl.configuration().transactionListenerProviders()).hasSize(1);
 				});
 	}
 

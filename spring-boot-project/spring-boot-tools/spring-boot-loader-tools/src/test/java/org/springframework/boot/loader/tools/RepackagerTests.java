@@ -296,7 +296,7 @@ class RepackagerTests {
 		assertThat(entry.getTime()).isEqualTo(JAN_1_1985);
 		entry = getEntry(file, "BOOT-INF/lib/" + libJarFileToUnpack.getName());
 		assertThat(entry.getComment()).startsWith("UNPACK:");
-		assertThat(entry.getComment().length()).isEqualTo(47);
+		assertThat(entry.getComment()).hasSize(47);
 	}
 
 	@Test
