@@ -1143,15 +1143,14 @@ before starting the remote client, it is not pushed to the remote server.
 ==== Configuring File System Watcher
 {sc-spring-boot-devtools}/filewatch/FileSystemWatcher.{sc-ext}[FileSystemWatcher] works
 by polling the class changes with a certain time interval, and then waiting for a
-predefined quiet period to make sure no more changes are coming from the compiler. The
-changes are then being uploaded to the remote application. On a slower development
-environment, it may happen that the quiet period is not enough, and the changes in the
-classes appear to be split into two batches. The server is then restarted after the first
-batch of class changes is uploaded, but the second batch can’t immediately be sent to the
-application, since the server is restarting.
+predefined quiet period to make sure there are no more changes. The changes are then
+uploaded to the remote application. On a slower development environment, it may happen
+that the quiet period is not enough, and the changes in the classes may be split into batches.
+The server is restarted after the first batch of class changes is uploaded.
+The next batch can’t be sent to the application, since the server is restarting.
 
 This is typically manifested by a warning in the `RemoteSpringApplication` logs about
-failing to upload some of the classes, and a consequent retry. But it may also lead to the
+failing to upload some of the classes, and a consequent retry. But it may also lead to
 application code inconsistency and failure to restart after the first batch of changes is
 uploaded.
 
@@ -1165,12 +1164,12 @@ parameters to the values that fit your development environment:
 	spring.devtools.restart.quiet-period=1s
 ----
 
-The monitored classpath folders are now being swept every 2 seconds, and a 1 second quiet
-period is maintained to make sure no additional class changes are coming.
+The monitored classpath folders are now polled every 2 seconds for changes, and a 1 second
+quiet period is maintained to make sure there are no additional class changes.
 
 [[security-configuration-for-devtools-remote]]
 ==== Security Configuration for Devtools Remote
-If you use security configuration on the server, you may observe HTTP error 401 or 403 in
+If you have Spring Security on the classpath, you may observe HTTP error 401 or 403 in
 the logs of the `RemoteSpringApplication`:
 
 [indent=0,subs="attributes"]
@@ -1179,9 +1178,8 @@ the logs of the `RemoteSpringApplication`:
 ----
 
 The URL for class uploading should be exempted both from the web security and from the
-csrf filter. Here’s an example `WebSecurityConfigurerAdapter` configuration that uses
-HTTP Basic Auth to secure all URLs except the default one used by devtools for class
-uploading:
+csrf filter. The following example shows how anonymous access to the remote devtools endpoint
+can be configured:
 
 [source,java,indent=0]
 ----
@@ -1190,14 +1188,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/.~~spring-boot!~/restart").anonymous()
-			.and().csrf().ignoringAntMatchers("/.~~spring-boot!~/restart")
-			.and().authorizeRequests().anyRequest().authenticated()
-			.and().httpBasic();
+		http.requestMatchers("/.~~spring-boot!~/restart").anyRequest().anonymous()
+			.and().csrf().disable();
 	}
 
 }
 ----
+
+NOTE: The above configuration will only affect the remote devtools endpoint. Spring Boot's default
+security auto-configuration will still apply to the rest of the application. If the rest
+of the application requires custom security, it needs to be configured separately.
 
 
 
