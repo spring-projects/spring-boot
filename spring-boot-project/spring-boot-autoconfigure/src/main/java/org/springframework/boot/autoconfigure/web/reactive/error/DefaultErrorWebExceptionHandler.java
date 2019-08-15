@@ -124,11 +124,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	private List<String> getData(int errorStatus) {
-		HttpStatus errorHttpStatus = HttpStatus.resolve(errorStatus);
 		List<String> data = new ArrayList<>();
 		data.add("error/" + errorStatus);
-		if (errorHttpStatus != null) {
-			data.add("error/" + SERIES_VIEWS.get(errorHttpStatus.series()));
+		HttpStatus.Series series = HttpStatus.Series.resolve(errorStatus);
+		if (series != null) {
+			data.add("error/" + SERIES_VIEWS.get(series));
 		}
 		data.add("error/error");
 		return data;
