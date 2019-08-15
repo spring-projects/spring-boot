@@ -1135,6 +1135,34 @@ remote updates and restarts are much quicker than a full rebuild and deploy cycl
 NOTE: Files are only monitored when the remote client is running. If you change a file
 before starting the remote client, it is not pushed to the remote server.
 
+[[configuring-file-system-watcher]]
+==== Configuring File System Watcher
+{sc-spring-boot-devtools}/filewatch/FileSystemWatcher.{sc-ext}[FileSystemWatcher] works
+by polling the class changes with a certain time interval, and then waiting for a
+predefined quiet period to make sure there are no more changes. The changes are then
+uploaded to the remote application. On a slower development environment, it may happen
+that the quiet period is not enough, and the changes in the classes may be split into batches.
+The server is restarted after the first batch of class changes is uploaded.
+The next batch can’t be sent to the application, since the server is restarting.
+
+This is typically manifested by a warning in the `RemoteSpringApplication` logs about
+failing to upload some of the classes, and a consequent retry. But it may also lead to
+application code inconsistency and failure to restart after the first batch of changes is
+uploaded.
+
+If you observe such problems constantly, try increasing the
+`spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period`
+parameters to the values that fit your development environment:
+
+[source,properties,indent=0]
+----
+	spring.devtools.restart.poll-interval=2s
+	spring.devtools.restart.quiet-period=1s
+----
+
+The monitored classpath folders are now polled every 2 seconds for changes, and a 1 second
+quiet period is maintained to make sure there are no additional class changes.
+
 
 
 [[using-boot-packaging-for-production]]
