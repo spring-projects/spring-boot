@@ -303,8 +303,8 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void defaultPropertyAsFallback() {
-		this.environment.getPropertySources().addLast(
-				new MapPropertySource("defaultProperties", Collections.singletonMap("my.fallback", (Object) "foo")));
+		this.environment.getPropertySources()
+				.addLast(new MapPropertySource("defaultProperties", Collections.singletonMap("my.fallback", "foo")));
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.fallback");
 		assertThat(property).isEqualTo("foo");
@@ -313,7 +313,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void defaultPropertyAsFallbackDuringFileParsing() {
 		this.environment.getPropertySources().addLast(new MapPropertySource("defaultProperties",
-				Collections.singletonMap("spring.config.name", (Object) "testproperties")));
+				Collections.singletonMap("spring.config.name", "testproperties")));
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
 		assertThat(property).isEqualTo("frompropertiesfile");

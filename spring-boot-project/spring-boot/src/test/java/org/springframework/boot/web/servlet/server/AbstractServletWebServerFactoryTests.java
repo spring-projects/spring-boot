@@ -788,8 +788,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer(new ServletRegistrationBean<>(new ExampleServlet(false, true), "/hello"));
 		this.webServer.start();
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
-		Map<String, InputStreamFactory> contentDecoderMap = Collections.singletonMap("gzip",
-				(InputStreamFactory) inputStreamFactory);
+		Map<String, InputStreamFactory> contentDecoderMap = Collections.singletonMap("gzip", inputStreamFactory);
 		getResponse(getLocalUrl("/hello"), new HttpComponentsClientHttpRequestFactory(
 				HttpClientBuilder.create().setContentDecoderRegistry(contentDecoderMap).build()));
 		assertThat(inputStreamFactory.wasCompressionUsed()).isTrue();
@@ -993,8 +992,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 			HttpMethod method) throws Exception {
 		String testContent = setUpFactoryForCompression(contentSize, mimeTypes, excludedUserAgents);
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
-		Map<String, InputStreamFactory> contentDecoderMap = Collections.singletonMap("gzip",
-				(InputStreamFactory) inputStreamFactory);
+		Map<String, InputStreamFactory> contentDecoderMap = Collections.singletonMap("gzip", inputStreamFactory);
 		String response = getResponse(getLocalUrl("/test.txt"), method,
 				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create().setUserAgent("testUserAgent")
 						.setContentDecoderRegistry(contentDecoderMap).build()));
