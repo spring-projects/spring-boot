@@ -665,7 +665,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		getResponse(getLocalUrl("/session"));
 		this.webServer.stop();
 		File[] dirContents = sessionStoreDir.listFiles((dir, name) -> !(".".equals(name) || "..".equals(name)));
-		assertThat(dirContents.length).isGreaterThan(0);
+		assertThat(dirContents).isNotEmpty();
 	}
 
 	@Test

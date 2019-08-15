@@ -64,7 +64,7 @@ class CassandraDataAutoConfigurationTests {
 	@Test
 	void templateExists() {
 		load(TestExcludeConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class)).hasSize(1);
 	}
 
 	@Test

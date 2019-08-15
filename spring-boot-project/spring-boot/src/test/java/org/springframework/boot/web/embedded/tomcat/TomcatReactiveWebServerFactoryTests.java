@@ -185,7 +185,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		factory.addAdditionalTomcatConnectors(connectors);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		Map<Service, Connector[]> connectorsByService = ((TomcatWebServer) this.webServer).getServiceConnectors();
-		assertThat(connectorsByService.values().iterator().next().length).isEqualTo(connectors.length + 1);
+		assertThat(connectorsByService.values().iterator().next()).hasSize(connectors.length + 1);
 	}
 
 	@Test
