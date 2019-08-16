@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Servlet;
@@ -48,11 +47,8 @@ import org.springframework.boot.devtools.restart.server.SourceFolderUrlFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for remote development support.
@@ -68,6 +64,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @ConditionalOnProperty(prefix = "spring.devtools.remote", name = "secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
+@Import(RemoteDevtoolsSecurityConfiguration.class)
 @EnableConfigurationProperties({ ServerProperties.class, DevToolsProperties.class })
 public class RemoteDevToolsAutoConfiguration {
 
@@ -132,27 +129,6 @@ public class RemoteDevToolsAutoConfiguration {
 			logger.warn("Listening for remote restart updates on " + url);
 			Handler handler = new HttpRestartServerHandler(server);
 			return new UrlHandlerMapper(url, handler);
-		}
-
-	}
-
-	@Configuration
-	@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
-	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-	static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		private final String url;
-
-		SecurityConfiguration(DevToolsProperties devToolsProperties, ServerProperties serverProperties) {
-			Servlet servlet = serverProperties.getServlet();
-			String servletContextPath = (servlet.getContextPath() != null) ? servlet.getContextPath() : "";
-			this.url = servletContextPath + devToolsProperties.getRemote().getContextPath() + "/restart";
-		}
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(new AntPathRequestMatcher(this.url)).authorizeRequests().anyRequest().anonymous().and()
-					.csrf().disable();
 		}
 
 	}
