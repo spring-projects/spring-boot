@@ -62,6 +62,7 @@ import org.springframework.util.unit.DataSize;
  * @author Andrew McGhie
  * @author Rafiullah Hamedy
  * @author Dirk Deyne
+ * @author HaiTao Zhang
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -905,6 +906,21 @@ public class ServerProperties {
 		 */
 		private Integer selectors = -1;
 
+		/**
+		 * Maximum number of threads.
+		 */
+		private Integer maxThreads = 200;
+
+		/**
+		 * Minimum number of threads.
+		 */
+		private Integer minThreads = 8;
+
+		/**
+		 * Maximum thread idle time.
+		 */
+		private Integer idleTimeout = 60000;
+
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
@@ -931,6 +947,30 @@ public class ServerProperties {
 
 		public void setSelectors(Integer selectors) {
 			this.selectors = selectors;
+		}
+
+		public void setMinThreads(Integer minThreads) {
+			this.minThreads = minThreads;
+		}
+
+		public Integer getMinThreads() {
+			return this.minThreads;
+		}
+
+		public void setMaxThreads(Integer maxThreads) {
+			this.maxThreads = maxThreads;
+		}
+
+		public Integer getMaxThreads() {
+			return this.maxThreads;
+		}
+
+		public void setIdleTimeout(Integer idleTimeout) {
+			this.idleTimeout = idleTimeout;
+		}
+
+		public Integer getIdleTimeout() {
+			return this.idleTimeout;
 		}
 
 		/**
