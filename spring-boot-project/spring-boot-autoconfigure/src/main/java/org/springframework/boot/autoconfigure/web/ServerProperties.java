@@ -907,12 +907,12 @@ public class ServerProperties {
 		private Integer selectors = -1;
 
 		/**
-		 * Maximum amount of threads.
+		 * Maximum number of threads.
 		 */
 		private Integer maxThreads = 200;
 
 		/**
-		 * Minimum amount of threads.
+		 * Minimum number of threads.
 		 */
 		private Integer minThreads = 8;
 
