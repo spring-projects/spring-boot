@@ -36,4 +36,13 @@ public class NamedParameterJdbcOperationsDependsOnPostProcessor extends Abstract
 		super(NamedParameterJdbcOperations.class, dependsOn);
 	}
 
+	/**
+	 * Creates a new {@code NamedParameterJdbcOperationsDependsOnPostProcessor} that will
+	 * set up dependencies upon beans with the given types.
+	 * @param dependsOn types of the beans to depend upon
+	 */
+	public NamedParameterJdbcOperationsDependsOnPostProcessor(Class<?>... dependsOn) {
+		super(NamedParameterJdbcOperations.class, dependsOn);
+	}
+
 }

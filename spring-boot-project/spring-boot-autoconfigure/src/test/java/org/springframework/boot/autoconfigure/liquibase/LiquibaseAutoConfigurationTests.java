@@ -32,9 +32,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
@@ -300,6 +302,26 @@ public class LiquibaseAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void userConfigurationBeans() {
+		this.contextRunner
+				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("springLiquibase");
+					assertThat(context).doesNotHaveBean("liquibase");
+				});
+	}
+
+	@Test
+	void userConfigurationJdbcTemplateDependency() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
+				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("jdbcTemplate");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("springLiquibase");
+				});
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(SpringLiquibase.class);
@@ -321,6 +343,20 @@ public class LiquibaseAutoConfigurationTests {
 		@Bean
 		public DataSource liquibaseDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:liquibasetest").username("sa").build();
+		}
+
+	}
+
+	@Configuration
+	static class LiquibaseUserConfiguration {
+
+		@Bean
+		SpringLiquibase springLiquibase(DataSource dataSource) {
+			SpringLiquibase liquibase = new SpringLiquibase();
+			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
+			liquibase.setShouldRun(true);
+			liquibase.setDataSource(dataSource);
+			return liquibase;
 		}
 
 	}
