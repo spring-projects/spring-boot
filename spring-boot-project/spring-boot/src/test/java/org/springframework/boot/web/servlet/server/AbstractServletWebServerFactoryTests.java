@@ -1084,8 +1084,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 			String[] parts = header.split(":");
 			request.getHeaders().add(parts[0], parts[1]);
 		}
-		ClientHttpResponse response = request.execute();
-		return response;
+		return request.execute();
 	}
 
 	protected void assertForwardHeaderIsUsed(ServletWebServerFactory factory) throws IOException, URISyntaxException {

@@ -74,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Quinten De Swaef
  * @author Venil Noronha
  * @author Andrew McGhie
+ * @author HaiTao Zhang
  */
 class ServerPropertiesTests {
 
@@ -216,6 +217,24 @@ class ServerPropertiesTests {
 	void testCustomizeJettySelectors() {
 		bind("server.jetty.selectors", "10");
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeJettyMaxThreads() {
+		bind("server.jetty.max-threads", "10");
+		assertThat(this.properties.getJetty().getMaxThreads()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeJettyMinThreads() {
+		bind("server.jetty.min-threads", "10");
+		assertThat(this.properties.getJetty().getMinThreads()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeJettyIdleTimeout() {
+		bind("server.jetty.idle-timeout", "10");
+		assertThat(this.properties.getJetty().getIdleTimeout()).isEqualTo(10);
 	}
 
 	@Test
