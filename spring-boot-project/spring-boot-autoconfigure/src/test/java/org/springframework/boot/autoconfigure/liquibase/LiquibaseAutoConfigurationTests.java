@@ -63,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Dominic Gunn
  * @author András Deák
+ * @author Andrii Hrytsiuk
  */
 public class LiquibaseAutoConfigurationTests {
 
@@ -303,7 +304,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void userConfigurationBeans() {
+	public void userConfigurationBeans() {
 		this.contextRunner
 				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
@@ -313,7 +314,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void userConfigurationJdbcTemplateDependency() {
+	public void userConfigurationJdbcTemplateDependency() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
 				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
