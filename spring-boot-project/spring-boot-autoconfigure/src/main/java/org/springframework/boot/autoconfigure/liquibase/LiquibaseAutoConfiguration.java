@@ -161,7 +161,7 @@ public class LiquibaseAutoConfiguration {
 	protected static class LiquibaseJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public LiquibaseJpaDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}
@@ -176,7 +176,7 @@ public class LiquibaseAutoConfiguration {
 	protected static class LiquibaseJdbcOperationsDependencyConfiguration extends JdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseJdbcOperationsDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}
@@ -192,7 +192,7 @@ public class LiquibaseAutoConfiguration {
 			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseNamedParameterJdbcOperationsDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}
