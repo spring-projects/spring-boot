@@ -93,7 +93,7 @@ class JettyWebServerFactoryCustomizerTests {
 		JettyWebServer server = customizeAndGetServer();
 		CustomRequestLog requestLog = getRequestLog(server);
 		assertThat(requestLog.getFormatString()).isEqualTo(CustomRequestLog.EXTENDED_NCSA_FORMAT);
-		assertThat(requestLog.getIgnorePaths().length).isEqualTo(2);
+		assertThat(requestLog.getIgnorePaths()).hasSize(2);
 		assertThat(requestLog.getIgnorePaths()).containsExactly("/a/path", "/b/path");
 		RequestLogWriter logWriter = getLogWriter(requestLog);
 		assertThat(logWriter.getFileName()).isEqualTo(logFile.getAbsolutePath());

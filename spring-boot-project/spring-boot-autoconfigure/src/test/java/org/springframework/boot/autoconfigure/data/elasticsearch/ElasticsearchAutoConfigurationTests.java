@@ -69,7 +69,7 @@ class ElasticsearchAutoConfigurationTests {
 		this.context.register(CustomConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(Client.class)).hasSize(1);
 		assertThat(this.context.getBean("myClient")).isSameAs(this.context.getBean(Client.class));
 	}
 

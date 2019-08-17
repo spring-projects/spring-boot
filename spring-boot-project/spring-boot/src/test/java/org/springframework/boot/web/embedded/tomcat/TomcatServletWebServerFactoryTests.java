@@ -225,7 +225,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		factory.addAdditionalTomcatConnectors(connectors);
 		this.webServer = factory.getWebServer();
 		Map<Service, Connector[]> connectorsByService = ((TomcatWebServer) this.webServer).getServiceConnectors();
-		assertThat(connectorsByService.values().iterator().next().length).isEqualTo(connectors.length + 1);
+		assertThat(connectorsByService.values().iterator().next()).hasSize(connectors.length + 1);
 	}
 
 	@Test
