@@ -409,7 +409,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void appendWhenElementNameIsNullShouldReturnName() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		assertThat((Object) name.append((String) null)).isSameAs(name);
+		assertThat((Object) name.append(null)).isSameAs(name);
 	}
 
 	@Test
