@@ -155,7 +155,7 @@ class SpringApplicationBuilderTests {
 		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass().getClassLoader());
 		application.resourceLoader(new DefaultResourceLoader(classLoader));
 		this.context = application.run();
-		assertThat(((SpyApplicationContext) this.context).getClassLoader()).isEqualTo(classLoader);
+		assertThat(this.context.getClassLoader()).isEqualTo(classLoader);
 	}
 
 	@Test
