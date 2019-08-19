@@ -36,7 +36,8 @@ import org.springframework.util.MultiValueMap;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-abstract class AbstractTypeToEnumConverterFactory<T> implements ConverterFactory<T, Enum> {
+@SuppressWarnings("rawtypes")
+abstract class AbstractTypeToEnumConverterFactory<T> implements ConverterFactory<T, Enum<?>> {
 
 	private static Map<String, List<String>> ALIASES;
 
@@ -48,7 +49,7 @@ abstract class AbstractTypeToEnumConverterFactory<T> implements ConverterFactory
 	}
 
 	@Override
-	public <E extends Enum> Converter<T, E> getConverter(Class<E> targetType) {
+	public <E extends Enum<?>> Converter<T, E> getConverter(Class<E> targetType) {
 		Class<?> enumType = targetType;
 		while (enumType != null && !enumType.isEnum()) {
 			enumType = enumType.getSuperclass();
@@ -59,6 +60,7 @@ abstract class AbstractTypeToEnumConverterFactory<T> implements ConverterFactory
 
 	abstract <E extends Enum> Converter<T, E> getTypeToEnumConverter(Class<E> targetType);
 
+	@SuppressWarnings("unchecked")
 	<E extends Enum> E findEnum(String source, Class<E> enumType) {
 		Map<String, E> candidates = new LinkedHashMap<>();
 		for (E candidate : (Set<E>) EnumSet.allOf(enumType)) {
