@@ -16,8 +16,11 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.InvalidConfigurationPropertiesException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -29,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link InvalidConfigurationPropertiesFailureAnalyzer}
  *
  * @author Madhura Bhave
+ * @author Stephane Nicoll
  */
 class InvalidConfigurationPropertiesFailureAnalyzerTests {
 
@@ -36,20 +40,47 @@ class InvalidConfigurationPropertiesFailureAnalyzerTests {
 
 	@Test
 	void analysisForInvalidConfigurationOfConfigurationProperties() {
-		FailureAnalysis analysis = performAnalysis();
-		assertThat(analysis.getDescription()).isEqualTo(getDescription());
-		assertThat(analysis.getAction()).isEqualTo("Remove @Component from " + TestProperties.class.getName()
-				+ " or consider disabling automatic @ConfigurationProperties scanning.");
+		FailureAnalysis analysis = performAnalysis(TestProperties.class);
+		assertThat(analysis.getDescription()).isEqualTo(getBasicDescription(TestProperties.class));
+		assertThat(analysis.getAction()).isEqualTo(getBasicAction(TestProperties.class));
 	}
 
-	private String getDescription() {
-		return TestProperties.class.getName() + " is annotated with @ConfigurationProperties and @Component"
+	@Test
+	void analysisForInvalidConfigurationOfConfigurationPropertiesWithSingleConstructor() {
+		FailureAnalysis analysis = performAnalysis(TestPropertiesWithSingleConstructor.class);
+		assertThat(analysis.getDescription()).containsSequence(
+				getBasicDescription(TestPropertiesWithSingleConstructor.class),
+				" Also, autowiring by constructor is enabled for "
+						+ TestPropertiesWithSingleConstructor.class.getSimpleName()
+						+ " which conflicts with properties constructor binding.");
+		assertThat(analysis.getAction()).containsSubsequence("Consider refactoring TestPropertiesWithSingleConstructor "
+				+ "so that it does not rely on other beans. Alternatively, a default constructor should be added and "
+				+ "@Autowired should be defined on "
+				+ "org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertiesFailureAnalyzerTests$TestPropertiesWithSingleConstructor(java.lang.Object,java.util.function.Function<java.lang.String, java.lang.Integer>).",
+				getBasicAction(TestPropertiesWithSingleConstructor.class));
+	}
+
+	@Test
+	void analysisForInvalidConfigurationOfConfigurationPropertiesWithSeveralConstructors() {
+		FailureAnalysis analysis = performAnalysis(TestPropertiesWithSeveralConstructors.class);
+		assertThat(analysis.getDescription())
+				.isEqualTo(getBasicDescription(TestPropertiesWithSeveralConstructors.class));
+		assertThat(analysis.getAction()).isEqualTo(getBasicAction(TestPropertiesWithSeveralConstructors.class));
+	}
+
+	private String getBasicDescription(Class<?> target) {
+		return target.getSimpleName() + " is annotated with @ConfigurationProperties and @Component"
 				+ ". This may cause the @ConfigurationProperties bean to be registered twice.";
 	}
 
-	private FailureAnalysis performAnalysis() {
+	private String getBasicAction(Class<?> target) {
+		return "Remove @Component from " + target.getName()
+				+ " or consider disabling automatic @ConfigurationProperties scanning.";
+	}
+
+	private FailureAnalysis performAnalysis(Class<?> target) {
 		FailureAnalysis analysis = this.analyzer
-				.analyze(new InvalidConfigurationPropertiesException(TestProperties.class, Component.class));
+				.analyze(new InvalidConfigurationPropertiesException(target, Component.class));
 		assertThat(analysis).isNotNull();
 		return analysis;
 	}
@@ -57,6 +88,30 @@ class InvalidConfigurationPropertiesFailureAnalyzerTests {
 	@ConfigurationProperties
 	@Component
 	static class TestProperties {
+
+	}
+
+	@ConfigurationProperties
+	@Component
+	static class TestPropertiesWithSingleConstructor {
+
+		TestPropertiesWithSingleConstructor(Object firstService, Function<String, Integer> factory) {
+
+		}
+
+	}
+
+	@ConfigurationProperties
+	@Component
+	static class TestPropertiesWithSeveralConstructors {
+
+		TestPropertiesWithSeveralConstructors() {
+		}
+
+		@Autowired
+		TestPropertiesWithSeveralConstructors(Object someService) {
+
+		}
 
 	}
 

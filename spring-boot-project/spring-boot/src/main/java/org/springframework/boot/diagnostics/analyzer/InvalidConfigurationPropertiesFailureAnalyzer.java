@@ -16,6 +16,8 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.lang.reflect.Constructor;
+
 import org.springframework.boot.context.properties.InvalidConfigurationPropertiesException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -25,6 +27,7 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * {@link InvalidConfigurationPropertiesException}.
  *
  * @author Madhura Bhave
+ * @author Stephane Nicoll
  * @since 2.2.0
  */
 public class InvalidConfigurationPropertiesFailureAnalyzer
@@ -32,20 +35,46 @@ public class InvalidConfigurationPropertiesFailureAnalyzer
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, InvalidConfigurationPropertiesException cause) {
-		String configurationProperties = cause.getConfigurationProperties().getName();
-		String component = cause.getComponent().getSimpleName();
-		return new FailureAnalysis(getDescription(configurationProperties, component),
-				getAction(configurationProperties, component), cause);
+		Class<?> target = cause.getConfigurationProperties();
+		Constructor<?> autowiringConstructor = getAutowiringConstructor(target);
+		String componentName = cause.getComponent().getSimpleName();
+		return new FailureAnalysis(getDescription(target, autowiringConstructor, componentName),
+				getAction(target, autowiringConstructor, componentName), cause);
 	}
 
-	private String getDescription(String configurationProperties, String component) {
-		return configurationProperties + " is annotated with @ConfigurationProperties and @" + component
-				+ ". This may cause the @ConfigurationProperties bean to be registered twice.";
+	private String getDescription(Class<?> target, Constructor<?> autowiringConstructor, String componentName) {
+		String targetName = target.getSimpleName();
+		StringBuilder sb = new StringBuilder(targetName);
+		sb.append(" is annotated with @ConfigurationProperties and @").append(componentName)
+				.append(". This may cause the @ConfigurationProperties bean to be registered twice.");
+		if (autowiringConstructor != null) {
+			sb.append(" Also, autowiring by constructor is enabled for ").append(targetName)
+					.append(" which conflicts with properties constructor binding.");
+		}
+		return sb.toString();
 	}
 
-	private String getAction(String configurationProperties, String component) {
-		return "Remove @" + component + " from " + configurationProperties
-				+ " or consider disabling automatic @ConfigurationProperties scanning.";
+	private String getAction(Class<?> target, Constructor<?> autowiringConstructor, String componentName) {
+		StringBuilder sb = new StringBuilder();
+		if (autowiringConstructor != null) {
+			sb.append("Consider refactoring ").append(target.getSimpleName()).append(
+					" so that it does not rely on other beans. Alternatively, a default constructor should be added and @Autowired should be defined on ")
+					.append(autowiringConstructor.toGenericString()).append(String.format(".%n%n"));
+		}
+		sb.append("Remove @").append(componentName).append(" from ").append(target.getName())
+				.append(" or consider disabling automatic @ConfigurationProperties scanning.");
+		return sb.toString();
+	}
+
+	private Constructor<?> getAutowiringConstructor(Class<?> target) {
+		Constructor<?>[] candidates = target.getDeclaredConstructors();
+		if (candidates.length == 1) {
+			Constructor<?> candidate = candidates[0];
+			if (candidate.getParameterCount() > 0) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 
 }
