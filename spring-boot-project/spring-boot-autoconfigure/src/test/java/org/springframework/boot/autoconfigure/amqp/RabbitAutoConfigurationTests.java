@@ -126,6 +126,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testConnectionFactoryWithOverrides() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
@@ -143,6 +144,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testConnectionFactoryWithCustomConnectionNameStrategy() {
 		this.contextRunner.withUserConfiguration(ConnectionNameStrategyConfiguration.class).run((context) -> {
 			CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);

@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
 import org.springframework.boot.logging.LogFile;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -41,8 +40,6 @@ import org.springframework.util.FileCopyUtils;
  */
 @RunWith(WebEndpointRunners.class)
 public class LogFileWebEndpointWebIntegrationTests {
-
-	private static ConfigurableApplicationContext context;
 
 	private static WebTestClient client;
 

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
  * @author Madhura Bhave
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class SimpleFactoryBean implements FactoryBean {
 
 	private static boolean isInitializedEarly = false;
@@ -40,10 +41,12 @@ public class SimpleFactoryBean implements FactoryBean {
 		}
 	}
 
+	@Override
 	public Object getObject() {
 		return new Object();
 	}
 
+	@Override
 	public Class<?> getObjectType() {
 		return Object.class;
 	}

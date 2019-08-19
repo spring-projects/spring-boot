@@ -42,7 +42,6 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -84,18 +83,15 @@ public class LiquibaseAutoConfiguration {
 
 		private final DataSourceProperties dataSourceProperties;
 
-		private final ResourceLoader resourceLoader;
-
 		private final DataSource dataSource;
 
 		private final DataSource liquibaseDataSource;
 
 		public LiquibaseConfiguration(LiquibaseProperties properties, DataSourceProperties dataSourceProperties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
 			this.properties = properties;
 			this.dataSourceProperties = dataSourceProperties;
-			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.liquibaseDataSource = liquibaseDataSource.getIfAvailable();
 		}
