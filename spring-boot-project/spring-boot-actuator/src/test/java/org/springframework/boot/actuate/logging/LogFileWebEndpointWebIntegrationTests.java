@@ -25,7 +25,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.logging.LogFile;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -41,17 +40,13 @@ import org.springframework.util.FileCopyUtils;
  */
 class LogFileWebEndpointWebIntegrationTests {
 
-	private ConfigurableApplicationContext context;
-
 	private WebTestClient client;
 
 	private static File tempFile;
 
 	@BeforeEach
-	void setUp(WebTestClient client, ConfigurableApplicationContext context) {
+	void setUp(WebTestClient client) {
 		this.client = client;
-		this.context = context;
-
 	}
 
 	@BeforeAll
