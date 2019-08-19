@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -62,9 +63,9 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 
 	static {
 		groupLevelFields = Arrays.asList(
-				fieldWithPath("configuredLevel").description("Configured level of the logger group")
-						.type(LogLevel.class).optional(),
-				fieldWithPath("members").description("Loggers that are part of this group").optional());
+				fieldWithPath("configuredLevel").description("Configured level of the logger group, if any.")
+						.type(JsonFieldType.STRING).optional(),
+				fieldWithPath("members").description("Loggers that are part of this group"));
 	}
 
 	@MockBean
@@ -98,8 +99,11 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 
 	@Test
 	void loggerGroups() throws Exception {
+		this.loggerGroups.get("test").configureLogLevel(LogLevel.INFO, (member, level) -> {
+		});
 		this.mockMvc.perform(get("/actuator/loggers/test")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("loggers/group", responseFields(groupLevelFields)));
+		resetLogger();
 	}
 
 	@Test
