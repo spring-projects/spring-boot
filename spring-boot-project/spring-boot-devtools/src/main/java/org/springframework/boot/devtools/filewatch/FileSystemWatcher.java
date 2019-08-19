@@ -165,9 +165,7 @@ public class FileSystemWatcher {
 	}
 
 	private void saveInitialSnapshots() {
-		for (File folder : this.folders.keySet()) {
-			this.folders.put(folder, new FolderSnapshot(folder));
-		}
+		this.folders.replaceAll((f, v) -> new FolderSnapshot(f));
 	}
 
 	/**
