@@ -69,7 +69,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 				ObjectProvider<NettyRouteProvider> routes, ObjectProvider<NettyServerCustomizer> serverCustomizers) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory();
 			serverFactory.setResourceFactory(resourceFactory);
-			routes.orderedStream().forEach((route) -> serverFactory.addRouteProviders(route));
+			routes.orderedStream().forEach(serverFactory::addRouteProviders);
 			serverFactory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
 			return serverFactory;
 		}
