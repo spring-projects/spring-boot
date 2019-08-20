@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.cassandra;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
@@ -40,7 +42,8 @@ class CassandraHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraConfiguration.class,
-					CassandraHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
+					CassandraHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

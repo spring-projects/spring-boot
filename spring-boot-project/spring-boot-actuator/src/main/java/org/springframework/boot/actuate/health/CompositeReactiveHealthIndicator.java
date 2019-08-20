@@ -30,7 +30,9 @@ import reactor.util.function.Tuple2;
  *
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of a {@link CompositeReactiveHealthContributor}
  */
+@Deprecated
 public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator {
 
 	private final ReactiveHealthIndicatorRegistry registry;

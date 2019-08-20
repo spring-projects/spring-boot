@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Map;
+
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.util.Assert;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 
 /**
  * {@link Endpoint @Endpoint} to expose application health information.
@@ -31,57 +34,49 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 @Endpoint(id = "health")
-public class HealthEndpoint {
+public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
-	private final HealthIndicator healthIndicator;
+	private static final String[] EMPTY_PATH = {};
 
 	/**
-	 * Create a new {@link HealthEndpoint} instance that will use the given
-	 * {@code healthIndicator} to generate its response.
+	 * Create a new {@link HealthEndpoint} instance that will use the given {@code
+	 * healthIndicator} to generate its response.
 	 * @param healthIndicator the health indicator
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #HealthEndpoint(HealthContributorRegistry, HealthEndpointSettings)}
 	 */
+	@Deprecated
 	public HealthEndpoint(HealthIndicator healthIndicator) {
-		Assert.notNull(healthIndicator, "HealthIndicator must not be null");
-		this.healthIndicator = healthIndicator;
-	}
-
-	@ReadOperation
-	public Health health() {
-		return this.healthIndicator.health();
 	}
 
 	/**
-	 * Return the {@link Health} of a particular component or {@code null} if such
-	 * component does not exist.
-	 * @param component the name of a particular {@link HealthIndicator}
-	 * @return the {@link Health} for the component or {@code null}
+	 * Create a new {@link HealthEndpoint} instance.
+	 * @param registry the health contributor registry
+	 * @param settings the health endpoint settings
 	 */
-	@ReadOperation
-	public Health healthForComponent(@Selector String component) {
-		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator, component);
-		return (indicator != null) ? indicator.health() : null;
+	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointSettings settings) {
+		super(registry, settings);
 	}
 
-	/**
-	 * Return the {@link Health} of a particular {@code instance} managed by the specified
-	 * {@code component} or {@code null} if that particular component is not a
-	 * {@link CompositeHealthIndicator} or if such instance does not exist.
-	 * @param component the name of a particular {@link CompositeHealthIndicator}
-	 * @param instance the name of an instance managed by that component
-	 * @return the {@link Health} for the component instance of {@code null}
-	 */
 	@ReadOperation
-	public Health healthForComponentInstance(@Selector String component, @Selector String instance) {
-		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator, component);
-		HealthIndicator nestedIndicator = getNestedHealthIndicator(indicator, instance);
-		return (nestedIndicator != null) ? nestedIndicator.health() : null;
+	public HealthComponent health() {
+		return healthForPath(EMPTY_PATH);
 	}
 
-	private HealthIndicator getNestedHealthIndicator(HealthIndicator healthIndicator, String name) {
-		if (healthIndicator instanceof CompositeHealthIndicator) {
-			return ((CompositeHealthIndicator) healthIndicator).getRegistry().get(name);
-		}
-		return null;
+	@ReadOperation
+	public HealthComponent healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
+		return getHealth(SecurityContext.NONE, true, path);
+	}
+
+	@Override
+	protected HealthComponent getHealth(HealthContributor contributor, boolean includeDetails) {
+		return ((HealthIndicator) contributor).getHealth(includeDetails);
+	}
+
+	@Override
+	protected HealthComponent aggregateContributions(Map<String, HealthComponent> contributions,
+			StatusAggregator statusAggregator, boolean includeDetails) {
+		return getCompositeHealth(contributions, statusAggregator, includeDetails);
 	}
 
 }

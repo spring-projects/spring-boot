@@ -20,6 +20,8 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
@@ -49,7 +51,8 @@ class DataSourceHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class, DataSourceHealthIndicatorAutoConfiguration.class))
+					HealthIndicatorAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class, DataSourceHealthIndicatorAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode=never");
 
 	@Test

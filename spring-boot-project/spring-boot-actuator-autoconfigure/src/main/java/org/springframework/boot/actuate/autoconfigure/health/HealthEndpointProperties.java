@@ -16,11 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.ShowDetails;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -32,6 +34,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("management.endpoint.health")
 public class HealthEndpointProperties {
 
+	private final Status status = new Status();
+
 	/**
 	 * When to show full health details.
 	 */
@@ -42,6 +46,10 @@ public class HealthEndpointProperties {
 	 * When empty, all authenticated users are authorized.
 	 */
 	private Set<String> roles = new HashSet<>();
+
+	public Status getStatus() {
+		return this.status;
+	}
 
 	public ShowDetails getShowDetails() {
 		return this.showDetails;
@@ -57,6 +65,61 @@ public class HealthEndpointProperties {
 
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
+	}
+
+	/**
+	 * Status properties for the group.
+	 */
+	public static class Status {
+
+		/**
+		 * Comma-separated list of health statuses in order of severity.
+		 */
+		private List<String> order = null;
+
+		/**
+		 * Mapping of health statuses to HTTP status codes. By default, registered health
+		 * statuses map to sensible defaults (for example, UP maps to 200).
+		 */
+		private final Map<String, Integer> httpMapping = new HashMap<>();
+
+		public List<String> getOrder() {
+			return this.order;
+		}
+
+		public void setOrder(List<String> statusOrder) {
+			if (statusOrder != null && !statusOrder.isEmpty()) {
+				this.order = statusOrder;
+			}
+		}
+
+		public Map<String, Integer> getHttpMapping() {
+			return this.httpMapping;
+		}
+
+	}
+
+	/**
+	 * Options for showing details in responses from the {@link HealthEndpoint} web
+	 * extensions.
+	 */
+	public enum ShowDetails {
+
+		/**
+		 * Never show details in the response.
+		 */
+		NEVER,
+
+		/**
+		 * Show details in the response when accessed by an authorized user.
+		 */
+		WHEN_AUTHORIZED,
+
+		/**
+		 * Always show details in the response.
+		 */
+		ALWAYS
+
 	}
 
 }

@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.hazelcast;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
@@ -36,7 +38,8 @@ class HazelcastHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class,
-					HazelcastHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
+					HazelcastHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

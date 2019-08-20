@@ -16,11 +16,12 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.function.Supplier;
+import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
@@ -37,37 +38,60 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
-public class HealthEndpointWebExtension {
+public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
-	private final HealthEndpoint delegate;
+	private static final String[] NO_PATH = {};
 
-	private final HealthWebEndpointResponseMapper responseMapper;
-
+	/**
+	 * Create a new {@link HealthEndpointWebExtension} instance using a delegate endpoint.
+	 * @param delegate the delegate endpoint
+	 * @param responseMapper the response mapper
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #HealthEndpointWebExtension(HealthContributorRegistry, HealthEndpointSettings)}
+	 */
+	@Deprecated
 	public HealthEndpointWebExtension(HealthEndpoint delegate, HealthWebEndpointResponseMapper responseMapper) {
-		this.delegate = delegate;
-		this.responseMapper = responseMapper;
+	}
+
+	/**
+	 * Create a new {@link HealthEndpointWebExtension} instance.
+	 * @param registry the health contributor registry
+	 * @param settings the health endpoint settings
+	 */
+	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointSettings settings) {
+		super(registry, settings);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Health> health(SecurityContext securityContext) {
-		return this.responseMapper.map(this.delegate.health(), securityContext);
+	public WebEndpointResponse<HealthComponent> health(SecurityContext securityContext) {
+		return health(securityContext, NO_PATH);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Health> healthForComponent(SecurityContext securityContext, @Selector String component) {
-		Supplier<Health> health = () -> this.delegate.healthForComponent(component);
-		return this.responseMapper.mapDetails(health, securityContext);
+	public WebEndpointResponse<HealthComponent> health(SecurityContext securityContext,
+			@Selector(match = Match.ALL_REMAINING) String... path) {
+		return health(securityContext, false, path);
 	}
 
-	@ReadOperation
-	public WebEndpointResponse<Health> healthForComponentInstance(SecurityContext securityContext,
-			@Selector String component, @Selector String instance) {
-		Supplier<Health> health = () -> this.delegate.healthForComponentInstance(component, instance);
-		return this.responseMapper.mapDetails(health, securityContext);
+	public WebEndpointResponse<HealthComponent> health(SecurityContext securityContext, boolean alwaysIncludeDetails,
+			String... path) {
+		HealthComponent health = getHealth(securityContext, alwaysIncludeDetails, path);
+		if (health == null) {
+			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
+		}
+		int statusCode = getSettings().getHttpCodeStatusMapper().getStatusCode(health.getStatus());
+		return new WebEndpointResponse<>(health, statusCode);
 	}
 
-	public WebEndpointResponse<Health> getHealth(SecurityContext securityContext, ShowDetails showDetails) {
-		return this.responseMapper.map(this.delegate.health(), securityContext, showDetails);
+	@Override
+	protected HealthComponent getHealth(HealthContributor contributor, boolean includeDetails) {
+		return ((HealthIndicator) contributor).getHealth(includeDetails);
+	}
+
+	@Override
+	protected HealthComponent aggregateContributions(Map<String, HealthComponent> contributions,
+			StatusAggregator statusAggregator, boolean includeDetails) {
+		return getCompositeHealth(contributions, statusAggregator, includeDetails);
 	}
 
 }

@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -42,8 +44,10 @@ import static org.mockito.Mockito.mock;
 class Neo4jHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(Neo4jConfiguration.class).withConfiguration(AutoConfigurations
-					.of(Neo4jHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
+			.withUserConfiguration(Neo4jConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(Neo4jHealthIndicatorAutoConfiguration.class,
+					HealthIndicatorAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

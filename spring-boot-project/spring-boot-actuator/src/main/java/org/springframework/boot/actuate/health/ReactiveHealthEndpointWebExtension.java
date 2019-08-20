@@ -16,11 +16,15 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Map;
+
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
@@ -29,57 +33,102 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
  * {@link HealthEndpoint}.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
-public class ReactiveHealthEndpointWebExtension {
+public class ReactiveHealthEndpointWebExtension
+		extends HealthEndpointSupport<ReactiveHealthContributor, Mono<? extends HealthComponent>> {
 
-	private final ReactiveHealthIndicator delegate;
+	private static final String[] NO_PATH = {};
 
-	private final HealthWebEndpointResponseMapper responseMapper;
-
+	/**
+	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.
+	 * @param delegate the delegate health indicator
+	 * @param responseMapper the response mapper
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link #ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry, HealthEndpointSettings)}
+	 */
+	@Deprecated
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthIndicator delegate,
 			HealthWebEndpointResponseMapper responseMapper) {
-		this.delegate = delegate;
-		this.responseMapper = responseMapper;
+	}
+
+	/**
+	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.
+	 * @param registry the health contributor registry
+	 * @param settings the health endpoint settings
+	 */
+	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry,
+			HealthEndpointSettings settings) {
+		super(registry, settings);
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext) {
-		return this.delegate.health().map((health) -> this.responseMapper.map(health, securityContext));
+	public Mono<WebEndpointResponse<? extends HealthComponent>> health(SecurityContext securityContext) {
+		return health(securityContext, NO_PATH);
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> healthForComponent(SecurityContext securityContext,
-			@Selector String component) {
-		return responseFromIndicator(getNestedHealthIndicator(this.delegate, component), securityContext);
+	public Mono<WebEndpointResponse<? extends HealthComponent>> health(SecurityContext securityContext,
+			@Selector(match = Match.ALL_REMAINING) String... path) {
+		return health(securityContext, false, path);
 	}
 
-	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> healthForComponentInstance(SecurityContext securityContext,
-			@Selector String component, @Selector String instance) {
-		ReactiveHealthIndicator indicator = getNestedHealthIndicator(this.delegate, component);
-		if (indicator != null) {
-			indicator = getNestedHealthIndicator(indicator, instance);
+	public Mono<WebEndpointResponse<? extends HealthComponent>> health(SecurityContext securityContext,
+			boolean alwaysIncludeDetails, String... path) {
+		Mono<? extends HealthComponent> result = getHealth(securityContext, alwaysIncludeDetails, path);
+		if (result == null) {
+			return Mono.just(new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND));
 		}
-		return responseFromIndicator(indicator, securityContext);
+		return result.map((health) -> {
+			int statusCode = getSettings().getHttpCodeStatusMapper().getStatusCode(health.getStatus());
+			return new WebEndpointResponse<>(health, statusCode);
+		});
 	}
 
-	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext, ShowDetails showDetails) {
-		return this.delegate.health().map((health) -> this.responseMapper.map(health, securityContext, showDetails));
+	@Override
+	protected Mono<? extends HealthComponent> getHealth(ReactiveHealthContributor contributor, boolean includeDetails) {
+		return ((ReactiveHealthIndicator) contributor).getHealth(includeDetails);
 	}
 
-	private Mono<WebEndpointResponse<Health>> responseFromIndicator(ReactiveHealthIndicator indicator,
-			SecurityContext securityContext) {
-		return (indicator != null)
-				? indicator.health().map((health) -> this.responseMapper.map(health, securityContext)) : Mono.empty();
+	@Override
+	protected Mono<? extends HealthComponent> aggregateContributions(
+			Map<String, Mono<? extends HealthComponent>> contributions, StatusAggregator statusAggregator,
+			boolean includeDetails) {
+		return Flux.fromIterable(contributions.entrySet()).flatMap(NamedHealthComponent::create)
+				.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth)
+				.map((components) -> this.getCompositeHealth(components, statusAggregator, includeDetails));
 	}
 
-	private ReactiveHealthIndicator getNestedHealthIndicator(ReactiveHealthIndicator healthIndicator, String name) {
-		if (healthIndicator instanceof CompositeReactiveHealthIndicator) {
-			return ((CompositeReactiveHealthIndicator) healthIndicator).getRegistry().get(name);
+	/**
+	 * A named {@link HealthComponent}.
+	 */
+	private static final class NamedHealthComponent {
+
+		private final String name;
+
+		private final HealthComponent health;
+
+		private NamedHealthComponent(Object... pair) {
+			this.name = (String) pair[0];
+			this.health = (HealthComponent) pair[1];
 		}
-		return null;
+
+		String getName() {
+			return this.name;
+		}
+
+		HealthComponent getHealth() {
+			return this.health;
+		}
+
+		static Mono<NamedHealthComponent> create(Map.Entry<String, Mono<? extends HealthComponent>> entry) {
+			Mono<String> name = Mono.just(entry.getKey());
+			Mono<? extends HealthComponent> health = entry.getValue();
+			return Mono.zip(NamedHealthComponent::new, name, health);
+		}
+
 	}
 
 }

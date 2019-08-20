@@ -27,7 +27,11 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of
+ * {@link ReactiveHealthContributor#adapt(HealthContributor)}
+ * @see ReactiveHealthContributor#adapt(HealthContributor)
  */
+@Deprecated
 public class HealthIndicatorReactiveAdapter implements ReactiveHealthIndicator {
 
 	private final HealthIndicator delegate;

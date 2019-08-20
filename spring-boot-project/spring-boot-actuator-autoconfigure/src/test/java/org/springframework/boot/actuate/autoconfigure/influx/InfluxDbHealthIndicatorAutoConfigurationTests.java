@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.influx;
 import org.influxdb.InfluxDB;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.influx.InfluxDbHealthIndicator;
@@ -36,8 +38,10 @@ import static org.mockito.Mockito.mock;
 class InfluxDbHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(InfluxDB.class, () -> mock(InfluxDB.class)).withConfiguration(AutoConfigurations
-					.of(InfluxDbHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
+			.withBean(InfluxDB.class, () -> mock(InfluxDB.class))
+			.withConfiguration(AutoConfigurations.of(InfluxDbHealthIndicatorAutoConfiguration.class,
+					HealthIndicatorAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

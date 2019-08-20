@@ -26,12 +26,19 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.health.CompositeHealthContributor;
+import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.HealthEndpointSettings;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicatorRegistryFactory;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
+import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
+import org.springframework.boot.actuate.health.SimpleStatusAggregator;
+import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -63,14 +70,18 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	@Test
 	void health() throws Exception {
+		FieldDescriptor status = fieldWithPath("status").description("Overall status of the application.");
+		FieldDescriptor components = fieldWithPath("details").description("The components that make up the health.");
+		FieldDescriptor componentStatus = fieldWithPath("details.*.status")
+				.description("Status of a specific part of the application.");
+		FieldDescriptor componentDetails = subsectionWithPath("details.*.details")
+				.description("Details of the health of a specific part of the application. "
+						+ "Presence is controlled by `management.endpoint.health.show-details`.")
+				.optional();
+		FieldDescriptor nestedComponents = subsectionWithPath("details.*.details")
+				.description("Nested components that make up the health.").optional();
 		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk()).andDo(document("health",
-				responseFields(fieldWithPath("status").description("Overall status of the application."),
-						fieldWithPath("details")
-								.description("Details of the health of the application. Presence is controlled by "
-										+ "`management.endpoint.health.show-details`)."),
-						fieldWithPath("details.*.status").description("Status of a specific part of the application."),
-						subsectionWithPath("details.*.details")
-								.description("Details of the health of a specific part of the application."))));
+				responseFields(status, components, componentStatus, componentDetails, nestedComponents)));
 	}
 
 	@Test
@@ -91,9 +102,10 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	static class TestConfiguration {
 
 		@Bean
-		HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(new CompositeHealthIndicator(new OrderedHealthAggregator(),
-					new HealthIndicatorRegistryFactory().createHealthIndicatorRegistry(healthIndicators)));
+		HealthEndpoint healthEndpoint(Map<String, HealthContributor> healthContributors) {
+			HealthContributorRegistry registry = new DefaultHealthContributorRegistry(healthContributors);
+			HealthEndpointSettings settings = new TestHealthEndpointSettings();
+			return new HealthEndpoint(registry, settings);
 		}
 
 		@Bean
@@ -107,11 +119,34 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		}
 
 		@Bean
-		CompositeHealthIndicator brokerHealthIndicator() {
+		CompositeHealthContributor brokerHealthContributor() {
 			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 			indicators.put("us1", () -> Health.up().withDetail("version", "1.0.2").build());
 			indicators.put("us2", () -> Health.up().withDetail("version", "1.0.4").build());
-			return new CompositeHealthIndicator(new OrderedHealthAggregator(), indicators);
+			return CompositeHealthContributor.fromMap(indicators);
+		}
+
+	}
+
+	private static class TestHealthEndpointSettings implements HealthEndpointSettings {
+
+		private final StatusAggregator statusAggregator = new SimpleStatusAggregator();
+
+		private final HttpCodeStatusMapper httpCodeStatusMapper = new SimpleHttpCodeStatusMapper();
+
+		@Override
+		public boolean includeDetails(SecurityContext securityContext) {
+			return true;
+		}
+
+		@Override
+		public StatusAggregator getStatusAggregator() {
+			return this.statusAggregator;
+		}
+
+		@Override
+		public HttpCodeStatusMapper getHttpCodeStatusMapper() {
+			return this.httpCodeStatusMapper;
 		}
 
 	}

@@ -26,7 +26,9 @@ import java.util.Map;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @since 1.1.0
+ * @deprecated since 2.2.0 in favor of a {@link CompositeHealthContributor}
  */
+@Deprecated
 public class CompositeHealthIndicator implements HealthIndicator {
 
 	private final HealthIndicatorRegistry registry;

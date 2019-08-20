@@ -16,44 +16,41 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for some health properties.
  *
  * @author Christian Dupuis
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of {@link HealthEndpointProperties}
  */
+@Deprecated
 @ConfigurationProperties(prefix = "management.health.status")
 public class HealthIndicatorProperties {
 
-	/**
-	 * Comma-separated list of health statuses in order of severity.
-	 */
-	private List<String> order = null;
+	private final HealthEndpointProperties healthEndpointProperties;
 
-	/**
-	 * Mapping of health statuses to HTTP status codes. By default, registered health
-	 * statuses map to sensible defaults (for example, UP maps to 200).
-	 */
-	private final Map<String, Integer> httpMapping = new HashMap<>();
+	HealthIndicatorProperties(HealthEndpointProperties healthEndpointProperties) {
+		this.healthEndpointProperties = healthEndpointProperties;
+	}
 
+	@DeprecatedConfigurationProperty(replacement = "management.endpoint.health.status.order")
 	public List<String> getOrder() {
-		return this.order;
+		return this.healthEndpointProperties.getStatus().getOrder();
 	}
 
 	public void setOrder(List<String> statusOrder) {
-		if (statusOrder != null && !statusOrder.isEmpty()) {
-			this.order = statusOrder;
-		}
+		this.healthEndpointProperties.getStatus().setOrder(statusOrder);
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "management.endpoint.health.status.http-mapping")
 	public Map<String, Integer> getHttpMapping() {
-		return this.httpMapping;
+		return this.healthEndpointProperties.getStatus().getHttpMapping();
 	}
 
 }

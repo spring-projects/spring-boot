@@ -16,17 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -35,31 +29,31 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HealthIndicatorAutoConfiguration}.
+ * Tests for {@link HealthContributorAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-class HealthIndicatorAutoConfigurationTests {
+class HealthContributorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HealthIndicatorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class));
 
 	@Test
-	void runWhenNoOtherIndicatorsShouldCreateDefaultApplicationHealthIndicator() {
+	void runWhenNoOtherIndicatorsCreatesDefaultApplicationHealthIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 				.isInstanceOf(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	void runWhenHasDefinedIndicatorShouldNotCreateDefaultApplicationHealthIndicator() {
+	void runWhenHasDefinedIndicatorDoesNotCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 						.isInstanceOf(CustomHealthIndicator.class));
 	}
 
 	@Test
-	void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledShouldCreateDefaultApplicationHealthIndicator() {
+	void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledCreatesDefaultApplicationHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.withPropertyValues("management.health.defaults.enabled:false").run((context) -> assertThat(context)
 						.getBean(HealthIndicator.class).isInstanceOf(ApplicationHealthIndicator.class));
@@ -67,37 +61,12 @@ class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledShouldCreateEnabledIndicator() {
+	void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledDoesNotCreateEnabledIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.withPropertyValues("management.health.defaults.enabled:false", "management.health.custom.enabled:true")
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 						.isInstanceOf(CustomHealthIndicator.class));
 
-	}
-
-	@Test
-	void runShouldCreateOrderedHealthAggregator() {
-		this.contextRunner.run((context) -> assertThat(context).getBean(HealthAggregator.class)
-				.isInstanceOf(OrderedHealthAggregator.class));
-	}
-
-	@Test
-	void runWhenHasCustomOrderPropertyShouldCreateOrderedHealthAggregator() {
-		this.contextRunner.withPropertyValues("management.health.status.order:UP,DOWN").run((context) -> {
-			OrderedHealthAggregator aggregator = context.getBean(OrderedHealthAggregator.class);
-			Map<String, Health> healths = new LinkedHashMap<>();
-			healths.put("foo", Health.up().build());
-			healths.put("bar", Health.down().build());
-			Health aggregate = aggregator.aggregate(healths);
-			assertThat(aggregate.getStatus()).isEqualTo(Status.UP);
-		});
-	}
-
-	@Test
-	void runWhenHasCustomHealthAggregatorShouldNotCreateOrderedHealthAggregator() {
-		this.contextRunner.withUserConfiguration(CustomHealthAggregatorConfiguration.class)
-				.run((context) -> assertThat(context).getBean(HealthAggregator.class)
-						.isNotInstanceOf(OrderedHealthAggregator.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -116,16 +85,6 @@ class HealthIndicatorAutoConfigurationTests {
 		@Override
 		public Health health() {
 			return Health.down().build();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomHealthAggregatorConfiguration {
-
-		@Bean
-		HealthAggregator healthAggregator() {
-			return (healths) -> Health.down().build();
 		}
 
 	}
