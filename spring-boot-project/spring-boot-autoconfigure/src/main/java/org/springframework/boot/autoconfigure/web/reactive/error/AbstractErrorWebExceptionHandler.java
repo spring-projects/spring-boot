@@ -171,7 +171,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		}
 		Resource resource = resolveResource(viewName);
 		if (resource != null) {
-			return responseBody.bodyValue(BodyInserters.fromResource(resource));
+			return responseBody.body(BodyInserters.fromResource(resource));
 		}
 		return Mono.empty();
 	}
