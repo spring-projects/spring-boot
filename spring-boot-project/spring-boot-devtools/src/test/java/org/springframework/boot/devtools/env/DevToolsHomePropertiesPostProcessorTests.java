@@ -41,9 +41,26 @@ class DevToolsHomePropertiesPostProcessorTests {
 
 	private File home;
 
+	private File rootDir;
+
 	@BeforeEach
-	void setup(@TempDir File tempDir) throws IOException {
+	void setup(@TempDir File tempDir, @TempDir File rootDir) throws IOException {
 		this.home = tempDir;
+		this.rootDir = rootDir;
+	}
+
+	@Test
+	void loadsRootFolderProperties() throws Exception {
+		System.setProperty("PROJECT_ROOT_FOLDER", rootDir.getAbsolutePath());
+		Properties properties = new Properties();
+		properties.put("uvw", "xyz");
+		OutputStream out = new FileOutputStream(new File(this.rootDir, ".spring-boot-devtools.properties"));
+		properties.store(out, null);
+		out.close();
+		ConfigurableEnvironment environment = new MockEnvironment();
+		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
+		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
+		assertThat(environment.getProperty("uvw")).isEqualTo("xyz");
 	}
 
 	@Test

@@ -44,7 +44,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		if (DevToolsEnablementDeducer.shouldEnable(Thread.currentThread())) {
-			File home = getHomeFolder();
+			File home = getProjectRootFolder();
 			File propertyFile = (home != null) ? new File(home, FILE_NAME) : null;
 			if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
 				FileSystemResource resource = new FileSystemResource(propertyFile);
@@ -59,6 +59,17 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 				}
 			}
 		}
+	}
+
+	protected File getProjectRootFolder() {
+		String rootFolder = System.getenv("PROJECT_ROOT_FOLDER");
+		if (rootFolder == null) {
+			rootFolder = System.getProperty("PROJECT_ROOT_FOLDER");
+		}
+		if (StringUtils.hasLength(rootFolder)) {
+			return new File(rootFolder);
+		}
+		return getHomeFolder();
 	}
 
 	protected File getHomeFolder() {
