@@ -16,9 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,93 +30,47 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 2.0.0
  */
 @ConfigurationProperties("management.endpoint.health")
-public class HealthEndpointProperties {
-
-	private final Status status = new Status();
+public class HealthEndpointProperties extends HealthProperties {
 
 	/**
-	 * When to show full health details.
+	 * Health endpoint groups.
 	 */
-	private ShowDetails showDetails = ShowDetails.NEVER;
+	private Map<String, Group> group = new LinkedHashMap<>();
 
-	/**
-	 * Roles used to determine whether or not a user is authorized to be shown details.
-	 * When empty, all authenticated users are authorized.
-	 */
-	private Set<String> roles = new HashSet<>();
-
-	public Status getStatus() {
-		return this.status;
-	}
-
-	public ShowDetails getShowDetails() {
-		return this.showDetails;
-	}
-
-	public void setShowDetails(ShowDetails showDetails) {
-		this.showDetails = showDetails;
-	}
-
-	public Set<String> getRoles() {
-		return this.roles;
-	}
-
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
+	public Map<String, Group> getGroup() {
+		return this.group;
 	}
 
 	/**
-	 * Status properties for the group.
+	 * A health endpoint group.
 	 */
-	public static class Status {
+	public static class Group extends HealthProperties {
 
 		/**
-		 * Comma-separated list of health statuses in order of severity.
+		 * The health indicator IDs to include. Use '*' if you want to include all.
 		 */
-		private List<String> order = null;
+		private Set<String> include;
 
 		/**
-		 * Mapping of health statuses to HTTP status codes. By default, registered health
-		 * statuses map to sensible defaults (for example, UP maps to 200).
+		 * The health indicator IDs to exclude. Use '*' if you want to exclude all.
 		 */
-		private final Map<String, Integer> httpMapping = new HashMap<>();
+		private Set<String> exclude;
 
-		public List<String> getOrder() {
-			return this.order;
+		public Set<String> getInclude() {
+			return this.include;
 		}
 
-		public void setOrder(List<String> statusOrder) {
-			if (statusOrder != null && !statusOrder.isEmpty()) {
-				this.order = statusOrder;
-			}
+		public void setInclude(Set<String> include) {
+			this.include = include;
 		}
 
-		public Map<String, Integer> getHttpMapping() {
-			return this.httpMapping;
+		public Set<String> getExclude() {
+			return this.exclude;
 		}
 
-	}
-
-	/**
-	 * Options for showing details in responses from the {@link HealthEndpoint} web
-	 * extensions.
-	 */
-	public enum ShowDetails {
-
-		/**
-		 * Never show details in the response.
-		 */
-		NEVER,
-
-		/**
-		 * Show details in the response when accessed by an authorized user.
-		 */
-		WHEN_AUTHORIZED,
-
-		/**
-		 * Always show details in the response.
-		 */
-		ALWAYS
+		public void setExclude(Set<String> exclude) {
+			this.exclude = exclude;
+		}
 
 	}
 

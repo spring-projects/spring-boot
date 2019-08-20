@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -43,7 +44,7 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	 * healthIndicator} to generate its response.
 	 * @param healthIndicator the health indicator
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #HealthEndpoint(HealthContributorRegistry, HealthEndpointSettings)}
+	 * {@link #HealthEndpoint(HealthContributorRegistry, HealthEndpointGroups)}
 	 */
 	@Deprecated
 	public HealthEndpoint(HealthIndicator healthIndicator) {
@@ -52,10 +53,10 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	/**
 	 * Create a new {@link HealthEndpoint} instance.
 	 * @param registry the health contributor registry
-	 * @param settings the health endpoint settings
+	 * @param groups the health endpoint groups
 	 */
-	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointSettings settings) {
-		super(registry, settings);
+	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups) {
+		super(registry, groups);
 	}
 
 	@ReadOperation
@@ -65,7 +66,8 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 
 	@ReadOperation
 	public HealthComponent healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
-		return getHealth(SecurityContext.NONE, true, path);
+		HealthResult<HealthComponent> result = getHealth(SecurityContext.NONE, true, path);
+		return (result != null) ? result.getHealth() : null;
 	}
 
 	@Override
@@ -75,8 +77,8 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 
 	@Override
 	protected HealthComponent aggregateContributions(Map<String, HealthComponent> contributions,
-			StatusAggregator statusAggregator, boolean includeDetails) {
-		return getCompositeHealth(contributions, statusAggregator, includeDetails);
+			StatusAggregator statusAggregator, boolean includeDetails, Set<String> groupNames) {
+		return getCompositeHealth(contributions, statusAggregator, includeDetails, groupNames);
 	}
 
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Map;
+import java.util.Set;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -47,7 +48,7 @@ public class ReactiveHealthEndpointWebExtension
 	 * @param delegate the delegate health indicator
 	 * @param responseMapper the response mapper
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry, HealthEndpointSettings)}
+	 * {@link #ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry, HealthEndpointGroups)}
 	 */
 	@Deprecated
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthIndicator delegate,
@@ -57,11 +58,10 @@ public class ReactiveHealthEndpointWebExtension
 	/**
 	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
-	 * @param settings the health endpoint settings
+	 * @param groups the health endpoint groups
 	 */
-	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry,
-			HealthEndpointSettings settings) {
-		super(registry, settings);
+	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry, HealthEndpointGroups groups) {
+		super(registry, groups);
 	}
 
 	@ReadOperation
@@ -77,12 +77,13 @@ public class ReactiveHealthEndpointWebExtension
 
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(SecurityContext securityContext,
 			boolean alwaysIncludeDetails, String... path) {
-		Mono<? extends HealthComponent> result = getHealth(securityContext, alwaysIncludeDetails, path);
+		HealthResult<Mono<? extends HealthComponent>> result = getHealth(securityContext, alwaysIncludeDetails, path);
 		if (result == null) {
 			return Mono.just(new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND));
 		}
-		return result.map((health) -> {
-			int statusCode = getSettings().getHttpCodeStatusMapper().getStatusCode(health.getStatus());
+		HealthEndpointGroup group = result.getGroup();
+		return result.getHealth().map((health) -> {
+			int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
 			return new WebEndpointResponse<>(health, statusCode);
 		});
 	}
@@ -95,10 +96,10 @@ public class ReactiveHealthEndpointWebExtension
 	@Override
 	protected Mono<? extends HealthComponent> aggregateContributions(
 			Map<String, Mono<? extends HealthComponent>> contributions, StatusAggregator statusAggregator,
-			boolean includeDetails) {
+			boolean includeDetails, Set<String> groupNames) {
 		return Flux.fromIterable(contributions.entrySet()).flatMap(NamedHealthComponent::create)
 				.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth)
-				.map((components) -> this.getCompositeHealth(components, statusAggregator, includeDetails));
+				.map((components) -> this.getCompositeHealth(components, statusAggregator, includeDetails, groupNames));
 	}
 
 	/**

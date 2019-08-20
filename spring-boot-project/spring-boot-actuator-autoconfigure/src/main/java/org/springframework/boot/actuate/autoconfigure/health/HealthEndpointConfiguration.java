@@ -18,17 +18,16 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthEndpointSettings;
+import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleStatusAggregator;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -55,27 +54,22 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthEndpointSettings healthEndpointSettings(HealthEndpointProperties properties,
-			ObjectProvider<StatusAggregator> statusAggregatorProvider,
-			ObjectProvider<HttpCodeStatusMapper> httpCodeStatusMapperProvider) {
-		StatusAggregator statusAggregator = statusAggregatorProvider
-				.getIfAvailable(() -> new SimpleStatusAggregator(properties.getStatus().getOrder()));
-		HttpCodeStatusMapper httpCodeStatusMapper = httpCodeStatusMapperProvider
-				.getIfAvailable(() -> new SimpleHttpCodeStatusMapper(properties.getStatus().getHttpMapping()));
-		return new AutoConfiguredHealthEndpointSettings(statusAggregator, httpCodeStatusMapper,
-				properties.getShowDetails(), properties.getRoles());
+	HealthEndpointGroups healthEndpointGroups(ApplicationContext applicationContext,
+			HealthEndpointProperties properties) {
+		return new AutoConfiguredHealthEndpointGroups(applicationContext, properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthContributorRegistry healthContributorRegistry(Map<String, HealthContributor> healthContributors) {
-		return new DefaultHealthContributorRegistry(healthContributors);
+	HealthContributorRegistry healthContributorRegistry(Map<String, HealthContributor> healthContributors,
+			HealthEndpointGroups groups) {
+		return new AutoConfiguredHealthContributorRegistry(healthContributors, groups.getNames());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointSettings settings) {
-		return new HealthEndpoint(registry, settings);
+	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups) {
+		return new HealthEndpoint(registry, groups);
 	}
 
 }

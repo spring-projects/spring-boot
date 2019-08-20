@@ -951,6 +951,42 @@ TIP: If necessary, reactive indicators replace the regular ones. Also, any
 
 
 
+==== Health Groups
+It's sometimes useful to organize health indicators into groups that can be used for
+different purposes. For example, if you deploy your application to Kubernetes, you may
+want one different sets of health indicators for your "`liveness`" and "`readiness`"
+probes.
+
+To create a health indicator group you can use the `management.endpoint.health.group.<name>`
+property and specify a list of health indicator IDs to `include` or `exclude`. For example,
+to create a group that includes only database indicators you can define the following:
+
+[source,properties,indent=0]
+----
+	management.endpoint.health.group.custom.include=db
+----
+
+You can then check the result by hitting `http://localhost:8080/actuator/health/custom`.
+
+By default groups will inherit the same `StatusAggregator` and `HttpCodeStatusMapper`
+settings as the system health, however, these can also be defined on a per-group
+basis. It's also possible to override the `show-details` and `roles` properties
+if required:
+
+[source,properties,indent=0]
+----
+	management.endpoint.health.group.custom.show-details=when-authorized
+	management.endpoint.health.group.custom.roles=admin
+	management.endpoint.health.group.custom.status.order=fatal,up
+	management.endpoint.health.group.custom.status.http-mapping.fatal=500
+
+----
+
+TIP: You can use `@Qualifier("groupname")` if you need to register custom
+`StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
+
+
+
 [[production-ready-application-info]]
 === Application Information
 Application information exposes various information collected from all

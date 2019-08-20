@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -50,18 +51,18 @@ class ReactiveHealthEndpointWebExtensionTests extends
 	@Test
 	void healthReturnsSystemHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.settings)
+		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.groups)
 				.health(SecurityContext.NONE).block();
 		HealthComponent health = response.getBody();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health).isInstanceOf(CompositeHealth.class);
+		assertThat(health).isInstanceOf(SystemHealth.class);
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Test
 	void healthWhenPathDoesNotExistReturnsHttp404() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.settings)
+		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.groups)
 				.health(SecurityContext.NONE, "missing").block();
 		assertThat(response.getBody()).isNull();
 		assertThat(response.getStatus()).isEqualTo(404);
@@ -70,7 +71,7 @@ class ReactiveHealthEndpointWebExtensionTests extends
 	@Test
 	void healthWhenPathExistsReturnsHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.settings)
+		WebEndpointResponse<? extends HealthComponent> response = create(this.registry, this.groups)
 				.health(SecurityContext.NONE, "test").block();
 		assertThat(response.getBody()).isEqualTo(this.up);
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -78,8 +79,8 @@ class ReactiveHealthEndpointWebExtensionTests extends
 
 	@Override
 	protected ReactiveHealthEndpointWebExtension create(ReactiveHealthContributorRegistry registry,
-			HealthEndpointSettings settings) {
-		return new ReactiveHealthEndpointWebExtension(registry, settings);
+			HealthEndpointGroups groups) {
+		return new ReactiveHealthEndpointWebExtension(registry, groups);
 	}
 
 	@Override
@@ -99,8 +100,8 @@ class ReactiveHealthEndpointWebExtensionTests extends
 	}
 
 	@Override
-	protected HealthComponent getHealth(Mono<? extends HealthComponent> result) {
-		return result.block();
+	protected HealthComponent getHealth(HealthResult<Mono<? extends HealthComponent>> result) {
+		return result.getHealth().block();
 	}
 
 }

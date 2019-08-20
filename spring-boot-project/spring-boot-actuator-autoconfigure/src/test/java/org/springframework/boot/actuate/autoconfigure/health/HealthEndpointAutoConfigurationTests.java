@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -32,7 +32,7 @@ import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthEndpointSettings;
+import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -75,7 +76,7 @@ class HealthEndpointAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.endpoint.health.enabled=false").run((context) -> {
 			assertThat(context).doesNotHaveBean(StatusAggregator.class);
 			assertThat(context).doesNotHaveBean(HttpCodeStatusMapper.class);
-			assertThat(context).doesNotHaveBean(HealthEndpointSettings.class);
+			assertThat(context).doesNotHaveBean(HealthEndpointGroups.class);
 			assertThat(context).doesNotHaveBean(HealthContributorRegistry.class);
 			assertThat(context).doesNotHaveBean(HealthEndpoint.class);
 			assertThat(context).doesNotHaveBean(ReactiveHealthContributorRegistry.class);
@@ -152,19 +153,21 @@ class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void runCreatesHealthEndpointSettings() {
-		this.contextRunner.run((context) -> {
-			HealthEndpointSettings settings = context.getBean(HealthEndpointSettings.class);
-			assertThat(settings).isInstanceOf(AutoConfiguredHealthEndpointSettings.class);
+	void runCreatesHealthEndpointGroups() {
+		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=*").run((context) -> {
+			HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+			assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
+			assertThat(groups.getNames()).containsOnly("ready");
 		});
 	}
 
 	@Test
-	void runWhenHasHealthEndpointSettingsBeanDoesNotCreateAdditionalHealthEndpointSettings() {
-		this.contextRunner.withUserConfiguration(HealthEndpointSettingsConfiguration.class).run((context) -> {
-			HealthEndpointSettings settings = context.getBean(HealthEndpointSettings.class);
-			assertThat(Mockito.mockingDetails(settings).isMock()).isTrue();
-		});
+	void runWhenHasHealthEndpointGroupsBeanDoesNotCreateAdditionalHealthEndpointGroups() {
+		this.contextRunner.withUserConfiguration(HealthEndpointGroupsConfiguration.class)
+				.withPropertyValues("management.endpoint.health.group.ready.include=*").run((context) -> {
+					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+					assertThat(groups.getNames()).containsOnly("mock");
+				});
 	}
 
 	@Test
@@ -340,11 +343,13 @@ class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class HealthEndpointSettingsConfiguration {
+	static class HealthEndpointGroupsConfiguration {
 
 		@Bean
-		HealthEndpointSettings healthEndpointSettings() {
-			return mock(HealthEndpointSettings.class);
+		HealthEndpointGroups healthEndpointGroups() {
+			HealthEndpointGroups groups = mock(HealthEndpointGroups.class);
+			given(groups.getNames()).willReturn(Collections.singleton("mock"));
+			return groups;
 		}
 
 	}

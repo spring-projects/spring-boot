@@ -17,22 +17,24 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties.ShowDetails;
+import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.ShowDetails;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.health.HealthEndpointSettings;
+import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Auto-configured {@link HealthEndpointSettings} backed by
- * {@link HealthEndpointProperties}.
+ * Auto-configured {@link HealthEndpointGroup} backed by {@link HealthProperties}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class AutoConfiguredHealthEndpointSettings implements HealthEndpointSettings {
+class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
+
+	private final Predicate<String> members;
 
 	private final StatusAggregator statusAggregator;
 
@@ -43,18 +45,25 @@ class AutoConfiguredHealthEndpointSettings implements HealthEndpointSettings {
 	private final Collection<String> roles;
 
 	/**
-	 * Create a new {@link AutoConfiguredHealthEndpointSettings} instance.
+	 * Create a new {@link AutoConfiguredHealthEndpointGroup} instance.
+	 * @param members a predicate used to test for group membership
 	 * @param statusAggregator the status aggregator to use
 	 * @param httpCodeStatusMapper the HTTP code status mapper to use
 	 * @param showDetails the show details setting
 	 * @param roles the roles to match
 	 */
-	AutoConfiguredHealthEndpointSettings(StatusAggregator statusAggregator, HttpCodeStatusMapper httpCodeStatusMapper,
-			ShowDetails showDetails, Collection<String> roles) {
+	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
+			HttpCodeStatusMapper httpCodeStatusMapper, ShowDetails showDetails, Collection<String> roles) {
+		this.members = members;
 		this.statusAggregator = statusAggregator;
 		this.httpCodeStatusMapper = httpCodeStatusMapper;
 		this.showDetails = showDetails;
 		this.roles = roles;
+	}
+
+	@Override
+	public boolean isMember(String name) {
+		return this.members.test(name);
 	}
 
 	@Override

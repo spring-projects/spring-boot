@@ -19,12 +19,20 @@ package org.springframework.boot.actuate.health;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 
 /**
- * Setting for a {@link HealthEndpoint}.
+ * A logical grouping of {@link HealthContributor health contributors} that can be exposed
+ * by the {@link HealthEndpoint}.
  *
  * @author Phillip Webb
  * @since 2.2.0
  */
-public interface HealthEndpointSettings {
+public interface HealthEndpointGroup {
+
+	/**
+	 * Returns {@code true} if the given contributor is a member of this group.
+	 * @param name the contributor name
+	 * @return {@code true} if the contributor is a member of this group
+	 */
+	boolean isMember(String name);
 
 	/**
 	 * Returns if {@link Health#getDetails() health details} should be included in the
@@ -35,13 +43,13 @@ public interface HealthEndpointSettings {
 	boolean includeDetails(SecurityContext securityContext);
 
 	/**
-	 * Returns the status agreggator that should be used for the endpoint.
-	 * @return the status aggregator
+	 * Returns the status agreggator that should be used for this group.
+	 * @return the status aggregator for this group
 	 */
 	StatusAggregator getStatusAggregator();
 
 	/**
-	 * Returns the {@link HttpCodeStatusMapper} that should be used for the endpoint.
+	 * Returns the {@link HttpCodeStatusMapper} that should be used for this group.
 	 * @return the HTTP code status mapper
 	 */
 	HttpCodeStatusMapper getHttpCodeStatusMapper();

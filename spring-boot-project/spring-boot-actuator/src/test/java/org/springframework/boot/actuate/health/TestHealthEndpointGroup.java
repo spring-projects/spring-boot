@@ -16,20 +16,37 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.function.Predicate;
+
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 
 /**
- * Test implementation of {@link HealthEndpointSettings}.
+ * Test implementation of {@link HealthEndpointGroups}.
  *
  * @author Phillip Webb
  */
-class TestHealthEndpointSettings implements HealthEndpointSettings {
+class TestHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final StatusAggregator statusAggregator = new SimpleStatusAggregator();
 
 	private final HttpCodeStatusMapper httpCodeStatusMapper = new SimpleHttpCodeStatusMapper();
 
+	private final Predicate<String> memberPredicate;
+
 	private boolean includeDetails = true;
+
+	TestHealthEndpointGroup() {
+		this((name) -> true);
+	}
+
+	TestHealthEndpointGroup(Predicate<String> memberPredicate) {
+		this.memberPredicate = memberPredicate;
+	}
+
+	@Override
+	public boolean isMember(String name) {
+		return this.memberPredicate.test(name);
+	}
 
 	@Override
 	public boolean includeDetails(SecurityContext securityContext) {

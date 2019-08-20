@@ -37,7 +37,7 @@ import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthEndpointSettings;
+import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -112,8 +112,8 @@ class CloudFoundryWebEndpointDiscovererTests {
 		@Bean
 		HealthEndpoint healthEndpoint() {
 			HealthContributorRegistry registry = mock(HealthContributorRegistry.class);
-			HealthEndpointSettings settings = mock(HealthEndpointSettings.class);
-			return new HealthEndpoint(registry, settings);
+			HealthEndpointGroups groups = mock(HealthEndpointGroups.class);
+			return new HealthEndpoint(registry, groups);
 		}
 
 		@Bean

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -49,19 +50,18 @@ class HealthEndpointWebExtensionTests
 	@Test
 	void healthReturnsSystemHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<HealthComponent> response = create(this.registry, this.settings)
-				.health(SecurityContext.NONE);
+		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(SecurityContext.NONE);
 		HealthComponent health = response.getBody();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health).isInstanceOf(CompositeHealth.class);
+		assertThat(health).isInstanceOf(SystemHealth.class);
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Test
 	void healthWhenPathDoesNotExistReturnsHttp404() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<HealthComponent> response = create(this.registry, this.settings)
-				.health(SecurityContext.NONE, "missing");
+		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(SecurityContext.NONE,
+				"missing");
 		assertThat(response.getBody()).isNull();
 		assertThat(response.getStatus()).isEqualTo(404);
 	}
@@ -69,15 +69,15 @@ class HealthEndpointWebExtensionTests
 	@Test
 	void healthWhenPathExistsReturnsHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		WebEndpointResponse<HealthComponent> response = create(this.registry, this.settings)
-				.health(SecurityContext.NONE, "test");
+		WebEndpointResponse<HealthComponent> response = create(this.registry, this.groups).health(SecurityContext.NONE,
+				"test");
 		assertThat(response.getBody()).isEqualTo(this.up);
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Override
-	protected HealthEndpointWebExtension create(HealthContributorRegistry registry, HealthEndpointSettings settings) {
-		return new HealthEndpointWebExtension(registry, settings);
+	protected HealthEndpointWebExtension create(HealthContributorRegistry registry, HealthEndpointGroups groups) {
+		return new HealthEndpointWebExtension(registry, groups);
 	}
 
 	@Override
@@ -96,8 +96,8 @@ class HealthEndpointWebExtensionTests
 	}
 
 	@Override
-	protected HealthComponent getHealth(HealthComponent result) {
-		return result;
+	protected HealthComponent getHealth(HealthResult<HealthComponent> result) {
+		return result.getHealth();
 	}
 
 }

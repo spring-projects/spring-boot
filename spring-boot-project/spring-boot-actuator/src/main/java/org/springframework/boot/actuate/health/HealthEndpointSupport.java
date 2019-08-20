@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -34,7 +35,7 @@ abstract class HealthEndpointSupport<C, T> {
 
 	private final ContributorRegistry<C> registry;
 
-	private final HealthEndpointSettings settings;
+	private final HealthEndpointGroups groups;
 
 	/**
 	 * Throw a new {@link IllegalStateException} to indicate a constructor has been
@@ -49,37 +50,39 @@ abstract class HealthEndpointSupport<C, T> {
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
 	 * @param registry the health contributor registry
-	 * @param settings the health settings
+	 * @param groups the health endpoint groups
 	 */
-	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointSettings settings) {
+	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointGroups groups) {
 		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(groups, "Groups must not be null");
 		this.registry = registry;
-		this.settings = settings;
+		this.groups = groups;
 	}
 
-	/**
-	 * Return the health endpoint settings.
-	 * @return the settings
-	 */
-	protected final HealthEndpointSettings getSettings() {
-		return this.settings;
+	HealthResult<T> getHealth(SecurityContext securityContext, boolean alwaysIncludeDetails, String... path) {
+		HealthEndpointGroup group = (path.length > 0) ? this.groups.get(path[0]) : null;
+		if (group != null) {
+			return getHealth(group, securityContext, alwaysIncludeDetails, path, 1);
+		}
+		return getHealth(this.groups.getPrimary(), securityContext, alwaysIncludeDetails, path, 0);
 	}
 
-	T getHealth(SecurityContext securityContext, boolean alwaysIncludeDetails, String... path) {
-		boolean includeDetails = alwaysIncludeDetails || this.settings.includeDetails(securityContext);
-		boolean isRoot = path.length == 0;
+	private HealthResult<T> getHealth(HealthEndpointGroup group, SecurityContext securityContext,
+			boolean alwaysIncludeDetails, String[] path, int pathOffset) {
+		boolean includeDetails = alwaysIncludeDetails || group.includeDetails(securityContext);
+		boolean isSystemHealth = group == this.groups.getPrimary() && pathOffset == 0;
+		boolean isRoot = path.length - pathOffset == 0;
 		if (!includeDetails && !isRoot) {
 			return null;
 		}
-		Object contributor = getContributor(path);
-		return getContribution(contributor, includeDetails);
+		Object contributor = getContributor(path, pathOffset);
+		T health = getContribution(group, contributor, includeDetails, isSystemHealth ? this.groups.getNames() : null);
+		return (health != null) ? new HealthResult<T>(health, group) : null;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object getContributor(String[] path) {
+	private Object getContributor(String[] path, int pathOffset) {
 		Object contributor = this.registry;
-		int pathOffset = 0;
 		while (pathOffset < path.length) {
 			if (!(contributor instanceof NamedContributors)) {
 				return null;
@@ -91,37 +94,70 @@ abstract class HealthEndpointSupport<C, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private T getContribution(Object contributor, boolean includeDetails) {
+	private T getContribution(HealthEndpointGroup group, Object contributor, boolean includeDetails,
+			Set<String> groupNames) {
 		if (contributor instanceof NamedContributors) {
-			return getAggregateHealth((NamedContributors<C>) contributor, includeDetails);
+			return getAggregateHealth(group, (NamedContributors<C>) contributor, includeDetails, groupNames);
 		}
 		return (contributor != null) ? getHealth((C) contributor, includeDetails) : null;
 	}
 
-	private T getAggregateHealth(NamedContributors<C> namedContributors, boolean includeDetails) {
+	private T getAggregateHealth(HealthEndpointGroup group, NamedContributors<C> namedContributors,
+			boolean includeDetails, Set<String> groupNames) {
 		Map<String, T> contributions = new LinkedHashMap<>();
 		for (NamedContributor<C> namedContributor : namedContributors) {
 			String name = namedContributor.getName();
-			T contribution = getContribution(namedContributor.getContributor(), includeDetails);
-			contributions.put(name, contribution);
+			if (group.isMember(name)) {
+				T contribution = getContribution(group, namedContributor.getContributor(), includeDetails, null);
+				contributions.put(name, contribution);
+			}
 		}
 		if (contributions.isEmpty()) {
 			return null;
 		}
-		return aggregateContributions(contributions, this.settings.getStatusAggregator(), includeDetails);
+		return aggregateContributions(contributions, group.getStatusAggregator(), includeDetails, groupNames);
 	}
 
 	protected abstract T getHealth(C contributor, boolean includeDetails);
 
 	protected abstract T aggregateContributions(Map<String, T> contributions, StatusAggregator statusAggregator,
-			boolean includeDetails);
+			boolean includeDetails, Set<String> groupNames);
 
 	protected final CompositeHealth getCompositeHealth(Map<String, HealthComponent> components,
-			StatusAggregator statusAggregator, boolean includeDetails) {
+			StatusAggregator statusAggregator, boolean includeDetails, Set<String> groupNames) {
 		Status status = statusAggregator.getAggregateStatus(
 				components.values().stream().map(HealthComponent::getStatus).collect(Collectors.toSet()));
 		Map<String, HealthComponent> includedComponents = includeDetails ? components : null;
+		if (groupNames != null) {
+			return new SystemHealth(status, includedComponents, groupNames);
+		}
 		return new CompositeHealth(status, includedComponents);
+	}
+
+	/**
+	 * A health result containing health and the group that created it.
+	 *
+	 * @param <T> the contributed health component
+	 */
+	static class HealthResult<T> {
+
+		private final T health;
+
+		private final HealthEndpointGroup group;
+
+		HealthResult(T health, HealthEndpointGroup group) {
+			this.health = health;
+			this.group = group;
+		}
+
+		T getHealth() {
+			return this.health;
+		}
+
+		HealthEndpointGroup getGroup() {
+			return this.group;
+		}
+
 	}
 
 }

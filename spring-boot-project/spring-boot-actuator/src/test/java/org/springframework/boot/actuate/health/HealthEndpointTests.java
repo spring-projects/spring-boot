@@ -20,6 +20,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
@@ -42,30 +44,30 @@ class HealthEndpointTests
 	}
 
 	@Test
-	void healthReturnsCompositeHealth() {
+	void healthReturnsSystemHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthComponent health = create(this.registry, this.settings).health();
+		HealthComponent health = create(this.registry, this.groups).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health).isInstanceOf(CompositeHealth.class);
+		assertThat(health).isInstanceOf(SystemHealth.class);
 	}
 
 	@Test
 	void healthWhenPathDoesNotExistReturnsNull() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthComponent health = create(this.registry, this.settings).healthForPath("missing");
+		HealthComponent health = create(this.registry, this.groups).healthForPath("missing");
 		assertThat(health).isNull();
 	}
 
 	@Test
 	void healthWhenPathExistsReturnsHealth() {
 		this.registry.registerContributor("test", createContributor(this.up));
-		HealthComponent health = create(this.registry, this.settings).healthForPath("test");
+		HealthComponent health = create(this.registry, this.groups).healthForPath("test");
 		assertThat(health).isEqualTo(this.up);
 	}
 
 	@Override
-	protected HealthEndpoint create(HealthContributorRegistry registry, HealthEndpointSettings settings) {
-		return new HealthEndpoint(registry, settings);
+	protected HealthEndpoint create(HealthContributorRegistry registry, HealthEndpointGroups groups) {
+		return new HealthEndpoint(registry, groups);
 	}
 
 	@Override
@@ -84,8 +86,8 @@ class HealthEndpointTests
 	}
 
 	@Override
-	protected HealthComponent getHealth(HealthComponent result) {
-		return result;
+	protected HealthComponent getHealth(HealthResult<HealthComponent> result) {
+		return result.getHealth();
 	}
 
 }

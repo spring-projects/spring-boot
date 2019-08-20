@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -47,7 +48,7 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	 * @param delegate the delegate endpoint
 	 * @param responseMapper the response mapper
 	 * @deprecated since 2.2.0 in favor of
-	 * {@link #HealthEndpointWebExtension(HealthContributorRegistry, HealthEndpointSettings)}
+	 * {@link #HealthEndpointWebExtension(HealthContributorRegistry, HealthEndpointGroups)}
 	 */
 	@Deprecated
 	public HealthEndpointWebExtension(HealthEndpoint delegate, HealthWebEndpointResponseMapper responseMapper) {
@@ -56,10 +57,10 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	/**
 	 * Create a new {@link HealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
-	 * @param settings the health endpoint settings
+	 * @param groups the health endpoint groups
 	 */
-	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointSettings settings) {
-		super(registry, settings);
+	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointGroups groups) {
+		super(registry, groups);
 	}
 
 	@ReadOperation
@@ -75,11 +76,13 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 
 	public WebEndpointResponse<HealthComponent> health(SecurityContext securityContext, boolean alwaysIncludeDetails,
 			String... path) {
-		HealthComponent health = getHealth(securityContext, alwaysIncludeDetails, path);
-		if (health == null) {
+		HealthResult<HealthComponent> result = getHealth(securityContext, alwaysIncludeDetails, path);
+		if (result == null) {
 			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 		}
-		int statusCode = getSettings().getHttpCodeStatusMapper().getStatusCode(health.getStatus());
+		HealthComponent health = result.getHealth();
+		HealthEndpointGroup group = result.getGroup();
+		int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
 		return new WebEndpointResponse<>(health, statusCode);
 	}
 
@@ -90,8 +93,8 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 
 	@Override
 	protected HealthComponent aggregateContributions(Map<String, HealthComponent> contributions,
-			StatusAggregator statusAggregator, boolean includeDetails) {
-		return getCompositeHealth(contributions, statusAggregator, includeDetails);
+			StatusAggregator statusAggregator, boolean includeDetails, Set<String> groupNames) {
+		return getCompositeHealth(contributions, statusAggregator, includeDetails, groupNames);
 	}
 
 }

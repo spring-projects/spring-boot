@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,8 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthEndpointSettings;
+import org.springframework.boot.actuate.health.HealthEndpointGroup;
+import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
@@ -104,8 +106,9 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		@Bean
 		HealthEndpoint healthEndpoint(Map<String, HealthContributor> healthContributors) {
 			HealthContributorRegistry registry = new DefaultHealthContributorRegistry(healthContributors);
-			HealthEndpointSettings settings = new TestHealthEndpointSettings();
-			return new HealthEndpoint(registry, settings);
+			HealthEndpointGroup primary = new TestHealthEndpointGroup();
+			HealthEndpointGroups groups = HealthEndpointGroups.of(primary, Collections.emptyMap());
+			return new HealthEndpoint(registry, groups);
 		}
 
 		@Bean
@@ -128,11 +131,16 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	}
 
-	private static class TestHealthEndpointSettings implements HealthEndpointSettings {
+	private static class TestHealthEndpointGroup implements HealthEndpointGroup {
 
 		private final StatusAggregator statusAggregator = new SimpleStatusAggregator();
 
 		private final HttpCodeStatusMapper httpCodeStatusMapper = new SimpleHttpCodeStatusMapper();
+
+		@Override
+		public boolean isMember(String name) {
+			return true;
+		}
 
 		@Override
 		public boolean includeDetails(SecurityContext securityContext) {
