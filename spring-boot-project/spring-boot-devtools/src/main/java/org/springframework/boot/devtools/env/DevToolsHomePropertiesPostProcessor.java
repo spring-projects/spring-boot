@@ -93,7 +93,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private void addPropertySource(List<PropertySource<?>> propertySources, String fileName,
 			Function<File, String> propertySourceNamer) {
-		File home = getHomeDirectory();
+		File home = getProjectRootFolder();
 		File file = (home != null) ? new File(home, fileName) : null;
 		FileSystemResource resource = (file != null) ? new FileSystemResource(file) : null;
 		if (resource != null && resource.exists() && resource.isFile()) {
@@ -119,6 +119,17 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	private boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
 		return Arrays.stream(loader.getFileExtensions())
 				.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
+	}
+
+	protected File getProjectRootFolder() {
+		String rootFolder = System.getenv("PROJECT_ROOT_FOLDER");
+		if (rootFolder == null) {
+			rootFolder = System.getProperty("PROJECT_ROOT_FOLDER");
+		}
+		if (StringUtils.hasLength(rootFolder)) {
+			return new File(rootFolder);
+		}
+		return getHomeDirectory();
 	}
 
 	protected File getHomeDirectory() {
