@@ -45,7 +45,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -85,11 +84,8 @@ public class LiquibaseAutoConfiguration {
 
 		private final LiquibaseProperties properties;
 
-		private final ResourceLoader resourceLoader;
-
-		public LiquibaseConfiguration(LiquibaseProperties properties, ResourceLoader resourceLoader) {
+		public LiquibaseConfiguration(LiquibaseProperties properties) {
 			this.properties = properties;
-			this.resourceLoader = resourceLoader;
 		}
 
 		@Bean

@@ -149,7 +149,7 @@
 		<mariadb.version>2.4.3</mariadb.version>
 		<micrometer.version>1.2.0</micrometer.version>
 		<mimepull.version>1.9.11</mimepull.version>
-		<mockito.version>2.28.2</mockito.version>
+		<mockito.version>3.0.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.12.0-rc0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.11.0-rc0</mongodb.version>
 		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
@@ -166,7 +166,7 @@
 		<quartz.version>2.3.1</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
 		<rabbit-amqp-client.version>5.7.3</rabbit-amqp-client.version>
-		<reactor-bom.version>Dysprosium-M3</reactor-bom.version>
+		<reactor-bom.version>Dysprosium-BUILD-SNAPSHOT</reactor-bom.version>
 		<rest-assured.version>3.3.0</rest-assured.version>
 		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rsocket.version>1.0.0-RC2</rsocket.version>
@@ -181,13 +181,13 @@
 		<snakeyaml.version>1.24</snakeyaml.version>
 		<solr.version>8.2.0</solr.version>
 		<spring-amqp.version>2.2.0.M4</spring-amqp.version>
-		<spring-batch.version>4.2.0.M3</spring-batch.version>
+		<spring-batch.version>4.2.0.BUILD-SNAPSHOT</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.6.RELEASE</spring-cloud-connectors.version>
-		<spring-data-releasetrain.version>Moore-RC2</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Moore-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-framework.version>5.2.0.BUILD-SNAPSHOT</spring-framework.version>
-		<spring-hateoas.version>1.0.0.RC1</spring-hateoas.version>
-		<spring-integration.version>5.2.0.M4</spring-integration.version>
-		<spring-kafka.version>2.3.0.M4</spring-kafka.version>
+		<spring-hateoas.version>1.0.0.BUILD-SNAPSHOT</spring-hateoas.version>
+		<spring-integration.version>5.2.0.BUILD-SNAPSHOT</spring-integration.version>
+		<spring-kafka.version>2.3.0.BUILD-SNAPSHOT</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>2.0.0.M1</spring-plugin.version>
 		<spring-restdocs.version>2.0.3.RELEASE</spring-restdocs.version>

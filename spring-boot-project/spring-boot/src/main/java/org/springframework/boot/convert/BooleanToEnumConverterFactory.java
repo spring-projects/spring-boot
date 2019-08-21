@@ -24,7 +24,7 @@ import org.springframework.core.convert.converter.Converter;
  *
  * @author Madhura Bhave
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings("rawtypes")
 final class BooleanToEnumConverterFactory extends AbstractTypeToEnumConverterFactory<Boolean> {
 
 	@Override

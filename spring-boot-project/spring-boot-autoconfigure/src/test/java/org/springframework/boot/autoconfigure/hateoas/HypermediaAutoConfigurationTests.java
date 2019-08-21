@@ -22,7 +22,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.EntityLinksConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.HypermediaConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -93,7 +92,6 @@ class HypermediaAutoConfigurationTests {
 		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(HypermediaConfiguration.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(EntityLinksConfiguration.class)).isEmpty();
 	}
 
 	@Test

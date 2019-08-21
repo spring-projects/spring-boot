@@ -1036,6 +1036,7 @@ TIP: The Maven and Gradle plugins can both generate that file. See
 "<<howto.adoc#howto-build-info,Generate build information>>" for more details.
 
 
+
 [[production-ready-application-info-custom]]
 ==== Writing Custom InfoContributors
 To provide custom application information, you can register Spring beans that implement
@@ -1074,6 +1075,7 @@ additional entry:
 		}
 	}
 ----
+
 
 
 [[production-ready-monitoring]]
