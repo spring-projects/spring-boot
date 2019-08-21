@@ -380,8 +380,11 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void faviconMapping() {
-		this.contextRunner
-				.run((context) -> assertThat(getResourceMappingLocations(context).get("/favicon.ico")).hasSize(1));
+		this.contextRunner.run((context) -> {
+			List<Resource> favIconResources = getResourceMappingLocations(context).get("/favicon.ico");
+			assertThat(favIconResources.stream().map(ClassPathResource.class::cast).map(ClassPathResource::getPath))
+					.containsExactly("META-INF/resources/", "resources/", "static/", "public/", "favicon.ico");
+		});
 	}
 
 	@Test
