@@ -94,6 +94,7 @@ org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManag
 org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey.JerseyWebEndpointManagementContextConfiguration,\
+org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration,\

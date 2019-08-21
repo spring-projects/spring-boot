@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package sample.actuator.customsecurity;
+package sample.secure.jersey;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -33,16 +30,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for separate management and main service ports with custom management
- * context path.
+ * Integration tests for separate management and main service ports with custom
+ * application path.
  *
- * @author Dave Syer
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0", "management.server.servlet.context-path=/management" })
-public class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSampleActuatorCustomSecurityTests {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0", "spring.jersey.application-path=/example" })
+public class ManagementPortCustomApplicationPathJerseyTests extends AbstractJerseySecureTests {
 
 	@LocalServerPort
 	private int port;
@@ -50,30 +46,21 @@ public class ManagementPortAndPathSampleActuatorApplicationTests extends Abstrac
 	@LocalManagementPort
 	private int managementPort;
 
-	@Autowired
-	private Environment environment;
-
 	@Test
-	public void testMissing() {
-		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(entity.getBody()).contains("\"status\":404");
+	public void actuatorPathOnMainPortShouldNotMatch() {
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/example/actuator/health", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Override
 	String getPath() {
-		return "http://localhost:" + this.port;
+		return "http://localhost:" + this.port + "/example";
 	}
 
 	@Override
 	String getManagementPath() {
-		return "http://localhost:" + this.managementPort + "/management";
-	}
-
-	@Override
-	Environment getEnvironment() {
-		return this.environment;
+		return "http://localhost:" + this.managementPort;
 	}
 
 }

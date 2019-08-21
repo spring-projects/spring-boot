@@ -69,6 +69,7 @@
 		<module>spring-boot-sample-reactive-oauth2-client</module>
 		<module>spring-boot-sample-reactive-oauth2-resource-server</module>
 		<module>spring-boot-sample-secure</module>
+		<module>spring-boot-sample-secure-jersey</module>
 		<module>spring-boot-sample-secure-webflux</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-session</module>

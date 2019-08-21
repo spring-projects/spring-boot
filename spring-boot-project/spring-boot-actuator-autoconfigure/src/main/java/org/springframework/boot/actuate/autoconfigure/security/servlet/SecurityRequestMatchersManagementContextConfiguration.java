@@ -13,41 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.security.servlet;
+
+package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.security.servlet.AntPathRequestMatcherProvider;
+import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
- * Auto-configuration for {@link RequestMatcherProvider}.
+ * {@link ManagementContextConfiguration} that configures the appropriate
+ * {@link RequestMatcherProvider}.
  *
  * @author Madhura Bhave
- * @since 2.0.5
+ * @since 2.1.8
  */
-@Configuration
+@ManagementContextConfiguration
 @ConditionalOnClass({ RequestMatcher.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class SecurityRequestMatcherProviderAutoConfiguration {
+public class SecurityRequestMatchersManagementContextConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(DispatcherServlet.class)
-	@ConditionalOnBean(HandlerMappingIntrospector.class)
+	@ConditionalOnBean(DispatcherServletPath.class)
 	public static class MvcRequestMatcherConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		@ConditionalOnClass(DispatcherServlet.class)
-		public RequestMatcherProvider requestMatcherProvider(HandlerMappingIntrospector introspector) {
-			return new MvcRequestMatcherProvider(introspector);
+		public RequestMatcherProvider requestMatcherProvider(DispatcherServletPath servletPath) {
+			return new AntPathRequestMatcherProvider(servletPath::getRelativePath);
 		}
 
 	}
@@ -60,7 +67,7 @@ public class SecurityRequestMatcherProviderAutoConfiguration {
 
 		@Bean
 		public RequestMatcherProvider requestMatcherProvider(JerseyApplicationPath applicationPath) {
-			return new JerseyRequestMatcherProvider(applicationPath);
+			return new AntPathRequestMatcherProvider(applicationPath::getRelativePath);
 		}
 
 	}
