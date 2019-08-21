@@ -133,7 +133,7 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	}
 
 	private void resetLogger() {
-		this.loggerGroups.get("test").configureLogLevel(null, (a, b) -> {
+		this.loggerGroups.get("test").configureLogLevel(LogLevel.INFO, (a, b) -> {
 		});
 	}
 
@@ -152,6 +152,8 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 		@Bean
 		LoggersEndpoint endpoint(LoggingSystem loggingSystem, LoggerGroups groups) {
 			groups.putAll(getLoggerGroups());
+			groups.get("test").configureLogLevel(LogLevel.INFO, (member, level) -> {
+			});
 			return new LoggersEndpoint(loggingSystem, groups);
 		}
 
