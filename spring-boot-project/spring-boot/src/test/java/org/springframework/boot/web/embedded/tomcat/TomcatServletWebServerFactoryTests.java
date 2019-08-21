@@ -519,6 +519,21 @@ public class TomcatServletWebServerFactoryTests extends AbstractServletWebServer
 				() -> factory.getWebServer((context) -> context.addListener(new FailingServletContextListener())));
 	}
 
+	@Test
+	public void registerJspServletWithDefaultLoadOnStartup() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
+		factory.addInitializers(new ServletContextInitializer() {
+
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.addServlet("manually-registered-jsp-servlet", JspServlet.class);
+			}
+
+		});
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+	}
+
 	@Override
 	protected JspServlet getJspServlet() throws ServletException {
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
