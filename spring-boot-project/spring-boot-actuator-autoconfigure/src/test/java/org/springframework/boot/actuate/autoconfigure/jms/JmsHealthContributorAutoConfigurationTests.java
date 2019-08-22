@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.jms;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.jms.JmsHealthIndicator;
 import org.springframework.boot.actuate.ldap.LdapHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -41,15 +40,13 @@ class JmsHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JmsHealthIndicator.class)
-				.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JmsHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.jms.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(LdapHealthIndicator.class)
-						.hasSingleBean(ApplicationHealthIndicator.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(LdapHealthIndicator.class));
 	}
 
 }

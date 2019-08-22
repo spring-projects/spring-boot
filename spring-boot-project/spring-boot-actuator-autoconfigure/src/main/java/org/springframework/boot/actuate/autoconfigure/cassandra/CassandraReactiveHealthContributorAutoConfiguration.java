@@ -22,11 +22,9 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -48,7 +46,6 @@ import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
 @ConditionalOnClass({ Cluster.class, ReactiveCassandraOperations.class, Flux.class })
 @ConditionalOnBean(ReactiveCassandraOperations.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")
-@AutoConfigureBefore(HealthContributorAutoConfiguration.class)
 @AutoConfigureAfter(CassandraReactiveDataAutoConfiguration.class)
 public class CassandraReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {

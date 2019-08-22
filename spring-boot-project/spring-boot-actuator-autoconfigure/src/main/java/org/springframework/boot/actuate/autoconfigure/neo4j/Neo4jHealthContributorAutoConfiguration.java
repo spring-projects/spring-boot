@@ -22,11 +22,9 @@ import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,7 +44,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(SessionFactory.class)
 @ConditionalOnBean(SessionFactory.class)
 @ConditionalOnEnabledHealthIndicator("neo4j")
-@AutoConfigureBefore(HealthContributorAutoConfiguration.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
 public class Neo4jHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<Neo4jHealthIndicator, SessionFactory> {

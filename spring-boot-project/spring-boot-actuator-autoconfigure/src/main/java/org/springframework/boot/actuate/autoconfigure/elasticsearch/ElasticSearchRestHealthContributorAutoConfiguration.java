@@ -22,11 +22,9 @@ import org.elasticsearch.client.RestClient;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,7 +44,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(RestClient.class)
 @ConditionalOnBean(RestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
-@AutoConfigureBefore(HealthContributorAutoConfiguration.class)
 @AutoConfigureAfter({ RestClientAutoConfiguration.class, ElasticSearchClientHealthContributorAutoConfiguration.class })
 @SuppressWarnings("deprecation")
 public class ElasticSearchRestHealthContributorAutoConfiguration

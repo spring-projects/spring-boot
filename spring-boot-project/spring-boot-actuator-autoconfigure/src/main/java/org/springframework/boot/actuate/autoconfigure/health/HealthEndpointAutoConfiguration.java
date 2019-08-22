@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +33,6 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HealthEndpointProperties.class)
-@AutoConfigureAfter(HealthContributorAutoConfiguration.class)
 @ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
 @Import({ LegacyHealthEndpointAdaptersConfiguration.class, LegacyHealthEndpointCompatibiltyConfiguration.class,
 		HealthEndpointConfiguration.class, ReactiveHealthEndpointConfiguration.class,

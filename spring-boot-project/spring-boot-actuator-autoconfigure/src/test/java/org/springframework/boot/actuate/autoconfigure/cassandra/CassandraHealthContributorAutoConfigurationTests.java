@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -44,15 +43,13 @@ class CassandraHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CassandraHealthIndicator.class)
-				.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CassandraHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.cassandra.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(CassandraHealthIndicator.class)
-						.hasSingleBean(ApplicationHealthIndicator.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(CassandraHealthIndicator.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
