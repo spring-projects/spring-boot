@@ -16,35 +16,12 @@
 
 package org.springframework.boot.convert;
 
-import org.springframework.core.convert.converter.Converter;
-
 /**
  * Converter to support mapping of YAML style {@code "false"} and {@code "true"} to enums
  * {@code ON} and {@code OFF}.
  *
  * @author Madhura Bhave
  */
-@SuppressWarnings("rawtypes")
-final class BooleanToEnumConverterFactory extends AbstractTypeToEnumConverterFactory<Boolean> {
-
-	@Override
-	<E extends Enum> Converter<Boolean, E> getTypeToEnumConverter(Class<E> targetType) {
-		return new BooleanToEnum<>(targetType);
-	}
-
-	private class BooleanToEnum<T extends Enum> implements Converter<Boolean, T> {
-
-		private final Class<T> enumType;
-
-		BooleanToEnum(Class<T> enumType) {
-			this.enumType = enumType;
-		}
-
-		@Override
-		public T convert(Boolean source) {
-			return findEnum(Boolean.toString(source), this.enumType);
-		}
-
-	}
+final class LenientBooleanToEnumConverterFactory extends LenientToEnumConverterFactory<Boolean> {
 
 }

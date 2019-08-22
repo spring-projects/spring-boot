@@ -16,8 +16,6 @@
 
 package org.springframework.boot.convert;
 
-import org.springframework.core.convert.converter.Converter;
-
 /**
  * Converts from a String to a {@link java.lang.Enum} with lenient conversion rules.
  * Specifically:
@@ -30,36 +28,6 @@ import org.springframework.core.convert.converter.Converter;
  *
  * @author Phillip Webb
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
-final class LenientStringToEnumConverterFactory extends AbstractTypeToEnumConverterFactory<String> {
-
-	@Override
-	<E extends Enum> Converter<String, E> getTypeToEnumConverter(Class<E> targetType) {
-		return new StringToEnum<>(targetType);
-	}
-
-	private class StringToEnum<T extends Enum> implements Converter<String, T> {
-
-		private final Class<T> enumType;
-
-		StringToEnum(Class<T> enumType) {
-			this.enumType = enumType;
-		}
-
-		@Override
-		public T convert(String source) {
-			if (source.isEmpty()) {
-				return null;
-			}
-			source = source.trim();
-			try {
-				return (T) Enum.valueOf(this.enumType, source);
-			}
-			catch (Exception ex) {
-				return findEnum(source, this.enumType);
-			}
-		}
-
-	}
+final class LenientStringToEnumConverterFactory extends LenientToEnumConverterFactory<String> {
 
 }

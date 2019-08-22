@@ -18,7 +18,6 @@ package org.springframework.boot.convert;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +36,7 @@ import org.springframework.util.MultiValueMap;
  * @author Madhura Bhave
  */
 @SuppressWarnings("rawtypes")
-abstract class AbstractTypeToEnumConverterFactory<T> implements ConverterFactory<T, Enum<?>> {
+abstract class LenientToEnumConverterFactory<T> implements ConverterFactory<T, Enum<?>> {
 
 	private static Map<String, List<String>> ALIASES;
 
@@ -49,43 +48,58 @@ abstract class AbstractTypeToEnumConverterFactory<T> implements ConverterFactory
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <E extends Enum<?>> Converter<T, E> getConverter(Class<E> targetType) {
 		Class<?> enumType = targetType;
 		while (enumType != null && !enumType.isEnum()) {
 			enumType = enumType.getSuperclass();
 		}
 		Assert.notNull(enumType, () -> "The target type " + targetType.getName() + " does not refer to an enum");
-		return getTypeToEnumConverter(targetType);
+		return new LenientToEnumConverter<E>((Class<E>) enumType);
 	}
-
-	abstract <E extends Enum> Converter<T, E> getTypeToEnumConverter(Class<E> targetType);
 
 	@SuppressWarnings("unchecked")
-	<E extends Enum> E findEnum(String source, Class<E> enumType) {
-		Map<String, E> candidates = new LinkedHashMap<>();
-		for (E candidate : (Set<E>) EnumSet.allOf(enumType)) {
-			candidates.put(getCanonicalName(candidate.name()), candidate);
+	private class LenientToEnumConverter<E extends Enum> implements Converter<T, E> {
+
+		private final Class<E> enumType;
+
+		LenientToEnumConverter(Class<E> enumType) {
+			this.enumType = enumType;
 		}
-		String name = getCanonicalName(source);
-		E result = candidates.get(name);
-		if (result != null) {
-			return result;
-		}
-		for (String alias : ALIASES.getOrDefault(name, Collections.emptyList())) {
-			result = candidates.get(alias);
-			if (result != null) {
-				return result;
+
+		@Override
+		public E convert(T source) {
+			String value = source.toString().trim();
+			if (value.isEmpty()) {
+				return null;
+			}
+			try {
+				return (E) Enum.valueOf(this.enumType, value);
+			}
+			catch (Exception ex) {
+				return findEnum(value);
 			}
 		}
-		throw new IllegalArgumentException("No enum constant " + enumType.getCanonicalName() + "." + source);
 
-	}
+		private E findEnum(String value) {
+			String name = getCanonicalName(value);
+			List<String> aliases = ALIASES.getOrDefault(name, Collections.emptyList());
+			for (E candidate : (Set<E>) EnumSet.allOf(this.enumType)) {
+				String candidateName = getCanonicalName(candidate.name());
+				if (name.equals(candidateName) || aliases.contains(candidateName)) {
+					return candidate;
+				}
+			}
+			throw new IllegalArgumentException("No enum constant " + this.enumType.getCanonicalName() + "." + value);
+		}
 
-	private String getCanonicalName(String name) {
-		StringBuilder canonicalName = new StringBuilder(name.length());
-		name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
-				.forEach((c) -> canonicalName.append((char) c));
-		return canonicalName.toString();
+		private String getCanonicalName(String name) {
+			StringBuilder canonicalName = new StringBuilder(name.length());
+			name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+					.forEach((c) -> canonicalName.append((char) c));
+			return canonicalName.toString();
+		}
+
 	}
 
 }

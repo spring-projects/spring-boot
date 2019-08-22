@@ -116,7 +116,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new StringToDataSizeConverter());
 		registry.addConverter(new NumberToDataSizeConverter());
 		registry.addConverterFactory(new LenientStringToEnumConverterFactory());
-		registry.addConverterFactory(new BooleanToEnumConverterFactory());
+		registry.addConverterFactory(new LenientBooleanToEnumConverterFactory());
 	}
 
 	/**
