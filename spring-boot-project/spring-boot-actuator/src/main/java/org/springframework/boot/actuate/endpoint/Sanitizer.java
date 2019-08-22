@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.net.URI;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Strategy that should be used by endpoint implementations to sanitize potentially
@@ -29,6 +31,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Nicolas Lejeune
  * @author Stephane Nicoll
+ * @author HaiTao Zhang
  * @since 2.0.0
  */
 public class Sanitizer {
@@ -38,7 +41,7 @@ public class Sanitizer {
 	private Pattern[] keysToSanitize;
 
 	public Sanitizer() {
-		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services", "sun.java.command");
+		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services", "sun.java.command", "uri");
 	}
 
 	public Sanitizer(String... keysToSanitize) {
@@ -86,8 +89,27 @@ public class Sanitizer {
 		}
 		for (Pattern pattern : this.keysToSanitize) {
 			if (pattern.matcher(key).matches()) {
+				if (pattern.matcher("uri").matches()) {
+					return sanitizeUri(value);
+				}
 				return "******";
 			}
+		}
+		return value;
+	}
+
+	private Object sanitizeUri(Object value) {
+		URI uri = URI.create(value.toString());
+		String userInfo = uri.getUserInfo();
+		if (!StringUtils.hasText(userInfo) || userInfo.split(":").length == 0) {
+			return value;
+		}
+		String[] parts = userInfo.split(":");
+		String userName = parts[0];
+		if (StringUtils.hasText(userName)) {
+			String sanitizedPassword = "******";
+			return uri.getScheme() + "://" + userName + ":" + sanitizedPassword + "@" + uri.getHost() + ":"
+					+ uri.getPort() + uri.getPath();
 		}
 		return value;
 	}
