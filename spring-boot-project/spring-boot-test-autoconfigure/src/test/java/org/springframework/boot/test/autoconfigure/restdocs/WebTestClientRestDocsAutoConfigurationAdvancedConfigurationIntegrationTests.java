@@ -73,20 +73,20 @@ class WebTestClientRestDocsAutoConfigurationAdvancedConfigurationIntegrationTest
 	}
 
 	@TestConfiguration
-	public static class CustomizationConfiguration {
+	static class CustomizationConfiguration {
 
 		@Bean
-		public RestDocumentationResultHandler restDocumentation() {
+		RestDocumentationResultHandler restDocumentation() {
 			return MockMvcRestDocumentation.document("{method-name}");
 		}
 
 		@Bean
-		public RestDocsWebTestClientConfigurationCustomizer templateFormatCustomizer() {
+		RestDocsWebTestClientConfigurationCustomizer templateFormatCustomizer() {
 			return (configurer) -> configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
 		}
 
 		@Bean
-		public RestDocsWebTestClientConfigurationCustomizer defaultSnippetsCustomizer() {
+		RestDocsWebTestClientConfigurationCustomizer defaultSnippetsCustomizer() {
 			return (configurer) -> configurer.snippets()
 					.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}

@@ -104,7 +104,7 @@ class JerseyAutoConfigurationTests {
 	static class ResourceConfigConfiguration {
 
 		@Bean
-		public ResourceConfig resourceConfig() {
+		ResourceConfig resourceConfig() {
 			return new ResourceConfig();
 		}
 
@@ -114,7 +114,7 @@ class JerseyAutoConfigurationTests {
 	static class RequestContextFilterConfiguration {
 
 		@Bean
-		public RequestContextFilter requestContextFilter() {
+		RequestContextFilter requestContextFilter() {
 			return new RequestContextFilter();
 		}
 
@@ -124,7 +124,7 @@ class JerseyAutoConfigurationTests {
 	static class RequestContextFilterRegistrationConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<RequestContextFilter> customRequestContextFilterRegistration() {
+		FilterRegistrationBean<RequestContextFilter> customRequestContextFilterRegistration() {
 			return new FilterRegistrationBean<>(new RequestContextFilter());
 		}
 

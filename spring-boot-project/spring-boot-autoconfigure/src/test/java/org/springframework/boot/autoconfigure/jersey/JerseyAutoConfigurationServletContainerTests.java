@@ -85,10 +85,10 @@ class JerseyAutoConfigurationServletContainerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class ContainerConfiguration {
+	static class ContainerConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory() {
 
 				@Override

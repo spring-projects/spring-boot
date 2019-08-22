@@ -91,7 +91,7 @@ public class ReactiveRestClientAutoConfigurationTests {
 	static class CustomClientConfiguration {
 
 		@Bean
-		public ReactiveElasticsearchClient customClient() {
+		ReactiveElasticsearchClient customClient() {
 			return mock(ReactiveElasticsearchClient.class);
 		}
 
@@ -101,7 +101,7 @@ public class ReactiveRestClientAutoConfigurationTests {
 	static class CustomClientConfigConfiguration {
 
 		@Bean
-		public ClientConfiguration customClientConfiguration() {
+		ClientConfiguration customClientConfiguration() {
 			return ClientConfiguration.localhost();
 		}
 

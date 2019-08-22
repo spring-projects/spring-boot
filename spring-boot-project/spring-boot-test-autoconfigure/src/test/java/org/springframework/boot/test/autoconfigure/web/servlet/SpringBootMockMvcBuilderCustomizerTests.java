@@ -69,7 +69,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 	static class ServletConfiguration {
 
 		@Bean
-		public TestServlet testServlet() {
+		TestServlet testServlet() {
 			return new TestServlet();
 		}
 
@@ -79,12 +79,12 @@ class SpringBootMockMvcBuilderCustomizerTests {
 	static class FilterConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<OtherTestFilter> filterRegistrationBean() {
+		FilterRegistrationBean<OtherTestFilter> filterRegistrationBean() {
 			return new FilterRegistrationBean<>(new OtherTestFilter());
 		}
 
 		@Bean
-		public TestFilter testFilter() {
+		TestFilter testFilter() {
 			return new TestFilter();
 		}
 

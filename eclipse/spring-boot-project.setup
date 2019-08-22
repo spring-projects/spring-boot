@@ -59,7 +59,7 @@
     <requirement
         name="org.eclipse.jdt.feature.group"/>
     <requirement
-        name="io.spring.javaformat.eclipse.feature.feature.group" versionRange="[0.0.14,0.0.15)"/>
+        name="io.spring.javaformat.eclipse.feature.feature.group" versionRange="[0.0.15,0.0.16)"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
     <requirement
@@ -139,8 +139,14 @@
     <workingSet
         name="spring-boot-tests">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-.*-test.*"/>
+          xsi:type="predicates:AndPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-(.*-test|tests).*"/>
+        <operand
+            xsi:type="workingsets:ExclusionPredicate"
+            excludedWorkingSet="//@setupTasks.7/@workingSets.3"/>
+      </predicate>
     </workingSet>
   </setupTask>
   <setupTask
@@ -237,7 +243,7 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.editors/printMarginColumn"
-        value="90"/>
+        value="120"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.editors/lineNumberRuler"

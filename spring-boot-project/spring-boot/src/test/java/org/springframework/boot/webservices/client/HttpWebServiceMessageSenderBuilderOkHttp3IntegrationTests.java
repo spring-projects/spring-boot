@@ -19,11 +19,9 @@ package org.springframework.boot.webservices.client;
 import java.time.Duration;
 
 import okhttp3.OkHttpClient;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,20 +36,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("httpclient-*.jar")
-public class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
+class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
 	@Test
-	public void buildUseOkHttp3ByDefault() {
+	void buildUseOkHttp3ByDefault() {
 		WebServiceMessageSender messageSender = this.builder.build();
 		assertOkHttp3RequestFactory(messageSender);
 	}
 
 	@Test
-	public void buildWithCustomTimeouts() {
+	void buildWithCustomTimeouts() {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
 				.setReadTimeout(Duration.ofSeconds(2)).build();
 		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(messageSender);

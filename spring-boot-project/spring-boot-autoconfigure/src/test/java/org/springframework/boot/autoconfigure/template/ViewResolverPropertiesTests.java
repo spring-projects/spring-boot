@@ -66,7 +66,7 @@ class ViewResolverPropertiesTests {
 		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-16;foo=bar");
 	}
 
-	private static class ViewResolverProperties extends AbstractViewResolverProperties {
+	static class ViewResolverProperties extends AbstractViewResolverProperties {
 
 	}
 

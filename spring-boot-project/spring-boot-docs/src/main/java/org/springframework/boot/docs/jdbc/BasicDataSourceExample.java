@@ -34,7 +34,7 @@ public class BasicDataSourceExample {
 	 * A configuration that exposes an empty {@link DataSource}.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	static class BasicDataSourceConfiguration {
+	public static class BasicDataSourceConfiguration {
 
 		// tag::configuration[]
 		@Bean

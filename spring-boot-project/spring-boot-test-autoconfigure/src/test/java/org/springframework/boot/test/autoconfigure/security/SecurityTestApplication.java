@@ -34,7 +34,7 @@ public class SecurityTestApplication {
 
 		@RequestMapping("/")
 		@Secured("ROLE_USER")
-		public String index() {
+		String index() {
 			return "Hello";
 		}
 

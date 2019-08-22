@@ -52,11 +52,11 @@ class QualifierDefinition {
 		this.annotations = annotations;
 	}
 
-	public boolean matches(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	boolean matches(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		return beanFactory.isAutowireCandidate(beanName, this.descriptor);
 	}
 
-	public void applyTo(RootBeanDefinition definition) {
+	void applyTo(RootBeanDefinition definition) {
 		definition.setQualifiedElement(this.field);
 	}
 
@@ -77,7 +77,7 @@ class QualifierDefinition {
 		return this.annotations.hashCode();
 	}
 
-	public static QualifierDefinition forElement(AnnotatedElement element) {
+	static QualifierDefinition forElement(AnnotatedElement element) {
 		if (element != null && element instanceof Field) {
 			Field field = (Field) element;
 			Set<Annotation> annotations = getQualifierAnnotations(field);

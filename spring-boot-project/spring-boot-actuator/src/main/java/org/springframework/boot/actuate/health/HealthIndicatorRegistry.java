@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.health;
 import java.util.Map;
 
 /**
- * A registry of {@link HealthIndicator HealthIndicators}.
+ * A mutable registry of {@link HealthIndicator HealthIndicators}.
  * <p>
  * Implementations <strong>must</strong> be thread-safe.
  *
@@ -27,7 +27,10 @@ import java.util.Map;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @see HealthEndpoint
+ * @deprecated since 2.2.0 in favor of a {@link HealthContributorRegistry}
  */
+@Deprecated
 public interface HealthIndicatorRegistry {
 
 	/**
@@ -35,8 +38,8 @@ public interface HealthIndicatorRegistry {
 	 * {@code name}.
 	 * @param name the name of the indicator
 	 * @param healthIndicator the indicator
-	 * @throws IllegalStateException if an indicator with the given {@code name} is
-	 * already registered.
+	 * @throws IllegalStateException if the indicator cannot be registered with the given
+	 * {@code name}.
 	 */
 	void register(String name, HealthIndicator healthIndicator);
 

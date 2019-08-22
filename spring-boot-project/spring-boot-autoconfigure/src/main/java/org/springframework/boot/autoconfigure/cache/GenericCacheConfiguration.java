@@ -32,7 +32,6 @@ import org.springframework.context.annotation.Configuration;
  * context.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(Cache.class)
@@ -41,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
 class GenericCacheConfiguration {
 
 	@Bean
-	public SimpleCacheManager cacheManager(CacheManagerCustomizers customizers, Collection<Cache> caches) {
+	SimpleCacheManager cacheManager(CacheManagerCustomizers customizers, Collection<Cache> caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(caches);
 		return customizers.customize(cacheManager);

@@ -70,16 +70,16 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 	@Path("/message")
 	public static class Application extends ResourceConfig {
 
+		Application() {
+			register(Application.class);
+		}
+
 		@GET
 		public Message message() {
 			return new Message("Jersey", null);
 		}
 
-		Application() {
-			register(Application.class);
-		}
-
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(Application.class, args);
 		}
 

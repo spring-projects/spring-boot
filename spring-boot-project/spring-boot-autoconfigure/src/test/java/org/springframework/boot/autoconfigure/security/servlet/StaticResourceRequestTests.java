@@ -100,7 +100,7 @@ class StaticResourceRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final WebApplicationContext context;
 
@@ -111,11 +111,11 @@ class StaticResourceRequestTests {
 			this.matcher = matcher;
 		}
 
-		public void matches(String path) {
+		void matches(String path) {
 			matches(mockRequest(path));
 		}
 
-		public void matches(String servletPath, String path) {
+		void matches(String servletPath, String path) {
 			matches(mockRequest(servletPath, path));
 		}
 
@@ -123,11 +123,11 @@ class StaticResourceRequestTests {
 			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
-		public void doesNotMatch(String path) {
+		void doesNotMatch(String path) {
 			doesNotMatch(mockRequest(path));
 		}
 
-		public void doesNotMatch(String servletPath, String path) {
+		void doesNotMatch(String servletPath, String path) {
 			doesNotMatch(mockRequest(servletPath, path));
 		}
 

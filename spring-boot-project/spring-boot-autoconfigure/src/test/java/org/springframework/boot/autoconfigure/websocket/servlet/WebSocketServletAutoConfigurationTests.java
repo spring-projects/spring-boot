@@ -78,7 +78,7 @@ class WebSocketServletAutoConfigurationTests {
 	static class CommonConfiguration {
 
 		@Bean
-		public WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
+		WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
 			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
@@ -88,7 +88,7 @@ class WebSocketServletAutoConfigurationTests {
 	static class TomcatConfiguration extends CommonConfiguration {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(0);
 			return factory;
@@ -100,7 +100,7 @@ class WebSocketServletAutoConfigurationTests {
 	static class JettyConfiguration extends CommonConfiguration {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			JettyServletWebServerFactory JettyServletWebServerFactory = new JettyServletWebServerFactory();
 			JettyServletWebServerFactory.setPort(0);
 			return JettyServletWebServerFactory;

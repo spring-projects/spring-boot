@@ -29,7 +29,6 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * Reactive Repositories.
  *
  * @author Brian Clozel
- * @since 2.2.0
  */
 class ReactiveElasticsearchRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 

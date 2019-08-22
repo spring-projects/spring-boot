@@ -80,7 +80,7 @@ class DataSourceInitializer {
 		this(dataSource, properties, null);
 	}
 
-	public DataSource getDataSource() {
+	DataSource getDataSource() {
 		return this.dataSource;
 	}
 
@@ -89,7 +89,7 @@ class DataSourceInitializer {
 	 * @return {@code true} if the schema was created
 	 * @see DataSourceProperties#getSchema()
 	 */
-	public boolean createSchema() {
+	boolean createSchema() {
 		List<Resource> scripts = getScripts("spring.datasource.schema", this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
 			if (!isEnabled()) {
@@ -107,7 +107,7 @@ class DataSourceInitializer {
 	 * Initialize the schema if necessary.
 	 * @see DataSourceProperties#getData()
 	 */
-	public void initSchema() {
+	void initSchema() {
 		List<Resource> scripts = getScripts("spring.datasource.data", this.properties.getData(), "data");
 		if (!scripts.isEmpty()) {
 			if (!isEnabled()) {

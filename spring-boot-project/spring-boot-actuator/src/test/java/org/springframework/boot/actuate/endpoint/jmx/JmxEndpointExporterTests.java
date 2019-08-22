@@ -170,7 +170,7 @@ class JmxEndpointExporterTests {
 	/**
 	 * Test {@link EndpointObjectNameFactory}.
 	 */
-	private static class TestEndpointObjectNameFactory implements EndpointObjectNameFactory {
+	static class TestEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 		@Override
 		public ObjectName getObjectName(ExposableJmxEndpoint endpoint) throws MalformedObjectNameException {

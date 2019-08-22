@@ -32,7 +32,6 @@ import org.json.JSONObject;
  * Read standard json metadata format as {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class JsonReader {
 
@@ -40,7 +39,7 @@ class JsonReader {
 
 	private final SentenceExtractor sentenceExtractor = new SentenceExtractor();
 
-	public RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
+	RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
 		try {
 			JSONObject json = readJson(in, charset);
 			List<ConfigurationMetadataSource> groups = parseAllSources(json);

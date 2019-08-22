@@ -56,13 +56,13 @@ class ArtemisConnectionFactoryFactory {
 		this.properties = properties;
 	}
 
-	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			startEmbeddedJms();
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create " + "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException("Unable to create ActiveMQConnectionFactory", ex);
 		}
 	}
 
@@ -109,7 +109,7 @@ class ArtemisConnectionFactoryFactory {
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
-					+ "Artemis connection, ensure that artemis-jms-server.jar " + "is in the classpath", ex);
+					+ "Artemis connection, ensure that artemis-jms-server.jar is in the classpath", ex);
 		}
 	}
 

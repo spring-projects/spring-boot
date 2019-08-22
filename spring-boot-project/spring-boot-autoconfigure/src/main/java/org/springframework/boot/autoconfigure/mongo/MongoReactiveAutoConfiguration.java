@@ -67,7 +67,7 @@ public class MongoReactiveAutoConfiguration {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		public NettyDriverMongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
+		NettyDriverMongoClientSettingsBuilderCustomizer nettyDriverCustomizer(
 				ObjectProvider<MongoClientSettings> settings) {
 			return new NettyDriverMongoClientSettingsBuilderCustomizer(settings);
 		}

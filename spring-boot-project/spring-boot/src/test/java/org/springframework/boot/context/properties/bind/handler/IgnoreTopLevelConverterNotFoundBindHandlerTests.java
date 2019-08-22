@@ -85,25 +85,25 @@ class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 				.withCauseInstanceOf(ConverterNotFoundException.class);
 	}
 
-	public static class Example {
+	static class Example {
 
 		private int foo;
 
 		private Map<String, String> map;
 
-		public int getFoo() {
+		int getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(int foo) {
+		void setFoo(int foo) {
 			throw new IllegalStateException();
 		}
 
-		public Map<String, String> getMap() {
+		Map<String, String> getMap() {
 			return this.map;
 		}
 
-		public void setMap(Map<String, String> map) {
+		void setMap(Map<String, String> map) {
 			this.map = map;
 		}
 

@@ -30,6 +30,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.hazelcast.HazelcastSessionRepository;
@@ -126,6 +128,32 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 					SpringBootJdbcHttpSessionConfiguration configuration = context
 							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
 					assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", "0 0 12 * * *");
+				});
+	}
+
+	@Test
+	void customFlushMode() {
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.flush-mode=immediate")
+				.run((context) -> {
+					assertThat(context.getBean(JdbcSessionProperties.class).getFlushMode())
+							.isEqualTo(FlushMode.IMMEDIATE);
+					SpringBootJdbcHttpSessionConfiguration configuration = context
+							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
+					assertThat(configuration).hasFieldOrPropertyWithValue("flushMode", FlushMode.IMMEDIATE);
+				});
+	}
+
+	@Test
+	void customSaveMode() {
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.save-mode=on-get-attribute")
+				.run((context) -> {
+					assertThat(context.getBean(JdbcSessionProperties.class).getSaveMode())
+							.isEqualTo(SaveMode.ON_GET_ATTRIBUTE);
+					SpringBootJdbcHttpSessionConfiguration configuration = context
+							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
+					assertThat(configuration).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
 				});
 	}
 

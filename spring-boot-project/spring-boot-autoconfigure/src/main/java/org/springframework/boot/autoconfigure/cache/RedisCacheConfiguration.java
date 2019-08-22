@@ -43,7 +43,6 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
  * @author Stephane Nicoll
  * @author Mark Paluch
  * @author Ryon Day
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisConnectionFactory.class)
@@ -54,9 +53,9 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
 class RedisCacheConfiguration {
 
 	@Bean
-	public RedisCacheManager cacheManager(CacheProperties cacheProperties,
-			CacheManagerCustomizers cacheManagerCustomizers,
+	RedisCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers cacheManagerCustomizers,
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
+			ObjectProvider<RedisCacheManagerBuilderCustomizer> redisCacheManagerBuilderCustomizers,
 			RedisConnectionFactory redisConnectionFactory, ResourceLoader resourceLoader) {
 		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(
 				determineConfiguration(cacheProperties, redisCacheConfiguration, resourceLoader.getClassLoader()));
@@ -64,6 +63,7 @@ class RedisCacheConfiguration {
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
+		redisCacheManagerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return cacheManagerCustomizers.customize(builder.build());
 	}
 

@@ -40,6 +40,7 @@ public class CassandraReactiveHealthIndicator extends AbstractReactiveHealthIndi
 	 * @param reactiveCassandraOperations the Cassandra operations
 	 */
 	public CassandraReactiveHealthIndicator(ReactiveCassandraOperations reactiveCassandraOperations) {
+		super("Cassandra health check failed");
 		Assert.notNull(reactiveCassandraOperations, "ReactiveCassandraOperations must not be null");
 		this.reactiveCassandraOperations = reactiveCassandraOperations;
 	}

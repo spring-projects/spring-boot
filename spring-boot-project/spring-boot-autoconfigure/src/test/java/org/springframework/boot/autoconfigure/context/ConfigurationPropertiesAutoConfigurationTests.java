@@ -75,11 +75,11 @@ class ConfigurationPropertiesAutoConfigurationTests {
 
 		private String name = "default";
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 

@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -69,6 +70,11 @@ public class RedisProperties {
 	 * Connection timeout.
 	 */
 	private Duration timeout;
+
+	/**
+	 * Client name to be set on connections with CLIENT SETNAME.
+	 */
+	private String clientName;
 
 	private Sentinel sentinel;
 
@@ -132,6 +138,14 @@ public class RedisProperties {
 
 	public Duration getTimeout() {
 		return this.timeout;
+	}
+
+	public String getClientName() {
+		return this.clientName;
+	}
+
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 
 	public Sentinel getSentinel() {

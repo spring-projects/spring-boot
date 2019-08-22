@@ -109,13 +109,13 @@ class ConditionalOnRepositoryTypeTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnRepositoryType(store = "test", type = RepositoryType.IMPERATIVE)
-	protected static class ImperativeRepository {
+	static class ImperativeRepository {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnRepositoryType(store = "test", type = RepositoryType.REACTIVE)
-	protected static class ReactiveRepository {
+	static class ReactiveRepository {
 
 	}
 

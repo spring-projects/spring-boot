@@ -39,6 +39,7 @@ import org.springframework.boot.cli.util.Log;
  *
  * @author Jon Brisbin
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class CommandCompleter extends StringsCompleter {
 
@@ -129,11 +130,11 @@ public class CommandCompleter extends StringsCompleter {
 			this.usage = optionHelp.getUsageHelp();
 		}
 
-		public String getOptions() {
+		String getOptions() {
 			return this.options;
 		}
 
-		public String getUsage() {
+		String getUsage() {
 			return this.usage;
 		}
 

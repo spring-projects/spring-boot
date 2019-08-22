@@ -124,7 +124,7 @@ class ControllerEndpointWebMvcIntegrationTests {
 	static class ExampleController {
 
 		@GetMapping("/")
-		public String example() {
+		String example() {
 			return "Example";
 		}
 

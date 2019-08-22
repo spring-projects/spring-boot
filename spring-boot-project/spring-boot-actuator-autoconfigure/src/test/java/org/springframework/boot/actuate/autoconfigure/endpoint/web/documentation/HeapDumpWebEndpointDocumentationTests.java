@@ -61,7 +61,7 @@ class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	static class TestConfiguration {
 
 		@Bean
-		public HeapDumpWebEndpoint endpoint() {
+		HeapDumpWebEndpoint endpoint() {
 			return new HeapDumpWebEndpoint() {
 
 				@Override

@@ -54,6 +54,7 @@ public class HikariDataSourcePoolMetadataTests
 		HikariDataSource dataSource = initializeBuilder().type(HikariDataSource.class).build();
 		dataSource.setMinimumIdle(minSize);
 		dataSource.setMaximumPoolSize(maxSize);
+		dataSource.setIdleTimeout(5000);
 		return dataSource;
 	}
 

@@ -40,7 +40,6 @@ import org.springframework.context.annotation.Configuration;
  * default {@link HazelcastInstance} is still made, using the same defaults.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
 @Configuration(proxyBeanMethods = false)
@@ -51,8 +50,8 @@ import org.springframework.context.annotation.Configuration;
 class HazelcastCacheConfiguration {
 
 	@Bean
-	public HazelcastCacheManager cacheManager(CacheManagerCustomizers customizers,
-			HazelcastInstance existingHazelcastInstance) throws IOException {
+	HazelcastCacheManager cacheManager(CacheManagerCustomizers customizers, HazelcastInstance existingHazelcastInstance)
+			throws IOException {
 		HazelcastCacheManager cacheManager = new HazelcastCacheManager(existingHazelcastInstance);
 		return customizers.customize(cacheManager);
 	}

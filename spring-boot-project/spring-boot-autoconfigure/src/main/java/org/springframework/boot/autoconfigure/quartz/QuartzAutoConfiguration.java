@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -92,6 +93,7 @@ public class QuartzAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
+	@ConditionalOnProperty(prefix = "spring.quartz", name = "job-store-type", havingValue = "jdbc")
 	protected static class JdbcStoreTypeConfiguration {
 
 		@Bean
@@ -100,13 +102,11 @@ public class QuartzAutoConfiguration {
 				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
 				ObjectProvider<PlatformTransactionManager> transactionManager) {
 			return (schedulerFactoryBean) -> {
-				if (properties.getJobStoreType() == JobStoreType.JDBC) {
-					DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
-					schedulerFactoryBean.setDataSource(dataSourceToUse);
-					PlatformTransactionManager txManager = transactionManager.getIfUnique();
-					if (txManager != null) {
-						schedulerFactoryBean.setTransactionManager(txManager);
-					}
+				DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
+				schedulerFactoryBean.setDataSource(dataSourceToUse);
+				PlatformTransactionManager txManager = transactionManager.getIfUnique();
+				if (txManager != null) {
+					schedulerFactoryBean.setTransactionManager(txManager);
 				}
 			};
 		}

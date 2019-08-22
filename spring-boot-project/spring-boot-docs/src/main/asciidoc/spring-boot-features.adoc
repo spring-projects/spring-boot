@@ -2,14 +2,11 @@
 = Spring Boot Features
 include::attributes.adoc[]
 
-[partintro]
---
 This section dives into the details of Spring Boot. Here you can learn about the key
 features that you may want to use and customize. If you have not already done so, you
 might want to read the "<<getting-started.adoc#getting-started>>" and
 "<<using-spring-boot.adoc#using-boot>>" sections, so that you have a good grounding of the
 basics.
---
 
 
 
@@ -175,18 +172,7 @@ produced at all (`off`).
 The printed banner is registered as a singleton bean under the following name:
 `springBootBanner`.
 
-[NOTE]
-====
-YAML maps `off` to `false`, so be sure to add quotes if you want to disable the banner in
-your application, as shown in the following example:
 
-[source,yaml,indent=0]
-----
-	spring:
-		main:
-			banner-mode: "off"
-----
-====
 
 [[boot-features-customizing-spring-application]]
 === Customizing SpringApplication
@@ -463,9 +449,9 @@ variable or system property).
 . A `RandomValuePropertySource` that has properties only in `+random.*+`.
 . <<boot-features-external-config-profile-specific-properties,Profile-specific
 application properties>> outside of your packaged jar
-(`application-{profile}.properties` and YAML variants).
+(`application-\{profile}.properties` and YAML variants).
 . <<boot-features-external-config-profile-specific-properties,Profile-specific
-application properties>> packaged inside your jar (`application-{profile}.properties`
+application properties>> packaged inside your jar (`application-\{profile}.properties`
 and YAML variants).
 . Application properties outside of your packaged jar (`application.properties` and YAML
 variants).
@@ -659,7 +645,7 @@ environment variables or system properties.
 [[boot-features-external-config-profile-specific-properties]]
 === Profile-specific Properties
 In addition to `application.properties` files, profile-specific properties can also be
-defined by using the following naming convention: `application-{profile}.properties`. The
+defined by using the following naming convention: `application-\{profile}.properties`. The
 `Environment` has a set of default profiles (by default, `[default]`) that are used if no
 active profiles are set. In other words, if no profiles are explicitly activated, then
 properties from `application-default.properties` are loaded.
@@ -904,7 +890,7 @@ to using only one of them.
 
 [[boot-features-external-config-typesafe-configuration-properties]]
 === Type-safe Configuration Properties
-Using the `@Value("${property}")` annotation to inject configuration properties can
+Using the `@Value("$\{property}")` annotation to inject configuration properties can
 sometimes be cumbersome, especially if you are working with multiple properties or your
 data is hierarchical in nature. Spring Boot provides an alternative method of working
 with properties that lets strongly typed beans govern and validate the configuration of
@@ -983,6 +969,12 @@ the name of the property. In particular, the return type is not used at all ther
 could have been `SecurityProperties`.
 * `acme.security.password`.
 * `acme.security.roles`, with a collection of `String` that defaults to `USER`.
+
+NOTE: Spring Boot auto-configuration heavily makes use of `@ConfigurationProperties` for easily
+configuring auto-configured beans. Similar to auto-configuration classes, `@ConfigurationProperties`
+classes available in Spring Boot are for internal use only. The properties that map to the class,
+which are configured via properties files, YAML files, environment variables etc., are public API but
+the content of the class itself is not meant to be used directly.
 
 [NOTE]
 ====
@@ -2075,7 +2067,7 @@ as the delimiter between a property name and its default value and not use `:-`.
 
 You can add MDC and other ad-hoc content to log lines by overriding only the
 `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with Logback). For example, if you use
-`logging.pattern.level=user:%X{user} %5p`, then the default log format contains an MDC
+`logging.pattern.level=user:%X\{user} %5p`, then the default log format contains an MDC
 entry for "user", if it exists, as shown in the following example.
 
 ----
@@ -2171,7 +2163,8 @@ a `messages` resource bundle at the root of the classpath.
 NOTE: The auto-configuration applies when the default properties file for the configured
 resource bundle is available (i.e. `messages.properties` by default). If your resource
 bundle contains only language-specific properties files, you are required to add the
-default.
+default. If no properties file is found that matches any of the configured base names,
+there will be no auto-configured `MessageSource`.
 
 The basename of the resource bundle as well as several other attributes can be configured
 using the `spring.messages` namespace, as shown in the following example:
@@ -2259,17 +2252,17 @@ The following code shows a typical `@RestController` that serves JSON data:
 	@RequestMapping(value="/users")
 	public class MyRestController {
 
-		@RequestMapping(value="/{user}", method=RequestMethod.GET)
+		@RequestMapping(value="/\{user}", method=RequestMethod.GET)
 		public User getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/{user}/customers", method=RequestMethod.GET)
+		@RequestMapping(value="/\{user}/customers", method=RequestMethod.GET)
 		List<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@RequestMapping(value="/{user}", method=RequestMethod.DELETE)
+		@RequestMapping(value="/\{user}", method=RequestMethod.DELETE)
 		public User deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2860,17 +2853,17 @@ following example:
 	@RequestMapping("/users")
 	public class MyRestController {
 
-		@GetMapping("/{user}")
+		@GetMapping("/\{user}")
 		public Mono<User> getUser(@PathVariable Long user) {
 			// ...
 		}
 
-		@GetMapping("/{user}/customers")
+		@GetMapping("/\{user}/customers")
 		public Flux<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
-		@DeleteMapping("/{user}")
+		@DeleteMapping("/\{user}")
 		public Mono<User> deleteUser(@PathVariable Long user) {
 			// ...
 		}
@@ -2888,9 +2881,9 @@ actual handling of the requests, as shown in the following example:
 
 		@Bean
 		public RouterFunction<ServerResponse> monoRouterFunction(UserHandler userHandler) {
-			return route(GET("/{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
-					.andRoute(GET("/{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
-					.andRoute(DELETE("/{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
+			return route(GET("/\{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
+					.andRoute(GET("/\{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
+					.andRoute(DELETE("/\{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
 		}
 
 	}
@@ -3243,33 +3236,18 @@ If convention-based mapping is not flexible enough, you can use the
 `ServletRegistrationBean`, `FilterRegistrationBean`, and
 `ServletListenerRegistrationBean` classes for complete control.
 
-Spring Boot ships with many auto-configurations that may define Filter beans. Here are a
-few examples of Filters and their respective order (lower order value means higher
-precedence):
-
-|===
-| Servlet Filter | Order
-
-|`OrderedCharacterEncodingFilter`
-|`Ordered.HIGHEST_PRECEDENCE`
-
-|`WebMvcMetricsFilter`
-|`Ordered.HIGHEST_PRECEDENCE + 1`
-
-|`ErrorPageFilter`
-|`Ordered.HIGHEST_PRECEDENCE + 1`
-
-|`HttpTraceFilter`
-|`Ordered.LOWEST_PRECEDENCE - 10`
-|===
-
-It is usually safe to leave Filter beans unordered.
-
-If a specific order is required, you should avoid configuring a Filter that reads the
-request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character
+Filter beans can be ordered to control their position in the filter chain by using
+`@Order` or implemented `Ordered`. It is usually safe to leave Filter beans unordered.
+However, if a specific order is required, you should avoid configuring a Filter that reads
+the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character
 encoding configuration of your application. If a Servlet filter wraps the request, it
 should be configured with an order that is less than or equal to
 `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
+
+TIP: To see the order of every `Filter` in your application, enable debug level logging
+for the `web` <<boot-features-custom-log-groups,logging group>>
+(`logging.level.web=debug`). Details of the registered filters, including their order and
+URL patterns, will then be logged at startup.
 
 
 
@@ -3325,7 +3303,7 @@ Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface
 address to bind to `server.address`, and so on.
-* Session settings: Whether the session is persistent (`server.servlet.session.persistence`),
+* Session settings: Whether the session is persistent (`server.servlet.session.persistent`),
 session timeout (`server.servlet.session.timeout`), location of session data
 (`server.servlet.session.store-dir`), and session-cookie configuration
 (`server.servlet.session.cookie.*`).
@@ -3474,7 +3452,7 @@ The following code shows a typical `@Controller`:
 			// ...
 		}
 
-		@MessageMapping("users.{user}.info")
+		@MessageMapping("users.\{user}.info")
 		Mono<ChatUserInfo> getUserInfo(@DestinationVariable String user) {
 			// ...
 		}
@@ -3574,12 +3552,12 @@ The following code shows a typical example:
 
 		public MyService(RSocketRequester.Builder rsocketRequesterBuilder) {
 			this.rsocketRequester = rsocketRequesterBuilder
-				.connectTcp("example.org", 9090).block();
+					.connectTcp("example.org", 9090).block();
 		}
 
 		public Mono<User> someRSocketCall(String name) {
-			return this.requester.route("user").data(payload)
-                   				.retrieveMono(User.class);
+			return this.requester.route("user").data(name)
+					.retrieveMono(User.class);
 		}
 
 	}
@@ -3820,15 +3798,15 @@ to validate tokens via introspection:
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.resourceserver.opaque-token.introspection-uri=https://example.com/check-token
-	spring.security.oauth2.resourceserver.opaque-token.client-id=my-client-id
-	spring.security.oauth2.resourceserver.opaque-token.client-secret-my-client-secret
+	spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
+	spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
+	spring.security.oauth2.resourceserver.opaquetoken.client-secret-my-client-secret
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
 
-Alternatively, you can define your own `OAuth2TokenIntrospectionClient` bean for servlet applications
-or a `ReactiveOAuth2TokenIntrospectionClient` for reactive applications.
+Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servlet applications
+or a `ReactiveOpaqueTokenIntrospector` for reactive applications.
 
 ==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0
@@ -4695,9 +4673,9 @@ properties, as shown in the following example:
 	spring.data.neo4j.password=secret
 ----
 
-You can take full control over the session creation by adding a
-`org.neo4j.ogm.config.Configuration` `@Bean`. Also, adding a `@Bean` of type
-`SessionFactory` disables the auto-configuration and gives you full control.
+You can take full control over the session creation by either adding a
+`org.neo4j.ogm.config.Configuration` bean or a `org.neo4j.ogm.session.SessionFactory`
+bean.
 
 
 
@@ -5429,7 +5407,7 @@ TIP: It is also possible to _force_ a particular cache provider by setting the
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching
 dependencies. The starter brings in `spring-context-support`. If you add dependencies
 manually, you must include `spring-context-support` in order to use the JCache,
-EhCache 2.x, or Guava support.
+EhCache 2.x, or Caffeine support.
 
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its
 configuration before it is fully initialized by exposing a bean that implements the
@@ -6311,6 +6289,43 @@ spring.kafka.producer.properties.spring.json.add.type.headers=false
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot
 explicitly supports.
 
+[[boot-features-embedded-kafka]]
+==== Testing with Embedded Kafka
+Spring for Apache Kafka provides a convenient way to test projects with an embedded Apache Kafka
+broker. To use this feature, annotate a test class with `@EmbeddedKafka` from the `spring-kafka-test`
+module. For more information, please see the Spring for Apache Kafka
+https://docs.spring.io/spring-kafka/docs/current/reference/html/#embedded-kafka-annotation[reference manual].
+
+To make Spring Boot auto-configuration work with the aforementioned embedded Apache Kafka broker, you need
+to remap a system property for embedded broker addresses (populated by the `EmbeddedKafkaBroker`)
+into the Spring Boot configuration property for Apache Kafka. There are several ways to do that:
+
+* Provide a system property to map embedded broker addresses into `spring.kafka.bootstrap-servers` in the test class:
+
+[source,java,indent=0]
+----
+static {
+    System.setProperty(EmbeddedKafkaBroker.BROKER_LIST_PROPERTY, "spring.kafka.bootstrap-servers");
+}
+----
+
+* Configure a property name on the `@EmbeddedKafka` annotation:
+
+[source,java,indent=0]
+----
+@EmbeddedKafka(topics = "someTopic",
+        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+----
+
+* Use a placeholder in configuration properties:
+
+[source,properties,indent=0]
+----
+spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}
+----
+
+
+
 [[boot-features-resttemplate]]
 == Calling REST Services with `RestTemplate`
 If you need to call remote REST services from your application, you can use the Spring
@@ -7052,9 +7067,8 @@ property:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@SpringBootTest(properties = "spring.main.web-application-type=reactive")
-	public class MyWebFluxTests { ... }
+	class MyWebFluxTests { ... }
 ----
 
 
@@ -7117,10 +7131,10 @@ that class explicitly where it is required, as shown in the following example:
 ----
 	@SpringBootTest
 	@Import(MyTestsConfiguration.class)
-	public class MyTests {
+	class MyTests {
 
 		@Test
-		public void exampleTest() {
+		void exampleTest() {
 			...
 		}
 
@@ -7374,7 +7388,7 @@ Strings respectively. Any helper fields on the test class can be `@Autowired` wh
 		}
 
 		@Test
-		public void testDeserialize() throws Exception {
+		void testDeserialize() throws Exception {
 			String content = "{\"make\":\"Ford\",\"model\":\"Focus\"}";
 			assertThat(this.json.parse(content))
 					.isEqualTo(new VehicleDetails("Ford", "Focus"));
@@ -7408,8 +7422,9 @@ assertThat(json.write(message))
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest`
 annotation. `@WebMvcTest` auto-configures the Spring MVC infrastructure and limits
 scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`,
-`GenericConverter`, `Filter`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`.
-Regular `@Component` beans are not scanned when using this annotation.
+`GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, and
+`HandlerMethodArgumentResolver`. Regular `@Component` beans are not scanned when using
+this annotation.
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be
 <<appendix.adoc#test-auto-configuration,found in the appendix>>.
@@ -7523,9 +7538,9 @@ full end-to-end tests with an actual server>>.
 To test that {spring-reference}/web-reactive.html[Spring WebFlux] controllers are
 working as expected, you can use the `@WebFluxTest` annotation. `@WebFluxTest`
 auto-configures the Spring WebFlux infrastructure and limits scanned beans to
-`@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, and
-`WebFluxConfigurer`. Regular `@Component` beans are not scanned when the `@WebFluxTest`
-annotation is used.
+`@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`,
+`WebFilter`, and `WebFluxConfigurer`. Regular `@Component` beans are not scanned when the
+`@WebFluxTest` annotation is used.
 
 TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be
 <<appendix.adoc#test-auto-configuration,found in the appendix>>.
@@ -7665,10 +7680,9 @@ following example:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@DataJpaTest
 	@AutoConfigureTestDatabase(replace=Replace.NONE)
-	public class ExampleRepositoryTests {
+	class ExampleRepositoryTests {
 
 		// ...
 
@@ -7794,7 +7808,7 @@ The following class shows the `@DataMongoTest` annotation in use:
 	import org.springframework.data.mongodb.core.MongoTemplate;
 
 	@DataMongoTest
-	public class ExampleDataMongoTests {
+	class ExampleDataMongoTests {
 
 		@Autowired
 		private MongoTemplate mongoTemplate;
@@ -7814,7 +7828,7 @@ the following example:
 	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
 	@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-	public class ExampleDataMongoNonEmbeddedTests {
+	class ExampleDataMongoNonEmbeddedTests {
 
 	}
 ----
@@ -7841,7 +7855,7 @@ The following example shows a typical setup for using Neo4J tests in Spring Boot
 	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 
 	@DataNeo4jTest
-	public class ExampleDataNeo4jTests {
+	class ExampleDataNeo4jTests {
 
 		@Autowired
 		private YourRepository repository;
@@ -7864,7 +7878,7 @@ as follows:
 
 	@DataNeo4jTest
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public class ExampleNonTransactionalTests {
+	class ExampleNonTransactionalTests {
 
 	}
 ----
@@ -7890,7 +7904,7 @@ The following example shows the `@DataRedisTest` annotation in use:
 	import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 
 	@DataRedisTest
-	public class ExampleDataRedisTests {
+	class ExampleDataRedisTests {
 
 		@Autowired
 		private YourRepository repository;
@@ -7921,7 +7935,7 @@ The following example shows the `@DataLdapTest` annotation in use:
 	import org.springframework.ldap.core.LdapTemplate;
 
 	@DataLdapTest
-	public class ExampleDataLdapTests {
+	class ExampleDataLdapTests {
 
 		@Autowired
 		private LdapTemplate ldapTemplate;
@@ -7941,7 +7955,7 @@ following example:
 	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 
 	@DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
-	public class ExampleDataLdapNonEmbeddedTests {
+	class ExampleDataLdapNonEmbeddedTests {
 
 	}
 ----
@@ -7964,7 +7978,7 @@ The specific beans that you want to test should be specified by using the `value
 [source,java,indent=0]
 ----
 	@RestClientTest(RemoteVehicleDetailsService.class)
-	public class ExampleRestClientTest {
+	class ExampleRestClientTest {
 
 		@Autowired
 		private RemoteVehicleDetailsService service;
@@ -7973,7 +7987,7 @@ The specific beans that you want to test should be specified by using the `value
 		private MockRestServiceServer server;
 
 		@Test
-		public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
+		void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
 				throws Exception {
 			this.server.expect(requestTo("/greet/details"))
 					.andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
@@ -8128,10 +8142,9 @@ simply by adding `@ImportAutoConfiguration` to the test as shown in the followin
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
 	@JdbcTest
 	@ImportAutoConfiguration(IntegrationAutoConfiguration.class)
-	public class ExampleJdbcTests {
+	class ExampleJdbcTests {
 
 	}
 ----
@@ -8284,30 +8297,15 @@ which auto-configures one for you.
 [[boot-features-output-capture-test-utility]]
 ==== OutputCapture
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and
-`System.err` output. To use with {@link ExtendWith @ExtendWith}, you can inject
-`CapturedOutput` as an argument to your test class constructor or test method as follows:
+`System.err` output. To use with `@ExtendWith`, you can inject `CapturedOutput` as an
+argument to your test class constructor or test method as follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-    import org.junit.jupiter.api.extension.ExtendWith;
-
-    import org.springframework.boot.test.system.CapturedOutput;
-    import org.springframework.boot.test.system.OutputCaptureExtension;
-
-	import static org.assertj.core.api.Assertions.assertThat;
-
-	@ExtendWith(OutputCaptureExtension.class)
-	class MyTest {
-
-		@Test
-		void testName(CapturedOutput output) {
-			System.out.println("Hello World!");
-			assertThat(output).contains("World"));
-		}
-
-	}
+include::{test-examples}/test/system/OutputCaptureTests.java[tag=test]
 ----
+
+
 
 [[boot-features-rest-templates-test-utility]]
 ==== TestRestTemplate
@@ -8764,16 +8762,55 @@ assume that you are creating a starter for "acme" and that you name the auto-con
 module `acme-spring-boot-autoconfigure` and the starter `acme-spring-boot-starter`. If
 you only have one module that combines the two, name it `acme-spring-boot-starter`.
 
-Also, if your starter provides configuration keys, use a unique namespace for them. In
+
+
+[[boot-features-custom-starter-configuration-keys]]
+==== Configuration keys
+If your starter provides configuration keys, use a unique namespace for them. In
 particular, do not include your keys in the namespaces that Spring Boot uses (such as
 `server`, `management`, `spring`, and so on). If you use the same namespace, we may modify
-these namespaces in the future in ways that break your modules.
+these namespaces in the future in ways that break your modules. As a rule of thumb,
+prefix all your keys with a namespace that you own (e.g. `acme`).
+
+Make sure that configuration keys are documented by adding field javadoc for each
+property, as shown in the following example:
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
+
+		/**
+		 * Whether to check the location of acme resources.
+		 */
+		private boolean checkLocation = true;
+
+		/**
+		 * Timeout for establishing a connection to the acme server.
+		 */
+		private Duration loginTimeout = Duration.ofSeconds(3);
+
+		// getters & setters
+
+	}
+----
+
+Here are some rules we follow internally to make sure descriptions are consistent:
+
+* Do not start the description by "The" or "A".
+* For `boolean` types, start the description with "Whether" or "Enable".
+* For collection-based types, start the description with "Comma-separated list"
+* Use `java.time.Duration` rather than `long` and describe the default unit if it differs
+from milliseconds, e.g. "If a duration suffix is not specified, seconds will be used".
+* Do not provide the default value in the description unless it has to be determined at
+runtime.
 
 Make sure to
 <<appendix.adoc#configuration-metadata-annotation-processor,trigger meta-data
 generation>> so that IDE assistance is available for your keys as well. You may want to
-review the generated meta-data (`META-INF/spring-configuration-metadata.json`) to make
-sure your keys are properly documented.
+review the generated metadata (`META-INF/spring-configuration-metadata.json`) to make
+sure your keys are properly documented. Using your own starter in a compatible IDE is
+also a good idea to validate that quality of the metadata.
 
 
 

@@ -101,7 +101,7 @@ class JolokiaEndpointAutoConfigurationIntegrationTests {
 			JolokiaEndpointAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 			ServletManagementContextAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 			ServletEndpointManagementContextConfiguration.class })
-	protected static class Application {
+	static class Application {
 
 	}
 

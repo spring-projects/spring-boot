@@ -38,6 +38,7 @@ import org.springframework.boot.cli.util.ResourceUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.0.0
  */
 public class SpringApplicationRunner {
 
@@ -175,7 +176,7 @@ public class SpringApplicationRunner {
 		/**
 		 * Shutdown the thread, closing any previously opened application context.
 		 */
-		public void shutdown() {
+		void shutdown() {
 			synchronized (this.monitor) {
 				if (this.applicationContext != null) {
 					try {

@@ -48,10 +48,10 @@ class SpringBootTestReactiveWebEnvironmentUserDefinedTestRestTemplateTests
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebFlux
 	@RestController
-	protected static class Config extends AbstractConfig {
+	static class Config extends AbstractConfig {
 
 		@Bean
-		public RestTemplate testRestTemplate() {
+		RestTemplate testRestTemplate() {
 			return new RestTemplate();
 		}
 

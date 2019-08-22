@@ -83,7 +83,7 @@ class JmxMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -94,7 +94,7 @@ class JmxMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public JmxConfig customConfig() {
+		JmxConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -105,7 +105,7 @@ class JmxMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public JmxMeterRegistry customRegistry(JmxConfig config, Clock clock) {
+		JmxMeterRegistry customRegistry(JmxConfig config, Clock clock) {
 			return new JmxMeterRegistry(config, clock);
 		}
 

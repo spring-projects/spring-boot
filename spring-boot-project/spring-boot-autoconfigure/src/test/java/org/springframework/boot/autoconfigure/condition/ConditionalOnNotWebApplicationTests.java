@@ -59,15 +59,15 @@ class ConditionalOnNotWebApplicationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ReactiveApplicationConfig {
+	static class ReactiveApplicationConfig {
 
 		@Bean
-		public ReactiveWebServerFactory reactiveWebServerFactory() {
+		ReactiveWebServerFactory reactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return (request, response) -> Mono.empty();
 		}
 
@@ -75,10 +75,10 @@ class ConditionalOnNotWebApplicationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnNotWebApplication
-	protected static class NotWebApplicationConfiguration {
+	static class NotWebApplicationConfiguration {
 
 		@Bean
-		public String none() {
+		String none() {
 			return "none";
 		}
 

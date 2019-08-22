@@ -85,10 +85,10 @@ class EndpointIdTests {
 	}
 
 	@Test
-	void ofWhenContainsDeprecatedCharsLogsWarning(CapturedOutput capturedOutput) {
+	void ofWhenContainsDeprecatedCharsLogsWarning(CapturedOutput output) {
 		EndpointId.resetLoggedWarnings();
 		EndpointId.of("foo-bar");
-		assertThat(capturedOutput.toString())
+		assertThat(output)
 				.contains("Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
 	}
 

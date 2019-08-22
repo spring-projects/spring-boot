@@ -84,7 +84,7 @@ class JvmMetricsAutoConfigurationTests {
 	static class CustomJvmGcMetricsConfiguration {
 
 		@Bean
-		public JvmGcMetrics customJvmGcMetrics() {
+		JvmGcMetrics customJvmGcMetrics() {
 			return new JvmGcMetrics();
 		}
 
@@ -94,7 +94,7 @@ class JvmMetricsAutoConfigurationTests {
 	static class CustomJvmMemoryMetricsConfiguration {
 
 		@Bean
-		public JvmMemoryMetrics customJvmMemoryMetrics() {
+		JvmMemoryMetrics customJvmMemoryMetrics() {
 			return new JvmMemoryMetrics();
 		}
 
@@ -104,7 +104,7 @@ class JvmMetricsAutoConfigurationTests {
 	static class CustomJvmThreadMetricsConfiguration {
 
 		@Bean
-		public JvmThreadMetrics customJvmThreadMetrics() {
+		JvmThreadMetrics customJvmThreadMetrics() {
 			return new JvmThreadMetrics();
 		}
 
@@ -114,7 +114,7 @@ class JvmMetricsAutoConfigurationTests {
 	static class CustomClassLoaderMetricsConfiguration {
 
 		@Bean
-		public ClassLoaderMetrics customClassLoaderMetrics() {
+		ClassLoaderMetrics customClassLoaderMetrics() {
 			return new ClassLoaderMetrics();
 		}
 

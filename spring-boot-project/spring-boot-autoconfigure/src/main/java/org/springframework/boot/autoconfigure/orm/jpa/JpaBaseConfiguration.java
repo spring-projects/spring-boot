@@ -69,6 +69,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  * @author Eddú Meléndez
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JpaProperties.class)
@@ -218,7 +219,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			if (this.jpaProperties.getOpenInView() == null) {
 				logger.warn("spring.jpa.open-in-view is enabled by default. "
 						+ "Therefore, database queries may be performed during view "
-						+ "rendering. Explicitly configure " + "spring.jpa.open-in-view to disable this warning");
+						+ "rendering. Explicitly configure spring.jpa.open-in-view to disable this warning");
 			}
 			return new OpenEntityManagerInViewInterceptor();
 		}

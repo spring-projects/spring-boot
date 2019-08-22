@@ -36,6 +36,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *
  * @author Dave Syer
  * @author Josh Long
+ * @since 1.0.0
  * @see EnableAspectJAutoProxy
  */
 @Configuration(proxyBeanMethods = false)

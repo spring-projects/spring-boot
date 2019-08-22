@@ -39,6 +39,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 public class ArtifactsLibraries implements Libraries {
 

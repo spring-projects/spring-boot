@@ -46,8 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to jdbc tests.
  * <p>
- * By default, tests annotated with {@code @JdbcTest} will use an embedded in-memory
- * database (replacing any explicit or usually auto-configured DataSource). The
+ * By default, tests annotated with {@code @JdbcTest} are transactional and roll back at
+ * the end of each test. They also use an embedded in-memory database (replacing any
+ * explicit or usually auto-configured DataSource). The
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
  * override these settings.
  * <p>
@@ -58,6 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
+ * @since 1.5.0
  * @see AutoConfigureJdbc
  * @see AutoConfigureTestDatabase
  * @see AutoConfigureCache

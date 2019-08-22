@@ -72,10 +72,10 @@ class RemappedErrorViewIntegrationTests {
 			HttpMessageConvertersAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 	@Controller
-	public static class TestConfiguration implements ErrorPageRegistrar {
+	static class TestConfiguration implements ErrorPageRegistrar {
 
 		@RequestMapping("/")
-		public String home() {
+		String home() {
 			throw new RuntimeException("Planned!");
 		}
 
@@ -85,7 +85,7 @@ class RemappedErrorViewIntegrationTests {
 		}
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			new SpringApplicationBuilder(TestConfiguration.class).properties("spring.mvc.servlet.path:spring/*")
 					.run(args);
 		}

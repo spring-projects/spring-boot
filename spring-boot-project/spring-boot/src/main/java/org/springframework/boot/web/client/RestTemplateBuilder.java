@@ -91,7 +91,7 @@ public class RestTemplateBuilder {
 
 	private final BasicAuthentication basicAuthentication;
 
-	private final Map<String, String> defaultHeaders;
+	private final Map<String, List<String>> defaultHeaders;
 
 	private final Set<RestTemplateCustomizer> customizers;
 
@@ -114,7 +114,7 @@ public class RestTemplateBuilder {
 		this.errorHandler = null;
 		this.basicAuthentication = null;
 		this.defaultHeaders = Collections.emptyMap();
-		this.customizers = setOf(customizers);
+		this.customizers = copiedSetOf(customizers);
 		this.requestCustomizers = Collections.emptySet();
 	}
 
@@ -122,7 +122,7 @@ public class RestTemplateBuilder {
 			String rootUri, Set<HttpMessageConverter<?>> messageConverters,
 			Set<ClientHttpRequestInterceptor> interceptors, Supplier<ClientHttpRequestFactory> requestFactorySupplier,
 			UriTemplateHandler uriTemplateHandler, ResponseErrorHandler errorHandler,
-			BasicAuthentication basicAuthentication, Map<String, String> defaultHeaders,
+			BasicAuthentication basicAuthentication, Map<String, List<String>> defaultHeaders,
 			Set<RestTemplateCustomizer> customizers, Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		this.requestFactoryCustomizer = requestFactoryCustomizer;
 		this.detectRequestFactory = detectRequestFactory;
@@ -154,7 +154,10 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Set a root URL that should be applied to each request that starts with {@code '/'}.
-	 * See {@link RootUriTemplateHandler} for details.
+	 * Since this works by adding a {@link UriTemplateHandler} to the
+	 * {@link RestTemplate}, the root URL will only apply when {@code String} variants of
+	 * the {@link RestTemplate} methods are used for specifying the request URL. See
+	 * {@link RootUriTemplateHandler} for details.
 	 * @param rootUri the root URI or {@code null}
 	 * @return a new builder instance
 	 */
@@ -191,7 +194,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder messageConverters(Collection<? extends HttpMessageConverter<?>> messageConverters) {
 		Assert.notNull(messageConverters, "MessageConverters must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
-				setOf(messageConverters), this.interceptors, this.requestFactory, this.uriTemplateHandler,
+				copiedSetOf(messageConverters), this.interceptors, this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
 	}
@@ -235,7 +238,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder defaultMessageConverters() {
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
-				setOf(new RestTemplate().getMessageConverters()), this.interceptors, this.requestFactory,
+				copiedSetOf(new RestTemplate().getMessageConverters()), this.interceptors, this.requestFactory,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
 	}
@@ -266,7 +269,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder interceptors(Collection<ClientHttpRequestInterceptor> interceptors) {
 		Assert.notNull(interceptors, "interceptors must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
-				this.messageConverters, setOf(interceptors), this.requestFactory, this.uriTemplateHandler,
+				this.messageConverters, copiedSetOf(interceptors), this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
 	}
@@ -395,15 +398,17 @@ public class RestTemplateBuilder {
 	 * Add a default header that will be set if not already present on the outgoing
 	 * {@link HttpClientRequest}.
 	 * @param name the name of the header
-	 * @param value the header value
+	 * @param values the header values
 	 * @return a new builder instance
 	 * @since 2.2.0
 	 */
-	public RestTemplateBuilder defaultHeader(String name, String value) {
+	public RestTemplateBuilder defaultHeader(String name, String... values) {
+		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(values, "Values must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthentication, append(this.defaultHeaders, name, value), this.customizers,
-				this.requestCustomizers);
+				this.errorHandler, this.basicAuthentication, append(this.defaultHeaders, name, values),
+				this.customizers, this.requestCustomizers);
 	}
 
 	/**
@@ -475,7 +480,7 @@ public class RestTemplateBuilder {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthentication, this.defaultHeaders, setOf(customizers),
+				this.errorHandler, this.basicAuthentication, this.defaultHeaders, copiedSetOf(customizers),
 				this.requestCustomizers);
 	}
 
@@ -539,7 +544,7 @@ public class RestTemplateBuilder {
 		return new RestTemplateBuilder(this.requestFactoryCustomizer, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
-				setOf(requestCustomizers));
+				copiedSetOf(requestCustomizers));
 	}
 
 	/**
@@ -675,12 +680,16 @@ public class RestTemplateBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Set<T> setOf(T... items) {
-		return setOf(Arrays.asList(items));
+	private <T> Set<T> copiedSetOf(T... items) {
+		return copiedSetOf(Arrays.asList(items));
 	}
 
-	private <T> Set<T> setOf(Collection<? extends T> collection) {
+	private <T> Set<T> copiedSetOf(Collection<? extends T> collection) {
 		return Collections.unmodifiableSet(new LinkedHashSet<>(collection));
+	}
+
+	private static <T> List<T> copiedListOf(T[] items) {
+		return Collections.unmodifiableList(Arrays.asList(Arrays.copyOf(items, items.length)));
 	}
 
 	private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {
@@ -691,9 +700,11 @@ public class RestTemplateBuilder {
 		return Collections.unmodifiableSet(result);
 	}
 
-	private static <K, V> Map<K, V> append(Map<K, V> map, K key, V value) {
-		Map<K, V> result = new LinkedHashMap<>((map != null) ? map : Collections.emptyMap());
-		result.put(key, value);
+	private static <K, V> Map<K, List<V>> append(Map<K, List<V>> map, K key, V[] values) {
+		Map<K, List<V>> result = new LinkedHashMap<>((map != null) ? map : Collections.emptyMap());
+		if (values != null) {
+			result.put(key, copiedListOf(values));
+		}
 		return Collections.unmodifiableMap(result);
 	}
 
@@ -718,15 +729,15 @@ public class RestTemplateBuilder {
 			this.bufferRequestBody = bufferRequestBody;
 		}
 
-		public RequestFactoryCustomizer connectTimeout(Duration connectTimeout) {
+		RequestFactoryCustomizer connectTimeout(Duration connectTimeout) {
 			return new RequestFactoryCustomizer(connectTimeout, this.readTimeout, this.bufferRequestBody);
 		}
 
-		public RequestFactoryCustomizer readTimeout(Duration readTimeout) {
+		RequestFactoryCustomizer readTimeout(Duration readTimeout) {
 			return new RequestFactoryCustomizer(this.connectTimeout, readTimeout, this.bufferRequestBody);
 		}
 
-		public RequestFactoryCustomizer bufferRequestBody(boolean bufferRequestBody) {
+		RequestFactoryCustomizer bufferRequestBody(boolean bufferRequestBody) {
 			return new RequestFactoryCustomizer(this.connectTimeout, this.readTimeout, bufferRequestBody);
 		}
 

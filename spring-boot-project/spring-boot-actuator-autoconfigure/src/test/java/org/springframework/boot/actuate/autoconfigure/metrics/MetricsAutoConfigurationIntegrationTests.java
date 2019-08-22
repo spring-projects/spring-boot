@@ -114,7 +114,7 @@ class MetricsAutoConfigurationIntegrationTests {
 
 		@Primary
 		@Bean
-		public MeterRegistry simpleMeterRegistry() {
+		MeterRegistry simpleMeterRegistry() {
 			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		}
 

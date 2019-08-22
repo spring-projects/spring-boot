@@ -110,10 +110,10 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TransactionManagerConfiguration {
+	static class TransactionManagerConfiguration {
 
 		@Bean
-		public PlatformTransactionManager myTransactionManager() {
+		PlatformTransactionManager myTransactionManager() {
 			return mock(PlatformTransactionManager.class);
 		}
 

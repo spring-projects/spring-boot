@@ -24,6 +24,7 @@ import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -189,6 +190,20 @@ class ActiveMQAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void cachingConnectionFactoryNotOnTheClasspathThenSimpleConnectionFactoryAutoConfigured() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
+				.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=false")
+				.run((context) -> assertThat(context).hasSingleBean(ActiveMQConnectionFactory.class));
+	}
+
+	@Test
+	void cachingConnectionFactoryNotOnTheClasspathAndCacheEnabledThenSimpleConnectionFactoryNotConfigured() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
+				.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=true")
+				.run((context) -> assertThat(context).doesNotHaveBean(ActiveMQConnectionFactory.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
@@ -198,7 +213,7 @@ class ActiveMQAutoConfigurationTests {
 	static class CustomConnectionFactoryConfiguration {
 
 		@Bean
-		public ConnectionFactory connectionFactory() {
+		ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
 
@@ -208,7 +223,7 @@ class ActiveMQAutoConfigurationTests {
 	static class CustomizerConfiguration {
 
 		@Bean
-		public ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
+		ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
 			return (factory) -> {
 				factory.setBrokerURL("vm://localhost?useJmx=false&broker.persistent=false");
 				factory.setUserName("foobar");

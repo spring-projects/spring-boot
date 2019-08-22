@@ -89,7 +89,7 @@ class ApplicationContextRequestMatcherTests {
 			this.bean = bean;
 		}
 
-		public ExistingBean getBean() {
+		ExistingBean getBean() {
 			return this.bean;
 		}
 
@@ -103,11 +103,11 @@ class ApplicationContextRequestMatcherTests {
 			super(context);
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(WebApplicationContext context) {
+		Supplier<C> callMatchesAndReturnProvidedContext(WebApplicationContext context) {
 			return callMatchesAndReturnProvidedContext(new MockHttpServletRequest(context.getServletContext()));
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(HttpServletRequest request) {
+		Supplier<C> callMatchesAndReturnProvidedContext(HttpServletRequest request) {
 			matches(request);
 			return getProvidedContext();
 		}
@@ -118,7 +118,7 @@ class ApplicationContextRequestMatcherTests {
 			return false;
 		}
 
-		public Supplier<C> getProvidedContext() {
+		Supplier<C> getProvidedContext() {
 			return this.providedContext;
 		}
 

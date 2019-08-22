@@ -149,6 +149,16 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Test
+	void webServerWithNonAbsoluteMultipartLocationUndertowConfiguration() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(
+				WebServerWithNonAbsolutePathUndertow.class, BaseConfiguration.class);
+		this.context.getBean(MultipartConfigElement.class);
+		verifyServletWorks();
+		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
+				.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
+	}
+
+	@Test
 	void webServerWithMultipartConfigDisabled() {
 		testWebServerWithCustomMultipartConfigEnabledSetting("false", 0);
 	}
@@ -239,12 +249,12 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WebServerWithNothing {
+	static class WebServerWithNothing {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WebServerWithNoMultipartJetty {
+	static class WebServerWithNoMultipartJetty {
 
 		@Bean
 		JettyServletWebServerFactory webServerFactory() {
@@ -259,7 +269,7 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WebServerWithNoMultipartUndertow {
+	static class WebServerWithNoMultipartUndertow {
 
 		@Bean
 		UndertowServletWebServerFactory webServerFactory() {
@@ -277,10 +287,10 @@ class MultipartAutoConfigurationTests {
 	@Import({ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			MultipartAutoConfiguration.class })
 	@EnableConfigurationProperties(MultipartProperties.class)
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 		@Bean
-		public ServerProperties serverProperties() {
+		ServerProperties serverProperties() {
 			ServerProperties properties = new ServerProperties();
 			properties.setPort(0);
 			return properties;
@@ -289,7 +299,7 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WebServerWithNoMultipartTomcat {
+	static class WebServerWithNoMultipartTomcat {
 
 		@Bean
 		TomcatServletWebServerFactory webServerFactory() {
@@ -304,7 +314,7 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WebServerWithEverythingJetty {
+	static class WebServerWithEverythingJetty {
 
 		@Bean
 		MultipartConfigElement multipartConfigElement() {
@@ -325,7 +335,7 @@ class MultipartAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	public static class WebServerWithEverythingTomcat {
+	static class WebServerWithEverythingTomcat {
 
 		@Bean
 		MultipartConfigElement multipartConfigElement() {
@@ -346,7 +356,7 @@ class MultipartAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	public static class WebServerWithEverythingUndertow {
+	static class WebServerWithEverythingUndertow {
 
 		@Bean
 		MultipartConfigElement multipartConfigElement() {
@@ -366,7 +376,28 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WebServerWithCustomMultipartResolver {
+	@EnableWebMvc
+	static class WebServerWithNonAbsolutePathUndertow {
+
+		@Bean
+		MultipartConfigElement multipartConfigElement() {
+			return new MultipartConfigElement("test/not-absolute");
+		}
+
+		@Bean
+		UndertowServletWebServerFactory webServerFactory() {
+			return new UndertowServletWebServerFactory();
+		}
+
+		@Bean
+		WebController webController() {
+			return new WebController();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WebServerWithCustomMultipartResolver {
 
 		@Bean
 		MultipartResolver multipartResolver() {
@@ -376,7 +407,7 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class ContainerWithCommonsMultipartResolver {
+	static class ContainerWithCommonsMultipartResolver {
 
 		@Bean
 		CommonsMultipartResolver multipartResolver() {
@@ -386,11 +417,11 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Controller
-	public static class WebController {
+	static class WebController {
 
 		@RequestMapping("/")
 		@ResponseBody
-		public String index() {
+		String index() {
 			return "Hello";
 		}
 

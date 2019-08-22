@@ -34,7 +34,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Brian Clozel
- * @since 1.1
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.mvc")
 public class WebMvcProperties {
@@ -75,6 +75,11 @@ public class WebMvcProperties {
 	 * scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
+
+	/**
+	 * Whether to publish a ServletRequestHandledEvent at the end of each request.
+	 */
+	private boolean publishRequestHandledEvents = true;
 
 	/**
 	 * Whether a "NoHandlerFoundException" should be thrown if no Handler was found to
@@ -141,6 +146,14 @@ public class WebMvcProperties {
 
 	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
+	}
+
+	public boolean isPublishRequestHandledEvents() {
+		return this.publishRequestHandledEvents;
+	}
+
+	public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
+		this.publishRequestHandledEvents = publishRequestHandledEvents;
 	}
 
 	public boolean isThrowExceptionIfNoHandlerFound() {

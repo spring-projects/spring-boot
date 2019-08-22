@@ -97,7 +97,7 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(String.format(
 						"server.port file '" + this.serverPortFile + "' was not written within " + timeToWait.toMillis()
-								+ "ms. " + "Application output:%n%s%s",
+								+ "ms. Application output:%n%s%s",
 						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardOut())),
 						FileCopyUtils.copyToString(new FileReader(this.launchedApplication.getStandardError()))));
 			}
@@ -137,12 +137,12 @@ public class DevToolsWithLazyInitializationIntegrationTests {
 			this.classesDirectory = classesDirectory;
 		}
 
-		public ControllerBuilder withRequestMapping(String mapping) {
+		ControllerBuilder withRequestMapping(String mapping) {
 			this.mappings.add(mapping);
 			return this;
 		}
 
-		public void build() throws Exception {
+		void build() throws Exception {
 			DynamicType.Builder<Object> builder = new ByteBuddy().subclass(Object.class).name(this.name)
 					.annotateType(AnnotationDescription.Builder.ofType(RestController.class).build());
 			for (String mapping : this.mappings) {

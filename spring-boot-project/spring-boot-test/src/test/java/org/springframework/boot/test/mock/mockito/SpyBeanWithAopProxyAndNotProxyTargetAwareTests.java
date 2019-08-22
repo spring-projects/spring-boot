@@ -64,14 +64,14 @@ class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 	static class Config {
 
 		@Bean
-		public CacheResolver cacheResolver(CacheManager cacheManager) {
+		CacheResolver cacheResolver(CacheManager cacheManager) {
 			SimpleCacheResolver resolver = new SimpleCacheResolver();
 			resolver.setCacheManager(cacheManager);
 			return resolver;
 		}
 
 		@Bean
-		public ConcurrentMapCacheManager cacheManager() {
+		ConcurrentMapCacheManager cacheManager() {
 			ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
 			cacheManager.setCacheNames(Arrays.asList("test"));
 			return cacheManager;
@@ -80,7 +80,7 @@ class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 	}
 
 	@Service
-	static class DateService {
+	public static class DateService {
 
 		@Cacheable(cacheNames = "test")
 		public Long getDate(boolean arg) {

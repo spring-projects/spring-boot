@@ -41,7 +41,7 @@ class MockMvcSecurityConfiguration {
 
 	@Bean
 	@ConditionalOnBean(name = DEFAULT_SECURITY_FILTER_NAME)
-	public SecurityMockMvcBuilderCustomizer securityMockMvcBuilderCustomizer() {
+	SecurityMockMvcBuilderCustomizer securityMockMvcBuilderCustomizer() {
 		return new SecurityMockMvcBuilderCustomizer();
 	}
 

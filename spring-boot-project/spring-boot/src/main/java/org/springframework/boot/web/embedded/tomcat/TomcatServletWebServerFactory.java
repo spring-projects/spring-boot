@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContainerInitializer;
 
@@ -91,6 +92,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Christoffer Sawicki
+ * @author Dawid Antecki
  * @since 2.0.0
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
@@ -116,11 +118,11 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
 
-	private Collection<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
+	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
-	private Collection<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
+	private Set<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
 
-	private Collection<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new LinkedHashSet<>();
+	private Set<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new LinkedHashSet<>();
 
 	private final List<Connector> additionalTomcatConnectors = new ArrayList<>();
 
@@ -569,7 +571,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	public void setTomcatContextCustomizers(Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
-		this.tomcatContextCustomizers = new ArrayList<>(tomcatContextCustomizers);
+		this.tomcatContextCustomizers = new LinkedHashSet<>(tomcatContextCustomizers);
 	}
 
 	/**
@@ -595,7 +597,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	public void setTomcatConnectorCustomizers(
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
 		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
-		this.tomcatConnectorCustomizers = new ArrayList<>(tomcatConnectorCustomizers);
+		this.tomcatConnectorCustomizers = new LinkedHashSet<>(tomcatConnectorCustomizers);
 	}
 
 	@Override
@@ -622,7 +624,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	public void setTomcatProtocolHandlerCustomizers(
 			Collection<? extends TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizer) {
 		Assert.notNull(tomcatProtocolHandlerCustomizer, "TomcatProtocolHandlerCustomizers must not be null");
-		this.tomcatProtocolHandlerCustomizers = new ArrayList<>(tomcatProtocolHandlerCustomizer);
+		this.tomcatProtocolHandlerCustomizers = new LinkedHashSet<>(tomcatProtocolHandlerCustomizer);
 	}
 
 	/**
@@ -813,7 +815,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		@Override
 		public Set<String> listWebAppPaths(String path) {
-			return this.delegate.listWebAppPaths(path);
+			return this.delegate.listWebAppPaths(path).stream()
+					.filter((webAppPath) -> !webAppPath.startsWith("/org/springframework/boot"))
+					.collect(Collectors.toSet());
 		}
 
 		@Override

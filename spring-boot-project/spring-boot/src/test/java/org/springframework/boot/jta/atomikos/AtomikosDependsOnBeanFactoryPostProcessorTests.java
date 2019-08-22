@@ -67,27 +67,27 @@ class AtomikosDependsOnBeanFactoryPostProcessorTests {
 	static class Config {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
 		@Bean
-		public ConnectionFactory connectionFactory() {
+		ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
 
 		@Bean
-		public UserTransactionManager userTransactionManager() {
+		UserTransactionManager userTransactionManager() {
 			return mock(UserTransactionManager.class);
 		}
 
 		@Bean
-		public MessageDrivenContainer messageDrivenContainer() {
+		MessageDrivenContainer messageDrivenContainer() {
 			return mock(MessageDrivenContainer.class);
 		}
 
 		@Bean
-		public static AtomikosDependsOnBeanFactoryPostProcessor atomikosPostProcessor() {
+		static AtomikosDependsOnBeanFactoryPostProcessor atomikosPostProcessor() {
 			return new AtomikosDependsOnBeanFactoryPostProcessor();
 		}
 

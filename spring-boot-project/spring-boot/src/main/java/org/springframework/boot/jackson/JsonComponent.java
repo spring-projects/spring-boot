@@ -30,10 +30,11 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link Component} that provides {@link JsonSerializer}, {@link JsonDeserializer} or
- * {@link KeyDeserializer} implementations to be registered with Jackson when
- * {@link JsonComponentModule} is in use. Can be used to annotate implementations directly
- * or a class that contains them as inner-classes. For example: <pre class="code">
+ * {@link Component @Component} that provides {@link JsonSerializer},
+ * {@link JsonDeserializer} or {@link KeyDeserializer} implementations to be registered
+ * with Jackson when {@link JsonComponentModule} is in use. Can be used to annotate
+ * implementations directly or a class that contains them as inner-classes. For example:
+ * <pre class="code">
  * &#064;JsonComponent
  * public class CustomerJsonComponent {
  *
@@ -91,8 +92,7 @@ public @interface JsonComponent {
 	Scope scope() default Scope.VALUES;
 
 	/**
-	 * The various scopes under which a serializer/deserialzier can be registered.
-	 * @since 2.2.0
+	 * The various scopes under which a serializer/deserializer can be registered.
 	 */
 	enum Scope {
 

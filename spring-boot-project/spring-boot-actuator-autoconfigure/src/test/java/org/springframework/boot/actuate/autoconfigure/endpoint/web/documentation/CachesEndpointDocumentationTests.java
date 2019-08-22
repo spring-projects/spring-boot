@@ -57,7 +57,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	private static final List<ParameterDescriptor> requestParameters = Collections
 			.singletonList(parameterWithName("cacheManager").description(
-					"Name of the cacheManager to qualify the cache. May be " + "omitted if the cache name is unique.")
+					"Name of the cacheManager to qualify the cache. May be omitted if the cache name is unique.")
 					.optional());
 
 	@Test
@@ -66,7 +66,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				.andDo(MockMvcRestDocumentation.document("caches/all",
 						responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
 								fieldWithPath("cacheManagers.*.caches")
-										.description("Caches in the application context keyed by " + "name."))
+										.description("Caches in the application context keyed by name."))
 												.andWithPrefix("cacheManagers.*.caches.*.", fieldWithPath("target")
 														.description("Fully qualified name of the native cache."))));
 	}
@@ -95,7 +95,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	static class TestConfiguration {
 
 		@Bean
-		public CachesEndpoint endpoint() {
+		CachesEndpoint endpoint() {
 			Map<String, CacheManager> cacheManagers = new HashMap<>();
 			cacheManagers.put("cacheManager", new ConcurrentMapCacheManager("countries", "cities"));
 			cacheManagers.put("anotherCacheManager", new ConcurrentMapCacheManager("countries"));
@@ -103,7 +103,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		}
 
 		@Bean
-		public CachesEndpointWebExtension endpointWebExtension(CachesEndpoint endpoint) {
+		CachesEndpointWebExtension endpointWebExtension(CachesEndpoint endpoint) {
 			return new CachesEndpointWebExtension(endpoint);
 		}
 

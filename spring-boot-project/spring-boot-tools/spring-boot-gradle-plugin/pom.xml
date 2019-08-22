@@ -324,6 +324,7 @@
 										<icons>font</icons>
 										<stylesdir>css/</stylesdir>
 										<stylesheet>style.css</stylesheet>
+										<attribute-missing>warn</attribute-missing>
 									</attributes>
 									<logHandler>
 										<outputToConsole>true</outputToConsole>
@@ -386,6 +387,15 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>java13</id>
+			<activation>
+				<jdk>13</jdk>
+			</activation>
+			<properties>
+				<gradle.task>assemble</gradle.task>
+			</properties>
 		</profile>
 	</profiles>
 </project>

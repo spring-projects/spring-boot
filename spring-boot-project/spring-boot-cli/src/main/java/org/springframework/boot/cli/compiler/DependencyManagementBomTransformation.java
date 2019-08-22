@@ -135,7 +135,7 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 				&& ((ConstantExpression) valueExpression).getValue() instanceof String) {
 			return Arrays.asList((ConstantExpression) valueExpression);
 		}
-		reportError("@DependencyManagementBom requires an inline constant that is a " + "string or a string array",
+		reportError("@DependencyManagementBom requires an inline constant that is a string or a string array",
 				valueExpression);
 		return Collections.emptyList();
 	}
@@ -148,7 +148,7 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 				expressions.add((ConstantExpression) expression);
 			}
 			else {
-				reportError("Each entry in the array must be an " + "inline string constant", expression);
+				reportError("Each entry in the array must be an inline string constant", expression);
 			}
 		}
 		return expressions;

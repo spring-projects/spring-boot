@@ -38,7 +38,7 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 2.2.0
+ * @author Sam Brannen
  * @see OutputCaptureExtension
  * @see OutputCaptureRule
  */
@@ -126,7 +126,8 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	private String get(Predicate<Type> filter) {
-		Assert.state(!this.systemCaptures.isEmpty(), "No system captures found. Check that you have used @ExtendWith.");
+		Assert.state(!this.systemCaptures.isEmpty(),
+				"No system captures found. Please check your output capture registration.");
 		StringBuilder builder = new StringBuilder();
 		for (SystemCapture systemCapture : this.systemCaptures) {
 			systemCapture.append(builder, filter);
@@ -155,7 +156,7 @@ class OutputCapture implements CapturedOutput {
 			System.setErr(this.err);
 		}
 
-		public void release() {
+		void release() {
 			System.setOut(this.out.getParent());
 			System.setErr(this.err.getParent());
 		}
@@ -172,7 +173,7 @@ class OutputCapture implements CapturedOutput {
 			}
 		}
 
-		public void append(StringBuilder builder, Predicate<Type> filter) {
+		void append(StringBuilder builder, Predicate<Type> filter) {
 			synchronized (this.monitor) {
 				for (CapturedString stringCapture : this.capturedStrings) {
 					if (filter.test(stringCapture.getType())) {
@@ -182,7 +183,7 @@ class OutputCapture implements CapturedOutput {
 			}
 		}
 
-		public void reset() {
+		void reset() {
 			synchronized (this.monitor) {
 				this.capturedStrings.clear();
 			}
@@ -202,7 +203,7 @@ class OutputCapture implements CapturedOutput {
 			this.parent = parent;
 		}
 
-		public PrintStream getParent() {
+		PrintStream getParent() {
 			return this.parent;
 		}
 
@@ -261,7 +262,7 @@ class OutputCapture implements CapturedOutput {
 			this.string = string;
 		}
 
-		public Type getType() {
+		Type getType() {
 			return this.type;
 		}
 
@@ -293,11 +294,11 @@ class OutputCapture implements CapturedOutput {
 			AnsiOutput.setEnabled(Enabled.NEVER);
 		}
 
-		public void restore() {
+		void restore() {
 			AnsiOutput.setEnabled(this.saved);
 		}
 
-		public static AnsiOutputState saveAndDisable() {
+		static AnsiOutputState saveAndDisable() {
 			if (!ClassUtils.isPresent("org.springframework.boot.ansi.AnsiOutput",
 					OutputCapture.class.getClassLoader())) {
 				return null;

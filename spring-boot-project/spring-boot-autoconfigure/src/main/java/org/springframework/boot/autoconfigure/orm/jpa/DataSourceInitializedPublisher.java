@@ -46,7 +46,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * only be registered via the inner {@link Registrar} class.
  *
  * @author Dave Syer
- * @since 1.1.0
  */
 class DataSourceInitializedPublisher implements BeanPostProcessor {
 

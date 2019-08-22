@@ -419,9 +419,9 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	void servletRequestCanBeInjectedEarly(CapturedOutput capturedOutput) throws Exception {
+	void servletRequestCanBeInjectedEarly(CapturedOutput output) throws Exception {
 		// gh-14990
-		int initialOutputLength = capturedOutput.length();
+		int initialOutputLength = output.length();
 		addWebServerFactoryBean();
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(WithAutowiredServletRequest.class);
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
@@ -431,8 +431,7 @@ class ServletWebServerApplicationContextTests {
 			assertThat(bean.getRequest()).isNotNull();
 		});
 		this.context.refresh();
-		String output = capturedOutput.toString().substring(initialOutputLength);
-		assertThat(output).doesNotContain("Replacing scope");
+		assertThat(output.toString().substring(initialOutputLength)).doesNotContain("Replacing scope");
 	}
 
 	@Test
@@ -448,7 +447,7 @@ class ServletWebServerApplicationContextTests {
 				new RootBeanDefinition(MockServletWebServerFactory.class));
 	}
 
-	public MockServletWebServerFactory getWebServerFactory() {
+	MockServletWebServerFactory getWebServerFactory() {
 		return this.context.getBean(MockServletWebServerFactory.class);
 	}
 
@@ -462,14 +461,14 @@ class ServletWebServerApplicationContextTests {
 		return beanDefinition;
 	}
 
-	public static <T> T getBean(T object) {
+	static <T> T getBean(T object) {
 		if (object instanceof RuntimeException) {
 			throw (RuntimeException) object;
 		}
 		return object;
 	}
 
-	public static class MockListener implements ApplicationListener<ServletWebServerInitializedEvent> {
+	static class MockListener implements ApplicationListener<ServletWebServerInitializedEvent> {
 
 		private ServletWebServerInitializedEvent event;
 
@@ -478,14 +477,14 @@ class ServletWebServerApplicationContextTests {
 			this.event = event;
 		}
 
-		public ServletWebServerInitializedEvent getEvent() {
+		ServletWebServerInitializedEvent getEvent() {
 			return this.event;
 		}
 
 	}
 
 	@Order(10)
-	protected static class OrderedFilter extends GenericFilterBean {
+	static class OrderedFilter extends GenericFilterBean {
 
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
@@ -493,15 +492,15 @@ class ServletWebServerApplicationContextTests {
 
 	}
 
-	protected static class WithAutowiredServletRequest {
+	static class WithAutowiredServletRequest {
 
 		private final ServletRequest request;
 
-		public WithAutowiredServletRequest(ServletRequest request) {
+		WithAutowiredServletRequest(ServletRequest request) {
 			this.request = request;
 		}
 
-		public ServletRequest getRequest() {
+		ServletRequest getRequest() {
 			return this.request;
 		}
 

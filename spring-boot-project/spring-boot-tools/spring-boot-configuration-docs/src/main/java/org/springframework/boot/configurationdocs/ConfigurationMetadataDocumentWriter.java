@@ -35,6 +35,7 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepos
  * Write Asciidoc documents with configuration properties listings.
  *
  * @author Brian Clozel
+ * @since 2.0.0
  */
 public class ConfigurationMetadataDocumentWriter {
 

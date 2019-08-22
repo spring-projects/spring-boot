@@ -39,7 +39,7 @@ class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustom
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		boolean enabled = MergedAnnotations.from(testClass, SearchStrategy.EXHAUSTIVE)
+		boolean enabled = MergedAnnotations.from(testClass, SearchStrategy.TYPE_HIERARCHY)
 				.get(OverrideAutoConfiguration.class).getValue("enabled", Boolean.class).orElse(true);
 		return !enabled ? new DisableAutoConfigurationContextCustomizer() : null;
 	}

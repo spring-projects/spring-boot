@@ -66,10 +66,10 @@ class AuditEventsEndpointWebIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public AuditEventRepository auditEventsRepository() {
+		AuditEventRepository auditEventsRepository() {
 			AuditEventRepository repository = new InMemoryAuditEventRepository(3);
 			repository.add(createEvent("2016-11-01T11:00:00Z", "admin", "login"));
 			repository.add(createEvent("2016-11-01T12:00:00Z", "admin", "logout"));
@@ -78,7 +78,7 @@ class AuditEventsEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {
+		AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {
 			return new AuditEventsEndpoint(auditEventRepository);
 		}
 

@@ -28,6 +28,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.core.ElasticsearchEntityMapper;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.EntityMapper;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Artur Konczak
  * @author Brian Clozel
+ * @author Peter-Josef Meisch
  */
 @DisabledWithoutDockerTestcontainers
 class ElasticsearchDataAutoConfigurationTests {
@@ -91,6 +93,11 @@ class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultEntityMapperRegistered() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(EntityMapper.class));
+	}
+
+	@Test
 	void customTransportTemplateShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class).run((context) -> assertThat(context)
 				.getBeanNames(ElasticsearchTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
@@ -109,11 +116,17 @@ class ElasticsearchDataAutoConfigurationTests {
 						.contains("reactiveElasticsearchTemplate"));
 	}
 
+	@Test
+	void customEntityMapperShouldeBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomEntityMapper.class).run((context) -> assertThat(context)
+				.getBeanNames(EntityMapper.class).containsExactly("elasticsearchEntityMapper"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomTransportTemplate {
 
 		@Bean
-		public ElasticsearchTemplate elasticsearchTemplate() {
+		ElasticsearchTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchTemplate.class);
 		}
 
@@ -123,7 +136,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	static class CustomRestTemplate {
 
 		@Bean
-		public ElasticsearchRestTemplate elasticsearchTemplate() {
+		ElasticsearchRestTemplate elasticsearchTemplate() {
 			return mock(ElasticsearchRestTemplate.class);
 		}
 
@@ -133,8 +146,18 @@ class ElasticsearchDataAutoConfigurationTests {
 	static class CustomReactiveRestTemplate {
 
 		@Bean
-		public ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
+		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
 			return mock(ReactiveElasticsearchTemplate.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomEntityMapper {
+
+		@Bean
+		EntityMapper elasticsearchEntityMapper() {
+			return mock(ElasticsearchEntityMapper.class);
 		}
 
 	}

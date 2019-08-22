@@ -108,7 +108,7 @@ class AetherGrapeEngineTests {
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"),
 				createDependency("org.springframework", "spring-beans", "3.2.4.RELEASE"));
 
-		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(3);
+		assertThat(this.groovyClassLoader.getURLs()).hasSize(3);
 	}
 
 	@Test
@@ -117,7 +117,7 @@ class AetherGrapeEngineTests {
 
 		createGrapeEngine().grab(args, createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE", false));
 
-		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
+		assertThat(this.groovyClassLoader.getURLs()).hasSize(1);
 	}
 
 	@Test
@@ -129,8 +129,8 @@ class AetherGrapeEngineTests {
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
 
-		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(0);
-		assertThat(customClassLoader.getURLs().length).isEqualTo(5);
+		assertThat(this.groovyClassLoader.getURLs()).isEmpty();
+		assertThat(customClassLoader.getURLs()).hasSize(5);
 	}
 
 	@Test
@@ -142,7 +142,7 @@ class AetherGrapeEngineTests {
 				"0.1.1.RELEASE");
 		dependency.put("ext", "zip");
 		grapeEngine.grab(args, dependency);
-		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
+		assertThat(this.groovyClassLoader.getURLs()).hasSize(1);
 	}
 
 	@Test
@@ -162,7 +162,7 @@ class AetherGrapeEngineTests {
 		dependency.put("type", "pom");
 		createGrapeEngine().grab(args, dependency);
 		URL[] urls = this.groovyClassLoader.getURLs();
-		assertThat(urls.length).isEqualTo(1);
+		assertThat(urls).hasSize(1);
 		assertThat(urls[0].toExternalForm().endsWith(".pom")).isTrue();
 	}
 
@@ -174,7 +174,7 @@ class AetherGrapeEngineTests {
 		dependency.put("ext", "pom");
 		createGrapeEngine().grab(args, dependency);
 		URL[] urls = this.groovyClassLoader.getURLs();
-		assertThat(urls.length).isEqualTo(1);
+		assertThat(urls).hasSize(1);
 		assertThat(urls[0].toExternalForm().endsWith(".pom")).isTrue();
 	}
 
@@ -187,7 +187,7 @@ class AetherGrapeEngineTests {
 		createGrapeEngine().grab(args, dependency);
 
 		URL[] urls = this.groovyClassLoader.getURLs();
-		assertThat(urls.length).isEqualTo(1);
+		assertThat(urls).hasSize(1);
 		assertThat(urls[0].toExternalForm().endsWith("-sources.jar")).isTrue();
 	}
 

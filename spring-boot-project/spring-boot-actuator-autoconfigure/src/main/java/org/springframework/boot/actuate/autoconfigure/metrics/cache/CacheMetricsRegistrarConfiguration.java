@@ -59,12 +59,12 @@ class CacheMetricsRegistrarConfiguration {
 	}
 
 	@Bean
-	public CacheMetricsRegistrar cacheMetricsRegistrar() {
+	CacheMetricsRegistrar cacheMetricsRegistrar() {
 		return this.cacheMetricsRegistrar;
 	}
 
 	@PostConstruct
-	public void bindCachesToRegistry() {
+	void bindCachesToRegistry() {
 		this.cacheManagers.forEach(this::bindCacheManagerToRegistry);
 	}
 

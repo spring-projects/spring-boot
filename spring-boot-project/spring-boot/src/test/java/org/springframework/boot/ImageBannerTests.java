@@ -165,7 +165,7 @@ class ImageBannerTests {
 		int frames = 138;
 		int linesPerFrame = 36;
 		assertThat(banner).contains("\r");
-		assertThat(lines.length).isEqualTo(frames * linesPerFrame - 1);
+		assertThat(lines).hasSize(frames * linesPerFrame - 1);
 	}
 
 	private int getBannerHeight(String banner) {

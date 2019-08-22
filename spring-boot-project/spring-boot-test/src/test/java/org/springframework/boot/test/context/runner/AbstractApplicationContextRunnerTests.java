@@ -198,7 +198,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	static class FailingConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			throw new IllegalStateException("Failed");
 		}
 
@@ -208,7 +208,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	static class FooConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -218,7 +218,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	static class BarConfig {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 

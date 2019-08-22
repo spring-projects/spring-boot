@@ -85,7 +85,7 @@ class GangliaMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -96,7 +96,7 @@ class GangliaMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public GangliaConfig customConfig() {
+		GangliaConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -107,7 +107,7 @@ class GangliaMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public GangliaMeterRegistry customRegistry(GangliaConfig config, Clock clock) {
+		GangliaMeterRegistry customRegistry(GangliaConfig config, Clock clock) {
 			return new GangliaMeterRegistry(config, clock);
 		}
 

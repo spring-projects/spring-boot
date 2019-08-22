@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
  * Caffeine cache configuration.
  *
  * @author Eddú Meléndez
- * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
@@ -46,7 +45,7 @@ import org.springframework.util.StringUtils;
 class CaffeineCacheConfiguration {
 
 	@Bean
-	public CaffeineCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
+	CaffeineCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
 			ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
 			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
 		CaffeineCacheManager cacheManager = createCacheManager(cacheProperties, caffeine, caffeineSpec, cacheLoader);

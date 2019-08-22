@@ -377,8 +377,7 @@ class LambdaSafeTests {
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).withLogger(logger)
 				.invoke((c) -> c.handle(argument));
-		verify(logger).debug(
-				contains("Non-matching CharSequence type for callback " + "LambdaSafeTests.GenericCallback"),
+		verify(logger).debug(contains("Non-matching CharSequence type for callback LambdaSafeTests.GenericCallback"),
 				any(Throwable.class));
 	}
 

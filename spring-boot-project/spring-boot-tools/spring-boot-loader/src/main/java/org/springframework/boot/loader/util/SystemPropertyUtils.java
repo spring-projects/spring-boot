@@ -33,6 +33,7 @@ import java.util.Set;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Dave Syer
+ * @since 1.0.0
  * @see System#getProperty(String)
  */
 public abstract class SystemPropertyUtils {
@@ -108,7 +109,7 @@ public abstract class SystemPropertyUtils {
 				placeholder = parseStringValue(properties, value, placeholder, visitedPlaceholders);
 				// Now obtain the value for the fully resolved key...
 				String propVal = resolvePlaceholder(properties, value, placeholder);
-				if (propVal == null && VALUE_SEPARATOR != null) {
+				if (propVal == null) {
 					int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
 					if (separatorIndex != -1) {
 						String actualPlaceholder = placeholder.substring(0, separatorIndex);

@@ -43,6 +43,7 @@ import org.springframework.util.Assert;
  *
  * @param <C> the application context type
  * @author Phillip Webb
+ * @since 2.0.0
  * @see AssertableApplicationContext
  * @see AssertableWebApplicationContext
  * @see AssertableReactiveWebApplicationContext

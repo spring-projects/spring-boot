@@ -127,7 +127,7 @@ class HandlerTests {
 	@Test
 	void urlWithSpecReferencingParentDirectory() throws MalformedURLException {
 		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
-				"../folderB/b.xsd");
+				"../folderB/c/d/e.xsd");
 	}
 
 	@Test
@@ -139,7 +139,7 @@ class HandlerTests {
 	@Test
 	void urlWithSpecReferencingCurrentDirectory() throws MalformedURLException {
 		assertStandardAndCustomHandlerUrlsAreEqual("file:/test.jar!/BOOT-INF/classes!/xsd/folderA/a.xsd",
-				"./folderB/./b.xsd");
+				"./folderB/c/d/e.xsd");
 	}
 
 	@Test

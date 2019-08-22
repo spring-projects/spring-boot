@@ -79,7 +79,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 	static class CustomClientHttpConnectorConfig {
 
 		@Bean
-		public ClientHttpConnector customConnector() {
+		ClientHttpConnector customConnector() {
 			return mock(ClientHttpConnector.class);
 		}
 
@@ -89,7 +89,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 	static class CustomReactorResourceConfig {
 
 		@Bean
-		public ReactorResourceFactory customReactorResourceFactory() {
+		ReactorResourceFactory customReactorResourceFactory() {
 			return new ReactorResourceFactory();
 		}
 

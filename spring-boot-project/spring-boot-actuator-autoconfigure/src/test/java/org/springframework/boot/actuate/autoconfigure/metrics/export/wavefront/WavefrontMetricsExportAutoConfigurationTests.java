@@ -89,7 +89,7 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -100,7 +100,7 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public WavefrontConfig customConfig() {
+		WavefrontConfig customConfig() {
 			return new WavefrontConfig() {
 				@Override
 				public String get(String key) {
@@ -121,7 +121,7 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public WavefrontMeterRegistry customRegistry(WavefrontConfig config, Clock clock) {
+		WavefrontMeterRegistry customRegistry(WavefrontConfig config, Clock clock) {
 			return new WavefrontMeterRegistry(config, clock);
 		}
 

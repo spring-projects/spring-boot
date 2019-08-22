@@ -24,7 +24,6 @@ import java.util.Map;
  * Represent a project type that is supported by a service.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class ProjectType {
 
@@ -48,23 +47,23 @@ class ProjectType {
 		}
 	}
 
-	public String getId() {
+	String getId() {
 		return this.id;
 	}
 
-	public String getName() {
+	String getName() {
 		return this.name;
 	}
 
-	public String getAction() {
+	String getAction() {
 		return this.action;
 	}
 
-	public boolean isDefaultType() {
+	boolean isDefaultType() {
 		return this.defaultType;
 	}
 
-	public Map<String, String> getTags() {
+	Map<String, String> getTags() {
 		return Collections.unmodifiableMap(this.tags);
 	}
 

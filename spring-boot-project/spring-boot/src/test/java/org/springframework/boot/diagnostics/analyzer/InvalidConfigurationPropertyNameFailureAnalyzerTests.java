@@ -65,7 +65,7 @@ class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 	static class InvalidPrefixConfiguration {
 
 		@Bean(name = "invalidPrefixProperties")
-		public InvalidPrefixProperties invalidPrefixProperties() {
+		InvalidPrefixProperties invalidPrefixProperties() {
 			return new InvalidPrefixProperties();
 		}
 
@@ -76,11 +76,11 @@ class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 
 		private String value;
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 

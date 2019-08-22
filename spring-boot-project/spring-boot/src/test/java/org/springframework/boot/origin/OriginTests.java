@@ -68,7 +68,7 @@ class OriginTests {
 		assertThat(Origin.from(exception)).isEqualTo(origin);
 	}
 
-	private static class TestException extends RuntimeException implements OriginProvider {
+	static class TestException extends RuntimeException implements OriginProvider {
 
 		private final Origin origin;
 

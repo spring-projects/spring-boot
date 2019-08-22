@@ -2,8 +2,6 @@
 = "`How-to`" Guides
 include::attributes.adoc[]
 
-[partintro]
---
 This section provides answers to some common '`how do I do that...`' questions
 that often arise when using Spring Boot. Its coverage is not exhaustive, but it
 does cover quite a lot.
@@ -15,7 +13,6 @@ the `spring-boot` tag).
 
 We are also more than happy to extend this section. If you want to add a '`how-to`',
 send us a {github-code}[pull request].
---
 
 
 
@@ -234,7 +231,7 @@ You also need to include the following element inside `<plugins/>`:
 ----
 
 NOTE: The `useDefaultDelimiters` property is important if you use standard Spring
-placeholders (such as `${placeholder}`) in your configuration. If that property is not
+placeholders (such as `$\{placeholder}`) in your configuration. If that property is not
 set to `false`, these may be expanded by the build.
 
 
@@ -475,7 +472,7 @@ NOTE: The YAML documents are merged in the order in which they are encountered. 
 values override earlier values.
 
 To do the same thing with properties files, you can use
-`application-${profile}.properties` to specify profile-specific values.
+`application-$\{profile}.properties` to specify profile-specific values.
 
 
 
@@ -1570,11 +1567,11 @@ want to set levels, as shown in the following example:
 If you look at `base.xml` in the spring-boot jar, you can see that it uses
 some useful System properties that the `LoggingSystem` takes care of creating for you:
 
-* `${PID}`: The current process ID.
-* `${LOG_FILE}`: Whether `logging.file.name` was set in Boot's external configuration.
-* `${LOG_PATH}`: Whether `logging.file.path` (representing a directory for
+* `$\{PID}`: The current process ID.
+* `$\{LOG_FILE}`: Whether `logging.file.name` was set in Boot's external configuration.
+* `$\{LOG_PATH}`: Whether `logging.file.path` (representing a directory for
    log files to live in) was set in Boot's external configuration.
-* `${LOG_EXCEPTION_CONVERSION_WORD}`: Whether `logging.exception-conversion-word` was set
+* `$\{LOG_EXCEPTION_CONVERSION_WORD}`: Whether `logging.exception-conversion-word` was set
    in Boot's external configuration.
 
 Spring Boot also provides some nice ANSI color terminal output on a console (but not in
@@ -2243,7 +2240,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 Spring Boot can automatically create the schema (DDL scripts) of your `DataSource` and
 initialize it (DML scripts). It loads SQL from the standard root classpath locations:
 `schema.sql` and `data.sql`, respectively. In addition, Spring Boot processes the
-`schema-${platform}.sql` and `data-${platform}.sql` files (if present), where `platform`
+`schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform`
 is the value of `spring.datasource.platform`. This allows you to switch to
 database-specific scripts if necessary. For example, you might choose to set it to the
 vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
@@ -2309,12 +2306,12 @@ scripts in both the default classpath location and the `/opt/migration` director
 	spring.flyway.locations=classpath:db/migration,filesystem:/opt/migration
 ----
 
-You can also add a special `{vendor}` placeholder to use vendor-specific scripts. Assume
+You can also add a special `\{vendor}` placeholder to use vendor-specific scripts. Assume
 the following:
 
 [source,properties,indent=0]
 ----
-	spring.flyway.locations=classpath:db/migration/{vendor}
+	spring.flyway.locations=classpath:db/migration/\{vendor}
 ----
 
 Rather than using `db/migration`, the preceding configuration sets the folder to use
@@ -2432,9 +2429,13 @@ other factory that your application defines, if any.
 
 This section answers questions that arise from using Spring Batch with Spring Boot.
 
-NOTE: By default, batch applications require a `DataSource` to store job details. If you
-want to deviate from that, you need to implement `BatchConfigurer`. See
-{spring-batch-javadoc}/core/configuration/annotation/EnableBatchProcessing.html[The
+NOTE: By default, batch applications require a `DataSource` to store job details.
+Batch autowires a single `DataSource` in your context and uses that for processing. To
+have Batch use a `DataSource` other than the application’s main `DataSource`, declare a
+`DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`. If you do so and
+want two data sources, remember to create another one and mark it as `@Primary`. To take
+greater control, implement `BatchConfigurer`. See
+{spring-batch-javadoc}/core/configuration/annotation/EnableBatchProcessing.html[the
 Javadoc of `@EnableBatchProcessing`] for more details.
 
 For more about Spring Batch, see the https://projects.spring.io/spring-batch/[Spring Batch

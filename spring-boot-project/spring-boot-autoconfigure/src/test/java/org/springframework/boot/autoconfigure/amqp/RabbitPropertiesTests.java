@@ -150,7 +150,7 @@ class RabbitPropertiesTests {
 
 	@Test
 	void determineUsernameReturnsUsernameOfFirstAddress() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha," + "rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determineUsername()).isEqualTo("user");
 	}
 
@@ -163,7 +163,7 @@ class RabbitPropertiesTests {
 	@Test
 	void determineUsernameReturnsPropertyWhenFirstAddressHasNoUsername() {
 		this.properties.setUsername("alice");
-		this.properties.setAddresses("rabbit1.example.com:1234/alpha," + "user:secret@rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("rabbit1.example.com:1234/alpha,user:secret@rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determineUsername()).isEqualTo("alice");
 	}
 
@@ -180,7 +180,7 @@ class RabbitPropertiesTests {
 
 	@Test
 	void determinePasswordReturnsPasswordOfFirstAddress() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha," + "rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determinePassword()).isEqualTo("secret");
 	}
 
@@ -193,7 +193,7 @@ class RabbitPropertiesTests {
 	@Test
 	void determinePasswordReturnsPropertyWhenFirstAddressHasNoPassword() {
 		this.properties.setPassword("12345678");
-		this.properties.setAddresses("rabbit1.example.com:1234/alpha," + "user:secret@rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses("rabbit1.example.com:1234/alpha,user:secret@rabbit2.example.com:2345/bravo");
 		assertThat(this.properties.determinePassword()).isEqualTo("12345678");
 	}
 

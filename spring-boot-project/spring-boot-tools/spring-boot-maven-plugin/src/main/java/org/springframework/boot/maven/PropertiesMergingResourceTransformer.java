@@ -33,6 +33,7 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class PropertiesMergingResourceTransformer implements ResourceTransformer {
 
@@ -51,10 +52,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	@Override
 	public boolean canTransformResource(String resource) {
-		if (this.resource != null && this.resource.equalsIgnoreCase(resource)) {
-			return true;
-		}
-		return false;
+		return this.resource != null && this.resource.equalsIgnoreCase(resource);
 	}
 
 	@Override

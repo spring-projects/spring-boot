@@ -35,6 +35,7 @@ import javax.tools.ToolProvider;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.5.0
  */
 public class TestCompiler {
 

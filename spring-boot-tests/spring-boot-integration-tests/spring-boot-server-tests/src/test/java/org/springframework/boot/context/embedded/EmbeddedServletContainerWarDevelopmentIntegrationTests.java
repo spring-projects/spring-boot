@@ -16,6 +16,13 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.http.HttpStatus;
@@ -51,6 +58,26 @@ public class EmbeddedServletContainerWarDevelopmentIntegrationTests {
 	public void webappResourcesAreAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest.getForEntity("/webapp-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@TestTemplate
+	public void loaderClassesAreNotAvailableViaResourcePaths(RestTemplate rest) {
+		ResponseEntity<String> entity = rest.getForEntity("/resourcePaths", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(readLines(entity.getBody()))
+				.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
+	}
+
+	private List<String> readLines(String input) {
+		if (input == null) {
+			return Collections.emptyList();
+		}
+		try (BufferedReader reader = new BufferedReader(new StringReader(input))) {
+			return reader.lines().collect(Collectors.toList());
+		}
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to read lines from input '" + input + "'");
+		}
 	}
 
 }

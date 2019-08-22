@@ -35,6 +35,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)

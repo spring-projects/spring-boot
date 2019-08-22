@@ -111,7 +111,7 @@ class MixedMongoRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	// Not this package or its parent
 	@EnableMongoRepositories(basePackageClasses = Country.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
@@ -120,7 +120,7 @@ class MixedMongoRepositoriesAutoConfigurationTests {
 	@EnableMongoRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class MixedConfiguration {
+	static class MixedConfiguration {
 
 	}
 
@@ -128,7 +128,7 @@ class MixedMongoRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(MongoAutoConfiguration.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class JpaConfiguration {
+	static class JpaConfiguration {
 
 	}
 
@@ -137,17 +137,17 @@ class MixedMongoRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(CityRepository.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	protected static class OverlapConfiguration {
+	static class OverlapConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(Registrar.class)
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 	}
 
-	protected static class Registrar implements ImportSelector {
+	static class Registrar implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {

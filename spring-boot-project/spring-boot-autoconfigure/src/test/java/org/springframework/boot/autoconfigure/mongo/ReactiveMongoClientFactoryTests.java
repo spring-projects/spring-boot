@@ -98,7 +98,7 @@ class ReactiveMongoClientFactoryTests {
 	@Test
 	void uriCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://user:secret@mongo1.example.com:12345," + "mongo2.example.com:23456/test");
+		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test");
 		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(2);
@@ -123,7 +123,7 @@ class ReactiveMongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties)).withMessageContaining(
-				"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
+				"Invalid mongo configuration, either uri or host/port/credentials must be specified");
 	}
 
 	@Test
@@ -133,7 +133,7 @@ class ReactiveMongoClientFactoryTests {
 		properties.setHost("localhost");
 		properties.setPort(4567);
 		assertThatIllegalStateException().isThrownBy(() -> createMongoClient(properties)).withMessageContaining(
-				"Invalid mongo configuration, " + "either uri or host/port/credentials must be specified");
+				"Invalid mongo configuration, either uri or host/port/credentials must be specified");
 	}
 
 	@Test

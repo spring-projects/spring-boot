@@ -27,12 +27,12 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 1.3.0
  */
 public class JarCommand extends ArchiveCommand {
 
 	public JarCommand() {
-		super("jar", "Create a self-contained executable jar " + "file from a Spring Groovy script",
-				new JarOptionHandler());
+		super("jar", "Create a self-contained executable jar file from a Spring Groovy script", new JarOptionHandler());
 	}
 
 	private static final class JarOptionHandler extends ArchiveOptionHandler {

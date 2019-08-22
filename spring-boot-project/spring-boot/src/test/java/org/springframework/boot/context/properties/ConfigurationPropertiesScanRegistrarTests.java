@@ -87,10 +87,15 @@ class ConfigurationPropertiesScanRegistrarTests {
 						.isFalse();
 		BeanDefinition aDefinition = beanFactory.getBeanDefinition(
 				"a-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$AProperties");
-		BeanDefinition bDefinition = beanFactory.getBeanDefinition(
-				"b-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BProperties");
+		BeanDefinition bFirstDefinition = beanFactory.getBeanDefinition(
+				"b.first-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BFirstProperties");
+		BeanDefinition bSecondDefinition = beanFactory.getBeanDefinition(
+				"b.second-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BSecondProperties");
 		assertThat(aDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
-		assertThat(bDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
+		// Constructor injection
+		assertThat(bFirstDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+		// Post-processing injection
+		assertThat(bSecondDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 	}
 
 	@Test

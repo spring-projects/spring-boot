@@ -48,15 +48,15 @@ class IntegrationGraphEndpointWebIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableIntegration
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
+		IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
 			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 
 		@Bean
-		public IntegrationGraphServer integrationGraphServer() {
+		IntegrationGraphServer integrationGraphServer() {
 			return new IntegrationGraphServer();
 		}
 

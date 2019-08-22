@@ -120,7 +120,7 @@ class MongoReactiveAutoConfigurationTests {
 	static class OptionsConfig {
 
 		@Bean
-		public MongoClientSettings mongoClientSettings() {
+		MongoClientSettings mongoClientSettings() {
 			return MongoClientSettings.builder().readPreference(ReadPreference.nearest())
 					.applyToSocketSettings((socket) -> socket.readTimeout(300, TimeUnit.SECONDS)).build();
 		}
@@ -131,13 +131,13 @@ class MongoReactiveAutoConfigurationTests {
 	static class SslOptionsConfig {
 
 		@Bean
-		public MongoClientSettings mongoClientSettings(StreamFactoryFactory streamFactoryFactory) {
+		MongoClientSettings mongoClientSettings(StreamFactoryFactory streamFactoryFactory) {
 			return MongoClientSettings.builder().applicationName("test-config")
 					.streamFactoryFactory(streamFactoryFactory).build();
 		}
 
 		@Bean
-		public StreamFactoryFactory myStreamFactoryFactory() {
+		StreamFactoryFactory myStreamFactoryFactory() {
 			StreamFactoryFactory streamFactoryFactory = mock(StreamFactoryFactory.class);
 			given(streamFactoryFactory.create(any(), any())).willReturn(mock(StreamFactory.class));
 			return streamFactoryFactory;
@@ -152,7 +152,7 @@ class MongoReactiveAutoConfigurationTests {
 				.build();
 
 		@Bean
-		public MongoClientSettingsBuilderCustomizer customizer() {
+		MongoClientSettingsBuilderCustomizer customizer() {
 			return (clientSettingsBuilder) -> clientSettingsBuilder.applicationName("overridden-name")
 					.streamFactoryFactory(streamFactoryFactory);
 		}

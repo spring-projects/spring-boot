@@ -89,7 +89,7 @@ public class MappingsEndpointAutoConfiguration {
 	static class ReactiveWebConfiguration {
 
 		@Bean
-		public DispatcherHandlersMappingDescriptionProvider dispatcherHandlerMappingDescriptionProvider() {
+		DispatcherHandlersMappingDescriptionProvider dispatcherHandlerMappingDescriptionProvider() {
 			return new DispatcherHandlersMappingDescriptionProvider();
 		}
 

@@ -38,7 +38,7 @@ class FreeMarkerNonWebConfiguration extends AbstractFreeMarkerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public FreeMarkerConfigurationFactoryBean freeMarkerConfiguration() {
+	FreeMarkerConfigurationFactoryBean freeMarkerConfiguration() {
 		FreeMarkerConfigurationFactoryBean freeMarkerFactoryBean = new FreeMarkerConfigurationFactoryBean();
 		applyProperties(freeMarkerFactoryBean);
 		return freeMarkerFactoryBean;

@@ -41,6 +41,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
@@ -54,7 +55,7 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(PlatformTransactionManager.class)
-		public DataSourceTransactionManager transactionManager(DataSource dataSource,
+		DataSourceTransactionManager transactionManager(DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
 			transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));

@@ -35,7 +35,6 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Eddú Meléndez
  * @author Phillip Webb
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(ConnectionFactory.class)
@@ -45,14 +44,14 @@ class ArtemisXAConnectionFactoryConfiguration {
 
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
-	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+	ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		return wrapper.wrapConnectionFactory(new ArtemisConnectionFactoryFactory(beanFactory, properties)
 				.createConnectionFactory(ActiveMQXAConnectionFactory.class));
 	}
 
 	@Bean
-	public ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory,
+	ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory,
 			ArtemisProperties properties) {
 		return new ArtemisConnectionFactoryFactory(beanFactory, properties)
 				.createConnectionFactory(ActiveMQXAConnectionFactory.class);

@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author MyeongHyeon Lee
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
 public class OAuth2ClientProperties {
@@ -213,7 +214,8 @@ public class OAuth2ClientProperties {
 		private String jwkSetUri;
 
 		/**
-		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier.
+		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
+		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
 		private String issuerUri;
 

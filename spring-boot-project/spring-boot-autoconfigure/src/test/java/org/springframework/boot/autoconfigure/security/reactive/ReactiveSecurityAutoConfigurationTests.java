@@ -55,7 +55,7 @@ class ReactiveSecurityAutoConfigurationTests {
 	static class WebFilterChainProxyConfiguration {
 
 		@Bean
-		public WebFilterChainProxy webFilterChainProxy() {
+		WebFilterChainProxy webFilterChainProxy() {
 			return mock(WebFilterChainProxy.class);
 		}
 

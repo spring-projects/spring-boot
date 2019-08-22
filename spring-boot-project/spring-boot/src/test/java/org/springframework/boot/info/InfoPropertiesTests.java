@@ -75,7 +75,7 @@ class InfoPropertiesTests {
 		assertThat(source.getName()).isEqualTo("MyInfoProperties");
 	}
 
-	private static class MyInfoProperties extends InfoProperties {
+	static class MyInfoProperties extends InfoProperties {
 
 		MyInfoProperties(Properties entries) {
 			super(entries);

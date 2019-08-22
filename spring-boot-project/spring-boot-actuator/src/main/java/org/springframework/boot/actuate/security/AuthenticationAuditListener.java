@@ -31,6 +31,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @since 1.0.0
  */
 public class AuthenticationAuditListener extends AbstractAuthenticationAuditListener {
 
@@ -93,7 +94,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 	private static class WebAuditListener {
 
-		public void process(AuthenticationAuditListener listener, AbstractAuthenticationEvent input) {
+		void process(AuthenticationAuditListener listener, AbstractAuthenticationEvent input) {
 			if (listener != null) {
 				AuthenticationSwitchUserEvent event = (AuthenticationSwitchUserEvent) input;
 				Map<String, Object> data = new HashMap<>();
@@ -108,7 +109,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 		}
 
-		public boolean accepts(AbstractAuthenticationEvent event) {
+		boolean accepts(AbstractAuthenticationEvent event) {
 			return event instanceof AuthenticationSwitchUserEvent;
 		}
 

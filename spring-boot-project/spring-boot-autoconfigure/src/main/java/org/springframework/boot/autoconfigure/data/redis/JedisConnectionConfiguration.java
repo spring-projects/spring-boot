@@ -55,7 +55,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
-	public JedisConnectionFactory redisConnectionFactory(
+	JedisConnectionFactory redisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) throws UnknownHostException {
 		return createJedisConnectionFactory(builderCustomizers);
 	}
@@ -93,6 +93,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		if (getProperties().getTimeout() != null) {
 			Duration timeout = getProperties().getTimeout();
 			builder.readTimeout(timeout).connectTimeout(timeout);
+		}
+		if (StringUtils.hasText(getProperties().getClientName())) {
+			builder.clientName(getProperties().getClientName());
 		}
 		return builder;
 	}

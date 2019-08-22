@@ -150,13 +150,13 @@ class SpringBootContextLoaderTests {
 	/**
 	 * {@link TestContextManager} which exposes the {@link TestContext}.
 	 */
-	private static class ExposedTestContextManager extends TestContextManager {
+	static class ExposedTestContextManager extends TestContextManager {
 
 		ExposedTestContextManager(Class<?> testClass) {
 			super(testClass);
 		}
 
-		public final TestContext getExposedTestContext() {
+		final TestContext getExposedTestContext() {
 			return super.getTestContext();
 		}
 

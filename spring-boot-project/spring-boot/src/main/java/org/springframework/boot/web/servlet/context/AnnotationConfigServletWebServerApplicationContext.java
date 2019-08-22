@@ -47,6 +47,7 @@ import org.springframework.util.ClassUtils;
  * to deliberately override certain bean definitions via an extra Configuration class.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see #register(Class...)
  * @see #scan(String...)
  * @see ServletWebServerApplicationContext

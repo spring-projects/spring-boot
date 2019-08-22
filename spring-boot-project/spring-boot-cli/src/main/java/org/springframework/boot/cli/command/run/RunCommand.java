@@ -40,6 +40,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  * @see SpringApplicationRunner
  */
 public class RunCommand extends OptionParsingCommand {
@@ -78,7 +79,7 @@ public class RunCommand extends OptionParsingCommand {
 			this.quietOption = option(Arrays.asList("quiet", "q"), "Quiet logging");
 		}
 
-		public void stop() {
+		void stop() {
 			synchronized (this.monitor) {
 				if (this.runner != null) {
 					this.runner.stop();

@@ -60,12 +60,12 @@ class WebTestClientContextCustomizerWithOverrideIntegrationTests {
 	static class TestConfig {
 
 		@Bean
-		public TomcatReactiveWebServerFactory webServerFactory() {
+		TomcatReactiveWebServerFactory webServerFactory() {
 			return new TomcatReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public WebTestClient webTestClient() {
+		WebTestClient webTestClient() {
 			return mock(CustomWebTestClient.class);
 		}
 

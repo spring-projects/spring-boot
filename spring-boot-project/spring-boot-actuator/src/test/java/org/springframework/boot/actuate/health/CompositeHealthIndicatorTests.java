@@ -36,6 +36,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
+@Deprecated
 class CompositeHealthIndicatorTests {
 
 	private HealthAggregator healthAggregator;
@@ -82,7 +83,7 @@ class CompositeHealthIndicatorTests {
 		assertThat(mapper.writeValueAsString(result))
 				.isEqualTo("{\"status\":\"UNKNOWN\",\"details\":{\"db\":{\"status\":\"UNKNOWN\""
 						+ ",\"details\":{\"db1\":{\"status\":\"UNKNOWN\",\"details\""
-						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\"" + ":{\"2\":\"2\"}}}}}}");
+						+ ":{\"1\":\"1\"}},\"db2\":{\"status\":\"UNKNOWN\",\"details\":{\"2\":\"2\"}}}}}}");
 	}
 
 }

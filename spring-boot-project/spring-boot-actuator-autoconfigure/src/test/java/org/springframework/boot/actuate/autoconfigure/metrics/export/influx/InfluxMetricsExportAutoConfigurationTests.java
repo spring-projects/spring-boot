@@ -84,7 +84,7 @@ class InfluxMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -95,7 +95,7 @@ class InfluxMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public InfluxConfig customConfig() {
+		InfluxConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -106,7 +106,7 @@ class InfluxMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public InfluxMeterRegistry customRegistry(InfluxConfig config, Clock clock) {
+		InfluxMeterRegistry customRegistry(InfluxConfig config, Clock clock) {
 			return new InfluxMeterRegistry(config, clock);
 		}
 

@@ -94,10 +94,10 @@ class MustacheAutoConfigurationServletIntegrationTests {
 	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
 	@Controller
-	public static class Application {
+	static class Application {
 
 		@RequestMapping("/")
-		public String home(Map<String, Object> model) {
+		String home(Map<String, Object> model) {
 			model.put("time", new Date());
 			model.put("message", "Hello World");
 			model.put("title", "Hello App");
@@ -105,7 +105,7 @@ class MustacheAutoConfigurationServletIntegrationTests {
 		}
 
 		@RequestMapping("/partial")
-		public String layout(Map<String, Object> model) {
+		String layout(Map<String, Object> model) {
 			model.put("time", new Date());
 			model.put("message", "Hello World");
 			model.put("title", "Hello App");
@@ -113,7 +113,7 @@ class MustacheAutoConfigurationServletIntegrationTests {
 		}
 
 		@Bean
-		public MustacheViewResolver viewResolver() {
+		MustacheViewResolver viewResolver() {
 			Mustache.Compiler compiler = Mustache.compiler()
 					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
@@ -122,7 +122,7 @@ class MustacheAutoConfigurationServletIntegrationTests {
 			return resolver;
 		}
 
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(Application.class, args);
 		}
 

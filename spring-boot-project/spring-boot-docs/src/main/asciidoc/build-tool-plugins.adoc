@@ -2,15 +2,12 @@
 = Build Tool Plugins
 include::attributes.adoc[]
 
-[partintro]
---
 Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a variety
 of features, including the packaging of executable jars. This section provides more
 details on both plugins as well as some help should you need to extend an unsupported
 build system. If you are just getting started, you might want to read
 "`<<using-spring-boot.adoc#using-boot-build-systems>>`" from the
 "`<<using-spring-boot.adoc#using-boot>>`" section first.
---
 
 
 
@@ -117,10 +114,21 @@ the usual `packaging` element, as shown in the following example:
 ----
 
 Your existing archive is enhanced by Spring Boot during the `package` phase. The main
-class that you want to launch can be specified either by using a configuration option or
-by adding a `Main-Class` attribute to the manifest in the usual way. If you do not specify
-a main class, the plugin searches for a class with a
-`public static void main(String[] args)` method.
+class that you want to launch can be specified either by using a configuration option, as
+shown below, or by adding a `Main-Class` attribute to the manifest. If you do not specify
+a main class, the plugin searches for a class with a `public static void main(String[] args)`
+method.
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+		<configuration>
+			<mainClass>com.example.app.Main</mainClass>
+		</configuration>
+	</plugin>
+----
+
 
 To build and run a project artifact, you can type the following:
 

@@ -88,7 +88,7 @@ class CentralDirectoryParserTests {
 		assertThat(headers.hasNext()).isFalse();
 	}
 
-	private static class Collector implements CentralDirectoryVisitor {
+	static class Collector implements CentralDirectoryVisitor {
 
 		private List<CentralDirectoryFileHeader> headers = new ArrayList<>();
 
@@ -105,13 +105,13 @@ class CentralDirectoryParserTests {
 		public void visitEnd() {
 		}
 
-		public List<CentralDirectoryFileHeader> getHeaders() {
+		List<CentralDirectoryFileHeader> getHeaders() {
 			return this.headers;
 		}
 
 	}
 
-	private static class MockCentralDirectoryVisitor implements CentralDirectoryVisitor {
+	static class MockCentralDirectoryVisitor implements CentralDirectoryVisitor {
 
 		private final List<String> invocations = new ArrayList<>();
 
@@ -130,7 +130,7 @@ class CentralDirectoryParserTests {
 			this.invocations.add("visitEnd");
 		}
 
-		public List<String> getInvocations() {
+		List<String> getInvocations() {
 			return this.invocations;
 		}
 

@@ -55,8 +55,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 		CreateBootStartScripts bootStartScripts = project.getTasks().create("bootStartScripts",
 				CreateBootStartScripts.class);
-		bootStartScripts.setDescription(
-				"Generates OS-specific start scripts to run the" + " project as a Spring Boot application.");
+		bootStartScripts
+				.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
 		((TemplateBasedScriptGenerator) bootStartScripts.getUnixStartScriptGenerator())
 				.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
 		((TemplateBasedScriptGenerator) bootStartScripts.getWindowsStartScriptGenerator())

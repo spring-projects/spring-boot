@@ -59,7 +59,7 @@ class OriginTrackedPropertiesLoader {
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	public Map<String, OriginTrackedValue> load() throws IOException {
+	Map<String, OriginTrackedValue> load() throws IOException {
 		return load(true);
 	}
 
@@ -70,7 +70,7 @@ class OriginTrackedPropertiesLoader {
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	public Map<String, OriginTrackedValue> load(boolean expandLists) throws IOException {
+	Map<String, OriginTrackedValue> load(boolean expandLists) throws IOException {
 		try (CharacterReader reader = new CharacterReader(this.resource)) {
 			Map<String, OriginTrackedValue> result = new LinkedHashMap<>();
 			StringBuilder buffer = new StringBuilder();
@@ -162,11 +162,11 @@ class OriginTrackedPropertiesLoader {
 			this.reader.close();
 		}
 
-		public boolean read() throws IOException {
+		boolean read() throws IOException {
 			return read(false);
 		}
 
-		public boolean read(boolean wrappedLine) throws IOException {
+		boolean read(boolean wrappedLine) throws IOException {
 			this.escaped = false;
 			this.character = this.reader.read();
 			this.columnNumber++;
@@ -237,31 +237,31 @@ class OriginTrackedPropertiesLoader {
 			}
 		}
 
-		public boolean isWhiteSpace() {
+		boolean isWhiteSpace() {
 			return !this.escaped && (this.character == ' ' || this.character == '\t' || this.character == '\f');
 		}
 
-		public boolean isEndOfFile() {
+		boolean isEndOfFile() {
 			return this.character == -1;
 		}
 
-		public boolean isEndOfLine() {
+		boolean isEndOfLine() {
 			return this.character == -1 || (!this.escaped && this.character == '\n');
 		}
 
-		public boolean isListDelimiter() {
+		boolean isListDelimiter() {
 			return !this.escaped && this.character == ',';
 		}
 
-		public boolean isPropertyDelimiter() {
+		boolean isPropertyDelimiter() {
 			return !this.escaped && (this.character == '=' || this.character == ':');
 		}
 
-		public char getCharacter() {
+		char getCharacter() {
 			return (char) this.character;
 		}
 
-		public Location getLocation() {
+		Location getLocation() {
 			return new Location(this.reader.getLineNumber(), this.columnNumber);
 		}
 

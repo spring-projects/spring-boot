@@ -134,7 +134,7 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	static class TestConfiguration {
 
 		@Bean
-		public EnvironmentEndpoint endpoint(ConfigurableEnvironment environment) {
+		EnvironmentEndpoint endpoint(ConfigurableEnvironment environment) {
 			return new EnvironmentEndpoint(new AbstractEnvironment() {
 
 				@Override

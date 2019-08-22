@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +61,9 @@ import org.springframework.util.unit.DataSize;
  * @author Artsiom Yudovin
  * @author Andrew McGhie
  * @author Rafiullah Hamedy
- *
+ * @author Dirk Deyne
+ * @author HaiTao Zhang
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -294,7 +297,7 @@ public class ServerProperties {
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
 				+ "0:0:0:0:0:0:0:1|::1";
 
 		/**
@@ -393,6 +396,18 @@ public class ServerProperties {
 		 * match one and only one character and zero or more characters respectively.
 		 */
 		private List<String> additionalTldSkipPatterns = new ArrayList<>();
+
+		/**
+		 * Comma-separated list of additional unencoded characters that should be allowed
+		 * in URI paths. Only "< > [ \ ] ^ ` { | }" are allowed.
+		 */
+		private List<Character> relaxedPathChars = new ArrayList<>();
+
+		/**
+		 * Comma-separated list of additional unencoded characters that should be allowed
+		 * in URI query strings. Only "< > [ \ ] ^ ` { | }" are allowed.
+		 */
+		private List<Character> relaxedQueryChars = new ArrayList<>();
 
 		/**
 		 * Static resource configuration.
@@ -550,6 +565,22 @@ public class ServerProperties {
 
 		public void setAdditionalTldSkipPatterns(List<String> additionalTldSkipPatterns) {
 			this.additionalTldSkipPatterns = additionalTldSkipPatterns;
+		}
+
+		public List<Character> getRelaxedPathChars() {
+			return this.relaxedPathChars;
+		}
+
+		public void setRelaxedPathChars(List<Character> relaxedPathChars) {
+			this.relaxedPathChars = relaxedPathChars;
+		}
+
+		public List<Character> getRelaxedQueryChars() {
+			return this.relaxedQueryChars;
+		}
+
+		public void setRelaxedQueryChars(List<Character> relaxedQueryChars) {
+			this.relaxedQueryChars = relaxedQueryChars;
 		}
 
 		public Resource getResource() {
@@ -875,6 +906,21 @@ public class ServerProperties {
 		 */
 		private Integer selectors = -1;
 
+		/**
+		 * Maximum number of threads.
+		 */
+		private Integer maxThreads = 200;
+
+		/**
+		 * Minimum number of threads.
+		 */
+		private Integer minThreads = 8;
+
+		/**
+		 * Maximum thread idle time.
+		 */
+		private Integer idleTimeout = 60000;
+
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
@@ -901,6 +947,30 @@ public class ServerProperties {
 
 		public void setSelectors(Integer selectors) {
 			this.selectors = selectors;
+		}
+
+		public void setMinThreads(Integer minThreads) {
+			this.minThreads = minThreads;
+		}
+
+		public Integer getMinThreads() {
+			return this.minThreads;
+		}
+
+		public void setMaxThreads(Integer maxThreads) {
+			this.maxThreads = maxThreads;
+		}
+
+		public Integer getMaxThreads() {
+			return this.maxThreads;
+		}
+
+		public void setIdleTimeout(Integer idleTimeout) {
+			this.idleTimeout = idleTimeout;
+		}
+
+		public Integer getIdleTimeout() {
+			return this.idleTimeout;
 		}
 
 		/**
@@ -1119,6 +1189,8 @@ public class ServerProperties {
 
 		private final Accesslog accesslog = new Accesslog();
 
+		private final Options options = new Options();
+
 		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
@@ -1227,6 +1299,10 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
+		public Options getOptions() {
+			return this.options;
+		}
+
 		/**
 		 * Undertow access log properties.
 		 */
@@ -1308,6 +1384,22 @@ public class ServerProperties {
 
 			public void setRotate(boolean rotate) {
 				this.rotate = rotate;
+			}
+
+		}
+
+		public static class Options {
+
+			private Map<String, String> socket = new LinkedHashMap<>();
+
+			private Map<String, String> server = new LinkedHashMap<>();
+
+			public Map<String, String> getServer() {
+				return this.server;
+			}
+
+			public Map<String, String> getSocket() {
+				return this.socket;
 			}
 
 		}

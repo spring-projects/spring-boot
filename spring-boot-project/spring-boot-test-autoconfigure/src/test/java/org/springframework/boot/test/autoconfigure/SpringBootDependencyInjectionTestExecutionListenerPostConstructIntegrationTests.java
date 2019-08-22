@@ -41,7 +41,7 @@ class SpringBootDependencyInjectionTestExecutionListenerPostConstructIntegration
 	private List<String> calls = new ArrayList<>();
 
 	@PostConstruct
-	public void postConstruct() {
+	void postConstruct() {
 		StringWriter writer = new StringWriter();
 		new RuntimeException().printStackTrace(new PrintWriter(writer));
 		this.calls.add(writer.toString());

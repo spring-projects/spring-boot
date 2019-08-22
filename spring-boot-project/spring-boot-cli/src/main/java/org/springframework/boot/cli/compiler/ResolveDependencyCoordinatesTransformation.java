@@ -36,6 +36,7 @@ import org.springframework.core.annotation.Order;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 1.0.0
  */
 @Order(ResolveDependencyCoordinatesTransformation.ORDER)
 public class ResolveDependencyCoordinatesTransformation extends AnnotatedNodeASTTransformation {

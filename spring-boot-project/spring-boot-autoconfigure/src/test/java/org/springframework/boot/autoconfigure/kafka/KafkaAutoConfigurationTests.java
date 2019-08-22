@@ -58,6 +58,7 @@ import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -104,6 +105,7 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.consumer.enable-auto-commit=false", "spring.kafka.consumer.fetch-max-wait=456",
 				"spring.kafka.consumer.properties.fiz.buz=fix.fox", "spring.kafka.consumer.fetch-min-size=1KB",
 				"spring.kafka.consumer.group-id=bar", "spring.kafka.consumer.heartbeat-interval=234",
+				"spring.kafka.consumer.isolation-level = read-committed",
 				"spring.kafka.consumer.key-deserializer = org.apache.kafka.common.serialization.LongDeserializer",
 				"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer")
 				.run((context) -> {
@@ -132,6 +134,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(configs.get(ConsumerConfig.FETCH_MIN_BYTES_CONFIG)).isEqualTo(1024);
 					assertThat(configs.get(ConsumerConfig.GROUP_ID_CONFIG)).isEqualTo("bar");
 					assertThat(configs.get(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG)).isEqualTo(234);
+					assertThat(configs.get(ConsumerConfig.ISOLATION_LEVEL_CONFIG)).isEqualTo("read_committed");
 					assertThat(configs.get(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG))
 							.isEqualTo(LongDeserializer.class);
 					assertThat(configs.get(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG))
@@ -538,6 +541,15 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomRecordInterceptor() {
+		this.contextRunner.withUserConfiguration(RecordInterceptorConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("recordInterceptor", context.getBean("recordInterceptor"));
+		});
+	}
+
+	@Test
 	void testConcurrentKafkaListenerContainerFactoryWithCustomRebalanceListener() {
 		this.contextRunner.withUserConfiguration(RebalanceListenerConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -558,51 +570,51 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MessageConverterConfiguration {
+	static class MessageConverterConfiguration {
 
 		@Bean
-		public RecordMessageConverter myMessageConverter() {
+		RecordMessageConverter myMessageConverter() {
 			return mock(RecordMessageConverter.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BatchMessageConverterConfiguration {
+	static class BatchMessageConverterConfiguration {
 
 		@Bean
-		public BatchMessageConverter myBatchMessageConverter() {
+		BatchMessageConverter myBatchMessageConverter() {
 			return mock(BatchMessageConverter.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ErrorHandlerConfiguration {
+	static class ErrorHandlerConfiguration {
 
 		@Bean
-		public SeekToCurrentErrorHandler errorHandler() {
+		SeekToCurrentErrorHandler errorHandler() {
 			return new SeekToCurrentErrorHandler();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BatchErrorHandlerConfiguration {
+	static class BatchErrorHandlerConfiguration {
 
 		@Bean
-		public SeekToCurrentBatchErrorHandler batchErrorHandler() {
+		SeekToCurrentBatchErrorHandler batchErrorHandler() {
 			return new SeekToCurrentBatchErrorHandler();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TransactionManagerConfiguration {
+	static class TransactionManagerConfiguration {
 
 		@Bean
 		@Primary
-		public PlatformTransactionManager chainedTransactionManager(
+		PlatformTransactionManager chainedTransactionManager(
 				KafkaTransactionManager<String, String> kafkaTransactionManager) {
 			return new ChainedKafkaTransactionManager<String, String>(kafkaTransactionManager);
 		}
@@ -610,10 +622,10 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class AfterRollbackProcessorConfiguration {
+	static class AfterRollbackProcessorConfiguration {
 
 		@Bean
-		public AfterRollbackProcessor<Object, Object> afterRollbackProcessor() {
+		AfterRollbackProcessor<Object, Object> afterRollbackProcessor() {
 			return (records, consumer, ex, recoverable) -> {
 				// no-op
 			};
@@ -622,10 +634,20 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class RebalanceListenerConfiguration {
+	static class RecordInterceptorConfiguration {
 
 		@Bean
-		public ConsumerAwareRebalanceListener rebalanceListener() {
+		RecordInterceptor<Object, Object> recordInterceptor() {
+			return (record) -> record;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RebalanceListenerConfiguration {
+
+		@Bean
+		ConsumerAwareRebalanceListener rebalanceListener() {
 			return mock(ConsumerAwareRebalanceListener.class);
 		}
 
@@ -633,15 +655,15 @@ class KafkaAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableKafkaStreams
-	protected static class EnableKafkaStreamsConfiguration {
+	static class EnableKafkaStreamsConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestKafkaStreamsConfiguration {
+	static class TestKafkaStreamsConfiguration {
 
 		@Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-		public KafkaStreamsConfiguration kafkaStreamsConfiguration() {
+		KafkaStreamsConfiguration kafkaStreamsConfiguration() {
 			Map<String, Object> streamsProperties = new HashMap<>();
 			streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9094, localhost:9095");
 			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-id");
@@ -652,15 +674,15 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestStreamsBuilderFactoryBeanConfiguration {
+	static class TestStreamsBuilderFactoryBeanConfiguration {
 
 		@Bean
-		public StreamsBuilderFactoryBean firstStreamsBuilderFactoryBean() {
+		StreamsBuilderFactoryBean firstStreamsBuilderFactoryBean() {
 			return mock(StreamsBuilderFactoryBean.class);
 		}
 
 		@Bean
-		public StreamsBuilderFactoryBean secondStreamsBuilderFactoryBean() {
+		StreamsBuilderFactoryBean secondStreamsBuilderFactoryBean() {
 			return mock(StreamsBuilderFactoryBean.class);
 		}
 

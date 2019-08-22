@@ -56,7 +56,7 @@ class WebTestClientContextCustomizerIntegrationTests {
 	static class TestConfig {
 
 		@Bean
-		public TomcatReactiveWebServerFactory webServerFactory() {
+		TomcatReactiveWebServerFactory webServerFactory() {
 			return new TomcatReactiveWebServerFactory(0);
 		}
 

@@ -776,6 +776,14 @@
       "defaultValue": "simple"
     },
     {
+      "name": "spring.reactor.stacktrace-mode.enabled",
+      "description": "Whether Reactor should collect stacktrace information at runtime.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.reactor.debug-agent.enabled"
+      }
+    },
+    {
       "name": "spring.security.filter.dispatcher-types",
       "defaultValue": [
         "async",
@@ -1046,7 +1054,7 @@
       "description": "Check the change log location exists.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "spring.liquibase.check-change-log-location",
+        "reason": "Liquibase has it's own check that checks if the change log location exists making this property redundant.",
         "level": "error"
       }
     },
@@ -1956,6 +1964,16 @@
       }
     },
     {
+      "name": "spring.liquibase.check-change-log-location",
+      "type": "java.lang.Boolean",
+      "description": "Check the change log location exists.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Liquibase has it's own check that checks if the change log location exists making this property redundant.",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.messages.cache-seconds",
       "type": "java.lang.Integer",
       "description": "Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever.",
@@ -2081,6 +2099,76 @@
     }
   ],
   "hints": [
+    {
+      "name": "server.tomcat.relaxed-query-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.relaxed-path-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    },
     {
       "name": "spring.liquibase.change-log",
       "providers": [

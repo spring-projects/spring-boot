@@ -75,7 +75,7 @@ class ResourceConditionTests {
 	static class DefaultLocationConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -86,13 +86,13 @@ class ResourceConditionTests {
 	static class UnknownDefaultLocationConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	private static class DefaultLocationResourceCondition extends ResourceCondition {
+	static class DefaultLocationResourceCondition extends ResourceCondition {
 
 		DefaultLocationResourceCondition() {
 			super("test", "spring.foo.test.config", "classpath:/logging.properties");
@@ -100,7 +100,7 @@ class ResourceConditionTests {
 
 	}
 
-	private static class UnknownDefaultLocationResourceCondition extends ResourceCondition {
+	static class UnknownDefaultLocationResourceCondition extends ResourceCondition {
 
 		UnknownDefaultLocationResourceCondition() {
 			super("test", "spring.foo.test.config", "classpath:/this-file-does-not-exist.xml");

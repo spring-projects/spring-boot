@@ -146,17 +146,17 @@ class MetricsIntegrationTests {
 
 		@Primary
 		@Bean
-		public MeterRegistry registry() {
+		MeterRegistry registry() {
 			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		}
 
 		@Bean
-		public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+		RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 			return restTemplateBuilder.build();
 		}
 
 		@Bean
-		public CyclicBarrier cyclicBarrier() {
+		CyclicBarrier cyclicBarrier() {
 			return new CyclicBarrier(2);
 		}
 

@@ -35,12 +35,12 @@ import org.springframework.web.bind.annotation.RestController;
 class HateoasController {
 
 	@RequestMapping("/resource")
-	public EntityModel<Map<String, String>> resource() {
+	EntityModel<Map<String, String>> resource() {
 		return new EntityModel<>(new HashMap<>(), new Link("self", "https://api.example.com"));
 	}
 
 	@RequestMapping("/plain")
-	public Map<String, String> plain() {
+	Map<String, String> plain() {
 		return new HashMap<>();
 	}
 

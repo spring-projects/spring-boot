@@ -17,9 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -66,7 +64,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -106,7 +103,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
-import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
@@ -114,7 +110,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
@@ -134,6 +129,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Kristine Jetzke
  * @author Bruce Brouwer
  * @author Artsiom Yudovin
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -152,7 +148,7 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled", matchIfMissing = false)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
@@ -164,13 +160,20 @@ public class WebMvcAutoConfiguration {
 		return new OrderedFormContentFilter();
 	}
 
+	static String[] getResourceLocations(String[] staticLocations) {
+		String[] locations = new String[staticLocations.length + SERVLET_LOCATIONS.length];
+		System.arraycopy(staticLocations, 0, locations, 0, staticLocations.length);
+		System.arraycopy(SERVLET_LOCATIONS, 0, locations, staticLocations.length, SERVLET_LOCATIONS.length);
+		return locations;
+	}
+
 	// Defined as a nested config to ensure WebMvcConfigurer is not read when not
 	// on the classpath
 	@Configuration(proxyBeanMethods = false)
 	@Import(EnableWebMvcConfiguration.class)
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	@Order(0)
-	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ResourceLoaderAware {
+	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
 
@@ -184,8 +187,6 @@ public class WebMvcAutoConfiguration {
 
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		private ResourceLoader resourceLoader;
-
 		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
@@ -194,11 +195,6 @@ public class WebMvcAutoConfiguration {
 			this.beanFactory = beanFactory;
 			this.messageConvertersProvider = messageConvertersProvider;
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
-		}
-
-		@Override
-		public void setResourceLoader(ResourceLoader resourceLoader) {
-			this.resourceLoader = resourceLoader;
 		}
 
 		@Override
@@ -323,37 +319,6 @@ public class WebMvcAutoConfiguration {
 			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
 		}
 
-		@Bean
-		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext) {
-			return new WelcomePageHandlerMapping(new TemplateAvailabilityProviders(applicationContext),
-					applicationContext, getWelcomePage(), this.mvcProperties.getStaticPathPattern());
-		}
-
-		static String[] getResourceLocations(String[] staticLocations) {
-			String[] locations = new String[staticLocations.length + SERVLET_LOCATIONS.length];
-			System.arraycopy(staticLocations, 0, locations, 0, staticLocations.length);
-			System.arraycopy(SERVLET_LOCATIONS, 0, locations, staticLocations.length, SERVLET_LOCATIONS.length);
-			return locations;
-		}
-
-		private Optional<Resource> getWelcomePage() {
-			String[] locations = getResourceLocations(this.resourceProperties.getStaticLocations());
-			return Arrays.stream(locations).map(this::getIndexHtml).filter(this::isReadable).findFirst();
-		}
-
-		private Resource getIndexHtml(String location) {
-			return this.resourceLoader.getResource(location + "index.html");
-		}
-
-		private boolean isReadable(Resource resource) {
-			try {
-				return resource.exists() && (resource.getURL() != null);
-			}
-			catch (Exception ex) {
-				return false;
-			}
-		}
-
 		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
@@ -369,48 +334,21 @@ public class WebMvcAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
-		public static class FaviconConfiguration implements ResourceLoaderAware {
+		public static class FaviconConfiguration implements WebMvcConfigurer {
 
 			private final ResourceProperties resourceProperties;
 
-			private ResourceLoader resourceLoader;
-
-			public FaviconConfiguration(ResourceProperties resourceProperties) {
+			FaviconConfiguration(ResourceProperties resourceProperties) {
 				this.resourceProperties = resourceProperties;
 			}
 
 			@Override
-			public void setResourceLoader(ResourceLoader resourceLoader) {
-				this.resourceLoader = resourceLoader;
-			}
-
-			@Bean
-			public SimpleUrlHandlerMapping faviconHandlerMapping(FaviconRequestHandler handler) {
-				SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-				mapping.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-				mapping.setUrlMap(Collections.singletonMap("**/favicon.ico", handler));
-				return mapping;
-			}
-
-			@Bean
-			public FaviconRequestHandler faviconRequestHandler() {
-				return new FaviconRequestHandler(resolveFaviconLocations());
-			}
-
-			private List<Resource> resolveFaviconLocations() {
-				String[] staticLocations = getResourceLocations(this.resourceProperties.getStaticLocations());
-				List<Resource> locations = new ArrayList<>(staticLocations.length + 1);
-				Arrays.stream(staticLocations).map(this.resourceLoader::getResource).forEach(locations::add);
-				locations.add(new ClassPathResource("/"));
-				return Collections.unmodifiableList(locations);
-			}
-
-		}
-
-		static final class FaviconRequestHandler extends ResourceHttpRequestHandler {
-
-			FaviconRequestHandler(List<Resource> locations) {
-				setLocations(locations);
+			public void addResourceHandlers(ResourceHandlerRegistry registry) {
+				if (!registry.hasMappingForPattern("favicon.ico")) {
+					registry.addResourceHandler("favicon.ico")
+							.addResourceLocations(this.resourceProperties.getStaticLocations())
+							.addResourceLocations("classpath:favicon.ico");
+				}
 			}
 
 		}
@@ -421,7 +359,9 @@ public class WebMvcAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebMvc}.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
+	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
+
+		private final ResourceProperties resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
 
@@ -429,8 +369,12 @@ public class WebMvcAutoConfiguration {
 
 		private final WebMvcRegistrations mvcRegistrations;
 
-		public EnableWebMvcConfiguration(ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
+		private ResourceLoader resourceLoader;
+
+		public EnableWebMvcConfiguration(ResourceProperties resourceProperties,
+				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
 				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider, ListableBeanFactory beanFactory) {
+			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
 			this.beanFactory = beanFactory;
@@ -465,6 +409,34 @@ public class WebMvcAutoConfiguration {
 			// Must be @Primary for MvcUriComponentsBuilder to work
 			return super.requestMappingHandlerMapping(mvcContentNegotiationManager, mvcConversionService,
 					mvcResourceUrlProvider);
+		}
+
+		@Bean
+		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
+				FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider) {
+			WelcomePageHandlerMapping welcomePageHandlerMapping = new WelcomePageHandlerMapping(
+					new TemplateAvailabilityProviders(applicationContext), applicationContext, getWelcomePage(),
+					this.mvcProperties.getStaticPathPattern());
+			welcomePageHandlerMapping.setInterceptors(getInterceptors(mvcConversionService, mvcResourceUrlProvider));
+			return welcomePageHandlerMapping;
+		}
+
+		private Optional<Resource> getWelcomePage() {
+			String[] locations = getResourceLocations(this.resourceProperties.getStaticLocations());
+			return Arrays.stream(locations).map(this::getIndexHtml).filter(this::isReadable).findFirst();
+		}
+
+		private Resource getIndexHtml(String location) {
+			return this.resourceLoader.getResource(location + "index.html");
+		}
+
+		private boolean isReadable(Resource resource) {
+			try {
+				return resource.exists() && (resource.getURL() != null);
+			}
+			catch (Exception ex) {
+				return false;
+			}
 		}
 
 		@Bean
@@ -538,6 +510,11 @@ public class WebMvcAutoConfiguration {
 			return manager;
 		}
 
+		@Override
+		public void setResourceLoader(ResourceLoader resourceLoader) {
+			this.resourceLoader = resourceLoader;
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -545,7 +522,7 @@ public class WebMvcAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
-		public ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
+		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
 			return new ResourceChainResourceHandlerRegistrationCustomizer();
 		}
 

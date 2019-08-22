@@ -25,14 +25,14 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * Sample {@link JsonComponent} used for tests.
+ * Sample {@link JsonComponent @JsonComponent} used for tests.
  *
  * @author Paul Aly
  */
 @JsonComponent(type = NameAndAge.class, scope = JsonComponent.Scope.KEYS)
 public class NameAndAgeJsonKeyComponent {
 
-	public static class Serializer extends JsonSerializer<NameAndAge> {
+	static class Serializer extends JsonSerializer<NameAndAge> {
 
 		@Override
 		public void serialize(NameAndAge value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
@@ -41,7 +41,7 @@ public class NameAndAgeJsonKeyComponent {
 
 	}
 
-	public static class Deserializer extends KeyDeserializer {
+	static class Deserializer extends KeyDeserializer {
 
 		@Override
 		public NameAndAge deserializeKey(String key, DeserializationContext ctxt) throws IOException {

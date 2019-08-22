@@ -99,7 +99,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			});
 		}
 		else {
-			this.logger.debug("No ContextLoaderListener registered, as " + "createRootApplicationContext() did not "
+			this.logger.debug("No ContextLoaderListener registered, as createRootApplicationContext() did not "
 					+ "return an application context");
 		}
 	}
@@ -119,7 +119,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder.listeners(new WebEnvironmentPropertySourceInitializer(servletContext));
 		SpringApplication application = builder.build();
 		if (application.getAllSources().isEmpty()
-				&& MergedAnnotations.from(getClass(), SearchStrategy.EXHAUSTIVE).isPresent(Configuration.class)) {
+				&& MergedAnnotations.from(getClass(), SearchStrategy.TYPE_HIERARCHY).isPresent(Configuration.class)) {
 			application.addPrimarySources(Collections.singleton(getClass()));
 		}
 		Assert.state(!application.getAllSources().isEmpty(),

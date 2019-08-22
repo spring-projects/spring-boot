@@ -87,17 +87,17 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public TestProperties testProperties() {
+		TestProperties testProperties() {
 			return new TestProperties();
 		}
 
 	}
 
 	@ConfigurationProperties("test")
-	static class TestProperties {
+	public static class TestProperties {
 
 		private String dbPassword = "123456";
 

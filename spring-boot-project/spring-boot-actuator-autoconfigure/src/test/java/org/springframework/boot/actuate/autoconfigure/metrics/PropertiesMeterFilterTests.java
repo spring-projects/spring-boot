@@ -295,7 +295,7 @@ class PropertiesMeterFilterTests {
 		return binder.bind("", Bindable.of(MetricsProperties.class)).orElseGet(MetricsProperties::new);
 	}
 
-	private static class TestMeterRegistry extends SimpleMeterRegistry {
+	static class TestMeterRegistry extends SimpleMeterRegistry {
 
 	}
 

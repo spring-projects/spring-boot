@@ -98,12 +98,12 @@ class ValidatorAdapterTests {
 	static class LocalValidatorFactoryBeanConfig {
 
 		@Bean
-		public LocalValidatorFactoryBean validator() {
+		LocalValidatorFactoryBean validator() {
 			return new LocalValidatorFactoryBean();
 		}
 
 		@Bean
-		public ValidatorAdapter wrapper(LocalValidatorFactoryBean validator) {
+		ValidatorAdapter wrapper(LocalValidatorFactoryBean validator) {
 			return new ValidatorAdapter(validator, true);
 		}
 
@@ -115,7 +115,7 @@ class ValidatorAdapterTests {
 		private final LocalValidatorFactoryBean validator = mock(LocalValidatorFactoryBean.class);
 
 		@Bean
-		public ValidatorAdapter wrapper() {
+		ValidatorAdapter wrapper() {
 			return new ValidatorAdapter(this.validator, false);
 		}
 
@@ -127,7 +127,7 @@ class ValidatorAdapterTests {
 		private final LocalValidatorFactoryBean validator = mock(LocalValidatorFactoryBean.class);
 
 		@Bean
-		public ValidatorAdapter wrapper() {
+		ValidatorAdapter wrapper() {
 			return new ValidatorAdapter(this.validator, true);
 		}
 

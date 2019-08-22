@@ -71,7 +71,7 @@ class WebMvcEndpointChildContextConfigurationTests {
 	static class ExistingConfig {
 
 		@Bean
-		public RequestContextFilter testRequestContextFilter() {
+		RequestContextFilter testRequestContextFilter() {
 			return new RequestContextFilter();
 		}
 
@@ -81,7 +81,7 @@ class WebMvcEndpointChildContextConfigurationTests {
 	static class RequestContextListenerConfig {
 
 		@Bean
-		public RequestContextListener testRequestContextListener() {
+		RequestContextListener testRequestContextListener() {
 			return new RequestContextListener();
 		}
 

@@ -53,7 +53,7 @@ class RedisSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
+	ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
 		switch (redisSessionProperties.getConfigureAction()) {
 		case NOTIFY_KEYSPACE_EVENTS:
 			return new ConfigureNotifyKeyspaceEventsAction();
@@ -74,7 +74,8 @@ class RedisSessionConfiguration {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setRedisNamespace(redisSessionProperties.getNamespace());
-			setRedisFlushMode(redisSessionProperties.getFlushMode());
+			setFlushMode(redisSessionProperties.getFlushMode());
+			setSaveMode(redisSessionProperties.getSaveMode());
 			setCleanupCron(redisSessionProperties.getCleanupCron());
 		}
 

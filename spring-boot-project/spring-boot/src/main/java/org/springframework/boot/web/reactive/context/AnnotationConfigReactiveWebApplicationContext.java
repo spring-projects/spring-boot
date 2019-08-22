@@ -199,8 +199,8 @@ public class AnnotationConfigReactiveWebApplicationContext extends AnnotationCon
 	 * If not set, the implementation may use a default as appropriate.
 	 * @param location the config location
 	 * @deprecated since 2.2.0 since this class no longer extends
-	 * {@code AbstractRefreshableConfigApplicationContext}. Use {@link ImportResource}
-	 * instead.
+	 * {@code AbstractRefreshableConfigApplicationContext}. Use
+	 * {@link ImportResource @ImportResource} instead.
 	 */
 	@Deprecated
 	public void setConfigLocation(String location) {
@@ -213,8 +213,8 @@ public class AnnotationConfigReactiveWebApplicationContext extends AnnotationCon
 	 * If not set, the implementation may use a default as appropriate.
 	 * @param locations the config locations
 	 * @deprecated since 2.2.0 since this class no longer extends
-	 * {@code AbstractRefreshableConfigApplicationContext}. Use {@link ImportResource}
-	 * instead.
+	 * {@code AbstractRefreshableConfigApplicationContext}. Use
+	 * {@link ImportResource @ImportResource} instead.
 	 */
 	@Deprecated
 	public void setConfigLocations(@Nullable String... locations) {

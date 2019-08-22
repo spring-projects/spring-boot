@@ -32,6 +32,7 @@ import org.springframework.boot.cli.util.Log;
  * called with the current index followed by a list of arguments already typed.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class HintCommand extends AbstractCommand {
 

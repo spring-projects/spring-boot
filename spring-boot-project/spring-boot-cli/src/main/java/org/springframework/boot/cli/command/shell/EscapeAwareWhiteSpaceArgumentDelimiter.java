@@ -67,7 +67,7 @@ class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter
 		return -1;
 	}
 
-	public String[] parseArguments(String line) {
+	String[] parseArguments(String line) {
 		ArgumentList delimit = delimit(line, 0);
 		return cleanArguments(delimit.getArguments());
 	}

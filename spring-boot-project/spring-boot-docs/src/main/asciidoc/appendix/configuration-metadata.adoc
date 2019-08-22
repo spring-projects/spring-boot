@@ -1,6 +1,9 @@
 [appendix]
 [[configuration-metadata]]
 == Configuration Metadata
+
+include::{asciidoc-sources-root}/attributes.adoc[]
+
 Spring Boot jars include metadata files that provide details of all supported
 configuration properties. The files are designed to let IDE developers offer
 contextual help and "`code completion`" as users are working with `application.properties`
@@ -816,6 +819,58 @@ is detected even if only a getter is present).
 
 The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter`
 lombok annotations.
+
+
+The annotation processor cannot auto-detect default values for ``Enum``s and
+``Collections``s. In the cases where a `Collection` or `Enum` property has a non-empty
+default value, <<configuration-metadata-additional-metadata,manual metadata>> should be
+provided.
+
+Consider the following class:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@ConfigurationProperties(prefix="acme.messaging")
+	public class MessagingProperties {
+
+		private List<String> addresses = new ArrayList<>(Arrays.asList("a", "b")) ;
+
+		private ContainerType = ContainerType.SIMPLE;
+
+		// ... getter and setters
+
+		public enum ContainerType {
+
+			SIMPLE,
+
+			DIRECT
+
+		}
+
+	}
+----
+
+In order to document default values for properties in the class above, you could add the
+following content to <<configuration-metadata-additional-metadata,the manual metadata of
+the module>>:
+
+[source,json,indent=0]
+----
+	{"properties": [
+		{
+			"name": "acme.messaging.addresses",
+			"defaultValue": ["a, b"]
+		},
+		{
+			"name": "acme.messaging.container-type",
+			"defaultValue": "simple"
+		}
+	]}
+----
+
+Only the `name` of the property is required to document additional fields with manual
+metadata.
+
 
 [NOTE]
 ====

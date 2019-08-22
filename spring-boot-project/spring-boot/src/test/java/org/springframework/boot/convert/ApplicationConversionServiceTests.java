@@ -91,7 +91,7 @@ class ApplicationConversionServiceTests {
 		}
 	}
 
-	private static class ExampleGenericConverter implements GenericConverter {
+	static class ExampleGenericConverter implements GenericConverter {
 
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
@@ -105,7 +105,7 @@ class ApplicationConversionServiceTests {
 
 	}
 
-	private static class ExampleConverter implements Converter<String, Integer> {
+	static class ExampleConverter implements Converter<String, Integer> {
 
 		@Override
 		public Integer convert(String source) {
@@ -114,7 +114,7 @@ class ApplicationConversionServiceTests {
 
 	}
 
-	private static class ExampleFormatter implements Formatter<Integer> {
+	static class ExampleFormatter implements Formatter<Integer> {
 
 		@Override
 		public String print(Integer object, Locale locale) {
@@ -128,7 +128,7 @@ class ApplicationConversionServiceTests {
 
 	}
 
-	private static class ExampleParser implements Parser<Integer> {
+	static class ExampleParser implements Parser<Integer> {
 
 		@Override
 		public Integer parse(String text, Locale locale) throws ParseException {
@@ -137,7 +137,7 @@ class ApplicationConversionServiceTests {
 
 	}
 
-	private static class ExamplePrinter implements Printer<Integer> {
+	static class ExamplePrinter implements Printer<Integer> {
 
 		@Override
 		public String print(Integer object, Locale locale) {

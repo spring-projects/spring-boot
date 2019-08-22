@@ -58,6 +58,8 @@ class JsonContentAssertTests {
 
 	private static final String SIMPSONS = loadJson("simpsons.json");
 
+	private static final String NULLS = loadJson("nulls.json");
+
 	private static JSONComparator COMPARATOR = new DefaultComparator(JSONCompareMode.LENIENT);
 
 	@TempDir
@@ -840,6 +842,24 @@ class JsonContentAssertTests {
 	}
 
 	@Test
+	void hasJsonPathForPresentAndNotNull() {
+		assertThat(forJson(NULLS)).hasJsonPath("valuename");
+	}
+
+	@Test
+	void hasJsonPathForPresentAndNull() {
+		assertThat(forJson(NULLS)).hasJsonPath("nullname");
+	}
+
+	@Test
+	void hasJsonPathForNotPresent() {
+		String expression = "missing";
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forJson(NULLS)).hasJsonPath(expression))
+				.withMessageContaining("No JSON path \"" + expression + "\" found");
+	}
+
+	@Test
 	void hasJsonPathValue() {
 		assertThat(forJson(TYPES)).hasJsonPathValue("$.str");
 	}
@@ -855,6 +875,22 @@ class JsonContentAssertTests {
 	}
 
 	@Test
+	void hasJsonPathValueForANullValue() {
+		String expression = "nullname";
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forJson(NULLS)).hasJsonPathValue(expression))
+				.withMessageContaining("No value at JSON path \"" + expression + "\"");
+	}
+
+	@Test
+	void hasJsonPathValueForMissingValue() {
+		String expression = "missing";
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forJson(NULLS)).hasJsonPathValue(expression))
+				.withMessageContaining("No value at JSON path \"" + expression + "\"");
+	}
+
+	@Test
 	void hasJsonPathValueForIndefinitePathWithResults() {
 		assertThat(forJson(SIMPSONS)).hasJsonPathValue("$.familyMembers[?(@.name == 'Bart')]");
 	}
@@ -865,6 +901,27 @@ class JsonContentAssertTests {
 		assertThatExceptionOfType(AssertionError.class)
 				.isThrownBy(() -> assertThat(forJson(SIMPSONS)).hasJsonPathValue(expression))
 				.withMessageContaining("No value at JSON path \"" + expression + "\"");
+	}
+
+	@Test
+	void doesNotHaveJsonPathForMissing() {
+		assertThat(forJson(NULLS)).doesNotHaveJsonPath("missing");
+	}
+
+	@Test
+	void doesNotHaveJsonPathForNull() {
+		String expression = "nullname";
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forJson(NULLS)).doesNotHaveJsonPath(expression))
+				.withMessageContaining("Expecting no JSON path \"" + expression + "\"");
+	}
+
+	@Test
+	void doesNotHaveJsonPathForPresent() {
+		String expression = "valuename";
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(forJson(NULLS)).doesNotHaveJsonPath(expression))
+				.withMessageContaining("Expecting no JSON path \"" + expression + "\"");
 	}
 
 	@Test
@@ -900,6 +957,11 @@ class JsonContentAssertTests {
 	@Test
 	void doesNotHaveJsonPathValueForIndefinitePathWithEmptyResults() {
 		assertThat(forJson(SIMPSONS)).doesNotHaveJsonPathValue("$.familyMembers[?(@.name == 'Dilbert')]");
+	}
+
+	@Test
+	void doesNotHaveJsonPathValueForNull() {
+		assertThat(forJson(NULLS)).doesNotHaveJsonPathValue("nullname");
 	}
 
 	@Test

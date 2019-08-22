@@ -108,7 +108,7 @@ class CouchbaseRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	@Import(CouchbaseTestConfigurer.class)
-	protected static class NoRepositoryConfiguration {
+	static class NoRepositoryConfiguration {
 
 	}
 

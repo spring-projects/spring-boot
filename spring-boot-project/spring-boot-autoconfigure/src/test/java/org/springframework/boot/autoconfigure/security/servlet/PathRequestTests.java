@@ -58,7 +58,7 @@ class PathRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final WebApplicationContext context;
 
@@ -69,7 +69,7 @@ class PathRequestTests {
 			this.matcher = matcher;
 		}
 
-		public void matches(String path) {
+		void matches(String path) {
 			matches(mockRequest(path));
 		}
 
@@ -77,7 +77,7 @@ class PathRequestTests {
 			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
-		public void doesNotMatch(String path) {
+		void doesNotMatch(String path) {
 			doesNotMatch(mockRequest(path));
 		}
 

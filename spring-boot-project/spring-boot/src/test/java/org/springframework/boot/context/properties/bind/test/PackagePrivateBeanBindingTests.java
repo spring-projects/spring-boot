@@ -63,11 +63,11 @@ class PackagePrivateBeanBindingTests {
 
 		private int bar;
 
-		public int getBar() {
+		int getBar() {
 			return this.bar;
 		}
 
-		public void setBar(int bar) {
+		void setBar(int bar) {
 			this.bar = bar;
 		}
 

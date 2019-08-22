@@ -100,37 +100,37 @@ class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WebServerConfiguration {
+	static class WebServerConfiguration {
 
 		@Bean
-		public ReactiveWebServerFactory webServerFactory() {
+		ReactiveWebServerFactory webServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class HttpHandlerConfiguration {
+	static class HttpHandlerConfiguration {
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return mock(HttpHandler.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class InitializationTestConfig {
+	static class InitializationTestConfig {
 
 		private static boolean addedListener;
 
 		@Bean
-		public ReactiveWebServerFactory webServerFactory() {
+		ReactiveWebServerFactory webServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			if (!addedListener) {
 				throw new RuntimeException(
 						"Handlers should be added after listeners, we're being initialized too early!");
@@ -139,12 +139,12 @@ class AnnotationConfigReactiveWebServerApplicationContextTests {
 		}
 
 		@Bean
-		public Listener listener() {
+		Listener listener() {
 			return new Listener();
 		}
 
 		@Bean
-		public ApplicationEventMulticaster applicationEventMulticaster() {
+		ApplicationEventMulticaster applicationEventMulticaster() {
 			return new SimpleApplicationEventMulticaster() {
 
 				@Override
@@ -158,7 +158,7 @@ class AnnotationConfigReactiveWebServerApplicationContextTests {
 			};
 		}
 
-		private static class Listener implements ApplicationListener<ContextRefreshedEvent> {
+		static class Listener implements ApplicationListener<ContextRefreshedEvent> {
 
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {

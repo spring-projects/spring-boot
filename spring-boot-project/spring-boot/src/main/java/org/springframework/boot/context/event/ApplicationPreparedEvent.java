@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
  * will be loaded and the {@link Environment} is ready for use at this stage.
  *
  * @author Dave Syer
+ * @since 1.0.0
  */
 @SuppressWarnings("serial")
 public class ApplicationPreparedEvent extends SpringApplicationEvent {

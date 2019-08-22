@@ -272,7 +272,7 @@ public class MetricsEndpoint {
 
 		@Override
 		public String toString() {
-			return "MeasurementSample{" + "statistic=" + this.statistic + ", value=" + this.value + '}';
+			return "MeasurementSample{statistic=" + this.statistic + ", value=" + this.value + '}';
 		}
 
 	}

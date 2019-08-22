@@ -53,7 +53,7 @@ class LogbackMetricsAutoConfigurationTests {
 	static class CustomLogbackMetricsConfiguration {
 
 		@Bean
-		public LogbackMetrics customLogbackMetrics() {
+		LogbackMetrics customLogbackMetrics() {
 			return new LogbackMetrics();
 		}
 

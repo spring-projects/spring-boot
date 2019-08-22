@@ -91,7 +91,7 @@ class UnboundConfigurationPropertyFailureAnalyzerTests {
 		MutablePropertySources sources = context.getEnvironment().getPropertySources();
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {
-			int index = pair.indexOf("=");
+			int index = pair.indexOf('=');
 			String key = (index > 0) ? pair.substring(0, index) : pair;
 			String value = (index > 0) ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
@@ -109,11 +109,11 @@ class UnboundConfigurationPropertyFailureAnalyzerTests {
 
 		private List<String> listValue;
 
-		public List<String> getListValue() {
+		List<String> getListValue() {
 			return this.listValue;
 		}
 
-		public void setListValue(List<String> listValue) {
+		void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
 

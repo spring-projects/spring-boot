@@ -58,7 +58,7 @@ class JerseyAutoConfigurationCustomApplicationTests {
 	}
 
 	@ApplicationPath("/test")
-	public static class TestApplication extends Application {
+	static class TestApplication extends Application {
 
 	}
 

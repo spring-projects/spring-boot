@@ -50,6 +50,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Sebastien Deleuze
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HttpMessageConverter.class)

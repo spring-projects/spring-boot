@@ -158,7 +158,7 @@ class MappingsEndpointTests {
 	static class EndpointConfiguration {
 
 		@Bean
-		public MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
+		MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
 				ApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
 		}
@@ -171,18 +171,18 @@ class MappingsEndpointTests {
 	static class ReactiveWebConfiguration {
 
 		@Bean
-		public DispatcherHandlersMappingDescriptionProvider dispatcherHandlersMappingDescriptionProvider() {
+		DispatcherHandlersMappingDescriptionProvider dispatcherHandlersMappingDescriptionProvider() {
 			return new DispatcherHandlersMappingDescriptionProvider();
 		}
 
 		@Bean
-		public RouterFunction<ServerResponse> routerFunction() {
+		RouterFunction<ServerResponse> routerFunction() {
 			return route(GET("/one"), (request) -> ServerResponse.ok().build()).andRoute(POST("/two"),
 					(request) -> ServerResponse.ok().build());
 		}
 
 		@RequestMapping("/three")
-		public void three() {
+		void three() {
 
 		}
 
@@ -194,29 +194,29 @@ class MappingsEndpointTests {
 	static class ServletWebConfiguration {
 
 		@Bean
-		public DispatcherServletsMappingDescriptionProvider dispatcherServletsMappingDescriptionProvider() {
+		DispatcherServletsMappingDescriptionProvider dispatcherServletsMappingDescriptionProvider() {
 			return new DispatcherServletsMappingDescriptionProvider();
 		}
 
 		@Bean
-		public ServletsMappingDescriptionProvider servletsMappingDescriptionProvider() {
+		ServletsMappingDescriptionProvider servletsMappingDescriptionProvider() {
 			return new ServletsMappingDescriptionProvider();
 		}
 
 		@Bean
-		public FiltersMappingDescriptionProvider filtersMappingDescriptionProvider() {
+		FiltersMappingDescriptionProvider filtersMappingDescriptionProvider() {
 			return new FiltersMappingDescriptionProvider();
 		}
 
 		@Bean
-		public DispatcherServlet dispatcherServlet(WebApplicationContext context) throws ServletException {
+		DispatcherServlet dispatcherServlet(WebApplicationContext context) throws ServletException {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
 			dispatcherServlet.init(new MockServletConfig());
 			return dispatcherServlet;
 		}
 
 		@RequestMapping("/three")
-		public void three() {
+		void three() {
 
 		}
 
@@ -226,8 +226,7 @@ class MappingsEndpointTests {
 	static class CustomDispatcherServletConfiguration {
 
 		@Bean
-		public ServletRegistrationBean<DispatcherServlet> customDispatcherServletRegistration(
-				WebApplicationContext context) {
+		ServletRegistrationBean<DispatcherServlet> customDispatcherServletRegistration(WebApplicationContext context) {
 			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
 					createTestDispatcherServlet(context));
 			registration.setName("customDispatcherServletRegistration");
@@ -235,12 +234,12 @@ class MappingsEndpointTests {
 		}
 
 		@Bean
-		public DispatcherServlet anotherDispatcherServlet(WebApplicationContext context) {
+		DispatcherServlet anotherDispatcherServlet(WebApplicationContext context) {
 			return createTestDispatcherServlet(context);
 		}
 
 		@Bean
-		public ServletRegistrationBean<DispatcherServlet> anotherDispatcherServletRegistration(
+		ServletRegistrationBean<DispatcherServlet> anotherDispatcherServletRegistration(
 				DispatcherServlet dispatcherServlet, WebApplicationContext context) {
 			ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<>(
 					anotherDispatcherServlet(context));

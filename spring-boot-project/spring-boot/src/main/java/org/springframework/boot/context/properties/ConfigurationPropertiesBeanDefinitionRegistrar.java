@@ -34,8 +34,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Registers a bean definition for a type annotated with {@link ConfigurationProperties}
- * using the prefix of the annotation in the bean name.
+ * Registers a bean definition for a type annotated with
+ * {@link ConfigurationProperties @ConfigurationProperties} using the prefix of the
+ * annotation in the bean name.
  *
  * @author Madhura Bhave
  */
@@ -46,10 +47,9 @@ final class ConfigurationPropertiesBeanDefinitionRegistrar {
 	private ConfigurationPropertiesBeanDefinitionRegistrar() {
 	}
 
-	public static void register(BeanDefinitionRegistry registry, ConfigurableListableBeanFactory beanFactory,
-			Class<?> type) {
-		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations.from(type, SearchStrategy.EXHAUSTIVE)
-				.get(ConfigurationProperties.class);
+	static void register(BeanDefinitionRegistry registry, ConfigurableListableBeanFactory beanFactory, Class<?> type) {
+		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
+				.from(type, SearchStrategy.TYPE_HIERARCHY).get(ConfigurationProperties.class);
 		String name = getName(type, annotation);
 		if (!containsBeanDefinition(beanFactory, name)) {
 			registerBeanDefinition(registry, beanFactory, name, type, annotation);

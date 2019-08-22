@@ -213,9 +213,10 @@ class SpringIterableConfigurationPropertySourceTests {
 
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
+	 *
+	 * @param <T> the source type
 	 */
-	private static class OriginCapablePropertySource<T> extends EnumerablePropertySource<T>
-			implements OriginLookup<String> {
+	static class OriginCapablePropertySource<T> extends EnumerablePropertySource<T> implements OriginLookup<String> {
 
 		private final EnumerablePropertySource<T> propertySource;
 
@@ -248,11 +249,11 @@ class SpringIterableConfigurationPropertySourceTests {
 
 	}
 
-	private static class ConcurrentModificationThrowingMap<K, V> extends LinkedHashMap<K, V> {
+	static class ConcurrentModificationThrowingMap<K, V> extends LinkedHashMap<K, V> {
 
 		private boolean throwException;
 
-		public void setThrowException(boolean throwException) {
+		void setThrowException(boolean throwException) {
 			this.throwException = throwException;
 		}
 

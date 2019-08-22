@@ -74,11 +74,11 @@ class DataSourceJsonSerializationTests {
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)
-	protected interface DataSourceJson {
+	interface DataSourceJson {
 
 	}
 
-	protected static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
+	static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
 
 		private ConversionService conversionService = new DefaultConversionService();
 
@@ -97,7 +97,7 @@ class DataSourceJsonSerializationTests {
 
 	}
 
-	protected static class GenericSerializerModifier extends BeanSerializerModifier {
+	static class GenericSerializerModifier extends BeanSerializerModifier {
 
 		private ConversionService conversionService = new DefaultConversionService();
 

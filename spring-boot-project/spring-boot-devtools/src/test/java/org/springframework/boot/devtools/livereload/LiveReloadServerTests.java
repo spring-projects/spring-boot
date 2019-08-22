@@ -130,28 +130,9 @@ class LiveReloadServerTests {
 	}
 
 	/**
-	 * Useful main method for manual testing against a real browser.
-	 * @param args main args
-	 * @throws IOException in case of I/O errors
-	 */
-	public static void main(String[] args) throws IOException {
-		LiveReloadServer server = new LiveReloadServer();
-		server.start();
-		while (true) {
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			server.triggerReload();
-		}
-	}
-
-	/**
 	 * {@link LiveReloadServer} with additional monitoring.
 	 */
-	private static class MonitoredLiveReloadServer extends LiveReloadServer {
+	static class MonitoredLiveReloadServer extends LiveReloadServer {
 
 		private final List<ConnectionClosedException> closedExceptions = new ArrayList<>();
 
@@ -167,7 +148,7 @@ class LiveReloadServerTests {
 			return new MonitoredConnection(socket, inputStream, outputStream);
 		}
 
-		public List<ConnectionClosedException> getClosedExceptions() {
+		List<ConnectionClosedException> getClosedExceptions() {
 			synchronized (this.monitor) {
 				return new ArrayList<>(this.closedExceptions);
 			}
@@ -197,7 +178,7 @@ class LiveReloadServerTests {
 
 	}
 
-	private static class LiveReloadWebSocketHandler extends TextWebSocketHandler {
+	static class LiveReloadWebSocketHandler extends TextWebSocketHandler {
 
 		private WebSocketSession session;
 
@@ -216,7 +197,7 @@ class LiveReloadServerTests {
 			this.helloLatch.countDown();
 		}
 
-		public void awaitHello() throws InterruptedException {
+		void awaitHello() throws InterruptedException {
 			this.helloLatch.await(1, TimeUnit.MINUTES);
 			Thread.sleep(200);
 		}
@@ -239,23 +220,23 @@ class LiveReloadServerTests {
 			this.closeStatus = status;
 		}
 
-		public void sendMessage(WebSocketMessage<?> message) throws IOException {
+		void sendMessage(WebSocketMessage<?> message) throws IOException {
 			this.session.sendMessage(message);
 		}
 
-		public void close() throws IOException {
+		void close() throws IOException {
 			this.session.close();
 		}
 
-		public List<String> getMessages() {
+		List<String> getMessages() {
 			return this.messages;
 		}
 
-		public int getPongCount() {
+		int getPongCount() {
 			return this.pongCount;
 		}
 
-		public CloseStatus getCloseStatus() {
+		CloseStatus getCloseStatus() {
 			return this.closeStatus;
 		}
 

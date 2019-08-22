@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 class BaseConfiguration {
 
 	@Bean
-	public AbstractWebEndpointIntegrationTests.EndpointDelegate endpointDelegate() {
+	AbstractWebEndpointIntegrationTests.EndpointDelegate endpointDelegate() {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		if (classLoader instanceof TomcatEmbeddedWebappClassLoader) {
 			Thread.currentThread().setContextClassLoader(classLoader.getParent());
@@ -55,13 +55,13 @@ class BaseConfiguration {
 	}
 
 	@Bean
-	public EndpointMediaTypes endpointMediaTypes() {
+	EndpointMediaTypes endpointMediaTypes() {
 		List<String> mediaTypes = Arrays.asList("application/vnd.test+json", "application/json");
 		return new EndpointMediaTypes(mediaTypes, mediaTypes);
 	}
 
 	@Bean
-	public WebEndpointDiscoverer webEndpointDiscoverer(EndpointMediaTypes endpointMediaTypes,
+	WebEndpointDiscoverer webEndpointDiscoverer(EndpointMediaTypes endpointMediaTypes,
 			ApplicationContext applicationContext) {
 		ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 				DefaultConversionService.getSharedInstance());
@@ -70,7 +70,7 @@ class BaseConfiguration {
 	}
 
 	@Bean
-	public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+	PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 

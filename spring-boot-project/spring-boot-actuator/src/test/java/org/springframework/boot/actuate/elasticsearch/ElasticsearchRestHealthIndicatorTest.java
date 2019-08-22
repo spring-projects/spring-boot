@@ -137,7 +137,7 @@ class ElasticsearchRestHealthIndicatorTest {
 							+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}",
 					status);
 		}
-		return "{\n" + "  \"error\": \"Server Error\",\n" + "  \"status\": " + responseCode + "\n" + "}";
+		return "{\n  \"error\": \"Server Error\",\n  \"status\": " + responseCode + "\n}";
 	}
 
 }

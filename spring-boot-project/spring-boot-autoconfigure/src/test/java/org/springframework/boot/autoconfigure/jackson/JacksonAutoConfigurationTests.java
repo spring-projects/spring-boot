@@ -80,6 +80,7 @@ class JacksonAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class));
 
 	@Test
+	@Deprecated
 	void registersJodaModuleAutomatically() {
 		this.contextRunner.run((context) -> {
 			ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
@@ -116,6 +117,7 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void customJodaDateTimeFormat() throws Exception {
 		this.contextRunner.withPropertyValues("spring.jackson.date-format:yyyyMMddHHmmss",
 				"spring.jackson.joda-date-time-format:yyyy-MM-dd HH:mm:ss").run((context) -> {
@@ -336,6 +338,7 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void customLocaleWithJodaTime() throws JsonProcessingException {
 		this.contextRunner.withPropertyValues("spring.jackson.locale:de_DE", "spring.jackson.date-format:zzzz",
 				"spring.jackson.serialization.write-dates-with-zone-id:true").run((context) -> {
@@ -388,6 +391,16 @@ class JacksonAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void builderIsNotSharedAcrossMultipleInjectionPoints() {
+		this.contextRunner.withUserConfiguration(ObjectMapperBuilderConsumerConfig.class).run((context) -> {
+			ObjectMapperBuilderConsumerConfig consumer = context.getBean(ObjectMapperBuilderConsumerConfig.class);
+			assertThat(consumer.builderOne).isNotNull();
+			assertThat(consumer.builderTwo).isNotNull();
+			assertThat(consumer.builderOne).isNotSameAs(consumer.builderTwo);
+		});
+	}
+
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode, Class<?>... configClasses) {
 		this.contextRunner.withUserConfiguration(configClasses).run((context) -> {
 			DeserializationConfig deserializationConfig = context.getBean(ObjectMapper.class)
@@ -398,7 +411,7 @@ class JacksonAutoConfigurationTests {
 		});
 	}
 
-	public static class MyDateFormat extends SimpleDateFormat {
+	static class MyDateFormat extends SimpleDateFormat {
 
 		MyDateFormat() {
 			super("yyyy-MM-dd HH:mm:ss");
@@ -407,11 +420,11 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MockObjectMapperConfig {
+	static class MockObjectMapperConfig {
 
 		@Bean
 		@Primary
-		public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper() {
 			return mock(ObjectMapper.class);
 		}
 
@@ -419,20 +432,20 @@ class JacksonAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BazSerializer.class)
-	protected static class ModuleConfig {
+	static class ModuleConfig {
 
 		@Bean
-		public CustomModule jacksonModule() {
+		CustomModule jacksonModule() {
 			return new CustomModule();
 		}
 
 	}
 
 	@Configuration
-	protected static class DoubleModulesConfig {
+	static class DoubleModulesConfig {
 
 		@Bean
-		public Module jacksonModule() {
+		Module jacksonModule() {
 			SimpleModule module = new SimpleModule();
 			module.addSerializer(Foo.class, new JsonSerializer<Foo>() {
 
@@ -448,7 +461,7 @@ class JacksonAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper() {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.registerModule(jacksonModule());
 			return mapper;
@@ -457,21 +470,42 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ParameterNamesModuleConfig {
+	static class ParameterNamesModuleConfig {
 
 		@Bean
-		public ParameterNamesModule parameterNamesModule() {
+		ParameterNamesModule parameterNamesModule() {
 			return new ParameterNamesModule(JsonCreator.Mode.DELEGATING);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ObjectMapperBuilderCustomConfig {
+	static class ObjectMapperBuilderCustomConfig {
 
 		@Bean
-		public Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
+		Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
 			return (builder) -> builder.dateFormat(new MyDateFormat());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ObjectMapperBuilderConsumerConfig {
+
+		Jackson2ObjectMapperBuilder builderOne;
+
+		Jackson2ObjectMapperBuilder builderTwo;
+
+		@Bean
+		String consumerOne(Jackson2ObjectMapperBuilder builder) {
+			this.builderOne = builder;
+			return "one";
+		}
+
+		@Bean
+		String consumerTwo(Jackson2ObjectMapperBuilder builder) {
+			this.builderTwo = builder;
+			return "two";
 		}
 
 	}
@@ -497,22 +531,22 @@ class JacksonAutoConfigurationTests {
 
 	}
 
-	protected static class Bar {
+	static class Bar {
 
 		private String propertyName;
 
-		public String getPropertyName() {
+		String getPropertyName() {
 			return this.propertyName;
 		}
 
-		public void setPropertyName(String propertyName) {
+		void setPropertyName(String propertyName) {
 			this.propertyName = propertyName;
 		}
 
 	}
 
 	@JsonComponent
-	private static class BazSerializer extends JsonObjectSerializer<Baz> {
+	static class BazSerializer extends JsonObjectSerializer<Baz> {
 
 		@Override
 		protected void serializeObject(Baz value, JsonGenerator jgen, SerializerProvider provider) {
@@ -520,11 +554,11 @@ class JacksonAutoConfigurationTests {
 
 	}
 
-	private static class Baz {
+	static class Baz {
 
 	}
 
-	private static class CustomModule extends SimpleModule {
+	static class CustomModule extends SimpleModule {
 
 		private Set<ObjectCodec> owners = new HashSet<>();
 
@@ -540,13 +574,13 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@SuppressWarnings("unused")
-	private static class VisibilityBean {
+	static class VisibilityBean {
 
 		private String property1;
 
 		public String property2;
 
-		public String getProperty3() {
+		String getProperty3() {
 			return null;
 		}
 

@@ -37,7 +37,7 @@ class OptionParsingCommandTests {
 		assertThat(command.getHelp()).contains("--bar");
 	}
 
-	private static class TestOptionParsingCommand extends OptionParsingCommand {
+	static class TestOptionParsingCommand extends OptionParsingCommand {
 
 		TestOptionParsingCommand(String name, String description, OptionHandler handler) {
 			super(name, description, handler);

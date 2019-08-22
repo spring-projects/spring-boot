@@ -78,7 +78,7 @@ class ServletContextInitializerBeansTests {
 	static class ServletConfiguration {
 
 		@Bean
-		public TestServlet testServlet() {
+		TestServlet testServlet() {
 			return new TestServlet();
 		}
 
@@ -88,7 +88,7 @@ class ServletContextInitializerBeansTests {
 	static class FilterConfiguration {
 
 		@Bean
-		public TestFilter testFilter() {
+		TestFilter testFilter() {
 			return new TestFilter();
 		}
 
@@ -98,12 +98,12 @@ class ServletContextInitializerBeansTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TestServletContextInitializer testServletContextInitializer() {
+		TestServletContextInitializer testServletContextInitializer() {
 			return new TestServletContextInitializer();
 		}
 
 		@Bean
-		public OtherTestServletContextInitializer otherTestServletContextInitializer() {
+		OtherTestServletContextInitializer otherTestServletContextInitializer() {
 			return new OtherTestServletContextInitializer();
 		}
 

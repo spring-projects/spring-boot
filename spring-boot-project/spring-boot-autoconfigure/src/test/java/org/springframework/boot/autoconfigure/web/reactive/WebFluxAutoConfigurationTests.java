@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Assertions;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -187,7 +188,7 @@ class WebFluxAutoConfigurationTests {
 	void noDateFormat() {
 		this.contextRunner.run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
-			Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+			Date date = Date.from(ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant());
 			// formatting conversion service should use simple toString()
 			assertThat(conversionService.convert(date, String.class)).isEqualTo(date.toString());
 		});
@@ -197,7 +198,7 @@ class WebFluxAutoConfigurationTests {
 	void overrideDateFormat() {
 		this.contextRunner.withPropertyValues("spring.webflux.date-format:dd*MM*yyyy").run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
-			Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+			Date date = Date.from(ZonedDateTime.of(1988, 6, 25, 20, 30, 0, 0, ZoneId.systemDefault()).toInstant());
 			assertThat(conversionService.convert(date, String.class)).isEqualTo("25*06*1988");
 		});
 	}
@@ -302,22 +303,23 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void hiddenHttpMethodFilterIsAutoConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
+	void hiddenHttpMethodFilterIsDisabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test
 	void hiddenHttpMethodFilterCanBeOverridden() {
-		this.contextRunner.withUserConfiguration(CustomHiddenHttpMethodFilter.class).run((context) -> {
-			assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
-			assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
-		});
+		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
+				.withUserConfiguration(CustomHiddenHttpMethodFilter.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
+					assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
+				});
 	}
 
 	@Test
-	void hiddenHttpMethodFilterCanBeDisabled() {
-		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HiddenHttpMethodFilter.class));
+	void hiddenHttpMethodFilterCanBeEnabled() {
+		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
+				.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
 	}
 
 	@Test
@@ -396,68 +398,68 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomArgumentResolvers {
+	static class CustomArgumentResolvers {
 
 		@Bean
-		public HandlerMethodArgumentResolver firstResolver() {
+		HandlerMethodArgumentResolver firstResolver() {
 			return mock(HandlerMethodArgumentResolver.class);
 		}
 
 		@Bean
-		public HandlerMethodArgumentResolver secondResolver() {
+		HandlerMethodArgumentResolver secondResolver() {
 			return mock(HandlerMethodArgumentResolver.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomCodecCustomizers {
+	static class CustomCodecCustomizers {
 
 		@Bean
-		public CodecCustomizer firstCodecCustomizer() {
+		CodecCustomizer firstCodecCustomizer() {
 			return mock(CodecCustomizer.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ViewResolvers {
+	static class ViewResolvers {
 
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
-		public ViewResolver aViewResolver() {
+		ViewResolver aViewResolver() {
 			return mock(ViewResolver.class);
 		}
 
 		@Bean
-		public ViewResolver anotherViewResolver() {
+		ViewResolver anotherViewResolver() {
 			return mock(ViewResolver.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class Config {
+	static class Config {
 
 		@Bean
-		public MockReactiveWebServerFactory mockReactiveWebServerFactory() {
+		MockReactiveWebServerFactory mockReactiveWebServerFactory() {
 			return mockReactiveWebServerFactory;
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomHttpHandler {
+	static class CustomHttpHandler {
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> null;
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ValidatorWebFluxConfigurer implements WebFluxConfigurer {
+	static class ValidatorWebFluxConfigurer implements WebFluxConfigurer {
 
 		private final Validator validator = mock(Validator.class);
 
@@ -469,7 +471,7 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ValidatorJsr303WebFluxConfigurer implements WebFluxConfigurer {
+	static class ValidatorJsr303WebFluxConfigurer implements WebFluxConfigurer {
 
 		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
@@ -484,7 +486,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomJsr303Validator {
 
 		@Bean
-		public javax.validation.Validator customValidator() {
+		javax.validation.Validator customValidator() {
 			return mock(javax.validation.Validator.class);
 		}
 
@@ -494,7 +496,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomSpringValidator {
 
 		@Bean
-		public Validator customValidator() {
+		Validator customValidator() {
 			return mock(Validator.class);
 		}
 
@@ -504,7 +506,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomHiddenHttpMethodFilter {
 
 		@Bean
-		public HiddenHttpMethodFilter customHiddenHttpMethodFilter() {
+		HiddenHttpMethodFilter customHiddenHttpMethodFilter() {
 			return mock(HiddenHttpMethodFilter.class);
 		}
 
@@ -514,7 +516,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomRequestMappingHandlerAdapter {
 
 		@Bean
-		public WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
+		WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
 			return new WebFluxRegistrations() {
 
 				@Override
@@ -527,7 +529,7 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
-	private static class MyRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
+	static class MyRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
 
 	}
 
@@ -542,7 +544,7 @@ class WebFluxAutoConfigurationTests {
 	static class CustomRequestMappingHandlerMapping {
 
 		@Bean
-		public WebFluxRegistrations webFluxRegistrationsHandlerMapping() {
+		WebFluxRegistrations webFluxRegistrationsHandlerMapping() {
 			return new WebFluxRegistrations() {
 
 				@Override
@@ -555,7 +557,7 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
-	private static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
+	static class MyRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
 	}
 
@@ -563,7 +565,7 @@ class WebFluxAutoConfigurationTests {
 	static class PrinterConfiguration {
 
 		@Bean
-		public Printer<Example> examplePrinter() {
+		Printer<Example> examplePrinter() {
 			return new ExamplePrinter();
 		}
 
@@ -573,7 +575,7 @@ class WebFluxAutoConfigurationTests {
 	static class ParserConfiguration {
 
 		@Bean
-		public Parser<Example> exampleParser() {
+		Parser<Example> exampleParser() {
 			return new ExampleParser();
 		}
 
@@ -587,13 +589,13 @@ class WebFluxAutoConfigurationTests {
 			this.name = name;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
 	}
 
-	private static class ExamplePrinter implements Printer<Example> {
+	static class ExamplePrinter implements Printer<Example> {
 
 		@Override
 		public String print(Example example, Locale locale) {
@@ -602,7 +604,7 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
-	private static class ExampleParser implements Parser<Example> {
+	static class ExampleParser implements Parser<Example> {
 
 		@Override
 		public Example parse(String source, Locale locale) {

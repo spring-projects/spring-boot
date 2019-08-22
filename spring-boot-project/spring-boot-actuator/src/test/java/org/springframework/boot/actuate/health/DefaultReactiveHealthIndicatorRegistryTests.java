@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
+@Deprecated
 class DefaultReactiveHealthIndicatorRegistryTests {
 
 	private ReactiveHealthIndicator one = mock(ReactiveHealthIndicator.class);

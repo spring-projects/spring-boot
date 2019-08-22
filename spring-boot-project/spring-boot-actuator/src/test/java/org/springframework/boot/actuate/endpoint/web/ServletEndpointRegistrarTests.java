@@ -134,7 +134,7 @@ class ServletEndpointRegistrarTests {
 		return endpoint;
 	}
 
-	public static class TestServlet extends GenericServlet {
+	static class TestServlet extends GenericServlet {
 
 		@Override
 		public void service(ServletRequest req, ServletResponse res) {

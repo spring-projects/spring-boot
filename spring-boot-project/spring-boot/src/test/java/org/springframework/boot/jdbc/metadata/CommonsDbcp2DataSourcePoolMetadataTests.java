@@ -83,6 +83,7 @@ class CommonsDbcp2DataSourcePoolMetadataTests
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxTotal(maxSize);
+		dataSource.setMinEvictableIdleTimeMillis(5000);
 		return new CommonsDbcp2DataSourcePoolMetadata(dataSource);
 	}
 

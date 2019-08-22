@@ -23,6 +23,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  *
  * @author Michael Simons
  */
-public interface ExampleRepository extends MongoRepository<ExampleDocument, String> {
+interface ExampleRepository extends MongoRepository<ExampleDocument, String> {
 
 }

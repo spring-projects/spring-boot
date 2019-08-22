@@ -90,14 +90,14 @@ class ValueObjectBinder implements DataObjectBinder {
 			this.constructor = constructor;
 		}
 
-		public T instantiate(List<Object> args) {
+		T instantiate(List<Object> args) {
 			return BeanUtils.instantiateClass(this.constructor, args.toArray());
 		}
 
-		public abstract List<ConstructorParameter> getConstructorParameters();
+		abstract List<ConstructorParameter> getConstructorParameters();
 
 		@SuppressWarnings("unchecked")
-		public static <T> ValueObject<T> get(Bindable<T> bindable) {
+		static <T> ValueObject<T> get(Bindable<T> bindable) {
 			if (bindable.getValue() != null) {
 				return null;
 			}
@@ -138,11 +138,11 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		@Override
-		public List<ConstructorParameter> getConstructorParameters() {
+		List<ConstructorParameter> getConstructorParameters() {
 			return this.constructorParameters;
 		}
 
-		public static <T> ValueObject<T> get(Class<T> type) {
+		static <T> ValueObject<T> get(Class<T> type) {
 			Constructor<T> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
 			if (primaryConstructor == null || primaryConstructor.getParameterCount() == 0) {
 				return null;
@@ -186,14 +186,23 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		@Override
-		public List<ConstructorParameter> getConstructorParameters() {
+		List<ConstructorParameter> getConstructorParameters() {
 			return this.constructorParameters;
 		}
 
 		@SuppressWarnings("unchecked")
 		static <T> ValueObject<T> get(Class<T> type) {
-			Constructor<?>[] constructors = type.getDeclaredConstructors();
-			return (constructors.length != 1) ? null : get((Constructor<T>) constructors[0]);
+			Constructor<?> constructor = null;
+			for (Constructor<?> candidate : type.getDeclaredConstructors()) {
+				int modifiers = candidate.getModifiers();
+				if (!Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers)) {
+					if (constructor != null) {
+						return null;
+					}
+					constructor = candidate;
+				}
+			}
+			return get((Constructor<T>) constructor);
 		}
 
 		static <T> DefaultValueObject<T> get(Constructor<T> constructor) {
@@ -222,7 +231,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			this.annotations = annotations;
 		}
 
-		public Object getDefaultValue(BindConverter converter) {
+		Object getDefaultValue(BindConverter converter) {
 			for (Annotation annotation : this.annotations) {
 				if (annotation instanceof DefaultValue) {
 					return converter.convert(((DefaultValue) annotation).value(), this.type, this.annotations);
@@ -231,7 +240,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			return null;
 		}
 
-		public Object bind(DataObjectPropertyBinder propertyBinder) {
+		Object bind(DataObjectPropertyBinder propertyBinder) {
 			return propertyBinder.bindProperty(this.name, Bindable.of(this.type).withAnnotations(this.annotations));
 		}
 

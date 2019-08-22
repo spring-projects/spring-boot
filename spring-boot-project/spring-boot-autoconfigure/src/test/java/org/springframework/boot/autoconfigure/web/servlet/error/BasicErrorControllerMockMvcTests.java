@@ -130,15 +130,15 @@ class BasicErrorControllerMockMvcTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(TestConfiguration.class, args);
 		}
 
 		@Bean
-		public View error() {
+		View error() {
 			return new AbstractView() {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
@@ -149,27 +149,27 @@ class BasicErrorControllerMockMvcTests {
 		}
 
 		@RestController
-		protected static class Errors {
-
-			public String getFoo() {
-				return "foo";
-			}
+		public static class Errors {
 
 			@RequestMapping("/")
-			public String home() {
+			String home() {
 				throw new IllegalStateException("Expected!");
 			}
 
 			@RequestMapping("/bang")
-			public String bang() {
+			String bang() {
 				throw new NotFoundException("Expected!");
 			}
 
 			@RequestMapping("/bind")
-			public String bind() throws Exception {
+			String bind() throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
 				throw error;
+			}
+
+			public String getFoo() {
+				return "foo";
 			}
 
 		}
@@ -177,7 +177,7 @@ class BasicErrorControllerMockMvcTests {
 	}
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	private static class NotFoundException extends RuntimeException {
+	static class NotFoundException extends RuntimeException {
 
 		NotFoundException(String string) {
 			super(string);

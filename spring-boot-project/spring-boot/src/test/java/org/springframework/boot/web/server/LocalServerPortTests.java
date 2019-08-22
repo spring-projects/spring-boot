@@ -27,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LocalServerPort}.
+ * Tests for {@link LocalServerPort @LocalServerPort}.
  *
  * @author Anand Shah
  * @author Phillip Webb

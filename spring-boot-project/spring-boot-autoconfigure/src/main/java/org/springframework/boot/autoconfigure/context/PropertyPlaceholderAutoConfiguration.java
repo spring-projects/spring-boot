@@ -31,6 +31,7 @@ import org.springframework.core.Ordered;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.5.0
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)

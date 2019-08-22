@@ -61,6 +61,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Brian Clozel
+ * @since 2.0.0
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration(proxyBeanMethods = false)
@@ -91,6 +92,7 @@ public class DispatcherServletAutoConfiguration {
 			dispatcherServlet.setDispatchOptionsRequest(webMvcProperties.isDispatchOptionsRequest());
 			dispatcherServlet.setDispatchTraceRequest(webMvcProperties.isDispatchTraceRequest());
 			dispatcherServlet.setThrowExceptionIfNoHandlerFound(webMvcProperties.isThrowExceptionIfNoHandlerFound());
+			dispatcherServlet.setPublishEvents(webMvcProperties.isPublishRequestHandledEvents());
 			dispatcherServlet.setEnableLoggingRequestDetails(httpProperties.isLogRequestDetails());
 			return dispatcherServlet;
 		}

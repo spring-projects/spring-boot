@@ -34,6 +34,7 @@ import org.springframework.boot.loader.jar.Handler;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
@@ -85,8 +86,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 					// This should never happen as the IllegalArgumentException indicates
 					// that the package has already been defined and, therefore,
 					// getPackage(name) should not return null.
-					throw new AssertionError(
-							"Package " + name + " has already been " + "defined but it could not be found");
+					throw new AssertionError("Package " + name + " has already been defined but it could not be found");
 				}
 			}
 			return super.loadClass(name, resolve);
@@ -117,7 +117,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 						// indicates that the package has already been defined and,
 						// therefore, getPackage(name) should not have returned null.
 						throw new AssertionError(
-								"Package " + packageName + " has already been defined " + "but it could not be found");
+								"Package " + packageName + " has already been defined but it could not be found");
 					}
 				}
 			}

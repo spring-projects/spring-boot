@@ -16,12 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.properties;
 
-import java.time.Duration;
-
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Base test for {@link StepRegistryPropertiesConfigAdapter} implementations.
  *
@@ -30,38 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  */
-public abstract class StepRegistryPropertiesConfigAdapterTests<P extends StepRegistryProperties, A extends StepRegistryPropertiesConfigAdapter<P>> {
-
-	protected abstract P createProperties();
-
-	protected abstract A createConfigAdapter(P properties);
-
-	@Test
-	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
-		P properties = createProperties();
-		properties.setStep(Duration.ofSeconds(42));
-		assertThat(createConfigAdapter(properties).step()).isEqualTo(Duration.ofSeconds(42));
-	}
-
-	@Test
-	void whenPropertiesEnabledIsSetAdapterEnabledReturnsIt() {
-		P properties = createProperties();
-		properties.setEnabled(false);
-		assertThat(createConfigAdapter(properties).enabled()).isFalse();
-	}
-
-	@Test
-	void whenPropertiesNumThreadsIsSetAdapterNumThreadsReturnsIt() {
-		P properties = createProperties();
-		properties.setNumThreads(42);
-		assertThat(createConfigAdapter(properties).numThreads()).isEqualTo(42);
-	}
-
-	@Test
-	void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
-		P properties = createProperties();
-		properties.setBatchSize(10042);
-		assertThat(createConfigAdapter(properties).batchSize()).isEqualTo(10042);
-	}
+public abstract class StepRegistryPropertiesConfigAdapterTests<P extends StepRegistryProperties, A extends StepRegistryPropertiesConfigAdapter<P>>
+		extends PushRegistryPropertiesConfigAdapterTests<P, A> {
 
 }

@@ -51,10 +51,10 @@ class ConditionalOnMissingClassTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClassTests")
-	protected static class BasicConfiguration {
+	static class BasicConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -62,20 +62,20 @@ class ConditionalOnMissingClassTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("FOO")
-	protected static class MissingConfiguration {
+	static class MissingConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class FooConfiguration {
+	static class FooConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

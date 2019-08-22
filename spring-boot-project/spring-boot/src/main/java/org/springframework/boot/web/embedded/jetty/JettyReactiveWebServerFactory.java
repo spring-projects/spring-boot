@@ -17,10 +17,10 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +68,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private boolean useForwardHeaders;
 
-	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
+	private Set<JettyServerCustomizer> jettyServerCustomizers = new LinkedHashSet<>();
 
 	private JettyResourceFactory resourceFactory;
 
@@ -119,7 +119,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void setServerCustomizers(Collection<? extends JettyServerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers = new ArrayList<>(customizers);
+		this.jettyServerCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		server.addConnector(createConnector(address, server));
 		ServletHolder servletHolder = new ServletHolder(servlet);
 		servletHolder.setAsyncSupported(true);
-		ServletContextHandler contextHandler = new ServletContextHandler(server, "", false, false);
+		ServletContextHandler contextHandler = new ServletContextHandler(server, "/", false, false);
 		contextHandler.addServlet(servletHolder, "/");
 		server.setHandler(addHandlerWrappers(contextHandler));
 		JettyReactiveWebServerFactory.logger.info("Server initialized with port: " + port);

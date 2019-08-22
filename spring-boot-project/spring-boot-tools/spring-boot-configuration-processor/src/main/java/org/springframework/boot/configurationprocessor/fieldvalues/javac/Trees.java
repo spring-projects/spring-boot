@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import javax.lang.model.element.Element;
  * Reflection based access to {@code com.sun.source.util.Trees}.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 final class Trees extends ReflectionWrapper {
 
@@ -33,12 +32,12 @@ final class Trees extends ReflectionWrapper {
 		super("com.sun.source.util.Trees", instance);
 	}
 
-	public Tree getTree(Element element) throws Exception {
+	Tree getTree(Element element) throws Exception {
 		Object tree = findMethod("getTree", Element.class).invoke(getInstance(), element);
 		return (tree != null) ? new Tree(tree) : null;
 	}
 
-	public static Trees instance(ProcessingEnvironment env) throws Exception {
+	static Trees instance(ProcessingEnvironment env) throws Exception {
 		ClassLoader classLoader = env.getClass().getClassLoader();
 		Class<?> type = findClass(classLoader, "com.sun.source.util.Trees");
 		Method method = findMethod(type, "instance", ProcessingEnvironment.class);

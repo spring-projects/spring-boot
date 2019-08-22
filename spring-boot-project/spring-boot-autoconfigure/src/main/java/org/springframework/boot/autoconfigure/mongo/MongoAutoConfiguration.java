@@ -36,6 +36,7 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(MongoClient.class)

@@ -30,7 +30,8 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used by {@link ServletComponentScan}.
+ * {@link ImportBeanDefinitionRegistrar} used by
+ * {@link ServletComponentScan @ServletComponentScan}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

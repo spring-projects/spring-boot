@@ -38,7 +38,7 @@ class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 		this.providers = providers;
 	}
 
-	public String getDefaultDdlAuto(DataSource dataSource) {
+	String getDefaultDdlAuto(DataSource dataSource) {
 		if (!EmbeddedDatabaseConnection.isEmbedded(dataSource)) {
 			return "none";
 		}

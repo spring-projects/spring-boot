@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.liquibase;
 
 import java.util.function.Supplier;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -46,13 +45,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -88,20 +84,8 @@ public class LiquibaseAutoConfiguration {
 
 		private final LiquibaseProperties properties;
 
-		private final ResourceLoader resourceLoader;
-
-		public LiquibaseConfiguration(LiquibaseProperties properties, ResourceLoader resourceLoader) {
+		public LiquibaseConfiguration(LiquibaseProperties properties) {
 			this.properties = properties;
-			this.resourceLoader = resourceLoader;
-		}
-
-		@PostConstruct
-		public void checkChangelogExists() {
-			if (this.properties.isCheckChangeLogLocation()) {
-				Resource resource = this.resourceLoader.getResource(this.properties.getChangeLog());
-				Assert.state(resource.exists(), () -> "Cannot find changelog location: " + resource
-						+ " (please add changelog or check your Liquibase " + "configuration)");
-			}
 		}
 
 		@Bean
@@ -173,7 +157,7 @@ public class LiquibaseAutoConfiguration {
 	protected static class LiquibaseJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public LiquibaseJpaDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}
@@ -188,7 +172,7 @@ public class LiquibaseAutoConfiguration {
 	protected static class LiquibaseJdbcOperationsDependencyConfiguration extends JdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseJdbcOperationsDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}
@@ -204,7 +188,7 @@ public class LiquibaseAutoConfiguration {
 			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
 
 		public LiquibaseNamedParameterJdbcOperationsDependencyConfiguration() {
-			super("liquibase");
+			super(SpringLiquibase.class);
 		}
 
 	}

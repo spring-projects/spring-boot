@@ -100,6 +100,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 public class ConfigFileApplicationListener implements EnvironmentPostProcessor, SmartApplicationListener, Ordered {
 
@@ -318,7 +319,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					getClass().getClassLoader());
 		}
 
-		public void load() {
+		void load() {
 			FilteredPropertySource.apply(this.environment, DEFAULT_PROPERTIES, LOAD_FILTERED_PROPERTY,
 					(defaultProperties) -> {
 						this.profiles = new LinkedList<>();
@@ -452,6 +453,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						return;
 					}
 				}
+				throw new IllegalStateException("File extension of config file location '" + location
+						+ "' is not known to any PropertySourceLoader. If the location is meant to reference "
+						+ "a directory, it must end in '/'");
 			}
 			Set<String> processed = new HashSet<>();
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
@@ -538,8 +542,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				}
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Failed to load property " + "source from location '" + location + "'",
-						ex);
+				throw new IllegalStateException("Failed to load property source from location '" + location + "'", ex);
 			}
 		}
 
@@ -734,11 +737,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.defaultProfile = defaultProfile;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public boolean isDefaultProfile() {
+		boolean isDefaultProfile() {
 			return this.defaultProfile;
 		}
 
@@ -819,19 +822,19 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.includeProfiles = includeProfiles;
 		}
 
-		public PropertySource<?> getPropertySource() {
+		PropertySource<?> getPropertySource() {
 			return this.propertySource;
 		}
 
-		public String[] getProfiles() {
+		String[] getProfiles() {
 			return this.profiles;
 		}
 
-		public Set<Profile> getActiveProfiles() {
+		Set<Profile> getActiveProfiles() {
 			return this.activeProfiles;
 		}
 
-		public Set<Profile> getIncludeProfiles() {
+		Set<Profile> getIncludeProfiles() {
 			return this.includeProfiles;
 		}
 

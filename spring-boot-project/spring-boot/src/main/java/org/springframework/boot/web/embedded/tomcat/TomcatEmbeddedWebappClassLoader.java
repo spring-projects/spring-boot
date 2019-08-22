@@ -129,8 +129,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 				this.securityManager.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
 			}
 			catch (SecurityException ex) {
-				throw new ClassNotFoundException("Security Violation, attempt to use " + "Restricted Class: " + name,
-						ex);
+				throw new ClassNotFoundException("Security Violation, attempt to use Restricted Class: " + name, ex);
 			}
 		}
 	}

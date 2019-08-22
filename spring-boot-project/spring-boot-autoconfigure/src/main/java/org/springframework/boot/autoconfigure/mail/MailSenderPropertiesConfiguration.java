@@ -39,7 +39,7 @@ class MailSenderPropertiesConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JavaMailSenderImpl mailSender(MailProperties properties) {
+	JavaMailSenderImpl mailSender(MailProperties properties) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		applyProperties(properties, sender);
 		return sender;

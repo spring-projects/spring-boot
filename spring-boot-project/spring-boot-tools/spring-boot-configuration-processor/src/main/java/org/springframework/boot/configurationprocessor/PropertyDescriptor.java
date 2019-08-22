@@ -63,35 +63,35 @@ abstract class PropertyDescriptor<S extends Element> {
 		this.setter = setter;
 	}
 
-	public TypeElement getOwnerElement() {
+	TypeElement getOwnerElement() {
 		return this.ownerElement;
 	}
 
-	public ExecutableElement getFactoryMethod() {
+	ExecutableElement getFactoryMethod() {
 		return this.factoryMethod;
 	}
 
-	public S getSource() {
+	S getSource() {
 		return this.source;
 	}
 
-	public String getName() {
+	String getName() {
 		return this.name;
 	}
 
-	public TypeMirror getType() {
+	TypeMirror getType() {
 		return this.type;
 	}
 
-	public VariableElement getField() {
+	VariableElement getField() {
 		return this.field;
 	}
 
-	public ExecutableElement getGetter() {
+	ExecutableElement getGetter() {
 		return this.getter;
 	}
 
-	public ExecutableElement getSetter() {
+	ExecutableElement getSetter() {
 		return this.setter;
 	}
 
@@ -122,7 +122,7 @@ abstract class PropertyDescriptor<S extends Element> {
 		return isParentTheSame(typeElement, getOwnerElement());
 	}
 
-	public ItemMetadata resolveItemMetadata(String prefix, MetadataGenerationEnvironment environment) {
+	ItemMetadata resolveItemMetadata(String prefix, MetadataGenerationEnvironment environment) {
 		if (isNested(environment)) {
 			return resolveItemMetadataGroup(prefix, environment);
 		}

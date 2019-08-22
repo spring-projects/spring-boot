@@ -78,7 +78,7 @@ class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	static class TestConfiguration {
 
 		@Bean
-		public MetricsEndpoint endpoint() {
+		MetricsEndpoint endpoint() {
 			SimpleMeterRegistry registry = new SimpleMeterRegistry();
 			new JvmMemoryMetrics().bindTo(registry);
 			return new MetricsEndpoint(registry);

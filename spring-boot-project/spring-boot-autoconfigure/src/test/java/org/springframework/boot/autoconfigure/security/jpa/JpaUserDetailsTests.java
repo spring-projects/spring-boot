@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.security.jpa;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -45,14 +44,10 @@ class JpaUserDetailsTests {
 	void contextLoads() {
 	}
 
-	public static void main(String[] args) {
-		SpringApplication.run(Main.class, args);
-	}
-
 	@Import({ EmbeddedDataSourceConfiguration.class, DataSourceAutoConfiguration.class,
 			HibernateJpaAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 			SecurityAutoConfiguration.class })
-	public static class Main {
+	static class Main {
 
 	}
 

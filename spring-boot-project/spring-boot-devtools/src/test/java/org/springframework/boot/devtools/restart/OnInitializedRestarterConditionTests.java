@@ -72,9 +72,9 @@ class OnInitializedRestarterConditionTests {
 		}
 	}
 
-	public static class TestInitialized {
+	static class TestInitialized {
 
-		public static void main(String... args) {
+		static void main(String... args) {
 			RestartInitializer initializer = mock(RestartInitializer.class);
 			given(initializer.getInitialUrls(any(Thread.class))).willReturn(new URL[0]);
 			Restarter.initialize(new String[0], false, initializer);
@@ -89,11 +89,11 @@ class OnInitializedRestarterConditionTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 		@Bean
 		@ConditionalOnInitializedRestarter
-		public String bean() {
+		String bean() {
 			return "bean";
 		}
 

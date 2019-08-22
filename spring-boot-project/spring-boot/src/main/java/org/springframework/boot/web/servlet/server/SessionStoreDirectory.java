@@ -32,15 +32,15 @@ class SessionStoreDirectory {
 
 	private File directory;
 
-	public File getDirectory() {
+	File getDirectory() {
 		return this.directory;
 	}
 
-	public void setDirectory(File directory) {
+	void setDirectory(File directory) {
 		this.directory = directory;
 	}
 
-	public File getValidDirectory(boolean mkdirs) {
+	File getValidDirectory(boolean mkdirs) {
 		File dir = getDirectory();
 		if (dir == null) {
 			return new ApplicationTemp().getDir("servlet-sessions");

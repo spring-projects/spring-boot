@@ -29,7 +29,6 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * Repositories.
  *
  * @author Eddú Meléndez
- * @since 1.4.0
  */
 class RedisRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 

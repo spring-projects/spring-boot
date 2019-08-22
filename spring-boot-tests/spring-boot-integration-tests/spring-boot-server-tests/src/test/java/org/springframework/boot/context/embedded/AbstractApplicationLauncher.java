@@ -63,7 +63,7 @@ abstract class AbstractApplicationLauncher implements BeforeEachCallback, AfterE
 		this.process = startApplication();
 	}
 
-	public final int getHttpPort() {
+	final int getHttpPort() {
 		return this.httpPort;
 	}
 

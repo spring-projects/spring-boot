@@ -17,6 +17,7 @@
 	</properties>
 	<modules>
 		<!-- Deployment tests are slow so don't include by default -->
+		<module>spring-boot-smoke-tests-invoker</module>
 		<module>spring-boot-integration-tests</module>
 	</modules>
 	<profiles>
@@ -29,6 +30,8 @@
 				</property>
 			</activation>
 			<modules>
+				<module>spring-boot-smoke-tests</module>
+				<module>spring-boot-smoke-tests-invoker</module>
 				<module>spring-boot-integration-tests</module>
 				<module>spring-boot-deployment-tests</module>
 			</modules>

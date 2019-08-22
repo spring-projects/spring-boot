@@ -196,8 +196,7 @@ public class ManagementContextAutoConfiguration {
 			}
 		}
 
-		public static void addIfPossible(ApplicationContext parentContext,
-				ConfigurableApplicationContext childContext) {
+		static void addIfPossible(ApplicationContext parentContext, ConfigurableApplicationContext childContext) {
 			if (parentContext instanceof ConfigurableApplicationContext) {
 				add((ConfigurableApplicationContext) parentContext, childContext);
 			}

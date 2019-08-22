@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * classpath.
  *
  * @author Phillip Webb
+ * @since 1.5.0
  */
 public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpolator> {
 
@@ -42,7 +43,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 
 	static {
 		Set<String> fallbacks = new LinkedHashSet<>();
-		fallbacks.add("org.hibernate.validator.messageinterpolation" + ".ParameterMessageInterpolator");
+		fallbacks.add("org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator");
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
 	}
 

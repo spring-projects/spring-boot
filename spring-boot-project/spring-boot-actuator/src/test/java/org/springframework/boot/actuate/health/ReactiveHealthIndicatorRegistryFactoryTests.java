@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 class ReactiveHealthIndicatorRegistryFactoryTests {
 
 	private static final Health UP = new Health.Builder().status(Status.UP).build();

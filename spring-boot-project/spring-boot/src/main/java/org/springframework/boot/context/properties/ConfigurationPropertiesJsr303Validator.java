@@ -51,7 +51,7 @@ final class ConfigurationPropertiesJsr303Validator implements Validator {
 		this.delegate.validate(target, errors);
 	}
 
-	public static boolean isJsr303Present(ApplicationContext applicationContext) {
+	static boolean isJsr303Present(ApplicationContext applicationContext) {
 		ClassLoader classLoader = applicationContext.getClassLoader();
 		for (String validatorClass : VALIDATOR_CLASSES) {
 			if (!ClassUtils.isPresent(validatorClass, classLoader)) {

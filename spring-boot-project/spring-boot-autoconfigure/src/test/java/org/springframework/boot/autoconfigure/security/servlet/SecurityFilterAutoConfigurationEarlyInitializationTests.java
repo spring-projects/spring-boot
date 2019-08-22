@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -45,6 +48,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Integration test to ensure {@link SecurityFilterAutoConfiguration} doesn't cause early
  * initialization.
@@ -54,18 +59,20 @@ import org.springframework.web.bind.annotation.RestController;
 @ExtendWith(OutputCaptureExtension.class)
 class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
+	private static final Pattern PASSWORD_PATTERN = Pattern.compile("^Using generated security password: (.*)$",
+			Pattern.MULTILINE);
+
 	@Test
-	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput capturedOutput) {
+	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput output) {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
-			String password = capturedOutput.toString().split("Using generated security password: ")[1].split("\n")[0]
-					.trim();
-			new TestRestTemplate("user", password).getForEntity("http://localhost:" + port, Object.class);
+			Matcher password = PASSWORD_PATTERN.matcher(output);
+			assertThat(password.find()).isTrue();
+			new TestRestTemplate("user", password.group(1)).getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
-
 		}
 	}
 
@@ -78,7 +85,7 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	static class Config {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(0);
 			return factory;
@@ -86,20 +93,20 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	}
 
-	public static class SourceType {
+	static class SourceType {
 
 		public String foo;
 
 	}
 
-	public static class DestinationType {
+	static class DestinationType {
 
 		public String bar;
 
 	}
 
 	@Component
-	public static class JacksonModuleBean extends SimpleModule {
+	static class JacksonModuleBean extends SimpleModule {
 
 		private static final long serialVersionUID = 1L;
 
@@ -110,7 +117,7 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	}
 
 	@Component
-	public static class DeserializerBean extends StdDeserializer<SourceType> {
+	static class DeserializerBean extends StdDeserializer<SourceType> {
 
 		@Autowired
 		ConversionService conversionService;
@@ -127,20 +134,20 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	}
 
 	@RestController
-	public static class ExampleController {
+	static class ExampleController {
 
 		@Autowired
 		private ConversionService conversionService;
 
 		@RequestMapping("/")
-		public void convert() {
+		void convert() {
 			this.conversionService.convert(new SourceType(), DestinationType.class);
 		}
 
 	}
 
 	@Component
-	public static class ConverterBean implements Converter<SourceType, DestinationType> {
+	static class ConverterBean implements Converter<SourceType, DestinationType> {
 
 		@Override
 		public DestinationType convert(SourceType source) {

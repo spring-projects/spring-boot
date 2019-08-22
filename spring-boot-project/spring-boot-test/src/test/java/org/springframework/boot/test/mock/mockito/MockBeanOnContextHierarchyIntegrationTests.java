@@ -77,7 +77,7 @@ class MockBeanOnContextHierarchyIntegrationTests {
 			this.context = applicationContext;
 		}
 
-		public ApplicationContext getContext() {
+		ApplicationContext getContext() {
 			return this.context;
 		}
 

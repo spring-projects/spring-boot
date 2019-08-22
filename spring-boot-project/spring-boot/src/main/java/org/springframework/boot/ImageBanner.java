@@ -259,11 +259,11 @@ public class ImageBanner implements Banner {
 			this.delayTime = delayTime;
 		}
 
-		public BufferedImage getImage() {
+		BufferedImage getImage() {
 			return this.image;
 		}
 
-		public int getDelayTime() {
+		int getDelayTime() {
 			return this.delayTime;
 		}
 

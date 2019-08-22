@@ -87,11 +87,11 @@ final class DefaultPropertyMapper implements PropertyMapper {
 			this.mapping = mapping;
 		}
 
-		public boolean isFrom(T from) {
+		boolean isFrom(T from) {
 			return ObjectUtils.nullSafeEquals(from, this.from);
 		}
 
-		public PropertyMapping[] getMapping() {
+		PropertyMapping[] getMapping() {
 			return this.mapping;
 		}
 

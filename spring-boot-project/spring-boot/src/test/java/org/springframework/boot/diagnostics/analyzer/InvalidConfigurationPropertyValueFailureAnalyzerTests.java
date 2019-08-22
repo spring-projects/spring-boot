@@ -87,7 +87,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getAction()).contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription())
-				.contains("Additionally, this property is also set in the following " + "property sources:")
+				.contains("Additionally, this property is also set in the following property sources:")
 				.contains("In 'additional' with the value 'valid'")
 				.contains("In 'another' with the value 'test' (originating from 'TestOrigin test.property')");
 	}

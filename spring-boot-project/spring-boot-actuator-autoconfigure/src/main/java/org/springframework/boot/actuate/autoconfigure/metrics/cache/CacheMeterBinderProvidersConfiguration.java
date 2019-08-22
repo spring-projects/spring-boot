@@ -47,7 +47,7 @@ class CacheMeterBinderProvidersConfiguration {
 	static class CaffeineCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public CaffeineCacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
+		CaffeineCacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
 			return new CaffeineCacheMeterBinderProvider();
 		}
 
@@ -58,7 +58,7 @@ class CacheMeterBinderProvidersConfiguration {
 	static class EhCache2CacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public EhCache2CacheMeterBinderProvider ehCache2CacheMeterBinderProvider() {
+		EhCache2CacheMeterBinderProvider ehCache2CacheMeterBinderProvider() {
 			return new EhCache2CacheMeterBinderProvider();
 		}
 
@@ -69,7 +69,7 @@ class CacheMeterBinderProvidersConfiguration {
 	static class HazelcastCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public HazelcastCacheMeterBinderProvider hazelcastCacheMeterBinderProvider() {
+		HazelcastCacheMeterBinderProvider hazelcastCacheMeterBinderProvider() {
 			return new HazelcastCacheMeterBinderProvider();
 		}
 
@@ -80,7 +80,7 @@ class CacheMeterBinderProvidersConfiguration {
 	static class JCacheCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
+		JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
 			return new JCacheCacheMeterBinderProvider();
 		}
 

@@ -61,8 +61,8 @@ class SpringBootServletInitializerTests {
 	private SpringApplication application;
 
 	@AfterEach
-	void verifyLoggingOutput(CapturedOutput capturedOutput) {
-		assertThat(capturedOutput).doesNotContain(StandardServletEnvironment.class.getSimpleName());
+	void verifyLoggingOutput(CapturedOutput output) {
+		assertThat(output).doesNotContain(StandardServletEnvironment.class.getSimpleName());
 	}
 
 	@Test
@@ -129,14 +129,14 @@ class SpringBootServletInitializerTests {
 		given(servletContext.getInitParameterNames())
 				.willReturn(Collections.enumeration(Collections.singletonList("spring.profiles.active")));
 		given(servletContext.getInitParameter("spring.profiles.active")).willReturn("from-servlet-context");
-		given(servletContext.getAttributeNames()).willReturn(Collections.enumeration(Collections.emptyList()));
+		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
 		try (ConfigurableApplicationContext context = (ConfigurableApplicationContext) new PropertySourceVerifyingSpringBootServletInitializer()
 				.createRootApplicationContext(servletContext)) {
 			assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("from-servlet-context");
 		}
 	}
 
-	private static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
+	static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
 
 		@Override
 		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -191,7 +191,7 @@ class SpringBootServletInitializerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WithErrorPageFilterNotRegistered extends SpringBootServletInitializer {
+	static class WithErrorPageFilterNotRegistered extends SpringBootServletInitializer {
 
 		WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);
@@ -200,21 +200,21 @@ class SpringBootServletInitializerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class ExecutableWar extends SpringBootServletInitializer {
+	static class ExecutableWar extends SpringBootServletInitializer {
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			return new UndertowServletWebServerFactory(0);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Config {
+	static class Config {
 
 	}
 
-	private static class CustomSpringApplicationBuilder extends SpringApplicationBuilder {
+	static class CustomSpringApplicationBuilder extends SpringApplicationBuilder {
 
 		private boolean built;
 

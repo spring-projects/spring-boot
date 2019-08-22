@@ -199,6 +199,22 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customRelaxedPathChars() {
+		bind("server.tomcat.relaxed-path-chars=|,^");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getRelaxedPathChars()).isEqualTo("|^"));
+	}
+
+	@Test
+	void customRelaxedQueryChars() {
+		bind("server.tomcat.relaxed-query-chars=^  ,  | ");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getRelaxedQueryChars()).isEqualTo("^|"));
+	}
+
+	@Test
 	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		testRemoteIpValveConfigured();
@@ -232,7 +248,7 @@ class TomcatWebServerFactoryCustomizerTests {
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
 				+ "0:0:0:0:0:0:0:1|::1";
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}

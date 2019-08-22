@@ -54,7 +54,7 @@ class SpringJUnitTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import({ PropertyPlaceholderAutoConfiguration.class })
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 

@@ -29,12 +29,13 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * {@link BeanNotOfRequiredTypeException}.
  *
  * @author Andy Wilkinson
+ * @since 1.4.0
  */
 public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyzer<BeanNotOfRequiredTypeException> {
 
 	private static final String ACTION = "Consider injecting the bean as one of its "
 			+ "interfaces or forcing the use of CGLib-based "
-			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or " + "@EnableCaching.";
+			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanNotOfRequiredTypeException cause) {

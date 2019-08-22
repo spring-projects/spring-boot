@@ -46,12 +46,12 @@ class SpringBootApplicationTests {
 	}
 
 	@SpringBootApplication
-	private static class DefaultSpringBootApplication {
+	static class DefaultSpringBootApplication {
 
 	}
 
 	@SpringBootApplication(proxyBeanMethods = false)
-	private static class NoBeanMethodProxyingSpringBootApplication {
+	static class NoBeanMethodProxyingSpringBootApplication {
 
 	}
 

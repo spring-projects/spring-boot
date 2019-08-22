@@ -49,10 +49,10 @@ class SpringBootTestUserDefinedTestRestTemplateTests extends AbstractSpringBootT
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@RestController
-	protected static class Config extends AbstractConfig {
+	static class Config extends AbstractConfig {
 
 		@Bean
-		public RestTemplate testRestTemplate() {
+		RestTemplate testRestTemplate() {
 			return new RestTemplate();
 		}
 

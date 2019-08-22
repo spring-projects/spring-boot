@@ -361,7 +361,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		}
 	}
 
-	private static class TestableInitCommandOptionHandler extends InitCommand.InitOptionHandler {
+	static class TestableInitCommandOptionHandler extends InitCommand.InitOptionHandler {
 
 		private boolean disableProjectGeneration;
 

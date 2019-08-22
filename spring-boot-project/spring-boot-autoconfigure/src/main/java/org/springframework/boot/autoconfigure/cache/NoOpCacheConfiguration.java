@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
  * No-op cache configuration used to disable caching via configuration.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(CacheManager.class)
@@ -35,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
 class NoOpCacheConfiguration {
 
 	@Bean
-	public NoOpCacheManager cacheManager() {
+	NoOpCacheManager cacheManager() {
 		return new NoOpCacheManager();
 	}
 

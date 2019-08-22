@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 class HealthWebEndpointResponseMapperTests {
 
 	private final HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();

@@ -127,7 +127,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 
 	}
 
-	private static class WebEndpointsInvocationContext
+	static class WebEndpointsInvocationContext
 			implements TestTemplateInvocationContext, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
 		private static final Duration TIMEOUT = Duration.ofMinutes(6);
@@ -153,7 +153,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		private boolean isConfiguration(Class<?> candidate) {
-			return MergedAnnotations.from(candidate, SearchStrategy.EXHAUSTIVE).isPresent(Configuration.class);
+			return MergedAnnotations.from(candidate, SearchStrategy.TYPE_HIERARCHY).isPresent(Configuration.class);
 		}
 
 		@Override
@@ -219,17 +219,17 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public ResourceConfig resourceConfig() {
+		ResourceConfig resourceConfig() {
 			return new ResourceConfig();
 		}
 
 		@Bean
-		public ResourceConfigCustomizer webEndpointRegistrar() {
+		ResourceConfigCustomizer webEndpointRegistrar() {
 			return this::customize;
 		}
 
@@ -242,7 +242,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 					Collections.emptyList());
 			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
 					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
-					new EndpointLinksResolver(discoverer.getEndpoints()));
+					new EndpointLinksResolver(discoverer.getEndpoints()), true);
 			config.registerResources(new HashSet<>(resources));
 		}
 
@@ -261,12 +261,12 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory netty() {
+		NettyReactiveWebServerFactory netty() {
 			return new NettyReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public PortHolder portHolder() {
+		PortHolder portHolder() {
 			return this.portHolder;
 		}
 
@@ -276,19 +276,20 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 		}
 
 		@Bean
-		public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
+		WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
 			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
 			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
-					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()),
+					true);
 		}
 
 	}
@@ -305,19 +306,20 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
+		WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
 			List<String> mediaTypes = Arrays.asList(MediaType.APPLICATION_JSON_VALUE, ActuatorMediaType.V2_JSON);
 			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
 					Collections.emptyList());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
-					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()));
+					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()),
+					true);
 		}
 
 	}

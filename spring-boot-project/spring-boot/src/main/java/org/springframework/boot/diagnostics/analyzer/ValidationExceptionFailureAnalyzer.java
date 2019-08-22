@@ -37,8 +37,8 @@ class ValidationExceptionFailureAnalyzer extends AbstractFailureAnalyzer<Validat
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
 		if (cause.getMessage().startsWith(MISSING_IMPLEMENTATION_MESSAGE)) {
 			return new FailureAnalysis(
-					"The Bean Validation API is on the classpath but no implementation" + " could be found",
-					"Add an implementation, such as Hibernate Validator, to the" + " classpath", cause);
+					"The Bean Validation API is on the classpath but no implementation could be found",
+					"Add an implementation, such as Hibernate Validator, to the classpath", cause);
 		}
 		return null;
 	}

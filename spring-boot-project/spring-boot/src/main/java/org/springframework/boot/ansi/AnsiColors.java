@@ -120,7 +120,7 @@ public final class AnsiColors {
 		}
 
 		// See https://en.wikipedia.org/wiki/Color_difference#CIE94
-		public double getDistance(LabColor other) {
+		double getDistance(LabColor other) {
 			double c1 = Math.sqrt(this.a * this.a + this.b * this.b);
 			double deltaC = c1 - Math.sqrt(other.a * other.a + other.b * other.b);
 			double deltaA = this.a - other.a;

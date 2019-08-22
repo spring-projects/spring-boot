@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  * @see JarFile#registerUrlProtocolHandler()
  */
 public class Handler extends URLStreamHandler {
@@ -50,7 +51,7 @@ public class Handler extends URLStreamHandler {
 
 	private static final String CURRENT_DIR = "/./";
 
-	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR);
+	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR, Pattern.LITERAL);
 
 	private static final String PARENT_DIR = "/../";
 

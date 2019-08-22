@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,12 @@ public class MockReactiveWebServerFactory extends AbstractReactiveWebServerFacto
 
 		private Map<String, HttpHandler> httpHandlerMap;
 
-		public MockReactiveWebServer(HttpHandler httpHandler, int port) {
+		MockReactiveWebServer(HttpHandler httpHandler, int port) {
 			this.httpHandler = httpHandler;
 			this.port = port;
 		}
 
-		public MockReactiveWebServer(Map<String, HttpHandler> httpHandlerMap, int port) {
+		MockReactiveWebServer(Map<String, HttpHandler> httpHandlerMap, int port) {
 			this.httpHandlerMap = httpHandlerMap;
 			this.port = port;
 		}

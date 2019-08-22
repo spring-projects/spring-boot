@@ -153,6 +153,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Ethan Rubinson
+ * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
  * @see #SpringApplication(Class...)
@@ -340,6 +341,7 @@ public class SpringApplication {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
+		ConfigurationPropertySources.attach(environment);
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
@@ -518,8 +520,6 @@ public class SpringApplication {
 	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
-		environment.getActiveProfiles(); // ensure they are initialized
-		// But these ones should go first (last wins in a property key clash)
 		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 		environment.setActiveProfiles(StringUtils.toStringArray(profiles));
@@ -582,8 +582,7 @@ public class SpringApplication {
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
-						"Unable create a default ApplicationContext, " + "please specify an ApplicationContextClass",
-						ex);
+						"Unable create a default ApplicationContext, please specify an ApplicationContextClass", ex);
 			}
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
@@ -936,7 +935,7 @@ public class SpringApplication {
 	 * Sets if bean definition overriding, by registering a definition with the same name
 	 * as an existing definition, should be allowed. Defaults to {@code false}.
 	 * @param allowBeanDefinitionOverriding if overriding is allowed
-	 * @since 2.1
+	 * @since 2.1.0
 	 * @see DefaultListableBeanFactory#setAllowBeanDefinitionOverriding(boolean)
 	 */
 	public void setAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {

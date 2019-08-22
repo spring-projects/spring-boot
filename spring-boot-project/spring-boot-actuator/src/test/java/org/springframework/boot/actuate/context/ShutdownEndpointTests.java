@@ -89,20 +89,19 @@ class ShutdownEndpointTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class EndpointConfig {
+	static class EndpointConfig {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		private volatile ClassLoader threadContextClassLoader;
 
 		@Bean
-		public ShutdownEndpoint endpoint() {
-			ShutdownEndpoint endpoint = new ShutdownEndpoint();
-			return endpoint;
+		ShutdownEndpoint endpoint() {
+			return new ShutdownEndpoint();
 		}
 
 		@Bean
-		public ApplicationListener<ContextClosedEvent> listener() {
+		ApplicationListener<ContextClosedEvent> listener() {
 			return (event) -> {
 				EndpointConfig.this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
 				EndpointConfig.this.latch.countDown();
@@ -112,12 +111,12 @@ class ShutdownEndpointTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class EmptyConfig {
+	static class EmptyConfig {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		@Bean
-		public ApplicationListener<ContextClosedEvent> listener() {
+		ApplicationListener<ContextClosedEvent> listener() {
 			return (event) -> EmptyConfig.this.latch.countDown();
 		}
 

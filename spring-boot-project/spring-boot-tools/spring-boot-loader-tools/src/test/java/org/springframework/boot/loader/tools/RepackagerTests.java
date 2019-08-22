@@ -168,7 +168,7 @@ class RepackagerTests {
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		assertThatIllegalStateException().isThrownBy(() -> repackager.repackage(NO_LIBRARIES)).withMessageContaining(
-				"Unable to find a single main class " + "from the following candidates [a.b.C, a.b.D]");
+				"Unable to find a single main class from the following candidates [a.b.C, a.b.D]");
 	}
 
 	@Test
@@ -296,7 +296,7 @@ class RepackagerTests {
 		assertThat(entry.getTime()).isEqualTo(JAN_1_1985);
 		entry = getEntry(file, "BOOT-INF/lib/" + libJarFileToUnpack.getName());
 		assertThat(entry.getComment()).startsWith("UNPACK:");
-		assertThat(entry.getComment().length()).isEqualTo(47);
+		assertThat(entry.getComment()).hasSize(47);
 	}
 
 	@Test
@@ -680,7 +680,7 @@ class RepackagerTests {
 		return entryNames;
 	}
 
-	private static class MockLauncherScript implements LaunchScript {
+	static class MockLauncherScript implements LaunchScript {
 
 		private final byte[] bytes;
 
@@ -695,7 +695,7 @@ class RepackagerTests {
 
 	}
 
-	public static class TestLayoutFactory implements LayoutFactory {
+	static class TestLayoutFactory implements LayoutFactory {
 
 		@Override
 		public Layout getLayout(File source) {
@@ -704,7 +704,7 @@ class RepackagerTests {
 
 	}
 
-	private static class TestLayout extends Layouts.Jar implements CustomLoaderLayout {
+	static class TestLayout extends Layouts.Jar implements CustomLoaderLayout {
 
 		@Override
 		public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {

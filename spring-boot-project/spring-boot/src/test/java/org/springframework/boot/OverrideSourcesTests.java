@@ -61,43 +61,43 @@ class OverrideSourcesTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
 		@Primary
-		public TestBean another() {
+		TestBean another() {
 			return new TestBean("bar");
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class MainConfiguration {
+	static class MainConfiguration {
 
 		@Bean
-		public TestBean first() {
+		TestBean first() {
 			return new TestBean("foo");
 		}
 
 		@Bean
-		public Service Service() {
+		Service Service() {
 			return new Service();
 		}
 
 	}
 
-	protected static class Service {
+	static class Service {
 
 		@Autowired
 		private TestBean bean;
 
 	}
 
-	protected static class TestBean {
+	static class TestBean {
 
 		private final String name;
 
-		public TestBean(String name) {
+		TestBean(String name) {
 			this.name = name;
 		}
 

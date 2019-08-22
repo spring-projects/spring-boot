@@ -71,6 +71,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class GroovyCompiler {
 
@@ -293,11 +294,11 @@ public class GroovyCompiler {
 
 	private static class MainClass {
 
-		public static ClassNode get(CompilationUnit source) {
+		static ClassNode get(CompilationUnit source) {
 			return get(source.getAST().getClasses());
 		}
 
-		public static ClassNode get(List<ClassNode> classes) {
+		static ClassNode get(List<ClassNode> classes) {
 			for (ClassNode node : classes) {
 				if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
 					return null; // No need to enhance this

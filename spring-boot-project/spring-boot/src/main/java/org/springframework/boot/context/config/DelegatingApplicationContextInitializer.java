@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class DelegatingApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
@@ -92,8 +93,8 @@ public class DelegatingApplicationContextInitializer
 				ApplicationContextInitializer.class);
 		Assert.isAssignable(requireContextClass, contextClass,
 				String.format(
-						"Could not add context initializer [%s]" + " as its generic parameter [%s] is not assignable "
-								+ "from the type of application context used by this " + "context loader [%s]: ",
+						"Could not add context initializer [%s] as its generic parameter [%s] is not assignable "
+								+ "from the type of application context used by this context loader [%s]: ",
 						initializerClass.getName(), requireContextClass.getName(), contextClass.getName()));
 		return (ApplicationContextInitializer<?>) BeanUtils.instantiateClass(initializerClass);
 	}

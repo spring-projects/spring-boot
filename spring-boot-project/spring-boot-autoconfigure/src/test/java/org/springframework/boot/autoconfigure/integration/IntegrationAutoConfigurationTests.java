@@ -193,7 +193,7 @@ class IntegrationAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public MBeanExporter myMBeanExporter() {
+		MBeanExporter myMBeanExporter() {
 			return mock(MBeanExporter.class);
 		}
 
@@ -206,7 +206,7 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@MessagingGateway
-	public interface TestGateway extends RequestReplyExchanger {
+	interface TestGateway extends RequestReplyExchanger {
 
 	}
 
@@ -214,7 +214,7 @@ class IntegrationAutoConfigurationTests {
 	static class MessageSourceConfiguration {
 
 		@Bean
-		public MessageSource<?> myMessageSource() {
+		MessageSource<?> myMessageSource() {
 			return new MessageProcessorMessageSource(mock(MessageProcessor.class));
 		}
 

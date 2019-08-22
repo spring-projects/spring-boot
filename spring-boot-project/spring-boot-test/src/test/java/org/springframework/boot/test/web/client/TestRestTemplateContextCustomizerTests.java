@@ -53,7 +53,7 @@ class TestRestTemplateContextCustomizerTests {
 
 	}
 
-	private static class TestApplicationContext extends AbstractApplicationContext {
+	static class TestApplicationContext extends AbstractApplicationContext {
 
 		private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 

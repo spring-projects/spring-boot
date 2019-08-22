@@ -39,6 +39,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class ExplodedArchive implements Archive {
 
@@ -172,7 +173,7 @@ public class ExplodedArchive implements Archive {
 		private Iterator<File> listFiles(File file) {
 			File[] files = file.listFiles();
 			if (files == null) {
-				return Collections.<File>emptyList().iterator();
+				return Collections.emptyIterator();
 			}
 			Arrays.sort(files, this.entryComparator);
 			return Arrays.asList(files).iterator();
@@ -224,7 +225,7 @@ public class ExplodedArchive implements Archive {
 			this.file = file;
 		}
 
-		public File getFile() {
+		File getFile() {
 			return this.file;
 		}
 

@@ -60,7 +60,7 @@ class TomcatEmbeddedContext extends StandardContext {
 		super.setManager(manager);
 	}
 
-	public void deferredLoadOnStartup() throws LifecycleException {
+	void deferredLoadOnStartup() throws LifecycleException {
 		doWithThreadContextClassLoader(getLoader().getClassLoader(),
 				() -> getLoadOnStartupWrappers(findChildren()).forEach(this::load));
 	}
@@ -71,8 +71,7 @@ class TomcatEmbeddedContext extends StandardContext {
 			Wrapper wrapper = (Wrapper) child;
 			int order = wrapper.getLoadOnStartup();
 			if (order >= 0) {
-				grouped.computeIfAbsent(order, ArrayList::new);
-				grouped.get(order).add(wrapper);
+				grouped.computeIfAbsent(order, (o) -> new ArrayList<>()).add(wrapper);
 			}
 		}
 		return grouped.values().stream().flatMap(List::stream);
@@ -113,11 +112,11 @@ class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	public void setStarter(TomcatStarter starter) {
+	void setStarter(TomcatStarter starter) {
 		this.starter = starter;
 	}
 
-	public TomcatStarter getStarter() {
+	TomcatStarter getStarter() {
 		return this.starter;
 	}
 

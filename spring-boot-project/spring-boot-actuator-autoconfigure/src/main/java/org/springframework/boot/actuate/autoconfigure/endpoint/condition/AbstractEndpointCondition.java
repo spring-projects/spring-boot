@@ -101,7 +101,7 @@ abstract class AbstractEndpointCondition extends SpringBootCondition {
 	}
 
 	protected AnnotationAttributes getEndpointAttributes(Class<?> type) {
-		MergedAnnotations annotations = MergedAnnotations.from(type, SearchStrategy.EXHAUSTIVE);
+		MergedAnnotations annotations = MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY);
 		MergedAnnotation<Endpoint> endpoint = annotations.get(Endpoint.class);
 		if (endpoint.isPresent()) {
 			return endpoint.asAnnotationAttributes();

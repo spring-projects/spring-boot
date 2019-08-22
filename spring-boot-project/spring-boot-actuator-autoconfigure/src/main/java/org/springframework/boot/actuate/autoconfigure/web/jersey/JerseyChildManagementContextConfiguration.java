@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Import;
  * different port is required.
  *
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 @ManagementContextConfiguration(ManagementContextType.CHILD)
 @Import(JerseyManagementContextConfiguration.class)

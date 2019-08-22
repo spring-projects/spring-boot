@@ -127,7 +127,7 @@ class ImportsContextCustomizerFactoryTests {
 	static class TestWithImportAndBeanMethod {
 
 		@Bean
-		public String bean() {
+		String bean() {
 			return "bean";
 		}
 

@@ -35,7 +35,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.ServletContextAware;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Tests for {@link SpringBootMockServletContext}.
@@ -81,12 +80,12 @@ class SpringBootMockServletContextTests implements ServletContextAware {
 			}
 		};
 		URL resource = context.getResource("/");
-		assertThat(resource).isNotEqualTo(nullValue());
+		assertThat(resource).isNotNull();
 		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
 		assertThat(file).exists().isDirectory();
 		String[] contents = file.list((dir, name) -> !(".".equals(name) || "..".equals(name)));
-		assertThat(contents).isNotEqualTo(nullValue());
-		assertThat(contents.length).isEqualTo(0);
+		assertThat(contents).isNotNull();
+		assertThat(contents).isEmpty();
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -102,15 +102,15 @@ class MustacheAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import({ MustacheAutoConfiguration.class })
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class CustomCompilerConfiguration {
+	static class CustomCompilerConfiguration {
 
 		@Bean
-		public Mustache.Compiler compiler(Mustache.TemplateLoader mustacheTemplateLoader) {
+		Mustache.Compiler compiler(Mustache.TemplateLoader mustacheTemplateLoader) {
 			return Mustache.compiler().standardsMode(true).withLoader(mustacheTemplateLoader);
 		}
 

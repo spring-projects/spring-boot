@@ -58,7 +58,8 @@ class HazelcastSessionConfiguration {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setSessionMapName(hazelcastSessionProperties.getMapName());
-			setHazelcastFlushMode(hazelcastSessionProperties.getFlushMode());
+			setFlushMode(hazelcastSessionProperties.getFlushMode());
+			setSaveMode(hazelcastSessionProperties.getSaveMode());
 		}
 
 	}

@@ -99,15 +99,15 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 			this.cause = cause;
 		}
 
-		public Object getTarget() {
+		Object getTarget() {
 			return this.target;
 		}
 
-		public List<ObjectError> getErrors() {
+		List<ObjectError> getErrors() {
 			return this.errors;
 		}
 
-		public Throwable getCause() {
+		Throwable getCause() {
 			return this.cause;
 		}
 

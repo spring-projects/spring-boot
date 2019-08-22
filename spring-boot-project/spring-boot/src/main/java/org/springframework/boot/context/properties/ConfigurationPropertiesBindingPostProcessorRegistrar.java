@@ -24,10 +24,11 @@ import org.springframework.core.type.AnnotationMetadata;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} for binding externalized application properties
- * to {@link ConfigurationProperties} beans.
+ * to {@link ConfigurationProperties @ConfigurationProperties} beans.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class ConfigurationPropertiesBindingPostProcessorRegistrar implements ImportBeanDefinitionRegistrar {
 

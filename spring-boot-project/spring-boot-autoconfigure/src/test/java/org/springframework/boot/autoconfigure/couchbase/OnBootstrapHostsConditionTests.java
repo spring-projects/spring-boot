@@ -54,10 +54,10 @@ class OnBootstrapHostsConditionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(OnBootstrapHostsCondition.class)
-	protected static class TestConfig {
+	static class TestConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

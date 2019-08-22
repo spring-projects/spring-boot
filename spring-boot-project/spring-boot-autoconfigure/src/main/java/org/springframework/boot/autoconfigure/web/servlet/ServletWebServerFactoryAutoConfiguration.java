@@ -53,6 +53,7 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
  * @author Ivan Sopov
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)

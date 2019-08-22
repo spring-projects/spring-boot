@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -45,10 +46,13 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @since 1.0.0
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
+
+	private final Set<Logger> configuredLoggers = Collections.synchronizedSet(new HashSet<>());
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.FINEST);
@@ -118,6 +122,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		}
 		Logger logger = Logger.getLogger(loggerName);
 		if (logger != null) {
+			this.configuredLoggers.add(logger);
 			logger.setLevel(LEVELS.convertSystemToNative(level));
 		}
 	}
@@ -156,6 +161,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	@Override
 	public Runnable getShutdownHandler() {
 		return new ShutdownHandler();
+	}
+
+	@Override
+	public void cleanUp() {
+		this.configuredLoggers.clear();
 	}
 
 	private final class ShutdownHandler implements Runnable {

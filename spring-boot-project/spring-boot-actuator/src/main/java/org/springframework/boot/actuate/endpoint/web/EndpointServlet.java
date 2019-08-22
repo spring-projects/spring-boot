@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Julio José Gómez Díaz
+ * @since 2.0.0
  */
 public final class EndpointServlet {
 

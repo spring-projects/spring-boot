@@ -27,7 +27,6 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
  * Parse and expose arguments specified in a single string.
  *
  * @author Stephane Nicoll
- * @since 1.1.0
  */
 class RunArguments {
 
@@ -45,11 +44,11 @@ class RunArguments {
 		}
 	}
 
-	public Deque<String> getArgs() {
+	Deque<String> getArgs() {
 		return this.args;
 	}
 
-	public String[] asArray() {
+	String[] asArray() {
 		return this.args.toArray(new String[0]);
 	}
 

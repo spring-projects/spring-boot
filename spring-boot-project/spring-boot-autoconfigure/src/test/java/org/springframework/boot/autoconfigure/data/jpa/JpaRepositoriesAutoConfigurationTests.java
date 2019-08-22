@@ -127,16 +127,16 @@ class JpaRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	@Import(TestConfiguration.class)
-	protected static class MultipleAsyncTaskExecutorConfiguration {
+	static class MultipleAsyncTaskExecutorConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(TestConfiguration.class)
-	protected static class SingleAsyncTaskExecutorConfiguration {
+	static class SingleAsyncTaskExecutorConfiguration {
 
 		@Bean
-		public SimpleAsyncTaskExecutor testAsyncTaskExecutor() {
+		SimpleAsyncTaskExecutor testAsyncTaskExecutor() {
 			return new SimpleAsyncTaskExecutor();
 		}
 
@@ -144,7 +144,7 @@ class JpaRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
@@ -154,7 +154,7 @@ class JpaRepositoriesAutoConfigurationTests {
 			excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
 					@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
 	@TestAutoConfigurationPackage(City.class)
-	protected static class CustomConfiguration {
+	static class CustomConfiguration {
 
 	}
 
@@ -162,7 +162,7 @@ class JpaRepositoriesAutoConfigurationTests {
 	// To not find any repositories
 	@EnableJpaRepositories("foo.bar")
 	@TestAutoConfigurationPackage(City.class)
-	protected static class SortOfInvalidCustomConfiguration {
+	static class SortOfInvalidCustomConfiguration {
 
 	}
 

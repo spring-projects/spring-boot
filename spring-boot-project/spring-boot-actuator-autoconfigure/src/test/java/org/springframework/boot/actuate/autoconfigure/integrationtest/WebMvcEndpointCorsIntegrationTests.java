@@ -173,7 +173,7 @@ class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	@FunctionalInterface
-	private interface MockMvcConsumer {
+	interface MockMvcConsumer {
 
 		void accept(MockMvc mockMvc) throws Exception;
 

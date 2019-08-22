@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.rsocket.server.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
+import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -75,11 +76,12 @@ class RSocketServerAutoConfigurationTests {
 	void shouldCreateDefaultBeansForRSocketServerWhenPortIsSet() {
 		reactiveWebContextRunner().withPropertyValues("spring.rsocket.server.port=0")
 				.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
-						.hasSingleBean(RSocketServerBootstrap.class));
+						.hasSingleBean(RSocketServerBootstrap.class)
+						.hasSingleBean(ServerRSocketFactoryCustomizer.class));
 	}
 
 	@Test
-	void shoudUseCustomServerBootstrap() {
+	void shouldUseCustomServerBootstrap() {
 		contextRunner().withUserConfiguration(CustomServerBootstrapConfig.class).run((context) -> assertThat(context)
 				.getBeanNames(RSocketServerBootstrap.class).containsExactly("customServerBootstrap"));
 	}
@@ -98,10 +100,10 @@ class RSocketServerAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public RSocketMessageHandler messageHandler() {
+		RSocketMessageHandler messageHandler() {
 			RSocketMessageHandler messageHandler = new RSocketMessageHandler();
 			messageHandler.setRSocketStrategies(RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly()).build());
+					.decoder(StringDecoder.allMimeTypes()).build());
 			return messageHandler;
 		}
 
@@ -111,7 +113,7 @@ class RSocketServerAutoConfigurationTests {
 	static class CustomServerBootstrapConfig {
 
 		@Bean
-		public RSocketServerBootstrap customServerBootstrap() {
+		RSocketServerBootstrap customServerBootstrap() {
 			return mock(RSocketServerBootstrap.class);
 		}
 

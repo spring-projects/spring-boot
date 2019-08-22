@@ -44,7 +44,7 @@ class CompoundConfigurationTableEntry extends ConfigurationTableEntry {
 	}
 
 	@Override
-	public void write(AsciidocBuilder builder) {
+	void write(AsciidocBuilder builder) {
 		builder.append("|");
 		this.configurationKeys.forEach(builder::appendKey);
 		builder.newLine().appendln("|").appendln("|+++", this.description, "+++");

@@ -148,15 +148,6 @@ class CommandRunnerTests {
 	}
 
 	@Test
-	void handlesExceptionWithDashD() throws Exception {
-		willThrow(new RuntimeException()).given(this.regularCommand).run();
-		int status = this.commandRunner.runAndHandleErrors("command", "-d");
-		assertThat(System.getProperty("debug")).isEqualTo("true");
-		assertThat(status).isEqualTo(1);
-		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
-	}
-
-	@Test
 	void handlesExceptionWithDashDashDebug() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");

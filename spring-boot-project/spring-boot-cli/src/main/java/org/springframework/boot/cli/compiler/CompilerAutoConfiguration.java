@@ -29,6 +29,7 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
  * {@link CompilePhase#CONVERSION} Groovy compile phase.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public abstract class CompilerAutoConfiguration {
 

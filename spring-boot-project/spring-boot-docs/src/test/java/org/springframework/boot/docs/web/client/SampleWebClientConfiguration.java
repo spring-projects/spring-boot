@@ -43,7 +43,7 @@ class SampleWebClientConfiguration {
 	private static class ExampleController {
 
 		@RequestMapping("/example")
-		public ResponseEntity<String> example() {
+		ResponseEntity<String> example() {
 			return ResponseEntity.ok().location(URI.create("https://other.example.com/example")).body("test");
 		}
 

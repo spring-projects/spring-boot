@@ -58,7 +58,7 @@ final class ConversionServiceArguments {
 						"Application conversion service")));
 	}
 
-	private static class NamedConversionService implements ConversionService {
+	static class NamedConversionService implements ConversionService {
 
 		private final ConversionService delegate;
 

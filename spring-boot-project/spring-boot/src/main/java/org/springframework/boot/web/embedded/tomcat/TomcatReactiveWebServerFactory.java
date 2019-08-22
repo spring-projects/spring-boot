@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -54,6 +55,7 @@ import org.springframework.util.StringUtils;
  * {@link ReactiveWebServerFactory} that can be used to create a {@link TomcatWebServer}.
  *
  * @author Brian Clozel
+ * @author HaiTao Zhang
  * @since 2.0.0
  */
 public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFactory
@@ -72,11 +74,11 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
 
-	private Collection<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
+	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
-	private Collection<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
+	private Set<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
 
-	private Collection<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new LinkedHashSet<>();
+	private Set<TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers = new LinkedHashSet<>();
 
 	private final List<Connector> additionalTomcatConnectors = new ArrayList<>();
 
@@ -234,7 +236,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setTomcatContextCustomizers(Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
-		this.tomcatContextCustomizers = new ArrayList<>(tomcatContextCustomizers);
+		this.tomcatContextCustomizers = new LinkedHashSet<>(tomcatContextCustomizers);
 	}
 
 	/**
@@ -265,7 +267,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	public void setTomcatConnectorCustomizers(
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
 		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
-		this.tomcatConnectorCustomizers = new ArrayList<>(tomcatConnectorCustomizers);
+		this.tomcatConnectorCustomizers = new LinkedHashSet<>(tomcatConnectorCustomizers);
 	}
 
 	/**
@@ -297,7 +299,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	public void setTomcatProtocolHandlerCustomizers(
 			Collection<? extends TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers) {
 		Assert.notNull(tomcatProtocolHandlerCustomizers, "TomcatProtocolHandlerCustomizers must not be null");
-		this.tomcatProtocolHandlerCustomizers = new ArrayList<>(tomcatProtocolHandlerCustomizers);
+		this.tomcatProtocolHandlerCustomizers = new LinkedHashSet<>(tomcatProtocolHandlerCustomizers);
 	}
 
 	/**
@@ -325,6 +327,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	/**
 	 * Add {@link Connector}s in addition to the default connector, e.g. for SSL or AJP
 	 * @param connectors the connectors to add
+	 * @since 2.2.0
 	 */
 	public void addAdditionalTomcatConnectors(Connector... connectors) {
 		Assert.notNull(connectors, "Connectors must not be null");
@@ -335,6 +338,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * Returns a mutable collection of the {@link Connector}s that will be added to the
 	 * Tomcat.
 	 * @return the additionalTomcatConnectors
+	 * @since 2.2.0
 	 */
 	public List<Connector> getAdditionalTomcatConnectors() {
 		return this.additionalTomcatConnectors;

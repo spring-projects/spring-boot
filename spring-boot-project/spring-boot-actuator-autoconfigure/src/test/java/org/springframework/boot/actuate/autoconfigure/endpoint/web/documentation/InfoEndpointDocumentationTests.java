@@ -73,12 +73,12 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public InfoEndpoint endpoint(List<InfoContributor> infoContributors) {
+		InfoEndpoint endpoint(List<InfoContributor> infoContributors) {
 			return new InfoEndpoint(infoContributors);
 		}
 
 		@Bean
-		public GitInfoContributor gitInfoContributor() {
+		GitInfoContributor gitInfoContributor() {
 			Properties properties = new Properties();
 			properties.put("branch", "master");
 			properties.put("commit.id", "df027cf1ec5aeba2d4fedd7b8c42b88dc5ce38e5");
@@ -89,7 +89,7 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		}
 
 		@Bean
-		public BuildInfoContributor buildInfoContributor() {
+		BuildInfoContributor buildInfoContributor() {
 			Properties properties = new Properties();
 			properties.put("group", "com.example");
 			properties.put("artifact", "application");

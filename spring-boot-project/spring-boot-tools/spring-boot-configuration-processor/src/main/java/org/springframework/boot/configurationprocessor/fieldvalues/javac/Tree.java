@@ -24,7 +24,6 @@ import java.lang.reflect.Proxy;
  * Reflection based access to {@code com.sun.source.tree.Tree}.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 class Tree extends ReflectionWrapper {
 
@@ -38,7 +37,7 @@ class Tree extends ReflectionWrapper {
 		super("com.sun.source.tree.Tree", instance);
 	}
 
-	public void accept(TreeVisitor visitor) throws Exception {
+	void accept(TreeVisitor visitor) throws Exception {
 		this.acceptMethod.invoke(getInstance(), Proxy.newProxyInstance(getInstance().getClass().getClassLoader(),
 				new Class<?>[] { this.treeVisitorType }, new TreeVisitorInvocationHandler(visitor)), 0);
 	}

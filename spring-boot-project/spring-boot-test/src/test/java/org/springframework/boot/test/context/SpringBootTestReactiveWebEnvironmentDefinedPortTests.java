@@ -37,7 +37,7 @@ public class SpringBootTestReactiveWebEnvironmentDefinedPortTests
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebFlux
 	@RestController
-	protected static class Config extends AbstractConfig {
+	static class Config extends AbstractConfig {
 
 	}
 

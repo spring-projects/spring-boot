@@ -51,6 +51,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Servlet.class, ServerContainer.class })
@@ -64,7 +65,7 @@ public class WebSocketServletAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
-		public TomcatWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
+		TomcatWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new TomcatWebSocketServletWebServerCustomizer();
 		}
 
@@ -76,7 +77,7 @@ public class WebSocketServletAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
-		public JettyWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
+		JettyWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new JettyWebSocketServletWebServerCustomizer();
 		}
 
@@ -88,7 +89,7 @@ public class WebSocketServletAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
-		public UndertowWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
+		UndertowWebSocketServletWebServerCustomizer websocketServletWebServerCustomizer() {
 			return new UndertowWebSocketServletWebServerCustomizer();
 		}
 

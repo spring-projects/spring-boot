@@ -223,10 +223,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = "foo")
-	protected static class OnBeanNameConfiguration {
+	static class OnBeanNameConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -234,10 +234,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = "foo", value = Date.class)
-	protected static class OnBeanNameAndTypeConfiguration {
+	static class OnBeanNameAndTypeConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -245,10 +245,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(annotation = EnableScheduling.class)
-	protected static class OnAnnotationConfiguration {
+	static class OnAnnotationConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -256,10 +256,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
-	protected static class OnBeanClassConfiguration {
+	static class OnBeanClassConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -267,10 +267,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(type = "java.lang.String")
-	protected static class OnBeanClassNameConfiguration {
+	static class OnBeanClassNameConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -278,10 +278,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(type = "some.type.Missing")
-	protected static class OnBeanMissingClassConfiguration {
+	static class OnBeanMissingClassConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
@@ -289,10 +289,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
-	protected static class FooConfiguration {
+	static class FooConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -300,20 +300,20 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
-	protected static class XmlConfiguration {
+	static class XmlConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	@Import(OnBeanNameConfiguration.class)
-	protected static class CombinedXmlConfiguration {
+	static class CombinedXmlConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(WithPropertyPlaceholderClassNameRegistrar.class)
-	protected static class WithPropertyPlaceholderClassName {
+	static class WithPropertyPlaceholderClassName {
 
 	}
 
@@ -321,7 +321,7 @@ class ConditionalOnBeanTests {
 	static class FactoryBeanConfiguration {
 
 		@Bean
-		public ExampleFactoryBean exampleBeanFactoryBean() {
+		ExampleFactoryBean exampleBeanFactoryBean() {
 			return new ExampleFactoryBean();
 		}
 
@@ -332,13 +332,13 @@ class ConditionalOnBeanTests {
 	static class OnAnnotationWithFactoryBeanConfiguration {
 
 		@Bean
-		public String bar() {
+		String bar() {
 			return "bar";
 		}
 
 	}
 
-	protected static class WithPropertyPlaceholderClassNameRegistrar implements ImportBeanDefinitionRegistrar {
+	static class WithPropertyPlaceholderClassNameRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
@@ -350,7 +350,7 @@ class ConditionalOnBeanTests {
 
 	}
 
-	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
+	static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
 
 		@Override
 		public ExampleBean getObject() {
@@ -370,10 +370,10 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class OriginalDefinition {
+	static class OriginalDefinition {
 
 		@Bean
-		public String testBean() {
+		String testBean() {
 			return "test";
 		}
 
@@ -381,10 +381,10 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
-	public static class OverridingDefinition {
+	static class OverridingDefinition {
 
 		@Bean
-		public Integer testBean() {
+		Integer testBean() {
 			return 1;
 		}
 
@@ -392,7 +392,7 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
-	public static class ConsumingConfiguration {
+	static class ConsumingConfiguration {
 
 		ConsumingConfiguration(String testBean) {
 		}
@@ -403,7 +403,7 @@ class ConditionalOnBeanTests {
 	static class ParameterizedWithCustomConfig {
 
 		@Bean
-		public CustomExampleBean customExampleBean() {
+		CustomExampleBean customExampleBean() {
 			return new CustomExampleBean();
 		}
 
@@ -413,7 +413,7 @@ class ConditionalOnBeanTests {
 	static class ParameterizedWithoutCustomConfig {
 
 		@Bean
-		public OtherExampleBean otherExampleBean() {
+		OtherExampleBean otherExampleBean() {
 			return new OtherExampleBean();
 		}
 
@@ -423,7 +423,7 @@ class ConditionalOnBeanTests {
 	static class ParameterizedWithoutCustomContainerConfig {
 
 		@Bean
-		public TestParameterizedContainer<OtherExampleBean> otherExampleBean() {
+		TestParameterizedContainer<OtherExampleBean> otherExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
 
@@ -433,7 +433,7 @@ class ConditionalOnBeanTests {
 	static class ParameterizedWithCustomContainerConfig {
 
 		@Bean
-		public TestParameterizedContainer<CustomExampleBean> customExampleBean() {
+		TestParameterizedContainer<CustomExampleBean> customExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
 
@@ -444,7 +444,7 @@ class ConditionalOnBeanTests {
 
 		@Bean
 		@ConditionalOnBean(value = CustomExampleBean.class, parameterizedContainer = TestParameterizedContainer.class)
-		public CustomExampleBean conditionalCustomExampleBean() {
+		CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}
 
@@ -455,7 +455,7 @@ class ConditionalOnBeanTests {
 
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
-		public CustomExampleBean conditionalCustomExampleBean() {
+		CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}
 
@@ -466,14 +466,14 @@ class ConditionalOnBeanTests {
 
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
-		public TestParameterizedContainer<CustomExampleBean> conditionalCustomExampleBean() {
+		TestParameterizedContainer<CustomExampleBean> conditionalCustomExampleBean() {
 			return new TestParameterizedContainer<>();
 		}
 
 	}
 
 	@TestAnnotation
-	public static class ExampleBean {
+	static class ExampleBean {
 
 		private String value;
 
@@ -488,7 +488,7 @@ class ConditionalOnBeanTests {
 
 	}
 
-	public static class CustomExampleBean extends ExampleBean {
+	static class CustomExampleBean extends ExampleBean {
 
 		CustomExampleBean() {
 			super("custom subclass");
@@ -496,7 +496,7 @@ class ConditionalOnBeanTests {
 
 	}
 
-	public static class OtherExampleBean extends ExampleBean {
+	static class OtherExampleBean extends ExampleBean {
 
 		OtherExampleBean() {
 			super("other subclass");
@@ -507,7 +507,7 @@ class ConditionalOnBeanTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	public @interface TestAnnotation {
+	@interface TestAnnotation {
 
 	}
 

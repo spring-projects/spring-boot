@@ -74,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Quinten De Swaef
  * @author Venil Noronha
  * @author Andrew McGhie
+ * @author HaiTao Zhang
  */
 class ServerPropertiesTests {
 
@@ -127,6 +128,8 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.remote-ip-header", "Remote-Ip");
 		map.put("server.tomcat.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		map.put("server.tomcat.background-processor-delay", "10");
+		map.put("server.tomcat.relaxed-path-chars", "|,<");
+		map.put("server.tomcat.relaxed-query-chars", "^  ,  | ");
 		bind(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		Accesslog accesslog = tomcat.getAccesslog();
@@ -146,6 +149,8 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
+		assertThat(tomcat.getRelaxedQueryChars()).containsExactly('^', '|');
 	}
 
 	@Test
@@ -212,6 +217,38 @@ class ServerPropertiesTests {
 	void testCustomizeJettySelectors() {
 		bind("server.jetty.selectors", "10");
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeJettyMaxThreads() {
+		bind("server.jetty.max-threads", "10");
+		assertThat(this.properties.getJetty().getMaxThreads()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeJettyMinThreads() {
+		bind("server.jetty.min-threads", "10");
+		assertThat(this.properties.getJetty().getMinThreads()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeJettyIdleTimeout() {
+		bind("server.jetty.idle-timeout", "10");
+		assertThat(this.properties.getJetty().getIdleTimeout()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeUndertowServerOption() {
+		bind("server.undertow.options.server.ALWAYS_SET_KEEP_ALIVE", "true");
+		assertThat(this.properties.getUndertow().getOptions().getServer()).containsEntry("ALWAYS_SET_KEEP_ALIVE",
+				"true");
+	}
+
+	@Test
+	void testCustomizeUndertowSocketOption() {
+		bind("server.undertow.options.socket.ALWAYS_SET_KEEP_ALIVE", "true");
+		assertThat(this.properties.getUndertow().getOptions().getSocket()).containsEntry("ALWAYS_SET_KEEP_ALIVE",
+				"true");
 	}
 
 	@Test

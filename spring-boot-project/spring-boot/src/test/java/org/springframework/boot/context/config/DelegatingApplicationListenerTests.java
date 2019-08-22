@@ -75,7 +75,7 @@ class DelegatingApplicationListenerTests {
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private static class MockInitA implements ApplicationListener<ContextRefreshedEvent> {
+	static class MockInitA implements ApplicationListener<ContextRefreshedEvent> {
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -87,7 +87,7 @@ class DelegatingApplicationListenerTests {
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class MockInitB implements ApplicationListener<ContextRefreshedEvent> {
+	static class MockInitB implements ApplicationListener<ContextRefreshedEvent> {
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {

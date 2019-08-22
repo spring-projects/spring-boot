@@ -23,6 +23,6 @@ import org.springframework.data.repository.CrudRepository;
  *
  * @author Andy Wilkinson
  */
-public interface ExampleRepository extends CrudRepository<ExampleEntity, Long> {
+interface ExampleRepository extends CrudRepository<ExampleEntity, Long> {
 
 }

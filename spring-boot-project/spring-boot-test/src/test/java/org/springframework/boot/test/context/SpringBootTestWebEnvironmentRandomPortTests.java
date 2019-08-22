@@ -49,17 +49,17 @@ class SpringBootTestWebEnvironmentRandomPortTests extends AbstractSpringBootTest
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@RestController
-	protected static class Config extends AbstractConfig {
+	static class Config extends AbstractConfig {
 
 		@Bean
-		public RestTemplateBuilder restTemplateBuilder() {
+		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().additionalMessageConverters(new MyConverter());
 
 		}
 
 	}
 
-	private static class MyConverter extends StringHttpMessageConverter {
+	static class MyConverter extends StringHttpMessageConverter {
 
 	}
 

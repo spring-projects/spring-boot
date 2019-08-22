@@ -70,7 +70,7 @@ class UserServiceAutoConfigurationTests {
 	static class UserConfiguration {
 
 		@Bean
-		public UserService myUserService() {
+		UserService myUserService() {
 			return new UserService("mine");
 		}
 

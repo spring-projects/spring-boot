@@ -55,10 +55,10 @@ class OnWsdlLocationsConditionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(OnWsdlLocationsCondition.class)
-	protected static class TestConfig {
+	static class TestConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

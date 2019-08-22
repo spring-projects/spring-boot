@@ -52,6 +52,7 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
@@ -388,7 +389,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 			return read;
 		}
 
-		public boolean hasZipHeader() {
+		boolean hasZipHeader() {
 			return Arrays.equals(this.header, ZIP_HEADER);
 		}
 
@@ -430,7 +431,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 			}
 		}
 
-		public void setupStoredEntry(JarArchiveEntry entry) {
+		void setupStoredEntry(JarArchiveEntry entry) {
 			entry.setSize(this.size);
 			entry.setCompressedSize(this.size);
 			entry.setCrc(this.crc.getValue());

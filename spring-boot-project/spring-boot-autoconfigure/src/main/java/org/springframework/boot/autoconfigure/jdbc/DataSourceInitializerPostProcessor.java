@@ -29,7 +29,6 @@ import org.springframework.core.Ordered;
  * initialized as soon as a {@link DataSource} is.
  *
  * @author Dave Syer
- * @since 1.1.2
  */
 class DataSourceInitializerPostProcessor implements BeanPostProcessor, Ordered {
 

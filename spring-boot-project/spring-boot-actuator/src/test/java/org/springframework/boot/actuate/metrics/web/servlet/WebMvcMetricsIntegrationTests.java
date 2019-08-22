@@ -44,9 +44,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,8 +85,9 @@ class WebMvcMetricsIntegrationTests {
 	}
 
 	@Test
-	void rethrownExceptionIsRecordedInMetricTag() {
-		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError")).andExpect(status().is5xxServerError()));
+	void rethrownExceptionIsRecordedInMetricTag() throws Exception {
+		assertThatExceptionOfType(NestedServletException.class)
+				.isThrownBy(() -> this.mvc.perform(get("/api/rethrownError")).andReturn());
 		assertThat(this.registry.get("http.server.requests").tags("exception", "Exception2", "status", "500").timer()
 				.count()).isEqualTo(1L);
 	}
@@ -105,7 +107,7 @@ class WebMvcMetricsIntegrationTests {
 		}
 
 		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
+		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
 			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(), "http.server.requests",
 					AutoTimer.ENABLED);
 		}
@@ -117,17 +119,17 @@ class WebMvcMetricsIntegrationTests {
 		static class Controller1 {
 
 			@Bean
-			public CustomExceptionHandler controllerAdvice() {
+			CustomExceptionHandler controllerAdvice() {
 				return new CustomExceptionHandler();
 			}
 
 			@GetMapping("/handledError")
-			public String handledError() {
+			String handledError() {
 				throw new Exception1();
 			}
 
 			@GetMapping("/rethrownError")
-			public String rethrownError() {
+			String rethrownError() {
 				throw new Exception2();
 			}
 

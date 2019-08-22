@@ -122,13 +122,13 @@ class JooqAutoConfigurationTests {
 					assertThat(dsl.configuration().recordUnmapperProvider().getClass())
 							.isEqualTo(TestRecordUnmapperProvider.class);
 					assertThat(dsl.configuration().executorProvider().getClass()).isEqualTo(TestExecutorProvider.class);
-					assertThat(dsl.configuration().recordListenerProviders().length).isEqualTo(1);
+					assertThat(dsl.configuration().recordListenerProviders()).hasSize(1);
 					ExecuteListenerProvider[] executeListenerProviders = dsl.configuration().executeListenerProviders();
-					assertThat(executeListenerProviders.length).isEqualTo(2);
+					assertThat(executeListenerProviders).hasSize(2);
 					assertThat(executeListenerProviders[0]).isInstanceOf(DefaultExecuteListenerProvider.class);
 					assertThat(executeListenerProviders[1]).isInstanceOf(TestExecuteListenerProvider.class);
-					assertThat(dsl.configuration().visitListenerProviders().length).isEqualTo(1);
-					assertThat(dsl.configuration().transactionListenerProviders().length).isEqualTo(1);
+					assertThat(dsl.configuration().visitListenerProviders()).hasSize(1);
+					assertThat(dsl.configuration().transactionListenerProviders()).hasSize(1);
 				});
 	}
 
@@ -140,7 +140,7 @@ class JooqAutoConfigurationTests {
 						.isEqualTo(SQLDialect.POSTGRES));
 	}
 
-	private static class AssertFetch implements TransactionalRunnable {
+	static class AssertFetch implements TransactionalRunnable {
 
 		private final DSLContext dsl;
 
@@ -161,7 +161,7 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	private static class ExecuteSql implements TransactionalRunnable {
+	static class ExecuteSql implements TransactionalRunnable {
 
 		private final DSLContext dsl;
 
@@ -182,26 +182,26 @@ class JooqAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class JooqDataSourceConfiguration {
+	static class JooqDataSourceConfiguration {
 
 		@Bean
-		public DataSource jooqDataSource() {
+		DataSource jooqDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:jooqtest").username("sa").build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TxManagerConfiguration {
+	static class TxManagerConfiguration {
 
 		@Bean
-		public PlatformTransactionManager transactionManager(DataSource dataSource) {
+		PlatformTransactionManager transactionManager(DataSource dataSource) {
 			return new DataSourceTransactionManager(dataSource);
 		}
 
 	}
 
-	protected static class TestRecordMapperProvider implements RecordMapperProvider {
+	static class TestRecordMapperProvider implements RecordMapperProvider {
 
 		@Override
 		public <R extends Record, E> RecordMapper<R, E> provide(RecordType<R> recordType, Class<? extends E> aClass) {
@@ -210,7 +210,7 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	protected static class TestRecordUnmapperProvider implements RecordUnmapperProvider {
+	static class TestRecordUnmapperProvider implements RecordUnmapperProvider {
 
 		@Override
 		public <E, R extends Record> RecordUnmapper<E, R> provide(Class<? extends E> aClass, RecordType<R> recordType) {
@@ -219,7 +219,7 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	protected static class TestRecordListenerProvider implements RecordListenerProvider {
+	static class TestRecordListenerProvider implements RecordListenerProvider {
 
 		@Override
 		public RecordListener provide() {
@@ -229,7 +229,7 @@ class JooqAutoConfigurationTests {
 	}
 
 	@Order(100)
-	protected static class TestExecuteListenerProvider implements ExecuteListenerProvider {
+	static class TestExecuteListenerProvider implements ExecuteListenerProvider {
 
 		@Override
 		public ExecuteListener provide() {
@@ -238,7 +238,7 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	protected static class TestVisitListenerProvider implements VisitListenerProvider {
+	static class TestVisitListenerProvider implements VisitListenerProvider {
 
 		@Override
 		public VisitListener provide() {
@@ -247,7 +247,7 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	protected static class TestTransactionListenerProvider implements TransactionListenerProvider {
+	static class TestTransactionListenerProvider implements TransactionListenerProvider {
 
 		@Override
 		public TransactionListener provide() {
@@ -256,7 +256,7 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	protected static class TestExecutorProvider implements ExecutorProvider {
+	static class TestExecutorProvider implements ExecutorProvider {
 
 		@Override
 		public Executor provide() {

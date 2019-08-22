@@ -64,10 +64,10 @@ class AbstractNestedConditionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(ValidNestedCondition.class)
-	public static class ValidConfig {
+	static class ValidConfig {
 
 		@Bean
-		public String myBean() {
+		String myBean() {
 			return "myBean";
 		}
 
@@ -93,10 +93,10 @@ class AbstractNestedConditionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(InvalidNestedCondition.class)
-	public static class InvalidConfig {
+	static class InvalidConfig {
 
 		@Bean
-		public String myBean() {
+		String myBean() {
 			return "myBean";
 		}
 
@@ -122,7 +122,7 @@ class AbstractNestedConditionTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(DoubleNestedCondition.class)
-	public static class DoubleNestedConfig {
+	static class DoubleNestedConfig {
 
 	}
 

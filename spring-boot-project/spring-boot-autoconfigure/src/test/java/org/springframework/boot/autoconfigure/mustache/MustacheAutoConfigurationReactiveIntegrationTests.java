@@ -72,10 +72,10 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 	@Import({ ReactiveWebServerFactoryAutoConfiguration.class, WebFluxAutoConfiguration.class,
 			HttpHandlerAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	@Controller
-	public static class Application {
+	static class Application {
 
 		@RequestMapping("/")
-		public String home(Model model) {
+		String home(Model model) {
 			model.addAttribute("time", new Date());
 			model.addAttribute("message", "Hello World");
 			model.addAttribute("title", "Hello App");
@@ -83,7 +83,7 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 		}
 
 		@RequestMapping("/partial")
-		public String layout(Model model) {
+		String layout(Model model) {
 			model.addAttribute("time", new Date());
 			model.addAttribute("message", "Hello World");
 			model.addAttribute("title", "Hello App");
@@ -91,7 +91,7 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 		}
 
 		@Bean
-		public MustacheViewResolver viewResolver() {
+		MustacheViewResolver viewResolver() {
 			Mustache.Compiler compiler = Mustache.compiler()
 					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
@@ -100,7 +100,7 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 			return resolver;
 		}
 
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication application = new SpringApplication(Application.class);
 			application.setWebApplicationType(WebApplicationType.REACTIVE);
 			application.run(args);

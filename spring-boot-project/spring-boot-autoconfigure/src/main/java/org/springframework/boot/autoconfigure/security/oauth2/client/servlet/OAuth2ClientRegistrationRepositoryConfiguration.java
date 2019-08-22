@@ -44,7 +44,7 @@ class OAuth2ClientRegistrationRepositoryConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
-	public InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
+	InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
 		List<ClientRegistration> registrations = new ArrayList<>(
 				OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
 		return new InMemoryClientRegistrationRepository(registrations);

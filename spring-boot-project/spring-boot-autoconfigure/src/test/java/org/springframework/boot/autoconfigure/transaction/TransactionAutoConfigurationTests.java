@@ -149,12 +149,12 @@ class TransactionAutoConfigurationTests {
 	static class SeveralTransactionManagersConfiguration {
 
 		@Bean
-		public PlatformTransactionManager transactionManagerOne() {
+		PlatformTransactionManager transactionManagerOne() {
 			return mock(PlatformTransactionManager.class);
 		}
 
 		@Bean
-		public PlatformTransactionManager transactionManagerTwo() {
+		PlatformTransactionManager transactionManagerTwo() {
 			return mock(PlatformTransactionManager.class);
 		}
 
@@ -164,12 +164,12 @@ class TransactionAutoConfigurationTests {
 	static class CustomTransactionManagerConfiguration {
 
 		@Bean
-		public TransactionTemplate transactionTemplateFoo(PlatformTransactionManager transactionManager) {
+		TransactionTemplate transactionTemplateFoo(PlatformTransactionManager transactionManager) {
 			return new TransactionTemplate(transactionManager);
 		}
 
 		@Bean
-		public PlatformTransactionManager transactionManagerFoo() {
+		PlatformTransactionManager transactionManagerFoo() {
 			return mock(PlatformTransactionManager.class);
 		}
 
@@ -179,12 +179,12 @@ class TransactionAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public TransactionalService transactionalService() {
+		TransactionalService transactionalService() {
 			return new TransactionalServiceImpl();
 		}
 
 		@Bean
-		public AnotherServiceImpl anotherService() {
+		AnotherServiceImpl anotherService() {
 			return new AnotherServiceImpl();
 		}
 
@@ -195,12 +195,12 @@ class TransactionAutoConfigurationTests {
 	static class TransactionManagersConfiguration {
 
 		@Bean
-		public DataSourceTransactionManager transactionManager(DataSource dataSource) {
+		DataSourceTransactionManager transactionManager(DataSource dataSource) {
 			return new DataSourceTransactionManager(dataSource);
 		}
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver").url("jdbc:hsqldb:mem:tx")
 					.username("sa").build();
 		}

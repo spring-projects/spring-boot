@@ -89,7 +89,7 @@ class JolokiaEndpointAutoConfigurationTests {
 				.withPropertyValues("management.endpoints.web.exposure.include=jolokia").run((context) -> {
 					ExposableServletEndpoint endpoint = getEndpoint(context);
 					assertThat(endpoint.getEndpointServlet()).extracting("initParameters")
-							.containsOnly(Collections.singletonMap("debug", "true"));
+							.isEqualTo(Collections.singletonMap("debug", "true"));
 				});
 	}
 
@@ -102,7 +102,7 @@ class JolokiaEndpointAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext) {
+		ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext) {
 			return new ServletEndpointDiscoverer(applicationContext, null, Collections.emptyList());
 		}
 

@@ -201,7 +201,7 @@ class DefaultErrorViewResolverTests {
 		return response;
 	}
 
-	private static class TestTemplateAvailabilityProviders extends TemplateAvailabilityProviders {
+	static class TestTemplateAvailabilityProviders extends TemplateAvailabilityProviders {
 
 		TestTemplateAvailabilityProviders(TemplateAvailabilityProvider provider) {
 			super(Collections.singletonList(provider));

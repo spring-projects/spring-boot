@@ -109,14 +109,14 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TestRepository testRepository(EntityManagerFactory entityManagerFactory) {
+		TestRepository testRepository(EntityManagerFactory entityManagerFactory) {
 			return new TestRepository(entityManagerFactory.createEntityManager());
 		}
 
 	}
 
 	@Repository
-	private static class TestRepository {
+	static class TestRepository {
 
 		private final EntityManager entityManager;
 
@@ -124,7 +124,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 			this.entityManager = entityManager;
 		}
 
-		public void doSomething() {
+		void doSomething() {
 			this.entityManager.persist(null);
 		}
 

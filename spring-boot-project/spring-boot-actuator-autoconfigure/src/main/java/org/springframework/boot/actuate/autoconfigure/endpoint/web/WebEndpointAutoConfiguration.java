@@ -136,7 +136,7 @@ public class WebEndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
-		public ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext,
+		ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext,
 				ObjectProvider<PathMapper> endpointPathMappers,
 				ObjectProvider<EndpointFilter<ExposableServletEndpoint>> filters) {
 			return new ServletEndpointDiscoverer(applicationContext,

@@ -36,13 +36,14 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
- * {@link ConfigurationProperties}.
+ * {@link ConfigurationProperties @ConfigurationProperties}.
  *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @since 1.0.0
  */
 public class ConfigurationPropertiesBindingPostProcessor
 		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware, InitializingBean {

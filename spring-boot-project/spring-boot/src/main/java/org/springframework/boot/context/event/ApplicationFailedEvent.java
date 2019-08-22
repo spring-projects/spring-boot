@@ -23,6 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * Event published by a {@link SpringApplication} when it fails to start.
  *
  * @author Dave Syer
+ * @since 1.0.0
  * @see ApplicationReadyEvent
  */
 @SuppressWarnings("serial")

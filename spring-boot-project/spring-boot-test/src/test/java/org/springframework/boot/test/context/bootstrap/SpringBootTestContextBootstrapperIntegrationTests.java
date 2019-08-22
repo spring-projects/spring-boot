@@ -71,7 +71,7 @@ class SpringBootTestContextBootstrapperIntegrationTests {
 	static class TestConfig {
 
 		@Bean
-		public ExampleBean exampleBean() {
+		ExampleBean exampleBean() {
 			return new ExampleBean();
 		}
 

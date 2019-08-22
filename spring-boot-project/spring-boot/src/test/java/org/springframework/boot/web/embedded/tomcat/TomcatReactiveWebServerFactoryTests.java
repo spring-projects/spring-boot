@@ -40,7 +40,6 @@ import org.mockito.InOrder;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
-import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.SocketUtils;
 
@@ -57,6 +56,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
 class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
@@ -185,7 +185,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		factory.addAdditionalTomcatConnectors(connectors);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		Map<Service, Connector[]> connectorsByService = ((TomcatWebServer) this.webServer).getServiceConnectors();
-		assertThat(connectorsByService.values().iterator().next().length).isEqualTo(connectors.length + 1);
+		assertThat(connectorsByService.values().iterator().next()).hasSize(connectors.length + 1);
 	}
 
 	@Test
@@ -217,7 +217,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
-	protected void portClashOfPrimaryConnectorResultsInPortInUseException() throws IOException {
+	void portClashOfPrimaryConnectorResultsInPortInUseException() throws IOException {
 		doWithBlockedPort((port) -> {
 			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 				AbstractReactiveWebServerFactory factory = getFactory();
@@ -228,8 +228,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		});
 	}
 
-	protected final void doWithBlockedPort(AbstractServletWebServerFactoryTests.BlockedPortAction action)
-			throws IOException {
+	private void doWithBlockedPort(BlockedPortAction action) throws IOException {
 		int port = SocketUtils.findAvailableTcpPort(40000);
 		ServerSocket serverSocket = new ServerSocket();
 		for (int i = 0; i < 10; i++) {
@@ -248,9 +247,15 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		}
 	}
 
-	protected void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
+	private void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	interface BlockedPortAction {
+
+		void run(int port);
+
 	}
 
 }

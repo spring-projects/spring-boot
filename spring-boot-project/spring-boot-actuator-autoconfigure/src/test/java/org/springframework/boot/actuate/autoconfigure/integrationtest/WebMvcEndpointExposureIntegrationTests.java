@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
@@ -73,7 +73,7 @@ class WebMvcEndpointExposureIntegrationTests {
 							EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 							ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
 							ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-							HttpTraceAutoConfiguration.class, HealthIndicatorAutoConfiguration.class))
+							HttpTraceAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 					.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 					.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
 							HttpTraceRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
@@ -177,14 +177,14 @@ class WebMvcEndpointExposureIntegrationTests {
 			return false;
 		}
 		throw new IllegalStateException(
-				String.format("Unexpected %s HTTP status for " + "endpoint %s", result.getStatus(), path));
+				String.format("Unexpected %s HTTP status for endpoint %s", result.getStatus(), path));
 	}
 
 	@RestControllerEndpoint(id = "custommvc")
 	static class CustomMvcEndpoint {
 
 		@GetMapping("/")
-		public String main() {
+		String main() {
 			return "test";
 		}
 
@@ -208,20 +208,20 @@ class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class HttpTraceRepositoryConfiguration {
+	static class HttpTraceRepositoryConfiguration {
 
 		@Bean
-		public InMemoryHttpTraceRepository httpTraceRepository() {
+		InMemoryHttpTraceRepository httpTraceRepository() {
 			return new InMemoryHttpTraceRepository();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class AuditEventRepositoryConfiguration {
+	static class AuditEventRepositoryConfiguration {
 
 		@Bean
-		public InMemoryAuditEventRepository auditEventRepository() {
+		InMemoryAuditEventRepository auditEventRepository() {
 			return new InMemoryAuditEventRepository();
 		}
 

@@ -59,7 +59,7 @@ class TestRestTemplateContextCustomizerIntegrationTests {
 	static class TestConfig {
 
 		@Bean
-		public TomcatServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
 		}
 

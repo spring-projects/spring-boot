@@ -53,10 +53,10 @@ class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	protected static class Config {
+	static class Config {
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 

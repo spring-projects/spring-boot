@@ -80,6 +80,7 @@ import org.springframework.context.annotation.Import;
  * @author Gary Russell
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })

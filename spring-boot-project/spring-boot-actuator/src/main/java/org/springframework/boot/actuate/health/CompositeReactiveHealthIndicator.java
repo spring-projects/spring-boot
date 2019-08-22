@@ -30,7 +30,9 @@ import reactor.util.function.Tuple2;
  *
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of a {@link CompositeReactiveHealthContributor}
  */
+@Deprecated
 public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator {
 
 	private final ReactiveHealthIndicatorRegistry registry;
@@ -78,8 +80,9 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 
 	@Override
 	public Mono<Health> health() {
-		return Flux.fromIterable(this.registry.getAll().entrySet()).flatMap(
-				(entry) -> Mono.zip(Mono.just(entry.getKey()), entry.getValue().health().compose(this.timeoutCompose)))
+		return Flux.fromIterable(this.registry.getAll().entrySet())
+				.flatMap((entry) -> Mono.zip(Mono.just(entry.getKey()),
+						entry.getValue().health().transformDeferred(this.timeoutCompose)))
 				.collectMap(Tuple2::getT1, Tuple2::getT2).map(this.healthAggregator::aggregate);
 	}
 

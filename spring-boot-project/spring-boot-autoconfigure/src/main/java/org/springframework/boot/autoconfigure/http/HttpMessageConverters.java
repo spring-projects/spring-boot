@@ -50,6 +50,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 2.0.0
  * @see #HttpMessageConverters(HttpMessageConverter...)
  * @see #HttpMessageConverters(Collection)
  * @see #getConverters()
@@ -176,7 +177,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
 		List<HttpMessageConverter<?>> converters = new ArrayList<>();
-		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation." + "WebMvcConfigurationSupport",
+		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport",
 				null)) {
 			converters.addAll(new WebMvcConfigurationSupport() {
 

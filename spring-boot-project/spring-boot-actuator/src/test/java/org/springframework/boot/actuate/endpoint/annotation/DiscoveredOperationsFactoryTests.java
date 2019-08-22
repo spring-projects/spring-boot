@@ -128,7 +128,7 @@ class DiscoveredOperationsFactoryTests {
 	static class ExampleRead {
 
 		@ReadOperation
-		public String read() {
+		String read() {
 			return "read";
 		}
 
@@ -137,7 +137,7 @@ class DiscoveredOperationsFactoryTests {
 	static class ExampleWrite {
 
 		@WriteOperation
-		public String write() {
+		String write() {
 			return "write";
 		}
 
@@ -146,7 +146,7 @@ class DiscoveredOperationsFactoryTests {
 	static class ExampleDelete {
 
 		@DeleteOperation
-		public String delete() {
+		String delete() {
 			return "delete";
 		}
 
@@ -155,12 +155,12 @@ class DiscoveredOperationsFactoryTests {
 	static class ExampleMultiple {
 
 		@ReadOperation
-		public String read() {
+		String read() {
 			return "read";
 		}
 
 		@WriteOperation
-		public String write() {
+		String write() {
 			return "write";
 		}
 
@@ -169,7 +169,7 @@ class DiscoveredOperationsFactoryTests {
 	static class ExampleWithParams {
 
 		@ReadOperation
-		public String read(String name) {
+		String read(String name) {
 			return name;
 		}
 
@@ -215,15 +215,15 @@ class DiscoveredOperationsFactoryTests {
 			return invoker;
 		}
 
-		public EndpointId getEndpointId() {
+		EndpointId getEndpointId() {
 			return this.endpointId;
 		}
 
-		public OperationType getOperationType() {
+		OperationType getOperationType() {
 			return this.operationType;
 		}
 
-		public OperationParameters getParameters() {
+		OperationParameters getParameters() {
 			return this.parameters;
 		}
 

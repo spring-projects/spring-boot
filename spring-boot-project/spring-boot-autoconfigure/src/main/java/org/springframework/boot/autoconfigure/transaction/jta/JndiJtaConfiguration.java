@@ -33,7 +33,6 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(JtaTransactionManager.class)
@@ -43,7 +42,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 class JndiJtaConfiguration {
 
 	@Bean
-	public JtaTransactionManager transactionManager(
+	JtaTransactionManager transactionManager(
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManagerFactoryBean().getObject();
 		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(jtaTransactionManager));

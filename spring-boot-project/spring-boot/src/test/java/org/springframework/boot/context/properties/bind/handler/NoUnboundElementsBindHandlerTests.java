@@ -131,29 +131,29 @@ class NoUnboundElementsBindHandlerTests {
 						.contains("The elements [example.foo[0]] were left unbound"));
 	}
 
-	public static class Example {
+	static class Example {
 
 		private String foo;
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
 	}
 
-	public static class ExampleWithList {
+	static class ExampleWithList {
 
 		private List<String> foo;
 
-		public List<String> getFoo() {
+		List<String> getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(List<String> foo) {
+		void setFoo(List<String> foo) {
 			this.foo = foo;
 		}
 

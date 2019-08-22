@@ -68,7 +68,7 @@ class PropertyPlaceholderAutoConfigurationTests {
 		@Value("${foo:bar}")
 		private String foo;
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
@@ -78,7 +78,7 @@ class PropertyPlaceholderAutoConfigurationTests {
 	static class PlaceholdersOverride {
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer morePlaceholders() {
+		static PropertySourcesPlaceholderConfigurer morePlaceholders() {
 			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
 			configurer.setProperties(StringUtils.splitArrayElementsIntoProperties(new String[] { "foo=spam" }, "="));
 			configurer.setLocalOverride(true);

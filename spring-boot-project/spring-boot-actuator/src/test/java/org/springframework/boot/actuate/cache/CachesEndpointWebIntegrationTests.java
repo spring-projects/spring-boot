@@ -86,22 +86,22 @@ class CachesEndpointWebIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public CacheManager one() {
+		CacheManager one() {
 			return new ConcurrentMapCacheManager("a", "b");
 		}
 
 		@Bean
-		public CacheManager two() {
+		CacheManager two() {
 			return new ConcurrentMapCacheManager("a", "c");
 		}
 
 		@Bean
-		public CachesEndpoint endpoint(Map<String, CacheManager> cacheManagers) {
+		CachesEndpoint endpoint(Map<String, CacheManager> cacheManagers) {
 			return new CachesEndpoint(cacheManagers);
 		}
 
 		@Bean
-		public CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint endpoint) {
+		CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint endpoint) {
 			return new CachesEndpointWebExtension(endpoint);
 		}
 

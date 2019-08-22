@@ -110,7 +110,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		@Override
 		protected void doOptions() {
 			this.includeOption = option("include",
-					"Pattern applied to directories on the classpath to find files to " + "include in the resulting ")
+					"Pattern applied to directories on the classpath to find files to include in the resulting ")
 							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
 			this.excludeOption = option("exclude", "Pattern applied to directories on the classpath to find files to "
 					+ "exclude from the resulting " + this.type).withRequiredArg().withValuesSeparatedBy(",")
@@ -120,8 +120,8 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
 			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
-			Assert.isTrue(nonOptionArguments.size() >= 2, () -> "The name of the " + "resulting " + this.type
-					+ " and at least one source file must be " + "specified");
+			Assert.isTrue(nonOptionArguments.size() >= 2,
+					() -> "The name of the resulting " + this.type + " and at least one source file must be specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
 			Assert.isTrue(output.getName().toLowerCase(Locale.ENGLISH).endsWith("." + this.type),

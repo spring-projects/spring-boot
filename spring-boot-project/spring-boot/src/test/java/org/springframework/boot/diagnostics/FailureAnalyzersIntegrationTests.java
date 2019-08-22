@@ -40,17 +40,17 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class FailureAnalyzersIntegrationTests {
 
 	@Test
-	void analysisIsPerformed(CapturedOutput capturedOutput) {
+	void analysisIsPerformed(CapturedOutput output) {
 		assertThatExceptionOfType(Exception.class).isThrownBy(
 				() -> new SpringApplicationBuilder(TestConfiguration.class).web(WebApplicationType.NONE).run());
-		assertThat(capturedOutput).contains("APPLICATION FAILED TO START");
+		assertThat(output).contains("APPLICATION FAILED TO START");
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@PostConstruct
-		public void fail() {
+		void fail() {
 			throw new PortInUseException(8080);
 		}
 

@@ -130,7 +130,7 @@ class ConditionalOnJndiTests {
 	static class JndiAvailableConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -141,13 +141,13 @@ class ConditionalOnJndiTests {
 	static class JndiConditionConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	private static class MockableOnJndi extends OnJndiCondition {
+	static class MockableOnJndi extends OnJndiCondition {
 
 		private boolean jndiAvailable = true;
 
@@ -168,7 +168,7 @@ class ConditionalOnJndiTests {
 			};
 		}
 
-		public void setFoundLocation(String foundLocation) {
+		void setFoundLocation(String foundLocation) {
 			this.foundLocation = foundLocation;
 		}
 

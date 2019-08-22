@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ class CompositeHandlerMapping implements HandlerMapping {
 	}
 
 	private List<HandlerMapping> extractMappings() {
-		List<HandlerMapping> list = new ArrayList<>();
-		list.addAll(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
+		List<HandlerMapping> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		return list;

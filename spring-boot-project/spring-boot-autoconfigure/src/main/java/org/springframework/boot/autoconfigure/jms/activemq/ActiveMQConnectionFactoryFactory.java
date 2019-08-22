@@ -32,7 +32,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Venil Noronha
- * @since 1.2.0
  */
 class ActiveMQConnectionFactoryFactory {
 
@@ -51,12 +50,12 @@ class ActiveMQConnectionFactoryFactory {
 		this.factoryCustomizers = (factoryCustomizers != null) ? factoryCustomizers : Collections.emptyList();
 	}
 
-	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create " + "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException("Unable to create ActiveMQConnectionFactory", ex);
 		}
 	}
 

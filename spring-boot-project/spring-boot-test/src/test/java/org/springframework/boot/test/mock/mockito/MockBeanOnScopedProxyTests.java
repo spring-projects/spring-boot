@@ -60,7 +60,7 @@ class MockBeanOnScopedProxyTests {
 
 		@Bean
 		@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-		public ExampleService exampleService() {
+		ExampleService exampleService() {
 			return new FailingExampleService();
 		}
 

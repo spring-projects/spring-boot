@@ -124,23 +124,23 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void withPushGatewayEnabled(CapturedOutput capturedOutput) {
+	void withPushGatewayEnabled(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues("management.metrics.export.prometheus.pushgateway.enabled=true")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					assertThat(capturedOutput).doesNotContain("Invalid PushGateway base url");
+					assertThat(output).doesNotContain("Invalid PushGateway base url");
 					hasGatewayURL(context, "http://localhost:9091/metrics/job/");
 				});
 	}
 
 	@Test
 	@Deprecated
-	void withCustomLegacyPushGatewayURL(CapturedOutput capturedOutput) {
+	void withCustomLegacyPushGatewayURL(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues("management.metrics.export.prometheus.pushgateway.enabled=true",
 						"management.metrics.export.prometheus.pushgateway.base-url=localhost:9090")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					assertThat(capturedOutput).contains("Invalid PushGateway base url").contains("localhost:9090");
+					assertThat(output).contains("Invalid PushGateway base url").contains("localhost:9090");
 					hasGatewayURL(context, "http://localhost:9090/metrics/job/");
 				});
 	}
@@ -165,7 +165,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -176,7 +176,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public PrometheusConfig customConfig() {
+		PrometheusConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -187,7 +187,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public PrometheusMeterRegistry customRegistry(PrometheusConfig config, CollectorRegistry collectorRegistry,
+		PrometheusMeterRegistry customRegistry(PrometheusConfig config, CollectorRegistry collectorRegistry,
 				Clock clock) {
 			return new PrometheusMeterRegistry(config, collectorRegistry, clock);
 		}
@@ -199,7 +199,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomCollectorRegistryConfiguration {
 
 		@Bean
-		public CollectorRegistry customCollectorRegistry() {
+		CollectorRegistry customCollectorRegistry() {
 			return new CollectorRegistry();
 		}
 
@@ -210,7 +210,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomEndpointConfiguration {
 
 		@Bean
-		public PrometheusScrapeEndpoint customEndpoint(CollectorRegistry collectorRegistry) {
+		PrometheusScrapeEndpoint customEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
 

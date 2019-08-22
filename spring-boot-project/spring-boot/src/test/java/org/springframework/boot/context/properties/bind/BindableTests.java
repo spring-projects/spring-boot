@@ -145,8 +145,8 @@ class BindableTests {
 		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		System.out.println(bindable.toString());
 		assertThat(bindable.toString())
-				.contains("type = java.lang.String, " + "value = 'provided', annotations = array<Annotation>["
-						+ "@org.springframework.boot.context.properties.bind." + "BindableTests$TestAnnotation()]");
+				.contains("type = java.lang.String, value = 'provided', annotations = array<Annotation>["
+						+ "@org.springframework.boot.context.properties.bind.BindableTests$TestAnnotation()]");
 	}
 
 	@Test
@@ -169,11 +169,11 @@ class BindableTests {
 
 		private String foo = "hello world";
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
@@ -187,11 +187,11 @@ class BindableTests {
 
 		private String foo = "hello world";
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 

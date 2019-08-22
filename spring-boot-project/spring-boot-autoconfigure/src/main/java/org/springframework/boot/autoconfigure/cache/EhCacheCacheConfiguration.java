@@ -36,7 +36,6 @@ import org.springframework.core.io.Resource;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cache.class, EhCacheCacheManager.class })
@@ -45,13 +44,13 @@ import org.springframework.core.io.Resource;
 class EhCacheCacheConfiguration {
 
 	@Bean
-	public EhCacheCacheManager cacheManager(CacheManagerCustomizers customizers, CacheManager ehCacheCacheManager) {
+	EhCacheCacheManager cacheManager(CacheManagerCustomizers customizers, CacheManager ehCacheCacheManager) {
 		return customizers.customize(new EhCacheCacheManager(ehCacheCacheManager));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CacheManager ehCacheCacheManager(CacheProperties cacheProperties) {
+	CacheManager ehCacheCacheManager(CacheProperties cacheProperties) {
 		Resource location = cacheProperties.resolveConfigLocation(cacheProperties.getEhcache().getConfig());
 		if (location != null) {
 			return EhCacheManagerUtils.buildCacheManager(location);

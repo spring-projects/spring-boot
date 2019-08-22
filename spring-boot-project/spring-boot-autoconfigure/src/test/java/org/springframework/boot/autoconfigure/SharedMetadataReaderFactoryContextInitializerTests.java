@@ -55,7 +55,7 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		assertThat(definition.getAttribute("seen")).isEqualTo(true);
 	}
 
-	protected static class TestConfig {
+	static class TestConfig {
 
 	}
 

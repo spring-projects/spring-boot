@@ -87,7 +87,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class })
 	@SpringBootConfiguration
 	@SuppressWarnings("deprecation")
-	public static class WebEndpointTestApplication {
+	static class WebEndpointTestApplication {
 
 	}
 

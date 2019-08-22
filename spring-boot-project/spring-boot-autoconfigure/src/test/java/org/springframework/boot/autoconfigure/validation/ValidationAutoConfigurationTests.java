@@ -220,7 +220,7 @@ class ValidationAutoConfigurationTests {
 	static class UserDefinedValidatorConfig {
 
 		@Bean
-		public OptionalValidatorFactoryBean customValidator() {
+		OptionalValidatorFactoryBean customValidator() {
 			return new OptionalValidatorFactoryBean();
 		}
 
@@ -230,7 +230,7 @@ class ValidationAutoConfigurationTests {
 	static class UserDefinedDefaultValidatorConfig {
 
 		@Bean
-		public OptionalValidatorFactoryBean defaultValidator() {
+		OptionalValidatorFactoryBean defaultValidator() {
 			return new OptionalValidatorFactoryBean();
 		}
 
@@ -240,7 +240,7 @@ class ValidationAutoConfigurationTests {
 	static class UserDefinedJsrValidatorConfig {
 
 		@Bean
-		public Validator customValidator() {
+		Validator customValidator() {
 			return mock(Validator.class);
 		}
 
@@ -250,12 +250,12 @@ class ValidationAutoConfigurationTests {
 	static class UserDefinedSpringValidatorConfig {
 
 		@Bean
-		public org.springframework.validation.Validator customValidator() {
+		org.springframework.validation.Validator customValidator() {
 			return mock(org.springframework.validation.Validator.class);
 		}
 
 		@Bean
-		public org.springframework.validation.Validator anotherCustomValidator() {
+		org.springframework.validation.Validator anotherCustomValidator() {
 			return mock(org.springframework.validation.Validator.class);
 		}
 
@@ -265,13 +265,13 @@ class ValidationAutoConfigurationTests {
 	static class UserDefinedPrimarySpringValidatorConfig {
 
 		@Bean
-		public org.springframework.validation.Validator customValidator() {
+		org.springframework.validation.Validator customValidator() {
 			return mock(org.springframework.validation.Validator.class);
 		}
 
 		@Bean
 		@Primary
-		public org.springframework.validation.Validator anotherCustomValidator() {
+		org.springframework.validation.Validator anotherCustomValidator() {
 			return mock(org.springframework.validation.Validator.class);
 		}
 
@@ -280,8 +280,7 @@ class ValidationAutoConfigurationTests {
 	@Validated
 	static class SampleService {
 
-		public void doSomething(@Size(min = 3, max = 10) String name) {
-
+		void doSomething(@Size(min = 3, max = 10) String name) {
 		}
 
 	}
@@ -297,7 +296,6 @@ class ValidationAutoConfigurationTests {
 
 		@Override
 		public void doSomething(Integer counter) {
-
 		}
 
 	}
@@ -306,7 +304,7 @@ class ValidationAutoConfigurationTests {
 	static class AnotherSampleServiceConfiguration {
 
 		@Bean
-		public AnotherSampleService anotherSampleService() {
+		AnotherSampleService anotherSampleService() {
 			return new DefaultAnotherSampleService();
 		}
 
@@ -316,7 +314,7 @@ class ValidationAutoConfigurationTests {
 	static class SampleConfiguration {
 
 		@Bean
-		public MethodValidationPostProcessor testMethodValidationPostProcessor() {
+		MethodValidationPostProcessor testMethodValidationPostProcessor() {
 			return new MethodValidationPostProcessor();
 		}
 
@@ -343,7 +341,7 @@ class ValidationAutoConfigurationTests {
 		static class SomeServiceConfiguration {
 
 			@Bean
-			public SomeService someService() {
+			SomeService someService() {
 				return new SomeService();
 			}
 

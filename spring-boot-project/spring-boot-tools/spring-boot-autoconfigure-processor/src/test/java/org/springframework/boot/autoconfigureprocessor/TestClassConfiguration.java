@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigureprocessor.TestConditionalOnWebAppli
 public class TestClassConfiguration {
 
 	@TestAutoConfigureOrder
-	public static class Nested {
+	static class Nested {
 
 	}
 

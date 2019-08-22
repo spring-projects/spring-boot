@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.session.hazelcast.HazelcastFlushMode;
+import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
 
 /**
  * Configuration properties for Hazelcast backed Spring Session.
@@ -34,9 +35,16 @@ public class HazelcastSessionProperties {
 	private String mapName = "spring:session:sessions";
 
 	/**
-	 * Sessions flush mode.
+	 * Sessions flush mode. Determines when session changes are written to the session
+	 * store.
 	 */
-	private HazelcastFlushMode flushMode = HazelcastFlushMode.ON_SAVE;
+	private FlushMode flushMode = FlushMode.ON_SAVE;
+
+	/**
+	 * Sessions save mode. Determines how session changes are tracked and saved to the
+	 * session store.
+	 */
+	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
 
 	public String getMapName() {
 		return this.mapName;
@@ -46,12 +54,20 @@ public class HazelcastSessionProperties {
 		this.mapName = mapName;
 	}
 
-	public HazelcastFlushMode getFlushMode() {
+	public FlushMode getFlushMode() {
 		return this.flushMode;
 	}
 
-	public void setFlushMode(HazelcastFlushMode flushMode) {
+	public void setFlushMode(FlushMode flushMode) {
 		this.flushMode = flushMode;
+	}
+
+	public SaveMode getSaveMode() {
+		return this.saveMode;
+	}
+
+	public void setSaveMode(SaveMode saveMode) {
+		this.saveMode = saveMode;
 	}
 
 }

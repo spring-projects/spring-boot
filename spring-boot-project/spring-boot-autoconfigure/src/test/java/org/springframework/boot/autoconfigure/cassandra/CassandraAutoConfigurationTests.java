@@ -111,7 +111,7 @@ class CassandraAutoConfigurationTests {
 	static class MockCustomizerConfig {
 
 		@Bean
-		public ClusterBuilderCustomizer customizer() {
+		ClusterBuilderCustomizer customizer() {
 			return mock(ClusterBuilderCustomizer.class);
 		}
 
@@ -121,7 +121,7 @@ class CassandraAutoConfigurationTests {
 	static class SimpleCustomizerConfig {
 
 		@Bean
-		public ClusterBuilderCustomizer customizer() {
+		ClusterBuilderCustomizer customizer() {
 			return (clusterBuilder) -> clusterBuilder.withClusterName("overridden-name");
 		}
 
@@ -131,7 +131,7 @@ class CassandraAutoConfigurationTests {
 	static class ClusterFactoryConfig {
 
 		@Bean
-		public TestClusterFactory clusterFactory() {
+		TestClusterFactory clusterFactory() {
 			return new TestClusterFactory();
 		}
 

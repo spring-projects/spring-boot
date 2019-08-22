@@ -44,6 +44,8 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.FixedValue;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -166,7 +168,7 @@ class EndpointDiscovererTests {
 	void getEndpointsWhenTtlSetByIdAndIdDoesNotMatchShouldNotCacheInvokeCalls() {
 		load(TestEndpointConfiguration.class, (context) -> {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context,
-					(endpointId) -> (endpointId.equals("foo") ? 500L : 0L));
+					(endpointId) -> (endpointId.equals(EndpointId.of("foo")) ? 500L : 0L));
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
@@ -233,6 +235,15 @@ class EndpointDiscovererTests {
 					ReflectionUtils.findMethod(SubSpecializedTestEndpoint.class, "getSpecialOne", String.class));
 			assertThat(operations).containsKeys(ReflectionUtils.findMethod(SpecializedExtension.class, "getSpecial"));
 			assertThat(operations).hasSize(3);
+		});
+	}
+
+	@Test
+	void getEndpointsWhenHasProxiedEndpointShouldReturnEndpoint() {
+		load(ProxiedSpecializedEndpointsConfiguration.class, (context) -> {
+			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"), EndpointId.of("specialized"));
 		});
 	}
 
@@ -328,10 +339,23 @@ class EndpointDiscovererTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class ProxiedSpecializedTestEndpointConfiguration {
+
+		@Bean
+		SpecializedExtension specializedExtension() {
+			Enhancer enhancer = new Enhancer();
+			enhancer.setSuperclass(SpecializedExtension.class);
+			enhancer.setCallback((FixedValue) () -> null);
+			return (SpecializedExtension) enhancer.create();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TestEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
@@ -341,7 +365,7 @@ class EndpointDiscovererTests {
 	static class TestEndpointSubclassConfiguration {
 
 		@Bean
-		public TestEndpointSubclass testEndpointSubclass() {
+		TestEndpointSubclass testEndpointSubclass() {
 			return new TestEndpointSubclass();
 		}
 
@@ -351,12 +375,12 @@ class EndpointDiscovererTests {
 	static class ClashingEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpointTwo() {
+		TestEndpoint testEndpointTwo() {
 			return new TestEndpoint();
 		}
 
 		@Bean
-		public TestEndpoint testEndpointOne() {
+		TestEndpoint testEndpointOne() {
 			return new TestEndpoint();
 		}
 
@@ -366,12 +390,12 @@ class EndpointDiscovererTests {
 	static class ScopedTargetEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint() {
+		TestEndpoint testEndpoint() {
 			return new TestEndpoint();
 		}
 
 		@Bean(name = "scopedTarget.testEndpoint")
-		public TestEndpoint scopedTargetTestEndpoint() {
+		TestEndpoint scopedTargetTestEndpoint() {
 			return new TestEndpoint();
 		}
 
@@ -387,30 +411,35 @@ class EndpointDiscovererTests {
 
 	}
 
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class, ProxiedSpecializedTestEndpointConfiguration.class })
+	static class ProxiedSpecializedEndpointsConfiguration {
+
+	}
+
 	@Endpoint(id = "test")
 	static class TestEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		public Object getOne(@Selector String id) {
+		Object getOne(@Selector String id) {
 			return null;
 		}
 
 		@WriteOperation
-		public void update(String foo, String bar) {
+		void update(String foo, String bar) {
 
 		}
 
 		@DeleteOperation
-		public void deleteOne(@Selector String id) {
+		void deleteOne(@Selector String id) {
 
 		}
 
-		public void someOtherMethod() {
+		void someOtherMethod() {
 
 		}
 
@@ -419,7 +448,7 @@ class EndpointDiscovererTests {
 	static class TestEndpointSubclass extends TestEndpoint {
 
 		@WriteOperation
-		public void updateWithMoreArguments(String foo, String bar, String baz) {
+		void updateWithMoreArguments(String foo, String bar, String baz) {
 
 		}
 
@@ -430,7 +459,7 @@ class EndpointDiscovererTests {
 	@Documented
 	@Endpoint
 	@FilteredEndpoint(SpecializedEndpointFilter.class)
-	public @interface SpecializedEndpoint {
+	@interface SpecializedEndpoint {
 
 		@AliasFor(annotation = Endpoint.class)
 		String id();
@@ -438,10 +467,10 @@ class EndpointDiscovererTests {
 	}
 
 	@EndpointExtension(endpoint = SpecializedTestEndpoint.class, filter = SpecializedEndpointFilter.class)
-	public static class SpecializedExtension {
+	static class SpecializedExtension {
 
 		@ReadOperation
-		public Object getSpecial() {
+		Object getSpecial() {
 			return null;
 		}
 
@@ -459,7 +488,7 @@ class EndpointDiscovererTests {
 	static class SpecializedTestEndpoint {
 
 		@ReadOperation
-		public Object getAll() {
+		Object getAll() {
 			return null;
 		}
 
@@ -468,7 +497,7 @@ class EndpointDiscovererTests {
 	static class SubSpecializedTestEndpoint extends SpecializedTestEndpoint {
 
 		@ReadOperation
-		public Object getSpecialOne(@Selector String id) {
+		Object getSpecialOne(@Selector String id) {
 			return null;
 		}
 
@@ -575,7 +604,7 @@ class EndpointDiscovererTests {
 			this.invoker = invoker;
 		}
 
-		public OperationInvoker getInvoker() {
+		OperationInvoker getInvoker() {
 			return this.invoker;
 		}
 

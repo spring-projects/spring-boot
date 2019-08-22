@@ -93,7 +93,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 			return createHttp11ServerConnector(server, config, sslContextFactory);
 		}
 		Assert.state(isAlpnPresent(),
-				() -> "The 'org.eclipse.jetty:jetty-alpn-server' " + "dependency is required for HTTP/2 support.");
+				() -> "The 'org.eclipse.jetty:jetty-alpn-server' dependency is required for HTTP/2 support.");
 		Assert.state(isConscryptPresent(), () -> "The 'org.eclipse.jetty.http2:http2-server' and Conscrypt "
 				+ "dependencies are required for HTTP/2 support.");
 		return createHttp2ServerConnector(server, config, sslContextFactory);

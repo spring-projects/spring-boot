@@ -34,7 +34,7 @@ public class TomcatLegacyCookieProcessorExample {
 	 * Configuration class that declares the required {@link WebServerFactoryCustomizer}.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	static class LegacyCookieProcessorConfiguration {
+	public static class LegacyCookieProcessorConfiguration {
 
 		// tag::customizer[]
 		@Bean

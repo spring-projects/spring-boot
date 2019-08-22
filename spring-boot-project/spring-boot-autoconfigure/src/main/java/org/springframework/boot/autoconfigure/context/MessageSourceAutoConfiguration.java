@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @since 1.5.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(name = AbstractApplicationContext.MESSAGE_SOURCE_BEAN_NAME, search = SearchStrategy.CURRENT)

@@ -401,15 +401,16 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	void appendWhenElementNameMultiDotShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyName.of("foo").append("bar.baz"))
-				.withMessageContaining("Element value 'bar.baz' must be a single item");
+	void appendWhenElementNameMultiDotShouldAppend() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo").append("bar.baz");
+		assertThat(name.toString()).isEqualTo("foo.bar.baz");
+		assertThat(name.getNumberOfElements()).isEqualTo(3);
 	}
 
 	@Test
 	void appendWhenElementNameIsNullShouldReturnName() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		assertThat((Object) name.append((String) null)).isSameAs(name);
+		assertThat((Object) name.append(null)).isSameAs(name);
 	}
 
 	@Test

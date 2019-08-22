@@ -42,43 +42,43 @@ class SpringApplicationRunListeners {
 		this.listeners = new ArrayList<>(listeners);
 	}
 
-	public void starting() {
+	void starting() {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.starting();
 		}
 	}
 
-	public void environmentPrepared(ConfigurableEnvironment environment) {
+	void environmentPrepared(ConfigurableEnvironment environment) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.environmentPrepared(environment);
 		}
 	}
 
-	public void contextPrepared(ConfigurableApplicationContext context) {
+	void contextPrepared(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.contextPrepared(context);
 		}
 	}
 
-	public void contextLoaded(ConfigurableApplicationContext context) {
+	void contextLoaded(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.contextLoaded(context);
 		}
 	}
 
-	public void started(ConfigurableApplicationContext context) {
+	void started(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.started(context);
 		}
 	}
 
-	public void running(ConfigurableApplicationContext context) {
+	void running(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.running(context);
 		}
 	}
 
-	public void failed(ConfigurableApplicationContext context, Throwable exception) {
+	void failed(ConfigurableApplicationContext context, Throwable exception) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			callFailedListener(listener, context, exception);
 		}

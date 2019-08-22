@@ -26,7 +26,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +60,7 @@ import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.api.ServletStackTraces;
+import io.undertow.servlet.core.DeploymentImpl;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.xnio.OptionMap;
@@ -92,9 +97,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
-	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<>();
+	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
 
-	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
+	private Set<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new LinkedHashSet<>();
 
 	private ResourceLoader resourceLoader;
 
@@ -157,7 +162,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 */
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new ArrayList<>(customizers);
+		this.builderCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
@@ -183,7 +188,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 */
 	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
+		this.deploymentInfoCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
@@ -195,7 +200,11 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return this.deploymentInfoCustomizers;
 	}
 
-	@Override
+	/**
+	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
+	 * Undertow {@link DeploymentInfo}.
+	 * @param customizers the customizers to add
+	 */
 	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
 		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
@@ -262,6 +271,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		configureErrorPages(deployment);
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
+		deployment.setTempDir(createTempDir("undertow"));
 		deployment.setEagerFilterInit(this.eagerInitFilters);
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
@@ -277,6 +287,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		addLocaleMappings(deployment);
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
+		if (manager.getDeployment() instanceof DeploymentImpl) {
+			removeSuperfluousMimeMappings((DeploymentImpl) manager.getDeployment(), deployment);
+		}
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		Duration timeoutDuration = getSession().getTimeout();
 		int sessionTimeout = (isZeroOrLess(timeoutDuration) ? -1 : (int) timeoutDuration.getSeconds());
@@ -409,6 +422,16 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		for (Mapping mimeMapping : getMimeMappings()) {
 			servletBuilder.addMimeMapping(new MimeMapping(mimeMapping.getExtension(), mimeMapping.getMimeType()));
 		}
+	}
+
+	private void removeSuperfluousMimeMappings(DeploymentImpl deployment, DeploymentInfo deploymentInfo) {
+		// DeploymentManagerImpl will always add MimeMappings.DEFAULT_MIME_MAPPINGS
+		// but we only want ours
+		Map<String, String> mappings = new HashMap<>();
+		for (MimeMapping mapping : deploymentInfo.getMimeMappings()) {
+			mappings.put(mapping.getExtension().toLowerCase(Locale.ENGLISH), mapping.getMimeType());
+		}
+		deployment.setMimeExtensionMappings(mappings);
 	}
 
 	/**

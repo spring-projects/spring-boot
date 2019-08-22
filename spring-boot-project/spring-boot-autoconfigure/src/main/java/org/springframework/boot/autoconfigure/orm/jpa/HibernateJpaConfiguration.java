@@ -58,7 +58,6 @@ import org.springframework.util.ClassUtils;
  * @author Manuel Doninger
  * @author Andy Wilkinson
  * @author Stephane Nicoll
- * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HibernateProperties.class)
@@ -183,8 +182,9 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
 			// containers (e.g. JBoss EAP 6) wrap it in the superclass LinkageError
 			if (!isUsingJndi()) {
-				throw new IllegalStateException("Unable to set Hibernate JTA " + "platform, are you using the correct "
-						+ "version of Hibernate?", ex);
+				throw new IllegalStateException(
+						"Unable to set Hibernate JTA platform, are you using the correct " + "version of Hibernate?",
+						ex);
 			}
 			// Assume that Hibernate will use JNDI
 			if (logger.isDebugEnabled()) {

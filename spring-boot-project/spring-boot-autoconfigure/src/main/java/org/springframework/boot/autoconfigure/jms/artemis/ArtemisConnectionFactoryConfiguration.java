@@ -61,7 +61,7 @@ class ArtemisConnectionFactoryConfiguration {
 		@Bean
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
 				matchIfMissing = true)
-		public CachingConnectionFactory cachingJmsConnectionFactory(JmsProperties jmsProperties) {
+		CachingConnectionFactory cachingJmsConnectionFactory(JmsProperties jmsProperties) {
 			JmsProperties.Cache cacheProperties = jmsProperties.getCache();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(createConnectionFactory());
 			connectionFactory.setCacheConsumers(cacheProperties.isConsumers());
@@ -72,7 +72,7 @@ class ArtemisConnectionFactoryConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
-		public ActiveMQConnectionFactory jmsConnectionFactory() {
+		ActiveMQConnectionFactory jmsConnectionFactory() {
 			return createConnectionFactory();
 		}
 
@@ -90,7 +90,7 @@ class ArtemisConnectionFactoryConfiguration {
 		@Bean(destroyMethod = "stop")
 		@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "true",
 				matchIfMissing = false)
-		public JmsPoolConnectionFactory pooledJmsConnectionFactory(ListableBeanFactory beanFactory,
+		JmsPoolConnectionFactory pooledJmsConnectionFactory(ListableBeanFactory beanFactory,
 				ArtemisProperties properties) {
 			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties)
 					.createConnectionFactory(ActiveMQConnectionFactory.class);

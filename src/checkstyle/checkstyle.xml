@@ -8,16 +8,14 @@
 	</module>
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
-		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check">
-			<property name="unlessImports" value="org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner" />
-		</module>
+		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check" />
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
 			<property name="regexp" value="true" />
 			<property name="illegalPkgs"
 				value="^sun.*, ^org\.apache\.commons\.(?!compress|dbcp2|lang|lang3|logging|pool2).*, ^com\.google\.common.*, ^org\.flywaydb\.core\.internal.*, ^org\.testcontainers\.shaded.*" />
 			<property name="illegalClasses"
-				value="^reactor\.core\.support\.Assert, ^org\.junit\.rules\.ExpectedException, ^org\.slf4j\.LoggerFactory" />
+				value="^com\.hazelcast\.util\.Base64, ^org\.junit\.rules\.ExpectedException, ^org\.slf4j\.LoggerFactory, ^reactor\.core\.support\.Assert" />
 		</module>
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck">
@@ -47,6 +45,10 @@
 			<property name="message"
 				value="Please use BDDMockito imports." />
 			<property name="ignoreComments" value="true" />
+		</module>
+		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">
+			<property name="publicOnlySinceTags" value="true" />
+			<property name="requireSinceTag" value="true" />
 		</module>
 	</module>
 </module>

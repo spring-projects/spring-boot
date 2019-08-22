@@ -55,7 +55,7 @@ class ConditionalOnCloudPlatformTests {
 	static class CloudFoundryPlatformConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
@@ -66,7 +66,7 @@ class ConditionalOnCloudPlatformTests {
 
 		@Bean
 		@ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

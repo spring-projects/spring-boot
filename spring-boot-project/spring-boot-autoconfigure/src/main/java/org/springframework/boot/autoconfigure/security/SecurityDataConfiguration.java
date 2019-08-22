@@ -26,7 +26,7 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
  * Automatically adds Spring Security's integration with Spring Data.
  *
  * @author Rob Winch
- * @since 1.3
+ * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SecurityEvaluationContextExtension.class)

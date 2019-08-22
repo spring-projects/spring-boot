@@ -131,7 +131,7 @@ class TaskSchedulingAutoConfigurationTests {
 	static class TaskSchedulerConfiguration {
 
 		@Bean
-		public TaskScheduler customTaskScheduler() {
+		TaskScheduler customTaskScheduler() {
 			return new TestTaskScheduler();
 		}
 
@@ -141,7 +141,7 @@ class TaskSchedulingAutoConfigurationTests {
 	static class ScheduledExecutorServiceConfiguration {
 
 		@Bean
-		public ScheduledExecutorService customScheduledExecutorService() {
+		ScheduledExecutorService customScheduledExecutorService() {
 			return Executors.newScheduledThreadPool(2);
 		}
 
@@ -151,7 +151,7 @@ class TaskSchedulingAutoConfigurationTests {
 	static class TaskSchedulerCustomizerConfiguration {
 
 		@Bean
-		public TaskSchedulerCustomizer testTaskSchedulerCustomizer() {
+		TaskSchedulerCustomizer testTaskSchedulerCustomizer() {
 			return ((taskScheduler) -> taskScheduler.setThreadNamePrefix("customized-scheduler-"));
 		}
 
@@ -173,7 +173,7 @@ class TaskSchedulingAutoConfigurationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TestBean testBean() {
+		TestBean testBean() {
 			return new TestBean();
 		}
 
@@ -186,7 +186,7 @@ class TaskSchedulingAutoConfigurationTests {
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		@Scheduled(fixedRate = 60000)
-		public void accumulate() {
+		void accumulate() {
 			this.threadNames.add(Thread.currentThread().getName());
 			this.latch.countDown();
 		}

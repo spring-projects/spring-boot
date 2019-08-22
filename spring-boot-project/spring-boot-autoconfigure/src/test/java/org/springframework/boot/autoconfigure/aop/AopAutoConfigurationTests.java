@@ -100,26 +100,26 @@ class AopAutoConfigurationTests {
 	@EnableAspectJAutoProxy
 	@Configuration(proxyBeanMethods = false)
 	@Import(TestConfiguration.class)
-	protected static class CustomTestConfiguration {
+	static class CustomTestConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public TestAspect aspect() {
+		TestAspect aspect() {
 			return new TestAspect();
 		}
 
 		@Bean
-		public TestInterface bean() {
+		TestInterface bean() {
 			return new TestBean();
 		}
 
 	}
 
-	protected static class TestBean implements TestInterface {
+	static class TestBean implements TestInterface {
 
 		@Override
 		public void foo() {
@@ -128,22 +128,22 @@ class AopAutoConfigurationTests {
 	}
 
 	@Aspect
-	protected static class TestAspect {
+	static class TestAspect {
 
 		private boolean called;
 
-		public boolean isCalled() {
+		boolean isCalled() {
 			return this.called;
 		}
 
 		@Before("execution(* foo(..))")
-		public void before() {
+		void before() {
 			this.called = true;
 		}
 
 	}
 
-	public interface TestInterface {
+	interface TestInterface {
 
 		void foo();
 

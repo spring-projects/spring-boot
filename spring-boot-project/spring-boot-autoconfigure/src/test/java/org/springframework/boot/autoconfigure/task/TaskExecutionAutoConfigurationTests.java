@@ -98,13 +98,13 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	void taskExecutorAutoConfigured(CapturedOutput capturedOutput) {
+	void taskExecutorAutoConfigured(CapturedOutput output) {
 		this.contextRunner.run((context) -> {
-			assertThat(capturedOutput).doesNotContain("Initializing ExecutorService");
+			assertThat(output).doesNotContain("Initializing ExecutorService");
 			assertThat(context).hasSingleBean(Executor.class);
 			assertThat(context).hasBean("applicationTaskExecutor");
 			assertThat(context).getBean("applicationTaskExecutor").isInstanceOf(ThreadPoolTaskExecutor.class);
-			assertThat(capturedOutput).contains("Initializing ExecutorService");
+			assertThat(output).contains("Initializing ExecutorService");
 		});
 	}
 
@@ -163,7 +163,7 @@ class TaskExecutionAutoConfigurationTests {
 		private final TaskExecutorBuilder taskExecutorBuilder = new TaskExecutorBuilder();
 
 		@Bean
-		public TaskExecutorBuilder customTaskExecutorBuilder() {
+		TaskExecutorBuilder customTaskExecutorBuilder() {
 			return this.taskExecutorBuilder;
 		}
 
@@ -173,7 +173,7 @@ class TaskExecutionAutoConfigurationTests {
 	static class TaskExecutorCustomizerConfig {
 
 		@Bean
-		public TaskExecutorCustomizer mockTaskExecutorCustomizer() {
+		TaskExecutorCustomizer mockTaskExecutorCustomizer() {
 			return mock(TaskExecutorCustomizer.class);
 		}
 
@@ -183,7 +183,7 @@ class TaskExecutionAutoConfigurationTests {
 	static class TaskDecoratorConfig {
 
 		@Bean
-		public TaskDecorator mockTaskDecorator() {
+		TaskDecorator mockTaskDecorator() {
 			return mock(TaskDecorator.class);
 		}
 
@@ -193,7 +193,7 @@ class TaskExecutionAutoConfigurationTests {
 	static class CustomTaskExecutorConfig {
 
 		@Bean
-		public Executor customTaskExecutor() {
+		Executor customTaskExecutor() {
 			return new SyncTaskExecutor();
 		}
 
@@ -214,7 +214,7 @@ class TaskExecutionAutoConfigurationTests {
 	static class TestBean {
 
 		@Async
-		public Future<String> echo(String text) {
+		Future<String> echo(String text) {
 			return new AsyncResult<>(Thread.currentThread().getName() + " " + text);
 		}
 

@@ -131,8 +131,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext context,
 			ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
-		Map<String, Object> beans = new HashMap<>();
-		beans.putAll(context.getBeansWithAnnotation(ConfigurationProperties.class));
+		Map<String, Object> beans = new HashMap<>(context.getBeansWithAnnotation(ConfigurationProperties.class));
 		if (beanFactoryMetadata != null) {
 			beans.putAll(beanFactoryMetadata.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
 		}
@@ -326,7 +325,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				catch (Exception ex) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Skipping '" + writer.getFullName() + "' on '" + pojo.getClass().getName()
-								+ "' as an exception " + "was thrown when retrieving its value", ex);
+								+ "' as an exception was thrown when retrieving its value", ex);
 					}
 					return;
 				}

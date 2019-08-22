@@ -72,7 +72,7 @@ class SimpleMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -83,7 +83,7 @@ class SimpleMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public SimpleConfig customConfig() {
+		SimpleConfig customConfig() {
 			return (key) -> null;
 		}
 
@@ -94,7 +94,7 @@ class SimpleMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public MeterRegistry customRegistry() {
+		MeterRegistry customRegistry() {
 			return mock(MeterRegistry.class);
 		}
 

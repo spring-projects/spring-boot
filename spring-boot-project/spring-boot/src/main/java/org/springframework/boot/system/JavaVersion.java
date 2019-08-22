@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package org.springframework.boot.system;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.util.ClassUtils;
 
 /**
- * Supported Java versions.
+ * Known Java versions.
  *
  * @author Oliver Gierke
  * @author Phillip Webb
@@ -34,20 +35,40 @@ public enum JavaVersion {
 	/**
 	 * Java 1.8.
 	 */
-	EIGHT("1.8", "java.util.function.Function"),
+	EIGHT("1.8", Optional.class, "empty"),
 
 	/**
-	 * Java 1.9.
+	 * Java 9.
 	 */
-	NINE("1.9", "java.security.cert.URICertStoreParameters");
+	NINE("9", Optional.class, "stream"),
+
+	/**
+	 * Java 10.
+	 */
+	TEN("10", Optional.class, "orElseThrow"),
+
+	/**
+	 * Java 11.
+	 */
+	ELEVEN("11", String.class, "strip"),
+
+	/**
+	 * Java 12.
+	 */
+	TWELVE("12", String.class, "describeConstable"),
+
+	/**
+	 * Java 13.
+	 */
+	THIRTEEN("13", String.class, "stripIndent");
 
 	private final String name;
 
 	private final boolean available;
 
-	JavaVersion(String name, String className) {
+	JavaVersion(String name, Class<?> clazz, String methodName) {
 		this.name = name;
-		this.available = ClassUtils.isPresent(className, getClass().getClassLoader());
+		this.available = ClassUtils.hasMethod(clazz, methodName);
 	}
 
 	@Override

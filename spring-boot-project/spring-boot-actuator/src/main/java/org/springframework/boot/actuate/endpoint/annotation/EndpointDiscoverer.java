@@ -403,8 +403,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		private Set<ExtensionBean> extensions = new LinkedHashSet<>();
 
 		EndpointBean(String beanName, Object bean) {
-			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(bean.getClass(), SearchStrategy.EXHAUSTIVE)
-					.get(Endpoint.class);
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations
+					.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
 			String id = annotation.getString("id");
 			Assert.state(StringUtils.hasText(id),
 					() -> "No @Endpoint id attribute specified for " + bean.getClass().getName());
@@ -415,11 +415,11 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			this.filter = getFilter(this.bean.getClass());
 		}
 
-		public void addExtension(ExtensionBean extensionBean) {
+		void addExtension(ExtensionBean extensionBean) {
 			this.extensions.add(extensionBean);
 		}
 
-		public Set<ExtensionBean> getExtensions() {
+		Set<ExtensionBean> getExtensions() {
 			return this.extensions;
 		}
 
@@ -428,23 +428,23 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 					.getValue(MergedAnnotation.VALUE, Class.class).orElse(null);
 		}
 
-		public String getBeanName() {
+		String getBeanName() {
 			return this.beanName;
 		}
 
-		public Object getBean() {
+		Object getBean() {
 			return this.bean;
 		}
 
-		public EndpointId getId() {
+		EndpointId getId() {
 			return this.id;
 		}
 
-		public boolean isEnabledByDefault() {
+		boolean isEnabledByDefault() {
 			return this.enabledByDefault;
 		}
 
-		public Class<?> getFilter() {
+		Class<?> getFilter() {
 			return this.filter;
 		}
 
@@ -466,30 +466,30 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		ExtensionBean(String beanName, Object bean) {
 			this.bean = bean;
 			this.beanName = beanName;
-			MergedAnnotation<EndpointExtension> extensionAnnotation = MergedAnnotations.from(bean.getClass())
-					.get(EndpointExtension.class);
+			MergedAnnotation<EndpointExtension> extensionAnnotation = MergedAnnotations
+					.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(EndpointExtension.class);
 			Class<?> endpointType = extensionAnnotation.getClass("endpoint");
 			MergedAnnotation<Endpoint> endpointAnnotation = MergedAnnotations
-					.from(endpointType, SearchStrategy.EXHAUSTIVE).get(Endpoint.class);
+					.from(endpointType, SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
 			Assert.state(endpointAnnotation.isPresent(),
 					() -> "Extension " + endpointType.getName() + " does not specify an endpoint");
 			this.endpointId = EndpointId.of(endpointAnnotation.getString("id"));
 			this.filter = extensionAnnotation.getClass("filter");
 		}
 
-		public String getBeanName() {
+		String getBeanName() {
 			return this.beanName;
 		}
 
-		public Object getBean() {
+		Object getBean() {
 			return this.bean;
 		}
 
-		public EndpointId getEndpointId() {
+		EndpointId getEndpointId() {
 			return this.endpointId;
 		}
 
-		public Class<?> getFilter() {
+		Class<?> getFilter() {
 			return this.filter;
 		}
 

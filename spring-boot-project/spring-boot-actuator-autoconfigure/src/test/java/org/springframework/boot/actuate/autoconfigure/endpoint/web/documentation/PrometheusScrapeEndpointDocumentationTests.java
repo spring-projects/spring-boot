@@ -48,7 +48,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 	static class TestConfiguration {
 
 		@Bean
-		public PrometheusScrapeEndpoint endpoint() {
+		PrometheusScrapeEndpoint endpoint() {
 			CollectorRegistry collectorRegistry = new CollectorRegistry(true);
 			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((key) -> null, collectorRegistry,
 					Clock.SYSTEM);

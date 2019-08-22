@@ -55,12 +55,12 @@ class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointDocument
 	static class TestConfiguration {
 
 		@Bean
-		public IntegrationGraphServer integrationGraphServer() {
+		IntegrationGraphServer integrationGraphServer() {
 			return new IntegrationGraphServer();
 		}
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
+		IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
 			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 

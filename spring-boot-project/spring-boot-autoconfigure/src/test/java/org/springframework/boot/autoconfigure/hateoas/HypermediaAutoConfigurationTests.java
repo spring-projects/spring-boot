@@ -22,7 +22,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.EntityLinksConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.HypermediaConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -93,7 +92,6 @@ class HypermediaAutoConfigurationTests {
 		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true").applyTo(this.context);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(HypermediaConfiguration.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(EntityLinksConfiguration.class)).isEmpty();
 	}
 
 	@Test
@@ -121,8 +119,7 @@ class HypermediaAutoConfigurationTests {
 		RequestMappingHandlerAdapter handlerAdapter = this.context.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes()).containsExactly(MediaTypes.HAL_JSON,
-						MediaTypes.HAL_JSON_UTF8);
+				assertThat(converter.getSupportedMediaTypes()).containsExactly(MediaTypes.HAL_JSON);
 			}
 		}
 	}

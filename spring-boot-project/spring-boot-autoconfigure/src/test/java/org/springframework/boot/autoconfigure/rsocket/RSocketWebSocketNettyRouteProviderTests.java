@@ -86,19 +86,20 @@ class RSocketWebSocketNettyRouteProviderTests {
 	private RSocketRequester createRSocketRequester(ApplicationContext context, WebServer server) {
 		int port = server.getPort();
 		RSocketRequester.Builder builder = context.getBean(RSocketRequester.Builder.class);
-		return builder.connectWebSocket(URI.create("ws://localhost:" + port + "/rsocket")).block();
+		return builder.dataMimeType(MediaType.APPLICATION_CBOR)
+				.connectWebSocket(URI.create("ws://localhost:" + port + "/rsocket")).block();
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class WebConfiguration {
 
 		@Bean
-		public WebController webController() {
+		WebController webController() {
 			return new WebController();
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory customServerFactory(RSocketWebSocketNettyRouteProvider routeProvider) {
+		NettyReactiveWebServerFactory customServerFactory(RSocketWebSocketNettyRouteProvider routeProvider) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(0);
 			serverFactory.addRouteProviders(routeProvider);
 			return serverFactory;
@@ -111,18 +112,18 @@ class RSocketWebSocketNettyRouteProviderTests {
 
 		@GetMapping(path = "/protocol", produces = MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody
-		public TestProtocol testWebEndpoint() {
+		TestProtocol testWebEndpoint() {
 			return new TestProtocol("http");
 		}
 
 		@MessageMapping("websocket")
-		public TestProtocol testRSocketEndpoint() {
+		TestProtocol testRSocketEndpoint() {
 			return new TestProtocol("rsocket");
 		}
 
 	}
 
-	static class TestProtocol {
+	public static class TestProtocol {
 
 		private String name;
 

@@ -179,7 +179,7 @@ class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public FooEndpointEnabledByDefaultTrue foo() {
+		FooEndpointEnabledByDefaultTrue foo() {
 			return new FooEndpointEnabledByDefaultTrue();
 		}
 
@@ -190,7 +190,7 @@ class ConditionalOnEnabledEndpointTests {
 	static class FooEndpointEnabledByDefaultTrueOnConfigurationConfiguration {
 
 		@Bean
-		public FooEndpointEnabledByDefaultTrue foo() {
+		FooEndpointEnabledByDefaultTrue foo() {
 			return new FooEndpointEnabledByDefaultTrue();
 		}
 
@@ -201,7 +201,7 @@ class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public FooEndpointEnabledByDefaultFalse foo() {
+		FooEndpointEnabledByDefaultFalse foo() {
 			return new FooEndpointEnabledByDefaultFalse();
 		}
 
@@ -212,7 +212,7 @@ class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public FooBarEndpointEnabledByDefaultFalse fooBar() {
+		FooBarEndpointEnabledByDefaultFalse fooBar() {
 			return new FooBarEndpointEnabledByDefaultFalse();
 		}
 
@@ -223,13 +223,13 @@ class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public FooEndpointEnabledByDefaultTrue foo() {
+		FooEndpointEnabledByDefaultTrue foo() {
 			return new FooEndpointEnabledByDefaultTrue();
 		}
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public FooEndpointExtensionEnabledByDefaultTrue fooExt() {
+		FooEndpointExtensionEnabledByDefaultTrue fooExt() {
 			return new FooEndpointExtensionEnabledByDefaultTrue();
 		}
 
@@ -240,13 +240,13 @@ class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public FooEndpointEnabledByDefaultFalse foo() {
+		FooEndpointEnabledByDefaultFalse foo() {
 			return new FooEndpointEnabledByDefaultFalse();
 		}
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public FooEndpointExtensionEnabledByDefaultFalse fooExt() {
+		FooEndpointExtensionEnabledByDefaultFalse fooExt() {
 			return new FooEndpointExtensionEnabledByDefaultFalse();
 		}
 
@@ -257,7 +257,7 @@ class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint(endpoint = FooEndpointEnabledByDefaultTrue.class)
-		public String fooComponent() {
+		String fooComponent() {
 			return "foo";
 		}
 
@@ -268,7 +268,7 @@ class ConditionalOnEnabledEndpointTests {
 
 		@Bean
 		@ConditionalOnEnabledEndpoint
-		public String fooComponent() {
+		String fooComponent() {
 			return "foo";
 		}
 

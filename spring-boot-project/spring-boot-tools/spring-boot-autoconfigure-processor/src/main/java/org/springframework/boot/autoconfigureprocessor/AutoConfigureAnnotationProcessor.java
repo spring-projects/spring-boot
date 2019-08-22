@@ -49,6 +49,7 @@ import javax.tools.StandardLocation;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 1.5.0
  */
 @SupportedAnnotationTypes({ "org.springframework.context.annotation.Configuration",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
@@ -60,7 +61,7 @@ import javax.tools.StandardLocation;
 		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
 public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
-	protected static final String PROPERTIES_PATH = "META-INF/" + "spring-autoconfigure-metadata.properties";
+	protected static final String PROPERTIES_PATH = "META-INF/spring-autoconfigure-metadata.properties";
 
 	private final Map<String, String> annotations;
 

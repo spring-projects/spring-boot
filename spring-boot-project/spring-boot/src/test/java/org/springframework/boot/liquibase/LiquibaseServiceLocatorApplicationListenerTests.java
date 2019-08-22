@@ -83,7 +83,7 @@ class LiquibaseServiceLocatorApplicationListenerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class Conf {
+	static class Conf {
 
 	}
 

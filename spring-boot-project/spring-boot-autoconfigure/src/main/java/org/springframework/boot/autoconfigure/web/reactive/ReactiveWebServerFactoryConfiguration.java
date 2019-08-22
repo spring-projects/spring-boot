@@ -28,12 +28,12 @@ import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
+import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
-import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -60,16 +60,17 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactorResourceFactory reactorServerResourceFactory() {
+		ReactorResourceFactory reactorServerResourceFactory() {
 			return new ReactorResourceFactory();
 		}
 
 		@Bean
-		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory(ReactorResourceFactory resourceFactory,
-				ObjectProvider<NettyRouteProvider> routes) {
+		NettyReactiveWebServerFactory nettyReactiveWebServerFactory(ReactorResourceFactory resourceFactory,
+				ObjectProvider<NettyRouteProvider> routes, ObjectProvider<NettyServerCustomizer> serverCustomizers) {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory();
 			serverFactory.setResourceFactory(resourceFactory);
-			routes.orderedStream().forEach((route) -> serverFactory.addRouteProviders(route));
+			routes.orderedStream().forEach(serverFactory::addRouteProviders);
+			serverFactory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
 			return serverFactory;
 		}
 
@@ -81,7 +82,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedTomcat {
 
 		@Bean
-		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
+		TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
 				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
@@ -104,12 +105,12 @@ abstract class ReactiveWebServerFactoryConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public JettyResourceFactory jettyServerResourceFactory() {
+		JettyResourceFactory jettyServerResourceFactory() {
 			return new JettyResourceFactory();
 		}
 
 		@Bean
-		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory,
+		JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory,
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyReactiveWebServerFactory serverFactory = new JettyReactiveWebServerFactory();
 			serverFactory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
@@ -125,12 +126,9 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedUndertow {
 
 		@Bean
-		public UndertowReactiveWebServerFactory undertowReactiveWebServerFactory(
-				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
+		UndertowReactiveWebServerFactory undertowReactiveWebServerFactory(
 				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
 			UndertowReactiveWebServerFactory factory = new UndertowReactiveWebServerFactory();
-			factory.getDeploymentInfoCustomizers()
-					.addAll(deploymentInfoCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getBuilderCustomizers().addAll(builderCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}

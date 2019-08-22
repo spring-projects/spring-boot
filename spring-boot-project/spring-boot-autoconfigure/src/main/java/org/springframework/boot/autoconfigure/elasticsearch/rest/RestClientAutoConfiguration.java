@@ -16,80 +16,27 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
-import java.time.Duration;
-
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Elasticsearch REST clients.
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestClient.class)
 @EnableConfigurationProperties(RestClientProperties.class)
+@Import({ RestClientConfigurations.RestClientBuilderConfiguration.class,
+		RestClientConfigurations.RestHighLevelClientConfiguration.class,
+		RestClientConfigurations.RestClientFallbackConfiguration.class })
 public class RestClientAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	public RestClient restClient(RestClientBuilder builder) {
-		return builder.build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public RestClientBuilder restClientBuilder(RestClientProperties properties,
-			ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-		HttpHost[] hosts = properties.getUris().stream().map(HttpHost::create).toArray(HttpHost[]::new);
-		RestClientBuilder builder = RestClient.builder(hosts);
-		PropertyMapper map = PropertyMapper.get();
-		map.from(properties::getUsername).whenHasText().to((username) -> {
-			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-			Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
-					properties.getPassword());
-			credentialsProvider.setCredentials(AuthScope.ANY, credentials);
-			builder.setHttpClientConfigCallback(
-					(httpClientBuilder) -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
-		});
-		builder.setRequestConfigCallback((requestConfigBuilder) -> {
-			map.from(properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
-					.to(requestConfigBuilder::setConnectTimeout);
-			map.from(properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
-					.to(requestConfigBuilder::setSocketTimeout);
-			return requestConfigBuilder;
-		});
-		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-		return builder;
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(RestHighLevelClient.class)
-	public static class RestHighLevelClientConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public RestHighLevelClient restHighLevelClient(RestClientBuilder restClientBuilder) {
-			return new RestHighLevelClient(restClientBuilder);
-		}
-
-	}
 
 }

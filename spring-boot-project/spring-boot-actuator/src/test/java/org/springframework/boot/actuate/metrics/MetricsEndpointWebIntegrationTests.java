@@ -71,17 +71,17 @@ class MetricsEndpointWebIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public MeterRegistry registry() {
+		MeterRegistry registry() {
 			return registry;
 		}
 
 		@Bean
-		public MetricsEndpoint metricsEndpoint(MeterRegistry meterRegistry) {
+		MetricsEndpoint metricsEndpoint(MeterRegistry meterRegistry) {
 			return new MetricsEndpoint(meterRegistry);
 		}
 
 		@Bean
-		public JvmMemoryMetrics jvmMemoryMetrics(MeterRegistry meterRegistry) {
+		JvmMemoryMetrics jvmMemoryMetrics(MeterRegistry meterRegistry) {
 			JvmMemoryMetrics memoryMetrics = new JvmMemoryMetrics();
 			memoryMetrics.bindTo(meterRegistry);
 			return memoryMetrics;

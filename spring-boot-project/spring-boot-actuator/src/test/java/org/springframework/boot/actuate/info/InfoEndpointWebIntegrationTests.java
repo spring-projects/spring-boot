@@ -47,15 +47,15 @@ class InfoEndpointWebIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public InfoEndpoint endpoint(ObjectProvider<InfoContributor> infoContributors) {
+		InfoEndpoint endpoint(ObjectProvider<InfoContributor> infoContributors) {
 			return new InfoEndpoint(infoContributors.orderedStream().collect(Collectors.toList()));
 		}
 
 		@Bean
-		public InfoContributor beanName1() {
+		InfoContributor beanName1() {
 			return (builder) -> {
 				Map<String, Object> content = new LinkedHashMap<>();
 				content.put("key11", "value11");
@@ -65,7 +65,7 @@ class InfoEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public InfoContributor beanName2() {
+		InfoContributor beanName2() {
 			return (builder) -> {
 				Map<String, Object> content = new LinkedHashMap<>();
 				content.put("key21", "value21");

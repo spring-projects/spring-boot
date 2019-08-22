@@ -66,10 +66,10 @@ class AuditEventsEndpointAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomAuditEventRepositoryConfiguration {
+	static class CustomAuditEventRepositoryConfiguration {
 
 		@Bean
-		public InMemoryAuditEventRepository testAuditEventRepository() {
+		InMemoryAuditEventRepository testAuditEventRepository() {
 			return new InMemoryAuditEventRepository();
 		}
 

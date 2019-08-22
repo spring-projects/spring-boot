@@ -134,7 +134,7 @@ class EndpointServletTests {
 		assertThat(endpointServlet.getLoadOnStartup()).isEqualTo(3);
 	}
 
-	private static class TestServlet extends GenericServlet {
+	static class TestServlet extends GenericServlet {
 
 		@Override
 		public void service(ServletRequest req, ServletResponse res) {

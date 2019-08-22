@@ -22,6 +22,7 @@ import java.util.Set;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -38,8 +39,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} for registering {@link ConfigurationProperties}
- * bean definitions via scanning.
+ * {@link ImportBeanDefinitionRegistrar} for registering
+ * {@link ConfigurationProperties @ConfigurationProperties} bean definitions via scanning.
  *
  * @author Madhura Bhave
  */
@@ -82,6 +83,9 @@ class ConfigurationPropertiesScanRegistrar
 		scanner.setEnvironment(this.environment);
 		scanner.setResourceLoader(this.resourceLoader);
 		scanner.addIncludeFilter(new AnnotationTypeFilter(ConfigurationProperties.class));
+		TypeExcludeFilter typeExcludeFilter = new TypeExcludeFilter();
+		typeExcludeFilter.setBeanFactory(beanFactory);
+		scanner.addExcludeFilter(typeExcludeFilter);
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
 				scan(beanFactory, registry, scanner, basePackage);
@@ -106,7 +110,7 @@ class ConfigurationPropertiesScanRegistrar
 
 	private void validateScanConfiguration(Class<?> type) {
 		MergedAnnotation<Component> component = MergedAnnotations
-				.from(type, MergedAnnotations.SearchStrategy.EXHAUSTIVE).get(Component.class);
+				.from(type, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY).get(Component.class);
 		if (component.isPresent()) {
 			throw new InvalidConfigurationPropertiesException(type, component.getRoot().getType());
 		}

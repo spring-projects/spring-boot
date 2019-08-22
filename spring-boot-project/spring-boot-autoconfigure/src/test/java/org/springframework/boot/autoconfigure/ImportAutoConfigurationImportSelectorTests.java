@@ -312,7 +312,7 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	}
 
-	private static class TestImportAutoConfigurationImportSelector extends ImportAutoConfigurationImportSelector {
+	static class TestImportAutoConfigurationImportSelector extends ImportAutoConfigurationImportSelector {
 
 		@Override
 		protected Collection<String> loadFactoryNames(Class<?> source) {

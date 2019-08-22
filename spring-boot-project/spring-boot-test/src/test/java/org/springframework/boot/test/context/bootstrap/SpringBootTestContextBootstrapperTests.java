@@ -42,7 +42,7 @@ class SpringBootTestContextBootstrapperTests {
 				.isThrownBy(() -> buildTestContext(SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class))
 				.withMessageContaining("@WebAppConfiguration should only be used with "
 						+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
-						+ "environment. Please remove @WebAppConfiguration or reconfigure " + "@SpringBootTest.");
+						+ "environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");
 	}
 
 	@Test
@@ -63,13 +63,13 @@ class SpringBootTestContextBootstrapperTests {
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 	@WebAppConfiguration
-	private static class SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration {
+	static class SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration {
 
 	}
 
 	@SpringBootTest
 	@WebAppConfiguration
-	private static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
+	static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
 
 	}
 

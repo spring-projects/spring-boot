@@ -43,7 +43,7 @@ class PropertySourcesDeducer {
 		this.applicationContext = applicationContext;
 	}
 
-	public PropertySources getPropertySources() {
+	PropertySources getPropertySources() {
 		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
 		if (configurer != null) {
 			return configurer.getAppliedPropertySources();
@@ -53,7 +53,7 @@ class PropertySourcesDeducer {
 			return sources;
 		}
 		throw new IllegalStateException(
-				"Unable to obtain PropertySources from " + "PropertySourcesPlaceholderConfigurer or Environment");
+				"Unable to obtain PropertySources from PropertySourcesPlaceholderConfigurer or Environment");
 	}
 
 	private MutablePropertySources extractEnvironmentPropertySources() {
@@ -72,7 +72,7 @@ class PropertySourcesDeducer {
 			return beans.values().iterator().next();
 		}
 		if (beans.size() > 1 && logger.isWarnEnabled()) {
-			logger.warn("Multiple PropertySourcesPlaceholderConfigurer " + "beans registered " + beans.keySet()
+			logger.warn("Multiple PropertySourcesPlaceholderConfigurer beans registered " + beans.keySet()
 					+ ", falling back to Environment");
 		}
 		return null;

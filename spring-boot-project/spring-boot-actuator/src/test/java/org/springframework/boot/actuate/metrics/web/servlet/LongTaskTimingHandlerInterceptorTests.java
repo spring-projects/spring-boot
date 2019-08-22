@@ -162,7 +162,7 @@ class LongTaskTimingHandlerInterceptorTests {
 		@Timed
 		@Timed(value = "my.long.request", extraTags = { "region", "test" }, longTask = true)
 		@GetMapping("/callable/{id}")
-		public Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
+		Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
 			this.callableBarrier.await();
 			return () -> {
 				try {

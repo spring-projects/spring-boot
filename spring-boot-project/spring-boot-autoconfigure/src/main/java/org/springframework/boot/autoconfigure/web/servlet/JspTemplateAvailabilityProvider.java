@@ -31,7 +31,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 1.1.0
+ * @since 2.0.0
  */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 

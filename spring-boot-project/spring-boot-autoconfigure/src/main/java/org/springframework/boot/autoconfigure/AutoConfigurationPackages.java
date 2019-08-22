@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke
+ * @since 1.0.0
  */
 public abstract class AutoConfigurationPackages {
 
@@ -140,7 +141,7 @@ public abstract class AutoConfigurationPackages {
 			this.packageName = ClassUtils.getPackageName(metadata.getClassName());
 		}
 
-		public String getPackageName() {
+		String getPackageName() {
 			return this.packageName;
 		}
 
@@ -183,7 +184,7 @@ public abstract class AutoConfigurationPackages {
 			this.packages = packages;
 		}
 
-		public List<String> get() {
+		List<String> get() {
 			if (!this.loggedBasePackageInfo) {
 				if (this.packages.isEmpty()) {
 					if (logger.isWarnEnabled()) {
@@ -195,8 +196,8 @@ public abstract class AutoConfigurationPackages {
 				else {
 					if (logger.isDebugEnabled()) {
 						String packageNames = StringUtils.collectionToCommaDelimitedString(this.packages);
-						logger.debug("@EnableAutoConfiguration was declared on a class " + "in the package '"
-								+ packageNames + "'. Automatic @Repository and @Entity scanning is " + "enabled.");
+						logger.debug("@EnableAutoConfiguration was declared on a class in the package '" + packageNames
+								+ "'. Automatic @Repository and @Entity scanning is enabled.");
 					}
 				}
 				this.loggedBasePackageInfo = true;

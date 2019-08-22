@@ -49,7 +49,7 @@ class MockitoPostProcessorTests {
 		context.register(MultipleBeans.class);
 		assertThatIllegalStateException().isThrownBy(context::refresh)
 				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace " + "but found [example1, example2]");
+						+ " expected a single matching bean to replace but found [example1, example2]");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class MockitoPostProcessorTests {
 		context.register(MultipleQualifiedBeans.class);
 		assertThatIllegalStateException().isThrownBy(context::refresh)
 				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
-						+ " expected a single matching bean to replace " + "but found [example1, example3]");
+						+ " expected a single matching bean to replace but found [example1, example3]");
 	}
 
 	@Test
@@ -67,7 +67,7 @@ class MockitoPostProcessorTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
-		factoryBeanDefinition.setAttribute("factoryBeanObjectType", SomeInterface.class.getName());
+		factoryBeanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, SomeInterface.class.getName());
 		context.registerBeanDefinition("beanToBeMocked", factoryBeanDefinition);
 		context.register(MockedFactoryBean.class);
 		context.refresh();
@@ -128,7 +128,7 @@ class MockitoPostProcessorTests {
 	static class MockedFactoryBean {
 
 		@Bean
-		public TestFactoryBean testFactoryBean() {
+		TestFactoryBean testFactoryBean() {
 			return new TestFactoryBean();
 		}
 
@@ -139,12 +139,12 @@ class MockitoPostProcessorTests {
 	static class MultipleBeans {
 
 		@Bean
-		public ExampleService example1() {
+		ExampleService example1() {
 			return new FailingExampleService();
 		}
 
 		@Bean
-		public ExampleService example2() {
+		ExampleService example2() {
 			return new FailingExampleService();
 		}
 
@@ -159,18 +159,18 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService example1() {
+		ExampleService example1() {
 			return new FailingExampleService();
 		}
 
 		@Bean
-		public ExampleService example2() {
+		ExampleService example2() {
 			return new FailingExampleService();
 		}
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService example3() {
+		ExampleService example3() {
 			return new FailingExampleService();
 		}
 
@@ -184,13 +184,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
@@ -205,13 +205,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
@@ -225,13 +225,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 
@@ -246,13 +246,13 @@ class MockitoPostProcessorTests {
 
 		@Bean
 		@Qualifier("test")
-		public ExampleService exampleQualified() {
+		ExampleService exampleQualified() {
 			return new RealExampleService("qualified");
 		}
 
 		@Bean
 		@Primary
-		public ExampleService examplePrimary() {
+		ExampleService examplePrimary() {
 			return new RealExampleService("primary");
 		}
 

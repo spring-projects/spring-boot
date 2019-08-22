@@ -29,11 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @param <D> the data source pool metadata type
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 
 	/**
-	 * Return a data source metadata instance with a min size of 0 and max size of 2.
+	 * Return a data source metadata instance with a min size of 0 and max size of 2. Idle
+	 * connections are not reclaimed immediately.
 	 * @return the data source metadata
 	 */
 	protected abstract D getDataSourceMetadata();
@@ -65,6 +67,13 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0.5F));
 			return null;
 		});
+	}
+
+	@Test
+	void getIdle() {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
+		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
+		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(Integer.valueOf(1));
 	}
 
 	@Test

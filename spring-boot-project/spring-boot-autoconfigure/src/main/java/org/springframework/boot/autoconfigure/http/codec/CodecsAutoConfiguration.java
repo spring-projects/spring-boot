@@ -57,7 +57,7 @@ public class CodecsAutoConfiguration {
 		@Bean
 		@Order(0)
 		@ConditionalOnBean(ObjectMapper.class)
-		public CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
+		CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
 			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
 				defaults.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
@@ -73,7 +73,7 @@ public class CodecsAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		public CodecCustomizer loggingCodecCustomizer(HttpProperties properties) {
+		CodecCustomizer loggingCodecCustomizer(HttpProperties properties) {
 			return (configurer) -> configurer.defaultCodecs()
 					.enableLoggingRequestDetails(properties.isLogRequestDetails());
 		}

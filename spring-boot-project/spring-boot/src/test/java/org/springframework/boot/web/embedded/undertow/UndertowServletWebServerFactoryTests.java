@@ -22,11 +22,8 @@ import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.SSLException;
@@ -42,7 +39,6 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.ErrorPage;
-import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -259,15 +255,6 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	protected Map<String, String> getActualMimeMappings() {
 		return ((UndertowServletWebServer) this.webServer).getDeploymentManager().getDeployment()
 				.getMimeExtensionMappings();
-	}
-
-	@Override
-	protected Collection<Mapping> getExpectedMimeMappings() {
-		// Unlike Tomcat and Jetty, Undertow performs a case-sensitive match on file
-		// extension so it has a mapping for "z" and "Z".
-		Set<Mapping> expectedMappings = new HashSet<>(super.getExpectedMimeMappings());
-		expectedMappings.add(new Mapping("Z", "application/x-compress"));
-		return expectedMappings;
 	}
 
 	@Override

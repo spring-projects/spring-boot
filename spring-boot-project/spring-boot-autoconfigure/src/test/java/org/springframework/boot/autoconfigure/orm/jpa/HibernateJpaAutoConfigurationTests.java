@@ -409,7 +409,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		private boolean called;
 
 		@Autowired
-		public void validateDataSourceIsInitialized(EntityManagerFactory entityManagerFactory) {
+		void validateDataSourceIsInitialized(EntityManagerFactory entityManagerFactory) {
 			// Inject the entity manager to validate it is initialized at the injection
 			// point
 			EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -425,7 +425,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	static class TestImplicitNamingStrategyConfiguration {
 
 		@Bean
-		public ImplicitNamingStrategy testImplicitNamingStrategy() {
+		ImplicitNamingStrategy testImplicitNamingStrategy() {
 			return new SpringImplicitNamingStrategy();
 		}
 
@@ -435,7 +435,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	static class TestPhysicalNamingStrategyConfiguration {
 
 		@Bean
-		public PhysicalNamingStrategy testPhysicalNamingStrategy() {
+		PhysicalNamingStrategy testPhysicalNamingStrategy() {
 			return new SpringPhysicalNamingStrategy();
 		}
 
@@ -449,7 +449,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		private final ImplicitNamingStrategy implicitNamingStrategy = new SpringImplicitNamingStrategy();
 
 		@Bean
-		public HibernatePropertiesCustomizer testHibernatePropertiesCustomizer() {
+		HibernatePropertiesCustomizer testHibernatePropertiesCustomizer() {
 			return (hibernateProperties) -> {
 				hibernateProperties.put("hibernate.physical_naming_strategy", this.physicalNamingStrategy);
 				hibernateProperties.put("hibernate.implicit_naming_strategy", this.implicitNamingStrategy);
@@ -462,7 +462,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	static class DisableBeanContainerConfiguration {
 
 		@Bean
-		public HibernatePropertiesCustomizer disableBeanContainerHibernatePropertiesCustomizer() {
+		HibernatePropertiesCustomizer disableBeanContainerHibernatePropertiesCustomizer() {
 			return (hibernateProperties) -> hibernateProperties.remove(AvailableSettings.BEAN_CONTAINER);
 		}
 
@@ -502,7 +502,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	}
 
-	private static class HideDataScriptClassLoader extends URLClassLoader {
+	static class HideDataScriptClassLoader extends URLClassLoader {
 
 		private static final List<String> HIDDEN_RESOURCES = Arrays.asList("schema-all.sql", "schema.sql");
 
@@ -524,7 +524,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	static class JpaUsingApplicationListenerConfiguration {
 
 		@Bean
-		public EventCapturingApplicationListener jpaUsingApplicationListener(EntityManagerFactory emf) {
+		EventCapturingApplicationListener jpaUsingApplicationListener(EntityManagerFactory emf) {
 			return new EventCapturingApplicationListener();
 		}
 
@@ -545,12 +545,12 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	static class AsyncBootstrappingConfiguration {
 
 		@Bean
-		public ThreadPoolTaskExecutor ThreadPoolTaskExecutor() {
+		ThreadPoolTaskExecutor ThreadPoolTaskExecutor() {
 			return new ThreadPoolTaskExecutor();
 		}
 
 		@Bean
-		public EntityManagerFactoryBuilderCustomizer asyncBootstrappingCustomizer(ThreadPoolTaskExecutor executor) {
+		EntityManagerFactoryBuilderCustomizer asyncBootstrappingCustomizer(ThreadPoolTaskExecutor executor) {
 			return (builder) -> builder.setBootstrapExecutor(executor);
 		}
 

@@ -87,10 +87,10 @@ class ConditionalOnWebApplicationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication
-	protected static class AnyWebApplicationConfiguration {
+	static class AnyWebApplicationConfiguration {
 
 		@Bean
-		public String any() {
+		String any() {
 			return "any";
 		}
 
@@ -98,10 +98,10 @@ class ConditionalOnWebApplicationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	protected static class ServletWebApplicationConfiguration {
+	static class ServletWebApplicationConfiguration {
 
 		@Bean
-		public String servlet() {
+		String servlet() {
 			return "servlet";
 		}
 
@@ -109,20 +109,20 @@ class ConditionalOnWebApplicationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	protected static class ReactiveWebApplicationConfiguration {
+	static class ReactiveWebApplicationConfiguration {
 
 		@Bean
-		public String reactive() {
+		String reactive() {
 			return "reactive";
 		}
 
 		@Bean
-		public ReactiveWebServerFactory reactiveWebServerFactory() {
+		ReactiveWebServerFactory reactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return (request, response) -> Mono.empty();
 		}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.rsocket;
 import java.net.InetAddress;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.rsocket.server.RSocketServer;
 
 /**
  * {@link ConfigurationProperties properties} for RSocket support.
@@ -50,7 +51,7 @@ public class RSocketProperties {
 		/**
 		 * RSocket transport protocol.
 		 */
-		private Transport transport = Transport.TCP;
+		private RSocketServer.TRANSPORT transport = RSocketServer.TRANSPORT.TCP;
 
 		/**
 		 * Path under which RSocket handles requests (only works with websocket
@@ -74,11 +75,11 @@ public class RSocketProperties {
 			this.address = address;
 		}
 
-		public Transport getTransport() {
+		public RSocketServer.TRANSPORT getTransport() {
 			return this.transport;
 		}
 
-		public void setTransport(Transport transport) {
+		public void setTransport(RSocketServer.TRANSPORT transport) {
 			this.transport = transport;
 		}
 
@@ -88,12 +89,6 @@ public class RSocketProperties {
 
 		public void setMappingPath(String mappingPath) {
 			this.mappingPath = mappingPath;
-		}
-
-		public enum Transport {
-
-			TCP, WEBSOCKET
-
 		}
 
 	}

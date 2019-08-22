@@ -231,20 +231,20 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomTransactionManagerConfig {
+	static class CustomTransactionManagerConfig {
 
 		@Bean
-		public PlatformTransactionManager transactionManager() {
+		PlatformTransactionManager transactionManager() {
 			return mock(PlatformTransactionManager.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class PoolConfiguration {
+	static class PoolConfiguration {
 
 		@Bean
-		public ConnectionFactory pooledConnectionFactory(XAConnectionFactoryWrapper wrapper) throws Exception {
+		ConnectionFactory pooledConnectionFactory(XAConnectionFactoryWrapper wrapper) throws Exception {
 			XAConnectionFactory connectionFactory = mock(XAConnectionFactory.class);
 			XAConnection connection = mock(XAConnection.class);
 			XASession session = mock(XASession.class);
@@ -258,7 +258,7 @@ class JtaAutoConfigurationTests {
 		}
 
 		@Bean
-		public DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
+		DataSource pooledDataSource(XADataSourceWrapper wrapper) throws Exception {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
 		}

@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
  * Simplest cache configuration, usually used as a fallback.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(CacheManager.class)
@@ -37,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 class SimpleCacheConfiguration {
 
 	@Bean
-	public ConcurrentMapCacheManager cacheManager(CacheProperties cacheProperties,
+	ConcurrentMapCacheManager cacheManager(CacheProperties cacheProperties,
 			CacheManagerCustomizers cacheManagerCustomizers) {
 		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
 		List<String> cacheNames = cacheProperties.getCacheNames();

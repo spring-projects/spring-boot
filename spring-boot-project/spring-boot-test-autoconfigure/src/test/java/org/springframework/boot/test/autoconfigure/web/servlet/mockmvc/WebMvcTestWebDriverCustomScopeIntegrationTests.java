@@ -64,7 +64,7 @@ class WebMvcTestWebDriverCustomScopeIntegrationTests {
 
 		@Bean
 		@Scope("singleton")
-		public WebDriverFactory webDriver(MockMvc mockMvc) {
+		WebDriverFactory webDriver(MockMvc mockMvc) {
 			return new WebDriverFactory(mockMvc);
 		}
 

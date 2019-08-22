@@ -105,7 +105,7 @@
     {
       "name": "logging.file.max-history",
       "type": "java.lang.Integer",
-      "description": "Maximum of archive log files to keep. Only supported with the default logback setup.",
+      "description": "Maximum number of days archive log files are kept. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 7
     },
@@ -718,6 +718,13 @@
       "type": "java.util.List<java.lang.String>",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
+    },
+    {
+      "name": "spring.reactor.debug-agent.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
+      "description": "Whether the Reactor Debug Agent should be enabled when reactor-tools is present.",
+      "defaultValue": true
     },
     {
       "name": "trace",

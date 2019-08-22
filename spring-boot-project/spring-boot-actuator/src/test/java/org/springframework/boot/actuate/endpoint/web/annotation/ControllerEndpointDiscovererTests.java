@@ -178,7 +178,7 @@ class ControllerEndpointDiscovererTests {
 	static class TestControllerWithOperation {
 
 		@ReadOperation
-		public String read() {
+		String read() {
 			return "error";
 		}
 

@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataSourceJmxConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.datasource.url=" + "jdbc:hsqldb:mem:test-" + UUID.randomUUID())
+			.withPropertyValues("spring.datasource.url=jdbc:hsqldb:mem:test-" + UUID.randomUUID())
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, DataSourceAutoConfiguration.class));
 
 	@Test
@@ -167,13 +167,13 @@ class DataSourceJmxConfigurationTests {
 	static class DataSourceProxyConfiguration {
 
 		@Bean
-		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+		static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
 			return new DataSourceBeanPostProcessor();
 		}
 
 	}
 
-	private static class DataSourceBeanPostProcessor implements BeanPostProcessor {
+	static class DataSourceBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
@@ -189,14 +189,12 @@ class DataSourceJmxConfigurationTests {
 	static class DataSourceDelegateConfiguration {
 
 		@Bean
-		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+		static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
 			return new DataSourceBeanPostProcessor() {
 				@Override
 				public Object postProcessAfterInitialization(Object bean, String beanName) {
-					if (bean instanceof javax.sql.DataSource) {
-						return new DelegatingDataSource((javax.sql.DataSource) bean);
-					}
-					return bean;
+					return (bean instanceof javax.sql.DataSource)
+							? new DelegatingDataSource((javax.sql.DataSource) bean) : bean;
 				}
 			};
 		}

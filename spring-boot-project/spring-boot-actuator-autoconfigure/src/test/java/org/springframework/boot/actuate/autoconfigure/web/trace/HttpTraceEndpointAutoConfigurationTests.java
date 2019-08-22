@@ -71,7 +71,7 @@ class HttpTraceEndpointAutoConfigurationTests {
 	static class HttpTraceRepositoryConfiguration {
 
 		@Bean
-		public InMemoryHttpTraceRepository customRepository() {
+		InMemoryHttpTraceRepository customRepository() {
 			return new InMemoryHttpTraceRepository();
 		}
 

@@ -48,7 +48,7 @@ class WebMvcTestServletFilterRegistrationDisabledIntegrationTests {
 	static class DisabledRegistrationConfiguration {
 
 		@Bean
-		public FilterRegistrationBean<ExampleFilter> exampleFilterRegistration(ExampleFilter filter) {
+		FilterRegistrationBean<ExampleFilter> exampleFilterRegistration(ExampleFilter filter) {
 			FilterRegistrationBean<ExampleFilter> registration = new FilterRegistrationBean<>(filter);
 			registration.setEnabled(false);
 			return registration;

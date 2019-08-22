@@ -56,12 +56,12 @@ class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 
 		@Bean
 		@Primary
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 		@Bean
-		public DataSource secondaryDataSource() {
+		DataSource secondaryDataSource() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL).build();
 		}
 

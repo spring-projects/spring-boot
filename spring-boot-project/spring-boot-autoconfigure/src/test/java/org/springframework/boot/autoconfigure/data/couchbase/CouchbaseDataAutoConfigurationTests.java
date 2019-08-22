@@ -159,7 +159,7 @@ class CouchbaseDataAutoConfigurationTests {
 	static class CustomConversionsConfig {
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
-		public CouchbaseCustomConversions myCustomConversions() {
+		CouchbaseCustomConversions myCustomConversions() {
 			return new CouchbaseCustomConversions(Collections.singletonList(new MyConverter()));
 		}
 

@@ -30,7 +30,6 @@ import org.json.JSONObject;
  * Define the metadata available for a particular service instance.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class InitializrServiceMetadata {
 
@@ -79,7 +78,7 @@ class InitializrServiceMetadata {
 	 * Return the dependencies supported by the service.
 	 * @return the supported dependencies
 	 */
-	public Collection<Dependency> getDependencies() {
+	Collection<Dependency> getDependencies() {
 		return this.dependencies.values();
 	}
 
@@ -89,7 +88,7 @@ class InitializrServiceMetadata {
 	 * @param id the id
 	 * @return the dependency or {@code null}
 	 */
-	public Dependency getDependency(String id) {
+	Dependency getDependency(String id) {
 		return this.dependencies.get(id);
 	}
 
@@ -97,7 +96,7 @@ class InitializrServiceMetadata {
 	 * Return the project types supported by the service.
 	 * @return the supported project types
 	 */
-	public Map<String, ProjectType> getProjectTypes() {
+	Map<String, ProjectType> getProjectTypes() {
 		return this.projectTypes.getContent();
 	}
 
@@ -106,7 +105,7 @@ class InitializrServiceMetadata {
 	 * default.
 	 * @return the default project type or {@code null}
 	 */
-	public ProjectType getDefaultType() {
+	ProjectType getDefaultType() {
 		if (this.projectTypes.getDefaultItem() != null) {
 			return this.projectTypes.getDefaultItem();
 		}
@@ -121,7 +120,7 @@ class InitializrServiceMetadata {
 	 * Returns the defaults applicable to the service.
 	 * @return the defaults of the service
 	 */
-	public Map<String, String> getDefaults() {
+	Map<String, String> getDefaults() {
 		return this.defaults;
 	}
 
@@ -230,15 +229,15 @@ class InitializrServiceMetadata {
 			this.content = new HashMap<>();
 		}
 
-		public Map<K, T> getContent() {
+		Map<K, T> getContent() {
 			return this.content;
 		}
 
-		public T getDefaultItem() {
+		T getDefaultItem() {
 			return this.defaultItem;
 		}
 
-		public void setDefaultItem(T defaultItem) {
+		void setDefaultItem(T defaultItem) {
 			this.defaultItem = defaultItem;
 		}
 

@@ -24,7 +24,6 @@ import java.util.List;
  * A raw metadata structure. Used to initialize a {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class RawConfigurationMetadata {
 
@@ -44,11 +43,11 @@ class RawConfigurationMetadata {
 		}
 	}
 
-	public List<ConfigurationMetadataSource> getSources() {
+	List<ConfigurationMetadataSource> getSources() {
 		return this.sources;
 	}
 
-	public ConfigurationMetadataSource getSource(ConfigurationMetadataItem item) {
+	ConfigurationMetadataSource getSource(ConfigurationMetadataItem item) {
 		if (item.getSourceType() == null) {
 			return null;
 		}
@@ -58,11 +57,11 @@ class RawConfigurationMetadata {
 				.max(Comparator.comparingInt((candidate) -> candidate.getGroupId().length())).orElse(null);
 	}
 
-	public List<ConfigurationMetadataItem> getItems() {
+	List<ConfigurationMetadataItem> getItems() {
 		return this.items;
 	}
 
-	public List<ConfigurationMetadataHint> getHints() {
+	List<ConfigurationMetadataHint> getHints() {
 		return this.hints;
 	}
 

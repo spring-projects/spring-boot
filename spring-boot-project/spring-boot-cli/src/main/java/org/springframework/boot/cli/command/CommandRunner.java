@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * Main class used to run {@link Command}s.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see #addCommand(Command)
  * @see CommandRunner#runAndHandleErrors(String[])
  */
@@ -187,9 +188,9 @@ public class CommandRunner implements Iterable<Command> {
 		List<String> rtn = new ArrayList<>(args.length);
 		boolean appArgsDetected = false;
 		for (String arg : args) {
-			// Allow apps to have a -d argument
+			// Allow apps to have a --debug argument
 			appArgsDetected |= "--".equals(arg);
-			if (("-d".equals(arg) || "--debug".equals(arg)) && !appArgsDetected) {
+			if ("--debug".equals(arg) && !appArgsDetected) {
 				continue;
 			}
 			rtn.add(arg);
@@ -283,7 +284,7 @@ public class CommandRunner implements Iterable<Command> {
 		}
 		Log.info("");
 		Log.info("Common options:");
-		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "-d, --debug", "Verbose mode",
+		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "--debug", "Verbose mode",
 				"Print additional status information for the command you are running"));
 		Log.info("");
 		Log.info("");

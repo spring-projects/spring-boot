@@ -178,7 +178,7 @@ class ApplicationContextAssertProviderTests {
 	void toStringWhenContextFailsToStartShouldReturnSimpleString() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThat(context.toString()).isEqualTo("Unstarted application context "
-				+ "org.springframework.context.ApplicationContext" + "[startupFailure=java.lang.RuntimeException]");
+				+ "org.springframework.context.ApplicationContext[startupFailure=java.lang.RuntimeException]");
 	}
 
 	@Test
@@ -193,13 +193,11 @@ class ApplicationContextAssertProviderTests {
 				ApplicationContext.class, contextSupplier);
 	}
 
-	private interface TestAssertProviderApplicationContext
-			extends ApplicationContextAssertProvider<ApplicationContext> {
+	interface TestAssertProviderApplicationContext extends ApplicationContextAssertProvider<ApplicationContext> {
 
 	}
 
-	private abstract static class TestAssertProviderApplicationContextClass
-			implements TestAssertProviderApplicationContext {
+	abstract static class TestAssertProviderApplicationContextClass implements TestAssertProviderApplicationContext {
 
 	}
 

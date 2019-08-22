@@ -130,7 +130,7 @@ class PropertiesMigrationReporterTests {
 		String report = createErrorReport(loadRepository("metadata/type-conversion-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).containsSubsequence("Property source 'test'", "wrong.inconvertible", "Line: 1",
-				"Reason: Replacement key " + "'test.inconvertible' uses an incompatible target type");
+				"Reason: Replacement key 'test.inconvertible' uses an incompatible target type");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ import org.springframework.boot.convert.DurationStyle;
  * {@link Duration} (applicable to only timers).
  *
  * @author Phillip Webb
+ * @since 2.2.0
  */
-final class MeterValue {
+public final class MeterValue {
 
 	private final Object value;
 
@@ -43,8 +44,7 @@ final class MeterValue {
 	}
 
 	/**
-	 * Return the underlying value of the SLA in form suitable to apply to the given meter
-	 * type.
+	 * Return the underlying value in form suitable to apply to the given meter type.
 	 * @param meterType the meter type
 	 * @return the value or {@code null} if the value cannot be applied
 	 */

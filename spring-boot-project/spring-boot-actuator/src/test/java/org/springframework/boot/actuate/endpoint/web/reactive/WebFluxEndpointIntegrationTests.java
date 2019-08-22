@@ -41,6 +41,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.WebFilter;
@@ -107,28 +108,29 @@ class WebFluxEndpointIntegrationTests
 		private int port;
 
 		@Bean
-		public NettyReactiveWebServerFactory netty() {
+		NettyReactiveWebServerFactory netty() {
 			return new NettyReactiveWebServerFactory(0);
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ApplicationContext applicationContext) {
+		HttpHandler httpHandler(ApplicationContext applicationContext) {
 			return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 		}
 
 		@Bean
-		public WebFluxEndpointHandlerMapping webEndpointHandlerMapping(Environment environment,
+		WebFluxEndpointHandlerMapping webEndpointHandlerMapping(Environment environment,
 				WebEndpointDiscoverer endpointDiscoverer, EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
-			return new WebFluxEndpointHandlerMapping(new EndpointMapping(environment.getProperty("endpointPath")),
+			String endpointPath = environment.getProperty("endpointPath");
+			return new WebFluxEndpointHandlerMapping(new EndpointMapping(endpointPath),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes, corsConfiguration,
-					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
+					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()), StringUtils.hasText(endpointPath));
 		}
 
 		@Bean
-		public ApplicationListener<ReactiveWebServerInitializedEvent> serverInitializedListener() {
+		ApplicationListener<ReactiveWebServerInitializedEvent> serverInitializedListener() {
 			return (event) -> this.port = event.getWebServer().getPort();
 		}
 
@@ -138,7 +140,7 @@ class WebFluxEndpointIntegrationTests
 	static class AuthenticatedConfiguration {
 
 		@Bean
-		public WebFilter webFilter() {
+		WebFilter webFilter() {
 			return (exchange, chain) -> chain.filter(exchange).subscriberContext(
 					ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken("Alice",
 							"secret", Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR")))));

@@ -64,7 +64,7 @@ public class DependencyManagementPluginActionIntegrationTests {
 		assertThat(output).contains("During the build, one or more dependencies that "
 				+ "were declared without a version failed to resolve:");
 		assertThat(output).contains("org.springframework.boot:spring-boot-starter-web:");
-		assertThat(output).contains("Did you forget to apply the " + "io.spring.dependency-management plugin to the "
+		assertThat(output).contains("Did you forget to apply the io.spring.dependency-management plugin to the "
 				+ this.gradleBuild.getProjectDir().getName() + " project?");
 	}
 

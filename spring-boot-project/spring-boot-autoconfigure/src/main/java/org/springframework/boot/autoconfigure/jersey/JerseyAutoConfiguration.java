@@ -77,6 +77,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
@@ -200,7 +201,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	static class JacksonResourceConfigCustomizer {
 
 		@Bean
-		public ResourceConfigCustomizer resourceConfigCustomizer(final ObjectMapper objectMapper) {
+		ResourceConfigCustomizer resourceConfigCustomizer(final ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);
 				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
@@ -212,7 +213,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		static class JaxbObjectMapperCustomizer {
 
 			@Autowired
-			public void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
+			void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
 				JaxbAnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(
 						objectMapper.getTypeFactory());
 				objectMapper.setAnnotationIntrospectors(

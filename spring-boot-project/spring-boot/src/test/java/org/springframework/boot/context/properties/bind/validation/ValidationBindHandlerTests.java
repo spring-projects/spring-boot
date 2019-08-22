@@ -118,12 +118,13 @@ class ValidationBindHandlerTests {
 	}
 
 	@Test
-	void bindShouldFailWithAccessToName() {
+	void bindShouldFailWithAccessToNameAndValue() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
 		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo");
 		assertThat(cause.getMessage()).contains("nested.age");
+		assertThat(cause.getMessage()).contains("rejected value [4]");
 	}
 
 	@Test
@@ -167,7 +168,7 @@ class ValidationBindHandlerTests {
 
 	@Test
 	void bindShouldValidateIfOtherHandlersInChainIgnoreError() {
-		TestHandler testHandler = new TestHandler();
+		TestHandler testHandler = new TestHandler(null);
 		this.handler = new ValidationBindHandler(testHandler, this.validator);
 		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));
 		ExampleValidatedBean bean = new ExampleValidatedBean();
@@ -177,65 +178,98 @@ class ValidationBindHandlerTests {
 				.withCauseInstanceOf(BindValidationException.class);
 	}
 
+	@Test
+	void bindShouldValidateIfOtherHandlersInChainReplaceErrorWithResult() {
+		TestHandler testHandler = new TestHandler(new ExampleValidatedBeanSubclass());
+		this.handler = new ValidationBindHandler(testHandler, this.validator);
+		this.sources.add(new MockConfigurationPropertySource("foo", "hello"));
+		this.sources.add(new MockConfigurationPropertySource("foo.age", "bad"));
+		this.sources.add(new MockConfigurationPropertySource("foo.years", "99"));
+		ExampleValidatedBean bean = new ExampleValidatedBean();
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo",
+						Bindable.of(ExampleValidatedBean.class).withExistingValue(bean), this.handler))
+				.withCauseInstanceOf(BindValidationException.class)
+				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageContaining("years"));
+	}
+
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
 		try {
 			action.run();
 		}
 		catch (BindException ex) {
-			BindValidationException cause = (BindValidationException) ex.getCause();
-			return cause;
+			return (BindValidationException) ex.getCause();
 		}
 		throw new IllegalStateException("Did not throw");
 	}
 
-	public static class ExampleNonValidatedBean {
+	static class ExampleNonValidatedBean {
 
 		@Min(5)
 		private int age;
 
-		public int getAge() {
+		int getAge() {
 			return this.age;
 		}
 
-		public void setAge(int age) {
+		void setAge(int age) {
 			this.age = age;
 		}
 
 	}
 
 	@Validated
-	public static class ExampleValidatedBean {
+	static class ExampleValidatedBean {
 
 		@Min(5)
 		private int age;
 
-		public int getAge() {
+		int getAge() {
 			return this.age;
 		}
 
-		public void setAge(int age) {
+		void setAge(int age) {
 			this.age = age;
 		}
 
 	}
 
+	public static class ExampleValidatedBeanSubclass extends ExampleValidatedBean {
+
+		@Min(100)
+		private int years;
+
+		ExampleValidatedBeanSubclass() {
+			setAge(20);
+		}
+
+		public int getYears() {
+			return this.years;
+		}
+
+		public void setYears(int years) {
+			this.years = years;
+		}
+
+	}
+
 	@Validated
-	public static class ExampleValidatedWithNestedBean {
+	static class ExampleValidatedWithNestedBean {
 
 		@Valid
 		private ExampleNested nested = new ExampleNested();
 
-		public ExampleNested getNested() {
+		ExampleNested getNested() {
 			return this.nested;
 		}
 
-		public void setNested(ExampleNested nested) {
+		void setNested(ExampleNested nested) {
 			this.nested = nested;
 		}
 
 	}
 
-	public static class ExampleNested {
+	static class ExampleNested {
 
 		private String name;
 
@@ -245,36 +279,36 @@ class ValidationBindHandlerTests {
 		@NotNull
 		private String address;
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 
-		public int getAge() {
+		int getAge() {
 			return this.age;
 		}
 
-		public void setAge(int age) {
+		void setAge(int age) {
 			this.age = age;
 		}
 
-		public String getAddress() {
+		String getAddress() {
 			return this.address;
 		}
 
-		public void setAddress(String address) {
+		void setAddress(String address) {
 			this.address = address;
 		}
 
 	}
 
 	@Validated
-	public static class ExampleValidatedBeanWithGetterException {
+	static class ExampleValidatedBeanWithGetterException {
 
-		public int getAge() {
+		int getAge() {
 			throw new RuntimeException();
 		}
 
@@ -282,10 +316,16 @@ class ValidationBindHandlerTests {
 
 	static class TestHandler extends AbstractBindHandler {
 
+		private Object result;
+
+		TestHandler(Object result) {
+			this.result = result;
+		}
+
 		@Override
 		public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
 				Exception error) throws Exception {
-			return null;
+			return this.result;
 		}
 
 	}

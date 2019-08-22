@@ -186,13 +186,13 @@ class ServletEndpointDiscovererTests {
 		}
 
 		@ReadOperation
-		public String read() {
+		String read() {
 			return "error";
 		}
 
 	}
 
-	private static class TestServlet extends GenericServlet {
+	static class TestServlet extends GenericServlet {
 
 		@Override
 		public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {

@@ -377,7 +377,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return ((char) ((hi << 4) + lo));
 		}
 
-		public CharSequence toCharSequence() {
+		CharSequence toCharSequence() {
 			return this.name;
 		}
 
@@ -386,11 +386,11 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return this.name.toString();
 		}
 
-		public boolean isEmpty() {
+		boolean isEmpty() {
 			return this.name.isEmpty();
 		}
 
-		public String getContentType() {
+		String getContentType() {
 			if (this.contentType == null) {
 				this.contentType = deduceContentType();
 			}
@@ -405,11 +405,11 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return type;
 		}
 
-		public static JarEntryName get(StringSequence spec) {
+		static JarEntryName get(StringSequence spec) {
 			return get(spec, 0);
 		}
 
-		public static JarEntryName get(StringSequence spec, int beginIndex) {
+		static JarEntryName get(StringSequence spec, int beginIndex) {
 			if (spec.length() <= beginIndex) {
 				return EMPTY_JAR_ENTRY_NAME;
 			}

@@ -306,7 +306,7 @@ public final class Metadata {
 
 	}
 
-	private static class ItemHintValueCondition extends Condition<ItemHint> {
+	static class ItemHintValueCondition extends Condition<ItemHint> {
 
 		private final int index;
 
@@ -350,7 +350,7 @@ public final class Metadata {
 
 	}
 
-	private static class ItemHintProviderCondition extends Condition<ItemHint> {
+	static class ItemHintProviderCondition extends Condition<ItemHint> {
 
 		private final int index;
 
@@ -365,7 +365,7 @@ public final class Metadata {
 			describedAs(createDescription());
 		}
 
-		public String createDescription() {
+		String createDescription() {
 			StringBuilder description = new StringBuilder();
 			description.append("value provider");
 			if (this.name != null) {

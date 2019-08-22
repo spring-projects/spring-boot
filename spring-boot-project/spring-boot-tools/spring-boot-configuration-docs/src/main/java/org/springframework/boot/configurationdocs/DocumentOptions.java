@@ -25,6 +25,7 @@ import java.util.Map;
  * Options for generating documentation for configuration properties.
  *
  * @author Brian Clozel
+ * @since 2.0.0
  */
 public final class DocumentOptions {
 

@@ -123,7 +123,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	}
 
 	@ConfigurationProperties(prefix = "bar")
-	public static class BarProperties {
+	static class BarProperties {
 
 		BarProperties(String foo) {
 		}
@@ -131,7 +131,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	}
 
 	@ConfigurationProperties(prefix = "bing")
-	public static class BingProperties {
+	static class BingProperties {
 
 		BingProperties() {
 		}

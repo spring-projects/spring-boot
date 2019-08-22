@@ -90,7 +90,7 @@ class CompositeMeterRegistryAutoConfigurationTests {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public Clock micrometerClock() {
+		Clock micrometerClock() {
 			return Clock.SYSTEM;
 		}
 
@@ -105,7 +105,7 @@ class CompositeMeterRegistryAutoConfigurationTests {
 	static class SingleMeterRegistryConfig {
 
 		@Bean
-		public MeterRegistry meterRegistry() {
+		MeterRegistry meterRegistry() {
 			return new TestMeterRegistry();
 		}
 
@@ -115,12 +115,12 @@ class CompositeMeterRegistryAutoConfigurationTests {
 	static class MultipleMeterRegistriesConfig {
 
 		@Bean
-		public MeterRegistry meterRegistryOne() {
+		MeterRegistry meterRegistryOne() {
 			return new TestMeterRegistry();
 		}
 
 		@Bean
-		public MeterRegistry meterRegistryTwo() {
+		MeterRegistry meterRegistryTwo() {
 			return new SimpleMeterRegistry();
 		}
 
@@ -131,12 +131,12 @@ class CompositeMeterRegistryAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		public MeterRegistry meterRegistryOne() {
+		MeterRegistry meterRegistryOne() {
 			return new TestMeterRegistry();
 		}
 
 		@Bean
-		public MeterRegistry meterRegistryTwo() {
+		MeterRegistry meterRegistryTwo() {
 			return new SimpleMeterRegistry();
 		}
 

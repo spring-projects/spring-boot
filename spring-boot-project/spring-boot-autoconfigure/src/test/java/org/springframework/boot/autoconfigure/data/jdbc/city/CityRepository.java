@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,6 @@ package org.springframework.boot.autoconfigure.data.jdbc.city;
 
 import org.springframework.data.repository.CrudRepository;
 
-/**
- * Data JDBC repository for working with {@link City Cities}.
- *
- * @author Andy Wilkinson
- */
 public interface CityRepository extends CrudRepository<City, Long> {
 
 }

@@ -39,6 +39,7 @@ import org.springframework.boot.loader.tools.RunProcess;
  * @author Dmytro Nosan
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE,
 		requiresDependencyResolution = ResolutionScope.TEST)

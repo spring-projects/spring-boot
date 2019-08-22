@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 class ErrorPageFilterConfiguration {
 
 	@Bean
-	public ErrorPageFilter errorPageFilter() {
+	ErrorPageFilter errorPageFilter() {
 		return new ErrorPageFilter();
 	}
 

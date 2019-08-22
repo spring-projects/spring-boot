@@ -179,17 +179,16 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
-	 * Create a new {@link ConfigurationPropertyName} by appending the given element
-	 * value.
-	 * @param elementValue the single element value to append
+	 * Create a new {@link ConfigurationPropertyName} by appending the given elements.
+	 * @param elements the elements to append
 	 * @return a new {@link ConfigurationPropertyName}
-	 * @throws InvalidConfigurationPropertyNameException if elementValue is not valid
+	 * @throws InvalidConfigurationPropertyNameException if the result is not valid
 	 */
-	public ConfigurationPropertyName append(String elementValue) {
-		if (elementValue == null) {
+	public ConfigurationPropertyName append(String elements) {
+		if (elements == null) {
 			return this;
 		}
-		Elements additionalElements = probablySingleElementOf(elementValue);
+		Elements additionalElements = probablySingleElementOf(elements);
 		return new ConfigurationPropertyName(this.elements.append(additionalElements));
 	}
 
@@ -659,18 +658,19 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			this.resolved = resolved;
 		}
 
-		public Elements append(Elements additional) {
-			Assert.isTrue(additional.getSize() == 1,
-					() -> "Element value '" + additional.getSource() + "' must be a single item");
-			ElementType[] type = new ElementType[this.size + 1];
+		Elements append(Elements additional) {
+			int size = this.size + additional.size;
+			ElementType[] type = new ElementType[size];
 			System.arraycopy(this.type, 0, type, 0, this.size);
-			type[this.size] = additional.type[0];
-			CharSequence[] resolved = newResolved(this.size + 1);
-			resolved[this.size] = additional.get(0);
-			return new Elements(this.source, this.size + 1, this.start, this.end, type, resolved);
+			System.arraycopy(additional.type, 0, type, this.size, additional.size);
+			CharSequence[] resolved = newResolved(size);
+			for (int i = 0; i < additional.size; i++) {
+				resolved[this.size + i] = additional.get(i);
+			}
+			return new Elements(this.source, size, this.start, this.end, type, resolved);
 		}
 
-		public Elements chop(int size) {
+		Elements chop(int size) {
 			CharSequence[] resolved = newResolved(size);
 			return new Elements(this.source, size, this.start, this.end, this.type, resolved);
 		}
@@ -683,11 +683,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return resolved;
 		}
 
-		public int getSize() {
+		int getSize() {
 			return this.size;
 		}
 
-		public CharSequence get(int index) {
+		CharSequence get(int index) {
 			if (this.resolved != null && this.resolved[index] != null) {
 				return this.resolved[index];
 			}
@@ -696,7 +696,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return this.source.subSequence(start, end);
 		}
 
-		public int getLength(int index) {
+		int getLength(int index) {
 			if (this.resolved != null && this.resolved[index] != null) {
 				return this.resolved[index].length();
 			}
@@ -705,7 +705,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return end - start;
 		}
 
-		public char charAt(int index, int charIndex) {
+		char charAt(int index, int charIndex) {
 			if (this.resolved != null && this.resolved[index] != null) {
 				return this.resolved[index].charAt(charIndex);
 			}
@@ -713,11 +713,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return this.source.charAt(start + charIndex);
 		}
 
-		public ElementType getType(int index) {
+		ElementType getType(int index) {
 			return this.type[index];
 		}
 
-		public CharSequence getSource() {
+		CharSequence getSource() {
 			return this.source;
 		}
 
@@ -727,7 +727,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		 * @param requiredType the required type
 		 * @return {@code true} if all elements match at least one of the types
 		 */
-		public boolean canShortcutWithSource(ElementType requiredType) {
+		boolean canShortcutWithSource(ElementType requiredType) {
 			return canShortcutWithSource(requiredType, requiredType);
 		}
 
@@ -738,7 +738,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		 * @param alternativeType and alternative required type
 		 * @return {@code true} if all elements match at least one of the types
 		 */
-		public boolean canShortcutWithSource(ElementType requiredType, ElementType alternativeType) {
+		boolean canShortcutWithSource(ElementType requiredType, ElementType alternativeType) {
 			if (this.resolved != null) {
 				return false;
 			}
@@ -789,11 +789,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			this.type = new ElementType[capacity];
 		}
 
-		public Elements parse() {
+		Elements parse() {
 			return parse(null);
 		}
 
-		public Elements parse(Function<CharSequence, CharSequence> valueProcessor) {
+		Elements parse(Function<CharSequence, CharSequence> valueProcessor) {
 			int length = this.source.length();
 			int openBracketCount = 0;
 			int start = 0;
@@ -901,11 +901,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return dest;
 		}
 
-		public static boolean isValidChar(char ch, int index) {
+		static boolean isValidChar(char ch, int index) {
 			return isAlpha(ch) || isNumeric(ch) || (index != 0 && ch == '-');
 		}
 
-		public static boolean isAlphaNumeric(char ch) {
+		static boolean isAlphaNumeric(char ch) {
 			return isAlpha(ch) || isNumeric(ch);
 		}
 

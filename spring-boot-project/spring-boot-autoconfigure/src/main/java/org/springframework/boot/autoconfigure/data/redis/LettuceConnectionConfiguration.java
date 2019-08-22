@@ -56,13 +56,13 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean(destroyMethod = "shutdown")
 	@ConditionalOnMissingBean(ClientResources.class)
-	public DefaultClientResources lettuceClientResources() {
+	DefaultClientResources lettuceClientResources() {
 		return DefaultClientResources.create();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
-	public LettuceConnectionFactory redisConnectionFactory(
+	LettuceConnectionFactory redisConnectionFactory(
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
 			ClientResources clientResources) throws UnknownHostException {
 		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(builderCustomizers, clientResources,
@@ -114,6 +114,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
 		}
+		if (StringUtils.hasText(getProperties().getClientName())) {
+			builder.clientName(getProperties().getClientName());
+		}
 		return builder;
 	}
 
@@ -129,7 +132,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	 */
 	private static class PoolBuilderFactory {
 
-		public LettuceClientConfigurationBuilder createBuilder(Pool properties) {
+		LettuceClientConfigurationBuilder createBuilder(Pool properties) {
 			return LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(properties));
 		}
 

@@ -82,7 +82,7 @@ class LiquibaseEndpointAutoConfigurationTests {
 	static class DataSourceClosingLiquibaseConfiguration {
 
 		@Bean
-		public SpringLiquibase liquibase() {
+		SpringLiquibase liquibase() {
 			return new DataSourceClosingSpringLiquibase() {
 
 				private boolean propertiesSet = false;
@@ -91,7 +91,7 @@ class LiquibaseEndpointAutoConfigurationTests {
 				public void setCloseDataSourceOnceMigrated(boolean closeDataSourceOnceMigrated) {
 					if (this.propertiesSet) {
 						throw new IllegalStateException(
-								"setCloseDataSourceOnceMigrated " + "invoked after afterPropertiesSet");
+								"setCloseDataSourceOnceMigrated invoked after afterPropertiesSet");
 					}
 					super.setCloseDataSourceOnceMigrated(closeDataSourceOnceMigrated);
 				}

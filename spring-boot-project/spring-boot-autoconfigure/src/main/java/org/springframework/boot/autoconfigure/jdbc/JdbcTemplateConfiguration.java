@@ -36,7 +36,7 @@ class JdbcTemplateConfiguration {
 
 	@Bean
 	@Primary
-	public JdbcTemplate jdbcTemplate(DataSource dataSource, JdbcProperties properties) {
+	JdbcTemplate jdbcTemplate(DataSource dataSource, JdbcProperties properties) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		JdbcProperties.Template template = properties.getTemplate();
 		jdbcTemplate.setFetchSize(template.getFetchSize());

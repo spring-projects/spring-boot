@@ -167,6 +167,16 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
+	void bindToClassWhenHasPackagePrivateConstructorShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.property", "test");
+		this.sources.add(source);
+		ExamplePackagePrivateConstructorBean bound = this.binder
+				.bind("foo", Bindable.of(ExamplePackagePrivateConstructorBean.class)).get();
+		assertThat(bound.getProperty()).isEqualTo("test");
+	}
+
+	@Test
 	void createShouldReturnCreatedValue() {
 		ExampleValueBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleValueBean.class));
 		assertThat(value.getIntValue()).isEqualTo(0);
@@ -197,7 +207,7 @@ class ValueObjectBinderTests {
 		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
 	}
 
-	public static class ExampleValueBean {
+	static class ExampleValueBean {
 
 		private final int intValue;
 
@@ -218,23 +228,23 @@ class ValueObjectBinderTests {
 			this.enumValue = enumValue;
 		}
 
-		public int getIntValue() {
+		int getIntValue() {
 			return this.intValue;
 		}
 
-		public long getLongValue() {
+		long getLongValue() {
 			return this.longValue;
 		}
 
-		public boolean isBooleanValue() {
+		boolean isBooleanValue() {
 			return this.booleanValue;
 		}
 
-		public String getStringValue() {
+		String getStringValue() {
 			return this.stringValue;
 		}
 
-		public ExampleEnum getEnumValue() {
+		ExampleEnum getEnumValue() {
 			return this.enumValue;
 		}
 
@@ -249,7 +259,7 @@ class ValueObjectBinderTests {
 	}
 
 	@SuppressWarnings("unused")
-	public static class MultipleConstructorsBean {
+	static class MultipleConstructorsBean {
 
 		MultipleConstructorsBean(int intValue) {
 			this(intValue, 23L, "hello");
@@ -260,7 +270,7 @@ class ValueObjectBinderTests {
 
 	}
 
-	public abstract static class ExampleAbstractBean {
+	abstract static class ExampleAbstractBean {
 
 		private final String name;
 
@@ -268,20 +278,20 @@ class ValueObjectBinderTests {
 			this.name = name;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
 	}
 
-	public static class DefaultConstructorBean {
+	static class DefaultConstructorBean {
 
 		DefaultConstructorBean() {
 		}
 
 	}
 
-	public static class ExampleNestedBean {
+	static class ExampleNestedBean {
 
 		private final ExampleValueBean valueBean;
 
@@ -289,13 +299,13 @@ class ValueObjectBinderTests {
 			this.valueBean = valueBean;
 		}
 
-		public ExampleValueBean getValueBean() {
+		ExampleValueBean getValueBean() {
 			return this.valueBean;
 		}
 
 	}
 
-	public static class ExampleDefaultValueBean {
+	static class ExampleDefaultValueBean {
 
 		private final int intValue;
 
@@ -311,21 +321,21 @@ class ValueObjectBinderTests {
 			this.customList = customList;
 		}
 
-		public int getIntValue() {
+		int getIntValue() {
 			return this.intValue;
 		}
 
-		public List<String> getStringsList() {
+		List<String> getStringsList() {
 			return this.stringsList;
 		}
 
-		public List<String> getCustomList() {
+		List<String> getCustomList() {
 			return this.customList;
 		}
 
 	}
 
-	public static class ExampleFailingConstructorBean {
+	static class ExampleFailingConstructorBean {
 
 		private final String name;
 
@@ -338,17 +348,17 @@ class ValueObjectBinderTests {
 			this.value = value;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public Object getValue() {
+		Object getValue() {
 			return this.value;
 		}
 
 	}
 
-	public static class ConverterAnnotatedExampleBean {
+	static class ConverterAnnotatedExampleBean {
 
 		private final LocalDate date;
 
@@ -360,12 +370,26 @@ class ValueObjectBinderTests {
 			this.bar = bar;
 		}
 
-		public LocalDate getDate() {
+		LocalDate getDate() {
 			return this.date;
 		}
 
-		public String getBar() {
+		String getBar() {
 			return this.bar;
+		}
+
+	}
+
+	static class ExamplePackagePrivateConstructorBean {
+
+		private final String property;
+
+		ExamplePackagePrivateConstructorBean(String property) {
+			this.property = property;
+		}
+
+		String getProperty() {
+			return this.property;
 		}
 
 	}

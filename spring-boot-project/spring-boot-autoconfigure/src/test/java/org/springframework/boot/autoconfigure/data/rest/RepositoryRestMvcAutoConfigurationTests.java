@@ -136,24 +136,24 @@ class RepositoryRestMvcAutoConfigurationTests {
 	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
 			JacksonAutoConfiguration.class })
-	protected static class BaseConfiguration {
+	static class BaseConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	@EnableWebMvc
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
 	@Import({ TestConfiguration.class, TestRepositoryRestConfigurer.class })
-	protected static class TestConfigurationWithConfigurer {
+	static class TestConfigurationWithConfigurer {
 
 	}
 
 	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
-	protected static class TestConfigurationWithRestMvcConfig {
+	static class TestConfigurationWithRestMvcConfig {
 
 	}
 
@@ -163,7 +163,7 @@ class RepositoryRestMvcAutoConfigurationTests {
 	static class TestConfigurationWithObjectMapperBuilder {
 
 		@Bean
-		public Jackson2ObjectMapperBuilder objectMapperBuilder() {
+		Jackson2ObjectMapperBuilder objectMapperBuilder() {
 			Jackson2ObjectMapperBuilder objectMapperBuilder = new Jackson2ObjectMapperBuilder();
 			objectMapperBuilder.simpleDateFormat("yyyy-MM");
 			return objectMapperBuilder;

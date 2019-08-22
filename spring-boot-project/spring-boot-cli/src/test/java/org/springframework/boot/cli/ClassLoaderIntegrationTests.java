@@ -36,8 +36,8 @@ class ClassLoaderIntegrationTests {
 	@RegisterExtension
 	CliTester cli;
 
-	ClassLoaderIntegrationTests(CapturedOutput capturedOutput) {
-		this.cli = new CliTester("src/test/resources/", capturedOutput);
+	ClassLoaderIntegrationTests(CapturedOutput output) {
+		this.cli = new CliTester("src/test/resources/", output);
 	}
 
 	@Test

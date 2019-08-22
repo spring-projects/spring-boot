@@ -39,14 +39,14 @@ class PropertiesMigrationReport {
 	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that should be renamed
 	 */
-	public String getWarningReport() {
+	String getWarningReport() {
 		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getRenamed);
 		if (content.isEmpty()) {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
-		report.append(String.format(
-				"%nThe use of configuration keys that have been " + "renamed was found in the environment:%n%n"));
+		report.append(String
+				.format("%nThe use of configuration keys that have been renamed was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
 		report.append("Each configuration key has been temporarily mapped to its "
@@ -61,17 +61,17 @@ class PropertiesMigrationReport {
 	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that are no longer supported
 	 */
-	public String getErrorReport() {
+	String getErrorReport() {
 		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getUnsupported);
 		if (content.isEmpty()) {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
 		report.append(String.format(
-				"%nThe use of configuration keys that are no longer " + "supported was found in the environment:%n%n"));
+				"%nThe use of configuration keys that are no longer supported was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
-		report.append("Please refer to the migration guide or reference guide for " + "potential alternatives.");
+		report.append("Please refer to the migration guide or reference guide for potential alternatives.");
 		report.append(String.format("%n"));
 		return report.toString();
 	}
@@ -115,11 +115,11 @@ class PropertiesMigrationReport {
 			this.properties = new ArrayList<>(properties);
 		}
 
-		public List<PropertyMigration> getRenamed() {
+		List<PropertyMigration> getRenamed() {
 			return this.properties.stream().filter(PropertyMigration::isCompatibleType).collect(Collectors.toList());
 		}
 
-		public List<PropertyMigration> getUnsupported() {
+		List<PropertyMigration> getUnsupported() {
 			return this.properties.stream().filter((property) -> !property.isCompatibleType())
 					.collect(Collectors.toList());
 		}

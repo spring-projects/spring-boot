@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,11 +30,8 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
-import org.springframework.boot.testsupport.assertj.Matched;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.startsWith;
 
 /**
  * Tests for {@link GroovyGrabDependencyResolver}.
@@ -104,12 +100,13 @@ class GroovyGrabDependencyResolverTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void resolveShorthandArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-beans"));
 		assertThat(resolved).hasSize(3);
-		assertThat(getNames(resolved)).has((Condition) Matched
-				.by(hasItems(startsWith("spring-core-"), startsWith("spring-beans-"), startsWith("spring-jcl-"))));
+		Set<String> names = getNames(resolved);
+		assertThat(names).anyMatch((name) -> name.startsWith("spring-core-"));
+		assertThat(names).anyMatch((name) -> name.startsWith("spring-beans-"));
+		assertThat(names).anyMatch((name) -> name.startsWith("spring-jcl-"));
 	}
 
 	@Test
@@ -121,7 +118,7 @@ class GroovyGrabDependencyResolverTests {
 				"hamcrest-core-2.1.jar", "hamcrest-2.1.jar");
 	}
 
-	public Set<String> getNames(Collection<File> files) {
+	Set<String> getNames(Collection<File> files) {
 		Set<String> names = new HashSet<>(files.size());
 		for (File file : files) {
 			names.add(file.getName());

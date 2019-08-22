@@ -27,6 +27,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
@@ -60,11 +61,11 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	public WebApplicationContext getContext() {
+	WebApplicationContext getContext() {
 		return this.context;
 	}
 
-	public TestRestTemplate getRestTemplate() {
+	TestRestTemplate getRestTemplate() {
 		return this.restTemplate;
 	}
 
@@ -91,30 +92,31 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 		assertThat(this.context).isSameAs(WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
-	protected abstract static class AbstractConfig {
+	@Configuration(proxyBeanMethods = false)
+	static class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
 		@Bean
-		public ServletWebServerFactory webServerFactory() {
+		ServletWebServerFactory webServerFactory() {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(this.port);
 			return factory;
 		}
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 		@RequestMapping("/")
-		public String home() {
+		String home() {
 			return "Hello World";
 		}
 

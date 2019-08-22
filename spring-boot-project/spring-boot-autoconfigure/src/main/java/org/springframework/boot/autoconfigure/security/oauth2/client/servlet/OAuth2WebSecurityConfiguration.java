@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
@@ -33,7 +34,6 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
  *
  * @author Madhura Bhave
  * @author Phillip Webb
- * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(ClientRegistrationRepository.class)
@@ -41,15 +41,13 @@ class OAuth2WebSecurityConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public OAuth2AuthorizedClientService authorizedClientService(
-			ClientRegistrationRepository clientRegistrationRepository) {
+	OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
 		return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public OAuth2AuthorizedClientRepository authorizedClientRepository(
-			OAuth2AuthorizedClientService authorizedClientService) {
+	OAuth2AuthorizedClientRepository authorizedClientRepository(OAuth2AuthorizedClientService authorizedClientService) {
 		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
 	}
 
@@ -59,7 +57,9 @@ class OAuth2WebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login().and().oauth2Client();
+			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
+			http.oauth2Login(Customizer.withDefaults());
+			http.oauth2Client();
 		}
 
 	}

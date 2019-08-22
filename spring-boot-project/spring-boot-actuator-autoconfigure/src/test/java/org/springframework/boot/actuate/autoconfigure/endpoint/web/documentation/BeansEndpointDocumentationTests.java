@@ -75,7 +75,7 @@ class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests 
 	static class TestConfiguration {
 
 		@Bean
-		public BeansEndpoint beansEndpoint(ConfigurableApplicationContext context) {
+		BeansEndpoint beansEndpoint(ConfigurableApplicationContext context) {
 			return new BeansEndpoint(context);
 		}
 

@@ -61,6 +61,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @since 1.0.0
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
@@ -119,7 +120,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn("Ignoring '" + CONFIGURATION_FILE_PROPERTY
-					+ "' system property. " + "Please use 'logging.config' instead.");
+					+ "' system property. Please use 'logging.config' instead.");
 		}
 	}
 

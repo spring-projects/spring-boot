@@ -86,7 +86,7 @@ public class WebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled", matchIfMissing = false)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
@@ -242,7 +242,7 @@ public class WebFluxAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
-		public ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
+		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
 			return new ResourceChainResourceHandlerRegistrationCustomizer();
 		}
 

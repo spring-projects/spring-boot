@@ -104,26 +104,25 @@ class WebMvcMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
-					assertThat(capturedOutput)
-							.contains("Reached the maximum number of URI tags " + "for 'http.server.requests'");
+					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
 				});
 	}
 
 	@Test
-	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
-					assertThat(capturedOutput)
-							.doesNotContain("Reached the maximum number of URI tags " + "for 'http.server.requests'");
+					assertThat(output)
+							.doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
 				});
 	}
 
@@ -150,7 +149,7 @@ class WebMvcMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.run((context) -> assertThat(context.getBean(RequestMappingHandlerMapping.class))
-						.extracting("interceptors").element(0).asList().extracting((item) -> (Class) item.getClass())
+						.extracting("interceptors").asList().extracting((item) -> (Class) item.getClass())
 						.contains(LongTaskTimingHandlerInterceptor.class));
 	}
 
@@ -169,7 +168,7 @@ class WebMvcMetricsAutoConfigurationTests {
 	static class TagsProviderConfiguration {
 
 		@Bean
-		public TestWebMvcTagsProvider tagsProvider() {
+		TestWebMvcTagsProvider tagsProvider() {
 			return new TestWebMvcTagsProvider();
 		}
 

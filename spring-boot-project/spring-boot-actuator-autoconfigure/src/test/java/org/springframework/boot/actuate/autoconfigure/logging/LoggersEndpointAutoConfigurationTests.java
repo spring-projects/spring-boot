@@ -66,7 +66,7 @@ class LoggersEndpointAutoConfigurationTests {
 	static class LoggingConfiguration {
 
 		@Bean
-		public LoggingSystem loggingSystem() {
+		LoggingSystem loggingSystem() {
 			return mock(LoggingSystem.class);
 		}
 

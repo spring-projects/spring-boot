@@ -32,6 +32,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * bean definitions via an extra XML file.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see #setNamespace
  * @see #setConfigLocations
  * @see ServletWebServerApplicationContext

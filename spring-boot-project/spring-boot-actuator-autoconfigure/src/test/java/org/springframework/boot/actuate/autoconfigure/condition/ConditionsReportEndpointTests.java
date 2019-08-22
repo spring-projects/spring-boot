@@ -59,7 +59,7 @@ class ConditionsReportEndpointTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Config {
+	static class Config {
 
 		private final ConfigurableApplicationContext context;
 
@@ -68,7 +68,7 @@ class ConditionsReportEndpointTests {
 		}
 
 		@PostConstruct
-		public void setupAutoConfigurationReport() {
+		void setupAutoConfigurationReport() {
 			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context.getBeanFactory());
 			report.recordEvaluationCandidates(Arrays.asList("a", "b"));
 			report.recordConditionEvaluation("a", mock(Condition.class), mock(ConditionOutcome.class));
@@ -76,7 +76,7 @@ class ConditionsReportEndpointTests {
 		}
 
 		@Bean
-		public ConditionsReportEndpoint endpoint() {
+		ConditionsReportEndpoint endpoint() {
 			return new ConditionsReportEndpoint(this.context);
 		}
 

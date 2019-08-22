@@ -66,7 +66,7 @@ class JpaWebAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	@EnableWebMvc
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 

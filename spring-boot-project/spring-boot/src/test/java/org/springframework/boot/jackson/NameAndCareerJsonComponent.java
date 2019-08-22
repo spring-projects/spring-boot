@@ -26,14 +26,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * Sample {@link JsonComponent} used for tests.
+ * Sample {@link JsonComponent @JsonComponent} used for tests.
  *
  * @author Paul Aly
  */
 @JsonComponent(type = NameAndCareer.class)
 public class NameAndCareerJsonComponent {
 
-	public static class Serializer extends JsonObjectSerializer<Name> {
+	static class Serializer extends JsonObjectSerializer<Name> {
 
 		@Override
 		protected void serializeObject(Name value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
@@ -42,7 +42,7 @@ public class NameAndCareerJsonComponent {
 
 	}
 
-	public static class Deserializer extends JsonObjectDeserializer<Name> {
+	static class Deserializer extends JsonObjectDeserializer<Name> {
 
 		@Override
 		protected Name deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,

@@ -119,7 +119,7 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 			}
 		}
 
-		public boolean hasAnnotations() {
+		boolean hasAnnotations() {
 			return !this.annotations.isEmpty();
 		}
 
