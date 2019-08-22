@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author HaiTao Zhang
  */
 class ConfigurationPropertiesReportEndpointTests {
 
@@ -175,6 +177,22 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
+	void sanitizedUriWithSensitiveInfo() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
+			assertThat(nestedProperties.get("sensitiveUri")).isEqualTo("http://user:******@localhost:8080");
+		});
+	}
+
+	@Test
+	void sanitizedUriWithNoPassword() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans().get("testProperties").getProperties();
+			assertThat(nestedProperties.get("noPasswordUri")).isEqualTo("http://user:******@localhost:8080");
+		});
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	void listsOfListsAreSanitized() {
 		load((context, properties) -> {
@@ -265,6 +283,10 @@ class ConfigurationPropertiesReportEndpointTests {
 		private String nullValue = null;
 
 		private Duration duration = Duration.ofSeconds(10);
+
+		private URI sensitiveUri = URI.create("http://user:password@localhost:8080");
+
+		private URI noPasswordUri = URI.create("http://user:p@localhost:8080");
 
 		TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
@@ -375,6 +397,22 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public void setDuration(Duration duration) {
 			this.duration = duration;
+		}
+
+		public void setSensitiveUri(URI sensitiveUri) {
+			this.sensitiveUri = sensitiveUri;
+		}
+
+		public URI getSensitiveUri() {
+			return this.sensitiveUri;
+		}
+
+		public void setNoPasswordUri(URI noPasswordUri) {
+			this.noPasswordUri = noPasswordUri;
+		}
+
+		public URI getNoPasswordUri() {
+			return this.noPasswordUri;
 		}
 
 		public static class Hidden {
