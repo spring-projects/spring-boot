@@ -703,7 +703,11 @@
       "name": "spring.mvc.favicon.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable resolution of favicon.ico.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "remove default favicon.ico.",
+        "level": "error"
+      }
     },
     {
       "name": "spring.mvc.formcontent.putfilter.enabled",
