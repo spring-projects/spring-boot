@@ -22,6 +22,6 @@ package org.springframework.boot.convert;
  *
  * @author Madhura Bhave
  */
-final class LenientBooleanToEnumConverterFactory extends LenientToEnumConverterFactory<Boolean> {
+final class LenientBooleanToEnumConverterFactory extends LenientObjectToEnumConverterFactory<Boolean> {
 
 }

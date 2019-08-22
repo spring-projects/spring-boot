@@ -28,6 +28,6 @@ package org.springframework.boot.convert;
  *
  * @author Phillip Webb
  */
-final class LenientStringToEnumConverterFactory extends LenientToEnumConverterFactory<String> {
+final class LenientStringToEnumConverterFactory extends LenientObjectToEnumConverterFactory<String> {
 
 }

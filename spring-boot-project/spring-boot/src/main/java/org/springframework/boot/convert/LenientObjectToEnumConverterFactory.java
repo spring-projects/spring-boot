@@ -36,7 +36,7 @@ import org.springframework.util.MultiValueMap;
  * @author Madhura Bhave
  */
 @SuppressWarnings("rawtypes")
-abstract class LenientToEnumConverterFactory<T> implements ConverterFactory<T, Enum<?>> {
+abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactory<T, Enum<?>> {
 
 	private static Map<String, List<String>> ALIASES;
 
